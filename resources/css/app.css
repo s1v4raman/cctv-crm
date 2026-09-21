@@ -1,0 +1,1597 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ═══════════════════════════════════════════════════════════════════════
+   SECUREVISION AI CRM — MODERN SAAS LIGHT DESIGN SYSTEM
+   Matches Reference: Clean SaaS CRM Dashboard (Royal Blue & Slate Light)
+   ═══════════════════════════════════════════════════════════════════════ */
+
+:root {
+    --bg-canvas: #f8fafc;
+    --bg-card: #ffffff;
+    --border-card: #e2e8f0;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    
+    --brand-blue: #2563eb;
+    --brand-blue-hover: #1d4ed8;
+    --brand-blue-light: #eff6ff;
+    
+    --accent-emerald: #10b981;
+    --accent-amber: #f59e0b;
+    --accent-purple: #8b5cf6;
+    --accent-rose: #ef4444;
+}
+
+html {
+    background-color: #f8fafc;
+    color-scheme: light;
+}
+
+html.dark {
+    background-color: #060913;
+    color-scheme: dark;
+}
+
+body {
+    background-color: #f8fafc;
+    color: #0f172a;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+html.dark body {
+    background-color: #060913;
+    color: #f8fafc;
+}
+
+h1, h2, h3, h4, h5, h6, .font-heading {
+    font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Custom Sleek Scrollbars */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+html.dark ::-webkit-scrollbar-track {
+    background: #0b1120;
+}
+html.dark ::-webkit-scrollbar-thumb {
+    background: #334155;
+}
+html.dark ::-webkit-scrollbar-thumb:hover {
+    background: #475569;
+}
+
+/* Modern SaaS Card Utilities */
+.saas-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.saas-card:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+}
+
+html.dark .saas-card {
+    background: #0f172a;
+    border-color: #1e293b;
+    color: #f8fafc;
+}
+
+/* Button Presets */
+.btn-primary, .btn-blue {
+    background-color: #2563eb;
+    color: #ffffff !important;
+    font-weight: 600;
+    font-size: 0.825rem;
+    padding: 0.55rem 1.15rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 2px 0 rgba(37, 99, 235, 0.2);
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    text-decoration: none;
+    border: 1px solid #2563eb;
+    cursor: pointer;
+}
+.btn-primary:hover, .btn-blue:hover {
+    background-color: #1d4ed8;
+    border-color: #1d4ed8;
+    box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3);
+}
+
+.btn-secondary, .btn-dark {
+    background-color: #ffffff;
+    color: #334155 !important;
+    border: 1px solid #cbd5e1;
+    font-weight: 600;
+    font-size: 0.825rem;
+    padding: 0.55rem 1.15rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    text-decoration: none;
+    cursor: pointer;
+}
+.btn-secondary:hover, .btn-dark:hover {
+    background-color: #f8fafc;
+    border-color: #94a3b8;
+    color: #0f172a !important;
+}
+
+html.dark .btn-secondary,
+html.dark .btn-dark {
+    background-color: #0f172a;
+    color: #e2e8f0 !important;
+    border-color: #334155;
+}
+html.dark .btn-secondary:hover,
+html.dark .btn-dark:hover {
+    background-color: #1e293b;
+    border-color: #475569;
+    color: #ffffff !important;
+}
+
+.btn-amber {
+    background-color: #2563eb;
+    color: #ffffff !important;
+    font-weight: 600;
+    font-size: 0.825rem;
+    padding: 0.55rem 1.15rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 2px 0 rgba(37, 99, 235, 0.2);
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    text-decoration: none;
+    border: 1px solid #2563eb;
+    cursor: pointer;
+}
+.btn-amber:hover {
+    background-color: #1d4ed8;
+    border-color: #1d4ed8;
+}
+
+/* Modern Clean Input & Select styling */
+input[type="text"],
+input[type="search"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="date"],
+input[type="datetime-local"],
+input[type="tel"],
+select,
+textarea {
+    background-color: #ffffff;
+    border-color: #e2e8f0;
+    color: #0f172a;
+    border-radius: 0.75rem;
+}
+
+html.dark input[type="text"],
+html.dark input[type="search"],
+html.dark input[type="email"],
+html.dark input[type="password"],
+html.dark input[type="number"],
+html.dark input[type="date"],
+html.dark input[type="datetime-local"],
+html.dark input[type="tel"],
+html.dark select,
+html.dark textarea {
+    background-color: #0b1120;
+    border-color: #334155;
+    color: #f8fafc;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: #2563eb !important;
+    --tw-ring-color: rgba(37, 99, 235, 0.15) !important;
+    outline: none !important;
+}
+
+/* SaaS Data Table */
+.saas-table {
+    width: 100%;
+    text-align: left;
+    font-size: 0.85rem;
+    color: #334155;
+    border-collapse: collapse;
+}
+.saas-table thead th {
+    background: #f8fafc;
+    color: #64748b;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    padding: 0.85rem 1.25rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+.saas-table tbody tr {
+    background: #ffffff;
+    border-bottom: 1px solid #f1f5f9;
+    transition: background 0.15s ease;
+}
+.saas-table tbody tr:hover {
+    background: #f8fafc;
+}
+.saas-table tbody td {
+    padding: 0.95rem 1.25rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+/* Status Pill Badges matching Mockup */
+.badge-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.2rem 0.65rem;
+    border-radius: 9999px;
+    font-size: 0.72rem;
+    font-weight: 600;
+}
+.badge-pill-blue {
+    background-color: #eff6ff;
+    color: #2563eb;
+    border: 1px solid #dbeafe;
+}
+.badge-pill-green {
+    background-color: #ecfdf5;
+    color: #059669;
+    border: 1px solid #d1fae5;
+}
+.badge-pill-amber {
+    background-color: #fffbeb;
+    color: #d97706;
+    border: 1px solid #fef3c7;
+}
+.badge-pill-purple {
+    background-color: #faf5ff;
+    color: #7e22ce;
+    border: 1px solid #f3e8ff;
+}
+.badge-pill-red {
+    background-color: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fee2e2;
+}
+
+/* Deals Funnel Styles */
+.funnel-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    padding: 0.5rem 0;
+}
+.funnel-tier {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.65rem 1rem;
+    border-radius: 0.5rem;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 0.8rem;
+    transition: transform 0.15s ease;
+}
+.funnel-tier:hover {
+    transform: translateX(3px);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ALL MODULES MODERN SAAS REDESIGN (Light & Dark System)
+   Covers Leads, Site Surveys, Quotations, Jobs, Tickets, AMCs, Equipment,
+   Inventory, Invoices, Suppliers, Products, Admin/Users & Forms
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Header Slot Universal Typography */
+.header-slot-container h1,
+.header-slot-container h2,
+.header-slot-container h3,
+.header-slot-container .text-white {
+    color: #0f172a !important;
+}
+.header-slot-container p,
+.header-slot-container p.text-slate-400 {
+    color: #64748b !important;
+}
+html.dark .header-slot-container h1,
+html.dark .header-slot-container h2,
+html.dark .header-slot-container h3,
+html.dark .header-slot-container .text-white {
+    color: #ffffff !important;
+}
+html.dark .header-slot-container p,
+html.dark .header-slot-container p.text-slate-400 {
+    color: #94a3b8 !important;
+}
+
+/* Page Outer Wrappers */
+.pg-wrap {
+    background: #f8fafc !important;
+    min-height: calc(100vh - 4rem) !important;
+    padding: 1.5rem 0 3rem !important;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+html.dark .pg-wrap {
+    background: #060913 !important;
+}
+
+/* Inner Layout Containers */
+.pg-inner {
+    max-width: 1360px !important;
+    margin: 0 auto !important;
+    padding: 0 1.25rem !important;
+}
+
+/* Main Cards */
+.pg-card,
+.stat-card,
+.pip-card {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05) !important;
+    border-radius: 1rem !important;
+    color: #0f172a !important;
+    transition: all 0.2s ease;
+}
+.pg-card:hover,
+.stat-card:hover,
+.pip-card:hover {
+    box-shadow: 0 6px 12px -2px rgba(0, 0, 0, 0.06), 0 3px 6px -3px rgba(0, 0, 0, 0.04) !important;
+}
+html.dark .pg-card,
+html.dark .stat-card,
+html.dark .pip-card {
+    background: #0f172a !important;
+    border-color: #1e293b !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5) !important;
+    color: #f8fafc !important;
+}
+
+/* Pipeline summary strips (Quotations, Deals, Leads) */
+.pip-card .pip-count {
+    color: #0f172a !important;
+}
+.pip-card .pip-label {
+    color: #64748b !important;
+}
+html.dark .pip-card .pip-count {
+    color: #ffffff !important;
+}
+html.dark .pip-card .pip-label {
+    color: #94a3b8 !important;
+}
+
+/* Filter toolbars */
+.filter-bar {
+    background: #ffffff !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    padding: 1rem 1.25rem !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.75rem !important;
+    flex-wrap: wrap !important;
+}
+html.dark .filter-bar {
+    background: #0b1120 !important;
+    border-bottom-color: #1e293b !important;
+}
+
+/* Filter inputs & selects */
+.filter-bar input,
+.filter-bar select,
+.filter-select {
+    background-color: #f8fafc !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 0.65rem !important;
+    padding: 0.5rem 0.9rem !important;
+    font-size: 0.82rem !important;
+    color: #0f172a !important;
+    outline: none !important;
+    transition: border-color 0.15s, box-shadow 0.15s !important;
+}
+.filter-bar input:focus,
+.filter-bar select:focus,
+.filter-select:focus {
+    border-color: #2563eb !important;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
+    background-color: #ffffff !important;
+}
+html.dark .filter-bar input,
+html.dark .filter-bar select,
+html.dark .filter-select {
+    background-color: #060913 !important;
+    border-color: #334155 !important;
+    color: #ffffff !important;
+}
+html.dark .filter-bar input:focus,
+html.dark .filter-bar select:focus,
+html.dark .filter-select:focus {
+    border-color: #2563eb !important;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25) !important;
+    background-color: #0b1120 !important;
+}
+
+/* Status tabs (Tickets, Surveys, Jobs) */
+.status-tab {
+    background: #ffffff !important;
+    color: #64748b !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 0.6rem !important;
+    transition: all 0.15s ease !important;
+}
+.status-tab:hover {
+    background: #f8fafc !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+.status-tab.active {
+    background: #2563eb !important;
+    color: #ffffff !important;
+    border-color: #2563eb !important;
+}
+.status-tab .count-badge {
+    background: #f1f5f9 !important;
+    color: #475569 !important;
+}
+.status-tab.active .count-badge {
+    background: rgba(255, 255, 255, 0.25) !important;
+    color: #ffffff !important;
+}
+html.dark .status-tab {
+    background: #0f172a !important;
+    color: #94a3b8 !important;
+    border-color: #1e293b !important;
+}
+html.dark .status-tab:hover {
+    background: #1e293b !important;
+    color: #ffffff !important;
+}
+html.dark .status-tab.active {
+    background: #2563eb !important;
+    color: #ffffff !important;
+    border-color: #2563eb !important;
+}
+
+/* Universal Module Tables */
+table.leads-table,
+table.jobs-table,
+table.q-table,
+table.p-table,
+table.surveys-table,
+table.inv-table,
+table.eq-table,
+table.amc-table,
+table.users-table,
+table.suppliers-table,
+table.products-table,
+table.data-table,
+table.pg-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+}
+
+table.leads-table thead,
+table.jobs-table thead,
+table.q-table thead,
+table.p-table thead,
+table.surveys-table thead,
+table.inv-table thead,
+table.eq-table thead,
+table.amc-table thead,
+table.users-table thead,
+table.suppliers-table thead,
+table.products-table thead,
+table.data-table thead,
+table.pg-table thead {
+    background: #f8fafc !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+}
+
+table.leads-table thead th,
+table.jobs-table thead th,
+table.q-table thead th,
+table.p-table thead th,
+table.surveys-table thead th,
+table.inv-table thead th,
+table.eq-table thead th,
+table.amc-table thead th,
+table.users-table thead th,
+table.suppliers-table thead th,
+table.products-table thead th,
+table.data-table thead th,
+table.pg-table thead th {
+    padding: 0.8rem 1.25rem !important;
+    font-size: 0.68rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    color: #64748b !important;
+    text-align: left !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+}
+
+table.leads-table tbody tr,
+table.jobs-table tbody tr,
+table.q-table tbody tr,
+table.p-table tbody tr,
+table.surveys-table tbody tr,
+table.inv-table tbody tr,
+table.eq-table tbody tr,
+table.amc-table tbody tr,
+table.users-table tbody tr,
+table.suppliers-table tbody tr,
+table.products-table tbody tr,
+table.data-table tbody tr,
+table.pg-table tbody tr {
+    background: #ffffff !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    transition: background 0.15s ease !important;
+}
+
+table.leads-table tbody tr:hover,
+table.jobs-table tbody tr:hover,
+table.q-table tbody tr:hover,
+table.p-table tbody tr:hover,
+table.surveys-table tbody tr:hover,
+table.inv-table tbody tr:hover,
+table.eq-table tbody tr:hover,
+table.amc-table tbody tr:hover,
+table.users-table tbody tr:hover,
+table.suppliers-table tbody tr:hover,
+table.products-table tbody tr:hover,
+table.data-table tbody tr:hover,
+table.pg-table tbody tr:hover {
+    background: #f8fafc !important;
+}
+
+table.leads-table tbody td,
+table.jobs-table tbody td,
+table.q-table tbody td,
+table.p-table tbody td,
+table.surveys-table tbody td,
+table.inv-table tbody td,
+table.eq-table tbody td,
+table.amc-table tbody td,
+table.users-table tbody td,
+table.suppliers-table tbody td,
+table.products-table tbody td,
+table.data-table tbody td,
+table.pg-table tbody td {
+    padding: 0.9rem 1.25rem !important;
+    vertical-align: middle !important;
+    color: #334155 !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+}
+
+/* Dark Mode Table Overrides */
+html.dark table.leads-table thead,
+html.dark table.jobs-table thead,
+html.dark table.q-table thead,
+html.dark table.p-table thead,
+html.dark table.surveys-table thead,
+html.dark table.inv-table thead,
+html.dark table.eq-table thead,
+html.dark table.amc-table thead,
+html.dark table.users-table thead,
+html.dark table.suppliers-table thead,
+html.dark table.products-table thead,
+html.dark table.data-table thead,
+html.dark table.pg-table thead {
+    background: #0b1120 !important;
+    border-bottom-color: #1e293b !important;
+}
+
+html.dark table.leads-table thead th,
+html.dark table.jobs-table thead th,
+html.dark table.q-table thead th,
+html.dark table.p-table thead th,
+html.dark table.surveys-table thead th,
+html.dark table.inv-table thead th,
+html.dark table.eq-table thead th,
+html.dark table.amc-table thead th,
+html.dark table.users-table thead th,
+html.dark table.suppliers-table thead th,
+html.dark table.products-table thead th,
+html.dark table.data-table thead th,
+html.dark table.pg-table thead th {
+    color: #94a3b8 !important;
+    border-bottom-color: #1e293b !important;
+}
+
+html.dark table.leads-table tbody tr,
+html.dark table.jobs-table tbody tr,
+html.dark table.q-table tbody tr,
+html.dark table.p-table tbody tr,
+html.dark table.surveys-table tbody tr,
+html.dark table.inv-table tbody tr,
+html.dark table.eq-table tbody tr,
+html.dark table.amc-table tbody tr,
+html.dark table.users-table tbody tr,
+html.dark table.suppliers-table tbody tr,
+html.dark table.products-table tbody tr,
+html.dark table.data-table tbody tr,
+html.dark table.pg-table tbody tr {
+    background: #0f172a !important;
+    border-bottom-color: #1e293b !important;
+}
+
+html.dark table.leads-table tbody tr:hover,
+html.dark table.jobs-table tbody tr:hover,
+html.dark table.q-table tbody tr:hover,
+html.dark table.p-table tbody tr:hover,
+html.dark table.surveys-table tbody tr:hover,
+html.dark table.inv-table tbody tr:hover,
+html.dark table.eq-table tbody tr:hover,
+html.dark table.amc-table tbody tr:hover,
+html.dark table.users-table tbody tr:hover,
+html.dark table.suppliers-table tbody tr:hover,
+html.dark table.products-table tbody tr:hover,
+html.dark table.data-table tbody tr:hover,
+html.dark table.pg-table tbody tr:hover {
+    background: #1e293b !important;
+}
+
+html.dark table.leads-table tbody td,
+html.dark table.jobs-table tbody td,
+html.dark table.q-table tbody td,
+html.dark table.p-table tbody td,
+html.dark table.surveys-table tbody td,
+html.dark table.inv-table tbody td,
+html.dark table.eq-table tbody td,
+html.dark table.amc-table tbody td,
+html.dark table.users-table tbody td,
+html.dark table.suppliers-table tbody td,
+html.dark table.products-table tbody td,
+html.dark table.data-table tbody td,
+html.dark table.pg-table tbody td {
+    color: #cbd5e1 !important;
+    border-bottom-color: #1e293b !important;
+}
+
+/* Typography Inside Table Cells */
+.cell-name {
+    font-size: 0.85rem !important;
+    font-weight: 700 !important;
+    color: #0f172a !important;
+}
+.cell-name a {
+    color: #2563eb !important;
+    text-decoration: none !important;
+    transition: color 0.15s ease !important;
+}
+.cell-name a:hover {
+    color: #1d4ed8 !important;
+    text-decoration: underline !important;
+}
+.cell-no {
+    font-size: 0.85rem !important;
+    font-weight: 700 !important;
+    color: #2563eb !important;
+    text-decoration: none !important;
+}
+.cell-no a {
+    color: #2563eb !important;
+    text-decoration: none !important;
+}
+.cell-no a:hover {
+    color: #1d4ed8 !important;
+    text-decoration: underline !important;
+}
+.cell-sub {
+    font-size: 0.72rem !important;
+    color: #64748b !important;
+    margin-top: 0.1rem !important;
+}
+.cell-text {
+    font-size: 0.82rem !important;
+    color: #334155 !important;
+}
+.cell-amount {
+    font-size: 0.9rem !important;
+    font-weight: 800 !important;
+    color: #0f172a !important;
+    font-family: 'Outfit', sans-serif !important;
+}
+.cell-date {
+    font-size: 0.75rem !important;
+    color: #64748b !important;
+    white-space: nowrap !important;
+    font-weight: 600 !important;
+}
+
+html.dark .cell-name {
+    color: #ffffff !important;
+}
+html.dark .cell-name a {
+    color: #60a5fa !important;
+}
+html.dark .cell-name a:hover {
+    color: #93c5fd !important;
+}
+html.dark .cell-no {
+    color: #60a5fa !important;
+}
+html.dark .cell-no a {
+    color: #60a5fa !important;
+}
+html.dark .cell-sub {
+    color: #94a3b8 !important;
+}
+html.dark .cell-text {
+    color: #cbd5e1 !important;
+}
+html.dark .cell-amount {
+    color: #ffffff !important;
+}
+html.dark .cell-date {
+    color: #94a3b8 !important;
+}
+
+/* Tags & Action Buttons Inside Tables */
+.source-tag {
+    display: inline-block !important;
+    padding: 0.2rem 0.55rem !important;
+    border-radius: 9999px !important;
+    font-size: 0.7rem !important;
+    font-weight: 600 !important;
+    background: #eff6ff !important;
+    color: #2563eb !important;
+    border: 1px solid #dbeafe !important;
+}
+html.dark .source-tag {
+    background: rgba(37, 99, 235, 0.15) !important;
+    color: #60a5fa !important;
+    border-color: rgba(37, 99, 235, 0.3) !important;
+}
+
+.tech-tag {
+    display: inline-block !important;
+    padding: 0.2rem 0.55rem !important;
+    border-radius: 0.4rem !important;
+    font-size: 0.7rem !important;
+    font-weight: 600 !important;
+    background: #f1f5f9 !important;
+    color: #475569 !important;
+    border: 1px solid #e2e8f0 !important;
+}
+html.dark .tech-tag {
+    background: #1e293b !important;
+    color: #94a3b8 !important;
+    border-color: #334155 !important;
+}
+
+.btn-ticket {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.25rem !important;
+    padding: 0.3rem 0.7rem !important;
+    border-radius: 0.5rem !important;
+    font-size: 0.72rem !important;
+    font-weight: 700 !important;
+    background: #fffbeb !important;
+    color: #d97706 !important;
+    border: 1px solid #fde68a !important;
+    text-decoration: none !important;
+    transition: all 0.15s ease !important;
+}
+.btn-ticket:hover {
+    background: #fef3c7 !important;
+    color: #b45309 !important;
+}
+html.dark .btn-ticket {
+    background: rgba(245, 158, 11, 0.15) !important;
+    color: #fbbf24 !important;
+    border-color: rgba(245, 158, 11, 0.3) !important;
+}
+
+.btn-edit {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.25rem !important;
+    padding: 0.3rem 0.7rem !important;
+    border-radius: 0.5rem !important;
+    font-size: 0.72rem !important;
+    font-weight: 700 !important;
+    background: #eff6ff !important;
+    color: #2563eb !important;
+    border: 1px solid #bfdbfe !important;
+    text-decoration: none !important;
+    transition: all 0.15s ease !important;
+}
+.btn-edit:hover {
+    background: #dbeafe !important;
+    color: #1d4ed8 !important;
+}
+html.dark .btn-edit {
+    background: rgba(59, 130, 246, 0.15) !important;
+    color: #60a5fa !important;
+    border-color: rgba(59, 130, 246, 0.3) !important;
+}
+
+.btn-del {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.25rem !important;
+    padding: 0.3rem 0.7rem !important;
+    border-radius: 0.5rem !important;
+    font-size: 0.72rem !important;
+    font-weight: 700 !important;
+    background: #fef2f2 !important;
+    color: #dc2626 !important;
+    border: 1px solid #fecaca !important;
+    cursor: pointer !important;
+    transition: all 0.15s ease !important;
+    font-family: inherit !important;
+}
+.btn-del:hover {
+    background: #fee2e2 !important;
+    color: #b91c1c !important;
+}
+html.dark .btn-del {
+    background: rgba(244, 63, 94, 0.15) !important;
+    color: #fb7185 !important;
+    border-color: rgba(244, 63, 94, 0.3) !important;
+}
+
+/* Pagination Row */
+.pg-links {
+    padding: 1rem 1.25rem !important;
+    background: #ffffff !important;
+    border-top: 1px solid #e2e8f0 !important;
+    color: #64748b !important;
+}
+html.dark .pg-links {
+    background: #0f172a !important;
+    border-top-color: #1e293b !important;
+    color: #94a3b8 !important;
+}
+
+/* Status Badges in Light Mode */
+.badge-new, .badge-draft, .badge-pending, .badge-low, .badge-closed {
+    background: #f1f5f9 !important;
+    color: #475569 !important;
+    border: 1px solid #e2e8f0 !important;
+}
+.badge-contacted, .badge-sent, .badge-scheduled, .priority-medium {
+    background: #eff6ff !important;
+    color: #2563eb !important;
+    border: 1px solid #dbeafe !important;
+}
+.badge-quoted, .badge-in_progress, .priority-high {
+    background: #fffbeb !important;
+    color: #d97706 !important;
+    border: 1px solid #fef3c7 !important;
+}
+.badge-won, .badge-accepted, .badge-completed, .status-resolved {
+    background: #ecfdf5 !important;
+    color: #059669 !important;
+    border: 1px solid #d1fae5 !important;
+}
+.badge-lost, .badge-rejected, .badge-cancelled, .priority-critical, .status-open {
+    background: #fef2f2 !important;
+    color: #dc2626 !important;
+    border: 1px solid #fee2e2 !important;
+}
+.badge-assigned, .status-assigned {
+    background: #faf5ff !important;
+    color: #7e22ce !important;
+    border: 1px solid #f3e8ff !important;
+}
+
+/* Status Badges in Dark Mode */
+html.dark .badge-new, html.dark .badge-draft, html.dark .badge-pending, html.dark .badge-low, html.dark .badge-closed {
+    background: rgba(148, 163, 184, 0.15) !important;
+    color: #cbd5e1 !important;
+    border-color: rgba(148, 163, 184, 0.3) !important;
+}
+html.dark .badge-contacted, html.dark .badge-sent, html.dark .badge-scheduled, html.dark .priority-medium {
+    background: rgba(59, 130, 246, 0.15) !important;
+    color: #60a5fa !important;
+    border-color: rgba(59, 130, 246, 0.3) !important;
+}
+html.dark .badge-quoted, html.dark .badge-in_progress, html.dark .priority-high {
+    background: rgba(245, 158, 11, 0.15) !important;
+    color: #fbbf24 !important;
+    border-color: rgba(245, 158, 11, 0.3) !important;
+}
+html.dark .badge-won, html.dark .badge-accepted, html.dark .badge-completed, html.dark .status-resolved {
+    background: rgba(16, 185, 129, 0.15) !important;
+    color: #34d399 !important;
+    border-color: rgba(16, 185, 129, 0.3) !important;
+}
+html.dark .badge-lost, html.dark .badge-rejected, html.dark .badge-cancelled, html.dark .priority-critical, html.dark .status-open {
+    background: rgba(244, 63, 94, 0.15) !important;
+    color: #fb7185 !important;
+    border-color: rgba(244, 63, 94, 0.3) !important;
+}
+html.dark .badge-assigned, html.dark .status-assigned {
+    background: rgba(168, 85, 247, 0.15) !important;
+    color: #c084fc !important;
+    border-color: rgba(168, 85, 247, 0.3) !important;
+}
+
+/* Form Styles for Create & Edit Views */
+.form-label {
+    display: block !important;
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    color: #334155 !important;
+    margin-bottom: 0.4rem !important;
+}
+html.dark .form-label {
+    color: #94a3b8 !important;
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+    width: 100% !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 0.65rem !important;
+    padding: 0.65rem 0.85rem !important;
+    font-size: 0.875rem !important;
+    color: #0f172a !important;
+    background: #ffffff !important;
+    outline: none !important;
+    transition: all 0.15s ease !important;
+}
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+    border-color: #2563eb !important;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
+}
+html.dark .form-input,
+html.dark .form-select,
+html.dark .form-textarea {
+    border-color: #334155 !important;
+    color: #f8fafc !important;
+    background: #0b1120 !important;
+}
+html.dark .form-input:focus,
+html.dark .form-select:focus,
+html.dark .form-textarea:focus {
+    border-color: #2563eb !important;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25) !important;
+}
+
+.btn-submit-primary {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.5rem !important;
+    padding: 0.65rem 1.5rem !important;
+    border-radius: 0.75rem !important;
+    font-size: 0.875rem !important;
+    font-weight: 700 !important;
+    background-color: #2563eb !important;
+    color: #ffffff !important;
+    border: 1px solid #1d4ed8 !important;
+    cursor: pointer !important;
+    box-shadow: 0 2px 4px rgba(37, 99, 235, 0.25) !important;
+    transition: all 0.15s ease-in-out !important;
+}
+.btn-submit-primary:hover {
+    background-color: #1d4ed8 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 8px rgba(37, 99, 235, 0.35) !important;
+}
+
+.btn-cancel,
+.btn-head-secondary {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0.55rem 1.25rem !important;
+    border-radius: 0.75rem !important;
+    font-size: 0.875rem !important;
+    font-weight: 600 !important;
+    background-color: #ffffff !important;
+    color: #475569 !important;
+    border: 1px solid #cbd5e1 !important;
+    text-decoration: none !important;
+    transition: all 0.15s ease-in-out !important;
+}
+.btn-cancel:hover,
+.btn-head-secondary:hover {
+    background-color: #f8fafc !important;
+    color: #0f172a !important;
+    border-color: #94a3b8 !important;
+}
+html.dark .btn-cancel,
+html.dark .btn-head-secondary {
+    background-color: #0f172a !important;
+    color: #cbd5e1 !important;
+    border-color: #334155 !important;
+}
+html.dark .btn-cancel:hover,
+html.dark .btn-head-secondary:hover {
+    background-color: #1e293b !important;
+    color: #ffffff !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   UNIVERSAL CRM DETAIL/SHOW VIEWS & EMBEDDED CARDS
+   (Covers site-surveys/*, service-tickets/*, leads/*, quotations/*,
+   jobs/*, equipment/*, amcs/*, purchase-orders/*, inventory/*, etc.)
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* In Light Mode: Convert hardcoded dark wrappers & cards to Modern SaaS Light */
+html:not(.dark) .crm-app-container .bg-\[\#060913\],
+html:not(.dark) .crm-app-container div[style*="background-color: #060913"],
+html:not(.dark) .crm-app-container div[style*="background-color:#060913"],
+html:not(.dark) .crm-app-container div[style*="background: #060913"],
+html:not(.dark) .crm-app-container div[style*="background:#060913"] {
+    background-color: #f8fafc !important;
+    color: #0f172a !important;
+}
+
+/* Main Cards in Show/Detail Views */
+html:not(.dark) .crm-app-container .bg-\[\#0F172A\],
+html:not(.dark) .crm-app-container .bg-\[\#0f172a\],
+html:not(.dark) .crm-app-container div[style*="#0F172A"],
+html:not(.dark) .crm-app-container div[style*="#0f172a"] {
+    background-color: #ffffff !important;
+    border-color: #e2e8f0 !important;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05) !important;
+    color: #0f172a !important;
+}
+
+/* Headers of Cards in Show/Detail Views */
+html:not(.dark) .crm-app-container .bg-\[\#0B1120\],
+html:not(.dark) .crm-app-container .bg-\[\#0b1120\],
+html:not(.dark) .crm-app-container div[style*="#0B1120"],
+html:not(.dark) .crm-app-container div[style*="#0b1120"] {
+    background-color: #f8fafc !important;
+    border-color: #e2e8f0 !important;
+    color: #0f172a !important;
+}
+
+/* Sub-cards and nested code/note boxes inside cards */
+html:not(.dark) .crm-app-container .bg-\[\#0F172A\] .bg-\[\#060913\],
+html:not(.dark) .crm-app-container .bg-\[\#0f172a\] .bg-\[\#060913\],
+html:not(.dark) .crm-app-container .bg-\[\#0F172A\] .bg-\[\#0B1120\],
+html:not(.dark) .crm-app-container .bg-\[\#0f172a\] .bg-\[\#0B1120\] {
+    background-color: #f8fafc !important;
+    border-color: #e2e8f0 !important;
+    color: #334155 !important;
+}
+
+/* Borders in Light Mode */
+html:not(.dark) .crm-app-container .border-white\/10,
+html:not(.dark) .crm-app-container .border-white\/5,
+html:not(.dark) .crm-app-container .border-white\/20,
+html:not(.dark) .crm-app-container .border-slate-800,
+html:not(.dark) .crm-app-container .border-slate-700 {
+    border-color: #e2e8f0 !important;
+}
+
+/* Typography in Show/Detail Views for Light Mode */
+html:not(.dark) .crm-app-container h1.text-white,
+html:not(.dark) .crm-app-container h2.text-white,
+html:not(.dark) .crm-app-container h3.text-white,
+html:not(.dark) .crm-app-container h4.text-white,
+html:not(.dark) .crm-app-container strong.text-white,
+html:not(.dark) .crm-app-container .text-white {
+    color: #0f172a !important;
+}
+
+html:not(.dark) .crm-app-container .text-slate-100,
+html:not(.dark) .crm-app-container .text-slate-200 {
+    color: #1e293b !important;
+}
+
+html:not(.dark) .crm-app-container .text-slate-300,
+html:not(.dark) .crm-app-container .text-slate-400 {
+    color: #64748b !important;
+}
+
+html:not(.dark) .crm-app-container div[style*="color:#f8fafc"],
+html:not(.dark) .crm-app-container div[style*="color:#e2e8f0"],
+html:not(.dark) .crm-app-container span[style*="color:#f8fafc"],
+html:not(.dark) .crm-app-container span[style*="color:#e2e8f0"] {
+    color: #0f172a !important;
+}
+
+/* Secondary header & utility buttons in Light Mode */
+html:not(.dark) .crm-app-container a.bg-slate-800\/80,
+html:not(.dark) .crm-app-container a.bg-slate-800\/60,
+html:not(.dark) .crm-app-container a.bg-slate-800,
+html:not(.dark) .crm-app-container button.bg-slate-800\/80,
+html:not(.dark) .crm-app-container button.bg-slate-800\/60,
+html:not(.dark) .crm-app-container button.bg-slate-800,
+html:not(.dark) .crm-app-container a.bg-\[\#0F172A\],
+html:not(.dark) .crm-app-container button.bg-\[\#0F172A\] {
+    background-color: #ffffff !important;
+    border-color: #cbd5e1 !important;
+    color: #334155 !important;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+}
+
+html:not(.dark) .crm-app-container a.bg-slate-800\/80:hover,
+html:not(.dark) .crm-app-container a.bg-slate-800\/60:hover,
+html:not(.dark) .crm-app-container a.bg-slate-800:hover,
+html:not(.dark) .crm-app-container button.bg-slate-800\/80:hover,
+html:not(.dark) .crm-app-container button.bg-slate-800\/60:hover,
+html:not(.dark) .crm-app-container button.bg-slate-800:hover,
+html:not(.dark) .crm-app-container a.bg-\[\#0F172A\]:hover,
+html:not(.dark) .crm-app-container button.bg-\[\#0F172A\]:hover {
+    background-color: #f8fafc !important;
+    border-color: #94a3b8 !important;
+    color: #0f172a !important;
+}
+
+/* Status Select & Form dropdowns in Show views */
+html:not(.dark) .crm-app-container select.bg-\[\#060913\] {
+    background-color: #ffffff !important;
+    border-color: #cbd5e1 !important;
+    color: #0f172a !important;
+}
+
+/* Tables in Detail & Show Views */
+html:not(.dark) .crm-app-container table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+}
+html:not(.dark) .crm-app-container table thead,
+html:not(.dark) .crm-app-container table th {
+    background-color: #f8fafc !important;
+    color: #64748b !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+}
+html:not(.dark) .crm-app-container table tbody tr {
+    background-color: #ffffff !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+}
+html:not(.dark) .crm-app-container table tbody tr:hover td {
+    background-color: #f8fafc !important;
+}
+html:not(.dark) .crm-app-container table tbody td {
+    color: #334155 !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+}
+
+/* Dark Mode Show/Detail Cleanups */
+html.dark .crm-app-container .bg-\[\#060913\] {
+    background-color: #060913 !important;
+    color: #f8fafc !important;
+}
+html.dark .crm-app-container .bg-\[\#0F172A\],
+html.dark .crm-app-container .bg-\[\#0f172a\] {
+    background-color: #0f172a !important;
+    border-color: #1e293b !important;
+    color: #f8fafc !important;
+}
+html.dark .crm-app-container .bg-\[\#0B1120\],
+html.dark .crm-app-container .bg-\[\#0b1120\] {
+    background-color: #0b1120 !important;
+    border-color: #1e293b !important;
+    color: #f8fafc !important;
+}
+html.dark .crm-app-container .border-white\/10,
+html.dark .crm-app-container .border-white\/5,
+html.dark .crm-app-container .border-slate-800,
+html.dark .crm-app-container .border-slate-700 {
+    border-color: #1e293b !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   CYBER-CARD (Quotations Show/Proposal) & TAB TOOLBARS
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* In Light Mode: Cyber Card converts to SaaS Card */
+html:not(.dark) .cyber-card {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05) !important;
+    border-radius: 1rem !important;
+    color: #0f172a !important;
+}
+html.dark .cyber-card {
+    background: #0f172a !important;
+    border-color: #1e293b !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5) !important;
+    color: #f8fafc !important;
+}
+
+/* Action bar glow */
+html:not(.dark) .cyber-card .action-bar-glow {
+    background: #f8fafc !important;
+}
+html.dark .cyber-card .action-bar-glow {
+    background: #0f172a !important;
+}
+
+/* Sub-sections and Totals inside cyber-card */
+html:not(.dark) .cyber-card .bg-\[\#0B1120\] {
+    background-color: #f8fafc !important;
+    border-color: #e2e8f0 !important;
+}
+html:not(.dark) .cyber-card .bg-\[\#060913\] {
+    background-color: #ffffff !important;
+    border-color: #e2e8f0 !important;
+}
+html:not(.dark) .cyber-card table thead tr.bg-\[\#0B1120\] {
+    background-color: #f8fafc !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+}
+html:not(.dark) .cyber-card table tbody tr {
+    background-color: #ffffff !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+}
+html:not(.dark) .cyber-card table tbody tr:hover {
+    background-color: #f8fafc !important;
+}
+html:not(.dark) .cyber-card table tbody td {
+    color: #334155 !important;
+}
+html:not(.dark) .cyber-card table tbody td.text-white {
+    color: #0f172a !important;
+}
+
+/* Filter Tabs (Admin Users & Roles) */
+html:not(.dark) .filter-tabs {
+    background: #ffffff !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+}
+html:not(.dark) .filter-tab {
+    color: #64748b !important;
+}
+html:not(.dark) .filter-tab:hover {
+    background: #f8fafc !important;
+    color: #0f172a !important;
+}
+html:not(.dark) .filter-tab.active {
+    background: #2563eb !important;
+    color: #ffffff !important;
+}
+
+html.dark .filter-tabs {
+    background: #0b1120 !important;
+    border-bottom: 1px solid #1e293b !important;
+}
+html.dark .filter-tab {
+    color: #94a3b8 !important;
+}
+html.dark .filter-tab:hover {
+    background: #1e293b !important;
+    color: #ffffff !important;
+}
+html.dark .filter-tab.active {
+    background: #2563eb !important;
+    color: #ffffff !important;
+}
+
+/* Buttons and Badges in Inventory & Equipment */
+.btn-filter, .btn-adjust {
+    background: #2563eb !important;
+    color: #ffffff !important;
+    box-shadow: 0 1px 2px 0 rgba(37, 99, 235, 0.2) !important;
+}
+.btn-filter:hover, .btn-adjust:hover {
+    background: #1d4ed8 !important;
+}
+html:not(.dark) .btn-clear {
+    background: #ffffff !important;
+    color: #475569 !important;
+    border: 1px solid #cbd5e1 !important;
+}
+html:not(.dark) .btn-clear:hover {
+    background: #f8fafc !important;
+    color: #0f172a !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   COMPREHENSIVE LIGHT/DARK OVERRIDE — HIGH SPECIFICITY
+   Uses .pg-wrap parent to beat inline <style> blocks in blade files
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── TABLE CELLS: Force readable text in light mode ── */
+html:not(.dark) .pg-wrap .p-table thead,
+html:not(.dark) .pg-wrap table thead {
+    background: #f8fafc !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+}
+html:not(.dark) .pg-wrap .p-table thead th,
+html:not(.dark) .pg-wrap table thead th {
+    color: #64748b !important;
+    background: #f8fafc !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+}
+html:not(.dark) .pg-wrap .p-table tbody tr,
+html:not(.dark) .pg-wrap table tbody tr {
+    background: #ffffff !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+}
+html:not(.dark) .pg-wrap .p-table tbody tr:hover,
+html:not(.dark) .pg-wrap table tbody tr:hover {
+    background: #f8fafc !important;
+}
+html:not(.dark) .pg-wrap .p-table tbody td,
+html:not(.dark) .pg-wrap table tbody td {
+    color: #334155 !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+}
+
+/* ── CELL-NAME, CELL-NO: Force correct colors in light mode ── */
+html:not(.dark) .cell-name { color: #0f172a !important; }
+html:not(.dark) .cell-no   { color: #2563eb !important; }
+html:not(.dark) .cell-sub  { color: #64748b !important; }
+html:not(.dark) .cell-sku  {
+    color: #475569 !important;
+    background: #f1f5f9 !important;
+    border: 1px solid #e2e8f0 !important;
+}
+
+/* ── STAT CARD LABELS & VALUES: Override dark inline styles ── */
+html:not(.dark) .stat-label { color: #64748b !important; }
+html:not(.dark) .stat-value { color: #0f172a !important; }
+html:not(.dark) .stat-card  { background: #ffffff !important; color: #0f172a !important; }
+html:not(.dark) .stat-card .text-xs { color: #64748b !important; }
+
+/* ── FILTER BAR & INPUTS: Always visible in both modes ── */
+html:not(.dark) .filter-bar {
+    background: #ffffff !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+}
+html:not(.dark) .filter-bar input,
+html:not(.dark) .filter-bar select,
+html:not(.dark) .filter-select,
+html:not(.dark) input[type="text"],
+html:not(.dark) input[type="email"],
+html:not(.dark) input[type="number"],
+html:not(.dark) input[type="tel"],
+html:not(.dark) input[type="date"],
+html:not(.dark) input[type="search"],
+html:not(.dark) select,
+html:not(.dark) textarea {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+}
+html:not(.dark) input::placeholder,
+html:not(.dark) textarea::placeholder { color: #94a3b8 !important; }
+
+/* ── STATUS TABS: Force light colors ── */
+html:not(.dark) .status-tab {
+    background: #f8fafc !important;
+    color: #475569 !important;
+    border: 1px solid #e2e8f0 !important;
+}
+html:not(.dark) .status-tab:hover {
+    background: #f1f5f9 !important;
+    color: #0f172a !important;
+}
+html:not(.dark) .status-tab .count-badge {
+    background: #e2e8f0 !important;
+    color: #475569 !important;
+}
+
+/* ── FORM PAGES: Fix dark-themed form containers in light mode ── */
+html:not(.dark) .form-section,
+html:not(.dark) .form-card {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    color: #0f172a !important;
+}
+html:not(.dark) label {
+    color: #374151 !important;
+}
+html:not(.dark) .form-label {
+    color: #374151 !important;
+}
+
+/* ── PG-CARD INTERNAL TEXT: Fix invisible text inside cards ── */
+html:not(.dark) .pg-card {
+    color: #0f172a !important;
+}
+html:not(.dark) .pg-card p,
+html:not(.dark) .pg-card span:not([class*="text-"]),
+html:not(.dark) .pg-card div:not([class*="text-"]) {
+    color: inherit !important;
+}
+html:not(.dark) .pg-card .text-slate-400,
+html:not(.dark) .pg-card .text-slate-500,
+html:not(.dark) .pg-card .text-gray-500 {
+    color: #64748b !important;
+}
+html:not(.dark) .pg-card .text-slate-900,
+html:not(.dark) .pg-card .text-gray-900,
+html:not(.dark) .pg-card .text-white {
+    color: #0f172a !important;
+}
+
+/* ── MODAL/OVERLAY: Keep modals with their own theme ── */
+html:not(.dark) [role="dialog"] input,
+html:not(.dark) [role="dialog"] select,
+html:not(.dark) [role="dialog"] textarea {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #d1d5db !important;
+}
+html:not(.dark) [role="dialog"] label {
+    color: #374151 !important;
+}
+
+/* ── BREADCRUMB & PAGE HEADER TEXT ── */
+html:not(.dark) .pg-wrap h1,
+html:not(.dark) .pg-wrap h2,
+html:not(.dark) .pg-wrap h3,
+html:not(.dark) .pg-wrap h4 {
+    color: #0f172a !important;
+}
+html:not(.dark) .pg-wrap p {
+    color: #475569 !important;
+}
+
+/* ── DARK MODE: Ensure good contrast for all elements ── */
+html.dark .pg-wrap .p-table thead,
+html.dark .pg-wrap table thead {
+    background: #0b1120 !important;
+    border-bottom: 1px solid #1e293b !important;
+}
+html.dark .pg-wrap .p-table thead th,
+html.dark .pg-wrap table thead th {
+    color: #94a3b8 !important;
+    border-bottom: 1px solid #1e293b !important;
+}
+html.dark .pg-wrap .p-table tbody tr,
+html.dark .pg-wrap table tbody tr {
+    background: #0f172a !important;
+    border-bottom: 1px solid #1e293b !important;
+}
+html.dark .pg-wrap .p-table tbody tr:hover,
+html.dark .pg-wrap table tbody tr:hover {
+    background: #1e293b !important;
+}
+html.dark .pg-wrap .p-table tbody td,
+html.dark .pg-wrap table tbody td {
+    color: #cbd5e1 !important;
+    border-bottom: 1px solid #1e293b !important;
+}
+html.dark .cell-name { color: #ffffff !important; }
+html.dark .cell-no   { color: #f59e0b !important; }
+html.dark .cell-sub  { color: #94a3b8 !important; }
+
+/* ── DARK MODE FORM INPUTS ── */
+html.dark input[type="text"],
+html.dark input[type="email"],
+html.dark input[type="number"],
+html.dark input[type="tel"],
+html.dark input[type="date"],
+html.dark input[type="search"],
+html.dark select,
+html.dark textarea {
+    background-color: #0b1120 !important;
+    color: #f1f5f9 !important;
+    border-color: #334155 !important;
+}
+html.dark input::placeholder,
+html.dark textarea::placeholder { color: #64748b !important; }
+
+/* ── ANALYTICS KPI CARDS: Fix bg-[#0f172a] in light mode ── */
+html:not(.dark) [class*="bg-[#0f172a]"],
+html:not(.dark) [style*="background: #0f172a"],
+html:not(.dark) [style*="background:#0f172a"] {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    color: #0f172a !important;
+}
+html:not(.dark) [class*="bg-[#0b1120]"],
+html:not(.dark) [style*="background: #0b1120"],
+html:not(.dark) [style*="background:#0b1120"] {
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+}
+html:not(.dark) [class*="text-slate-400"]:not([class*="dark:"]) {
+    color: #64748b !important;
+}
+
+/* ── TECHNICIAN DASHBOARD: Force readable in light mode ── */
+html:not(.dark) .tech-card,
+html:not(.dark) .tech-stat {
+    background: #ffffff !important;
+    color: #0f172a !important;
+}
+
+/* ── TOMSELECT SEARCHABLE DROPDOWNS ── */
+.ts-wrapper {
+    width: 100% !important;
+}
+.ts-control {
+    background-color: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 0.75rem !important;
+    padding: 0.55rem 0.85rem !important;
+    font-size: 0.8125rem !important;
+    color: #0f172a !important;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    min-height: 42px;
+    display: flex;
+    align-items: center;
+}
+.ts-control input {
+    color: #0f172a !important;
+    font-size: 0.8125rem !important;
+}
+.ts-dropdown {
+    background-color: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 0.75rem !important;
+    box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.15) !important;
+    font-size: 0.8125rem !important;
+    z-index: 99999 !important;
+    padding: 0.35rem !important;
+}
+.ts-dropdown .option {
+    padding: 0.5rem 0.75rem !important;
+    border-radius: 0.5rem !important;
+    color: #334155 !important;
+    cursor: pointer;
+}
+.ts-dropdown .option.active, .ts-dropdown .option:hover {
+    background-color: #eff6ff !important;
+    color: #2563eb !important;
+}
+
+/* Dark mode TomSelect */
+html.dark .ts-control {
+    background-color: #0b1120 !important;
+    border-color: #334155 !important;
+    color: #f1f5f9 !important;
+}
+html.dark .ts-control input {
+    color: #f1f5f9 !important;
+}
+html.dark .ts-dropdown {
+    background-color: #0f172a !important;
+    border-color: #334155 !important;
+    color: #f1f5f9 !important;
+    box-shadow: 0 20px 35px -5px rgba(0, 0, 0, 0.6) !important;
+}
+html.dark .ts-dropdown .option {
+    color: #cbd5e1 !important;
+}
+html.dark .ts-dropdown .option.active, html.dark .ts-dropdown .option:hover {
+    background-color: #1e293b !important;
+    color: #fbbf24 !important;
+}
+.ts-wrapper.focus .ts-control {
+    border-color: #2563eb !important;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2) !important;
+}
+html.dark .ts-wrapper.focus .ts-control {
+    border-color: #f59e0b !important;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2) !important;
+}
+
+
+
