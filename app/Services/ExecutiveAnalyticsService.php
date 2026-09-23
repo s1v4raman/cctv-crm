@@ -480,6 +480,11 @@ class ExecutiveAnalyticsService
             ->get();
 
         return [
+            'date_range'      => [
+                'start' => $startDate->format('Y-m-d'),
+                'end'   => $endDate->format('Y-m-d'),
+                'label' => $startDate->format('d M Y') . ' - ' . $endDate->format('d M Y'),
+            ],
             'financials'      => $financials,
             'salary'          => $salaryData,
             'procurement'     => $procurement,

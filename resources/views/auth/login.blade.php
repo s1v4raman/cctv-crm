@@ -1,8 +1,12 @@
 @php
-    $isStaffPortal = (request()->getPort() == 8001)
-        || request()->is('staff/login', 'staff', 'admin/login', 'admin')
-        || request()->input('type') === 'staff'
-        || session('portal_type') === 'staff';
+    if (request()->is('customer/login', 'customer') || request()->input('type') === 'customer') {
+        $isStaffPortal = false;
+    } elseif (request()->is('staff/login', 'staff', 'admin/login', 'admin') || request()->input('type') === 'staff' || request()->getPort() == 8001) {
+        $isStaffPortal = true;
+    } else {
+        // Default on port 8000 / normal URL is Customer Portal
+        $isStaffPortal = (request()->getPort() == 8001);
+    }
 @endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-white">
@@ -31,9 +35,9 @@
                     },
                     colors: {
                         brand: {
-                            blue: '#4f46e5',
-                            blueHover: '#4338ca',
-                            lightBg: '#f0f4fc',
+                            blue: '#2563eb',
+                            blueHover: '#1d4ed8',
+                            lightBg: '#eff4fc',
                         }
                     }
                 }
@@ -60,53 +64,56 @@
     <div class="min-h-full flex flex-col lg:flex-row">
 
         {{-- ========================================================================= --}}
-        {{-- LEFT COLUMN: CLEAN WHITE FORM (Matches Reference Image Left Side)        --}}
+        {{-- LEFT COLUMN: ROYAL BLUE THEMED CLEAN WHITE FORM                           --}}
         {{-- ========================================================================= --}}
         <div class="w-full lg:w-1/2 flex flex-col justify-between p-6 sm:p-8 lg:p-10 xl:p-12 bg-white min-h-screen lg:min-h-full">
             
             {{-- Brand Logo Header --}}
             <div class="flex items-center justify-between mb-4 lg:mb-6">
-                <a href="{{ request()->getPort() == 8001 ? route('login') : route('home') }}" class="flex items-center space-x-3 group">
-                    <!-- Icon Tile (Deep Blue Square with Rounded Corners) -->
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/25 group-hover:scale-105 transition-transform">
+                <a href="{{ $isStaffPortal ? route('login') : route('home') }}" class="flex items-center space-x-3 group">
+                    <!-- Royal Blue Logo Icon Tile -->
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-blue-700 flex items-center justify-center text-white shadow-md shadow-blue-500/25 group-hover:scale-105 transition-transform">
                         <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                         </svg>
                     </div>
                     <div>
                         <span class="text-xl font-extrabold font-heading text-slate-900 tracking-tight">Path<span class="text-blue-600">Soft</span></span>
-                        <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">SecureVision CRM</span>
+                        <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                            {{ $isStaffPortal ? 'SecureVision ERP Operations' : 'Customer Surveillance Portal' }}
+                        </span>
                     </div>
                 </a>
 
                 @if($isStaffPortal)
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-100">
-                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                        <span>Staff ERP</span>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-100 shadow-xs">
+                        <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+                        <span>Staff & Admin ERP</span>
                     </span>
                 @else
-                    <a href="{{ route('home') }}" class="text-xs font-semibold text-slate-500 hover:text-blue-600 transition-colors">
-                        ← Customer Site
-                    </a>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-100 shadow-xs">
+                        <span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
+                        <span>Customer Portal</span>
+                    </span>
                 @endif
             </div>
 
             {{-- Main Form Container --}}
-            <div class="max-w-md w-full mx-auto my-auto py-4">
+            <div class="max-w-md w-full mx-auto my-auto py-2">
                 
-                <!-- Main Bold Title matching reference -->
+                <!-- Main Bold Title -->
                 <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 font-heading tracking-tight mb-2">
-                    Welcome Back
+                    {{ $isStaffPortal ? 'Operations Sign In' : 'Customer Sign In' }}
                 </h1>
                 <p class="text-xs text-slate-500 mb-6">
                     @if($isStaffPortal)
                         Sign in to access administration, technician dispatch & field operations
                     @else
-                        Sign in to view your camera surveillance status, tickets & invoices
+                        Sign in to view your camera surveillance status, service tickets & invoices
                     @endif
                 </p>
 
-                <!-- Role Selector Tabs (Only on Port 8001 or Staff ERP: Admin, Technician, Employee) -->
+                <!-- Role Selector Tabs (Only on Staff/Admin Login) -->
                 @if($isStaffPortal)
                     <div class="flex p-1 bg-slate-100 rounded-xl mb-5 text-xs">
                         <button type="button" 
@@ -130,7 +137,7 @@
                     </div>
                 @endif
 
-                <!-- Google / 1-Click Fast Button (Matching "Log in with Google" from Reference) -->
+                <!-- Google / 1-Click Fast Button -->
                 <button type="button" 
                         @click="quickSubmitRole(document.getElementById('email').value, document.getElementById('password').value, portal)"
                         class="w-full flex items-center justify-center space-x-3 py-3 px-4 rounded-xl border border-slate-200 hover:bg-slate-50 hover:border-slate-300 shadow-xs text-xs font-bold text-slate-700 transition-all">
@@ -141,10 +148,10 @@
                         <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
                         <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
                     </svg>
-                    <span>{{ $isStaffPortal ? 'Log in with Workspace Account' : 'Log in with Google' }}</span>
+                    <span>{{ $isStaffPortal ? 'Log in with Staff Workspace' : 'Log in with Google' }}</span>
                 </button>
 
-                <!-- Divider: OR LOGIN WITH EMAIL (Exact Reference Match) -->
+                <!-- Divider: OR LOGIN WITH EMAIL -->
                 <div class="relative flex items-center justify-center my-6">
                     <div class="border-t border-slate-200 w-full"></div>
                     <span class="bg-white px-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">
@@ -177,9 +184,9 @@
                     <div>
                         <label for="email" class="block text-xs font-bold text-slate-800 mb-1.5">Email Address</label>
                         <input id="email" type="email" name="email" 
-                               value="{{ old('email', request()->getPort() == 8001 ? 'test@example.com' : 'customer@example.com') }}" 
+                               value="{{ old('email', $isStaffPortal ? 'test@example.com' : 'customer@example.com') }}" 
                                required autofocus autocomplete="username" 
-                               placeholder="Email Address" 
+                               placeholder="{{ $isStaffPortal ? 'Staff Email (e.g. test@example.com)' : 'Customer Email (e.g. customer@example.com)' }}" 
                                class="w-full px-4 py-3 text-xs sm:text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent text-slate-900 placeholder-slate-400 bg-white transition-all shadow-xs">
                     </div>
 
@@ -200,7 +207,7 @@
                         </div>
                     </div>
 
-                    <!-- Remember Me & Forgot Password (Exact Layout Match) -->
+                    <!-- Remember Me & Forgot Password -->
                     <div class="flex items-center justify-between pt-1">
                         <label for="remember_me" class="flex items-center space-x-2 cursor-pointer select-none">
                             <input id="remember_me" type="checkbox" name="remember" 
@@ -213,42 +220,83 @@
                         </a>
                     </div>
 
-                    <!-- Primary Log in Button matching reference (Solid Royal Blue with Arrow) -->
+                    <!-- Royal Blue Primary Log in Button -->
                     <div class="pt-2">
                         <button type="submit" 
-                                class="w-full py-3.5 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-lg shadow-blue-500/25 flex items-center justify-center space-x-2 transition-all hover:scale-[1.01] active:scale-[0.99]">
-                            <span>Log in</span>
+                                class="w-full py-3.5 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold text-sm shadow-lg shadow-blue-500/25 flex items-center justify-center space-x-2 transition-all hover:scale-[1.01] active:scale-[0.99]">
+                            <span>{{ $isStaffPortal ? 'Log in to Operations ERP' : 'Log in to Customer Portal' }}</span>
                             <span class="text-base leading-none">→</span>
                         </button>
                     </div>
                 </form>
 
-                <!-- Bottom Helper Link matching reference ("Don't have an account? Sign up") -->
-                <div class="text-center mt-6 text-xs text-slate-500">
+                <!-- Demo Credentials Quick Helper -->
+                <div class="mt-5 p-3 bg-slate-50 border border-slate-200 rounded-2xl">
+                    <div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-2 flex items-center justify-between">
+                        <span>{{ $isStaffPortal ? 'Staff Demo Logins' : 'Customer Demo Logins' }}</span>
+                        <span class="text-blue-600 font-semibold lowercase">click to autofill</span>
+                    </div>
+
                     @if($isStaffPortal)
-                        <span>Internal staff account? </span>
-                        <a href="{{ route('login', ['type' => 'staff']) }}" class="text-pink-600 font-bold hover:underline">Select Role Above</a>
+                        <div class="grid grid-cols-3 gap-1.5 text-[11px]">
+                            <div class="p-1.5 bg-white rounded-lg border border-slate-100 cursor-pointer hover:border-blue-300 hover:bg-blue-50/40 transition text-center" @click="portal = 'admin'; setEmailAndPass('test@example.com', 'password')">
+                                <span class="font-bold text-slate-800 block text-[10px]">Admin</span>
+                                <span class="text-slate-500 font-mono text-[9px] block truncate">test@example.com</span>
+                            </div>
+                            <div class="p-1.5 bg-white rounded-lg border border-slate-100 cursor-pointer hover:border-blue-300 hover:bg-blue-50/40 transition text-center" @click="portal = 'technician'; setEmailAndPass('bob@example.com', 'password')">
+                                <span class="font-bold text-slate-800 block text-[10px]">Technician</span>
+                                <span class="text-slate-500 font-mono text-[9px] block truncate">bob@example.com</span>
+                            </div>
+                            <div class="p-1.5 bg-white rounded-lg border border-slate-100 cursor-pointer hover:border-blue-300 hover:bg-blue-50/40 transition text-center" @click="portal = 'staff'; setEmailAndPass('alex@example.com', 'password')">
+                                <span class="font-bold text-slate-800 block text-[10px]">Staff</span>
+                                <span class="text-slate-500 font-mono text-[9px] block truncate">alex@example.com</span>
+                            </div>
+                        </div>
                     @else
-                        <span>Don't have an account? </span>
-                        <a href="{{ route('register') }}" class="text-pink-600 font-bold hover:underline">Sign up</a>
+                        <div class="grid grid-cols-2 gap-2 text-[11px]">
+                            <div class="p-2 bg-white rounded-xl border border-slate-100 cursor-pointer hover:border-blue-400 hover:bg-blue-50/40 transition shadow-xs" @click="portal = 'customer'; setEmailAndPass('customer@example.com', 'password')">
+                                <span class="font-bold text-blue-900 block text-xs">Demo Customer</span>
+                                <span class="text-slate-500 font-mono text-[10px]">customer@example.com</span>
+                            </div>
+                            <div class="p-2 bg-white rounded-xl border border-slate-100 cursor-pointer hover:border-blue-400 hover:bg-blue-50/40 transition shadow-xs" @click="portal = 'customer'; setEmailAndPass('srinithish.p@example.com', 'password')">
+                                <span class="font-bold text-blue-900 block text-xs">Srinithish P</span>
+                                <span class="text-slate-500 font-mono text-[10px]">srinithish.p@example.com</span>
+                            </div>
+                        </div>
+                    @endif
+
+                    <div class="text-[10px] text-center text-slate-400 mt-1.5">Password for all accounts: <strong class="text-slate-700 font-mono">password</strong></div>
+                </div>
+
+                <!-- Portal Switcher Links -->
+                <div class="text-center mt-5 text-xs text-slate-500 pt-3 border-t border-slate-100">
+                    @if($isStaffPortal)
+                        <span>Looking for Customer Portal? </span>
+                        <a href="{{ route('customer.login') }}" class="text-blue-600 font-bold hover:underline">
+                            Switch to Customer Login →
+                        </a>
+                    @else
+                        <span>Looking for Staff & Admin ERP? </span>
+                        <a href="{{ route('staff.login') }}" class="text-blue-600 font-bold hover:underline">
+                            Switch to Staff / Technician Login →
+                        </a>
                     @endif
                 </div>
 
             </div>
 
             {{-- Left Footer Copyright --}}
-            <div class="text-xs text-slate-400 text-center lg:text-left mt-6">
+            <div class="text-xs text-slate-400 text-center lg:text-left mt-4">
                 &copy; {{ date('Y') }} PathSoft CCTV & Surveillance ERP. All rights reserved.
             </div>
         </div>
 
         {{-- ========================================================================= --}}
-        {{-- RIGHT COLUMN: SOFT BLUE BACKGROUND + DESK ILLUSTRATION + ACADEMY CARD     --}}
-        {{-- (Exact Match to Reference Right Side)                                     --}}
+        {{-- RIGHT COLUMN: ROYAL BLUE SOFT GRADIENT & WORKSPACE ILLUSTRATION           --}}
         {{-- ========================================================================= --}}
         <div class="hidden lg:flex w-1/2 bg-gradient-to-br from-[#eff4fc] via-[#f0f3fa] to-[#e6eef9] p-8 lg:p-10 xl:p-12 flex-col justify-between relative overflow-hidden border-l border-slate-100 min-h-screen lg:min-h-full">
             
-            {{-- Top Right Academy Widget Card (Matching Reference "Sleeknote Academy") --}}
+            {{-- Top Right Academy Widget Card --}}
             <div class="self-end max-w-sm text-right space-y-2 z-10">
                 <div class="flex items-center justify-end space-x-2 text-slate-900 font-bold text-sm font-heading">
                     <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -271,7 +319,7 @@
                 </div>
             </div>
 
-            {{-- Center Illustration Container (Full Uncropped Display) --}}
+            {{-- Center Illustration Container --}}
             <div class="my-auto py-3 flex flex-col items-center justify-center relative z-10 w-full">
                 
                 {{-- Glowing soft backdrop behind illustration --}}
@@ -290,7 +338,7 @@
                     @endif
                 </div>
 
-                <!-- Status Ribbon Below (Does NOT block any part of the picture) -->
+                <!-- Status Ribbon Below -->
                 <div class="w-full max-w-xl xl:max-w-2xl flex items-center justify-between mt-3 px-1">
                     <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/90 backdrop-blur-md border border-slate-200/80 shadow-xs text-xs font-bold text-slate-800">
                         <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -298,23 +346,20 @@
                     </div>
 
                     <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/90 backdrop-blur-md border border-slate-200/80 shadow-xs text-xs font-bold text-blue-600">
-                        <svg class="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-                        <span>{{ $isStaffPortal ? 'Telemetry Live' : 'System Secure' }}</span>
+                        <span>{{ $isStaffPortal ? 'ERP v2.6 Enterprise' : 'Secure Client Portal' }}</span>
                     </div>
                 </div>
+
             </div>
-                        <svg class="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-                        <span>{{ (request()->getPort() == 8001 || request()->is('staff/login', 'staff')) ? 'Telemetry Live' : 'System Secure' }}</span>
-                    </div>
+
+            {{-- Right Footer Security Status --}}
+            <div class="flex items-center justify-between text-xs text-slate-400 z-10">
+                <div class="flex items-center space-x-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    <span>256-Bit SSL Encrypted & SOC-2 Certified</span>
                 </div>
+                <span>PathSoft Security Infrastructure</span>
             </div>
-
-            {{-- Bottom Right Tagline --}}
-            <div class="flex items-center justify-between text-xs text-slate-400 z-10 pt-4">
-                <span>Certified Enterprise Security Operations</span>
-                <span class="font-mono text-[10px]">ISO 27001 • CCTV Telemetry</span>
-            </div>
-
         </div>
 
     </div>

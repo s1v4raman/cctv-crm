@@ -8,14 +8,29 @@
                 </h2>
                 <p class="mt-1 text-sm text-slate-500 dark:text-slate-400 font-medium">Official statement of earnings and attendance deductions</p>
             </div>
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2 flex-wrap">
                 <a href="{{ route('finance.payroll.index') }}"
-                   class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold hover:bg-slate-50 dark:hover:bg-slate-700 transition">
+                   class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold hover:bg-slate-50 dark:hover:bg-slate-700 shadow-2xs transition">
                     ← Back to Payroll
                 </a>
+                <a href="{{ route('finance.payroll.pdf', $payroll) }}"
+                   class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white !text-white dark:!text-slate-900 text-xs font-bold shadow-xs transition">
+                    <svg class="w-4 h-4 !text-white dark:!text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    <span class="!text-white dark:!text-slate-900">Download PDF</span>
+                </a>
+                <button type="button" 
+                        onclick="document.getElementById('whatsappModal').classList.remove('hidden')"
+                        class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 !text-white text-xs font-bold shadow-xs transition">
+                    <svg class="w-4 h-4 fill-current !text-white" viewBox="0 0 24 24">
+                        <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.698c.983.54 1.776.818 2.796.818 3.182 0 5.768-2.587 5.768-5.769.001-3.181-2.585-5.767-5.768-5.767zm9.969 5.766c0 5.495-4.474 9.969-9.969 9.969-1.748 0-3.385-.453-4.819-1.246l-5.212 1.367 1.391-5.084c-.887-1.493-1.391-3.238-1.391-5.006 0-5.495 4.474-9.969 9.969-9.969 5.495 0 9.969 4.474 9.969 9.969z"/>
+                    </svg>
+                    <span class="!text-white">Send via WhatsApp</span>
+                </button>
                 <button onclick="window.print()"
-                        class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-500/20 transition">
-                    🖨️ Print Payslip
+                        class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 !text-white text-xs font-bold shadow-xs transition">
+                    <span class="!text-white">🖨️ Print</span>
                 </button>
             </div>
         </div>
@@ -227,6 +242,57 @@
                 </div>
 
             </div>
+        </div>
+    </div>
+
+    {{-- WhatsApp Dispatch Modal --}}
+    <div id="whatsappModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+                <div class="flex items-center gap-2">
+                    <span class="w-7 h-7 rounded-lg bg-emerald-100 dark:bg-emerald-950/80 text-emerald-600 flex items-center justify-center">
+                        <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                            <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.698c.983.54 1.776.818 2.796.818 3.182 0 5.768-2.587 5.768-5.769.001-3.181-2.585-5.767-5.768-5.767zm9.969 5.766c0 5.495-4.474 9.969-9.969 9.969-1.748 0-3.385-.453-4.819-1.246l-5.212 1.367 1.391-5.084c-.887-1.493-1.391-3.238-1.391-5.006 0-5.495 4.474-9.969 9.969-9.969 5.495 0 9.969 4.474 9.969 9.969z"/>
+                        </svg>
+                    </span>
+                    <h3 class="text-sm font-bold text-slate-900 dark:text-white font-heading">
+                        Send Payslip via WhatsApp
+                    </h3>
+                </div>
+                <button type="button" onclick="document.getElementById('whatsappModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 text-xl font-bold">
+                    &times;
+                </button>
+            </div>
+
+            <form action="{{ route('finance.payroll.sendWhatsApp', $payroll) }}" method="GET" target="_blank" class="space-y-4 text-xs">
+                @php
+                    $detectedPhone = $payroll->getEmployeePhone();
+                @endphp
+
+                <div>
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Recipient Mobile Number (with Country Code)</label>
+                    <input type="text" name="phone" value="{{ $detectedPhone ?: '918789076658' }}" placeholder="e.g. 919876543210" required 
+                           class="w-full text-xs rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5">
+                    <p class="text-[11px] text-slate-400 mt-1">Recipient: <strong>{{ $payroll->user?->name }}</strong> ({{ $payroll->user?->role }})</p>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Message Preview</label>
+                    <textarea name="custom_message" rows="6" class="w-full text-[11px] font-mono rounded-xl border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5">{{ $payroll->getWhatsAppFormattedMessage() }}</textarea>
+                </div>
+
+                <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                    <button type="button" onclick="document.getElementById('whatsappModal').classList.add('hidden')" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 dark:text-slate-400">
+                        Cancel
+                    </button>
+                    <button type="submit" onclick="setTimeout(() => document.getElementById('whatsappModal').classList.add('hidden'), 500)" class="px-5 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-md transition flex items-center gap-1.5">
+                        <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                            <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.698c.983.54 1.776.818 2.796.818 3.182 0 5.768-2.587 5.768-5.769.001-3.181-2.585-5.767-5.768-5.767zm9.969 5.766c0 5.495-4.474 9.969-9.969 9.969-1.748 0-3.385-.453-4.819-1.246l-5.212 1.367 1.391-5.084c-.887-1.493-1.391-3.238-1.391-5.006 0-5.495 4.474-9.969 9.969-9.969 5.495 0 9.969 4.474 9.969 9.969z"/>
+                        </svg>
+                        <span>Open in WhatsApp</span>
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </x-app-layout>

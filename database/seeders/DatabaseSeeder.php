@@ -38,6 +38,23 @@ class DatabaseSeeder extends Seeder
         );
         $staff->update(['role' => 'staff', 'name' => 'Alex Rivera', 'password' => bcrypt('password')]);
 
+        // 2b. Employee / Staff: Kesavan
+        $kesavan = User::firstOrCreate(
+            ['email' => 'kesavan@gmail.com'],
+            ['name' => 'kesavan', 'password' => bcrypt('kesavan123'), 'role' => 'staff', 'email_verified_at' => now()]
+        );
+        $kesavan->update(['role' => 'staff', 'name' => 'kesavan', 'password' => bcrypt('kesavan123')]);
+
+        \App\Models\EmployeeSalary::updateOrCreate(
+            ['user_id' => $kesavan->id],
+            [
+                'base_salary_monthly' => 25000,
+                'daily_rate' => 1000,
+                'payment_method' => 'bank_transfer',
+                'notes' => 'Employee Phone: 8789076658',
+            ]
+        );
+
         // 3. Technician: Bob Miller
         $technician = User::firstOrCreate(
             ['email' => 'bob@example.com'],
@@ -71,6 +88,18 @@ class DatabaseSeeder extends Seeder
             ]
         );
         $customer->update(['role' => 'customer', 'name' => 'srinithish.p', 'lead_id' => $lead->id, 'password' => bcrypt('password')]);
+
+        $demoCustomer = User::firstOrCreate(
+            ['email' => 'customer@example.com'],
+            [
+                'name' => 'Demo Customer',
+                'password' => bcrypt('password'),
+                'role' => 'customer',
+                'lead_id' => $lead->id,
+                'email_verified_at' => now(),
+            ]
+        );
+        $demoCustomer->update(['role' => 'customer', 'name' => 'Demo Customer', 'lead_id' => $lead->id, 'password' => bcrypt('password')]);
 
         // Products for linking
         $camProduct = \App\Models\Product::first();

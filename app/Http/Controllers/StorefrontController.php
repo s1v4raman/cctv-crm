@@ -31,7 +31,7 @@ class StorefrontController extends Controller
                 return redirect()->route('dashboard');
             }
 
-            return redirect()->route('login');
+            return redirect()->route('staff.login');
         }
 
         $search = trim((string) $request->input('q', ''));

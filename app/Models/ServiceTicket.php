@@ -87,6 +87,11 @@ class ServiceTicket extends Model
         return $this->belongsTo(User::class, 'assigned_technician_id');
     }
 
+    public function technician(): BelongsTo
+    {
+        return $this->assignedTechnician();
+    }
+
     public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by_id');

@@ -68,22 +68,43 @@ class InvoiceController extends Controller
         $taxAmount = $taxableAmount * ($taxPercent / 100.0);
         $total = $taxableAmount + $taxAmount;
 
+        $lead = $quotation->lead;
+        $companySettings = \App\Models\GatewaySetting::getSettings();
+        $companyStateCode = $companySettings->company_state_code ?: '33';
+        
+        $customerGstin = trim((string) ($lead?->gstin ?? ''));
+        $posState = $lead?->state ?: ($companySettings->company_state ?: 'Tamil Nadu');
+        $posCode  = $lead?->state_code ?: $companyStateCode;
+        $isIntraState = ($posCode === $companyStateCode);
+        $isB2b = !empty($customerGstin);
+
+        $cgst = $isIntraState ? round($taxAmount / 2.0, 2) : 0.00;
+        $sgst = $isIntraState ? round($taxAmount - $cgst, 2) : 0.00;
+        $igst = !$isIntraState ? round($taxAmount, 2) : 0.00;
+
         $invoice = Invoice::create([
-            'installation_job_id' => $job->id,
-            'quotation_id' => $quotation->id,
-            'invoice_no' => 'INV-' . now()->format('Ymd') . '-' . str_pad((string) (Invoice::count() + 1), 4, '0', STR_PAD_LEFT),
-            'invoice_date' => $validated['invoice_date'],
-            'due_date' => $validated['due_date'] ?? null,
-            'subtotal' => $subtotal,
-            'discount' => $discount,
-            'tax_percent' => $taxPercent,
-            'tax_amount' => $taxAmount,
-            'total' => $total,
-            'status' => 'unpaid',
-            'notes' => $validated['notes'] ?? null,
+            'installation_job_id'   => $job->id,
+            'quotation_id'          => $quotation->id,
+            'invoice_no'            => 'INV-' . now()->format('Ymd') . '-' . str_pad((string) (Invoice::count() + 1), 4, '0', STR_PAD_LEFT),
+            'invoice_date'          => $validated['invoice_date'],
+            'due_date'              => $validated['due_date'] ?? null,
+            'subtotal'              => $subtotal,
+            'discount'              => $discount,
+            'tax_percent'           => $taxPercent,
+            'tax_amount'            => $taxAmount,
+            'place_of_supply'       => $posState,
+            'place_of_supply_code'  => $posCode,
+            'is_b2b'                => $isB2b,
+            'is_reverse_charge'     => false,
+            'cgst_amount'           => $cgst,
+            'sgst_amount'           => $sgst,
+            'igst_amount'           => $igst,
+            'total'                 => $total,
+            'status'                => 'unpaid',
+            'notes'                 => $validated['notes'] ?? null,
         ]);
 
-        return redirect()->route('invoices.show', $invoice)->with('status', 'Invoice created.');
+        return redirect()->route('invoices.show', $invoice)->with('status', 'Invoice created with GST computation.');
     }
 
     public function show(Invoice $invoice)

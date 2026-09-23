@@ -14,6 +14,7 @@ return new class extends Migration
             $table->string('po_number')->unique();
             $table->date('order_date');
             $table->date('expected_delivery_date')->nullable();
+            $table->date('due_date')->nullable();
             $table->enum('status', ['draft', 'ordered', 'partially_received', 'received', 'cancelled'])->default('draft');
             $table->decimal('subtotal', 12, 2)->default(0.00);
             $table->decimal('tax_percent', 5, 2)->default(18.00);

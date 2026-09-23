@@ -52,7 +52,7 @@
             <td style="width:40%; text-align:right">
                 <div style="font-size:11px; font-weight:bold; color:#059669">COST &amp; PROFIT INTELLIGENCE</div>
                 <div style="font-size:7.5px; color:#64748b; margin-top:2px">
-                    <strong>Period:</strong> {{ $data['date_range']['label'] }}<br>
+                    <strong>Period:</strong> {{ $data['date_range']['label'] ?? ($startDate->format('d M Y') . ' - ' . $endDate->format('d M Y')) }}<br>
                     <strong>Generated:</strong> {{ now()->format('d M Y, h:i A') }}
                 </div>
             </td>
@@ -270,7 +270,7 @@
 
     {{-- Footer --}}
     <div class="footer">
-        CCTV Security CRM &middot; Cost &amp; Profit Analysis Report &middot; Period: {{ $data['date_range']['label'] }} &middot; Confidential
+        CCTV Security CRM &middot; Cost &amp; Profit Analysis Report &middot; Period: {{ $data['date_range']['label'] ?? ($startDate->format('d M Y') . ' - ' . $endDate->format('d M Y')) }} &middot; Confidential
     </div>
 
 </body>

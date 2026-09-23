@@ -89,7 +89,7 @@ class TechnicianPortalController extends Controller
         }
 
         $validated = $request->validate([
-            'status' => ['required', 'in:pending,scheduled,assigned,completed'],
+            'status' => ['required', 'in:pending,scheduled,assigned,in_progress,completed,cancelled'],
             'notes' => ['nullable', 'string', 'max:1000'],
         ]);
 

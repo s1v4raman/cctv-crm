@@ -39,10 +39,27 @@ class Supplier extends Model
         return $this->hasMany(RmaClaim::class)->latest();
     }
 
+    public function vendorPayments(): HasMany
+    {
+        return $this->hasMany(VendorPayment::class)->latest('payment_date');
+    }
+
     public function totalPurchaseVolume(): float
     {
         return (float) $this->purchaseOrders()
             ->whereIn('status', ['ordered', 'partially_received', 'received'])
             ->sum('total');
+    }
+
+    public function balancePayable(): float
+    {
+        $orders = $this->purchaseOrders()
+            ->whereIn('status', ['ordered', 'partially_received', 'received'])
+            ->get();
+
+        $total = (float) $orders->sum('total');
+        $paid = (float) $orders->sum('amount_paid');
+
+        return max(0.0, $total - $paid);
     }
 }

@@ -19,6 +19,8 @@ class Product extends Model
         'unit_price',
         'stock_quantity',
         'min_stock_alert',
+        'hsn_code',
+        'tax_rate',
         'default_warranty_months',
         'is_active',
     ];
@@ -28,6 +30,7 @@ class Product extends Model
         return [
             'cost_price' => 'decimal:2',
             'unit_price' => 'decimal:2',
+            'tax_rate' => 'decimal:2',
             'stock_quantity' => 'integer',
             'min_stock_alert' => 'integer',
             'default_warranty_months' => 'integer',

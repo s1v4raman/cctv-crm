@@ -101,8 +101,8 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 <div class="stat-card">
                     <div>
-                        <p class="text-xs font-semibold text-slate-500 dark:text-gray-500 uppercase tracking-wider">Total Tickets</p>
-                        <h3 class="text-2xl font-bold text-slate-900 dark:text-gray-800 mt-1">{{ $metrics['total'] }}</h3>
+                        <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Total Tickets</p>
+                        <h3 class="text-2xl font-bold text-slate-900 dark:text-white mt-1">{{ $metrics['total'] }}</h3>
                     </div>
                     <div class="p-3 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 rounded-xl">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -292,7 +292,7 @@
                                         </td>
                                         <td>
                                             @if($ticket->lead)
-                                                <a href="{{ route('leads.show', $ticket->lead) }}" class="font-bold text-slate-900 hover:text-indigo-600 text-xs">
+                                                <a href="{{ route('leads.show', $ticket->lead) }}" class="font-bold text-slate-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 text-xs">
                                                     {{ $ticket->lead->customer_name }}
                                                 </a>
                                                 <div class="text-[11px] text-slate-500 mt-0.5 flex items-center gap-2">

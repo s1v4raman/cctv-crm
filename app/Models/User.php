@@ -114,4 +114,48 @@ class User extends Authenticatable
     {
         return $this->hasOne(EmployeeAttendance::class)->whereDate('date', now()->toDateString());
     }
+
+    public function leaveRequests(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(LeaveRequest::class);
+    }
+
+    public function expenseClaims(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(ExpenseClaim::class);
+    }
+
+    /**
+     * Compute annual leave quota and consumed days for an employee.
+     */
+    public function getLeaveSummary(?int $year = null): array
+    {
+        $year = $year ?? (int) now()->format('Y');
+
+        $approvedLeaves = $this->leaveRequests()
+            ->where('status', 'approved')
+            ->whereYear('start_date', $year)
+            ->get();
+
+        $casualUsed = (float) $approvedLeaves->where('leave_type', 'casual')->sum('days_count');
+        $sickUsed   = (float) $approvedLeaves->where('leave_type', 'sick')->sum('days_count');
+        $earnedUsed = (float) $approvedLeaves->where('leave_type', 'earned')->sum('days_count');
+        $lwpUsed    = (float) $approvedLeaves->where('leave_type', 'unpaid_lwp')->sum('days_count');
+        $emergencyUsed = (float) $approvedLeaves->where('leave_type', 'emergency')->sum('days_count');
+
+        $casualQuota = 12.0;
+        $sickQuota   = 6.0;
+        $earnedQuota = 15.0;
+
+        return [
+            'year'            => $year,
+            'casual'          => ['quota' => $casualQuota, 'used' => $casualUsed, 'remaining' => max(0, $casualQuota - $casualUsed)],
+            'sick'            => ['quota' => $sickQuota,   'used' => $sickUsed,   'remaining' => max(0, $sickQuota - $sickUsed)],
+            'earned'          => ['quota' => $earnedQuota, 'used' => $earnedUsed, 'remaining' => max(0, $earnedQuota - $earnedUsed)],
+            'unpaid_lwp'      => ['used' => $lwpUsed],
+            'emergency'       => ['used' => $emergencyUsed],
+            'total_used_paid' => $casualUsed + $sickUsed + $earnedUsed,
+            'total_remaining_paid' => max(0, ($casualQuota + $sickQuota + $earnedQuota) - ($casualUsed + $sickUsed + $earnedUsed)),
+        ];
+    }
 }

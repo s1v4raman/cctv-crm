@@ -9,9 +9,14 @@ class GatewaySetting extends Model
 {
     use HasFactory;
 
-    protected $table = 'gateway_settings';
-
     protected $fillable = [
+        'company_trade_name',
+        'company_legal_name',
+        'company_gstin',
+        'company_pan',
+        'company_state',
+        'company_state_code',
+        'company_address',
         'active_sms_gateway',
         'twilio_account_sid',
         'twilio_auth_token',

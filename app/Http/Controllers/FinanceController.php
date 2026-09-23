@@ -4,11 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\EmployeeAttendance;
 use App\Models\EmployeeSalary;
+use App\Models\NotificationLog;
 use App\Models\Payroll;
 use App\Models\User;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 
 class FinanceController extends Controller
@@ -317,6 +321,86 @@ class FinanceController extends Controller
         ]);
 
         return back()->with('status', "✅ Payroll slip #{$payroll->payroll_number} marked as " . ucfirst($payroll->status) . ".");
+    }
+
+    /**
+     * Download Official Salary Payslip PDF.
+     */
+    public function downloadPayslipPdf(Payroll $payroll)
+    {
+        $payroll->load(['user.salaryStructure', 'creator']);
+        $pdf = Pdf::loadView('finance.payslip_pdf', compact('payroll'));
+        $filename = "Payslip_{$payroll->payroll_number}_{$payroll->user?->name}.pdf";
+
+        return $pdf->download($filename);
+    }
+
+    /**
+     * Stream Official Salary Payslip PDF in browser.
+     */
+    public function streamPayslipPdf(Payroll $payroll)
+    {
+        $payroll->load(['user.salaryStructure', 'creator']);
+        $pdf = Pdf::loadView('finance.payslip_pdf', compact('payroll'));
+        $filename = "Payslip_{$payroll->payroll_number}.pdf";
+
+        return $pdf->stream($filename);
+    }
+
+    /**
+     * Dispatch Salary Payslip via WhatsApp.
+     */
+    public function sendWhatsApp(Request $request, Payroll $payroll)
+    {
+        $payroll->load(['user.salaryStructure', 'user.lead']);
+
+        $customPhone = $request->input('phone');
+        $customMsg   = $request->input('custom_message');
+
+        $phone = $payroll->getEmployeePhone($customPhone);
+        $message = $customMsg ?: $payroll->getWhatsAppFormattedMessage();
+
+        // Audit notification log
+        try {
+            NotificationLog::create([
+                'channel'         => 'whatsapp',
+                'event_type'      => 'payslip_sent',
+                'recipient_type'  => 'employee',
+                'recipient_name'  => $payroll->user?->name ?? 'Employee',
+                'recipient_phone' => $phone,
+                'recipient_email' => $payroll->user?->email,
+                'subject'         => "Salary Payslip #{$payroll->payroll_number} ({$payroll->formatted_period})",
+                'message_body'    => $message,
+                'action_url'      => route('finance.payroll.pdf', $payroll),
+                'status'          => 'sent',
+                'reference_type'  => get_class($payroll),
+                'reference_id'    => $payroll->id,
+                'sent_at'         => now(),
+                'created_by'      => Auth::id(),
+            ]);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning("Payslip WhatsApp NotificationLog failed: " . $e->getMessage());
+        }
+
+        $whatsappUrl = $payroll->getWhatsAppUrl($customPhone, $customMsg);
+        $webUrl      = $payroll->getWhatsAppWebUrl($customPhone, $customMsg);
+        $appUrl      = $payroll->getWhatsAppAppUrl($customPhone, $customMsg);
+        $pdfUrl      = route('finance.payroll.pdf', $payroll);
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success'       => true,
+                'whatsapp_url'  => $whatsappUrl,
+                'web_url'       => $webUrl,
+                'app_url'       => $appUrl,
+                'pdf_url'       => $pdfUrl,
+                'phone'         => $phone,
+                'employee_name' => $payroll->user?->name ?? 'Employee',
+                'message'       => $message,
+            ]);
+        }
+
+        return redirect()->away($whatsappUrl);
     }
 
     /**

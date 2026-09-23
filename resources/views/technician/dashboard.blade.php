@@ -13,9 +13,15 @@
                 </div>
                 <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Welcome back, <strong class="text-slate-800 dark:text-slate-200 font-semibold">{{ auth()->user()->name }}</strong> — here are your real-time on-site assignments.</p>
             </div>
-            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-[#2563eb] dark:text-blue-400 font-bold text-xs shadow-xs">
-                <span>⚡ FIELD TECHNICIAN</span>
-            </span>
+            <div class="flex items-center gap-2 flex-wrap">
+                <a href="{{ route('finance.expenses.index') }}" 
+                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 font-bold text-xs shadow-xs hover:bg-purple-100 transition">
+                    <span>🛵 Travel &amp; Fuel Claims</span>
+                </a>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-[#2563eb] dark:text-blue-400 font-bold text-xs shadow-xs">
+                    <span>⚡ FIELD TECHNICIAN</span>
+                </span>
+            </div>
         </div>
     </x-slot>
 

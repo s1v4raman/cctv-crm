@@ -15,6 +15,9 @@ class PurchaseOrderController extends Controller
 {
     public function index(Request $request): View
     {
+        if (auth()->user()?->role === 'technician') {
+            abort(403, 'Technicians are not authorized to view purchase orders.');
+        }
         $search = trim((string) $request->input('search', ''));
         $supplierId = $request->input('supplier_id');
         $status = $request->input('status');
@@ -136,6 +139,11 @@ class PurchaseOrderController extends Controller
     {
         $purchaseOrder->load(['supplier', 'items.product', 'createdBy']);
         return view('purchase_orders.show', compact('purchaseOrder'));
+    }
+
+    public function edit(PurchaseOrder $purchaseOrder): RedirectResponse
+    {
+        return redirect()->route('purchase-orders.show', $purchaseOrder);
     }
 
     public function receiveItems(Request $request, PurchaseOrder $purchaseOrder): RedirectResponse

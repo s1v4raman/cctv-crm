@@ -74,6 +74,7 @@
                 
                 {{-- Mobile Drawer Overlay --}}
                 <div x-show="sidebarOpen" 
+                     x-cloak
                      x-transition:enter="transition-opacity ease-linear duration-200"
                      x-transition:enter-start="opacity-0"
                      x-transition:enter-end="opacity-100"
@@ -81,12 +82,12 @@
                      x-transition:leave-start="opacity-100"
                      x-transition:leave-end="opacity-0"
                      @click="sidebarOpen = false" 
-                     class="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-sm lg:hidden" 
+                     class="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-sm lg:hidden" 
                      style="display: none;"></div>
 
-                {{-- Sidebar Container: Fixed & Sticky at 100vh with Smooth Scroll --}}
-                <div :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
-                     class="fixed inset-y-0 left-0 z-50 lg:sticky lg:top-0 lg:h-screen lg:z-30 transition-transform duration-300 ease-in-out flex shrink-0 bg-white dark:bg-[#0f172a] border-r border-slate-200/80 dark:border-slate-800">
+                {{-- Sidebar Container: Fixed on mobile, sticky on desktop with complete offscreen translation --}}
+                <div :class="sidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full lg:translate-x-0 shadow-none'"
+                     class="fixed inset-y-0 left-0 z-50 lg:sticky lg:top-0 lg:h-screen lg:z-30 w-64 shrink-0 transition-transform duration-300 ease-in-out flex flex-col bg-white dark:bg-[#0f172a] border-r border-slate-200/80 dark:border-slate-800 overflow-hidden">
                     @include('layouts.navigation')
                 </div>
 
@@ -94,27 +95,31 @@
                 <div class="flex-1 flex flex-col min-w-0 overflow-hidden min-h-screen bg-[#f8fafc] dark:bg-[#060913] transition-colors duration-200">
                     
                     {{-- Modern SaaS Top Navigation Bar --}}
-                    <header class="h-16 bg-white dark:bg-[#0f172a] border-b border-slate-200/80 dark:border-slate-800 px-4 sm:px-6 lg:px-8 flex items-center justify-between sticky top-0 z-20 shadow-xs transition-colors duration-200">
+                    <header class="h-16 bg-white dark:bg-[#0f172a] border-b border-slate-200/80 dark:border-slate-800 px-4 sm:px-6 lg:px-8 flex items-center justify-between sticky top-0 z-30 shadow-2xs transition-colors duration-200">
                         
-                        {{-- Left side: Mobile Toggle & Welcome Headline --}}
-                        <div class="flex items-center gap-3">
-                            <button @click="sidebarOpen = !sidebarOpen" class="lg:hidden p-2 rounded-xl text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                        {{-- Left side: Mobile Drawer Toggle & Sleek Context Pill --}}
+                        <div class="flex items-center gap-3 min-w-0">
+                            <button @click="sidebarOpen = !sidebarOpen" 
+                                    class="lg:hidden inline-flex items-center justify-center p-2 rounded-xl text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition-all shadow-2xs cursor-pointer shrink-0"
+                                    aria-label="Toggle navigation menu"
+                                    title="Open Navigation Menu">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
                             </button>
 
-                            <div>
-                                <h1 class="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white font-heading leading-tight flex items-center gap-1.5">
-                                    <span>Welcome back, {{ explode(' ', Auth::user()->name)[0] }}!</span>
-                                    <span>👋</span>
-                                </h1>
-                                <p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium hidden sm:block">
-                                    {{ auth()->user()->isCustomer() ? 'Client Operations & Self-Service Portal' : "Here's what's happening with your business today." }}
-                                </p>
+                            <div class="flex items-center gap-2.5 min-w-0">
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-bold border border-blue-200/70 dark:border-blue-800/60 shrink-0">
+                                    <span class="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400 animate-pulse"></span>
+                                    <span>SecureVision CRM</span>
+                                </span>
+                                <span class="text-slate-300 dark:text-slate-700 hidden sm:inline">/</span>
+                                <span class="text-xs font-medium text-slate-500 dark:text-slate-400 truncate hidden sm:inline">
+                                    {{ auth()->user()->role === 'technician' ? 'Field Station' : (auth()->user()->isCustomer() ? 'Client Portal' : 'Command Center') }}
+                                </span>
                             </div>
                         </div>
 
-                        {{-- Right side: Search, Theme Toggle, Notification Bell & User Dropdown --}}
-                        <div class="flex items-center gap-2 sm:gap-3">
+                        {{-- Right side: Search, Quick Action, Theme Toggle, Notification Bell & User Dropdown --}}
+                        <div class="flex items-center gap-2 sm:gap-3 shrink-0">
                             
                             {{-- Global Omnisearch Input & Live Dropdown --}}
                             <div class="relative w-48 sm:w-64 lg:w-72" 

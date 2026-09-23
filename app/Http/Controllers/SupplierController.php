@@ -12,6 +12,9 @@ class SupplierController extends Controller
 {
     public function index(Request $request): View
     {
+        if (auth()->user()?->role === 'technician') {
+            abort(403, 'Technicians are not authorized to view supplier records.');
+        }
         $search = trim((string) $request->input('search', ''));
         $query = Supplier::query()->withCount('purchaseOrders')->latest();
 

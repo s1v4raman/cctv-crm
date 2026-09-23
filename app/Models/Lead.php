@@ -8,8 +8,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Lead extends Model
 {
     protected $fillable = [
-        'customer_name', 'phone', 'email', 'site_address', 'source', 'status', 'notes',
+        'customer_name', 'company_legal_name', 'gstin', 'phone', 'email', 'site_address',
+        'state', 'state_code', 'source', 'status', 'notes',
     ];
+
+    public function isB2b(): bool
+    {
+        return !empty(trim((string) $this->gstin));
+    }
 
     public function quotations(): HasMany
     {

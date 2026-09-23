@@ -59,6 +59,27 @@ class AuthenticationTest extends TestCase
         $response = $this->actingAs($user)->post('/logout');
 
         $this->assertGuest();
-        $response->assertRedirect(route('login'));
+        $response->assertRedirect(route('staff.login'));
+    }
+
+    public function test_customer_login_screen_renders_customer_portal_branding(): void
+    {
+        $response = $this->get(route('customer.login'));
+
+        $response->assertOk()
+            ->assertSee('Customer Sign In')
+            ->assertSee('Customer Portal')
+            ->assertDontSee('Operations Sign In');
+    }
+
+    public function test_staff_login_screen_renders_staff_erp_branding(): void
+    {
+        $response = $this->get(route('staff.login'));
+
+        $response->assertOk()
+            ->assertSee('Operations Sign In')
+            ->assertSee('Staff')
+            ->assertSee('Admin ERP')
+            ->assertDontSee('Customer Sign In');
     }
 }

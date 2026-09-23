@@ -16,7 +16,7 @@ class InternalUserOnly
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!auth()->check() || auth()->user()->isCustomer() || auth()->user()->isTechnician()) {
+        if (!auth()->check() || auth()->user()->isCustomer()) {
             abort(403, 'Unauthorized action.');
         }
 

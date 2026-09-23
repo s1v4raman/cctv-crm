@@ -79,16 +79,16 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        // Staff → Staff ERP login page | Customer → Customer home page
+        // Staff (Admin, Technician, Employee) → Staff ERP login page | Customer → Customer home page
         if ($portalType === 'staff' || $port === 8001) {
             if ($port === 8001) {
                 $scheme = $request->getScheme();
                 $host = $request->getHost();
-                return redirect("{$scheme}://{$host}:8001/login");
+                return redirect("{$scheme}://{$host}:8001/staff/login");
             }
-            return redirect(route('login'));
+            return redirect()->route('staff.login');
         }
 
-        return redirect('/');
+        return redirect()->route('home');
     }
 }

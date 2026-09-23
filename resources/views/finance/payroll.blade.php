@@ -262,11 +262,26 @@
                                         @endif
                                     </td>
                                     <td class="py-3.5 px-4 text-right">
-                                        <div class="flex items-center justify-end gap-1.5">
+                                        <div class="flex items-center justify-end gap-1">
                                             <a href="{{ route('finance.payroll.show', $p->id) }}"
                                                class="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition text-xs font-bold"
                                                title="View & Print Official Payslip">
-                                                🖨️ Slip
+                                                🖨️
+                                            </a>
+
+                                            <a href="{{ route('finance.payroll.pdf', $p->id) }}"
+                                               class="p-1.5 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-900 transition text-xs font-bold"
+                                               title="Download PDF Payslip">
+                                                📄 PDF
+                                            </a>
+
+                                            <a href="{{ route('finance.payroll.sendWhatsApp', $p->id) }}"
+                                               target="_blank"
+                                               class="p-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition text-xs font-bold flex items-center gap-1"
+                                               title="Send via WhatsApp to {{ $p->user?->name }}">
+                                                <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                                                    <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.698c.983.54 1.776.818 2.796.818 3.182 0 5.768-2.587 5.768-5.769.001-3.181-2.585-5.767-5.768-5.767zm9.969 5.766c0 5.495-4.474 9.969-9.969 9.969-1.748 0-3.385-.453-4.819-1.246l-5.212 1.367 1.391-5.084c-.887-1.493-1.391-3.238-1.391-5.006 0-5.495 4.474-9.969 9.969-9.969 5.495 0 9.969 4.474 9.969 9.969z"/>
+                                                </svg>
                                             </a>
 
                                             {{-- Status Quick Modal Trigger --}}

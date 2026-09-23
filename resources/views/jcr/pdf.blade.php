@@ -255,7 +255,13 @@
             <td class="sig-box">
                 <span class="info-label">Client / Customer Authorized Sign-Off</span>
                 <div style="text-align: center; margin-top: 6px;">
-                    <img src="{{ $jobCompletionReport->customer_signature }}" class="sig-image" alt="Customer Signature">
+                    @if(str_starts_with($jobCompletionReport->customer_signature ?? '', 'data:image/png') || str_starts_with($jobCompletionReport->customer_signature ?? '', 'data:image/jpeg') || str_starts_with($jobCompletionReport->customer_signature ?? '', 'http'))
+                        <img src="{{ $jobCompletionReport->customer_signature }}" class="sig-image" alt="Customer Signature">
+                    @elseif($jobCompletionReport->customer_signature)
+                        <div style="font-family: 'Times New Roman', serif; font-style: italic; font-size: 16px; font-weight: bold; color: #1e3a8a; padding: 8px 0;">{{ $jobCompletionReport->signer_name }}</div>
+                    @else
+                        <span style="color: #94a3b8; font-style: italic;">Electronically Authorized</span>
+                    @endif
                 </div>
                 <div style="font-size: 9px; margin-top: 6px; border-top: 1px solid #e2e8f0; padding-top: 4px;">
                     <strong>{{ $jobCompletionReport->signer_name }}</strong>

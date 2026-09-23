@@ -14,6 +14,10 @@ class SiteSurveyController extends Controller
 {
     public function index(Request $request)
     {
+        if (auth()->user()?->role === 'technician') {
+            abort(403, 'Technicians are not authorized to view site surveys.');
+        }
+
         $query = SiteSurvey::with('lead', 'surveyedBy', 'photos');
 
         if ($request->filled('search')) {
@@ -45,6 +49,9 @@ class SiteSurveyController extends Controller
 
     public function create()
     {
+        if (auth()->user()?->role === 'technician') {
+            abort(403, 'Technicians are not authorized to create site surveys.');
+        }
         $leads = Lead::orderBy('customer_name')->get();
         $technicians = User::whereIn('role', ['technician', 'staff', 'admin'])->orderBy('name')->get();
         return view('site_surveys.create', compact('leads', 'technicians'));
