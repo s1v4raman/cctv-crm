@@ -84,9 +84,18 @@ try {
             'email_verified_at' => now(),
         ]
     );
-    echo '=> Admin accounts created and verified successfully.' . PHP_EOL;
+    \App\Models\User::updateOrCreate(
+        ['email' => 'customer@cctvcrm.com'],
+        [
+            'name' => 'John Customer',
+            'password' => bcrypt('password'),
+            'role' => 'customer',
+            'email_verified_at' => now(),
+        ]
+    );
+    echo '=> Admin and Customer accounts created and verified successfully.' . PHP_EOL;
 } catch (\Throwable \$e) {
-    echo '=> Admin creation error: ' . \$e->getMessage() . PHP_EOL;
+    echo '=> Account creation error: ' . \$e->getMessage() . PHP_EOL;
 }
 " || true
 
