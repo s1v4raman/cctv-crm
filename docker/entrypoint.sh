@@ -6,16 +6,21 @@ PORT=${PORT:-80}
 echo "=> Configuring Nginx to listen on port: $PORT"
 sed -i "s/PORT_PLACEHOLDER/$PORT/g" /etc/nginx/nginx.conf
 
+# Ensure PHP-FPM does not clear environment variables for worker processes
+mkdir -p /usr/local/etc/php-fpm.d
+echo "clear_env = no" > /usr/local/etc/php-fpm.d/zz-env.conf
+
 # Ensure storage & bootstrap cache directories exist with correct permissions
 echo "=> Ensuring storage & bootstrap cache directories and permissions..."
 mkdir -p /var/www/html/storage/framework/cache/data \
          /var/www/html/storage/framework/sessions \
          /var/www/html/storage/framework/views \
          /var/www/html/storage/logs \
-         /var/www/html/bootstrap/cache
+         /var/www/html/bootstrap/cache \
+         /var/www/html/database
 
-chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
-chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database
+chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database
 
 # Auto-generate APP_KEY if missing
 if [ -z "$APP_KEY" ]; then
@@ -27,6 +32,7 @@ fi
 if [ -z "$DB_HOST" ] || [ "$DB_HOST" = "127.0.0.1" ] || [ "$DB_HOST" = "localhost" ]; then
     echo "=> DB_HOST is not set. Defaulting to local SQLite database..."
     export DB_CONNECTION=sqlite
+    export DB_DATABASE=/var/www/html/database/database.sqlite
     touch /var/www/html/database/database.sqlite
     chown www-data:www-data /var/www/html/database/database.sqlite
     chmod 664 /var/www/html/database/database.sqlite
@@ -45,9 +51,9 @@ php artisan config:clear || true
 
 # Run database migrations
 echo "=> Running database migrations..."
-php artisan migrate --force || echo "=> Warning: Migrations failed. Check your database credentials."
+php artisan migrate --force || echo "=> Warning: Migrations failed. Check database configuration."
 
-# Seed database with catalog products & initial data if empty
+# Seed database with catalog products & initial admin accounts if empty
 echo "=> Seeding initial product catalog and demo data..."
 php artisan db:seed --force || echo "=> Database seeding completed or already populated."
 

@@ -13,7 +13,7 @@ services:
       - key: APP_ENV
         value: production
       - key: APP_DEBUG
-        value: "false"
+        value: "true"
       - key: APP_KEY
         generateValue: true
       - key: APP_URL
@@ -21,7 +21,7 @@ services:
       - key: LOG_CHANNEL
         value: stderr
       - key: DB_CONNECTION
-        value: pgsql
+        value: sqlite
       - key: DB_HOST
         sync: false
       - key: DB_PORT
@@ -37,8 +37,8 @@ services:
       - key: AUTO_MIGRATE
         value: "true"
       - key: SESSION_DRIVER
-        value: database
+        value: file
       - key: CACHE_STORE
-        value: database
+        value: file
       - key: QUEUE_CONNECTION
-        value: database
+        value: sync
