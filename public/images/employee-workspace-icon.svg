@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" class="w-full h-full">
+  <defs>
+    <linearGradient id="emp-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10B981"/>
+      <stop offset="50%" stop-color="#059669"/>
+      <stop offset="100%" stop-color="#047857"/>
+    </linearGradient>
+    <linearGradient id="emp-glow" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="emp-avatar" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#E2E8F0"/>
+    </linearGradient>
+    <filter id="emp-shadow" x="-10%" y="-10%" width="120%" height="125%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#059669" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+  <!-- Squircle Base with Glow -->
+  <rect x="4" y="4" width="56" height="56" rx="16" fill="url(#emp-bg)" filter="url(#emp-shadow)"/>
+  
+  <!-- Subtle Top Highlight Rim -->
+  <rect x="5" y="5" width="54" height="26" rx="15" fill="url(#emp-glow)"/>
+  
+  <!-- Outer Subtle Stroke -->
+  <rect x="4.5" y="4.5" width="55" height="55" rx="15.5" stroke="#34D399" stroke-opacity="0.4" stroke-width="1"/>
+
+  <!-- Left Teammate -->
+  <circle cx="21" cy="25" r="4.5" fill="#A7F3D0" fill-opacity="0.85"/>
+  <path d="M12 41c0-4 4-7.5 9-7.5 2.2 0 4.2.7 5.7 1.8A9.8 9.8 0 0021 41h-9z" fill="#A7F3D0" fill-opacity="0.7"/>
+
+  <!-- Right Teammate -->
+  <circle cx="43" cy="25" r="4.5" fill="#A7F3D0" fill-opacity="0.85"/>
+  <path d="M52 41c0-4-4-7.5-9-7.5-2.2 0-4.2.7-5.7 1.8A9.8 9.8 0 0143 41h9z" fill="#A7F3D0" fill-opacity="0.7"/>
+
+  <!-- Center Leader / Workforce Anchor -->
+  <circle cx="32" cy="23" r="6" fill="url(#emp-avatar)"/>
+  <path d="M19 43c0-5.5 5.8-10 13-10s13 4.5 13 10c0 1.2-.8 2-2 2H21c-1.2 0-2-.8-2-2z" fill="url(#emp-avatar)"/>
+
+  <!-- Collaborative Connected Pulse Dot / Badge -->
+  <circle cx="47" cy="17" r="3.5" fill="#FBBF24" stroke="#047857" stroke-width="1.5"/>
+</svg>
