@@ -267,7 +267,7 @@
                             </a>
                         </nav>
                         <div class="mt-2 pt-2 border-t border-slate-100 dark:border-slate-800 px-3">
-                            <a href="https://wa.me/916380920970" target="_blank" class="flex items-center justify-center space-x-2 w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow transition-colors">
+                            <a href="https://wa.me/919677257774" target="_blank" class="flex items-center justify-center space-x-2 w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow transition-colors">
                                 <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.007c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.861.174.086.275.072.376-.044.102-.115.434-.506.549-.68.116-.173.232-.145.39-.087s1.011.477 1.184.564.289.13.332.203c.044.072.044.419-.1.824z"/></svg>
                                 <span>WhatsApp Hotline</span>
                             </a>
@@ -333,30 +333,219 @@
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                             </a>
                         </div>
-                    </div>
-
-                    <!-- Hero Visual (Right) -->
+                    </div>                    <!-- Hero Visual (Right) - Dynamic Slide-by-Slide Showcase -->
                     <div class="lg:col-span-6 relative">
                         <div class="relative mx-auto max-w-lg lg:max-w-none">
                             <!-- Soft glowing backdrop -->
-                            <div class="absolute -inset-2 bg-gradient-to-r from-blue-600/15 to-cyan-500/15 rounded-3xl blur-2xl -z-10"></div>
+                            <div class="absolute -inset-2 bg-gradient-to-r from-blue-600/20 via-indigo-500/20 to-cyan-500/20 rounded-3xl blur-2xl -z-10 animate-pulse"></div>
                             
-                            <!-- Hero Image Container -->
-                            <div class="overflow-hidden rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-2xl bg-slate-100 dark:bg-slate-800">
-                                <img src="{{ asset('images/pathsoft_hero.jpg') }}" alt="PathSoft Professional Technology & Security Team"
-                                    class="w-full h-auto object-cover transform hover:scale-102 transition-transform duration-500">
+                            <!-- Hero Slider Main Container -->
+                            <div id="heroSliderContainer" class="relative overflow-hidden rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-2xl bg-slate-950 group select-none"
+                                onmouseenter="pauseHeroSlider()" onmouseleave="resumeHeroSlider()">
+                                
+                                <!-- Top Progress Countdown Bar -->
+                                <div class="absolute top-0 left-0 right-0 h-1 bg-white/10 z-30">
+                                    <div id="heroSliderProgress" class="h-full bg-gradient-to-r from-blue-500 to-cyan-400 transition-all ease-linear" style="width: 0%;"></div>
+                                </div>
+
+                                <!-- Slide Counter & View Fullscreen Pill (Top Right) -->
+                                <div class="absolute top-4 right-4 z-30 flex items-center space-x-2">
+                                    <span id="heroSlideCounter" class="px-2.5 py-1 rounded-full bg-slate-900/80 backdrop-blur-md border border-white/15 text-white text-[11px] font-bold font-mono tracking-wider shadow-lg">
+                                        01 / 08
+                                    </span>
+                                    <button type="button" onclick="openPictureLightbox(currentHeroIndex)"
+                                        class="p-1.5 rounded-full bg-slate-900/80 hover:bg-blue-600 backdrop-blur-md border border-white/15 text-white/90 hover:text-white transition-all shadow-lg hover:scale-110"
+                                        title="View Full Picture">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                <!-- Slider Viewport (Height 380px to 460px responsive) -->
+                                <div class="relative w-full h-[360px] sm:h-[420px] md:h-[460px] overflow-hidden bg-slate-950">
+                                    
+                                    <!-- Slide 1: CCTV Field Technician with Orange Helmet -->
+                                    <div class="hero-slide absolute inset-0 transition-all duration-700 ease-out opacity-100 scale-100 z-10 cursor-pointer" onclick="openPictureLightbox(0)">
+                                        <img src="{{ asset('images/slides/slide1_technician_cctv_orange_helmet.png') }}" 
+                                            alt="Professional CCTV Installation Technician"
+                                            class="w-full h-full object-cover object-center transform transition-transform duration-700 group-hover:scale-105">
+                                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                                        <div class="absolute bottom-0 left-0 right-0 p-3 sm:p-4 text-white space-y-1 pointer-events-none">
+                                            <div class="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-blue-600/90 backdrop-blur-sm text-[10px] font-bold uppercase tracking-wider text-white">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-cyan-300 animate-ping"></span>
+                                                <span>CCTV Engineering</span>
+                                            </div>
+                                            <h3 class="text-sm sm:text-base font-bold font-heading text-white drop-shadow-md line-clamp-1">
+                                                Expert Outdoor CCTV Installation & Junction Wiring
+                                            </h3>
+                                        </div>
+                                    </div>
+
+                                    <!-- Slide 2: Technician Aligning Bullet Camera -->
+                                    <div class="hero-slide absolute inset-0 transition-all duration-700 ease-out opacity-0 scale-95 z-0 pointer-events-none cursor-pointer" onclick="openPictureLightbox(1)">
+                                        <img src="{{ asset('images/slides/slide2_technician_bullet_camera.jpg') }}" 
+                                            alt="Bullet Camera Optical Alignment"
+                                            class="w-full h-full object-cover object-center transform transition-transform duration-700 group-hover:scale-105">
+                                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                                        <div class="absolute bottom-0 left-0 right-0 p-3 sm:p-4 text-white space-y-1 pointer-events-none">
+                                            <div class="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-emerald-600/90 backdrop-blur-sm text-[10px] font-bold uppercase tracking-wider text-white">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+                                                <span>Perimeter Security</span>
+                                            </div>
+                                            <h3 class="text-sm sm:text-base font-bold font-heading text-white drop-shadow-md line-clamp-1">
+                                                Precision IP Bullet Camera Optical Calibration
+                                            </h3>
+                                        </div>
+                                    </div>
+
+                                    <!-- Slide 3: Technician Mounting 360 Dome Camera -->
+                                    <div class="hero-slide absolute inset-0 transition-all duration-700 ease-out opacity-0 scale-95 z-0 pointer-events-none cursor-pointer" onclick="openPictureLightbox(2)">
+                                        <img src="{{ asset('images/slides/slide3_technician_dome_camera.png') }}" 
+                                            alt="AI Dome Camera Setup"
+                                            class="w-full h-full object-cover object-center transform transition-transform duration-700 group-hover:scale-105">
+                                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                                        <div class="absolute bottom-0 left-0 right-0 p-3 sm:p-4 text-white space-y-1 pointer-events-none">
+                                            <div class="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-indigo-600/90 backdrop-blur-sm text-[10px] font-bold uppercase tracking-wider text-white">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
+                                                <span>Commercial & Indoor</span>
+                                            </div>
+                                            <h3 class="text-sm sm:text-base font-bold font-heading text-white drop-shadow-md line-clamp-1">
+                                                Vandal-Resistant 360° AI Dome Camera Setup
+                                            </h3>
+                                        </div>
+                                    </div>
+
+                                    <!-- Slide 4: Specialist with Multi-camera Tools -->
+                                    <div class="hero-slide absolute inset-0 transition-all duration-700 ease-out opacity-0 scale-95 z-0 pointer-events-none cursor-pointer" onclick="openPictureLightbox(3)">
+                                        <img src="{{ asset('images/slides/slide4_cctv_specialist_tools.png') }}" 
+                                            alt="Turnkey Surveillance Equipment"
+                                            class="w-full h-full object-cover object-center transform transition-transform duration-700 group-hover:scale-105">
+                                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                                        <div class="absolute bottom-0 left-0 right-0 p-3 sm:p-4 text-white space-y-1 pointer-events-none">
+                                            <div class="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-amber-600/90 backdrop-blur-sm text-[10px] font-bold uppercase tracking-wider text-white">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
+                                                <span>Hardware Diagnostics</span>
+                                            </div>
+                                            <h3 class="text-sm sm:text-base font-bold font-heading text-white drop-shadow-md line-clamp-1">
+                                                Commercial Grade Multisensor Hardware & Tools
+                                            </h3>
+                                        </div>
+                                    </div>
+
+                                    <!-- Slide 5: AI Face Recognition Access Control Device -->
+                                    <div class="hero-slide absolute inset-0 transition-all duration-700 ease-out opacity-0 scale-95 z-0 pointer-events-none cursor-pointer" onclick="openPictureLightbox(4)">
+                                        <img src="{{ asset('images/slides/slide5_ai_face_recognition_attendance.png') }}" 
+                                            alt="AI Face Recognition Attendance Device"
+                                            class="w-full h-full object-contain bg-slate-900/90 object-center transform transition-transform duration-700 group-hover:scale-105">
+                                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                                        <div class="absolute bottom-0 left-0 right-0 p-3 sm:p-4 text-white space-y-1 pointer-events-none">
+                                            <div class="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-cyan-600/90 backdrop-blur-sm text-[10px] font-bold uppercase tracking-wider text-white">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+                                                <span>AI Biometrics</span>
+                                            </div>
+                                            <h3 class="text-sm sm:text-base font-bold font-heading text-white drop-shadow-md line-clamp-1">
+                                                AI Face Recognition Access Control & Time Attendance
+                                            </h3>
+                                        </div>
+                                    </div>
+
+                                    <!-- Slide 6: Multi-Identification Methods -->
+                                    <div class="hero-slide absolute inset-0 transition-all duration-700 ease-out opacity-0 scale-95 z-0 pointer-events-none cursor-pointer" onclick="openPictureLightbox(5)">
+                                        <img src="{{ asset('images/slides/slide6_multi_identification_access_methods.png') }}" 
+                                            alt="Multiple Biometric Identification Methods"
+                                            class="w-full h-full object-contain bg-slate-900/90 object-center transform transition-transform duration-700 group-hover:scale-105">
+                                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                                        <div class="absolute bottom-0 left-0 right-0 p-3 sm:p-4 text-white space-y-1 pointer-events-none">
+                                            <div class="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-blue-600/90 backdrop-blur-sm text-[10px] font-bold uppercase tracking-wider text-white">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
+                                                <span>Access Control</span>
+                                            </div>
+                                            <h3 class="text-sm sm:text-base font-bold font-heading text-white drop-shadow-md line-clamp-1">
+                                                10 Multi-Modal Identification & Security Combinations
+                                            </h3>
+                                        </div>
+                                    </div>
+
+                                    <!-- Slide 7: Biometric Fingerprint Terminal -->
+                                    <div class="hero-slide absolute inset-0 transition-all duration-700 ease-out opacity-0 scale-95 z-0 pointer-events-none cursor-pointer" onclick="openPictureLightbox(6)">
+                                        <img src="{{ asset('images/slides/slide7_biometric_fingerprint_terminal.png') }}" 
+                                            alt="Standalone Fingerprint Biometric Device"
+                                            class="w-full h-full object-contain bg-slate-900/90 object-center transform transition-transform duration-700 group-hover:scale-105">
+                                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                                        <div class="absolute bottom-0 left-0 right-0 p-3 sm:p-4 text-white space-y-1 pointer-events-none">
+                                            <div class="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-purple-600/90 backdrop-blur-sm text-[10px] font-bold uppercase tracking-wider text-white">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
+                                                <span>Door Access</span>
+                                            </div>
+                                            <h3 class="text-sm sm:text-base font-bold font-heading text-white drop-shadow-md line-clamp-1">
+                                                High-Security Standalone Biometric Terminals
+                                            </h3>
+                                        </div>
+                                    </div>
+
+                                    <!-- Slide 8: Attendance Management Dashboard & Verification -->
+                                    <div class="hero-slide absolute inset-0 transition-all duration-700 ease-out opacity-0 scale-95 z-0 pointer-events-none cursor-pointer" onclick="openPictureLightbox(7)">
+                                        <img src="{{ asset('images/slides/slide8_attendance_management_system.png') }}" 
+                                            alt="Cloud Attendance Management System"
+                                            class="w-full h-full object-contain bg-slate-900/90 object-center transform transition-transform duration-700 group-hover:scale-105">
+                                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                                        <div class="absolute bottom-0 left-0 right-0 p-3 sm:p-4 text-white space-y-1 pointer-events-none">
+                                            <div class="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-emerald-600/90 backdrop-blur-sm text-[10px] font-bold uppercase tracking-wider text-white">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+                                                <span>Cloud HR Suite</span>
+                                            </div>
+                                            <h3 class="text-sm sm:text-base font-bold font-heading text-white drop-shadow-md line-clamp-1">
+                                                Unified HR Attendance & Real-Time Check-in Suite
+                                            </h3>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <!-- Left & Right Navigation Arrows -->
+                                <button type="button" onclick="prevHeroSlide(event)" 
+                                    class="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-slate-900/70 hover:bg-blue-600 text-white backdrop-blur-md border border-white/20 flex items-center justify-center transition-all shadow-xl hover:scale-110"
+                                    title="Previous Image">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
+                                    </svg>
+                                </button>
+                                <button type="button" onclick="nextHeroSlide(event)" 
+                                    class="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-slate-900/70 hover:bg-blue-600 text-white backdrop-blur-md border border-white/20 flex items-center justify-center transition-all shadow-xl hover:scale-110"
+                                    title="Next Image">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+                                    </svg>
+                                </button>
+
+                                <!-- Bottom Slide Dots Strip -->
+                                <div class="absolute bottom-2.5 left-1/2 -translate-x-1/2 z-20 flex items-center space-x-1.5 px-3 py-1.5 rounded-full bg-slate-950/70 backdrop-blur-md border border-white/10">
+                                    <button type="button" onclick="setHeroSlide(0)" class="hero-dot w-6 h-2 rounded-full bg-blue-500 transition-all" title="Slide 1"></button>
+                                    <button type="button" onclick="setHeroSlide(1)" class="hero-dot w-2 h-2 rounded-full bg-white/40 hover:bg-white/80 transition-all" title="Slide 2"></button>
+                                    <button type="button" onclick="setHeroSlide(2)" class="hero-dot w-2 h-2 rounded-full bg-white/40 hover:bg-white/80 transition-all" title="Slide 3"></button>
+                                    <button type="button" onclick="setHeroSlide(3)" class="hero-dot w-2 h-2 rounded-full bg-white/40 hover:bg-white/80 transition-all" title="Slide 4"></button>
+                                    <button type="button" onclick="setHeroSlide(4)" class="hero-dot w-2 h-2 rounded-full bg-white/40 hover:bg-white/80 transition-all" title="Slide 5"></button>
+                                    <button type="button" onclick="setHeroSlide(5)" class="hero-dot w-2 h-2 rounded-full bg-white/40 hover:bg-white/80 transition-all" title="Slide 6"></button>
+                                    <button type="button" onclick="setHeroSlide(6)" class="hero-dot w-2 h-2 rounded-full bg-white/40 hover:bg-white/80 transition-all" title="Slide 7"></button>
+                                    <button type="button" onclick="setHeroSlide(7)" class="hero-dot w-2 h-2 rounded-full bg-white/40 hover:bg-white/80 transition-all" title="Slide 8"></button>
+                                </div>
                             </div>
 
-                            <!-- Floating badge -->
-                            <div class="absolute -bottom-6 -left-6 bg-white dark:bg-slate-900 rounded-2xl p-4 shadow-xl border border-slate-100 dark:border-slate-800 flex items-center space-x-3 hidden sm:flex">
-                                <div class="w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <!-- Badge Row – placed below slider, no overlap -->
+                            <div class="mt-3 flex items-center gap-3 px-1">
+                                <div class="w-9 h-9 rounded-xl bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center flex-shrink-0 shadow-sm">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
                                     </svg>
                                 </div>
-                                <div>
-                                    <div class="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">Enterprise Ready</div>
-                                    <div class="text-xs text-slate-500 dark:text-slate-400">ISO 27001 Certified Security</div>
+                                <div class="min-w-0 flex-1">
+                                    <div id="heroFloatingBadgeTitle" class="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider truncate">CCTV &amp; Biometrics</div>
+                                    <div id="heroFloatingBadgeSub" class="text-xs text-slate-500 dark:text-slate-400 truncate">ISO 27001 Certified Security</div>
+                                </div>
+                                <div class="hidden sm:flex items-center gap-1.5 text-[10px] text-slate-400 dark:text-slate-500 font-medium flex-shrink-0">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                    <span>Live System</span>
                                 </div>
                             </div>
                         </div>
@@ -612,7 +801,9 @@
                                 </div>
                                 <div>
                                     <h4 class="text-sm font-bold text-slate-900 dark:text-white">Direct Support Hotline</h4>
-                                    <p class="text-xs text-slate-500 dark:text-slate-400">+91 63809 20970 / 1-888-777-1234</p>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400">
+                                        <a href="tel:+919677257774" class="hover:text-blue-600 transition-colors font-medium">+91 96772 57774</a>
+                                    </p>
                                 </div>
                             </div>
 
@@ -651,7 +842,7 @@
                                         <p>3. You receive an itemized proposal and CAD wiring blueprint.</p>
                                     </div>
                                     <div class="flex flex-col sm:flex-row gap-3 justify-center pt-2">
-                                        <a href="https://wa.me/916380920970?text={{ urlencode('Hello PathSoft Team, I just submitted an on-site audit request. Please confirm my appointment.') }}" target="_blank"
+                                        <a href="https://wa.me/919677257774?text={{ urlencode('Hello PathSoft Team, I just submitted an on-site audit request. Please confirm my appointment.') }}" target="_blank"
                                             class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow flex items-center justify-center space-x-2">
                                             <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.007c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.861.174.086.275.072.376-.044.102-.115.434-.506.549-.68.116-.173.232-.145.39-.087s1.011.477 1.184.564.289.13.332.203c.044.072.044.419-.1.824z"/></svg>
                                             <span>WhatsApp Follow-up</span>
@@ -908,7 +1099,7 @@
                         </li>
                         <li class="flex items-center space-x-2">
                             <svg class="w-3.5 h-3.5 text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
-                            <span>1-888-777-1234</span>
+                            <a href="tel:+919677257774" class="hover:text-white transition-colors">+91 96772 57774</a>
                         </li>
                         <li class="flex items-center space-x-2">
                             <svg class="w-3.5 h-3.5 text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -1223,29 +1414,400 @@
             const modal = document.getElementById('searchModal');
             if (modal) modal.classList.add('hidden');
         }
+    </script>
 
-        // Global Outside Click Handler
+    <!-- 9. FULLSCREEN PICTURE LIGHTBOX MODAL (Slide-by-Slide Viewer) -->
+    <div id="pictureLightboxModal" class="fixed inset-0 z-50 hidden bg-slate-950/95 backdrop-blur-xl flex flex-col justify-between p-4 sm:p-6 transition-all duration-300">
+        <!-- Lightbox Header -->
+        <div class="flex items-center justify-between z-20 pb-3 border-b border-white/10 max-w-7xl mx-auto w-full">
+            <div class="flex items-center space-x-3">
+                <span class="px-3 py-1 rounded-full bg-blue-600/90 text-white text-xs font-bold font-mono tracking-wider shadow-lg" id="lightboxCategory">
+                    CCTV Engineering
+                </span>
+                <span class="text-white/60 text-xs font-mono font-semibold" id="lightboxCounter">1 / 8</span>
+            </div>
+            
+            <div class="flex items-center space-x-2">
+                <button type="button" onclick="toggleLightboxAutoplay()" id="lightboxAutoplayBtn"
+                    class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-semibold flex items-center space-x-1.5 transition-all">
+                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    <span id="lightboxAutoplayLabel">Auto Play</span>
+                </button>
+                <button type="button" onclick="closePictureLightbox()"
+                    class="w-9 h-9 rounded-full bg-white/10 hover:bg-rose-600 text-white flex items-center justify-center transition-all hover:scale-110"
+                    title="Close Viewer (ESC)">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Lightbox Body / Image View -->
+        <div class="relative flex-1 flex items-center justify-center my-2 max-w-7xl mx-auto w-full overflow-hidden">
+            <!-- Prev Button -->
+            <button type="button" onclick="prevLightboxSlide()"
+                class="absolute left-2 sm:left-4 z-30 w-12 h-12 rounded-full bg-slate-900/80 hover:bg-blue-600 text-white backdrop-blur-md border border-white/20 flex items-center justify-center transition-all shadow-2xl hover:scale-110">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
+                </svg>
+            </button>
+
+            <!-- Main Display Image -->
+            <div class="relative max-h-full max-w-full flex flex-col items-center justify-center p-2">
+                <img id="lightboxImage" src="" alt="" 
+                    class="max-h-[62vh] sm:max-h-[70vh] w-auto max-w-full object-contain rounded-xl shadow-2xl transition-all duration-300 transform scale-100">
+                <div class="mt-3 text-center max-w-2xl px-4">
+                    <h3 id="lightboxTitle" class="text-base sm:text-lg font-bold font-heading text-white drop-shadow"></h3>
+                    <p id="lightboxDescription" class="text-xs sm:text-sm text-slate-300 mt-1 line-clamp-2 drop-shadow"></p>
+                </div>
+            </div>
+
+            <!-- Next Button -->
+            <button type="button" onclick="nextLightboxSlide()"
+                class="absolute right-2 sm:right-4 z-30 w-12 h-12 rounded-full bg-slate-900/80 hover:bg-blue-600 text-white backdrop-blur-md border border-white/20 flex items-center justify-center transition-all shadow-2xl hover:scale-110">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Lightbox Footer Thumbnails Strip -->
+        <div class="z-20 pt-3 border-t border-white/10 max-w-5xl mx-auto w-full overflow-x-auto pb-1">
+            <div class="flex items-center justify-center space-x-2 sm:space-x-3 min-w-max px-2" id="lightboxThumbnails">
+                <!-- Dynamically rendered -->
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN JAVASCRIPT CONTROLLERS -->
+    <script>
+        // -------------------------------------------------------------
+        // SLIDES DATA AND CONTROLLER
+        // -------------------------------------------------------------
+        const heroSlidesData = [
+            {
+                src: "{{ asset('images/slides/slide1_technician_cctv_orange_helmet.png') }}",
+                category: "CCTV Engineering",
+                title: "Expert Outdoor CCTV Installation & Junction Wiring",
+                desc: "Certified field engineers ensuring weather-sealed junction boxes, shielded cabling, and rugged commercial mounting.",
+                badgeTitle: "CCTV Installation",
+                badgeSub: "Certified Field Engineers"
+            },
+            {
+                src: "{{ asset('images/slides/slide2_technician_bullet_camera.jpg') }}",
+                category: "Perimeter Security",
+                title: "Precision IP Bullet Camera Optical Calibration",
+                desc: "High-definition focal tuning, weatherproof IP67 outdoor housing, and crystal-clear long-range night vision.",
+                badgeTitle: "Bullet Surveillance",
+                badgeSub: "IP67 Weatherproof Optics"
+            },
+            {
+                src: "{{ asset('images/slides/slide3_technician_dome_camera.png') }}",
+                category: "Commercial & Indoor",
+                title: "Vandal-Resistant 360° AI Dome Camera Setup",
+                desc: "Discreet ceiling and wall mounted dome sensors with AI human tracking and wide panoramic vision.",
+                badgeTitle: "360° AI Dome Cameras",
+                badgeSub: "Motorized PTZ & VMS"
+            },
+            {
+                src: "{{ asset('images/slides/slide4_cctv_specialist_tools.png') }}",
+                category: "Hardware Diagnostics",
+                title: "Commercial Grade Multisensor Hardware & Tools",
+                desc: "Turnkey hardware deployment with rapid testing meters, precision crimping, and zero-downtime maintenance.",
+                badgeTitle: "Turnkey Hardware",
+                badgeSub: "Multi-Sensor Tooling"
+            },
+            {
+                src: "{{ asset('images/slides/slide5_ai_face_recognition_attendance.png') }}",
+                category: "AI Biometrics",
+                title: "AI Face Recognition Access Control & Time Attendance",
+                desc: "5,000 face capacity, live face & mask detection, QR code scanning, and enterprise cloud SDK integration.",
+                badgeTitle: "AI Face Attendance",
+                badgeSub: "Live Face & Mask Detection"
+            },
+            {
+                src: "{{ asset('images/slides/slide6_multi_identification_access_methods.png') }}",
+                category: "Access Control",
+                title: "10 Multi-Modal Identification & Security Combinations",
+                desc: "Seamless authentication using Face Recognition, Palmprint, RFID Card, Biometric Fingerprint, and Secure Passcodes.",
+                badgeTitle: "10-in-1 Access Modes",
+                badgeSub: "Palm, Face, Card & Fingerprint"
+            },
+            {
+                src: "{{ asset('images/slides/slide7_biometric_fingerprint_terminal.png') }}",
+                category: "Door Access",
+                title: "High-Security Standalone Biometric Terminals",
+                desc: "Fast 0.2s optical scanner matching, illuminated keypad, TCP/IP LAN syncing, and emergency electronic door strike relays.",
+                badgeTitle: "Biometric Terminals",
+                badgeSub: "0.2s Fast Matching"
+            },
+            {
+                src: "{{ asset('images/slides/slide8_attendance_management_system.png') }}",
+                category: "Cloud HR Suite",
+                title: "Unified HR Attendance & Real-Time Check-in Suite",
+                desc: "Photo-verified employee check-ins, automated overtime calculations, shift scheduling, and instant payroll export.",
+                badgeTitle: "Attendance Cloud",
+                badgeSub: "Automated Timesheets & Reports"
+            }
+        ];
+
+        let currentHeroIndex = 0;
+        let heroSliderInterval = null;
+        const SLIDE_DURATION = 4500; // 4.5 seconds
+        let isHeroPaused = false;
+
+        function updateHeroSliderUI() {
+            const slides = document.querySelectorAll('.hero-slide');
+            const dots = document.querySelectorAll('.hero-dot');
+            const counter = document.getElementById('heroSlideCounter');
+            const badgeTitle = document.getElementById('heroFloatingBadgeTitle');
+            const badgeSub = document.getElementById('heroFloatingBadgeSub');
+
+            slides.forEach((slide, idx) => {
+                if (idx === currentHeroIndex) {
+                    slide.classList.remove('opacity-0', 'scale-95', 'pointer-events-none', 'z-0');
+                    slide.classList.add('opacity-100', 'scale-100', 'z-10');
+                } else {
+                    slide.classList.remove('opacity-100', 'scale-100', 'z-10');
+                    slide.classList.add('opacity-0', 'scale-95', 'pointer-events-none', 'z-0');
+                }
+            });
+
+            dots.forEach((dot, idx) => {
+                if (idx === currentHeroIndex) {
+                    dot.className = 'hero-dot w-6 h-2 rounded-full bg-blue-500 transition-all shadow-md shadow-blue-500/50';
+                } else {
+                    dot.className = 'hero-dot w-2 h-2 rounded-full bg-white/40 hover:bg-white/80 transition-all';
+                }
+            });
+
+            if (counter) {
+                counter.innerText = `0${currentHeroIndex + 1} / 0${heroSlidesData.length}`;
+            }
+
+            if (badgeTitle && heroSlidesData[currentHeroIndex]) {
+                badgeTitle.innerText = heroSlidesData[currentHeroIndex].badgeTitle;
+            }
+            if (badgeSub && heroSlidesData[currentHeroIndex]) {
+                badgeSub.innerText = heroSlidesData[currentHeroIndex].badgeSub;
+            }
+
+            resetHeroProgress();
+        }
+
+        function setHeroSlide(index) {
+            currentHeroIndex = (index + heroSlidesData.length) % heroSlidesData.length;
+            updateHeroSliderUI();
+        }
+
+        function nextHeroSlide(e) {
+            if (e) e.stopPropagation();
+            setHeroSlide(currentHeroIndex + 1);
+        }
+
+        function prevHeroSlide(e) {
+            if (e) e.stopPropagation();
+            setHeroSlide(currentHeroIndex - 1);
+        }
+
+        function resetHeroProgress() {
+            const bar = document.getElementById('heroSliderProgress');
+            if (bar) {
+                bar.style.transition = 'none';
+                bar.style.width = '0%';
+                setTimeout(() => {
+                    if (!isHeroPaused && bar) {
+                        bar.style.transition = `width ${SLIDE_DURATION}ms linear`;
+                        bar.style.width = '100%';
+                    }
+                }, 50);
+            }
+        }
+
+        function startHeroSlider() {
+            clearInterval(heroSliderInterval);
+            resetHeroProgress();
+            heroSliderInterval = setInterval(() => {
+                if (!isHeroPaused) {
+                    setHeroSlide(currentHeroIndex + 1);
+                }
+            }, SLIDE_DURATION);
+        }
+
+        function pauseHeroSlider() {
+            isHeroPaused = true;
+            const bar = document.getElementById('heroSliderProgress');
+            if (bar) {
+                const computedWidth = window.getComputedStyle(bar).width;
+                bar.style.transition = 'none';
+                bar.style.width = computedWidth;
+            }
+        }
+
+        function resumeHeroSlider() {
+            isHeroPaused = false;
+            resetHeroProgress();
+        }
+
+        // Initialize slider on DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', () => {
+            updateHeroSliderUI();
+            startHeroSlider();
+            renderLightboxThumbnails();
+        });
+
+        // -------------------------------------------------------------
+        // LIGHTBOX VIEWER CONTROLLER
+        // -------------------------------------------------------------
+        let currentLightboxIndex = 0;
+        let lightboxAutoplayInterval = null;
+
+        function openPictureLightbox(index) {
+            pauseHeroSlider();
+            currentLightboxIndex = index;
+            const modal = document.getElementById('pictureLightboxModal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+                updateLightboxUI();
+            }
+        }
+
+        function closePictureLightbox() {
+            const modal = document.getElementById('pictureLightboxModal');
+            if (modal) {
+                modal.classList.add('hidden');
+                document.body.style.overflow = '';
+                if (lightboxAutoplayInterval) {
+                    clearInterval(lightboxAutoplayInterval);
+                    lightboxAutoplayInterval = null;
+                    const btn = document.getElementById('lightboxAutoplayLabel');
+                    if (btn) btn.innerText = 'Auto Play';
+                }
+                resumeHeroSlider();
+            }
+        }
+
+        function updateLightboxUI() {
+            const data = heroSlidesData[currentLightboxIndex];
+            if (!data) return;
+
+            const img = document.getElementById('lightboxImage');
+            const cat = document.getElementById('lightboxCategory');
+            const title = document.getElementById('lightboxTitle');
+            const desc = document.getElementById('lightboxDescription');
+            const counter = document.getElementById('lightboxCounter');
+
+            if (img) {
+                img.style.opacity = '0';
+                img.style.transform = 'scale(0.96)';
+                setTimeout(() => {
+                    img.src = data.src;
+                    img.alt = data.title;
+                    img.style.opacity = '1';
+                    img.style.transform = 'scale(1)';
+                }, 150);
+            }
+
+            if (cat) cat.innerText = data.category;
+            if (title) title.innerText = data.title;
+            if (desc) desc.innerText = data.desc;
+            if (counter) counter.innerText = `${currentLightboxIndex + 1} / ${heroSlidesData.length}`;
+
+            // Highlight active thumbnail
+            const thumbs = document.querySelectorAll('.lightbox-thumb');
+            thumbs.forEach((thumb, idx) => {
+                if (idx === currentLightboxIndex) {
+                    thumb.className = 'lightbox-thumb w-14 h-10 sm:w-16 sm:h-12 rounded-lg border-2 border-blue-500 overflow-hidden cursor-pointer shadow-lg transform scale-105 transition-all opacity-100';
+                } else {
+                    thumb.className = 'lightbox-thumb w-14 h-10 sm:w-16 sm:h-12 rounded-lg border border-white/20 overflow-hidden cursor-pointer opacity-50 hover:opacity-90 transition-all';
+                }
+            });
+        }
+
+        function nextLightboxSlide() {
+            currentLightboxIndex = (currentLightboxIndex + 1) % heroSlidesData.length;
+            updateLightboxUI();
+        }
+
+        function prevLightboxSlide() {
+            currentLightboxIndex = (currentLightboxIndex - 1 + heroSlidesData.length) % heroSlidesData.length;
+            updateLightboxUI();
+        }
+
+        function renderLightboxThumbnails() {
+            const container = document.getElementById('lightboxThumbnails');
+            if (!container) return;
+
+            container.innerHTML = heroSlidesData.map((slide, idx) => `
+                <div class="lightbox-thumb w-14 h-10 sm:w-16 sm:h-12 rounded-lg border border-white/20 overflow-hidden cursor-pointer opacity-50 hover:opacity-90 transition-all" onclick="currentLightboxIndex = ${idx}; updateLightboxUI();">
+                    <img src="${slide.src}" alt="${slide.title}" class="w-full h-full object-cover">
+                </div>
+            `).join('');
+        }
+
+        function toggleLightboxAutoplay() {
+            const label = document.getElementById('lightboxAutoplayLabel');
+            if (lightboxAutoplayInterval) {
+                clearInterval(lightboxAutoplayInterval);
+                lightboxAutoplayInterval = null;
+                if (label) label.innerText = 'Auto Play';
+            } else {
+                lightboxAutoplayInterval = setInterval(() => {
+                    nextLightboxSlide();
+                }, 3500);
+                if (label) label.innerText = 'Pause';
+            }
+        }
+
+        // -------------------------------------------------------------
+        // GLOBAL LISTENERS & MODALS
+        // -------------------------------------------------------------
+        // Override the window.onclick to also handle lightbox
         window.onclick = function(event) {
             const inquireModal = document.getElementById('inquireModal');
             const searchModal = document.getElementById('searchModal');
+            const lightboxModal = document.getElementById('pictureLightboxModal');
             const menuDropdownContainer = document.getElementById('navMenuDropdownContainer');
 
             if (event.target === inquireModal) closeInquireModal();
             if (event.target === searchModal) closeSearchModal();
+            if (event.target === lightboxModal) closePictureLightbox();
 
             if (menuDropdownContainer && !menuDropdownContainer.contains(event.target)) {
                 closeNavMenuDropdown();
             }
         };
 
-        // ESC key handler
+        // Keyboard navigation (ESC to close, Left/Right arrows to slide)
         document.addEventListener('keydown', function(event) {
+            const lightboxModal = document.getElementById('pictureLightboxModal');
+            const isLightboxOpen = lightboxModal && !lightboxModal.classList.contains('hidden');
+
             if (event.key === 'Escape') {
-                closeInquireModal();
-                closeSearchModal();
-                closeNavMenuDropdown();
+                if (isLightboxOpen) {
+                    closePictureLightbox();
+                } else {
+                    closeInquireModal();
+                    closeSearchModal();
+                    closeNavMenuDropdown();
+                }
+            } else if (event.key === 'ArrowRight') {
+                if (isLightboxOpen) {
+                    nextLightboxSlide();
+                } else {
+                    nextHeroSlide();
+                }
+            } else if (event.key === 'ArrowLeft') {
+                if (isLightboxOpen) {
+                    prevLightboxSlide();
+                } else {
+                    prevHeroSlide();
+                }
             }
         });
     </script>
 </body>
 </html>
+

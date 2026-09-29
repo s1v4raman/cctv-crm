@@ -37,6 +37,7 @@ use App\Http\Controllers\JobCostingController;
 use App\Http\Controllers\AccountsReceivableController;
 use App\Http\Controllers\AccountsPayableController;
 use App\Http\Controllers\PettyCashController;
+use App\Http\Controllers\ModuleHubController;
 
 // Mobile Phone Remote Barcode Scanner Companion & Live Sync
 Route::get('/mobile-scanner/{token?}', [MobileScannerSyncController::class, 'show'])->name('mobile.scanner');
@@ -257,9 +258,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ================================================================
     Route::middleware(['internal'])->group(function () {
 
-        // Dashboard
+        // Dashboard & Category Hubs
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/dashboard/data', [DashboardController::class, 'data'])->name('dashboard.data');
+        Route::get('/employee-workforce', [ModuleHubController::class, 'employeeHub'])->name('employee.hub');
+        Route::get('/finance-accounting', [ModuleHubController::class, 'financeHub'])->name('finance.hub');
 
         // Operations Calendar & Dispatch
         Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');

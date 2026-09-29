@@ -132,6 +132,25 @@ class PurchaseOrderController extends Controller
             return $purchaseOrder;
         });
 
+        // Dispatch Purchase Order notification to Supplier
+        try {
+            $po->load(['supplier', 'items']);
+            if ($po->supplier) {
+                $alertService = app(\App\Services\AlertNotificationService::class);
+                $alertService->sendAlert('po_created', $po->supplier, [
+                    'supplier_name'          => $po->supplier->company_name ?: $po->supplier->name,
+                    'po_number'              => $po->po_number,
+                    'order_date'             => \Carbon\Carbon::parse($po->order_date)->format('d M Y'),
+                    'total_amount'           => '₹' . number_format((float) $po->total, 2),
+                    'item_count'             => $po->items->count(),
+                    'expected_delivery_date' => $po->expected_delivery_date ? \Carbon\Carbon::parse($po->expected_delivery_date)->format('d M Y') : 'Immediate',
+                    'po_link'                => route('purchase-orders.show', $po),
+                ], $po);
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning("Purchase Order creation alert failed: " . $e->getMessage());
+        }
+
         return redirect()->route('purchase-orders.show', $po)->with('status', "Purchase Order {$po->po_number} created successfully.");
     }
 
@@ -160,6 +179,23 @@ class PurchaseOrderController extends Controller
         }
 
         $purchaseOrder->inwardStock($receivedQuantities, auth()->id());
+
+        // Dispatch Goods Received Note alert to Supplier
+        try {
+            $purchaseOrder->load('supplier');
+            if ($purchaseOrder->supplier) {
+                $alertService = app(\App\Services\AlertNotificationService::class);
+                $alertService->sendAlert('po_goods_received', $purchaseOrder->supplier, [
+                    'supplier_name'   => $purchaseOrder->supplier->company_name ?: $purchaseOrder->supplier->name,
+                    'po_number'       => $purchaseOrder->po_number,
+                    'total_amount'    => '₹' . number_format((float) $purchaseOrder->total, 2),
+                    'received_status' => ucfirst(str_replace('_', ' ', $purchaseOrder->status)),
+                    'received_date'   => now()->format('d M Y, h:i A'),
+                ], $purchaseOrder);
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning("Purchase Order goods receipt alert failed: " . $e->getMessage());
+        }
 
         return back()->with('status', 'Shipment items inwarded into central warehouse inventory.');
     }

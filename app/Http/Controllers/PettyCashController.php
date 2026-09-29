@@ -54,7 +54,7 @@ class PettyCashController extends Controller
             ->limit(10)
             ->get();
 
-        $activeJobs = InstallationJob::with('lead')->whereIn('status', ['scheduled', 'in_progress'])->get();
+        $activeJobs = InstallationJob::with(['quotation.lead', 'lead'])->whereIn('status', ['scheduled', 'in_progress'])->get();
         $activeTickets = ServiceTicket::with('lead')->whereIn('status', ['open', 'assigned', 'in_progress'])->get();
         $pendingInvoices = Invoice::with('quotation.lead')->whereIn('status', ['issued', 'partially_paid'])->get();
 

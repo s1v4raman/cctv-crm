@@ -57,7 +57,7 @@ class SiteSurveyController extends Controller
         return view('site_surveys.create', compact('leads', 'technicians'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request, \App\Services\AlertNotificationService $alertService)
     {
         $validated = $request->validate([
             'lead_id'        => ['required', 'exists:leads,id'],
@@ -83,6 +83,21 @@ class SiteSurveyController extends Controller
             'status'         => $validated['status'] ?? 'pending',
         ]);
 
+        try {
+            $survey->load(['lead', 'surveyedBy']);
+            $alertService->sendAlert('survey_scheduled', $survey->lead ?? $survey, [
+                'customer_name'    => $survey->contact_person ?: ($survey->lead?->customer_name ?? 'Customer'),
+                'survey_date'      => \Carbon\Carbon::parse($survey->survey_date)->format('d M Y, h:i A'),
+                'site_address'     => $survey->site_address ?: ($survey->lead?->site_address ?? 'Site'),
+                'technician_name'  => $survey->surveyedBy?->name ?? 'Field Engineer',
+                'technician_phone' => $survey->surveyedBy?->phone ?? 'Support Line',
+                'contact_person'   => $survey->contact_person ?? 'Customer',
+                'notes'            => $survey->visit_notes ?? 'Site inspection & feasibility assessment',
+            ], $survey);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning("Site survey scheduled alert failed: " . $e->getMessage());
+        }
+
         return redirect()->route('site-surveys.show', $survey)
             ->with('status', 'Site survey scheduled successfully.');
     }
@@ -101,7 +116,7 @@ class SiteSurveyController extends Controller
         return view('site_surveys.edit', compact('siteSurvey', 'leads', 'technicians'));
     }
 
-    public function update(Request $request, SiteSurvey $siteSurvey)
+    public function update(Request $request, SiteSurvey $siteSurvey, \App\Services\AlertNotificationService $alertService)
     {
         $validated = $request->validate([
             'lead_id'        => ['required', 'exists:leads,id'],
@@ -114,7 +129,23 @@ class SiteSurveyController extends Controller
             'status'         => ['required', 'in:pending,completed,cancelled'],
         ]);
 
+        $oldStatus = $siteSurvey->status;
         $siteSurvey->update($validated);
+
+        if ($validated['status'] === 'completed' && $oldStatus !== 'completed') {
+            try {
+                $siteSurvey->load(['lead', 'surveyedBy']);
+                $alertService->sendAlert('survey_completed', $siteSurvey->lead ?? $siteSurvey, [
+                    'customer_name'   => $siteSurvey->contact_person ?: ($siteSurvey->lead?->customer_name ?? 'Customer'),
+                    'survey_date'     => \Carbon\Carbon::parse($siteSurvey->survey_date)->format('d M Y'),
+                    'site_address'    => $siteSurvey->site_address ?: ($siteSurvey->lead?->site_address ?? 'Site'),
+                    'technician_name' => $siteSurvey->surveyedBy?->name ?? 'Field Engineer',
+                    'notes'           => $siteSurvey->visit_notes ?? 'Site assessment completed.',
+                ], $siteSurvey);
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::warning("Site survey completion alert failed: " . $e->getMessage());
+            }
+        }
 
         return redirect()->route('site-surveys.show', $siteSurvey)
             ->with('status', 'Site survey schedule updated successfully.');

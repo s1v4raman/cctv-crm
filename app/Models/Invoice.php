@@ -61,6 +61,23 @@ class Invoice extends Model
         return max((float) ($this->total - $this->amount_paid), 0.0);
     }
 
+    public function getBalanceDueAttribute(): float
+    {
+        return $this->balanceDue();
+    }
+
+    public function getLeadAttribute()
+    {
+        return $this->installationJob?->quotation?->lead ?? $this->quotation?->lead;
+    }
+
+    public function getCustomerNameAttribute(): string
+    {
+        return $this->lead?->customer_name 
+            ?? $this->lead?->name 
+            ?? 'Customer #' . $this->id;
+    }
+
     public function recalculatePaymentStatus(): void
     {
         $paid = (float) $this->payments()->sum('amount');

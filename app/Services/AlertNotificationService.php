@@ -30,10 +30,24 @@ class AlertNotificationService
     ): array {
         $template = NotificationTemplate::getTemplate($eventKey);
 
-        $recipientName = is_object($recipient) ? ($recipient->customer_name ?? $recipient->name ?? 'Customer') : ($variables['customer_name'] ?? 'Customer');
-        $recipientPhone = is_object($recipient) ? ($recipient->phone ?? null) : ($variables['recipient_phone'] ?? null);
-        $recipientEmail = is_object($recipient) ? ($recipient->email ?? null) : ($variables['recipient_email'] ?? null);
-        $recipientType = is_object($recipient) && method_exists($recipient, 'isTechnician') && $recipient->isTechnician() ? 'technician' : 'customer';
+        $recipientName = is_object($recipient) ? ($recipient->customer_name ?? $recipient->company_name ?? $recipient->name ?? 'Customer') : ($variables['customer_name'] ?? $variables['employee_name'] ?? $variables['supplier_name'] ?? 'Customer');
+        $recipientPhone = is_object($recipient) ? ($recipient->phone ?? $recipient->contact_phone ?? null) : ($variables['recipient_phone'] ?? $variables['phone'] ?? null);
+        $recipientEmail = is_object($recipient) ? ($recipient->email ?? $recipient->contact_email ?? null) : ($variables['recipient_email'] ?? $variables['email'] ?? null);
+
+        if (!$recipientPhone && !empty($variables['phone'])) {
+            $recipientPhone = $variables['phone'];
+        }
+        if (!$recipientEmail && !empty($variables['email'])) {
+            $recipientEmail = $variables['email'];
+        }
+
+        $recipientType = $variables['recipient_type'] ?? (
+            is_object($recipient) ? (
+                method_exists($recipient, 'isTechnician') && $recipient->isTechnician() ? 'technician' :
+                (isset($recipient->role) && in_array($recipient->role, ['admin', 'staff', 'technician']) ? $recipient->role :
+                ($recipient instanceof \App\Models\Supplier ? 'vendor' : 'customer'))
+            ) : 'customer'
+        );
 
         $logs = [];
 

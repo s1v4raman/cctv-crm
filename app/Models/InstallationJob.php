@@ -26,6 +26,11 @@ class InstallationJob extends Model
         return $this->belongsTo(Quotation::class);
     }
 
+    public function lead()
+    {
+        return $this->hasOneThrough(Lead::class, Quotation::class, 'id', 'id', 'quotation_id', 'lead_id');
+    }
+
     public function assignedTechnician()
     {
         return $this->belongsTo(User::class, 'assigned_technician_id');

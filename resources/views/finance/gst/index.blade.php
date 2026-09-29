@@ -37,7 +37,7 @@
                 <!-- Export Menu Dropdown -->
                 <div class="relative" x-data="{ open: false }">
                     <button @click="open = !open" @click.outside="open = false" type="button"
-                            class="inline-flex items-center gap-2 px-3.5 py-2 bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 text-xs font-bold rounded-xl shadow-md transition">
+                            class="inline-flex items-center gap-2 px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-md shadow-indigo-600/20 transition">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                         <span>Export Return</span>
                         <svg class="w-3.5 h-3.5 ml-0.5 opacity-70" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
@@ -97,6 +97,9 @@
     </x-slot>
 
     <div class="py-6 space-y-6">
+        {{-- Finance Category Sub-Navigation --}}
+        <x-finance-subnav active="gst" />
+
         @if (session('status'))
             <div class="p-4 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800/80 rounded-2xl flex items-center justify-between shadow-sm animate-in fade-in duration-200">
                 <div class="flex items-center gap-3">
@@ -109,26 +112,26 @@
         @endif
 
         <!-- Filing Status Bar -->
-        <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 text-white rounded-3xl p-5 md:p-6 shadow-xl border border-slate-700/50 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 md:p-6 shadow-sm flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div class="space-y-1">
                 <div class="flex items-center gap-2.5">
-                    <span class="text-xs font-bold uppercase tracking-wider text-amber-400">Return Period Status</span>
-                    <span class="text-xs text-slate-400">•</span>
-                    <span class="text-xs font-semibold text-slate-300">{{ Carbon\Carbon::parse($selectedMonth.'-01')->format('F Y') }}</span>
+                    <span class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Return Period Status</span>
+                    <span class="text-xs text-slate-300 dark:text-slate-600">•</span>
+                    <span class="text-xs font-semibold text-slate-600 dark:text-slate-300">{{ Carbon\Carbon::parse($selectedMonth.'-01')->format('F Y') }}</span>
                 </div>
-                <h3 class="text-xl md:text-2xl font-black text-white flex items-center gap-3">
+                <h3 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white flex flex-wrap items-center gap-3">
                     <span>GST Return Summary</span>
                     @if($filing && $filing->gstr3b_status === 'filed')
-                        <span class="px-3 py-1 text-xs font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 rounded-full flex items-center gap-1.5">
-                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                        <span class="px-3 py-1 text-xs font-black uppercase tracking-wider bg-emerald-50 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/40 rounded-full flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
                             Return Filed & Discharged
                         </span>
                     @elseif($filing && $filing->gstr3b_status === 'reconciled')
-                        <span class="px-3 py-1 text-xs font-black uppercase tracking-wider bg-blue-500/20 text-blue-400 border border-blue-500/40 rounded-full">
+                        <span class="px-3 py-1 text-xs font-black uppercase tracking-wider bg-blue-50 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300 border border-blue-200 dark:border-blue-500/40 rounded-full">
                             Reconciled & Ready to File
                         </span>
                     @else
-                        <span class="px-3 py-1 text-xs font-black uppercase tracking-wider bg-amber-500/20 text-amber-400 border border-amber-500/40 rounded-full">
+                        <span class="px-3 py-1 text-xs font-black uppercase tracking-wider bg-amber-50 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300 border border-amber-200 dark:border-amber-500/40 rounded-full">
                             Draft Computation Pending
                         </span>
                     @endif
@@ -136,22 +139,22 @@
             </div>
 
             <div class="flex flex-wrap items-center gap-3">
-                <div class="px-4 py-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/10 text-right">
-                    <div class="text-[10px] font-bold text-slate-300 uppercase tracking-wider">GSTR-1 Status</div>
-                    <div class="text-xs font-black text-white uppercase mt-0.5">
+                <div class="px-4 py-2.5 bg-slate-50 dark:bg-slate-800/80 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 text-right">
+                    <div class="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">GSTR-1 Status</div>
+                    <div class="text-xs font-black text-slate-900 dark:text-white uppercase mt-0.5">
                         {{ $filing ? ucfirst($filing->gstr1_status) : 'Pending' }}
                     </div>
                 </div>
-                <div class="px-4 py-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/10 text-right">
-                    <div class="text-[10px] font-bold text-slate-300 uppercase tracking-wider">GSTR-3B Status</div>
-                    <div class="text-xs font-black text-white uppercase mt-0.5">
+                <div class="px-4 py-2.5 bg-slate-50 dark:bg-slate-800/80 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 text-right">
+                    <div class="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">GSTR-3B Status</div>
+                    <div class="text-xs font-black text-slate-900 dark:text-white uppercase mt-0.5">
                         {{ $filing ? ucfirst($filing->gstr3b_status) : 'Pending' }}
                     </div>
                 </div>
                 @if($filing && $filing->challan_no)
-                    <div class="px-4 py-2 bg-emerald-950/60 backdrop-blur-md rounded-2xl border border-emerald-500/30 text-right">
-                        <div class="text-[10px] font-bold text-emerald-300 uppercase tracking-wider">Challan Ref</div>
-                        <div class="text-xs font-mono font-black text-emerald-400 mt-0.5">{{ $filing->challan_no }}</div>
+                    <div class="px-4 py-2.5 bg-emerald-50 dark:bg-emerald-950/60 rounded-2xl border border-emerald-200 dark:border-emerald-800/60 text-right">
+                        <div class="text-[10px] font-bold text-emerald-700 dark:text-emerald-300 uppercase tracking-wider">Challan Ref</div>
+                        <div class="text-xs font-mono font-black text-emerald-900 dark:text-emerald-300 mt-0.5">{{ $filing->challan_no }}</div>
                     </div>
                 @endif
             </div>

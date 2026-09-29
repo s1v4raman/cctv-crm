@@ -62,7 +62,7 @@ class RoleDataFlowTest extends TestCase
 
         $response = $this->actingAs($staff)->get('/service-tickets');
         $response->assertStatus(200);
-        $response->assertSee('TKT-2026-1082');
+        $response->assertSee('TKT-2026-101');
     }
 
     public function test_technician_can_access_technician_portal_and_assigned_tasks()
@@ -97,7 +97,7 @@ class RoleDataFlowTest extends TestCase
         // Service Tickets
         $response = $this->actingAs($customer)->get('/portal/tickets');
         $response->assertStatus(200);
-        $response->assertSee('TKT-2026-1082');
+        $response->assertSee('TKT-2026-101');
 
         // Invoices & Billing
         $response = $this->actingAs($customer)->get('/portal/invoices');

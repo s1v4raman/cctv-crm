@@ -71,9 +71,11 @@ class InstallationJobController extends Controller
         return view('jobs.show', compact('job', 'technicians'));
     }
 
-    public function update(UpdateJobRequest $request, InstallationJob $job)
+    public function update(UpdateJobRequest $request, InstallationJob $job, \App\Services\AlertNotificationService $alertService)
     {
         $data = $request->validated();
+        $oldScheduled = $job->scheduled_date;
+        $oldTech = $job->assigned_technician_id;
 
         // Automatic status workflow transition:
         // Only override if the status is one of the scheduling/assigning states: pending, scheduled, assigned
@@ -88,6 +90,26 @@ class InstallationJobController extends Controller
         }
 
         $job->update($data);
+
+        // Dispatch notification if scheduled date or assigned tech changed
+        if (in_array($job->status, ['scheduled', 'assigned']) && ($oldScheduled != $job->scheduled_date || $oldTech != $job->assigned_technician_id)) {
+            $job->load(['quotation.lead', 'assignedTechnician']);
+            if ($job->quotation?->lead) {
+                try {
+                    $alertService->sendAlert('job_scheduled', $job->quotation->lead, [
+                        'customer_name'    => $job->quotation->lead->customer_name,
+                        'job_no'           => $job->job_no,
+                        'scheduled_date'   => $job->scheduled_date ? \Carbon\Carbon::parse($job->scheduled_date)->format('d M Y, h:i A') : 'Scheduled Date',
+                        'technician_name'  => $job->assignedTechnician?->name ?? 'Lead Technician',
+                        'technician_phone' => $job->assignedTechnician?->phone ?? 'Support Line',
+                        'site_address'     => $job->quotation->lead->site_address ?? 'Site',
+                    ], $job);
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::warning("Job scheduled alert failed: " . $e->getMessage());
+                }
+            }
+        }
+
         return back()->with('status', 'Job updated.');
     }
 }

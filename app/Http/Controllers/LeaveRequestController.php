@@ -151,24 +151,19 @@ class LeaveRequestController extends Controller
             'status'           => 'pending',
         ]);
 
-        // Audit notification log
+        // Multi-channel alert dispatch for submitted leave request
         try {
-            NotificationLog::create([
-                'channel'        => 'system',
-                'event_type'     => 'leave_applied',
-                'recipient_type' => 'admin',
-                'recipient_name' => 'Admin Team',
-                'subject'        => "New Leave Request from " . Auth::user()->name,
-                'message_body'   => Auth::user()->name . " applied for {$leave->days_count} day(s) {$leave->leave_type_label} from {$startDate->format('d M Y')} to {$endDate->format('d M Y')}.",
-                'action_url'     => route('leaves.index', ['tab' => 'pending']),
-                'status'         => 'sent',
-                'reference_type' => get_class($leave),
-                'reference_id'   => $leave->id,
-                'sent_at'        => now(),
-                'created_by'     => Auth::id(),
-            ]);
+            $alertService = app(\App\Services\AlertNotificationService::class);
+            $alertService->sendAlert('leave_submitted', Auth::user(), [
+                'employee_name' => Auth::user()->name,
+                'leave_type'    => $leave->leave_type_label,
+                'start_date'    => $startDate->format('d M Y'),
+                'end_date'      => $endDate->format('d M Y'),
+                'days_count'    => $leave->days_count,
+                'reason'        => $validated['reason'],
+            ], $leave);
         } catch (\Throwable $e) {
-            // Non-blocking log
+            \Illuminate\Support\Facades\Log::warning("Leave submission alert failed: " . $e->getMessage());
         }
 
         return redirect()
@@ -223,26 +218,23 @@ class LeaveRequestController extends Controller
             }
         });
 
-        // Audit notification log to employee
+        $leave->load('user');
+
+        // Multi-channel alert to employee
         try {
-            NotificationLog::create([
-                'channel'         => 'system',
-                'event_type'      => 'leave_approved',
-                'recipient_type'  => 'employee',
-                'recipient_name'  => $leave->user->name,
-                'recipient_email' => $leave->user->email,
-                'recipient_phone' => $leave->user->salaryStructure?->notes ?? null,
-                'subject'         => "Leave Request Approved (Ref #LR-{$leave->id})",
-                'message_body'    => "Your request for {$leave->days_count} day(s) {$leave->leave_type_label} has been approved by " . Auth::user()->name . ".",
-                'action_url'      => route('leaves.index', ['tab' => 'my_leaves']),
-                'status'          => 'sent',
-                'reference_type'  => get_class($leave),
-                'reference_id'    => $leave->id,
-                'sent_at'         => now(),
-                'created_by'      => Auth::id(),
-            ]);
+            $alertService = app(\App\Services\AlertNotificationService::class);
+            $alertService->sendAlert('leave_status_updated', $leave->user ?? Auth::user(), [
+                'employee_name'  => $leave->user?->name ?? 'Employee',
+                'leave_type'     => $leave->leave_type_label,
+                'start_date'     => \Carbon\Carbon::parse($leave->start_date)->format('d M Y'),
+                'end_date'       => \Carbon\Carbon::parse($leave->end_date)->format('d M Y'),
+                'days_count'     => $leave->days_count,
+                'status'         => 'Approved',
+                'actioner_name'  => Auth::user()->name,
+                'review_remarks' => 'Leave approved and calendar/attendance updated.',
+            ], $leave);
         } catch (\Throwable $e) {
-            // Non-blocking log
+            \Illuminate\Support\Facades\Log::warning("Leave approval alert failed: " . $e->getMessage());
         }
 
         return back()->with('status', "Leave Request #LR-{$leave->id} for {$leave->user->name} has been APPROVED and attendance updated.");
@@ -272,25 +264,23 @@ class LeaveRequestController extends Controller
             'rejection_reason' => $validated['rejection_reason'],
         ]);
 
-        // Audit notification log to employee
+        $leave->load('user');
+
+        // Multi-channel alert to employee
         try {
-            NotificationLog::create([
-                'channel'         => 'system',
-                'event_type'      => 'leave_rejected',
-                'recipient_type'  => 'employee',
-                'recipient_name'  => $leave->user->name,
-                'recipient_email' => $leave->user->email,
-                'subject'         => "Leave Request Rejected (Ref #LR-{$leave->id})",
-                'message_body'    => "Your request for {$leave->days_count} day(s) {$leave->leave_type_label} was rejected. Reason: " . $validated['rejection_reason'],
-                'action_url'      => route('leaves.index', ['tab' => 'my_leaves']),
-                'status'          => 'sent',
-                'reference_type'  => get_class($leave),
-                'reference_id'    => $leave->id,
-                'sent_at'         => now(),
-                'created_by'      => Auth::id(),
-            ]);
+            $alertService = app(\App\Services\AlertNotificationService::class);
+            $alertService->sendAlert('leave_status_updated', $leave->user ?? Auth::user(), [
+                'employee_name'  => $leave->user?->name ?? 'Employee',
+                'leave_type'     => $leave->leave_type_label,
+                'start_date'     => \Carbon\Carbon::parse($leave->start_date)->format('d M Y'),
+                'end_date'       => \Carbon\Carbon::parse($leave->end_date)->format('d M Y'),
+                'days_count'     => $leave->days_count,
+                'status'         => 'Rejected',
+                'actioner_name'  => Auth::user()->name,
+                'review_remarks' => $validated['rejection_reason'],
+            ], $leave);
         } catch (\Throwable $e) {
-            // Non-blocking log
+            \Illuminate\Support\Facades\Log::warning("Leave rejection alert failed: " . $e->getMessage());
         }
 
         return back()->with('status', "Leave Request #LR-{$leave->id} has been rejected.");

@@ -313,12 +313,34 @@ class FinanceController extends Controller
             'notes'             => ['nullable', 'string', 'max:255'],
         ]);
 
+        $oldStatus = $payroll->status;
+
         $payroll->update([
             'status'            => $validated['status'],
             'payment_date'      => $validated['status'] === 'paid' ? ($validated['payment_date'] ?? now()->toDateString()) : null,
             'payment_reference' => $validated['payment_reference'] ?? $payroll->payment_reference,
             'notes'             => $validated['notes'] ?? $payroll->notes,
         ]);
+
+        if ($validated['status'] === 'paid' && $oldStatus !== 'paid') {
+            try {
+                $payroll->load(['user.salaryStructure']);
+                if ($payroll->user) {
+                    $alertService = app(\App\Services\AlertNotificationService::class);
+                    $paymentMethod = $payroll->user->salaryStructure?->payment_method ?? 'Bank Transfer';
+                    $alertService->sendAlert('salary_disbursed', $payroll->user, [
+                        'employee_name'     => $payroll->user->name,
+                        'payroll_number'    => $payroll->payroll_number,
+                        'period_month'      => \Carbon\Carbon::parse($payroll->period_start)->format('F Y'),
+                        'net_salary'        => '₹' . number_format((float) $payroll->net_salary, 2),
+                        'payment_method'    => ucfirst(str_replace('_', ' ', $paymentMethod)),
+                        'payment_reference' => $payroll->payment_reference ?: 'Direct Credit',
+                    ], $payroll);
+                }
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::warning("Salary disbursal alert failed: " . $e->getMessage());
+            }
+        }
 
         return back()->with('status', "✅ Payroll slip #{$payroll->payroll_number} marked as " . ucfirst($payroll->status) . ".");
     }

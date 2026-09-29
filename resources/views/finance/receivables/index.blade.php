@@ -40,7 +40,7 @@
                 </a>
 
                 <a href="{{ route('finance.receivables.export-pdf') }}"
-                   class="inline-flex items-center gap-2 px-3.5 py-2 bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 text-xs font-bold rounded-xl shadow-md transition">
+                   class="inline-flex items-center gap-2 px-3.5 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-xl shadow-xs transition">
                     <svg class="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
                     <span>Download Aging PDF</span>
                 </a>
@@ -70,6 +70,9 @@
                 </div>
             </div>
         @endif
+
+        {{-- Finance Category Sub-Navigation --}}
+        <x-finance-subnav active="receivables" />
 
         <!-- KPI Metric Cards Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
@@ -147,17 +150,17 @@
             </div>
 
             <!-- 6. Days Sales Outstanding (DSO) -->
-            <div class="bg-gradient-to-br from-indigo-900 to-slate-900 text-white border border-indigo-800/50 rounded-3xl p-5 shadow-sm relative overflow-hidden group">
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 rounded-3xl p-5 shadow-sm relative overflow-hidden group hover:border-indigo-500/40 transition">
                 <div class="flex items-center justify-between">
-                    <span class="text-[11px] font-bold text-indigo-300 uppercase tracking-wider">DSO (Collection Speed)</span>
-                    <span class="p-1.5 bg-indigo-800/60 text-indigo-200 rounded-lg">
+                    <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">DSO (Collection Speed)</span>
+                    <span class="p-1.5 bg-indigo-50 dark:bg-indigo-900/60 text-indigo-600 dark:text-indigo-200 rounded-lg">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     </span>
                 </div>
-                <div class="text-2xl font-black text-white mt-2">
-                    {{ $summary['dso_days'] }} <span class="text-xs font-normal text-indigo-300">Days</span>
+                <div class="text-2xl font-black text-slate-900 dark:text-white mt-2">
+                    {{ $summary['dso_days'] }} <span class="text-xs font-normal text-slate-500 dark:text-slate-400">Days</span>
                 </div>
-                <div class="mt-2 text-[11px] font-medium text-indigo-200/80">
+                <div class="mt-2 text-[11px] font-medium {{ $summary['dso_days'] <= 45 ? 'text-emerald-600 dark:text-emerald-400' : ($summary['dso_days'] <= 75 ? 'text-amber-600 dark:text-amber-400' : 'text-rose-600 dark:text-rose-400') }}">
                     {{ $summary['dso_days'] <= 45 ? '✓ Healthy cash velocity' : ($summary['dso_days'] <= 75 ? '⚠ Moderate collection delay' : '🚨 High collection drag') }}
                 </div>
             </div>

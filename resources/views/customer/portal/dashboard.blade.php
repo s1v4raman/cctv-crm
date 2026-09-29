@@ -625,7 +625,7 @@
                             <div class="space-y-2 pt-1 text-xs">
                                 <div class="flex items-center justify-between p-2.5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700">
                                     <span class="text-slate-500 dark:text-slate-400 font-semibold">Support Desk:</span>
-                                    <strong class="text-blue-600 dark:text-blue-400 font-mono">+91 98765 43210</strong>
+                                    <a href="tel:+919677257774" class="text-blue-600 dark:text-blue-400 font-mono font-bold hover:underline">+91 96772 57774</a>
                                 </div>
                                 <div class="flex items-center justify-between p-2.5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700">
                                     <span class="text-slate-500 dark:text-slate-400 font-semibold">Email:</span>

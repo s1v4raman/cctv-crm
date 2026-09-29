@@ -143,7 +143,7 @@
                     @endif
                 </p>
                 <div>
-                    <a href="https://wa.me/916380920970" target="_blank"
+                    <a href="https://wa.me/919677257774" target="_blank"
                        class="inline-block px-4 py-1.5 rounded-lg border border-slate-300 hover:border-slate-800 hover:bg-white text-[11px] font-bold text-slate-700 tracking-wider uppercase transition-all shadow-xs">
                         START ACADEMY
                     </a>

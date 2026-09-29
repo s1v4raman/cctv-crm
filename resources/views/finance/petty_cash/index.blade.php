@@ -35,6 +35,9 @@
         selectedAccountName: ''
     }">
 
+        {{-- Finance Category Sub-Navigation --}}
+        <x-finance-subnav active="petty_cash" />
+
         <!-- Status Alerts -->
         @if(session('status') || session('success'))
             <div class="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200 text-xs font-medium flex items-center gap-3">
@@ -141,25 +144,25 @@
         </div>
 
         <!-- Action Quick Launch Bar -->
-        <div class="bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-3xl p-5 shadow-lg flex flex-col md:flex-row items-center justify-between gap-4">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
             <div class="space-y-1 text-center md:text-left">
-                <h3 class="text-sm font-bold tracking-wide uppercase text-slate-300">Fast Field Operations</h3>
-                <p class="text-xs text-slate-400">Disburse advances, record customer cash collections, log site petty expenses, or process end-of-day bank handovers.</p>
+                <h3 class="text-sm font-bold tracking-wide uppercase text-slate-800 dark:text-slate-200">Fast Field Operations</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Disburse advances, record customer cash collections, log site petty expenses, or process end-of-day bank handovers.</p>
             </div>
             <div class="flex flex-wrap items-center justify-center gap-2.5">
-                <button type="button" @click="advanceModal = true" class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl shadow-xs transition">
+                <button type="button" @click="advanceModal = true" class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-xs transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
                     <span>Issue Float Advance</span>
                 </button>
-                <button type="button" @click="collectionModal = true" class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs rounded-xl shadow-xs transition">
+                <button type="button" @click="collectionModal = true" class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs rounded-xl shadow-xs transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 11l5-5m0 0l5 5m-5-5v12"/></svg>
                     <span>Record Cash Collection</span>
                 </button>
-                <button type="button" @click="expenseModal = true" class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs rounded-xl shadow-xs transition">
+                <button type="button" @click="expenseModal = true" class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-xl shadow-xs transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     <span>Log Petty Expense</span>
                 </button>
-                <button type="button" @click="handoverModal = true" class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-xs transition">
+                <button type="button" @click="handoverModal = true" class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-xs transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
                     <span>Handover / Deposit</span>
                 </button>

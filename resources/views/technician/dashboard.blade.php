@@ -387,24 +387,24 @@
             </div>
 
             {{-- On-Site Mobile Barcode & Serial Scanner Quick Tool --}}
-            <div class="bg-gradient-to-r from-blue-900 to-indigo-900 dark:from-slate-900 dark:to-indigo-950 text-white rounded-2xl p-5 mb-6 shadow-sm border border-blue-800 dark:border-slate-700">
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 mb-6 shadow-sm">
                 <div class="flex items-center justify-between flex-wrap gap-4">
                     <div class="flex items-center gap-3.5">
-                        <div class="w-12 h-12 rounded-xl bg-white/15 border border-white/20 flex items-center justify-center text-2xl flex-shrink-0">
+                        <div class="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 flex items-center justify-center text-2xl flex-shrink-0">
                             📷
                         </div>
                         <div>
-                            <h3 class="text-base font-bold text-white">On-Site Hardware Barcode Scanner</h3>
-                            <p class="text-xs text-blue-200 mt-0.5">Scan camera/NVR serial barcode or QR to check warranty, view history, or raise an RMA claim</p>
+                            <h3 class="text-base font-bold text-slate-900 dark:text-white">On-Site Hardware Barcode Scanner</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Scan camera/NVR serial barcode or QR to check warranty, view history, or raise an RMA claim</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-2.5 flex-wrap">
                         <button type="button" onclick="openBarcodeScanner('tech-barcode-modal', null, handleTechScannedCode)"
-                                class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#2563eb] hover:bg-blue-600 text-white text-xs font-bold shadow-xs transition-colors">
+                                class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs transition-colors">
                             📸 Open Camera Scanner
                         </button>
                         <a href="{{ route('equipment.create') }}"
-                           class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold border border-white/20 transition-colors">
+                           class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-slate-700 transition-colors">
                             + Register Asset
                         </a>
                     </div>

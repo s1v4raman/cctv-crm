@@ -174,24 +174,19 @@ class ExpenseClaimController extends Controller
             'status'              => 'pending',
         ]);
 
-        // Audit notification log to admin
+        // Multi-channel alert dispatch for submitted expense claim
         try {
-            NotificationLog::create([
-                'channel'        => 'system',
-                'event_type'     => 'expense_claim_submitted',
-                'recipient_type' => 'admin',
-                'recipient_name' => 'Finance & Accounts',
-                'subject'        => "New Expense Claim #{$claim->claim_no} from " . Auth::user()->name,
-                'message_body'   => Auth::user()->name . " filed a claim for ₹" . number_format($amount, 2) . " ({$claim->category_label}).",
-                'action_url'     => route('finance.expenses.index', ['tab' => 'pending']),
-                'status'         => 'sent',
-                'reference_type' => get_class($claim),
-                'reference_id'   => $claim->id,
-                'sent_at'        => now(),
-                'created_by'     => Auth::id(),
-            ]);
+            $alertService = app(\App\Services\AlertNotificationService::class);
+            $alertService->sendAlert('expense_submitted', Auth::user(), [
+                'employee_name'  => Auth::user()->name,
+                'expense_number' => $claim->claim_no,
+                'amount'         => '₹' . number_format($amount, 2),
+                'category'       => $claim->category_label,
+                'expense_date'   => $validated['expense_date'],
+                'description'    => $validated['description'],
+            ], $claim);
         } catch (\Throwable $e) {
-            // Non-blocking log
+            \Illuminate\Support\Facades\Log::warning("Expense submission alert failed: " . $e->getMessage());
         }
 
         return redirect()
@@ -218,25 +213,22 @@ class ExpenseClaimController extends Controller
             'actioned_at' => now(),
         ]);
 
-        // Audit notification to employee
+        $claim->load('user');
+
+        // Multi-channel alert to employee
         try {
-            NotificationLog::create([
-                'channel'         => 'system',
-                'event_type'      => 'expense_claim_approved',
-                'recipient_type'  => 'employee',
-                'recipient_name'  => $claim->user?->name ?? 'Employee',
-                'recipient_email' => $claim->user?->email,
-                'subject'         => "Expense Claim Approved #{$claim->claim_no}",
-                'message_body'    => "Your claim of ₹" . number_format((float) $claim->amount, 2) . " has been approved by " . Auth::user()->name . " and queued for payment disbursal.",
-                'action_url'      => route('finance.expenses.index', ['tab' => 'my_claims']),
-                'status'          => 'sent',
-                'reference_type'  => get_class($claim),
-                'reference_id'    => $claim->id,
-                'sent_at'         => now(),
-                'created_by'      => Auth::id(),
-            ]);
+            $alertService = app(\App\Services\AlertNotificationService::class);
+            $alertService->sendAlert('expense_status_updated', $claim->user ?? Auth::user(), [
+                'employee_name'  => $claim->user?->name ?? 'Employee',
+                'expense_number' => $claim->claim_no,
+                'amount'         => '₹' . number_format((float) $claim->amount, 2),
+                'category'       => $claim->category_label,
+                'status'         => 'Approved',
+                'actioner_name'  => Auth::user()->name,
+                'review_notes'   => 'Approved for payment disbursal.',
+            ], $claim);
         } catch (\Throwable $e) {
-            // Non-blocking log
+            \Illuminate\Support\Facades\Log::warning("Expense approval alert failed: " . $e->getMessage());
         }
 
         return back()->with('status', "✅ Claim #{$claim->claim_no} for {$claim->user?->name} (₹" . number_format((float) $claim->amount, 2) . ") has been APPROVED.");
@@ -266,25 +258,22 @@ class ExpenseClaimController extends Controller
             'rejection_reason' => $validated['rejection_reason'],
         ]);
 
-        // Audit notification to employee
+        $claim->load('user');
+
+        // Multi-channel alert to employee
         try {
-            NotificationLog::create([
-                'channel'         => 'system',
-                'event_type'      => 'expense_claim_rejected',
-                'recipient_type'  => 'employee',
-                'recipient_name'  => $claim->user?->name ?? 'Employee',
-                'recipient_email' => $claim->user?->email,
-                'subject'         => "Expense Claim Rejected #{$claim->claim_no}",
-                'message_body'    => "Your claim #{$claim->claim_no} was rejected. Reason: " . $validated['rejection_reason'],
-                'action_url'      => route('finance.expenses.index', ['tab' => 'my_claims']),
-                'status'          => 'sent',
-                'reference_type'  => get_class($claim),
-                'reference_id'    => $claim->id,
-                'sent_at'         => now(),
-                'created_by'      => Auth::id(),
-            ]);
+            $alertService = app(\App\Services\AlertNotificationService::class);
+            $alertService->sendAlert('expense_status_updated', $claim->user ?? Auth::user(), [
+                'employee_name'  => $claim->user?->name ?? 'Employee',
+                'expense_number' => $claim->claim_no,
+                'amount'         => '₹' . number_format((float) $claim->amount, 2),
+                'category'       => $claim->category_label,
+                'status'         => 'Rejected',
+                'actioner_name'  => Auth::user()->name,
+                'review_notes'   => $validated['rejection_reason'],
+            ], $claim);
         } catch (\Throwable $e) {
-            // Non-blocking log
+            \Illuminate\Support\Facades\Log::warning("Expense rejection alert failed: " . $e->getMessage());
         }
 
         return back()->with('status', "Claim #{$claim->claim_no} has been rejected.");
@@ -311,6 +300,23 @@ class ExpenseClaimController extends Controller
             'paid_at'           => now(),
             'actioned_by'       => Auth::id(),
         ]);
+
+        $claim->load('user');
+
+        try {
+            $alertService = app(\App\Services\AlertNotificationService::class);
+            $alertService->sendAlert('expense_status_updated', $claim->user ?? Auth::user(), [
+                'employee_name'  => $claim->user?->name ?? 'Employee',
+                'expense_number' => $claim->claim_no,
+                'amount'         => '₹' . number_format((float) $claim->amount, 2),
+                'category'       => $claim->category_label,
+                'status'         => 'Paid & Disbursed (' . ucfirst(str_replace('_', ' ', $validated['payment_method'])) . ')',
+                'actioner_name'  => Auth::user()->name,
+                'review_notes'   => 'Disbursed via ' . ucfirst(str_replace('_', ' ', $validated['payment_method'])) . ($claim->payment_reference ? ' (Ref: ' . $claim->payment_reference . ')' : ''),
+            ], $claim);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning("Expense paid alert failed: " . $e->getMessage());
+        }
 
         return back()->with('status', "🎉 Claim #{$claim->claim_no} marked as DISBURSED / PAID (₹" . number_format((float) $claim->amount, 2) . ") via " . ucfirst(str_replace('_', ' ', $validated['payment_method'])) . ".");
     }

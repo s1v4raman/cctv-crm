@@ -52,21 +52,8 @@
                 </div>
             @endif
 
-            {{-- Sub-Navigation Tabs --}}
-            <div class="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
-                <a href="{{ route('finance.salaries.index') }}"
-                   class="px-4 py-2 rounded-xl text-xs font-bold transition text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
-                    👥 Employee Salary Master
-                </a>
-                <a href="{{ route('finance.payroll.index') }}"
-                   class="px-4 py-2 rounded-xl text-xs font-bold transition bg-blue-600 text-white shadow-xs">
-                    💳 Monthly/Weekly Payrolls
-                </a>
-                <a href="{{ route('finance.analytics') }}"
-                   class="px-4 py-2 rounded-xl text-xs font-bold transition text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
-                    📊 Salary Analytics (Monthly / Weekly / Daily)
-                </a>
-            </div>
+            {{-- Employee Category Sub-Navigation --}}
+            <x-employee-subnav active="payroll" />
 
             {{-- Summary Cards for Selected Month --}}
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
@@ -270,7 +257,7 @@
                                             </a>
 
                                             <a href="{{ route('finance.payroll.pdf', $p->id) }}"
-                                               class="p-1.5 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-900 transition text-xs font-bold"
+                                               class="p-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white transition text-xs font-bold"
                                                title="Download PDF Payslip">
                                                 📄 PDF
                                             </a>

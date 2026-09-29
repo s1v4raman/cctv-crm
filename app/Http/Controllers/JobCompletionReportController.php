@@ -234,6 +234,26 @@ class JobCompletionReportController extends Controller
             return $report;
         });
 
+        // Dispatch completion alert to customer
+        if (!empty($validated['installation_job_id'])) {
+            $job = InstallationJob::with('quotation.lead')->find($validated['installation_job_id']);
+            if ($job && $job->quotation?->lead) {
+                try {
+                    $alertService = app(\App\Services\AlertNotificationService::class);
+                    $alertService->sendAlert('job_completed', $job->quotation->lead, [
+                        'customer_name'   => $job->quotation->lead->customer_name,
+                        'job_no'          => $job->job_no,
+                        'technician_name' => $report->technician?->name ?? 'Lead Technician',
+                        'report_no'       => $report->report_no,
+                        'jcr_link'        => route('jcr.show', $report),
+                        'completed_date'  => now()->format('d M Y'),
+                    ], $report);
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::warning("Job completion alert failed: " . $e->getMessage());
+                }
+            }
+        }
+
         // Redirect technician to report show or technician dashboard with success
         if (Auth::user()->isTechnician()) {
             return redirect()->route('jcr.show', $report)

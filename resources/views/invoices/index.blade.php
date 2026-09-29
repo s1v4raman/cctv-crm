@@ -77,6 +77,9 @@
                 </div>
             @endif
 
+            {{-- Finance Category Sub-Navigation --}}
+            <x-finance-subnav active="invoices" />
+
             {{-- Stat Summary Cards --}}
             @php
                 $totalInvoiced = \App\Models\Invoice::sum('total');

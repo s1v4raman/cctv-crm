@@ -22,8 +22,8 @@
 
             <div class="flex items-center gap-2.5">
                 <a href="{{ route('finance.payables.supplier.pdf', $supplier->id) }}"
-                   class="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 text-xs font-bold rounded-xl shadow-md transition">
-                    <svg class="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                   class="inline-flex items-center gap-2 px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl shadow-md shadow-rose-600/20 transition">
+                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
                     <span>Download Statement PDF</span>
                 </a>
             </div>
@@ -93,12 +93,12 @@
                     <span class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 block">Payments & Transfers</span>
                 </div>
 
-                <div class="bg-gradient-to-br from-rose-950 to-slate-900 text-white border border-rose-900/50 rounded-3xl p-5 shadow-sm">
-                    <span class="text-[11px] font-bold text-rose-300 uppercase tracking-wider">Net Balance Payable</span>
-                    <div class="text-2xl font-black text-white mt-2">
+                <div class="bg-white dark:bg-slate-900 border border-rose-200 dark:border-rose-800/80 rounded-3xl p-5 shadow-sm">
+                    <span class="text-[11px] font-bold text-rose-600 dark:text-rose-400 uppercase tracking-wider">Net Balance Payable</span>
+                    <div class="text-2xl font-black text-rose-900 dark:text-rose-100 mt-2">
                         ₹{{ number_format($ledger['outstanding_balance'], 2) }}
                     </div>
-                    <span class="text-[11px] text-rose-200/80 mt-1 block">
+                    <span class="text-[11px] text-rose-600/80 dark:text-rose-300/80 mt-1 block">
                         {{ $ledger['outstanding_balance'] > 0 ? 'Pending Payment Disbursement' : '✓ Zero Balance (Settled)' }}
                     </span>
                 </div>

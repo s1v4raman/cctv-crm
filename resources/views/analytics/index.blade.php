@@ -198,29 +198,29 @@
             </div>
 
             {{-- Cost Breakdown Highlight Bar --}}
-            <div class="bg-gradient-to-r from-slate-900 via-[#0f172a] to-slate-900 border border-white/5 rounded-2xl px-5 py-3 flex flex-wrap items-center gap-x-6 gap-y-2">
-                <span class="text-[10px] font-bold uppercase tracking-widest text-slate-500">Cost Waterfall</span>
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl px-5 py-3.5 flex flex-wrap items-center gap-x-6 gap-y-2 shadow-xs">
+                <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">Cost Waterfall</span>
                 <div class="flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-sky-400 inline-block"></span>
-                    <span class="text-[11px] text-slate-300 font-semibold">Revenue (No Tax): <strong class="text-sky-300">₹{{ number_format($overview['financials']['revenue_without_tax'] ?? round($overview['financials']['invoiced_revenue']/1.18, 0), 0) }}</strong></span>
+                    <span class="w-2 h-2 rounded-full bg-sky-500 inline-block"></span>
+                    <span class="text-[11px] text-slate-600 dark:text-slate-300 font-semibold">Revenue (No Tax): <strong class="text-sky-700 dark:text-sky-300">₹{{ number_format($overview['financials']['revenue_without_tax'] ?? round($overview['financials']['invoiced_revenue']/1.18, 0), 0) }}</strong></span>
                 </div>
-                <span class="text-slate-600 text-sm">−</span>
+                <span class="text-slate-400 dark:text-slate-600 text-sm">−</span>
                 <div class="flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-orange-400 inline-block"></span>
-                    <span class="text-[11px] text-slate-300 font-semibold">Product Buy: <strong class="text-orange-300">₹{{ number_format($overview['financials']['product_buy_cost'] ?? $overview['financials']['cogs'], 0) }}</strong></span>
+                    <span class="w-2 h-2 rounded-full bg-orange-500 inline-block"></span>
+                    <span class="text-[11px] text-slate-600 dark:text-slate-300 font-semibold">Product Buy: <strong class="text-orange-700 dark:text-orange-300">₹{{ number_format($overview['financials']['product_buy_cost'] ?? $overview['financials']['cogs'], 0) }}</strong></span>
                 </div>
-                <span class="text-slate-600 text-sm">−</span>
+                <span class="text-slate-400 dark:text-slate-600 text-sm">−</span>
                 <div class="flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-violet-400 inline-block"></span>
-                    <span class="text-[11px] text-slate-300 font-semibold">Salary: <strong class="text-violet-300">₹{{ number_format($overview['financials']['salary_credited_cost'] ?? $overview['financials']['employee_salary_cost'] ?? 0, 0) }}</strong></span>
+                    <span class="w-2 h-2 rounded-full bg-violet-500 inline-block"></span>
+                    <span class="text-[11px] text-slate-600 dark:text-slate-300 font-semibold">Salary: <strong class="text-violet-700 dark:text-violet-300">₹{{ number_format($overview['financials']['salary_credited_cost'] ?? $overview['financials']['employee_salary_cost'] ?? 0, 0) }}</strong></span>
                 </div>
-                <span class="text-slate-600 text-sm">=</span>
+                <span class="text-slate-400 dark:text-slate-600 text-sm">=</span>
                 @php $waterNetProfit = $overview['financials']['net_profit_without_tax'] ?? (($overview['financials']['revenue_without_tax'] ?? round($overview['financials']['invoiced_revenue']/1.18, 0)) - ($overview['financials']['product_buy_cost'] ?? $overview['financials']['cogs']) - ($overview['financials']['employee_salary_cost'] ?? 0)); @endphp
                 <div class="flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full {{ $waterNetProfit >= 0 ? 'bg-teal-400' : 'bg-rose-400' }} inline-block"></span>
-                    <span class="text-[11px] font-bold {{ $waterNetProfit >= 0 ? 'text-teal-300' : 'text-rose-400' }}">NET: ₹{{ number_format($waterNetProfit, 0) }}</span>
+                    <span class="w-2 h-2 rounded-full {{ $waterNetProfit >= 0 ? 'bg-teal-500' : 'bg-rose-500' }} inline-block"></span>
+                    <span class="text-[11px] font-bold {{ $waterNetProfit >= 0 ? 'text-teal-700 dark:text-teal-300' : 'text-rose-600 dark:text-rose-400' }}">NET: ₹{{ number_format($waterNetProfit, 0) }}</span>
                 </div>
-                <a href="{{ route('analytics.cost-profit', ['range' => $selectedRange]) }}" class="ml-auto text-[10px] font-bold text-emerald-400 hover:text-emerald-300 border border-emerald-500/30 px-3 py-1 rounded-lg transition">
+                <a href="{{ route('analytics.cost-profit', ['range' => $selectedRange]) }}" class="ml-auto text-[10px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 border border-emerald-300 dark:border-emerald-500/30 px-3 py-1.5 rounded-xl transition shadow-2xs">
                     Full Analysis →
                 </a>
             </div>

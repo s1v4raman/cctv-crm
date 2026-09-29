@@ -23,7 +23,7 @@
             <!-- Action Buttons -->
             <div class="flex flex-wrap items-center gap-2.5">
                 <a href="{{ route('finance.job-costing.pdf', $job->id) }}"
-                   class="inline-flex items-center gap-2 px-3.5 py-2 bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 text-xs font-bold rounded-xl shadow-md transition">
+                   class="inline-flex items-center gap-2 px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-md shadow-indigo-600/20 transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                     <span>Download P&L Statement PDF</span>
                 </a>
@@ -50,42 +50,42 @@
         @endif
 
         <!-- Visual Project P&L Waterfall Banner -->
-        <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 text-white rounded-3xl p-6 shadow-xl border border-slate-700/50">
-            <div class="text-[10px] font-bold uppercase tracking-wider text-emerald-400 mb-3">Project Profitability Waterfall (₹)</div>
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm">
+            <div class="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 mb-3">Project Profitability Waterfall (₹)</div>
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
                 <!-- 1. Revenue -->
-                <div class="p-3 bg-white/5 rounded-2xl border border-white/10">
-                    <div class="text-[10px] text-slate-400 font-bold uppercase">Taxable Revenue</div>
-                    <div class="text-lg font-black font-mono text-white mt-1">₹{{ number_format($costing['revenue_taxable'], 2) }}</div>
+                <div class="p-3 bg-slate-50 dark:bg-slate-800/80 rounded-2xl border border-slate-200/80 dark:border-slate-700/60">
+                    <div class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase">Taxable Revenue</div>
+                    <div class="text-lg font-black font-mono text-slate-900 dark:text-white mt-1">₹{{ number_format($costing['revenue_taxable'], 2) }}</div>
                     <div class="text-[9px] text-slate-400">Gross: ₹{{ number_format($costing['revenue_gross'], 2) }}</div>
                 </div>
 
                 <!-- 2. Less Hardware COGS -->
-                <div class="p-3 bg-white/5 rounded-2xl border border-white/10">
-                    <div class="text-[10px] text-purple-400 font-bold uppercase">(-) Hardware COGS</div>
-                    <div class="text-lg font-black font-mono text-purple-300 mt-1">₹{{ number_format($costing['hardware_cogs'], 2) }}</div>
-                    <div class="text-[9px] text-slate-400">{{ count($costing['hardware_items']) }} Material Items</div>
+                <div class="p-3 bg-purple-50 dark:bg-purple-950/40 rounded-2xl border border-purple-200 dark:border-purple-900/60">
+                    <div class="text-[10px] text-purple-700 dark:text-purple-300 font-bold uppercase">(-) Hardware COGS</div>
+                    <div class="text-lg font-black font-mono text-purple-900 dark:text-purple-200 mt-1">₹{{ number_format($costing['hardware_cogs'], 2) }}</div>
+                    <div class="text-[9px] text-purple-600/70 dark:text-purple-400/70">{{ count($costing['hardware_items']) }} Material Items</div>
                 </div>
 
                 <!-- 3. Less Labor Cost -->
-                <div class="p-3 bg-white/5 rounded-2xl border border-white/10">
-                    <div class="text-[10px] text-amber-400 font-bold uppercase">(-) Labor Cost</div>
-                    <div class="text-lg font-black font-mono text-amber-300 mt-1">₹{{ number_format($costing['labor_cost'], 2) }}</div>
-                    <div class="text-[9px] text-slate-400">{{ $costing['labor_hours'] }} hrs @ ₹{{ $costing['hourly_rate'] }}/hr</div>
+                <div class="p-3 bg-amber-50 dark:bg-amber-950/40 rounded-2xl border border-amber-200 dark:border-amber-900/60">
+                    <div class="text-[10px] text-amber-700 dark:text-amber-300 font-bold uppercase">(-) Labor Cost</div>
+                    <div class="text-lg font-black font-mono text-amber-900 dark:text-amber-200 mt-1">₹{{ number_format($costing['labor_cost'], 2) }}</div>
+                    <div class="text-[9px] text-amber-600/70 dark:text-amber-400/70">{{ $costing['labor_hours'] }} hrs @ ₹{{ $costing['hourly_rate'] }}/hr</div>
                 </div>
 
                 <!-- 4. Less Travel & Overheads -->
-                <div class="p-3 bg-white/5 rounded-2xl border border-white/10">
-                    <div class="text-[10px] text-rose-400 font-bold uppercase">(-) Direct Expenses</div>
-                    <div class="text-lg font-black font-mono text-rose-300 mt-1">₹{{ number_format($costing['field_expenses'] + $costing['other_direct_costs'], 2) }}</div>
-                    <div class="text-[9px] text-slate-400">Claims & Rentals</div>
+                <div class="p-3 bg-rose-50 dark:bg-rose-950/40 rounded-2xl border border-rose-200 dark:border-rose-900/60">
+                    <div class="text-[10px] text-rose-700 dark:text-rose-300 font-bold uppercase">(-) Direct Expenses</div>
+                    <div class="text-lg font-black font-mono text-rose-900 dark:text-rose-200 mt-1">₹{{ number_format($costing['field_expenses'] + $costing['other_direct_costs'], 2) }}</div>
+                    <div class="text-[9px] text-rose-600/70 dark:text-rose-400/70">Claims & Rentals</div>
                 </div>
 
                 <!-- 5. Net Gross Profit -->
-                <div class="p-3 bg-emerald-950/80 rounded-2xl border border-emerald-500/40 col-span-2 sm:col-span-1">
-                    <div class="text-[10px] text-emerald-300 font-bold uppercase">(=) Net Gross Profit</div>
-                    <div class="text-xl font-black font-mono text-emerald-400 mt-1">₹{{ number_format($costing['gross_profit'], 2) }}</div>
-                    <div class="text-[10px] font-bold text-emerald-300">{{ $costing['gross_margin_percent'] }}% Margin</div>
+                <div class="p-3 bg-emerald-50 dark:bg-emerald-950/60 rounded-2xl border border-emerald-300 dark:border-emerald-500/40 col-span-2 sm:col-span-1">
+                    <div class="text-[10px] text-emerald-700 dark:text-emerald-300 font-bold uppercase">(=) Net Gross Profit</div>
+                    <div class="text-xl font-black font-mono text-emerald-900 dark:text-emerald-300 mt-1">₹{{ number_format($costing['gross_profit'], 2) }}</div>
+                    <div class="text-[10px] font-bold text-emerald-700 dark:text-emerald-300">{{ $costing['gross_margin_percent'] }}% Margin</div>
                 </div>
             </div>
         </div>

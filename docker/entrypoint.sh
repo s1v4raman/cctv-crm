@@ -53,9 +53,46 @@ php artisan config:clear || true
 echo "=> Running database migrations..."
 php artisan migrate --force || echo "=> Warning: Migrations failed. Check database configuration."
 
-# Seed database with catalog products & initial admin accounts if empty
-echo "=> Seeding initial product catalog and demo data..."
-php artisan db:seed --force || echo "=> Database seeding completed or already populated."
+# Guarantee default Admin and Demo user accounts exist
+echo "=> Ensuring Super Admin and Staff accounts exist..."
+php artisan tinker --execute="
+try {
+    \App\Models\User::updateOrCreate(
+        ['email' => 'admin@cctvcrm.com'],
+        [
+            'name' => 'Suresh Prabhu (Admin)',
+            'password' => bcrypt('password'),
+            'role' => 'admin',
+            'email_verified_at' => now(),
+        ]
+    );
+    \App\Models\User::updateOrCreate(
+        ['email' => 'test@example.com'],
+        [
+            'name' => 'Admin User',
+            'password' => bcrypt('password'),
+            'role' => 'admin',
+            'email_verified_at' => now(),
+        ]
+    );
+    \App\Models\User::updateOrCreate(
+        ['email' => 'bob@example.com'],
+        [
+            'name' => 'Bob Technician',
+            'password' => bcrypt('password'),
+            'role' => 'technician',
+            'email_verified_at' => now(),
+        ]
+    );
+    echo '=> Admin accounts created and verified successfully.' . PHP_EOL;
+} catch (\Throwable \$e) {
+    echo '=> Admin creation error: ' . \$e->getMessage() . PHP_EOL;
+}
+" || true
+
+# Seed database with catalog products & full demo data if seeder exists
+echo "=> Running database seeders..."
+php artisan db:seed --force || echo "=> Seeders finished or already run."
 
 # Cache Laravel configuration, routes, and views for production performance
 echo "=> Caching Laravel configuration, routes, and views..."

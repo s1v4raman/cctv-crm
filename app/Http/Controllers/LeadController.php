@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreLeadRequest;
 use App\Http\Requests\UpdateLeadStatusRequest;
 use App\Models\Lead;
+use App\Services\AlertNotificationService;
 use Illuminate\Http\Request;
 
 class LeadController extends Controller
@@ -37,9 +38,22 @@ class LeadController extends Controller
         return view('leads.create');
     }
 
-    public function store(StoreLeadRequest $request)
+    public function store(StoreLeadRequest $request, AlertNotificationService $alertService)
     {
         $lead = Lead::create($request->validated());
+
+        try {
+            $alertService->sendAlert('lead_created', $lead, [
+                'customer_name' => $lead->customer_name,
+                'phone'         => $lead->phone,
+                'email'         => $lead->email ?? 'N/A',
+                'site_address'  => $lead->site_address ?? 'Standard Site',
+                'company_name'  => $lead->company_name ?? 'Individual',
+                'lead_source'   => ucfirst($lead->source ?? 'Direct inquiry'),
+            ], $lead);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning("Lead creation alert failed: " . $e->getMessage());
+        }
 
         return redirect()->route('leads.show', $lead)->with('status', 'Lead created.');
     }
@@ -102,9 +116,25 @@ class LeadController extends Controller
         return redirect()->route('leads.index')->with('status', 'Lead deleted.');
     }
 
-    public function updateStatus(UpdateLeadStatusRequest $request, Lead $lead)
+    public function updateStatus(UpdateLeadStatusRequest $request, Lead $lead, AlertNotificationService $alertService)
     {
+        $oldStatus = $lead->status;
         $lead->update($request->validated());
+
+        if ($oldStatus !== $lead->status) {
+            try {
+                $alertService->sendAlert('lead_status_updated', $lead, [
+                    'customer_name' => $lead->customer_name,
+                    'status'        => ucfirst(str_replace('_', ' ', $lead->status)),
+                    'site_address'  => $lead->site_address ?? 'Site',
+                    'company_name'  => $lead->company_name ?? 'N/A',
+                    'notes'         => $lead->notes ?? 'Status transitioned to ' . ucfirst(str_replace('_', ' ', $lead->status)),
+                ], $lead);
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::warning("Lead status alert failed: " . $e->getMessage());
+            }
+        }
+
         return back()->with('status', 'Lead status updated.');
     }
 

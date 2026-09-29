@@ -142,11 +142,11 @@
                     <div class="mt-8">
                         <div class="mb-4 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
                             <div>
-                                <h3 class="text-base font-extrabold text-white font-heading">
+                                <h3 class="text-base font-extrabold text-slate-900 dark:text-white font-heading">
                                     Quotation Items
                                 </h3>
 
-                                <p class="mt-0.5 text-xs text-slate-400">
+                                <p class="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
                                     Search a catalogue product, or enter a custom item manually.
                                 </p>
                             </div>
@@ -158,26 +158,26 @@
                             </button>
                         </div>
 
-                        <div class="overflow-x-auto rounded-xl border border-slate-800">
+                        <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
                             <table class="min-w-full border-collapse">
-                                <thead class="bg-slate-900/90 border-b border-slate-800">
+                                <thead class="bg-slate-50 dark:bg-slate-800/90 border-b border-slate-200 dark:border-slate-800">
                                     <tr>
-                                        <th class="min-w-64 px-3 py-3 text-left text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+                                        <th class="min-w-64 px-3 py-3 text-left text-[11px] font-extrabold uppercase tracking-wider text-slate-600 dark:text-slate-400">
                                             Item / Service
                                         </th>
-                                        <th class="min-w-56 px-3 py-3 text-left text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+                                        <th class="min-w-56 px-3 py-3 text-left text-[11px] font-extrabold uppercase tracking-wider text-slate-600 dark:text-slate-400">
                                             Description
                                         </th>
-                                        <th class="px-3 py-3 text-left text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+                                        <th class="px-3 py-3 text-left text-[11px] font-extrabold uppercase tracking-wider text-slate-600 dark:text-slate-400">
                                             Qty
                                         </th>
-                                        <th class="px-3 py-3 text-left text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+                                        <th class="px-3 py-3 text-left text-[11px] font-extrabold uppercase tracking-wider text-slate-600 dark:text-slate-400">
                                             Unit
                                         </th>
-                                        <th class="px-3 py-3 text-left text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+                                        <th class="px-3 py-3 text-left text-[11px] font-extrabold uppercase tracking-wider text-slate-600 dark:text-slate-400">
                                             Unit Price
                                         </th>
-                                        <th class="px-3 py-3 text-right text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+                                        <th class="px-3 py-3 text-right text-[11px] font-extrabold uppercase tracking-wider text-slate-600 dark:text-slate-400">
                                             Total
                                         </th>
                                         <th class="px-3 py-3"></th>

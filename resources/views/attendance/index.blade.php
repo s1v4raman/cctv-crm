@@ -71,6 +71,9 @@
                 </div>
             @endif
 
+            {{-- Employee Category Sub-Navigation --}}
+            <x-employee-subnav active="attendance" />
+
             {{-- 1-Click Live Personal Clock-In / Clock-Out Widget --}}
             <div class="pg-card p-5 border-l-4 border-l-blue-600 bg-gradient-to-r from-blue-50/40 via-white to-white dark:from-slate-900/80 dark:via-[#0f172a] dark:to-[#0f172a]">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
