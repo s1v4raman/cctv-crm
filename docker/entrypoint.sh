@@ -17,14 +17,19 @@ mkdir -p /var/www/html/storage/framework/cache/data \
 chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# If SQLite is configured and file does not exist, initialize it
-if [ "$DB_CONNECTION" = "sqlite" ]; then
-    if [ ! -f /var/www/html/database/database.sqlite ]; then
-        echo "=> Creating SQLite database file..."
-        touch /var/www/html/database/database.sqlite
-        chown www-data:www-data /var/www/html/database/database.sqlite
-        chmod 664 /var/www/html/database/database.sqlite
-    fi
+# Auto-generate APP_KEY if missing
+if [ -z "$APP_KEY" ]; then
+    echo "=> APP_KEY not provided. Generating a production application key..."
+    export APP_KEY=$(php artisan key:generate --show)
+fi
+
+# Smart Database fallback: If DB_HOST is not set or set to local/empty, fall back to SQLite
+if [ -z "$DB_HOST" ] || [ "$DB_HOST" = "127.0.0.1" ] || [ "$DB_HOST" = "localhost" ]; then
+    echo "=> DB_HOST is not set. Defaulting to local SQLite database..."
+    export DB_CONNECTION=sqlite
+    touch /var/www/html/database/database.sqlite
+    chown www-data:www-data /var/www/html/database/database.sqlite
+    chmod 664 /var/www/html/database/database.sqlite
 fi
 
 # Discover Laravel packages
@@ -35,13 +40,18 @@ php artisan package:discover --ansi || true
 echo "=> Creating storage symlink..."
 php artisan storage:link --force || true
 
-# Run database migrations if requested or if external database is configured
-if [ "$AUTO_MIGRATE" = "true" ] || [ -n "$DB_HOST" ]; then
-    echo "=> Running database migrations..."
-    php artisan migrate --force || echo "=> Warning: Migrations failed or database is not reachable yet. Proceeding with startup..."
-fi
+# Clear cached config first so runtime environment variables are read
+php artisan config:clear || true
 
-# Optimize Laravel caching for production
+# Run database migrations
+echo "=> Running database migrations..."
+php artisan migrate --force || echo "=> Warning: Migrations failed. Check your database credentials."
+
+# Seed database with catalog products & initial data if empty
+echo "=> Seeding initial product catalog and demo data..."
+php artisan db:seed --force || echo "=> Database seeding completed or already populated."
+
+# Cache Laravel configuration, routes, and views for production performance
 echo "=> Caching Laravel configuration, routes, and views..."
 php artisan config:cache || true
 php artisan route:cache || true

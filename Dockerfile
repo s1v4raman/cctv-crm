@@ -44,6 +44,7 @@ RUN apk add --no-cache \
         pdo_mysql \
         pdo_pgsql \
         pgsql \
+        pdo_sqlite \
         gd \
         zip \
         bcmath \
