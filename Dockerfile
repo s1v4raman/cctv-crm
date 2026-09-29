@@ -24,8 +24,13 @@ FROM php:8.3-fpm-alpine
 
 WORKDIR /var/www/html
 
+# Environment variables for Composer stability
+ENV COMPOSER_ALLOW_SUPERUSER=1 \
+    COMPOSER_NO_INTERACTION=1 \
+    COMPOSER_MEMORY_LIMIT=-1
+
 # Install official PHP extension installer helper
-COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
+COPY --from=mlocati/php-extension-installer:latest /usr/bin/install-php-extensions /usr/local/bin/
 
 # Install system utilities, web server, and PHP extensions
 RUN apk add --no-cache \
@@ -42,7 +47,6 @@ RUN apk add --no-cache \
         gd \
         zip \
         bcmath \
-        intl \
         opcache \
         pcntl
 
@@ -62,20 +66,14 @@ COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh && \
     sed -i 's/\r$//' /usr/local/bin/entrypoint.sh
 
-# Copy composer manifests first for layer caching
-COPY composer.json composer.lock ./
-
-# Install PHP dependencies without generating autoloader or running scripts
-RUN composer install --no-dev --no-interaction --prefer-dist --no-autoloader --no-scripts
-
 # Copy application source code
 COPY . .
 
 # Copy compiled frontend assets from node_builder stage
 COPY --from=node_builder /app/public/build ./public/build
 
-# Finish Composer classmap autoload optimization (strictly no artisan scripts at build time)
-RUN composer dump-autoload --optimize --no-dev --no-scripts
+# Install Composer dependencies with full codebase present and platform check bypassed
+RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --no-scripts --ignore-platform-reqs
 
 # Set permissions for web server
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
