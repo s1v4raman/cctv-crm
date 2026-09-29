@@ -65,8 +65,8 @@ RUN chmod +x /usr/local/bin/entrypoint.sh && \
 # Copy composer manifests first for layer caching
 COPY composer.json composer.lock ./
 
-# Install PHP dependencies without running artisan post-scripts
-RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --no-scripts
+# Install PHP dependencies without generating autoloader or running scripts
+RUN composer install --no-dev --no-interaction --prefer-dist --no-autoloader --no-scripts
 
 # Copy application source code
 COPY . .
