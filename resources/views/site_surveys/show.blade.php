@@ -55,12 +55,21 @@
 
             {{-- Pending Status Notice --}}
             @if($siteSurvey->status === 'pending')
-                <div class="p-5 rounded-2xl bg-gradient-to-r from-amber-950/40 via-[#0F172A] to-[#0F172A] border border-amber-500/40 flex items-start gap-4 shadow-xl">
-                    <div class="p-3 bg-amber-500 text-slate-950 rounded-xl shadow-lg shadow-amber-500/20 text-lg font-bold shrink-0">⏳</div>
-                    <div>
-                        <h4 class="text-sm font-extrabold text-amber-300 font-heading">Awaiting On-Site Technician Inspection</h4>
-                        <p class="text-xs text-slate-300 mt-1 leading-relaxed">
-                            Assigned to <strong class="text-white">{{ $siteSurvey->surveyedBy->name ?? 'Field Engineer' }}</strong> for site inspection on <strong class="text-amber-400">{{ $siteSurvey->survey_date->format('l, d M Y') }}</strong>. Once visited, the technician will submit camera recommendations, cable measurements, and on-site photos via their portal.
+                <div class="p-5 rounded-2xl bg-gradient-to-r from-amber-500/15 via-[#0F172A] to-[#0F172A] border border-amber-500/40 border-l-4 border-l-amber-400 flex items-start gap-4 shadow-xl shadow-amber-500/5">
+                    <div class="p-3 bg-gradient-to-br from-amber-400 to-amber-500 text-slate-950 rounded-xl shadow-lg shadow-amber-500/30 text-lg font-black shrink-0 flex items-center justify-center">
+                        ⏳
+                    </div>
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <h4 class="text-sm font-black text-amber-300 font-heading tracking-wide">Awaiting On-Site Technician Inspection</h4>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-amber-400/20 text-amber-300 border border-amber-400/30">
+                                Pending Visit
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-100 mt-1 leading-relaxed">
+                            Assigned to <strong class="text-white font-extrabold bg-white/10 px-1.5 py-0.5 rounded">{{ $siteSurvey->surveyedBy->name ?? 'Field Engineer' }}</strong> 
+                            for site inspection on <strong class="text-amber-300 font-extrabold bg-amber-400/20 px-1.5 py-0.5 rounded border border-amber-400/30">{{ $siteSurvey->survey_date->format('l, d M Y') }}</strong>. 
+                            <span class="text-slate-200">Once visited, the technician will submit camera recommendations, cable measurements, and on-site photos via their portal.</span>
                         </p>
                     </div>
                 </div>
