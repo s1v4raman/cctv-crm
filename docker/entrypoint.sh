@@ -7,7 +7,7 @@ echo "=> Configuring Nginx to listen on port: $PORT"
 sed -i "s/PORT_PLACEHOLDER/$PORT/g" /etc/nginx/nginx.conf
 
 # Ensure storage & bootstrap cache directories exist with correct permissions
-echo "=> Ensuring storage & bootstrap cache permissions..."
+echo "=> Ensuring storage & bootstrap cache directories and permissions..."
 mkdir -p /var/www/html/storage/framework/cache/data \
          /var/www/html/storage/framework/sessions \
          /var/www/html/storage/framework/views \
@@ -27,6 +27,10 @@ if [ "$DB_CONNECTION" = "sqlite" ]; then
     fi
 fi
 
+# Discover Laravel packages
+echo "=> Discovering Laravel packages..."
+php artisan package:discover --ansi || true
+
 # Ensure storage symlink exists
 echo "=> Creating storage symlink..."
 php artisan storage:link --force || true
@@ -34,10 +38,10 @@ php artisan storage:link --force || true
 # Run database migrations if requested or if external database is configured
 if [ "$AUTO_MIGRATE" = "true" ] || [ -n "$DB_HOST" ]; then
     echo "=> Running database migrations..."
-    php artisan migrate --force || echo "=> Warning: Migrations failed or database is not reachable yet. Skipping..."
+    php artisan migrate --force || echo "=> Warning: Migrations failed or database is not reachable yet. Proceeding with startup..."
 fi
 
-# Optimize Laravel caching
+# Optimize Laravel caching for production
 echo "=> Caching Laravel configuration, routes, and views..."
 php artisan config:cache || true
 php artisan route:cache || true
