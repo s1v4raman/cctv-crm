@@ -118,7 +118,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
         Route::put('/products/{product}', [ProductController::class, 'update'])->name('products.update');
         Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
-        Route::get('/products/search', [ProductController::class, 'search'])->name('products.search');
 
         // Inventory Stock Adjustments
         Route::post('/inventory/{product}/adjust', [InventoryController::class, 'adjustStock'])->name('inventory.adjust');
@@ -346,8 +345,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/jobs', [InstallationJobController::class, 'index'])->name('jobs.index');
         Route::get('/jobs/{job}', [InstallationJobController::class, 'show'])->name('jobs.show');
 
-        // Products Autocomplete Search for Staff Quotations
-        Route::get('/products/search', [ProductController::class, 'search'])->name('products.search.staff');
+        // Products Autocomplete Search for Quotations (Admin & Staff)
+        Route::get('/products/search', [ProductController::class, 'search'])->name('products.search');
 
         // Inventory Management Read-Only (Stock Overview & Audit Log)
         Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
