@@ -60,6 +60,12 @@
         .info-link { color:#4f46e5; text-decoration:none; }
         .info-link:hover { text-decoration:underline; }
 
+        html.dark .info-value { color: #f8fafc !important; }
+        html.dark .info-label { color: #94a3b8 !important; }
+        html.dark .info-link { color: #818cf8 !important; }
+        html.dark .section-head { border-bottom-color: #1e293b; }
+        html.dark .section-head h3 { color: #f8fafc; }
+
         /* Status Badges */
         .badge {
             display:inline-flex; padding:.25rem .75rem; border-radius:9999px;
@@ -152,7 +158,7 @@
                 <div class="info-grid">
                     <div>
                         <div class="info-label">Contract Number</div>
-                        <div class="info-value font-mono text-indigo-600">{{ $amc->contract_no }}</div>
+                        <div class="info-value font-mono text-indigo-600 dark:text-indigo-400">{{ $amc->contract_no }}</div>
                     </div>
                     <div>
                         <div class="info-label">Servicing Period</div>
@@ -160,7 +166,7 @@
                     </div>
                     <div>
                         <div class="info-label">Annual Value</div>
-                        <div class="info-value text-emerald-600">₹{{ number_format($amc->value, 2) }}</div>
+                        <div class="info-value text-emerald-600 dark:text-emerald-400">₹{{ number_format($amc->value, 2) }}</div>
                     </div>
                     <div>
                         <div class="info-label">Servicing Frequency</div>
@@ -180,7 +186,7 @@
                             <form method="POST" action="{{ route('amcs.updateStatus', $amc) }}">
                                 @csrf
                                 @method('PATCH')
-                                <select name="status" class="border border-gray-300 rounded-lg px-2.5 py-1 text-xs font-bold text-gray-800 bg-gray-50 focus:bg-white" onchange="this.form.submit()">
+                                <select name="status" class="border border-gray-300 dark:border-slate-700 rounded-lg px-2.5 py-1 text-xs font-bold text-gray-800 dark:text-slate-100 bg-gray-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-700" onchange="this.form.submit()">
                                     <option value="pending" @selected($amc->status === 'pending')>Pending</option>
                                     <option value="active" @selected($amc->status === 'active')>Active</option>
                                     <option value="expired" @selected($amc->status === 'expired')>Expired</option>
@@ -192,7 +198,7 @@
                     @if($amc->notes)
                         <div class="col-span-2 sm:col-span-3">
                             <div class="info-label">Contract Scope & Equipment Coverage</div>
-                            <div class="info-value text-sm font-normal text-gray-700 whitespace-pre-line">{{ $amc->notes }}</div>
+                            <div class="info-value text-sm font-normal text-gray-700 dark:text-slate-300 whitespace-pre-line">{{ $amc->notes }}</div>
                         </div>
                     @endif
                 </div>

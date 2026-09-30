@@ -82,6 +82,22 @@
             display:inline-flex; align-items:center; gap:.45rem; transition:background .2s;
         }
         .btn-submit:hover { background:#4338ca; }
+
+        /* Dark mode overrides */
+        html.dark .pg-wrap { background: #060913; }
+        html.dark .pg-card { background: #0f172a; border-color: #1e293b; color: #f8fafc; }
+        html.dark .section-head { background: #0f172a; border-bottom-color: #1e293b; }
+        html.dark .section-title { color: #f8fafc; }
+        html.dark .form-label { color: #cbd5e1; }
+        html.dark .form-input, html.dark .form-select, html.dark .form-textarea { background: #0b1120; border-color: #334155; color: #f8fafc; }
+        html.dark .req-box { background: #0f172a; border-color: #3730a3; }
+        html.dark .req-title { color: #a5b4fc; }
+        html.dark .req-item label { color: #94a3b8; }
+        html.dark .req-item span { color: #f8fafc; }
+        html.dark .finding-box { background: #0b1120; border-color: #334155; }
+        html.dark .finding-val { color: #f8fafc; }
+        html.dark .ex-photo { background: #0b1120; border-color: #334155; }
+        html.dark .ex-caption { color: #94a3b8; }
     </style>
 
     <div class="pg-wrap">

@@ -113,10 +113,10 @@
 
                 <div class="stat-card">
                     <div>
-                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Active / Open</p>
-                        <h3 class="text-2xl font-bold text-amber-600 mt-1">{{ $metrics['open'] }}</h3>
+                        <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Active / Open</p>
+                        <h3 class="text-2xl font-bold text-amber-600 dark:text-amber-400 mt-1">{{ $metrics['open'] }}</h3>
                     </div>
-                    <div class="p-3 bg-amber-50 text-amber-600 rounded-xl">
+                    <div class="p-3 bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 rounded-xl">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
@@ -125,10 +125,10 @@
 
                 <div class="stat-card">
                     <div>
-                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Critical / Urgent</p>
-                        <h3 class="text-2xl font-bold text-red-600 mt-1">{{ $metrics['critical'] }}</h3>
+                        <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Critical / Urgent</p>
+                        <h3 class="text-2xl font-bold text-red-600 dark:text-rose-400 mt-1">{{ $metrics['critical'] }}</h3>
                     </div>
-                    <div class="p-3 bg-red-50 text-red-600 rounded-xl">
+                    <div class="p-3 bg-red-50 dark:bg-rose-950/50 text-red-600 dark:text-rose-400 rounded-xl">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                         </svg>
@@ -137,10 +137,10 @@
 
                 <div class="stat-card">
                     <div>
-                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">SLA Overdue (>48h)</p>
-                        <h3 class="text-2xl font-bold text-rose-600 mt-1">{{ $metrics['overdue'] }}</h3>
+                        <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">SLA Overdue (>48h)</p>
+                        <h3 class="text-2xl font-bold text-rose-600 dark:text-rose-400 mt-1">{{ $metrics['overdue'] }}</h3>
                     </div>
-                    <div class="p-3 bg-rose-50 text-rose-600 rounded-xl">
+                    <div class="p-3 bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 rounded-xl">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
@@ -177,14 +177,14 @@
             </div>
 
             <!-- Filters Bar -->
-            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm mb-6">
+            <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm mb-6">
                 <form method="GET" action="{{ route('service-tickets.index') }}" class="flex flex-wrap items-center gap-3">
                     <input type="hidden" name="tab" value="{{ $activeTab }}">
                     
                     <div class="flex-1 min-w-[200px]">
                         <input type="text" name="search" value="{{ request('search') }}" 
                             placeholder="Search ticket #, issue, customer, phone..."
-                            class="w-full text-xs rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 py-2">
+                            class="w-full text-xs rounded-lg border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:border-indigo-500 py-2">
                     </div>
 
                     <div>

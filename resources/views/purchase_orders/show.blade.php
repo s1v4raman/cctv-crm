@@ -165,6 +165,20 @@
             transition: all 0.15s ease-in-out;
         }
         .btn-update-status:hover { background-color: #4338ca; }
+
+        /* Dark mode overrides */
+        html.dark .pg-wrap { background: #060913; }
+        html.dark .pg-card { background: #0f172a; border-color: #1e293b; color: #f8fafc; }
+        html.dark .section-head { border-bottom-color: #1e293b; }
+        html.dark .section-head h3 { color: #f8fafc; }
+        html.dark .info-value { color: #f8fafc !important; }
+        html.dark .info-label { color: #94a3b8 !important; }
+        html.dark .po-table thead { background: #0b1120; border-bottom-color: #1e293b; }
+        html.dark .po-table thead th { color: #94a3b8; }
+        html.dark .po-table tbody tr { border-bottom-color: #1e293b; }
+        html.dark .po-table tbody tr:hover { background: #1e293b; }
+        html.dark .po-table tbody td { color: #cbd5e1; }
+        html.dark .form-input, html.dark .form-select { background: #0b1120; border-color: #334155; color: #f8fafc; }
     </style>
 
     <div class="pg-wrap">

@@ -2,11 +2,12 @@
     <x-slot name="header">
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h2 class="text-xl font-semibold leading-tight text-gray-800">Select Lead for Quotation</h2>
-                <p class="mt-1 text-sm text-gray-500">Choose a customer lead to create a new price proposal</p>
+                <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-white font-heading">Select Lead for Quotation</h2>
+                <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Choose a customer lead to create a new price proposal</p>
             </div>
             <a href="{{ route('dashboard') }}"
-               style="display:inline-flex;align-items:center;gap:.4rem;font-size:.82rem;font-weight:600;color:#6366f1;text-decoration:none">
+               class="text-indigo-600 dark:text-indigo-400 hover:underline"
+               style="display:inline-flex;align-items:center;gap:.4rem;font-size:.82rem;font-weight:600;text-decoration:none">
                 ← Back to Dashboard
             </a>
         </div>
@@ -48,6 +49,14 @@
         .btn-primary:hover { opacity:.92; transform:translateY(-1px); }
 
         .empty-state { text-align:center; padding:2rem 1rem; color:#94a3b8; font-size:.85rem; }
+
+        /* Dark mode overrides */
+        html.dark .pg-wrap { background: #060913; }
+        html.dark .select-card { background: #0f172a; border-color: #1e293b; color: #f8fafc; }
+        html.dark .form-label { color: #cbd5e1; }
+        html.dark .form-select { background: #0b1120; border-color: #334155; color: #f8fafc; }
+        html.dark .empty-state { color: #cbd5e1; }
+        html.dark .empty-state a { color: #818cf8; }
     </style>
 
     <div class="pg-wrap">

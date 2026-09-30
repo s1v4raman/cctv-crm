@@ -109,6 +109,19 @@
         .status-partially_received { background:#fef3c7; color:#92400e; border:1px solid #fde68a; }
         .status-received           { background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; }
         .status-cancelled          { background:#fef2f2; color:#991b1b; border:1px solid #fecaca; }
+
+        /* Dark mode overrides */
+        html.dark .pg-wrap { background: #060913; }
+        html.dark .pg-card { background: #0f172a; border-color: #1e293b; color: #f8fafc; }
+        html.dark .section-head { border-bottom-color: #1e293b; }
+        html.dark .section-head h3 { color: #f8fafc; }
+        html.dark .info-value { color: #f8fafc !important; }
+        html.dark .info-label { color: #94a3b8 !important; }
+        html.dark .po-table thead { background: #0b1120; border-bottom-color: #1e293b; }
+        html.dark .po-table thead th { color: #94a3b8; }
+        html.dark .po-table tbody tr { border-bottom-color: #1e293b; }
+        html.dark .po-table tbody tr:hover { background: #1e293b; }
+        html.dark .po-table tbody td { color: #cbd5e1; }
     </style>
 
     <div class="pg-wrap">
