@@ -308,7 +308,7 @@
                                     @php
                                         $att = $attendances->get($emp->id);
                                     @endphp
-                                    <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-850/40 transition">
+                                    <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition">
                                         <td class="py-3 px-4">
                                             <div class="flex items-center gap-3">
                                                 <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-xs">
@@ -584,7 +584,7 @@
                                     @php
                                         $empStats = $weeklyEmployeeStats[$emp->id] ?? ['worked_days' => 0, 'total_hours' => 0, 'overtime_hours' => 0, 'leave_days' => 0];
                                     @endphp
-                                    <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-850/40 transition">
+                                    <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition">
                                         <td class="py-3 px-4">
                                             <div class="flex items-center gap-2.5">
                                                 <div class="w-7 h-7 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-xs">
@@ -788,7 +788,7 @@
                                             'total_hours' => 0, 'overtime_hours' => 0, 'attendance_rate' => 0,
                                         ];
                                     @endphp
-                                    <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-850/40 transition">
+                                    <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition">
                                         <td class="py-2.5 px-3 sticky left-0 bg-white dark:bg-[#0f172a] z-10 shadow-xs">
                                             <div class="flex items-center gap-2">
                                                 <div class="w-6 h-6 rounded-md bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-[10px]">

@@ -127,7 +127,7 @@
                                 @php
                                     $sal = $emp->salaryStructure;
                                 @endphp
-                                <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-850/40 transition">
+                                <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition">
                                     <td class="py-3 px-4">
                                         <div class="flex items-center gap-3">
                                             <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-xs">

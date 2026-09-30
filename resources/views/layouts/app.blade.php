@@ -319,16 +319,16 @@
                                          class="absolute right-0 mt-2 w-56 bg-white dark:bg-[#0f172a] rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 py-1.5 z-50 text-xs font-semibold text-slate-700 dark:text-slate-200"
                                          style="display: none;">
                                         
-                                        <a href="{{ route('leads.create') }}" class="flex items-center gap-2 px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-850 hover:text-blue-600 transition">
+                                        <a href="{{ route('leads.create') }}" class="flex items-center gap-2 px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-blue-600 transition">
                                             <span class="text-blue-600 font-bold">+</span> New Customer Lead
                                         </a>
-                                        <a href="{{ route('quotations.create-general') }}" class="flex items-center gap-2 px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-850 hover:text-emerald-600 transition">
+                                        <a href="{{ route('quotations.create-general') }}" class="flex items-center gap-2 px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-emerald-600 transition">
                                             <span class="text-emerald-600 font-bold">+</span> Generate Quotation
                                         </a>
-                                        <a href="{{ route('service-tickets.create') }}" class="flex items-center gap-2 px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-850 hover:text-rose-600 transition">
+                                        <a href="{{ route('service-tickets.create') }}" class="flex items-center gap-2 px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-rose-600 transition">
                                             <span class="text-rose-600 font-bold">+</span> Log Service Ticket
                                         </a>
-                                        <a href="{{ route('purchase-orders.create') }}" class="flex items-center gap-2 px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-850 hover:text-purple-600 transition">
+                                        <a href="{{ route('purchase-orders.create') }}" class="flex items-center gap-2 px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-purple-600 transition">
                                             <span class="text-purple-600 font-bold">+</span> New Purchase Order
                                         </a>
                                     </div>
@@ -899,45 +899,45 @@
 
                     <div class="p-6 space-y-4 text-xs">
                         <div class="space-y-2.5">
-                            <h4 class="text-[10px] uppercase font-bold tracking-wider text-slate-400 dark:text-slate-500">Navigation & Views</h4>
+                            <h4 class="text-[10px] uppercase font-bold tracking-wider text-slate-500 dark:text-slate-400">Navigation & Views</h4>
                             <div class="grid grid-cols-2 gap-2">
-                                <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-850 border border-slate-100 dark:border-slate-800">
-                                    <span class="text-slate-700 dark:text-slate-300 font-medium">Toggle Sidebar Dock</span>
-                                    <kbd class="px-2 py-0.5 font-mono text-[10px] font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded shadow-2xs">Ctrl + B</kbd>
+                                <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/70">
+                                    <span class="text-slate-700 dark:text-slate-100 font-medium">Toggle Sidebar Dock</span>
+                                    <kbd class="px-2 py-0.5 font-mono text-[10px] font-bold bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded shadow-2xs">Ctrl + B</kbd>
                                 </div>
-                                <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-850 border border-slate-100 dark:border-slate-800">
-                                    <span class="text-slate-700 dark:text-slate-300 font-medium">Global Omnisearch</span>
-                                    <kbd class="px-2 py-0.5 font-mono text-[10px] font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded shadow-2xs">Ctrl + K</kbd>
+                                <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/70">
+                                    <span class="text-slate-700 dark:text-slate-100 font-medium">Global Omnisearch</span>
+                                    <kbd class="px-2 py-0.5 font-mono text-[10px] font-bold bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded shadow-2xs">Ctrl + K</kbd>
                                 </div>
-                                <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-850 border border-slate-100 dark:border-slate-800">
-                                    <span class="text-slate-700 dark:text-slate-300 font-medium">Dark / Light Mode</span>
-                                    <kbd class="px-2 py-0.5 font-mono text-[10px] font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded shadow-2xs">Alt + T</kbd>
+                                <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/70">
+                                    <span class="text-slate-700 dark:text-slate-100 font-medium">Dark / Light Mode</span>
+                                    <kbd class="px-2 py-0.5 font-mono text-[10px] font-bold bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded shadow-2xs">Alt + T</kbd>
                                 </div>
-                                <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-850 border border-slate-100 dark:border-slate-800">
-                                    <span class="text-slate-700 dark:text-slate-300 font-medium">Shortcuts Cheatsheet</span>
-                                    <kbd class="px-2 py-0.5 font-mono text-[10px] font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded shadow-2xs">?</kbd>
+                                <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/70">
+                                    <span class="text-slate-700 dark:text-slate-100 font-medium">Shortcuts Cheatsheet</span>
+                                    <kbd class="px-2 py-0.5 font-mono text-[10px] font-bold bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded shadow-2xs">?</kbd>
                                 </div>
                             </div>
                         </div>
 
                         <div class="space-y-2.5">
-                            <h4 class="text-[10px] uppercase font-bold tracking-wider text-slate-400 dark:text-slate-500">Fast Access Routes</h4>
+                            <h4 class="text-[10px] uppercase font-bold tracking-wider text-slate-500 dark:text-slate-400">Fast Access Routes</h4>
                             <div class="grid grid-cols-2 gap-2">
-                                <a href="{{ route('dashboard') }}" class="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-850 border border-slate-100 dark:border-slate-800 hover:border-blue-400 transition">
-                                    <span class="text-slate-700 dark:text-slate-300 font-medium">Overview Dashboard</span>
-                                    <kbd class="px-2 py-0.5 font-mono text-[10px] font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded shadow-2xs">Alt + D</kbd>
+                                <a href="{{ route('dashboard') }}" class="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/70 hover:border-blue-400 dark:hover:border-blue-500 transition">
+                                    <span class="text-slate-700 dark:text-slate-100 font-medium">Overview Dashboard</span>
+                                    <kbd class="px-2 py-0.5 font-mono text-[10px] font-bold bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded shadow-2xs">Alt + D</kbd>
                                 </a>
-                                <a href="{{ route('attendance.index') }}" class="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-850 border border-slate-100 dark:border-slate-800 hover:border-blue-400 transition">
-                                    <span class="text-slate-700 dark:text-slate-300 font-medium">Attendance & Shifts</span>
-                                    <kbd class="px-2 py-0.5 font-mono text-[10px] font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded shadow-2xs">Alt + A</kbd>
+                                <a href="{{ route('attendance.index') }}" class="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/70 hover:border-blue-400 dark:hover:border-blue-500 transition">
+                                    <span class="text-slate-700 dark:text-slate-100 font-medium">Attendance & Shifts</span>
+                                    <kbd class="px-2 py-0.5 font-mono text-[10px] font-bold bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded shadow-2xs">Alt + A</kbd>
                                 </a>
-                                <a href="{{ route('leads.index') }}" class="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-850 border border-slate-100 dark:border-slate-800 hover:border-blue-400 transition">
-                                    <span class="text-slate-700 dark:text-slate-300 font-medium">Leads Pipeline</span>
-                                    <kbd class="px-2 py-0.5 font-mono text-[10px] font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded shadow-2xs">Alt + L</kbd>
+                                <a href="{{ route('leads.index') }}" class="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/70 hover:border-blue-400 dark:hover:border-blue-500 transition">
+                                    <span class="text-slate-700 dark:text-slate-100 font-medium">Leads Pipeline</span>
+                                    <kbd class="px-2 py-0.5 font-mono text-[10px] font-bold bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded shadow-2xs">Alt + L</kbd>
                                 </a>
-                                <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-850 border border-slate-100 dark:border-slate-800">
-                                    <span class="text-slate-700 dark:text-slate-300 font-medium">Close Active Window</span>
-                                    <kbd class="px-2 py-0.5 font-mono text-[10px] font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded shadow-2xs">Esc</kbd>
+                                <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/70">
+                                    <span class="text-slate-700 dark:text-slate-100 font-medium">Close Active Window</span>
+                                    <kbd class="px-2 py-0.5 font-mono text-[10px] font-bold bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded shadow-2xs">Esc</kbd>
                                 </div>
                             </div>
                         </div>

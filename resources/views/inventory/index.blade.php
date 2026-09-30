@@ -80,24 +80,24 @@
             display: inline-flex; align-items: center; gap: 0.4rem;
             padding: 0.45rem 0.85rem; border-radius: 0.5rem;
             font-size: 0.78rem; font-weight: 800;
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-            color: #020617 !important;
+            background: #2563eb !important;
+            color: #ffffff !important;
             border: none; cursor: pointer;
-            box-shadow: 0 4px 12px -2px rgba(245, 158, 11, 0.3);
+            box-shadow: 0 4px 12px -2px rgba(37, 99, 235, 0.35);
             transition: all .15s ease-in-out;
         }
-        .btn-adjust:hover { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); transform: translateY(-1px); }
+        .btn-adjust:hover { background: #1d4ed8 !important; transform: translateY(-1px); }
 
         .btn-filter {
             display: inline-flex; align-items: center; gap: 0.35rem;
             padding: .5rem 1.1rem; border-radius: .6rem;
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-            color: #020617 !important;
+            background: #2563eb !important;
+            color: #ffffff !important;
             font-size: .82rem; font-weight: 800;
             border: none; cursor: pointer;
-            box-shadow: 0 4px 12px -2px rgba(245, 158, 11, 0.3);
+            box-shadow: 0 4px 12px -2px rgba(37, 99, 235, 0.35);
         }
-        .btn-filter:hover { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); }
+        .btn-filter:hover { background: #1d4ed8 !important; }
 
         .btn-clear {
             display: inline-flex; align-items: center;
@@ -241,14 +241,14 @@
                                 <td>
                                     <div class="cell-name">{{ $prod->name }}</div>
                                     @if($prod->model_no)
-                                        <div class="cell-sub">Model: <span class="font-medium text-gray-700">{{ $prod->model_no }}</span></div>
+                                        <div class="cell-sub">Model: <span class="font-medium text-gray-700 dark:text-slate-300">{{ $prod->model_no }}</span></div>
                                     @endif
                                 </td>
                                 <td>
                                     <span class="cell-sku">{{ $prod->sku ?: '—' }}</span>
                                 </td>
                                 <td>
-                                    <div class="text-sm font-semibold text-gray-800">{{ $prod->category ?: 'General' }}</div>
+                                    <div class="text-sm font-semibold text-gray-800 dark:text-slate-200">{{ $prod->category ?: 'General' }}</div>
                                     <div class="cell-sub">{{ $prod->brand ?: 'Unbranded' }}</div>
                                 </td>
                                 <td class="center">
@@ -260,7 +260,7 @@
                                         <span class="stock-badge stock-low">
                                             <span>●</span> Low: {{ $prod->stock_quantity }} {{ $prod->unit }}
                                         </span>
-                                        <div class="text-[10px] text-amber-700 mt-0.5">Alert limit: {{ $prod->min_stock_alert }}</div>
+                                        <div class="text-[10px] text-amber-700 dark:text-amber-400 mt-0.5">Alert limit: {{ $prod->min_stock_alert }}</div>
                                     @else
                                         <span class="stock-badge stock-ok">
                                             <span>●</span> {{ $prod->stock_quantity }} {{ $prod->unit }}
@@ -268,13 +268,13 @@
                                     @endif
                                 </td>
                                 <td class="right">
-                                    <span class="text-sm font-medium text-gray-600">₹{{ number_format($prod->cost_price, 2) }}</span>
+                                    <span class="text-sm font-semibold text-gray-700 dark:text-slate-200">₹{{ number_format($prod->cost_price, 2) }}</span>
                                 </td>
                                 <td class="right">
-                                    <span class="text-sm font-bold text-gray-900">₹{{ number_format($prod->cost_price * $prod->stock_quantity, 2) }}</span>
+                                    <span class="text-sm font-bold text-gray-900 dark:text-white">₹{{ number_format($prod->cost_price * $prod->stock_quantity, 2) }}</span>
                                 </td>
                                 <td class="center">
-                                    <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
+                                    <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
                                         {{ $prod->default_warranty_months ?: 24 }} Mo
                                     </span>
                                 </td>
@@ -282,8 +282,8 @@
                                 <td class="center">
                                     <button type="button" 
                                             @click="openModal({{ $prod->id }}, {{ json_encode($prod->name) }}, {{ json_encode($prod->sku ?? '') }}, {{ $prod->stock_quantity }}, {{ json_encode($prod->unit ?? 'pcs') }})"
-                                            class="btn-adjust">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+                                            class="btn-adjust text-white">
+                                        <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
                                         Stock In / Adjust
                                     </button>
                                 </td>
@@ -330,35 +330,35 @@
                         <tbody>
                             @foreach($recentMovements as $mov)
                             <tr>
-                                <td class="text-xs text-gray-500 whitespace-nowrap">
+                                <td class="text-xs text-gray-500 dark:text-slate-400 whitespace-nowrap">
                                     {{ $mov->created_at->format('d M Y, h:i A') }}
                                 </td>
                                 <td>
-                                    <span class="font-bold text-xs text-gray-900">{{ $mov->product?->name ?? 'Unknown Product' }}</span>
+                                    <span class="font-bold text-xs text-gray-900 dark:text-white">{{ $mov->product?->name ?? 'Unknown Product' }}</span>
                                 </td>
                                 <td>
                                     @if($mov->type === 'in')
-                                        <span class="px-2.5 py-1 rounded text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">Stock IN (+)</span>
+                                        <span class="px-2.5 py-1 rounded text-[11px] font-bold bg-emerald-100 dark:bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30">Stock IN (+)</span>
                                     @elseif($mov->type === 'out')
-                                        <span class="px-2.5 py-1 rounded text-[11px] font-bold bg-rose-100 text-rose-800 border border-rose-200">Stock OUT (-)</span>
+                                        <span class="px-2.5 py-1 rounded text-[11px] font-bold bg-rose-100 dark:bg-rose-500/20 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-500/30">Stock OUT (-)</span>
                                     @elseif($mov->type === 'job_installation')
-                                        <span class="px-2.5 py-1 rounded text-[11px] font-bold bg-indigo-100 text-indigo-800 border border-indigo-200">Job Deployment</span>
+                                        <span class="px-2.5 py-1 rounded text-[11px] font-bold bg-indigo-100 dark:bg-indigo-500/20 text-indigo-800 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30">Job Deployment</span>
                                     @elseif($mov->type === 'return')
-                                        <span class="px-2.5 py-1 rounded text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-200">Customer Return</span>
+                                        <span class="px-2.5 py-1 rounded text-[11px] font-bold bg-amber-100 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30">Customer Return</span>
                                     @else
-                                        <span class="px-2.5 py-1 rounded text-[11px] font-bold bg-slate-100 text-slate-800 border border-slate-200">Adjustment</span>
+                                        <span class="px-2.5 py-1 rounded text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700">Adjustment</span>
                                     @endif
                                 </td>
-                                <td class="center font-bold text-xs {{ $mov->quantity >= 0 ? 'text-emerald-700' : 'text-rose-700' }}">
+                                <td class="center font-bold text-xs {{ $mov->quantity >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400' }}">
                                     {{ $mov->quantity > 0 ? '+' : '' }}{{ $mov->quantity }}
                                 </td>
-                                <td class="center font-semibold text-xs text-gray-700">
+                                <td class="center font-semibold text-xs text-gray-700 dark:text-slate-300">
                                     {{ $mov->balance_after }}
                                 </td>
-                                <td class="text-xs text-gray-600 max-w-xs truncate">
+                                <td class="text-xs text-gray-600 dark:text-slate-400 max-w-xs truncate">
                                     {{ $mov->notes ?: '—' }}
                                 </td>
-                                <td class="text-xs text-gray-500 font-medium">
+                                <td class="text-xs text-gray-500 dark:text-slate-400 font-medium">
                                     {{ $mov->user?->name ?? 'System' }}
                                 </td>
                             </tr>

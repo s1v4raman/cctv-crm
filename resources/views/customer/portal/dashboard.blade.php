@@ -579,7 +579,7 @@
                                     <div class="text-lg font-mono font-bold text-blue-600 dark:text-blue-400">{{ $activeAmc->contract_no }}</div>
                                 </div>
 
-                                <div class="bg-slate-50 dark:bg-slate-850 border border-slate-200 dark:border-slate-750 rounded-xl p-3.5 space-y-1">
+                                <div class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3.5 space-y-1">
                                     <div class="text-[10px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">Next Scheduled Routine Visit</div>
                                     <div class="text-sm font-bold text-slate-900 dark:text-white">
                                         {{ $nextVisit ? \Carbon\Carbon::parse($nextVisit->scheduled_date)->format('l, d M Y') : 'All visits completed for cycle' }}

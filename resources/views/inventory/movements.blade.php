@@ -127,38 +127,38 @@
                         <tbody>
                             @forelse($movements as $mov)
                             <tr>
-                                <td class="text-xs text-gray-500 whitespace-nowrap">
+                                <td class="text-xs text-gray-500 dark:text-slate-400 whitespace-nowrap">
                                     {{ $mov->created_at->format('d M Y, h:i A') }}
                                 </td>
                                 <td>
-                                    <div class="font-bold text-sm text-gray-900">{{ $mov->product?->name ?? 'Deleted Product' }}</div>
+                                    <div class="font-bold text-sm text-gray-900 dark:text-white">{{ $mov->product?->name ?? 'Deleted Product' }}</div>
                                     @if($mov->product?->sku)
-                                        <div class="text-[11px] font-mono text-gray-500">SKU: {{ $mov->product->sku }}</div>
+                                        <div class="text-[11px] font-mono text-gray-500 dark:text-slate-400">SKU: {{ $mov->product->sku }}</div>
                                     @endif
                                 </td>
                                 <td>
                                     @if($mov->type === 'in')
-                                        <span class="px-2.5 py-1 rounded text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">Stock IN</span>
+                                        <span class="px-2.5 py-1 rounded text-xs font-bold bg-emerald-100 dark:bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30">Stock IN</span>
                                     @elseif($mov->type === 'out')
-                                        <span class="px-2.5 py-1 rounded text-xs font-bold bg-rose-100 text-rose-800 border border-rose-200">Stock OUT</span>
+                                        <span class="px-2.5 py-1 rounded text-xs font-bold bg-rose-100 dark:bg-rose-500/20 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-500/30">Stock OUT</span>
                                     @elseif($mov->type === 'job_installation')
-                                        <span class="px-2.5 py-1 rounded text-xs font-bold bg-indigo-100 text-indigo-800 border border-indigo-200">Job Installation</span>
+                                        <span class="px-2.5 py-1 rounded text-xs font-bold bg-indigo-100 dark:bg-indigo-500/20 text-indigo-800 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30">Job Installation</span>
                                     @elseif($mov->type === 'return')
-                                        <span class="px-2.5 py-1 rounded text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200">Return</span>
+                                        <span class="px-2.5 py-1 rounded text-xs font-bold bg-amber-100 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30">Return</span>
                                     @else
-                                        <span class="px-2.5 py-1 rounded text-xs font-bold bg-slate-100 text-slate-800 border border-slate-200">Adjustment</span>
+                                        <span class="px-2.5 py-1 rounded text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700">Adjustment</span>
                                     @endif
                                 </td>
-                                <td class="center font-extrabold text-sm {{ $mov->quantity >= 0 ? 'text-emerald-600' : 'text-rose-600' }}">
+                                <td class="center font-extrabold text-sm {{ $mov->quantity >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400' }}">
                                     {{ $mov->quantity > 0 ? '+' : '' }}{{ $mov->quantity }}
                                 </td>
-                                <td class="center font-bold text-sm text-slate-800">
+                                <td class="center font-bold text-sm text-slate-800 dark:text-white">
                                     {{ $mov->balance_after }} {{ $mov->product?->unit ?? '' }}
                                 </td>
-                                <td class="text-xs text-gray-700 font-medium">
+                                <td class="text-xs text-gray-700 dark:text-slate-300 font-medium">
                                     {{ $mov->notes ?: '—' }}
                                 </td>
-                                <td class="text-xs text-gray-500 whitespace-nowrap font-medium">
+                                <td class="text-xs text-gray-500 dark:text-slate-400 whitespace-nowrap font-medium">
                                     {{ $mov->user?->name ?? 'System' }}
                                 </td>
                             </tr>

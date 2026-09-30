@@ -201,7 +201,7 @@
                             </tr>
 
                             {{-- Line 2: Product Buy Cost (COGS) --}}
-                            <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-850/40">
+                            <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/40">
                                 <td class="px-6 py-3.5 text-slate-700 dark:text-slate-300 font-semibold flex items-center gap-2">
                                     <span class="w-6 h-6 rounded-md bg-rose-500 text-white flex items-center justify-center font-bold text-xs">−</span>
                                     <span>Product Buy Cost (Hardware Equipment &amp; Cables)</span>
@@ -213,7 +213,7 @@
                             </tr>
 
                             {{-- Line 3: Gross Profit Without Tax --}}
-                            <tr class="bg-slate-50/60 dark:bg-slate-850/60 border-y border-slate-200 dark:border-slate-700">
+                            <tr class="bg-slate-50/60 dark:bg-slate-800/60 border-y border-slate-200 dark:border-slate-700">
                                 <td class="px-6 py-3.5 text-slate-900 dark:text-white font-bold flex items-center gap-2">
                                     <span class="w-6 h-6 rounded-md bg-amber-500 text-slate-950 flex items-center justify-center font-bold text-xs">=</span>
                                     <span>Gross Operating Profit (Without Tax)</span>
@@ -227,7 +227,7 @@
                             </tr>
 
                             {{-- Line 4: Employee Salary Expense --}}
-                            <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-850/40">
+                            <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/40">
                                 <td class="px-6 py-3.5 text-slate-700 dark:text-slate-300 font-semibold flex items-center gap-2">
                                     <span class="w-6 h-6 rounded-md bg-purple-500 text-white flex items-center justify-center font-bold text-xs">−</span>
                                     <span>Employee Salaries &amp; Staff Compensation (Auto-Deducted)</span>

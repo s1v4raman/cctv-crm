@@ -126,7 +126,7 @@
                                  @click="openImage = '{{ asset('storage/site-surveys/' . $photo->filename) }}'">
                                 <img src="{{ asset('storage/site-surveys/' . $photo->filename) }}" alt="Site Photo" class="w-full h-36 object-cover">
                                 @if($photo->caption)
-                                    <div class="p-2.5 text-[11px] font-semibold text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-850 border-t border-slate-200 dark:border-slate-700 truncate">
+                                    <div class="p-2.5 text-[11px] font-semibold text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 truncate">
                                         {{ $photo->caption }}
                                     </div>
                                 @endif
