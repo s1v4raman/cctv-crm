@@ -111,7 +111,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/quotations/{quotation}/job', [InstallationJobController::class, 'store'])->name('jobs.store');
         Route::patch('/jobs/{job}', [InstallationJobController::class, 'update'])->name('jobs.update');
 
-        // Products Write
+        // Products Management (Admin Only)
+        Route::get('/products', [ProductController::class, 'index'])->name('products.index');
         Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
         Route::post('/products', [ProductController::class, 'store'])->name('products.store');
         Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
@@ -345,8 +346,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/jobs', [InstallationJobController::class, 'index'])->name('jobs.index');
         Route::get('/jobs/{job}', [InstallationJobController::class, 'show'])->name('jobs.show');
 
-        // Products Catalog Read-Only
-        Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+        // Products Autocomplete Search for Staff Quotations
+        Route::get('/products/search', [ProductController::class, 'search'])->name('products.search.staff');
 
         // Inventory Management Read-Only (Stock Overview & Audit Log)
         Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');

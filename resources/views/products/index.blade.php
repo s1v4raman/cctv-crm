@@ -2,11 +2,11 @@
     <x-slot name="header">
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h2 class="text-2xl font-bold leading-tight text-white tracking-tight flex items-center gap-2">
+                <h2 class="text-2xl font-bold leading-tight text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
                     <span class="w-2.5 h-2.5 rounded-full bg-amber-400 shadow-[0_0_10px_#f59e0b]"></span>
                     Product Catalogue & Price Book
                 </h2>
-                <p class="mt-1 text-sm text-slate-400">CCTV cameras, NVRs, optics, mounting gear, cables & standard installation services</p>
+                <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">CCTV cameras, NVRs, optics, mounting gear, cables & standard installation services</p>
             </div>
             @if(auth()->user()->isAdmin())
             <a href="{{ route('products.create') }}"
@@ -21,9 +21,6 @@
     </x-slot>
 
     <style>
-        /* .pg-wrap uses global app.css */
-        /* .pg-inner uses global app.css */
-
         .pg-card {
             background:#0f172a;
             border-radius:1rem;
@@ -35,10 +32,10 @@
         .btn-amber {
             display:inline-flex; align-items:center; gap:.45rem;
             padding:.55rem 1.25rem; font-size:.82rem; font-weight:700;
-            background:linear-gradient(135deg, #f59e0b, #d97706); color:#020617; border-radius:.65rem;
+            background:linear-gradient(135deg, #f59e0b, #d97706); color:#020617 !important; border-radius:.65rem;
             text-decoration:none; transition:all .2s; box-shadow:0 4px 14px rgba(245,158,11,0.25);
         }
-        .btn-amber:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(245,158,11,0.4); color:#000; }
+        .btn-amber:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(245,158,11,0.4); color:#020617 !important; }
 
         /* Filter bar */
         .filter-bar {
@@ -53,6 +50,11 @@
         }
         .filter-bar input:focus, .filter-bar select:focus { border-color:#f59e0b; }
         .filter-bar input { min-width:220px; }
+
+        html:not(.dark) .pg-card { background:#ffffff; border-color:#e2e8f0; box-shadow:0 4px 16px rgba(0,0,0,0.05); }
+        html:not(.dark) .filter-bar { background:#ffffff; border-bottom:1px solid #e2e8f0; }
+        html:not(.dark) .filter-bar input, html:not(.dark) .filter-bar select { border-color:#cbd5e1; color:#0f172a; background:#ffffff; }
+        html:not(.dark) .filter-bar input:focus, html:not(.dark) .filter-bar select:focus { border-color:#2563eb; }
 
         /* Table */
         .p-table { width:100%; border-collapse:collapse; }

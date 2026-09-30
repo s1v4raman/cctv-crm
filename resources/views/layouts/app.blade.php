@@ -331,6 +331,11 @@
                                         <a href="{{ route('purchase-orders.create') }}" class="flex items-center gap-2 px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-purple-600 transition">
                                             <span class="text-purple-600 font-bold">+</span> New Purchase Order
                                         </a>
+                                        @if(auth()->user()->isAdmin())
+                                        <a href="{{ route('products.create') }}" class="flex items-center gap-2 px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-amber-600 transition border-t border-slate-100 dark:border-slate-800">
+                                            <span class="text-amber-500 font-bold">+</span> New Product / Pricing
+                                        </a>
+                                        @endif
                                     </div>
                                 </div>
                             @elseif(auth()->user()->isCustomer())
