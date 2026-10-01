@@ -19,13 +19,13 @@ class GstComplianceService
         $settings = GatewaySetting::getSettings();
 
         return [
-            'trade_name' => $settings->company_trade_name ?: 'CCTV Security & Surveillance Solutions',
-            'legal_name' => $settings->company_legal_name ?: 'CCTV Security Systems Pvt Ltd',
-            'gstin'      => $settings->company_gstin ?: '33AAAAA0000A1Z5',
-            'pan'        => $settings->company_pan ?: substr($settings->company_gstin ?: '33AAAAA0000A1Z5', 2, 10),
+            'trade_name' => $settings->company_trade_name ?: 'Precision IT Systems',
+            'legal_name' => $settings->company_legal_name ?: 'Precision IT Systems',
+            'gstin'      => $settings->company_gstin ?: '33AHLPI3531N1Z8',
+            'pan'        => $settings->company_pan ?: substr($settings->company_gstin ?: '33AHLPI3531N1Z8', 2, 10),
             'state'      => $settings->company_state ?: 'Tamil Nadu',
             'state_code' => $settings->company_state_code ?: '33',
-            'address'    => $settings->company_address ?: '123 Tech Park, Anna Nagar, Chennai, Tamil Nadu - 600040',
+            'address'    => $settings->company_address ?: 'Plot No.553, Lig-1, 27th Street, Tamil Nadu Housing Board, Avadi, Chennai-600054.',
         ];
     }
 

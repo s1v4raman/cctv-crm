@@ -134,7 +134,7 @@ class OnlinePaymentController extends Controller
             'amount'              => ['required', 'numeric', 'min:0.01'],
             'invoice_id'          => ['nullable', 'exists:invoices,id'],
             'quotation_id'        => ['nullable', 'exists:quotations,id'],
-            'method'              => ['required', 'string'],
+            'method'              => ['required', 'in:razorpay,cash'],
             'receipt_no'          => ['nullable', 'string'],
             'reference_no'        => ['nullable', 'string', 'max:100'],
             'razorpay_order_id'   => ['nullable', 'string'],
@@ -243,7 +243,12 @@ class OnlinePaymentController extends Controller
         $signature = $request->header('X-Razorpay-Signature', '');
         $webhookSecret = $gatewayService->getSettings()->razorpay_webhook_secret;
 
-        if ($webhookSecret && !empty($signature)) {
+        if (!empty($webhookSecret)) {
+            if (empty($signature)) {
+                Log::warning("Razorpay Webhook rejected: missing X-Razorpay-Signature header.");
+                return response()->json(['status' => 'missing_signature'], 400);
+            }
+
             $expectedSignature = hash_hmac('sha256', $payload, $webhookSecret);
             if (!hash_equals($expectedSignature, $signature)) {
                 Log::warning("Razorpay Webhook signature mismatch.");

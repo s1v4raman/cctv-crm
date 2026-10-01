@@ -136,8 +136,9 @@
     <table class="header-table">
         <tr>
             <td style="vertical-align: top;">
-                <div class="header-title">Statement of Account</div>
-                <div class="header-sub">Chronological Invoicing & Payment History</div>
+                <div class="header-title" style="font-size: 16px; font-weight: bold; color: #1e3a8a;">Precision IT Systems</div>
+                <div class="header-sub">Plot No.553, Lig-1, 27th St, TNHB, Avadi, Chennai-600054 | GSTIN: 33AHLPI3531N1Z8</div>
+                <div class="header-sub">Phone: +91-9677257774 | Email: precisionitsystem@gmail.com</div>
             </td>
             <td class="meta-box" style="vertical-align: top;">
                 <div><strong>Statement Date:</strong> {{ $generatedAt ?? now()->format('d M Y, h:i A') }}</div>

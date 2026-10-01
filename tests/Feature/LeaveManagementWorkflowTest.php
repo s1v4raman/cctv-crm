@@ -172,8 +172,8 @@ class LeaveManagementWorkflowTest extends TestCase
      */
     public function test_admin_can_approve_leave_and_auto_mark_attendance(): void
     {
-        $startDate = now()->addDays(10);
-        $endDate = now()->addDays(11);
+        $startDate = now()->next(Carbon::MONDAY);
+        $endDate = $startDate->copy()->addDay();
 
         $leave = LeaveRequest::create([
             'user_id'    => $this->employee->id,

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>Set New Password - {{ request()->getPort() == 8001 ? 'SecureVision ERP Operations' : 'PathSoft Customer Portal' }}</title>
+    <title>Set New Password - {{ request()->getPort() == 8001 ? 'Precision IT Systems ERP Operations' : 'Precision IT Systems Customer Portal' }}</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -42,14 +42,10 @@
             {{-- Brand Logo Header --}}
             <div class="flex items-center justify-between mb-4 lg:mb-6">
                 <a href="{{ request()->getPort() == 8001 ? route('login') : route('home') }}" class="flex items-center space-x-3 group">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/25 group-hover:scale-105 transition-transform">
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-                        </svg>
-                    </div>
+                    <img src="{{ asset('logo.png') }}" alt="Precision IT Systems" class="h-10 w-auto object-contain">
                     <div>
-                        <span class="text-xl font-extrabold font-heading text-slate-900 tracking-tight">Path<span class="text-blue-600">Soft</span></span>
-                        <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">SecureVision CRM</span>
+                        <span class="text-xl font-extrabold font-heading text-slate-900 tracking-tight">Precision IT <span class="text-blue-600">Systems</span></span>
+                        <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Surveillance & Operations CRM</span>
                     </div>
                 </a>
 
@@ -134,7 +130,7 @@
 
             {{-- Left Footer Copyright --}}
             <div class="text-xs text-slate-400 text-center lg:text-left mt-6">
-                &copy; {{ date('Y') }} PathSoft CCTV & Surveillance. All rights reserved.
+                &copy; {{ date('Y') }} Precision IT Systems. All rights reserved.
             </div>
         </div>
 

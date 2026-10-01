@@ -15,18 +15,21 @@ Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])
         ->name('register');
 
-    Route::post('register', [RegisteredUserController::class, 'store']);
+    Route::post('register', [RegisteredUserController::class, 'store'])
+        ->middleware('throttle:10,1');
 
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
         ->name('password.request');
 
     Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])
+        ->middleware('throttle:6,1')
         ->name('password.email');
 
     Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])
         ->name('password.reset');
 
     Route::post('reset-password', [NewPasswordController::class, 'store'])
+        ->middleware('throttle:6,1')
         ->name('password.store');
 });
 
@@ -56,7 +59,8 @@ Route::middleware('auth')->group(function () {
 Route::get('login', [AuthenticatedSessionController::class, 'create'])
     ->name('login');
 
-Route::post('login', [AuthenticatedSessionController::class, 'store']);
+Route::post('login', [AuthenticatedSessionController::class, 'store'])
+    ->middleware('throttle:15,1');
 
 // Staff/ERP Portal Login — accessible via Cloudflare Tunnel without port detection
 // Use: https://your-admin-tunnel.trycloudflare.com/staff/login
@@ -69,5 +73,15 @@ Route::middleware('guest')->group(function () {
         ->name('staff.login');
 
     Route::post('staff/login', [AuthenticatedSessionController::class, 'store'])
+        ->middleware('throttle:15,1')
         ->name('staff.login.post');
+
+    // Google OAuth Authentication
+    Route::get('auth/google', [\App\Http\Controllers\Auth\GoogleAuthController::class, 'redirectToGoogle'])
+        ->middleware('throttle:30,1')
+        ->name('auth.google');
+
+    Route::get('auth/google/callback', [\App\Http\Controllers\Auth\GoogleAuthController::class, 'handleGoogleCallback'])
+        ->middleware('throttle:30,1')
+        ->name('auth.google.callback');
 });

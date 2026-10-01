@@ -80,7 +80,7 @@ class Invoice extends Model
 
     public function recalculatePaymentStatus(): void
     {
-        $paid = (float) $this->payments()->sum('amount');
+        $paid = (float) $this->payments()->where('payment_status', 'completed')->sum('amount');
 
         $status = 'unpaid';
         if ($paid >= (float) $this->total) {

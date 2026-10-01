@@ -5,8 +5,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description"
-        content="PathSoft - Innovative AI CCTV Cameras & Smart Security Solutions Store. 4K Color Night Vision, Enterprise Surveillance, Cloud VMS, and 24/7 Support.">
-    <title>PathSoft | Smart AI CCTV Cameras & Security Solutions</title>
+        content="Precision IT Systems - Innovative AI CCTV Cameras & Smart Security Solutions. 4K Color Night Vision, Enterprise Surveillance, Cloud VMS, and 24/7 Support.">
+    <title>Precision IT Systems | Smart AI CCTV Cameras & Security Solutions</title>
 
     <!-- Theme Initialization Script (Prevents Flash of Unstyled Content) -->
     <script>
@@ -119,16 +119,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-8 py-3.5 flex items-center justify-between">
             <!-- Brand Logo -->
             <a href="{{ route('home') }}" class="flex items-center space-x-2.5 group">
-                <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
-                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-1 6h2v2h-2V7zm0 4h2v6h-2v-6z"/>
-                    </svg>
-                </div>
-                <div class="flex flex-col">
-                    <span class="text-2xl font-bold font-heading tracking-tight text-slate-900 dark:text-white flex items-center">
-                        Path<span class="text-blue-600">Soft</span>
-                    </span>
-                </div>
+                <img src="{{ asset('logo.png') }}" alt="Precision IT Systems" class="h-10 w-auto object-contain">
             </a>
 
             <!-- Navigation Links -->
@@ -791,7 +782,7 @@
                                 </div>
                                 <div>
                                     <h4 class="text-sm font-bold text-slate-900 dark:text-white">Corporate Headquarters</h4>
-                                    <p class="text-xs text-slate-500 dark:text-slate-400">Tech Park Cyber City, High-Tech Zone, Chennai - 600096</p>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400">Plot No.553, Lig-1, 27th Street, Tamil Nadu Housing Board, Avadi, Chennai-600054.</p>
                                 </div>
                             </div>
 
@@ -813,7 +804,19 @@
                                 </div>
                                 <div>
                                     <h4 class="text-sm font-bold text-slate-900 dark:text-white">Email Inquiries</h4>
-                                    <p class="text-xs text-slate-500 dark:text-slate-400">mail@example.com / support@securevision.ai</p>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400">
+                                        <a href="mailto:precisionitsystem@gmail.com" class="hover:text-blue-600 transition-colors">precisionitsystem@gmail.com</a>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start space-x-4">
+                                <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center flex-shrink-0 font-bold text-xs font-mono">
+                                    GST
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-slate-900 dark:text-white">GSTIN</h4>
+                                    <p class="text-xs font-mono font-bold text-slate-700 dark:text-slate-200">33AHLPI3531N1Z8</p>
                                 </div>
                             </div>
                         </div>
@@ -842,7 +845,7 @@
                                         <p>3. You receive an itemized proposal and CAD wiring blueprint.</p>
                                     </div>
                                     <div class="flex flex-col sm:flex-row gap-3 justify-center pt-2">
-                                        <a href="https://wa.me/919677257774?text={{ urlencode('Hello PathSoft Team, I just submitted an on-site audit request. Please confirm my appointment.') }}" target="_blank"
+                                        <a href="https://wa.me/919677257774?text={{ urlencode('Hello Precision IT Systems Team, I just submitted an on-site audit request. Please confirm my appointment.') }}" target="_blank"
                                             class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow flex items-center justify-center space-x-2">
                                             <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.007c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.861.174.086.275.072.376-.044.102-.115.434-.506.549-.68.116-.173.232-.145.39-.087s1.011.477 1.184.564.289.13.332.203c.044.072.044.419-.1.824z"/></svg>
                                             <span>WhatsApp Follow-up</span>
@@ -1040,17 +1043,10 @@
                 <!-- Col 1: Logo & Bio -->
                 <div class="lg:col-span-2 space-y-4">
                     <div class="flex items-center space-x-2.5">
-                        <div class="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-1 6h2v2h-2V7zm0 4h2v6h-2v-6z"/>
-                            </svg>
-                        </div>
-                        <span class="text-2xl font-bold font-heading text-white">
-                            Path<span class="text-blue-500">Soft</span>
-                        </span>
+                        <img src="{{ asset('logo.png') }}" alt="Precision IT Systems" class="h-10 w-auto object-contain bg-white/90 p-1.5 rounded-xl">
                     </div>
                     <p class="text-xs text-slate-400 leading-relaxed max-w-sm">
-                        Leading provider of enterprise AI video surveillance, smart security architecture, and mission-critical 24/7 maintenance engineering across modern corporations.
+                        Leading provider of enterprise AI video surveillance, smart security architecture, and mission-critical 24/7 maintenance engineering across modern premises.
                     </p>
                     <div class="flex items-center space-x-3 text-slate-400 pt-2">
                         <a href="#" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-blue-600 hover:text-white flex items-center justify-center transition-colors">
@@ -1093,17 +1089,21 @@
                 <div class="space-y-3">
                     <h4 class="text-sm font-bold text-white font-heading uppercase tracking-wider">Contact Us</h4>
                     <ul class="space-y-2.5 text-xs text-slate-400">
+                        <li class="flex items-start space-x-2">
+                            <svg class="w-3.5 h-3.5 text-blue-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            <span>Plot No.553, Lig-1, 27th St, TNHB, Avadi, Chennai-600054</span>
+                        </li>
                         <li class="flex items-center space-x-2">
                             <svg class="w-3.5 h-3.5 text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                            <span>mail@example.com</span>
+                            <a href="mailto:precisionitsystem@gmail.com" class="hover:text-white transition-colors">precisionitsystem@gmail.com</a>
                         </li>
                         <li class="flex items-center space-x-2">
                             <svg class="w-3.5 h-3.5 text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
                             <a href="tel:+919677257774" class="hover:text-white transition-colors">+91 96772 57774</a>
                         </li>
                         <li class="flex items-center space-x-2">
-                            <svg class="w-3.5 h-3.5 text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                            <span>24/7/365 Service Operations</span>
+                            <span class="text-[10px] font-mono font-bold text-blue-400">GST:</span>
+                            <span class="font-mono text-[11px] text-slate-300 font-bold">33AHLPI3531N1Z8</span>
                         </li>
                     </ul>
                 </div>
@@ -1111,7 +1111,7 @@
 
             <!-- Bottom Copyright Bar -->
             <div class="pt-8 border-t border-slate-800 text-center text-xs text-slate-500">
-                <p>&copy; 2026 PathSoft - All Rights Reserved. Smart AI CCTV Cameras & Enterprise Security Solutions.</p>
+                <p>&copy; {{ date('Y') }} Precision IT Systems - All Rights Reserved. Smart AI CCTV Cameras & Enterprise Security Solutions.</p>
             </div>
         </div>
     </footer>

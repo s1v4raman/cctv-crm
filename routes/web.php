@@ -69,20 +69,25 @@ Route::get('/pay/invoice/{invoice}', [OnlinePaymentController::class, 'checkoutI
 Route::get('/pay/quotation/{quotation}', [OnlinePaymentController::class, 'checkoutQuotation'])
     ->name('payment.checkout.quotation');
 Route::post('/api/payment/create-order', [OnlinePaymentController::class, 'createOrder'])
+    ->middleware('throttle:30,1')
     ->name('payment.create-order');
 Route::post('/api/payment/verify', [OnlinePaymentController::class, 'verifyPayment'])
+    ->middleware('throttle:30,1')
     ->name('payment.verify');
 
 // Public Official Payment Receipt PDF (Downloaded via WhatsApp / Email links)
 Route::get('/payments/{payment}/receipt', [OnlinePaymentController::class, 'downloadReceipt'])
+    ->middleware('throttle:60,1')
     ->name('payments.receipt.pdf');
 
 // Public customer Quotation PDF viewer (accessible from WhatsApp links)
 Route::get('/view-quotation/{quotation}/{format?}', [QuotationController::class, 'publicPdf'])
+    ->middleware('throttle:60,1')
     ->name('quotations.public-pdf');
 
 // Public customer JCR PDF viewer (accessible from WhatsApp links)
 Route::get('/view-jcr/{jobCompletionReport}', [JobCompletionReportController::class, 'publicPdf'])
+    ->middleware('throttle:60,1')
     ->name('jcr.public-pdf');
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -111,8 +116,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/quotations/{quotation}/job', [InstallationJobController::class, 'store'])->name('jobs.store');
         Route::patch('/jobs/{job}', [InstallationJobController::class, 'update'])->name('jobs.update');
 
-        // Products Management (Admin Only)
-        Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+        // Products Management (Admin Only writes)
         Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
         Route::post('/products', [ProductController::class, 'store'])->name('products.store');
         Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
@@ -345,7 +349,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/jobs', [InstallationJobController::class, 'index'])->name('jobs.index');
         Route::get('/jobs/{job}', [InstallationJobController::class, 'show'])->name('jobs.show');
 
-        // Products Autocomplete Search for Quotations (Admin & Staff)
+        // Products Catalog & Autocomplete Search for Quotations (Admin & Staff & Technician)
+        Route::get('/products', [ProductController::class, 'index'])->name('products.index');
         Route::get('/products/search', [ProductController::class, 'search'])->name('products.search');
 
         // Inventory Management Read-Only (Stock Overview & Audit Log)

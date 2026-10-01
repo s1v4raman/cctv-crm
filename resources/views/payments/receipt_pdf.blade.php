@@ -91,10 +91,10 @@
     <table class="header-table">
         <tr>
             <td style="width: 60%; vertical-align: top;">
-                <div class="company-name">{{ config('app.name', 'Precision IT & Security Systems') }}</div>
+                <div class="company-name">{{ config('app.name', 'Precision IT Systems') }}</div>
                 <div class="company-sub">
-                    Authorized CCTV Surveillance, Biometrics & Enterprise Networking<br>
-                    GSTIN: 27AABCU9603R1ZM · Support: +91 98765 43210 · Email: billing@precisionit.com
+                    Plot No.553, Lig-1, 27th Street, Tamil Nadu Housing Board, Avadi, Chennai-600054.<br>
+                    GSTIN: 33AHLPI3531N1Z8 · Support: +91 96772 57774 · Email: precisionitsystem@gmail.com
                 </div>
             </td>
             <td style="width: 40%; text-align: right; vertical-align: top;">

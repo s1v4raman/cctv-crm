@@ -32,7 +32,7 @@
                     🛡️
                 </div>
                 <div>
-                    <h1 class="text-lg font-bold text-white tracking-tight">{{ config('app.name') === 'Laravel' ? 'SecureVision AI Systems' : config('app.name') }}</h1>
+                    <h1 class="text-lg font-bold text-white tracking-tight">{{ config('app.name') === 'Laravel' ? 'Precision IT Systems' : config('app.name') }}</h1>
                     <p class="text-xs text-slate-400">256-Bit SSL Encrypted Payment Gateway</p>
                 </div>
             </div>

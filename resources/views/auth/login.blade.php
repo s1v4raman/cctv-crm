@@ -15,7 +15,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>Sign In - {{ $isStaffPortal ? 'SecureVision ERP Operations' : 'PathSoft Customer Portal' }}</title>
+    <title>Sign In - {{ $isStaffPortal ? 'Precision IT Systems ERP Operations' : 'Precision IT Systems Customer Portal' }}</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -71,16 +71,11 @@
             {{-- Brand Logo Header --}}
             <div class="flex items-center justify-between mb-4 lg:mb-6">
                 <a href="{{ $isStaffPortal ? route('login') : route('home') }}" class="flex items-center space-x-3 group">
-                    <!-- Royal Blue Logo Icon Tile -->
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-blue-700 flex items-center justify-center text-white shadow-md shadow-blue-500/25 group-hover:scale-105 transition-transform">
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-                        </svg>
-                    </div>
+                    <img src="{{ asset('logo.png') }}" alt="Precision IT Systems" class="h-10 w-auto object-contain">
                     <div>
-                        <span class="text-xl font-extrabold font-heading text-slate-900 tracking-tight">Path<span class="text-blue-600">Soft</span></span>
+                        <span class="text-xl font-extrabold font-heading text-slate-900 tracking-tight">Precision IT <span class="text-blue-600">Systems</span></span>
                         <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                            {{ $isStaffPortal ? 'SecureVision ERP Operations' : 'Customer Surveillance Portal' }}
+                            {{ $isStaffPortal ? 'Operations ERP Suite' : 'Customer Surveillance Portal' }}
                         </span>
                     </div>
                 </a>
@@ -137,10 +132,9 @@
                     </div>
                 @endif
 
-                <!-- Google / 1-Click Fast Button -->
-                <button type="button" 
-                        @click="quickSubmitRole(document.getElementById('email').value, document.getElementById('password').value, portal)"
-                        class="w-full flex items-center justify-center space-x-3 py-3 px-4 rounded-xl border border-slate-200 hover:bg-slate-50 hover:border-slate-300 shadow-xs text-xs font-bold text-slate-700 transition-all">
+                <!-- Google OAuth Login Link -->
+                <a href="{{ route('auth.google', ['portal' => $isStaffPortal ? 'staff' : 'customer', 'mode' => 'login']) }}" 
+                   class="w-full flex items-center justify-center space-x-3 py-3 px-4 rounded-xl border border-slate-200 hover:bg-slate-50 hover:border-slate-300 shadow-xs text-xs font-bold text-slate-700 transition-all">
                     <!-- Multicolored Google 'G' Icon -->
                     <svg class="w-4 h-4" viewBox="0 0 24 24">
                         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -149,7 +143,7 @@
                         <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
                     </svg>
                     <span>{{ $isStaffPortal ? 'Log in with Staff Workspace' : 'Log in with Google' }}</span>
-                </button>
+                </a>
 
                 <!-- Divider: OR LOGIN WITH EMAIL -->
                 <div class="relative flex items-center justify-center my-6">
@@ -230,6 +224,15 @@
                     </div>
                 </form>
 
+                @if(!$isStaffPortal)
+                    <div class="text-center mt-3.5 text-xs text-slate-500">
+                        <span>New customer? </span>
+                        <a href="{{ route('register') }}" class="text-blue-600 font-bold hover:underline">
+                            Create an account / Sign up →
+                        </a>
+                    </div>
+                @endif
+
                 <!-- Demo Credentials Quick Helper -->
                 <div class="mt-5 p-3 bg-slate-50 border border-slate-200 rounded-2xl">
                     <div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-2 flex items-center justify-between">
@@ -287,7 +290,7 @@
 
             {{-- Left Footer Copyright --}}
             <div class="text-xs text-slate-400 text-center lg:text-left mt-4">
-                &copy; {{ date('Y') }} PathSoft CCTV & Surveillance ERP. All rights reserved.
+                &copy; {{ date('Y') }} Precision IT Systems. All rights reserved.
             </div>
         </div>
 
@@ -358,7 +361,7 @@
                     <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
                     <span>256-Bit SSL Encrypted & SOC-2 Certified</span>
                 </div>
-                <span>PathSoft Security Infrastructure</span>
+                <span>Precision IT Systems Infrastructure</span>
             </div>
         </div>
 

@@ -95,7 +95,7 @@
                         <div class="flex items-start gap-4">
                             <div class="p-3.5 bg-blue-600 text-white rounded-2xl shadow-xs text-xl font-bold">🚀</div>
                             <div>
-                                <h3 class="text-lg font-bold text-slate-900 dark:text-white font-heading">Welcome to SecureVision AI Client Portal</h3>
+                                <h3 class="text-lg font-bold text-slate-900 dark:text-white font-heading">Welcome to Precision IT Systems Client Portal</h3>
                                 <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-2xl leading-relaxed">
                                     Submit your site installation or support requirements below. You can also calculate estimated costs, book a free engineer site survey, and inspect past deployment records.
                                 </p>
@@ -629,7 +629,7 @@
                                 </div>
                                 <div class="flex items-center justify-between p-2.5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700">
                                     <span class="text-slate-500 dark:text-slate-400 font-semibold">Email:</span>
-                                    <strong class="text-slate-800 dark:text-slate-200">support@cctvcrm.com</strong>
+                                    <a href="mailto:precisionitsystem@gmail.com" class="text-blue-600 dark:text-blue-400 font-semibold hover:underline">precisionitsystem@gmail.com</a>
                                 </div>
                             </div>
                         </div>

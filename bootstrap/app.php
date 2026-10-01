@@ -15,6 +15,9 @@ return Application::configure(basePath: dirname(__DIR__))
         // Trust Cloudflare Tunnel & all reverse proxies (fixes 419 CSRF error via tunnel)
         $middleware->trustProxies(at: '*');
 
+        // Security response headers (anti-clickjacking, XSS, MIME sniffing)
+        $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
+
         $middleware->validateCsrfTokens(except: [
             'api/*',
             'webhook/*',

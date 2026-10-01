@@ -215,8 +215,8 @@
                     </div>
 
                     <button type="submit"
-                            style="display: inline-flex; align-items: center; justify-content: center; background-color: #1e293b; color: #ffffff !important; border: 1px solid #0f172a; border-radius: 8px; padding: 7px 14px; font-size: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: background-color 0.15s;"
-                            onmouseover="this.style.backgroundColor='#0f172a'" onmouseout="this.style.backgroundColor='#1e293b'">
+                            class="btn-filter"
+                            style="display: inline-flex; align-items: center; justify-content: center; background-color: var(--crm-accent, #be123c); color: #ffffff !important; border-radius: 8px; padding: 7px 14px; font-size: 12px; font-weight: 700; cursor: pointer; border: none; box-shadow: 0 1px 2px rgba(0,0,0,0.1); transition: all 0.15s;">
                         Filter
                     </button>
 

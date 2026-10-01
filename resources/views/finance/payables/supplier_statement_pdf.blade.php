@@ -163,9 +163,9 @@
             <div class="meta-text">Generated On: {{ is_string($generatedAt) ? $generatedAt : $generatedAt->format('d M Y, h:i A') }}</div>
             <div class="meta-text">Account Ref: SUP-{{ str_pad($supplier->id, 5, '0', STR_PAD_LEFT) }}</div>
         </div>
-        <div class="company-title">Apex Security Solutions Pvt Ltd</div>
-        <div class="meta-text">GSTIN: 29AABCU9603R1ZM | CIN: U74999KA2024PTC123456</div>
-        <div class="meta-text">Accounts Payable Department | finance@apexsecurity.in</div>
+        <div class="company-title">Precision IT Systems</div>
+        <div class="meta-text">GSTIN: 33AHLPI3531N1Z8 | Avadi, Chennai-600054</div>
+        <div class="meta-text">Accounts Payable Department | precisionitsystem@gmail.com | +91-9677257774</div>
     </div>
 
     <table class="two-column">

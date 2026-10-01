@@ -135,7 +135,7 @@
             <td class="header-details">
                 <strong>Plot No.553, Lig-1, 27th Street, Tamil Nadu Housing Board,</strong><br>
                 Avadi, Chennai-600054.<br>
-                Contact No: 8939883299,<br>
+                Contact No: +91-9677257774,<br>
                 Email: precisionitsystem@gmail.com<br>
                 GSTIN: 33AHLPI3531N1Z8
             </td>

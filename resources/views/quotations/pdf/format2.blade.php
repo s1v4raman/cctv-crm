@@ -126,12 +126,12 @@
 <body>
 
     <div class="header-section">
-        <div class="company-name">NP SOLUTIONS</div>
+        <div class="company-name">PRECISION IT SYSTEMS</div>
         <div class="company-details">
-            NO 12 1ST MAIN ROAD SUBRAMANIYAPURAM, CHENNAI - 77<br>
-            Phone no. : 9884664108<br>
-            Email : npsolutions.in@gmail.com<br>
-            GSTIN : 33DNAPA0957C1ZQ<br>
+            Plot No.553, Lig-1, 27th Street, Tamil Nadu Housing Board, Avadi, Chennai-600054.<br>
+            Phone no. : +91-9677257774<br>
+            Email : precisionitsystem@gmail.com<br>
+            GSTIN : 33AHLPI3531N1Z8<br>
             State: 33-Tamil Nadu
         </div>
     </div>

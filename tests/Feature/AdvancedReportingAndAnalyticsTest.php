@@ -98,7 +98,7 @@ class AdvancedReportingAndAnalyticsTest extends TestCase
         ]);
 
         $analyticsService = app(ExecutiveAnalyticsService::class);
-        $result = $analyticsService->getTechnicianPerformanceDetails(Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth());
+        $result = $analyticsService->getTechnicianPerformanceDetails(Carbon::now()->subDays(10)->startOfDay(), Carbon::now()->endOfDay());
 
         $this->assertNotEmpty($result['technicians']);
         $techMetrics = collect($result['technicians'])->firstWhere('technician_id', $this->technician->id);

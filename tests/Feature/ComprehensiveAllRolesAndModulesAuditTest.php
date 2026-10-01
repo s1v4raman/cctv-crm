@@ -611,7 +611,7 @@ class ComprehensiveAllRolesAndModulesAuditTest extends TestCase
         // 1. Storefront Home
         $homeResponse = $this->get(route('home'));
         $homeResponse->assertOk();
-        $homeResponse->assertSee('PathSoft');
+        $homeResponse->assertSee('Precision IT Systems');
 
         // 2. Public Store Inquiry Engine
         $inquiryResponse = $this->post(route('public.inquire'), [

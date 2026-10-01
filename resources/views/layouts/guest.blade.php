@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'SecureVision AI') }}</title>
+        <title>{{ config('app.name', 'Precision IT Systems') }}</title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,16 +23,10 @@
         <!-- Minimal Brand Header -->
         <header class="border-b border-slate-800/80 bg-[#0B1120]/80 backdrop-blur-md px-6 py-4 flex justify-between items-center z-10">
             <a href="/" class="flex items-center gap-3 group">
-                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-600 p-0.5 shadow-lg shadow-amber-500/20">
-                    <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
-                        <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-                        </svg>
-                    </div>
-                </div>
+                <img src="{{ asset('logo.png') }}" alt="Precision IT Systems" class="h-10 w-auto object-contain bg-white/95 p-1 rounded-xl">
                 <div>
-                    <span class="font-heading font-black text-base text-white tracking-tight group-hover:text-amber-400 transition-colors">SecureVision<span class="text-amber-400"> AI</span></span>
-                    <span class="block text-[10px] font-bold uppercase tracking-widest text-slate-500 font-mono">Surveillance Operations</span>
+                    <span class="font-heading font-black text-base text-white tracking-tight group-hover:text-amber-400 transition-colors">Precision IT <span class="text-amber-400">Systems</span></span>
+                    <span class="block text-[10px] font-bold uppercase tracking-widest text-slate-500 font-mono">Security Operations</span>
                 </div>
             </a>
             <a href="/" class="text-xs text-slate-400 hover:text-white transition flex items-center gap-1.5 font-semibold">
@@ -48,7 +42,7 @@
         </main>
 
         <footer class="border-t border-slate-800/80 bg-[#060913] py-4 text-center text-xs text-slate-500 z-10">
-            © {{ date('Y') }} {{ config('app.name', 'SecureVision AI') }}. All rights reserved.
+            © {{ date('Y') }} {{ config('app.name', 'Precision IT Systems') }}. All rights reserved.
         </footer>
     </body>
 </html>

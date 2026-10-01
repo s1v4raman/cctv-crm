@@ -3,13 +3,18 @@
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <div class="flex items-center gap-2">
-                    <h2 class="text-xl font-extrabold text-white font-heading tracking-tight">Leads & Prospects</h2>
-                    <span class="text-[10px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded border border-amber-500/30">Pipeline</span>
+                    <h2 class="text-xl font-extrabold text-slate-900 dark:text-white font-heading tracking-tight">Leads & Prospects</h2>
+                    <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border"
+                          style="background-color: color-mix(in srgb, var(--crm-accent, #be123c) 15%, transparent); color: var(--crm-accent, #be123c); border-color: color-mix(in srgb, var(--crm-accent, #be123c) 30%, transparent);">
+                        Zoho CRM Custom View
+                    </span>
                 </div>
-                <p class="mt-1 text-xs text-slate-400">Manage client security inquiries, site survey bookings, and conversions</p>
+                <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Manage client security inquiries, site survey bookings, and conversions</p>
             </div>
             @if(auth()->user()->isAdmin() || auth()->user()->isStaff())
-            <a href="{{ route('leads.create') }}" class="btn-amber">
+            <a href="{{ route('leads.create') }}" 
+               class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-white font-bold text-xs shadow-md transition-all hover:scale-[1.02] active:scale-[0.98]"
+               style="background-color: var(--crm-accent, #be123c); box-shadow: 0 4px 12px -2px color-mix(in srgb, var(--crm-accent, #be123c) 40%, transparent);">
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
                 </svg>
@@ -20,35 +25,60 @@
     </x-slot>
 
     <style>
-        /* .pg-wrap uses global app.css */
-        /* .pg-inner uses global app.css */
-
         .pg-card {
-            background:#0f172a;
-            border-radius:1rem;
-            border:1px solid rgba(255, 255, 255, 0.08);
-            box-shadow:0 10px 25px -5px rgba(0, 0, 0, 0.5);
-            overflow:hidden;
+            background: #ffffff;
+            border-radius: 1rem;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        .dark .pg-card {
+            background: #0f172a;
+            border-color: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
         }
 
         .btn-edit {
             display:inline-flex; align-items:center; gap:.25rem;
             padding:.3rem .7rem; border-radius:.5rem;
             font-size:.72rem; font-weight:700;
-            background:rgba(59, 130, 246, 0.15); color:#60a5fa;
-            border:1px solid rgba(59, 130, 246, 0.3); text-decoration:none;
+            background:rgba(59, 130, 246, 0.12); color:#2563eb;
+            border:1px solid rgba(59, 130, 246, 0.25); text-decoration:none;
             transition:all .15s;
         }
-        .btn-edit:hover { background:rgba(59, 130, 246, 0.25); color:#93c5fd; }
+        .dark .btn-edit {
+            background:rgba(59, 130, 246, 0.15); color:#60a5fa;
+            border-color:rgba(59, 130, 246, 0.3);
+        }
+        .btn-edit:hover { background:rgba(59, 130, 246, 0.25); }
+
+        .btn-ticket {
+            display:inline-flex; align-items:center; gap:.25rem;
+            padding:.3rem .7rem; border-radius:.5rem;
+            font-size:.72rem; font-weight:700;
+            background:rgba(234, 88, 12, 0.12); color:#ea580c;
+            border:1px solid rgba(234, 88, 12, 0.25); text-decoration:none;
+            transition:all .15s;
+        }
+        .dark .btn-ticket {
+            background:rgba(234, 88, 12, 0.18); color:#fb923c;
+            border-color:rgba(234, 88, 12, 0.35);
+        }
+
         .btn-del {
             display:inline-flex; align-items:center; gap:.25rem;
             padding:.3rem .7rem; border-radius:.5rem;
             font-size:.72rem; font-weight:700;
-            background:rgba(244, 63, 94, 0.15); color:#fb7185;
-            border:1px solid rgba(244, 63, 94, 0.3); cursor:pointer;
+            background:rgba(244, 63, 94, 0.12); color:#e11d48;
+            border:1px solid rgba(244, 63, 94, 0.25); cursor:pointer;
             transition:all .15s; font-family:inherit;
         }
-        .btn-del:hover { background:rgba(244, 63, 94, 0.25); color:#fda4af; }
+        .dark .btn-del {
+            background:rgba(244, 63, 94, 0.15); color:#fb7185;
+            border-color:rgba(244, 63, 94, 0.3);
+        }
+        .btn-del:hover { background:rgba(244, 63, 94, 0.25); }
 
         /* Filter toolbar */
         .filter-bar {
@@ -56,49 +86,74 @@
             align-items:center;
             gap:.75rem;
             padding:1rem 1.25rem;
-            border-bottom:1px solid rgba(255, 255, 255, 0.08);
-            background:#0b1120;
+            border-bottom:1px solid #e2e8f0;
+            background:#f8fafc;
             flex-wrap:wrap;
         }
+        .dark .filter-bar {
+            border-bottom-color: rgba(255, 255, 255, 0.08);
+            background:#0b1120;
+        }
+
         .filter-bar input, .filter-bar select {
-            border:1px solid #334155;
+            border:1px solid #cbd5e1;
             border-radius:.6rem;
             padding:.5rem .9rem;
             font-size:.82rem;
-            color:#ffffff;
+            color:#0f172a;
+            background:#ffffff;
             outline:none;
             transition:border-color .15s;
         }
-        .filter-bar input:focus, .filter-bar select:focus { border-color:#f59e0b; }
+        .dark .filter-bar input, .dark .filter-bar select {
+            border-color:#334155;
+            color:#ffffff;
+            background:#0f172a;
+        }
+        .filter-bar input:focus, .filter-bar select:focus { border-color:var(--crm-accent, #be123c); }
         .filter-bar input { min-width:220px; }
 
         /* Table */
         .leads-table { width:100%; border-collapse:collapse; }
-        .leads-table thead { background:#0b1120; }
+        .leads-table thead { background:#f1f5f9; }
+        .dark .leads-table thead { background:#0b1120; }
+
         .leads-table thead th {
             padding:.75rem 1.25rem;
             font-size:.68rem;
             font-weight:800;
             text-transform:uppercase;
             letter-spacing:.06em;
-            color:#94a3b8;
+            color:#64748b;
             text-align:left;
             white-space:nowrap;
-            border-bottom:1px solid rgba(255, 255, 255, 0.05);
+            border-bottom:1px solid #e2e8f0;
         }
+        .dark .leads-table thead th {
+            color:#94a3b8;
+            border-bottom-color:rgba(255, 255, 255, 0.05);
+        }
+
         .leads-table tbody tr {
-            border-bottom:1px solid rgba(255, 255, 255, 0.05);
+            border-bottom:1px solid #f1f5f9;
             transition:background .12s;
         }
+        .dark .leads-table tbody tr {
+            border-bottom-color:rgba(255, 255, 255, 0.05);
+        }
         .leads-table tbody tr:last-child { border-bottom:none; }
-        .leads-table tbody tr:hover { background:#1e293b; }
+        .leads-table tbody tr:hover { background:#f8fafc; }
+        .dark .leads-table tbody tr:hover { background:#1e293b; }
         .leads-table tbody td { padding:.9rem 1.25rem; vertical-align:middle; }
 
-        .cell-name { font-size:.85rem; font-weight:700; color:#ffffff; }
-        .cell-name a { color:#f59e0b; text-decoration:none; transition:color .15s; }
-        .cell-name a:hover { color:#fbbf24; }
-        .cell-sub  { font-size:.72rem; color:#94a3b8; margin-top:.1rem; }
-        .cell-text { font-size:.82rem; color:#cbd5e1; }
+        .cell-name { font-size:.85rem; font-weight:700; color:#0f172a; }
+        .dark .cell-name { color:#ffffff; }
+        .cell-name a { color:var(--crm-accent, #be123c); text-decoration:none; transition:opacity .15s; }
+        .cell-name a:hover { opacity:0.85; text-decoration:underline; }
+        .cell-sub  { font-size:.72rem; color:#64748b; margin-top:.1rem; }
+        .dark .cell-sub { color:#94a3b8; }
+        .cell-text { font-size:.82rem; color:#334155; }
+        .dark .cell-text { color:#cbd5e1; }
 
         /* Badges */
         .badge {
@@ -107,14 +162,24 @@
             font-size:.68rem; font-weight:800; line-height:1.5;
             text-transform:uppercase; letter-spacing:.04em;
         }
-        .badge-new       { background:rgba(148, 163, 184, 0.15); color:#cbd5e1; border:1px solid rgba(148, 163, 184, 0.3); }
-        .badge-contacted { background:rgba(59, 130, 246, 0.15); color:#60a5fa; border:1px solid rgba(59, 130, 246, 0.3); }
-        .badge-quoted    { background:rgba(245, 158, 11, 0.15); color:#fbbf24; border:1px solid rgba(245, 158, 11, 0.3); }
-        .badge-won       { background:rgba(16, 185, 129, 0.15); color:#34d399; border:1px solid rgba(16, 185, 129, 0.3); }
-        .badge-lost      { background:rgba(244, 63, 94, 0.15); color:#fb7185; border:1px solid rgba(244, 63, 94, 0.3); }
+        .badge-new       { background:rgba(100, 116, 139, 0.12); color:#475569; border:1px solid rgba(100, 116, 139, 0.25); }
+        .dark .badge-new { background:rgba(148, 163, 184, 0.15); color:#cbd5e1; border-color:rgba(148, 163, 184, 0.3); }
+
+        .badge-contacted { background:rgba(59, 130, 246, 0.12); color:#2563eb; border:1px solid rgba(59, 130, 246, 0.25); }
+        .dark .badge-contacted { background:rgba(59, 130, 246, 0.15); color:#60a5fa; border-color:rgba(59, 130, 246, 0.3); }
+
+        .badge-quoted    { background:rgba(217, 119, 6, 0.12); color:#d97706; border:1px solid rgba(217, 119, 6, 0.25); }
+        .dark .badge-quoted { background:rgba(245, 158, 11, 0.15); color:#fbbf24; border-color:rgba(245, 158, 11, 0.3); }
+
+        .badge-won       { background:rgba(16, 185, 129, 0.12); color:#059669; border:1px solid rgba(16, 185, 129, 0.25); }
+        .dark .badge-won { background:rgba(16, 185, 129, 0.15); color:#34d399; border-color:rgba(16, 185, 129, 0.3); }
+
+        .badge-lost      { background:rgba(225, 29, 72, 0.12); color:#e11d48; border:1px solid rgba(225, 29, 72, 0.25); }
+        .dark .badge-lost { background:rgba(244, 63, 94, 0.15); color:#fb7185; border-color:rgba(244, 63, 94, 0.3); }
 
         /* Pagination */
-        .pg-links { padding:1rem 1.25rem; border-top:1px solid rgba(255, 255, 255, 0.08); }
+        .pg-links { padding:1rem 1.25rem; border-top:1px solid #e2e8f0; }
+        .dark .pg-links { border-top-color:rgba(255, 255, 255, 0.08); }
 
         /* Source badge */
         .source-tag {
@@ -123,10 +188,15 @@
             border-radius:.4rem;
             font-size:.7rem;
             font-weight:700;
+            background:#f1f5f9;
+            color:#475569;
+            border:1px solid #e2e8f0;
+            text-transform:capitalize;
+        }
+        .dark .source-tag {
             background:#1e293b;
             color:#94a3b8;
-            border:1px solid rgba(255, 255, 255, 0.05);
-            text-transform:capitalize;
+            border-color:rgba(255, 255, 255, 0.05);
         }
 
         /* Empty */
@@ -157,7 +227,7 @@
                     <div class="relative flex-1 min-w-[220px]">
                         <input type="text" name="search" id="lead-search" value="{{ request('search') }}" placeholder="Search customer, phone, address, company…" oninput="filterLeads()" class="w-full">
                     </div>
-                    <select name="status" id="lead-status-filter" onchange="this.form.submit()">
+                    <select name="status" id="lead-status-filter" onchange="filterLeads()" class="hidden sm:inline-block">
                         <option value="">All Statuses</option>
                         <option value="new" @selected(request('status') === 'new')>New</option>
                         <option value="contacted" @selected(request('status') === 'contacted')>Contacted</option>
@@ -165,16 +235,54 @@
                         <option value="won" @selected(request('status') === 'won')>Won</option>
                         <option value="lost" @selected(request('status') === 'lost')>Lost</option>
                     </select>
-                    <button type="submit" class="px-3 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-lg transition shadow">
-                        Search
+                    <button type="button" onclick="filterLeads()" 
+                            class="px-3 py-2 text-white font-bold text-xs rounded-lg transition shadow-xs"
+                            style="background-color: var(--crm-accent, #be123c);">
+                        Filter
                     </button>
                     @if(request('search') || request('status'))
-                        <a href="{{ route('leads.index') }}" class="px-2.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-lg transition">
-                            Clear
+                        <a href="{{ route('leads.index') }}" class="px-2.5 py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold rounded-lg transition">
+                            Reset
                         </a>
                     @endif
-                    <span id="lead-count" class="text-xs text-slate-400 ml-auto"></span>
+                    <span id="lead-count" class="text-xs text-slate-500 dark:text-slate-400 ml-auto"></span>
                 </form>
+
+                {{-- Zoho CRM Custom View Quick Filter Tabs --}}
+                <div class="px-4 py-2 bg-slate-50 dark:bg-[#0b1120] border-b border-slate-200 dark:border-slate-800/80 flex items-center gap-1.5 overflow-x-auto text-xs font-semibold">
+                    <span class="text-slate-400 text-[11px] font-bold uppercase tracking-wider mr-1">Views:</span>
+                    <button type="button" onclick="setCustomViewFilter('')" 
+                            id="view-tab-all"
+                            class="custom-view-pill px-3 py-1 rounded-full text-xs font-bold transition-all"
+                            style="background-color: var(--crm-accent, #be123c); color: #ffffff;">
+                        All Leads ({{ $leads->total() }})
+                    </button>
+                    <button type="button" onclick="setCustomViewFilter('new')" 
+                            id="view-tab-new"
+                            class="custom-view-pill px-3 py-1 rounded-full text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all">
+                        New
+                    </button>
+                    <button type="button" onclick="setCustomViewFilter('contacted')" 
+                            id="view-tab-contacted"
+                            class="custom-view-pill px-3 py-1 rounded-full text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all">
+                        Contacted
+                    </button>
+                    <button type="button" onclick="setCustomViewFilter('quoted')" 
+                            id="view-tab-quoted"
+                            class="custom-view-pill px-3 py-1 rounded-full text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all">
+                        Quoted
+                    </button>
+                    <button type="button" onclick="setCustomViewFilter('won')" 
+                            id="view-tab-won"
+                            class="custom-view-pill px-3 py-1 rounded-full text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all">
+                        Won
+                    </button>
+                    <button type="button" onclick="setCustomViewFilter('lost')" 
+                            id="view-tab-lost"
+                            class="custom-view-pill px-3 py-1 rounded-full text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all">
+                        Lost
+                    </button>
+                </div>
 
                 <div class="overflow-x-auto">
                     <table class="leads-table" id="leads-table">
@@ -276,14 +384,30 @@
     </div>
 
     <script>
+    function setCustomViewFilter(status) {
+        document.getElementById('lead-status-filter').value = status;
+        document.querySelectorAll('.custom-view-pill').forEach(el => {
+            el.style.backgroundColor = '';
+            el.style.color = '';
+            el.className = 'custom-view-pill px-3 py-1 rounded-full text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all';
+        });
+        const activeTab = document.getElementById('view-tab-' + (status || 'all'));
+        if (activeTab) {
+            activeTab.className = 'custom-view-pill px-3 py-1 rounded-full text-xs font-bold transition-all';
+            activeTab.style.backgroundColor = 'var(--crm-accent, #be123c)';
+            activeTab.style.color = '#ffffff';
+        }
+        filterLeads();
+    }
+
     function filterLeads() {
-        const q      = document.getElementById('lead-search').value.toLowerCase();
+        const q      = (document.getElementById('lead-search').value || '').toLowerCase();
         const status = document.getElementById('lead-status-filter').value;
         const rows   = document.querySelectorAll('.lead-row');
         let visible  = 0;
 
         rows.forEach(row => {
-            const nameMatch   = row.dataset.name.includes(q) || row.dataset.phone.includes(q);
+            const nameMatch   = (row.dataset.name || '').includes(q) || (row.dataset.phone || '').includes(q);
             const statusMatch = !status || row.dataset.status === status;
             const show        = nameMatch && statusMatch;
             row.style.display = show ? '' : 'none';
@@ -296,7 +420,12 @@
                               : `${visible} of ${total} leads`;
     }
 
-    // init count
-    filterLeads();
+    // Initialize custom view pill from current URL param if present
+    const urlStatus = "{{ request('status') }}";
+    if (urlStatus) {
+        setCustomViewFilter(urlStatus);
+    } else {
+        filterLeads();
+    }
     </script>
 </x-app-layout>

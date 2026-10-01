@@ -191,7 +191,8 @@ class JobCompletionReportController extends Controller
             // Save uploaded handover photos
             if ($request->hasFile('photos')) {
                 foreach ($request->file('photos') as $index => $file) {
-                    $filename = uniqid('jcr_') . '_' . time() . '.' . $file->getClientOriginalExtension();
+                    $extension = $file->extension() ?: 'jpg';
+                    $filename = uniqid('jcr_') . '_' . time() . '.' . $extension;
                     $file->storeAs('jcr-photos', $filename, 'public');
 
                     $report->photos()->create([

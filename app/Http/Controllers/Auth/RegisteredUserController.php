@@ -72,6 +72,6 @@ class RegisteredUserController extends Controller
         Auth::login($user);
 
         return redirect(route('portal.dashboard', absolute: false))
-            ->with('status', 'Welcome to your SecureVision Customer Portal! You can now track your quotations, service tickets, AMC warranties, and book new site surveys.');
+            ->with('status', 'Welcome to your Precision IT Systems Customer Portal! You can now track your quotations, service tickets, AMC warranties, and book new site surveys.');
     }
 }

@@ -388,7 +388,7 @@ class AttendanceAndFinanceModuleTest extends TestCase
             'end_date'     => $endDate,
             'status'       => 'present',
             'daily_hours'  => 8.0,
-            'skip_sundays' => 1,
+            'skip_sundays' => 0,
         ]);
 
         $rangeResponse->assertSessionHas('status');

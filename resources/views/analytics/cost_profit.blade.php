@@ -10,7 +10,8 @@
             </div>
             <div class="flex items-center gap-2">
                 <a href="{{ route('analytics.cost-profit.export-pdf', ['range' => $selectedRange, 'start_date' => $startDate->format('Y-m-d'), 'end_date' => $endDate->format('Y-m-d')]) }}"
-                   class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white text-xs font-extrabold shadow-[0_4px_14px_rgba(16,185,129,0.25)] transition">
+                   class="crm-btn-primary btn-amber inline-flex items-center gap-2 px-4 py-2 rounded-xl text-white text-xs font-extrabold shadow-md transition"
+                   style="background: linear-gradient(135deg, var(--crm-accent, #10b981), var(--crm-accent-hover, #059669));">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
                     Export Cost-Profit PDF
                 </a>
@@ -24,19 +25,23 @@
             {{-- Navigation Sub-Tabs --}}
             <div class="flex items-center gap-2 border-b border-slate-200 dark:border-white/5 pb-3 overflow-x-auto">
                 <a href="{{ route('analytics.index', ['range' => $selectedRange]) }}"
-                   class="px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap {{ request()->routeIs('analytics.index') ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-black shadow-md' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60' }}">
+                   class="px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap {{ request()->routeIs('analytics.index') ? 'crm-tab-active text-white font-black shadow-md' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60' }}"
+                   @if(request()->routeIs('analytics.index')) style="background: linear-gradient(135deg, var(--crm-accent, #f59e0b), var(--crm-accent-hover, #d97706)); color: #fff;" @endif>
                     📊 Executive Overview
                 </a>
                 <a href="{{ route('analytics.cost-profit', ['range' => $selectedRange]) }}"
-                   class="px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap {{ request()->routeIs('analytics.cost-profit') ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-black shadow-[0_4px_14px_rgba(16,185,129,0.25)]' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60' }}">
+                   class="px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap {{ request()->routeIs('analytics.cost-profit') ? 'crm-tab-active text-white font-black shadow-md' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60' }}"
+                   @if(request()->routeIs('analytics.cost-profit')) style="background: linear-gradient(135deg, var(--crm-accent, #10b981), var(--crm-accent-hover, #059669)); color: #fff;" @endif>
                     💰 Cost &amp; Profit (Without Tax &amp; Minus Salary)
                 </a>
                 <a href="{{ route('analytics.technicians', ['range' => $selectedRange]) }}"
-                   class="px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap {{ request()->routeIs('analytics.technicians') ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-black shadow-md' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60' }}">
+                   class="px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap {{ request()->routeIs('analytics.technicians') ? 'crm-tab-active text-white font-black shadow-md' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60' }}"
+                   @if(request()->routeIs('analytics.technicians')) style="background: linear-gradient(135deg, var(--crm-accent, #f59e0b), var(--crm-accent-hover, #d97706)); color: #fff;" @endif>
                     🛠️ Technician Performance (FTFR &amp; MTTR)
                 </a>
                 <a href="{{ route('analytics.mrr-retention', ['range' => $selectedRange]) }}"
-                   class="px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap {{ request()->routeIs('analytics.mrr-retention') ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-black shadow-md' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60' }}">
+                   class="px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap {{ request()->routeIs('analytics.mrr-retention') ? 'crm-tab-active text-white font-black shadow-md' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60' }}"
+                   @if(request()->routeIs('analytics.mrr-retention')) style="background: linear-gradient(135deg, var(--crm-accent, #f59e0b), var(--crm-accent-hover, #d97706)); color: #fff;" @endif>
                     📈 Monthly Revenue &amp; AMC Retention
                 </a>
             </div>
@@ -46,27 +51,27 @@
                 <div class="flex flex-wrap items-center gap-1.5 text-xs">
                     <span class="text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider text-[11px] mr-2">Analysis Period:</span>
                     <a href="{{ route('analytics.cost-profit', ['range' => 'today']) }}"
-                       class="px-3 py-1.5 rounded-xl font-bold transition {{ $selectedRange === 'today' ? 'bg-emerald-600 text-white shadow-xs' : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300' }}">
+                       class="px-3 py-1.5 rounded-xl font-bold transition {{ $selectedRange === 'today' ? 'crm-pill-active bg-emerald-600 text-white shadow-xs' : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300' }}">
                         Today
                     </a>
                     <a href="{{ route('analytics.cost-profit', ['range' => 'this_month']) }}"
-                       class="px-3 py-1.5 rounded-xl font-bold transition {{ $selectedRange === 'this_month' ? 'bg-emerald-600 text-white shadow-xs' : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300' }}">
+                       class="px-3 py-1.5 rounded-xl font-bold transition {{ $selectedRange === 'this_month' ? 'crm-pill-active bg-emerald-600 text-white shadow-xs' : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300' }}">
                         This Month
                     </a>
                     <a href="{{ route('analytics.cost-profit', ['range' => 'last_month']) }}"
-                       class="px-3 py-1.5 rounded-xl font-bold transition {{ $selectedRange === 'last_month' ? 'bg-emerald-600 text-white shadow-xs' : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300' }}">
+                       class="px-3 py-1.5 rounded-xl font-bold transition {{ $selectedRange === 'last_month' ? 'crm-pill-active bg-emerald-600 text-white shadow-xs' : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300' }}">
                         Last Month
                     </a>
                     <a href="{{ route('analytics.cost-profit', ['range' => 'this_quarter']) }}"
-                       class="px-3 py-1.5 rounded-xl font-bold transition {{ $selectedRange === 'this_quarter' ? 'bg-emerald-600 text-white shadow-xs' : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300' }}">
+                       class="px-3 py-1.5 rounded-xl font-bold transition {{ $selectedRange === 'this_quarter' ? 'crm-pill-active bg-emerald-600 text-white shadow-xs' : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300' }}">
                         This Quarter
                     </a>
                     <a href="{{ route('analytics.cost-profit', ['range' => 'this_year']) }}"
-                       class="px-3 py-1.5 rounded-xl font-bold transition {{ $selectedRange === 'this_year' ? 'bg-emerald-600 text-white shadow-xs' : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300' }}">
+                       class="px-3 py-1.5 rounded-xl font-bold transition {{ $selectedRange === 'this_year' ? 'crm-pill-active bg-emerald-600 text-white shadow-xs' : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300' }}">
                         This Year (FY)
                     </a>
                     <a href="{{ route('analytics.cost-profit', ['range' => 'all_time']) }}"
-                       class="px-3 py-1.5 rounded-xl font-bold transition {{ $selectedRange === 'all_time' ? 'bg-emerald-600 text-white shadow-xs' : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300' }}">
+                       class="px-3 py-1.5 rounded-xl font-bold transition {{ $selectedRange === 'all_time' ? 'crm-pill-active bg-emerald-600 text-white shadow-xs' : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300' }}">
                         All Time
                     </a>
                 </div>

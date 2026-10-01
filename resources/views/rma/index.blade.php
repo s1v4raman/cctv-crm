@@ -9,7 +9,8 @@
                 <p class="mt-1 text-sm text-slate-400 font-medium">Manage faulty hardware returns, supplier repairs, tracking challans & warranty replacements</p>
             </div>
             <a href="{{ route('rma.create') }}"
-               class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 text-xs font-extrabold shadow-[0_4px_14px_rgba(245,158,11,0.25)] transition">
+               class="crm-btn-primary btn-amber inline-flex items-center gap-2 px-4 py-2 rounded-xl text-white text-xs font-extrabold shadow-md transition"
+               style="background: linear-gradient(135deg, var(--crm-accent, #f59e0b), var(--crm-accent-hover, #d97706));">
                 <span>+</span> Raise New RMA Claim
             </a>
         </div>
