@@ -63,7 +63,8 @@
 
                                 <div class="flex items-center gap-2 pt-2 border-t border-slate-200 dark:border-slate-700 flex-wrap">
                                     <a href="{{ route('payment.checkout.quotation', $quote) }}"
-                                       class="flex-1 min-w-[140px] px-3.5 py-2 bg-[#2563eb] hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-xs text-center transition">
+                                       class="crm-customer-action-btn flex-1 min-w-[140px] px-3.5 py-2 text-white font-bold text-xs rounded-xl shadow-xs text-center transition-all duration-200 cursor-pointer"
+                                       style="background: linear-gradient(135deg, var(--crm-accent, #be123c), var(--crm-accent-hover, #9f1239)); border: 1px solid var(--crm-accent, #be123c); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(190,18,60,0.35));">
                                         💳 Pay Advance / Cash →
                                     </a>
                                     <a href="{{ route('quotations.public-pdf', ['quotation' => $quote->id]) }}" target="_blank"
@@ -86,7 +87,9 @@
                         <h3 class="text-xl font-bold text-slate-900 dark:text-white font-heading">No Invoices Issued Yet</h3>
                         <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">When an installation project, spare parts order, or AMC contract is billed, your official GST tax invoices and payment receipts will appear here.</p>
                         <div class="pt-2">
-                            <a href="{{ route('portal.quotations') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#2563eb] hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-xs transition">
+                            <a href="{{ route('portal.quotations') }}" 
+                               class="crm-customer-action-btn inline-flex items-center gap-2 px-5 py-2.5 text-white font-bold text-xs rounded-xl shadow-xs transition-all duration-200 cursor-pointer"
+                               style="background: linear-gradient(135deg, var(--crm-accent, #be123c), var(--crm-accent-hover, #9f1239)); border: 1px solid var(--crm-accent, #be123c); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(190,18,60,0.35));">
                                 Review CCTV Quotations →
                             </a>
                         </div>

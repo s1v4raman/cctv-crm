@@ -11,7 +11,8 @@
                 <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Raise support requests for offline cameras, DVR issues, recording errors, and track resolution in realtime.</p>
             </div>
             <a href="{{ route('portal.tickets.create') }}" 
-               class="inline-flex items-center gap-2 px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors">
+               class="crm-customer-action-btn inline-flex items-center gap-2 px-4 py-2 text-white text-xs font-bold rounded-xl shadow-xs transition-all duration-200 cursor-pointer"
+               style="background: linear-gradient(135deg, var(--crm-accent, #be123c), var(--crm-accent-hover, #9f1239)); border: 1px solid var(--crm-accent, #be123c); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(190,18,60,0.35));">
                 <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
                 <span>Log New Service Ticket</span>
             </a>
@@ -29,7 +30,9 @@
                     <h3 class="text-xl font-bold text-slate-900 dark:text-white font-heading">No Support Tickets Logged</h3>
                     <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">All your CCTV cameras and security equipment are operating normally. If any issue arises, log a breakdown ticket for immediate engineer dispatch.</p>
                     <div class="pt-2">
-                        <a href="{{ route('portal.tickets.create') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl shadow-xs transition">
+                        <a href="{{ route('portal.tickets.create') }}" 
+                           class="crm-customer-action-btn inline-flex items-center gap-2 px-5 py-2.5 text-white font-bold text-xs rounded-xl shadow-xs transition-all duration-200 cursor-pointer"
+                           style="background: linear-gradient(135deg, var(--crm-accent, #be123c), var(--crm-accent-hover, #9f1239)); border: 1px solid var(--crm-accent, #be123c); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(190,18,60,0.35));">
                             Report Camera Issue →
                         </a>
                     </div>
@@ -74,7 +77,8 @@
                     {{-- Status Pills --}}
                     <div class="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
                         <a href="{{ route('portal.tickets', ['status' => 'all', 'search' => request('search')]) }}" 
-                           class="px-3 py-1.5 rounded-xl text-xs font-semibold transition shrink-0 {{ $statusFilter === 'all' ? 'bg-[#2563eb] text-white font-bold shadow-xs' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700' }}">
+                           class="px-3 py-1.5 rounded-xl text-xs font-semibold transition shrink-0 {{ $statusFilter === 'all' ? 'crm-customer-action-btn text-white font-bold shadow-xs' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700' }}"
+                           @if($statusFilter === 'all') style="background: linear-gradient(135deg, var(--crm-accent, #be123c), var(--crm-accent-hover, #9f1239)); border: 1px solid var(--crm-accent, #be123c);" @endif>
                             All Tickets
                         </a>
                         <a href="{{ route('portal.tickets', ['status' => 'open', 'search' => request('search')]) }}" 
@@ -100,7 +104,9 @@
                                    class="w-full pl-9 pr-4 py-2 text-xs font-semibold rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 focus:outline-none">
                             <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                         </div>
-                        <button type="submit" class="px-4 py-2 bg-[#2563eb] hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-xs transition shrink-0">
+                        <button type="submit" 
+                                class="crm-customer-action-btn px-4 py-2 text-white text-xs font-bold rounded-xl shadow-xs transition-all duration-200 shrink-0 cursor-pointer"
+                                style="background: linear-gradient(135deg, var(--crm-accent, #be123c), var(--crm-accent-hover, #9f1239)); border: 1px solid var(--crm-accent, #be123c); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(190,18,60,0.35));">
                             Find
                         </button>
                     </form>

@@ -11,10 +11,11 @@
                 <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Track routine CCTV camera servicing visits, technician audit reports, and contract validity.</p>
             </div>
             
-            {{-- Action Button (Opens Renewal Modal) --}}
+            {{-- Action Button (Opens Renewal Modal - Dynamic Accent) --}}
             <button type="button" 
                     onclick="document.getElementById('amcRenewalModal').classList.remove('hidden')"
-                    class="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors">
+                    class="crm-customer-action-btn inline-flex items-center gap-2 px-4 py-2 text-white text-xs font-bold rounded-xl shadow-xs transition-all duration-200 cursor-pointer"
+                    style="background: linear-gradient(135deg, var(--crm-accent, #be123c), var(--crm-accent-hover, #9f1239)); border: 1px solid var(--crm-accent, #be123c); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(190,18,60,0.35));">
                 <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                 <span>Request AMC Renewal / Plan</span>
             </button>
@@ -44,7 +45,8 @@
                     <div class="pt-2">
                         <button type="button" 
                                 onclick="document.getElementById('amcRenewalModal').classList.remove('hidden')"
-                                class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-xs transition">
+                                class="crm-customer-action-btn px-6 py-2.5 text-white font-bold text-xs rounded-xl shadow-xs transition-all duration-200 cursor-pointer"
+                                style="background: linear-gradient(135deg, var(--crm-accent, #be123c), var(--crm-accent-hover, #9f1239)); border: 1px solid var(--crm-accent, #be123c); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(190,18,60,0.35));">
                             Request AMC Plan Quote Now →
                         </button>
                     </div>
@@ -209,7 +211,8 @@
                         Cancel
                     </button>
                     <button type="submit" 
-                            class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-xs transition">
+                            class="crm-customer-action-btn px-5 py-2.5 text-white text-xs font-bold rounded-xl shadow-xs transition-all duration-200 cursor-pointer"
+                            style="background: linear-gradient(135deg, var(--crm-accent, #be123c), var(--crm-accent-hover, #9f1239)); border: 1px solid var(--crm-accent, #be123c); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(190,18,60,0.35));">
                         Submit Renewal Request
                     </button>
                 </div>

@@ -112,7 +112,8 @@
                             Cancel
                         </a>
                         <button type="submit" 
-                                class="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-xs transition">
+                                class="crm-customer-action-btn px-5 py-2.5 text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-xs transition-all duration-200 cursor-pointer"
+                                style="background: linear-gradient(135deg, var(--crm-accent, #be123c), var(--crm-accent-hover, #9f1239)); border: 1px solid var(--crm-accent, #be123c); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(190,18,60,0.35));">
                             Submit Service Request
                         </button>
                     </div>

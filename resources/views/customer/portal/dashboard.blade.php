@@ -19,7 +19,8 @@
                 {{-- 1-Click Book Free Site Survey Button in Header --}}
                 <button type="button" 
                         onclick="document.getElementById('siteSurveyBookingModal').classList.remove('hidden')"
-                        class="inline-flex items-center gap-2 px-3.5 py-2 bg-[#2563eb] hover:bg-blue-700 text-white font-semibold text-xs rounded-xl shadow-xs transition-colors">
+                        class="crm-customer-action-btn inline-flex items-center gap-2 px-3.5 py-2 text-white font-semibold text-xs rounded-xl shadow-xs transition-all duration-200 cursor-pointer"
+                        style="background: linear-gradient(135deg, var(--crm-accent, #be123c), var(--crm-accent-hover, #9f1239)); border: 1px solid var(--crm-accent, #be123c); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(190,18,60,0.35));">
                     <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                     </svg>
@@ -104,7 +105,8 @@
                         <div class="flex items-center gap-2.5 shrink-0 flex-wrap">
                             <button type="button" 
                                     onclick="document.getElementById('siteSurveyBookingModal').classList.remove('hidden')"
-                                    class="px-4 py-2.5 bg-[#2563eb] hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-xs transition">
+                                    class="crm-customer-action-btn px-4 py-2.5 text-white text-xs font-bold rounded-xl shadow-xs transition-all duration-200 cursor-pointer"
+                                    style="background: linear-gradient(135deg, var(--crm-accent, #be123c), var(--crm-accent-hover, #9f1239)); border: 1px solid var(--crm-accent, #be123c); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(190,18,60,0.35));">
                                 📅 Book Free Survey
                             </button>
                             <a href="{{ route('home') }}" 
@@ -185,7 +187,8 @@
                             <div class="flex items-center justify-between pt-2">
                                 <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">⚡ Average engineer assignment response time: &lt; 30 minutes</span>
                                 <button type="submit" 
-                                        class="px-6 py-2.5 bg-[#2563eb] hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-xs transition">
+                                        class="crm-customer-action-btn px-6 py-2.5 text-white font-bold text-xs rounded-xl shadow-xs transition-all duration-200 cursor-pointer"
+                                        style="background: linear-gradient(135deg, var(--crm-accent, #be123c), var(--crm-accent-hover, #9f1239)); border: 1px solid var(--crm-accent, #be123c); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(190,18,60,0.35));">
                                     Submit Request to Operations →
                                 </button>
                             </div>
@@ -784,7 +787,8 @@
                         Cancel
                     </button>
                     <button type="submit"
-                            class="px-6 py-2.5 bg-[#2563eb] hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-xs transition">
+                            class="crm-customer-action-btn px-6 py-2.5 text-white font-bold text-xs rounded-xl shadow-xs transition-all duration-200 cursor-pointer"
+                            style="background: linear-gradient(135deg, var(--crm-accent, #be123c), var(--crm-accent-hover, #9f1239)); border: 1px solid var(--crm-accent, #be123c); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(190,18,60,0.35));">
                         Confirm Survey Booking →
                     </button>
                 </div>

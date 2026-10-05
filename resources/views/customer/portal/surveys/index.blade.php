@@ -11,7 +11,8 @@
                 <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Review engineer inspection reports, camera placement diagrams, cabling estimates, and site photos.</p>
             </div>
             <a href="{{ route('portal.tickets.create') }}" 
-               class="inline-flex items-center gap-2 px-4 py-2 bg-[#2563eb] hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors">
+               class="crm-customer-action-btn inline-flex items-center gap-2 px-4 py-2 text-white text-xs font-bold rounded-xl shadow-xs transition-all duration-200 cursor-pointer"
+               style="background: linear-gradient(135deg, var(--crm-accent, #be123c), var(--crm-accent-hover, #9f1239)); border: 1px solid var(--crm-accent, #be123c); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(190,18,60,0.35));">
                 <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
                 <span>Request New Site Survey</span>
             </a>
@@ -31,7 +32,9 @@
                         A CCTV Site Survey helps our field engineers inspect your property, identify optimal camera mounting angles, eliminate blind spots, and calculate exact cable runs.
                     </p>
                     <div class="pt-2">
-                        <a href="{{ route('portal.tickets.create') }}" class="inline-flex items-center gap-2 px-6 py-2.5 bg-[#2563eb] hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-xs transition">
+                        <a href="{{ route('portal.tickets.create') }}" 
+                           class="crm-customer-action-btn inline-flex items-center gap-2 px-6 py-2.5 text-white font-bold text-xs rounded-xl shadow-xs transition-all duration-200 cursor-pointer"
+                           style="background: linear-gradient(135deg, var(--crm-accent, #be123c), var(--crm-accent-hover, #9f1239)); border: 1px solid var(--crm-accent, #be123c); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(190,18,60,0.35));">
                             Book Free Site Survey Now →
                         </a>
                     </div>

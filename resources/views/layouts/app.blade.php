@@ -404,10 +404,11 @@
                                     </div>
                                 </div>
                             @elseif(auth()->user()->isCustomer())
-                                {{-- Quick Report Button for Customer --}}
+                                {{-- Quick Report Button for Customer (Dynamic Accent) --}}
                                 <a href="{{ route('portal.tickets.create') }}" 
-                                   class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 dark:hover:bg-blue-900/60 text-blue-700 dark:text-blue-300 font-bold text-sm border border-blue-200 dark:border-blue-800 transition shadow-2xs">
-                                    <svg class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                                   class="crm-customer-header-action inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-white font-bold text-sm transition shadow-sm"
+                                   style="background: linear-gradient(135deg, var(--crm-accent, #be123c), var(--crm-accent-hover, #9f1239)); border: 1px solid var(--crm-accent, #be123c);">
+                                    <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
                                     <span class="hidden sm:inline">Report Issue</span>
                                 </a>
                             @endif
