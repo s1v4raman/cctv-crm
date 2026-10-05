@@ -53,4 +53,11 @@ document.addEventListener('DOMContentLoaded', () => {
     window.initAllSearchableSelects();
 });
 
-Alpine.start();
+if (!window.AlpineStarted) {
+    window.AlpineStarted = true;
+    try {
+        Alpine.start();
+    } catch (e) {
+        // Alpine already initialized or started via CDN
+    }
+}

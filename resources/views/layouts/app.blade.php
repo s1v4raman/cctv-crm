@@ -7,507 +7,39 @@
 
         <title>{{ config('app.name', 'Precision IT Systems CRM') }} | Smart Operations</title>
 
-        <!-- Zoho CRM Theme & Mode Initialization (Prevents Flash of Unstyled Content) -->
-        <script>
-            window.applyGlobalCrmAccent = function(hex) {
-                if (!hex) hex = '#be123c';
-                
-                // Calculate darker hover/active hex color accurately
-                let hoverHex = hex;
-                try {
-                    let num = parseInt(hex.replace('#', ''), 16);
-                    let r = Math.max(0, ((num >> 16) & 255) - 25);
-                    let g = Math.max(0, ((num >> 8) & 255) - 25);
-                    let b = Math.max(0, (num & 255) - 25);
-                    hoverHex = '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
-                } catch(e) {}
-
-                document.documentElement.style.setProperty('--crm-accent', hex);
-                document.documentElement.style.setProperty('--crm-accent-hover', hoverHex);
-
-                let styleEl = document.getElementById('crm-dynamic-theme-overrides');
-                if (!styleEl) {
-                    styleEl = document.createElement('style');
-                    styleEl.id = 'crm-dynamic-theme-overrides';
-                }
-                // Always re-append to document.head so it is physically the last stylesheet in <head> (overrides Vite CSS)
-                document.head.appendChild(styleEl);
-
-                styleEl.textContent = `
-                    :root {
-                        --crm-accent: ${hex} !important;
-                        --crm-accent-hover: ${hoverHex} !important;
-                        --crm-accent-shadow: ${hex}40 !important;
-                        --brand-blue: ${hex} !important;
-                        --brand-blue-hover: ${hoverHex} !important;
-                    }
-                    
-                    /* =========================================================
-                       1. SIDEBAR & NAVIGATION ACTIVE / ACCENT BUTTONS
-                       ========================================================= */
-                    aside nav a.crm-active-link,
-                    aside nav a[class*="!bg-blue-600"],
-                    aside nav a[class*="bg-blue-600"],
-                    .crm-active-link,
-                    [class*="!bg-blue-600"] {
-                        background-color: ${hex} !important;
-                        border-color: ${hex} !important;
-                        color: #ffffff !important;
-                        box-shadow: 0 4px 14px -1px ${hex}55 !important;
-                    }
-
-                    aside nav a.crm-active-link:hover,
-                    aside nav a[class*="!bg-blue-600"]:hover,
-                    .crm-active-link:hover {
-                        background-color: ${hoverHex} !important;
-                        border-color: ${hoverHex} !important;
-                    }
-
-                    /* Sidebar User Accounts & Settings navigation button */
-                    aside nav a[href*="admin/users"].crm-active-link,
-                    aside nav a[href*="admin/users"][class*="!bg-blue-600"],
-                    aside nav a[href*="admin.users"].crm-active-link {
-                        background-color: ${hex} !important;
-                        border-color: ${hex} !important;
-                        color: #ffffff !important;
-                        box-shadow: 0 4px 14px -1px ${hex}55 !important;
-                    }
-                    aside nav a[href*="admin/users"]:hover:not(.crm-active-link) svg,
-                    aside nav a[href*="admin.users"]:hover:not(.crm-active-link) svg {
-                        color: ${hex} !important;
-                    }
-
-                    /* Sidebar Settings icon button (gear) */
-                    a[title="Profile Settings"]:hover,
-                    a[href*="profile"]:hover {
-                        color: ${hex} !important;
-                        background-color: ${hex}18 !important;
-                    }
-                    a[title="Profile Settings"]:hover svg,
-                    a[href*="profile"]:hover svg {
-                        color: ${hex} !important;
-                    }
-
-                    /* =========================================================
-                       2. USER ACCOUNT MENU & DROPDOWN SETTINGS BUTTONS
-                       ========================================================= */
-                    /* Top Header User Account pill button */
-                    button[aria-label="User account menu"]:hover,
-                    button[aria-label="User account menu"]:focus,
-                    button[aria-label="User account menu"][aria-expanded="true"] {
-                        border-color: ${hex}70 !important;
-                        background-color: ${hex}10 !important;
-                        box-shadow: 0 0 0 2px ${hex}25 !important;
-                    }
-
-                    /* User Dropdown links hover */
-                    button[aria-label="User account menu"] + div a:hover,
-                    button[aria-label="User account menu"] + div button:hover {
-                        color: ${hex} !important;
-                    }
-                    button[aria-label="User account menu"] + div a:hover svg,
-                    button[aria-label="User account menu"] + div button:hover svg {
-                        color: ${hex} !important;
-                    }
-
-                    /* User Role Badge in Dropdown */
-                    button[aria-label="User account menu"] + div span.uppercase.font-bold {
-                        border-color: ${hex}40 !important;
-                        color: ${hex} !important;
-                        background-color: ${hex}15 !important;
-                    }
-
-                    /* =========================================================
-                       3. FILTER BUTTONS & CONTROLS
-                       ========================================================= */
-                    .btn-filter,
-                    button.btn-filter,
-                    a.btn-filter,
-                    .btn-adjust,
-                    button.btn-adjust,
-                    a.btn-adjust,
-                    button[onclick*="filter"],
-                    button[onclick*="Filter"],
-                    button[onclick*="filterLeads"],
-                    form[class*="filter"] button[type="submit"]:not(.btn-clear):not([class*="bg-slate"]):not([class*="bg-rose"]),
-                    form.filter-bar button[type="submit"]:not(.btn-clear):not([class*="bg-slate"]):not([class*="bg-rose"]),
-                    .filter-bar button[type="submit"]:not(.btn-clear):not([class*="bg-slate"]):not([class*="bg-rose"]) {
-                        background-color: ${hex} !important;
-                        background-image: none !important;
-                        border-color: ${hex} !important;
-                        color: #ffffff !important;
-                        box-shadow: 0 2px 8px -1px ${hex}55 !important;
-                    }
-
-                    .btn-filter:hover,
-                    button.btn-filter:hover,
-                    a.btn-filter:hover,
-                    .btn-adjust:hover,
-                    button.btn-adjust:hover,
-                    a.btn-adjust:hover,
-                    button[onclick*="filter"]:hover,
-                    button[onclick*="Filter"]:hover,
-                    button[onclick*="filterLeads"]:hover,
-                    form[class*="filter"] button[type="submit"]:not(.btn-clear):hover,
-                    form.filter-bar button[type="submit"]:not(.btn-clear):hover,
-                    .filter-bar button[type="submit"]:not(.btn-clear):hover {
-                        background-color: ${hoverHex} !important;
-                        border-color: ${hoverHex} !important;
-                        color: #ffffff !important;
-                    }
-
-                    /* Active Filter Tabs & Pills (Leads, Admin Users, Service Tickets, Analytics, etc.) */
-                    .filter-tab.active,
-                    html:not(.dark) .filter-tab.active,
-                    html.dark .filter-tab.active,
-                    .filter-tabs .filter-tab.active,
-                    .custom-view-pill.active,
-                    button[id^="view-tab-"].active,
-                    .nav-tab.active,
-                    .tab-active,
-                    .crm-tab-active,
-                    .crm-pill-active,
-                    button[role="tab"][aria-selected="true"],
-                    .custom-view-pill[style*="var(--crm-accent"],
-                    /* Analytics & Reports Sub-navigation Active Tabs */
-                    div.flex > a[href*="analytics"][class*="from-amber-500"],
-                    div.flex > a[href*="analytics"][class*="bg-amber-500"],
-                    div.flex > a[href*="analytics"][class*="from-emerald-500"],
-                    div.flex > a[href*="analytics"][class*="bg-emerald-500"],
-                    div.flex > a[href*="analytics"][class*="bg-blue-600"],
-                    /* Analytics Timeframe Pill Filter Buttons (Today, This Month, etc.) */
-                    a[href*="analytics"][href*="range="][class*="bg-amber-500"],
-                    a[href*="analytics"][href*="range="][class*="bg-blue-600"],
-                    a[href*="analytics"][href*="range="][class*="bg-emerald-600"],
-                    a[href*="analytics"][href*="range="][class*="amber-500"],
-                    a[href*="analytics"][href*="range="][class*="blue-600"],
-                    a[href*="analytics"][href*="range="][class*="emerald-600"] {
-                        background: linear-gradient(135deg, ${hex}, ${hoverHex}) !important;
-                        background-color: ${hex} !important;
-                        border-color: ${hex} !important;
-                        color: #ffffff !important;
-                        box-shadow: 0 4px 14px -1px ${hex}55 !important;
-                    }
-
-                    /* =========================================================
-                       4. SEARCH BUTTONS & SEARCH INPUT CONTROLS
-                       ========================================================= */
-                    /* Search submit buttons in Quotations, Jobs, Invoices, Products, etc. */
-                    button.bg-amber-500,
-                    button[class*="bg-amber-500"],
-                    button[class*="from-amber-500"],
-                    button[type="submit"].bg-amber-500,
-                    .btn-search,
-                    button.btn-search,
-                    a.btn-search {
-                        background-color: ${hex} !important;
-                        background-image: none !important;
-                        border-color: ${hex} !important;
-                        color: #ffffff !important;
-                        box-shadow: 0 2px 8px -1px ${hex}55 !important;
-                    }
-
-                    button.bg-amber-500:hover,
-                    button[class*="bg-amber-500"]:hover,
-                    button[class*="hover:bg-amber-400"]:hover,
-                    button[class*="from-amber-500"]:hover,
-                    button[type="submit"].bg-amber-500:hover,
-                    .btn-search:hover,
-                    button.btn-search:hover,
-                    a.btn-search:hover {
-                        background-color: ${hoverHex} !important;
-                        border-color: ${hoverHex} !important;
-                        color: #ffffff !important;
-                    }
-
-                    /* Table & Page Search Inputs Focus Highlight */
-                    .filter-bar input:focus,
-                    .filter-bar select:focus,
-                    input[name="search"]:focus,
-                    input[name="q"]:focus,
-                    input[id*="search"]:focus,
-                    input[id*="q-search"]:focus,
-                    input[id*="job-search"]:focus,
-                    input[id*="p-search"]:focus,
-                    input[id*="lead-search"]:focus,
-                    input[type="search"]:focus {
-                        border-color: ${hex} !important;
-                        outline: none !important;
-                        --tw-ring-color: ${hex} !important;
-                        box-shadow: 0 0 0 2px ${hex}35 !important;
-                    }
-
-                    /* Global Omnisearch (Desktop & Mobile) */
-                    input[x-ref="searchInput"]:focus,
-                    input[x-ref="mobileSearchInput"]:focus {
-                        border-color: ${hex} !important;
-                        --tw-ring-color: ${hex} !important;
-                        box-shadow: 0 0 0 2px ${hex}35 !important;
-                    }
-                    .md\\:hidden button[title*="Search"]:hover,
-                    .md\\:hidden button[title*="Search"]:focus {
-                        color: ${hex} !important;
-                    }
-
-                    /* Omnisearch result dropdown active item */
-                    div[x-ref="searchInput"] + div a.bg-blue-50,
-                    div[x-ref="searchInput"] + div a[class*="text-blue-600"] {
-                        background-color: ${hex}15 !important;
-                        color: ${hex} !important;
-                    }
-
-                    /* =========================================================
-                       5. PRIMARY BUTTONS & ACTION CONTROLS (AND ETC)
-                       ========================================================= */
-                    /* General Primary Buttons & Amber/Emerald Action Links */
-                    button.bg-blue-600,
-                    button[class*="bg-blue-600"],
-                    a.bg-blue-600,
-                    a[class*="bg-blue-600"],
-                    .btn-primary,
-                    button.btn-primary,
-                    a.btn-primary,
-                    .btn-blue,
-                    button.btn-blue,
-                    a.btn-blue,
-                    .btn-amber,
-                    button.btn-amber,
-                    a.btn-amber,
-                    .crm-btn-primary,
-                    button.crm-btn-primary,
-                    a.crm-btn-primary,
-                    html body .btn-amber,
-                    html body .btn-primary,
-                    html body .btn-blue,
-                    /* All Amber / Emerald Action Buttons and Links (PDF Export, Raise Claim, etc.) */
-                    a[class*="from-amber-500"],
-                    a[class*="to-amber-600"],
-                    a[class*="bg-amber-500"]:not([href*="range="]),
-                    a[class*="from-emerald-500"],
-                    a[class*="to-emerald-600"],
-                    a[class*="bg-emerald-600"]:not([href*="range="]),
-                    button[class*="from-amber-500"],
-                    button[class*="to-amber-600"],
-                    button[class*="bg-amber-500"],
-                    button[class*="from-emerald-500"],
-                    button[class*="to-emerald-600"],
-                    a[href*="export-pdf"],
-                    a[href*="analytics/export-pdf"],
-                    a[href*="technicians/export-pdf"],
-                    a[href*="mrr-retention/export-pdf"],
-                    a[href*="cost-profit/export-pdf"],
-                    a[href*="rma/create"],
-                    a[href*="rma.create"] {
-                        background: linear-gradient(135deg, ${hex}, ${hoverHex}) !important;
-                        background-color: ${hex} !important;
-                        border-color: ${hex} !important;
-                        color: #ffffff !important;
-                        box-shadow: 0 4px 14px -1px ${hex}55 !important;
-                    }
-
-                    button.bg-blue-600:hover,
-                    button[class*="bg-blue-600"]:hover,
-                    a.bg-blue-600:hover,
-                    a[class*="bg-blue-600"]:hover,
-                    .btn-primary:hover,
-                    button.btn-primary:hover,
-                    a.btn-primary:hover,
-                    .btn-blue:hover,
-                    button.btn-blue:hover,
-                    a.btn-blue:hover,
-                    .btn-amber:hover,
-                    button.btn-amber:hover,
-                    a.btn-amber:hover,
-                    .crm-btn-primary:hover,
-                    button.crm-btn-primary:hover,
-                    a.crm-btn-primary:hover,
-                    html body .btn-amber:hover,
-                    html body .btn-primary:hover,
-                    html body .btn-blue:hover,
-                    a[class*="from-amber-500"]:hover,
-                    a[class*="to-amber-600"]:hover,
-                    a[class*="bg-amber-500"]:not([href*="range="]):hover,
-                    a[class*="from-emerald-500"]:hover,
-                    a[class*="to-emerald-600"]:hover,
-                    a[class*="bg-emerald-600"]:not([href*="range="]):hover,
-                    button[class*="from-amber-500"]:hover,
-                    button[class*="to-amber-600"]:hover,
-                    button[class*="bg-amber-500"]:hover,
-                    button[class*="from-emerald-500"]:hover,
-                    button[class*="to-emerald-600"]:hover,
-                    a[href*="export-pdf"]:hover,
-                    a[href*="analytics/export-pdf"]:hover,
-                    a[href*="technicians/export-pdf"]:hover,
-                    a[href*="mrr-retention/export-pdf"]:hover,
-                    a[href*="cost-profit/export-pdf"]:hover,
-                    a[href*="rma/create"]:hover,
-                    a[href*="rma.create"]:hover {
-                        background: linear-gradient(135deg, ${hoverHex}, ${hex}) !important;
-                        background-color: ${hoverHex} !important;
-                        border-color: ${hoverHex} !important;
-                        color: #ffffff !important;
-                        box-shadow: 0 6px 18px -1px ${hex}66 !important;
-                    }
-
-                    /* All clicking / active button states */
-                    button:active:not(:disabled),
-                    a[role="button"]:active,
-                    aside nav a:active,
-                    .btn-primary:active,
-                    .btn-blue:active,
-                    .btn-amber:active,
-                    button[class*="bg-blue-600"]:active,
-                    a[class*="bg-blue-600"]:active,
-                    button[class*="bg-amber-500"]:active,
-                    a[class*="from-amber-500"]:active,
-                    button[class*="from-amber-500"]:active,
-                    a[href*="export-pdf"]:active,
-                    a[href*="rma/create"]:active {
-                        background-color: ${hoverHex} !important;
-                        border-color: ${hoverHex} !important;
-                        transform: scale(0.98) !important;
-                    }
-
-                    /* Quick Action Dropdown Trigger Button */
-                    button.bg-blue-50.text-blue-700,
-                    div[x-data*="open"] > button.bg-blue-50,
-                    div[x-data*="open"] > button[class*="text-blue-700"] {
-                        background-color: ${hex}18 !important;
-                        color: ${hex} !important;
-                        border-color: ${hex}40 !important;
-                    }
-                    button.bg-blue-50.text-blue-700:hover,
-                    div[x-data*="open"] > button.bg-blue-50:hover {
-                        background-color: ${hex}28 !important;
-                        border-color: ${hex}60 !important;
-                    }
-                    button.bg-blue-50.text-blue-700 svg,
-                    div[x-data*="open"] > button.bg-blue-50 svg {
-                        color: ${hex} !important;
-                    }
-
-                    /* Active pagination */
-                    nav[role="navigation"] span[aria-current="page"] > span,
-                    nav[role="navigation"] span[aria-current="page"] *,
-                    .pagination .active *,
-                    .pagination .page-item.active .page-link,
-                    span[aria-current="page"] > span {
-                        background-color: ${hex} !important;
-                        border-color: ${hex} !important;
-                        color: #ffffff !important;
-                        box-shadow: 0 2px 6px ${hex}40 !important;
-                    }
-
-                    /* Checkbox & Radio active accents */
-                    input[type="checkbox"]:checked,
-                    input[type="radio"]:checked {
-                        accent-color: ${hex} !important;
-                    }
-
-                    /* Active tab borders & text */
-                    .text-blue-600,
-                    .text-blue-500,
-                    .text-blue-700,
-                    .dark .dark\\:text-blue-400,
-                    .dark .dark\\:text-blue-300 {
-                        color: ${hex} !important;
-                    }
-
-                    /* Subtle accent backgrounds */
-                    .bg-blue-50 {
-                        background-color: ${hex}18 !important;
-                    }
-                    .dark .dark\\:bg-blue-950\\/60,
-                    .dark .dark\\:bg-blue-950 {
-                        background-color: ${hex}28 !important;
-                    }
-
-                    /* Border highlights */
-                    .border-blue-200,
-                    .border-blue-200\\/70,
-                    .dark .dark\\:border-blue-800,
-                    .dark .dark\\:border-blue-800\\/60 {
-                        border-color: ${hex}40 !important;
-                    }
-
-                    /* Focus rings */
-                    .focus\\:ring-blue-600:focus,
-                    .focus\\:ring-blue-500:focus,
-                    button:focus-visible,
-                    a:focus-visible {
-                        --tw-ring-color: ${hex} !important;
-                        outline-color: ${hex} !important;
-                    }
-
-                    /* Glowing shadow */
-                    .shadow-blue-500\\/25 {
-                        box-shadow: 0 4px 14px -1px ${hex}55 !important;
-                    }
-
-                    /* Brand Logo Tile & User Avatars */
-                    .crm-brand-tile,
-                    .crm-user-avatar {
-                        background: linear-gradient(135deg, ${hex}, ${hoverHex}) !important;
-                    }
-                    .crm-brand-tile-inner,
-                    .crm-brand-tile > div {
-                        background-color: ${hex} !important;
-                    }
-
-                    /* Gradient logo tiles & icons */
-                    .from-blue-600 {
-                        --tw-gradient-from: ${hex} var(--tw-gradient-from-position) !important;
-                    }
-                    .to-indigo-600 {
-                        --tw-gradient-to: ${hoverHex} var(--tw-gradient-to-position) !important;
-                    }
-
-                    /* Glowing Indicator Dots & Accent Highlights (Analytics & RMA headers) */
-                    span[class*="shadow-[0_0_10px_#f59e0b]"],
-                    span[class*="shadow-[0_0_10px_#10b981]"] {
-                        background-color: ${hex} !important;
-                        box-shadow: 0 0 10px ${hex} !important;
-                    }
-                    strong.text-amber-400,
-                    strong.text-emerald-400,
-                    span.text-amber-400 {
-                        color: ${hex} !important;
-                    }
-                `;
-            };
-
-            (function() {
-                const mode = localStorage.getItem('crm_mode') || localStorage.getItem('theme') || 'auto';
-                const isDark = (mode === 'night' || mode === 'dark') || 
-                               (mode === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
-                if (isDark) {
-                    document.documentElement.classList.add('dark');
-                } else {
-                    document.documentElement.classList.remove('dark');
-                }
-                const themeStyle = localStorage.getItem('crm_theme_style') || 'dark';
-                document.documentElement.setAttribute('data-header-theme', themeStyle);
-
-                const accent = localStorage.getItem('crm_accent') || '#be123c';
-                document.documentElement.style.setProperty('--crm-accent', accent);
-                window.applyGlobalCrmAccent(accent);
-            })();
-
-            // Re-apply once DOM is ready so we guarantee priority over late injected stylesheets
-            document.addEventListener('DOMContentLoaded', function() {
-                const accent = localStorage.getItem('crm_accent') || '#be123c';
-                if (typeof window.applyGlobalCrmAccent === 'function') {
-                    window.applyGlobalCrmAccent(accent);
-                }
-            });
-        </script>
+        <!-- Zoho CRM Theme & Realtime Dynamic Logo Engine -->
+        <x-crm-theme-init />
 
         <!-- Google Fonts matching SaaS Mockup -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-        <!-- Scripts & Styles -->
+        <!-- Tailwind CSS & Alpine.js CDN Guard (Guarantees normal styling across all HTTP servers, LAN IPs, domains & production ports) -->
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script>
+            tailwind.config = {
+                darkMode: 'class',
+                theme: {
+                    extend: {
+                        fontFamily: {
+                            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                            heading: ['"Outfit"', 'sans-serif'],
+                        },
+                        colors: {
+                            brand: {
+                                blue: '#2563eb',
+                                blueHover: '#1d4ed8',
+                                lightBg: '#eff4fc',
+                            }
+                        }
+                    }
+                }
+            }
+        </script>
+        <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+        <!-- Scripts & Styles via Vite -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
         <style>
@@ -566,29 +98,28 @@
             .btn-primary:active,
             .btn-blue:active,
             aside nav a:active {
-                background-color: var(--crm-accent-hover, #9f1239) !important;
-                border-color: var(--crm-accent-hover, #9f1239) !important;
+                background-color: var(--crm-accent-hover, #1d4ed8) !important;
+                border-color: var(--crm-accent-hover, #1d4ed8) !important;
                 transform: scale(0.98);
             }
 
             /* Brand Logo Tile & User Avatars */
             .crm-brand-tile,
             .crm-user-avatar {
-                background: linear-gradient(135deg, var(--crm-accent, #be123c), var(--crm-accent-hover, #9f1239)) !important;
+                background: linear-gradient(135deg, var(--crm-accent, #2563eb), var(--crm-accent-hover, #1d4ed8)) !important;
             }
             .crm-brand-tile-inner,
             .crm-brand-tile > div {
-                background-color: var(--crm-accent, #be123c) !important;
+                background-color: var(--crm-accent, #2563eb) !important;
             }
         </style>
     </head>
     <body class="h-full font-sans antialiased text-slate-800 dark:text-slate-100 bg-[#f8fafc] dark:bg-[#060913] selection:bg-blue-600 selection:text-white" 
           x-data="{ 
               sidebarOpen: false, 
-              sidebarCollapsed: localStorage.getItem('crm_sidebar_collapsed') === 'true',
+              sidebarCollapsed: false,
               toggleSidebarCollapsed() {
                   this.sidebarCollapsed = !this.sidebarCollapsed;
-                  localStorage.setItem('crm_sidebar_collapsed', this.sidebarCollapsed);
               },
               shortcutsModalOpen: false,
               mobileNavOpen: false,
@@ -655,17 +186,17 @@
                         'translate-x-0 shadow-2xl': sidebarOpen,
                         '-translate-x-full lg:translate-x-0 shadow-none': !sidebarOpen,
                         'lg:w-20': sidebarCollapsed,
-                        'lg:w-64': !sidebarCollapsed
+                        'lg:w-72': !sidebarCollapsed
                      }"
-                     class="fixed inset-y-0 left-0 z-50 lg:sticky lg:top-0 lg:h-screen lg:z-30 w-64 shrink-0 transition-[width,transform] duration-300 ease-in-out flex flex-col bg-white dark:bg-[#0f172a] border-r border-slate-200/80 dark:border-slate-800 overflow-hidden">
+                     class="fixed inset-y-0 left-0 z-50 lg:sticky lg:top-0 lg:h-screen lg:z-30 w-72 shrink-0 transition-[width,transform] duration-300 ease-in-out flex flex-col bg-white dark:bg-[#0f172a] border-r border-slate-200/80 dark:border-slate-800 overflow-hidden">
                     @include('layouts.navigation')
                 </div>
 
                 {{-- Main Application Wrapper --}}
-                <div class="flex-1 flex flex-col min-w-0 overflow-hidden min-h-screen bg-[#f8fafc] dark:bg-[#060913] transition-colors duration-200">
+                <div class="flex-1 flex flex-col min-w-0 min-h-screen bg-[#f8fafc] dark:bg-[#060913] transition-colors duration-200">
                     
-                    {{-- Modern SaaS Top Navigation Bar --}}
-                    <header class="h-16 bg-white dark:bg-[#0f172a] border-b border-slate-200/80 dark:border-slate-800 px-3 sm:px-4 lg:px-6 flex items-center justify-between sticky top-0 z-30 shadow-2xs transition-colors duration-200 relative overflow-visible"
+                    {{-- Modern SaaS Top Navigation Bar (Zoho CRM Standard Comfortable Scale) --}}
+                    <header class="h-16 sm:h-[70px] bg-white dark:bg-[#0f172a] border-b border-slate-200/80 dark:border-slate-800 px-4 sm:px-5 md:px-6 flex items-center justify-between sticky top-0 z-30 shadow-2xs transition-colors duration-200 relative"
                             x-data="{
                                 query: '',
                                 results: [],
@@ -733,27 +264,26 @@
                                 </svg>
                             </button>
 
-                            <div class="flex items-center gap-2 min-w-0">
+                            <div class="flex items-center gap-2.5 min-w-0">
                                 <a href="{{ auth()->user()->role === 'technician' ? route('technician.dashboard') : (auth()->user()->isCustomer() ? route('portal.dashboard') : route('dashboard')) }}" 
-                                   class="inline-flex items-center gap-1.5 px-2 sm:px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-bold border border-blue-200/70 dark:border-blue-800/60 shrink-0">
+                                   class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-sm font-bold border border-blue-200/70 dark:border-blue-800/60 shrink-0">
                                     <span class="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400 animate-pulse"></span>
-                                    <span class="hidden sm:inline">Precision IT Systems CRM</span>
-                                    <span class="sm:hidden font-extrabold tracking-tight">CRM</span>
+                                    <span>Precision IT Systems CRM</span>
                                 </a>
                                 <span class="text-slate-300 dark:text-slate-700 hidden md:inline">/</span>
-                                <span class="text-xs font-medium text-slate-500 dark:text-slate-400 truncate hidden md:inline">
+                                <span class="text-sm font-semibold text-slate-600 dark:text-slate-400 truncate hidden md:inline">
                                     {{ auth()->user()->role === 'technician' ? 'Field Station' : (auth()->user()->isCustomer() ? 'Client Portal' : 'Command Center') }}
                                 </span>
                             </div>
                         </div>
 
                         {{-- Right side: Search, Quick Action, Theme Toggle, Notification Bell & User Dropdown --}}
-                        <div class="flex items-center gap-1.5 sm:gap-2 lg:gap-3 shrink-0">
+                        <div class="flex items-center gap-2 sm:gap-3 shrink-0">
                             
                             {{-- Global Omnisearch: Inline on Desktop (md:), Icon Button on Mobile (< md) --}}
-                            <div class="hidden md:block relative w-36 sm:w-44 md:w-52 lg:w-60 xl:w-68" @click.away="open = false">
+                            <div class="hidden md:block relative w-56 lg:w-64 xl:w-72" @click.away="open = false">
                                 <div class="relative flex items-center">
-                                    <svg class="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-4 h-4 text-slate-400 dark:text-slate-400 absolute left-3.5 pointer-events-none shrink-0" style="width: 16px; height: 16px; min-width: 16px; max-width: 16px; min-height: 16px; max-height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                                     </svg>
                                     <input type="text" 
@@ -765,7 +295,7 @@
                                            @keydown.arrow-up.prevent="navigate(-1)"
                                            @keydown.enter.prevent="selectActive()"
                                            placeholder="Search leads, jobs, quotes... (Ctrl+K)" 
-                                           class="w-full pl-9 pr-8 py-1.5 text-xs bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl focus:bg-white dark:focus:bg-slate-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 shadow-2xs transition-all">
+                                           class="w-full pl-10 pr-9 py-2 text-sm bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl focus:bg-white dark:focus:bg-slate-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 shadow-2xs transition-all">
                                     
                                     {{-- Clear button or loading spinner --}}
                                     <div class="absolute right-2.5 flex items-center">
@@ -840,7 +370,7 @@
                                 {{-- Quick Create Dropdown for Admin/Staff --}}
                                 <div x-data="{ open: false }" class="relative shrink-0">
                                     <button @click="open = !open" 
-                                            class="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 dark:hover:bg-blue-900/60 text-blue-700 dark:text-blue-300 font-bold text-xs border border-blue-200 dark:border-blue-800 transition">
+                                            class="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 dark:hover:bg-blue-900/60 text-blue-700 dark:text-blue-300 font-bold text-sm border border-blue-200 dark:border-blue-800 transition shadow-2xs">
                                         <svg class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
                                         <span class="hidden sm:inline">Quick Action</span>
                                         <svg class="w-3 h-3 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
@@ -851,7 +381,7 @@
                                          x-transition:enter="transition ease-out duration-100"
                                          x-transition:enter-start="transform opacity-0 scale-95"
                                          x-transition:enter-end="transform opacity-100 scale-100"
-                                         class="absolute right-0 mt-2 w-56 bg-white dark:bg-[#0f172a] rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 py-1.5 z-50 text-xs font-semibold text-slate-700 dark:text-slate-200"
+                                         class="absolute right-0 mt-2 w-60 bg-white dark:bg-[#0f172a] rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 py-2 z-50 text-sm font-semibold text-slate-700 dark:text-slate-200"
                                          style="display: none;">
                                         
                                         <a href="{{ route('leads.create') }}" class="flex items-center gap-2 px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-blue-600 transition">
@@ -876,7 +406,7 @@
                             @elseif(auth()->user()->isCustomer())
                                 {{-- Quick Report Button for Customer --}}
                                 <a href="{{ route('portal.tickets.create') }}" 
-                                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 dark:hover:bg-blue-900/60 text-blue-700 dark:text-blue-300 font-bold text-xs border border-blue-200 dark:border-blue-800 transition">
+                                   class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 dark:hover:bg-blue-900/60 text-blue-700 dark:text-blue-300 font-bold text-sm border border-blue-200 dark:border-blue-800 transition shadow-2xs">
                                     <svg class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
                                     <span class="hidden sm:inline">Report Issue</span>
                                 </a>
@@ -885,7 +415,7 @@
                             {{-- Clean Dark / Light Mode Toggle Button Only --}}
                             <button type="button" 
                                     @click="toggleTheme()" 
-                                    class="p-2 rounded-xl text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-800 transition shrink-0 cursor-pointer shadow-2xs"
+                                    class="p-2.5 rounded-xl text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-800 transition shrink-0 cursor-pointer shadow-2xs"
                                     :title="isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
                                     aria-label="Toggle Dark/Light Mode">
                                 {{-- Sun icon in Dark Mode --}}
@@ -1086,20 +616,17 @@
                                 </div>
                             </div>
 
-                            {{-- User Avatar Pill (Matching Profile Header on Mobile & Desktop) --}}
-                            <div x-data="{ open: false }" class="relative shrink-0 ml-1 sm:ml-2">
+                            {{-- User Avatar Button (Initial Badge Only - Click reveals full profile data) --}}
+                            <div x-data="{ open: false }" class="relative shrink-0 ml-1.5 mr-2">
                                 <button @click="open = !open" 
                                         type="button"
-                                        class="flex items-center gap-1.5 sm:gap-2 p-1 sm:px-2.5 sm:py-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-800 transition cursor-pointer shadow-2xs shrink-0"
+                                        class="w-10 h-10 rounded-2xl flex items-center justify-center font-black text-base text-white shadow-md transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none ring-2 ring-slate-200/90 dark:ring-slate-700/80 hover:ring-rose-500/50 dark:hover:ring-blue-500/50 cursor-pointer select-none"
+                                        style="background: linear-gradient(135deg, var(--crm-accent, #be123c) 0%, #1d4ed8 100%);"
                                         aria-label="User account menu"
-                                        title="User Account & Theme Settings">
-                                    <div class="w-8 h-8 rounded-full text-white flex items-center justify-center font-bold text-xs shadow-xs shrink-0 ring-2 ring-white dark:ring-slate-900 crm-user-avatar" style="background: linear-gradient(135deg, var(--crm-accent, #be123c), var(--crm-accent-hover, #9f1239));">
-                                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                                    </div>
-                                    <div class="text-left hidden sm:block min-w-0">
-                                        <span class="block text-xs font-bold text-slate-800 dark:text-slate-100 leading-none truncate max-w-[100px]">{{ Auth::user()->name }}</span>
-                                    </div>
-                                    <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                                        aria-expanded="false"
+                                        :aria-expanded="open.toString()"
+                                        title="{{ Auth::user()->name }} (Click to view profile)">
+                                    <span class="drop-shadow-xs">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
                                 </button>
 
                                 <div x-show="open" 
@@ -1107,13 +634,13 @@
                                      x-transition:enter="transition ease-out duration-100"
                                      x-transition:enter-start="transform opacity-0 scale-95"
                                      x-transition:enter-end="transform opacity-100 scale-100"
-                                     class="absolute right-0 mt-2 w-76 sm:w-80 max-w-[calc(100vw-1.5rem)] bg-white dark:bg-[#0f172a] rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 py-2 z-50 text-xs font-semibold text-slate-700 dark:text-slate-200"
+                                     class="absolute right-0 mt-2 w-80 max-w-[calc(100vw-1.5rem)] bg-white dark:bg-[#0f172a] rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 py-2.5 z-50 text-sm font-semibold text-slate-700 dark:text-slate-200"
                                      style="display: none;">
                                     
                                     {{-- User info header --}}
                                     <div class="px-4 py-2.5 border-b border-slate-100 dark:border-slate-800">
                                         <div class="flex items-center gap-2.5 mb-1.5">
-                                            <div class="w-8 h-8 rounded-full text-white flex items-center justify-center font-bold text-xs shrink-0 crm-user-avatar" style="background: linear-gradient(135deg, var(--crm-accent, #be123c), var(--crm-accent-hover, #9f1239));">
+                                            <div class="w-8 h-8 rounded-full text-white flex items-center justify-center font-bold text-xs shrink-0 crm-user-avatar" style="background: linear-gradient(135deg, var(--crm-accent, #2563eb), var(--crm-accent-hover, #1d4ed8));">
                                                 {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                                             </div>
                                             <div class="min-w-0 flex-1">

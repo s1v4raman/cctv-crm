@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 135" width="100%" height="100%" fill="none">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@800;900&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap');
+      .brand-title-dark {
+        font-family: 'Outfit', 'Plus Jakarta Sans', 'Segoe UI', -apple-system, sans-serif;
+        font-size: 58px;
+        font-weight: 900;
+        letter-spacing: -0.01em;
+        fill: #60A5FA;
+      }
+      .brand-sub-dark {
+        font-family: 'Plus Jakarta Sans', 'Outfit', 'Segoe UI', -apple-system, sans-serif;
+        font-size: 19.5px;
+        font-weight: 700;
+        letter-spacing: 0.38em;
+        fill: #93C5FD;
+      }
+    </style>
+  </defs>
+
+  <!-- Left Mark: Precision Security Chevrons -->
+  <g id="chevrons-dark" fill="#EF4444">
+    <!-- Lower Chevron -->
+    <path d="M 14 74 L 38 74 L 38 98 L 29 98 L 29 83 L 14 83 Z" />
+    <!-- Upper Chevron -->
+    <path d="M 32 56 L 56 56 L 56 80 L 47 80 L 47 65 L 32 65 Z" fill="#F87171" />
+  </g>
+
+  <!-- Title: PRECISI -->
+  <text x="68" y="78" class="brand-title-dark">PRECISI</text>
+
+  <!-- Custom Optical Lens / Camera Reticle 'O' -->
+  <g id="camera-reticle-dark" transform="translate(393, 56)">
+    <!-- Concentric Target Circles in Electric Blue -->
+    <circle cx="0" cy="0" r="22" stroke="#60A5FA" stroke-width="2.6" />
+    <circle cx="0" cy="0" r="15.5" stroke="#60A5FA" stroke-width="2" />
+    <circle cx="0" cy="0" r="9" stroke="#60A5FA" stroke-width="1.5" />
+    <circle cx="0" cy="0" r="3.2" fill="#60A5FA" />
+
+    <!-- Precision Red Crosshair Axes -->
+    <line x1="0" y1="-27" x2="0" y2="27" stroke="#EF4444" stroke-width="1.8" stroke-linecap="round" />
+    <line x1="-27" y1="0" x2="27" y2="0" stroke="#EF4444" stroke-width="1.8" stroke-linecap="round" />
+
+    <!-- Corner Optical Calibration Marks (45 deg ticks) -->
+    <line x1="13" y1="-13" x2="17" y2="-17" stroke="#EF4444" stroke-width="1.4" stroke-linecap="round" />
+    <line x1="-13" y1="-13" x2="-17" y2="-17" stroke="#EF4444" stroke-width="1.4" stroke-linecap="round" />
+    <line x1="13" y1="13" x2="17" y2="17" stroke="#EF4444" stroke-width="1.4" stroke-linecap="round" />
+    <line x1="-13" y1="13" x2="-17" y2="17" stroke="#EF4444" stroke-width="1.4" stroke-linecap="round" />
+  </g>
+
+  <!-- Title: N -->
+  <text x="427" y="78" class="brand-title-dark">N</text>
+
+  <!-- Subtitle: IT SYSTEMS -->
+  <text x="70" y="110" class="brand-sub-dark">IT SYSTEMS</text>
+</svg>

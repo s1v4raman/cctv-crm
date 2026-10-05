@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="100%" height="100%" fill="none">
+  <!-- Rounded High-Tech Background -->
+  <rect width="120" height="120" rx="28" fill="#0F172A" />
+  <rect x="1" y="1" width="118" height="118" rx="27" stroke="#1E293B" stroke-width="2" />
+  
+  <g transform="translate(6, 6)">
+    <!-- Dual Chevron Arrows -->
+    <path d="M 16 62 L 38 62 L 38 84 L 29 84 L 29 71 L 16 71 Z" fill="#DC2626" />
+    <path d="M 32 46 L 54 46 L 54 68 L 45 68 L 45 55 L 32 55 Z" fill="#EF4444" />
+    
+    <!-- Surveillance Lens Target Reticle -->
+    <g transform="translate(72, 53)">
+      <circle cx="0" cy="0" r="24" stroke="#F8FAFC" stroke-width="2.5" />
+      <circle cx="0" cy="0" r="16.5" stroke="#F8FAFC" stroke-width="2" />
+      <circle cx="0" cy="0" r="9.5" stroke="#F8FAFC" stroke-width="1.5" />
+      <circle cx="0" cy="0" r="3.5" fill="#F8FAFC" />
+      
+      <!-- Precision Red Crosshairs -->
+      <line x1="0" y1="-30" x2="0" y2="30" stroke="#EF4444" stroke-width="2" stroke-linecap="round" />
+      <line x1="-30" y1="0" x2="30" y2="0" stroke="#EF4444" stroke-width="2" stroke-linecap="round" />
+      
+      <!-- Calibration Ticks -->
+      <line x1="14" y1="-14" x2="19" y2="-19" stroke="#EF4444" stroke-width="1.5" stroke-linecap="round" />
+      <line x1="-14" y1="-14" x2="-19" y2="-19" stroke="#EF4444" stroke-width="1.5" stroke-linecap="round" />
+      <line x1="14" y1="14" x2="19" y2="19" stroke="#EF4444" stroke-width="1.5" stroke-linecap="round" />
+      <line x1="-14" y1="14" x2="-19" y2="19" stroke="#EF4444" stroke-width="1.5" stroke-linecap="round" />
+    </g>
+  </g>
+</svg>

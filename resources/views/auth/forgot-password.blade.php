@@ -7,6 +7,9 @@
 
     <title>Reset Password - {{ request()->getPort() == 8001 ? 'Precision IT Systems ERP Operations' : 'Precision IT Systems Customer Portal' }}</title>
 
+    <!-- Zoho CRM Theme & Realtime Dynamic Logo Recoloring Engine -->
+    <x-crm-theme-init />
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -40,11 +43,11 @@
             
             {{-- Brand Logo Header --}}
             <div class="flex items-center justify-between mb-4 lg:mb-6">
-                <a href="{{ request()->getPort() == 8001 ? route('login') : route('home') }}" class="flex items-center space-x-3 group">
-                    <img src="{{ asset('logo.png') }}" alt="Precision IT Systems" class="h-10 w-auto object-contain">
+                <a href="{{ request()->getPort() == 8001 ? route('login') : route('home') }}" class="flex items-center gap-3.5 group">
+                    <img src="{{ asset('logo.png') }}" alt="Precision IT Systems" class="crm-brand-logo h-14 w-14 sm:h-16 sm:w-16 object-contain shrink-0 drop-shadow-xs transition-transform group-hover:scale-105">
                     <div>
-                        <span class="text-xl font-extrabold font-heading text-slate-900 tracking-tight">Precision IT <span class="text-blue-600">Systems</span></span>
-                        <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Surveillance & Operations CRM</span>
+                        <span class="text-xl sm:text-2xl font-black font-heading text-slate-900 tracking-tight leading-tight">Precision IT <span class="crm-brand-accent-text text-blue-600">Systems</span></span>
+                        <span class="block text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 font-mono mt-0.5">Surveillance &amp; Operations CRM</span>
                     </div>
                 </a>
 

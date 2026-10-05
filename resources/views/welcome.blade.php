@@ -8,14 +8,8 @@
         content="Precision IT Systems - Innovative AI CCTV Cameras & Smart Security Solutions. 4K Color Night Vision, Enterprise Surveillance, Cloud VMS, and 24/7 Support.">
     <title>Precision IT Systems | Smart AI CCTV Cameras & Security Solutions</title>
 
-    <!-- Theme Initialization Script (Prevents Flash of Unstyled Content) -->
-    <script>
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
-    </script>
+    <!-- Zoho CRM Theme & Realtime Dynamic Logo Recoloring Engine -->
+    <x-crm-theme-init />
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -115,59 +109,98 @@
 
 
     <!-- 2. MAIN NAVBAR (PathSoft Layout) -->
+    <!-- 2. MAIN NAVBAR -->
     <header class="sticky top-0 z-50 bg-white/95 dark:bg-[#060913]/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 transition-colors">
-        <div class="max-w-7xl mx-auto px-4 sm:px-8 py-3.5 flex items-center justify-between">
-            <!-- Brand Logo -->
-            <a href="{{ route('home') }}" class="flex items-center space-x-2.5 group">
-                <img src="{{ asset('logo.png') }}" alt="Precision IT Systems" class="h-10 w-auto object-contain">
+        <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-3 xl:gap-6">
+            
+            <!-- Brand Logo & Company Name (Maximized Logo & Clean Responsive Lockup) -->
+            <a href="{{ route('home') }}" class="flex items-center gap-3 sm:gap-3.5 group shrink-0">
+                <img src="{{ asset('logo.png') }}" alt="Precision IT Systems" class="crm-brand-logo h-14 w-14 sm:h-16 sm:w-16 md:h-[68px] md:w-[68px] lg:h-[72px] lg:w-[72px] object-contain group-hover:scale-105 transition-transform shrink-0 drop-shadow-xs">
+                <div class="flex flex-col min-w-0">
+                    <span class="text-lg sm:text-2xl lg:text-[26px] font-black font-heading tracking-tight text-slate-900 dark:text-white leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                        Precision IT <span class="crm-brand-accent-text text-blue-600 dark:text-blue-400">Systems</span>
+                    </span>
+                    <span class="hidden sm:block text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 font-mono mt-0.5">
+                        Security &amp; AI Surveillance
+                    </span>
+                </div>
             </a>
 
-            <!-- Navigation Links -->
-            <nav class="hidden lg:flex items-center space-x-8 text-sm font-medium text-slate-600 dark:text-slate-300">
-                <a href="#home" class="text-blue-600 dark:text-blue-400 font-semibold transition-colors">Home</a>
-                <a href="#about" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">About Us</a>
-                <div class="relative group py-2">
-                    <a href="#services" class="flex items-center space-x-1 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+            <!-- Navigation Links (Centered, seamlessly filling the gap on lg and xl viewports) -->
+            <nav class="hidden lg:flex items-center space-x-3.5 xl:space-x-6 text-sm xl:text-[15px] font-semibold text-slate-600 dark:text-slate-300">
+                <a href="#home" class="px-2 py-1.5 rounded-lg text-blue-600 dark:text-blue-400 font-bold hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors">Home</a>
+                <a href="#about" class="px-2 py-1.5 rounded-lg hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors">About Us</a>
+                <div class="relative group py-1.5">
+                    <a href="#services" class="flex items-center space-x-1 px-2 py-1.5 rounded-lg hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors">
                         <span>Services</span>
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </a>
                     <!-- Dropdown -->
-                    <div class="absolute left-0 top-full hidden group-hover:block w-56 bg-white dark:bg-slate-900 shadow-xl rounded-xl border border-slate-100 dark:border-slate-800 py-2">
-                        <a href="#services" class="block px-4 py-2 text-xs hover:bg-blue-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300">Corporate Solutions</a>
-                        <a href="#services" class="block px-4 py-2 text-xs hover:bg-blue-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300">24/7 AMC & Support</a>
-                        <a href="#services" class="block px-4 py-2 text-xs hover:bg-blue-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300">Cloud AI Video Telemetry</a>
+                    <div class="absolute left-0 top-full hidden group-hover:block w-56 bg-white dark:bg-slate-900 shadow-xl rounded-xl border border-slate-100 dark:border-slate-800 py-2 z-50">
+                        <a href="#services" class="block px-4 py-2 text-sm hover:bg-blue-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300">Corporate Solutions</a>
+                        <a href="#services" class="block px-4 py-2 text-sm hover:bg-blue-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300">24/7 AMC & Support</a>
+                        <a href="#services" class="block px-4 py-2 text-sm hover:bg-blue-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300">Cloud AI Video Telemetry</a>
                     </div>
                 </div>
-                <a href="#solutions" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Solutions</a>
-                <a href="#why-us" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Why Us</a>
-                <a href="#contact" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Contact</a>
+                <a href="#solutions" class="px-2 py-1.5 rounded-lg hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors">Solutions</a>
+                <a href="#why-us" class="px-2 py-1.5 rounded-lg hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors">Why Us</a>
+                <a href="#contact" class="px-2 py-1.5 rounded-lg hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors">Contact</a>
             </nav>
 
-            <!-- Actions (Search Button, Profile/Register-Login Button, Hamburger Menu, Theme Toggle) -->
-            <div class="flex items-center space-x-2 sm:space-x-3">
-                <!-- 1. Search Circle Button (Solid Blue matching reference) -->
+            <!-- Actions (Search, Theme Toggle, Profile/Register-Login, CTA, Mobile Menu) -->
+            <div class="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+                
+                <!-- 1. Search Button -->
                 <button type="button" onclick="openSearchModal()"
-                    class="w-10 h-10 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center shadow-md shadow-blue-500/25 transition-all hover:scale-105"
+                    class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 flex items-center justify-center transition-all cursor-pointer shrink-0"
                     title="Search Solutions & Services">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                     </svg>
                 </button>
 
-                <!-- 2. Profile / Register & Login Circle Button (Soft Light Blue matching reference) -->
-                <div class="relative group">
-                    <button type="button"
-                        class="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 dark:hover:bg-blue-900/60 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-100 dark:border-blue-900/40 transition-all hover:scale-105"
-                        title="Account • Login / Register">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                        </svg>
-                    </button>
+                <!-- 2. Theme Toggle Button -->
+                <button type="button" id="theme-toggle" onclick="toggleTheme()"
+                    class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center transition-all cursor-pointer shrink-0"
+                    title="Toggle Dark / White Mode">
+                    <!-- Sun Icon (visible in dark mode) -->
+                    <svg id="theme-toggle-light-icon" class="w-4 h-4 hidden text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"/>
+                    </svg>
+                    <!-- Moon Icon (visible in light mode) -->
+                    <svg id="theme-toggle-dark-icon" class="w-4 h-4 text-slate-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>
+                    </svg>
+                </button>
+
+                <!-- 3. PROPER PROFILE / ACCOUNT VIEW (Always visible, protected from overflow) -->
+                <div class="relative group shrink-0">
+                    @auth
+                        <!-- Authenticated User Profile Initial Badge -->
+                        <button type="button"
+                            class="w-10 h-10 rounded-2xl flex items-center justify-center font-black text-base text-white shadow-md transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none ring-2 ring-slate-200/90 dark:ring-slate-700/80 hover:ring-blue-500/50 cursor-pointer select-none shrink-0"
+                            style="background: linear-gradient(135deg, #be123c 0%, #1d4ed8 100%);"
+                            title="My Account: {{ Auth::user()->name }} (Click to view profile)">
+                            <span class="drop-shadow-xs">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
+                        </button>
+                    @else
+                        <!-- Guest Portal / Profile Access Button -->
+                        <button type="button"
+                            class="flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 border border-slate-200/80 dark:border-slate-700 transition-all cursor-pointer shrink-0"
+                            title="Sign in / Register">
+                            <svg class="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                            <span class="text-xs font-bold hidden sm:inline">Profile</span>
+                            <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                    @endauth
+
                     <!-- Auth Dropdown Menu -->
-                    <div class="absolute right-0 top-full mt-2 hidden group-hover:block w-60 bg-white dark:bg-slate-900 shadow-2xl rounded-2xl border border-slate-100 dark:border-slate-800 py-2.5 z-50 transition-all">
+                    <div class="absolute right-0 top-full mt-2 hidden group-hover:block w-64 bg-white dark:bg-slate-900 shadow-2xl rounded-2xl border border-slate-100 dark:border-slate-800 py-2.5 z-50 transition-all">
                         @auth
                             <div class="px-4 py-2 border-b border-slate-100 dark:border-slate-800 mb-1">
-                                <span class="text-[10px] text-blue-600 font-semibold block">Hello, {{ explode(' ', Auth::user()->name)[0] }}</span>
+                                <span class="text-[10px] text-blue-600 font-bold block uppercase tracking-wider">Signed In</span>
                                 <p class="text-xs font-bold text-slate-900 dark:text-white truncate">{{ Auth::user()->name }}</p>
                                 <p class="text-[10px] text-slate-500 dark:text-slate-400 truncate">{{ Auth::user()->email }}</p>
                             </div>
@@ -187,9 +220,13 @@
                                     <span>ERP Dashboard</span>
                                 </a>
                             @endif
+                            <a href="{{ route('profile.edit') }}" class="flex items-center space-x-2.5 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-800 hover:text-blue-600 transition-colors">
+                                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                <span>Profile Settings</span>
+                            </a>
                             <form method="POST" action="{{ route('logout') }}" class="mt-1 pt-1 border-t border-slate-100 dark:border-slate-800">
                                 @csrf
-                                <button type="submit" class="w-full text-left flex items-center space-x-2.5 px-4 py-2 text-xs font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors">
+                                <button type="submit" class="w-full text-left flex items-center space-x-2.5 px-4 py-2 text-xs font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
                                     <span>Log Out</span>
                                 </button>
@@ -203,7 +240,7 @@
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
                                 </div>
                                 <div>
-                                    <span class="block">Client Login</span>
+                                    <span class="block font-bold">Client Login</span>
                                     <span class="block text-[10px] text-slate-400 font-normal">Sign in to your account</span>
                                 </div>
                             </a>
@@ -212,7 +249,7 @@
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
                                 </div>
                                 <div>
-                                    <span class="block">Register Account</span>
+                                    <span class="block font-bold">Register Account</span>
                                     <span class="block text-[10px] text-slate-400 font-normal">Create client profile</span>
                                 </div>
                             </a>
@@ -220,10 +257,15 @@
                     </div>
                 </div>
 
-                <!-- 3. Hamburger Menu Dropdown List (Clean Dropdown method) -->
-                <div class="relative" id="navMenuDropdownContainer">
+                <!-- 4. Get In Touch Primary Pill Button (Shown on md+ screens so it never pushes the profile button off) -->
+                <a href="#contact" class="hidden md:inline-flex items-center justify-center px-5 py-2.5 sm:px-6 sm:py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm sm:text-base font-bold rounded-xl shadow-md shadow-blue-500/25 transition-all hover:scale-105 shrink-0">
+                    Get In Touch
+                </a>
+
+                <!-- 5. Mobile Navigation Menu Toggle Button (Strictly lg:hidden so desktop doesn't clutter!) -->
+                <div class="relative lg:hidden" id="navMenuDropdownContainer">
                     <button type="button" onclick="toggleNavMenuDropdown()"
-                        class="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 dark:hover:bg-blue-900/60 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-100 dark:border-blue-900/40 transition-all hover:scale-105"
+                        class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 flex items-center justify-center transition-all cursor-pointer shrink-0"
                         title="Menu Options">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 6h16M4 12h16M4 18h16"/>
@@ -233,7 +275,7 @@
                     <div id="navMenuDropdownList" class="absolute right-0 top-full mt-2 hidden w-64 bg-white dark:bg-slate-900 shadow-2xl rounded-2xl border border-slate-100 dark:border-slate-800 py-3 z-50 transition-all">
                         <div class="px-4 pb-2 border-b border-slate-100 dark:border-slate-800 mb-2 flex items-center justify-between">
                             <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Quick Navigation</span>
-                            <span class="text-[10px] font-bold text-blue-600">PathSoft</span>
+                            <span class="text-[10px] font-bold text-blue-600">Precision IT</span>
                         </div>
                         <nav class="space-y-0.5 px-2">
                             <a href="#home" onclick="closeNavMenuDropdown()" class="flex items-center space-x-2.5 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-800 hover:text-blue-600 rounded-xl transition-colors">
@@ -246,7 +288,7 @@
                             </a>
                             <a href="#services" onclick="closeNavMenuDropdown()" class="flex items-center space-x-2.5 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-800 hover:text-blue-600 rounded-xl transition-colors">
                                 <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-                                <span>Services & AMC</span>
+                                <span>Services &amp; AMC</span>
                             </a>
                             <a href="#why-us" onclick="closeNavMenuDropdown()" class="flex items-center space-x-2.5 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-800 hover:text-blue-600 rounded-xl transition-colors">
                                 <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
@@ -266,24 +308,6 @@
                     </div>
                 </div>
 
-                <!-- Theme Toggle Button -->
-                <button type="button" id="theme-toggle" onclick="toggleTheme()"
-                    class="w-10 h-10 rounded-full border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center transition-colors"
-                    title="Toggle Dark / White Mode">
-                    <!-- Sun Icon (visible in dark mode) -->
-                    <svg id="theme-toggle-light-icon" class="w-4 h-4 hidden text-amber-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"/>
-                    </svg>
-                    <!-- Moon Icon (visible in light mode) -->
-                    <svg id="theme-toggle-dark-icon" class="w-4 h-4 text-slate-600" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>
-                    </svg>
-                </button>
-
-                <!-- Get In Touch Primary Pill Button -->
-                <a href="#contact" class="hidden sm:inline-flex items-center justify-center px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg shadow-md shadow-blue-500/20 transition-all hover:scale-105">
-                    Get In Touch
-                </a>
             </div>
         </div>
     </header>
@@ -1042,8 +1066,12 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-12">
                 <!-- Col 1: Logo & Bio -->
                 <div class="lg:col-span-2 space-y-4">
-                    <div class="flex items-center space-x-2.5">
-                        <img src="{{ asset('logo.png') }}" alt="Precision IT Systems" class="h-10 w-auto object-contain bg-white/90 p-1.5 rounded-xl">
+                    <div class="flex items-center gap-3.5">
+                        <img src="{{ asset('logo.png') }}" alt="Precision IT Systems" class="crm-brand-logo h-16 w-16 object-contain bg-white/95 p-1 rounded-2xl shadow-sm shrink-0">
+                        <div>
+                            <span class="font-heading font-black text-lg text-white tracking-tight">Precision IT <span class="crm-brand-accent-text text-blue-400">Systems</span></span>
+                            <span class="block text-[10px] font-bold uppercase tracking-widest text-slate-400 font-mono mt-0.5">Security Operations</span>
+                        </div>
                     </div>
                     <p class="text-xs text-slate-400 leading-relaxed max-w-sm">
                         Leading provider of enterprise AI video surveillance, smart security architecture, and mission-critical 24/7 maintenance engineering across modern premises.

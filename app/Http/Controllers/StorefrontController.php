@@ -17,8 +17,7 @@ class StorefrontController extends Controller
      */
     public function index(Request $request): View|RedirectResponse
     {
-        // Port 8001 is designated strictly for Admin, Technician & Employee ERP Suite.
-        // If accessed on port 8001, redirect directly to Login (or internal dashboard if already authenticated).
+        // If accessed on port 8001, redirect directly to Login (or internal dashboard if already authenticated)
         if ((int) $request->getPort() === 8001) {
             if (Auth::check()) {
                 $user = Auth::user();
@@ -33,6 +32,7 @@ class StorefrontController extends Controller
 
             return redirect()->route('staff.login');
         }
+
 
         $search = trim((string) $request->input('q', ''));
         $category = (string) $request->input('category', 'all');

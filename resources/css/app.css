@@ -9,10 +9,10 @@
    ═══════════════════════════════════════════════════════════════════════ */
 
 :root {
-    --crm-accent: #be123c;
-    --crm-accent-hover: #9f1239;
-    --crm-accent-light: #fff1f2;
-    --crm-accent-shadow: rgba(190, 18, 60, 0.25);
+    --crm-accent: #2563eb;
+    --crm-accent-hover: #1d4ed8;
+    --crm-accent-light: #eff6ff;
+    --crm-accent-shadow: rgba(37, 99, 235, 0.25);
 
     --bg-canvas: #f8fafc;
     --bg-card: #ffffff;
@@ -106,8 +106,8 @@ html.dark .saas-card {
     background-color: var(--crm-accent, #2563eb);
     color: #ffffff !important;
     font-weight: 600;
-    font-size: 0.825rem;
-    padding: 0.55rem 1.15rem;
+    font-size: 0.875rem;
+    padding: 0.625rem 1.25rem;
     border-radius: 0.75rem;
     box-shadow: 0 1px 2px 0 rgba(37, 99, 235, 0.2);
     transition: all 0.15s ease;
@@ -136,24 +136,24 @@ a[role="button"]:active {
 aside nav a.crm-active-link,
 aside nav a[class*="!bg-blue-600"],
 .crm-active-link {
-    background-color: var(--crm-accent, #be123c) !important;
-    border-color: var(--crm-accent, #be123c) !important;
+    background-color: var(--crm-accent, #2563eb) !important;
+    border-color: var(--crm-accent, #2563eb) !important;
     color: #ffffff !important;
 }
 aside nav a.crm-active-link:hover,
 aside nav a[class*="!bg-blue-600"]:hover {
-    background-color: var(--crm-accent-hover, #9f1239) !important;
-    border-color: var(--crm-accent-hover, #9f1239) !important;
+    background-color: var(--crm-accent-hover, #1d4ed8) !important;
+    border-color: var(--crm-accent-hover, #1d4ed8) !important;
 }
 
 /* Brand Logo Tile & User Avatars */
 .crm-brand-tile,
 .crm-user-avatar {
-    background: linear-gradient(135deg, var(--crm-accent, #be123c), var(--crm-accent-hover, #9f1239)) !important;
+    background: linear-gradient(135deg, var(--crm-accent, #2563eb), var(--crm-accent-hover, #1d4ed8)) !important;
 }
 .crm-brand-tile-inner,
 .crm-brand-tile > div {
-    background-color: var(--crm-accent, #be123c) !important;
+    background-color: var(--crm-accent, #2563eb) !important;
 }
 
 .btn-secondary, .btn-dark {
@@ -161,8 +161,8 @@ aside nav a[class*="!bg-blue-600"]:hover {
     color: #334155 !important;
     border: 1px solid #cbd5e1;
     font-weight: 600;
-    font-size: 0.825rem;
-    padding: 0.55rem 1.15rem;
+    font-size: 0.875rem;
+    padding: 0.625rem 1.25rem;
     border-radius: 0.75rem;
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     transition: all 0.15s ease;
@@ -195,8 +195,8 @@ html.dark .btn-dark:hover {
     background-color: var(--crm-accent, #be123c);
     color: #ffffff !important;
     font-weight: 600;
-    font-size: 0.825rem;
-    padding: 0.55rem 1.15rem;
+    font-size: 0.875rem;
+    padding: 0.625rem 1.25rem;
     border-radius: 0.75rem;
     box-shadow: 0 1px 2px 0 var(--crm-accent-shadow, rgba(190, 18, 60, 0.25));
     transition: all 0.15s ease;

@@ -17,6 +17,9 @@
 
     <title>Sign In - {{ $isStaffPortal ? 'Precision IT Systems ERP Operations' : 'Precision IT Systems Customer Portal' }}</title>
 
+    <!-- Zoho CRM Theme & Realtime Dynamic Logo Recoloring Engine -->
+    <x-crm-theme-init />
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -48,14 +51,28 @@
 
 <body class="h-full antialiased font-sans text-slate-800 bg-white"
       x-data="{ 
+          isStaff: {{ $isStaffPortal ? 'true' : 'false' }},
           portal: '{{ $isStaffPortal ? 'admin' : 'customer' }}',
           showPassword: false,
+          setStaff(val) {
+              this.isStaff = val;
+              if (val) {
+                  this.portal = 'admin';
+                  this.setEmailAndPass('test@example.com', 'password');
+              } else {
+                  this.portal = 'customer';
+                  this.setEmailAndPass('customer@example.com', 'password');
+              }
+          },
           setEmailAndPass(email, pass) {
-              document.getElementById('email').value = email;
-              document.getElementById('password').value = pass;
+              const emailEl = document.getElementById('email');
+              const passEl = document.getElementById('password');
+              if (emailEl) emailEl.value = email;
+              if (passEl) passEl.value = pass;
           },
           quickSubmitRole(email, pass, role) {
               this.portal = role;
+              this.isStaff = (role !== 'customer');
               this.setEmailAndPass(email, pass);
               document.getElementById('loginForm').submit();
           }
@@ -70,37 +87,53 @@
             
             {{-- Brand Logo Header --}}
             <div class="flex items-center justify-between mb-4 lg:mb-6">
-                <a href="{{ $isStaffPortal ? route('login') : route('home') }}" class="flex items-center space-x-3 group">
-                    <img src="{{ asset('logo.png') }}" alt="Precision IT Systems" class="h-10 w-auto object-contain">
+                <a href="{{ $isStaffPortal ? route('login') : route('home') }}" class="flex items-center gap-3.5 group">
+                    <img src="{{ asset('logo.png') }}" alt="Precision IT Systems" class="crm-brand-logo h-14 w-14 sm:h-16 sm:w-16 object-contain shrink-0 drop-shadow-xs transition-transform group-hover:scale-105">
                     <div>
-                        <span class="text-xl font-extrabold font-heading text-slate-900 tracking-tight">Precision IT <span class="text-blue-600">Systems</span></span>
-                        <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                        <span class="text-xl sm:text-2xl font-black font-heading text-slate-900 tracking-tight leading-tight">Precision IT <span class="crm-brand-accent-text text-blue-600">Systems</span></span>
+                        <span class="block text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 font-mono mt-0.5" x-text="isStaff ? 'Operations ERP Suite' : 'Customer Surveillance Portal'">
                             {{ $isStaffPortal ? 'Operations ERP Suite' : 'Customer Surveillance Portal' }}
                         </span>
                     </div>
                 </a>
 
-                @if($isStaffPortal)
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-100 shadow-xs">
-                        <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-                        <span>Staff & Admin ERP</span>
+                <div class="flex items-center gap-2">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold shadow-xs transition-colors"
+                          :class="isStaff ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'bg-slate-100 text-slate-700 border border-slate-200'">
+                        <span class="w-2 h-2 rounded-full transition-colors" :class="isStaff ? 'bg-blue-500 animate-pulse' : 'bg-emerald-500'"></span>
+                        <span x-text="isStaff ? 'Staff & Admin ERP' : 'Customer Portal'"></span>
                     </span>
-                @else
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-100 shadow-xs">
-                        <span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
-                        <span>Customer Portal</span>
-                    </span>
-                @endif
+                </div>
             </div>
 
             {{-- Main Form Container --}}
             <div class="max-w-md w-full mx-auto my-auto py-2">
                 
+                {{-- Universal Portal Selector Bar (Allows 1-click toggle on ALL HTTP servers, IPs, and ports) --}}
+                <div class="flex p-1 bg-slate-100 rounded-2xl mb-5 text-xs font-bold border border-slate-200/80 shadow-xs">
+                    <button type="button" 
+                            @click="setStaff(false)"
+                            class="flex-1 py-2.5 rounded-xl transition-all text-center flex items-center justify-center gap-1.5"
+                            :class="!isStaff ? 'bg-white text-blue-600 shadow-xs font-extrabold ring-1 ring-slate-200/60' : 'text-slate-500 hover:text-slate-800'">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                        <span>Customer Portal</span>
+                    </button>
+                    <button type="button" 
+                            @click="setStaff(true)"
+                            class="flex-1 py-2.5 rounded-xl transition-all text-center flex items-center justify-center gap-1.5"
+                            :class="isStaff ? 'bg-white text-blue-600 shadow-xs font-extrabold ring-1 ring-slate-200/60' : 'text-slate-500 hover:text-slate-800'">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                        <span>Staff & Admin ERP</span>
+                    </button>
+                </div>
+
                 <!-- Main Bold Title -->
-                <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 font-heading tracking-tight mb-2">
+                <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 font-heading tracking-tight mb-2"
+                    x-text="isStaff ? 'Operations Sign In' : 'Customer Sign In'">
                     {{ $isStaffPortal ? 'Operations Sign In' : 'Customer Sign In' }}
                 </h1>
-                <p class="text-xs text-slate-500 mb-6">
+                <p class="text-xs text-slate-500 mb-6"
+                   x-text="isStaff ? 'Sign in to access administration, technician dispatch & field operations' : 'Sign in to view your camera surveillance status, service tickets & invoices'">
                     @if($isStaffPortal)
                         Sign in to access administration, technician dispatch & field operations
                     @else
@@ -108,29 +141,27 @@
                     @endif
                 </p>
 
-                <!-- Role Selector Tabs (Only on Staff/Admin Login) -->
-                @if($isStaffPortal)
-                    <div class="flex p-1 bg-slate-100 rounded-xl mb-5 text-xs">
-                        <button type="button" 
-                                class="flex-1 py-2 rounded-lg font-bold transition-all text-center"
-                                :class="portal === 'admin' ? 'bg-white text-blue-600 shadow-sm font-extrabold' : 'text-slate-500 hover:text-slate-900'"
-                                @click="portal = 'admin'; setEmailAndPass('test@example.com', 'password')">
-                            Admin
-                        </button>
-                        <button type="button" 
-                                class="flex-1 py-2 rounded-lg font-bold transition-all text-center"
-                                :class="portal === 'technician' ? 'bg-white text-blue-600 shadow-sm font-extrabold' : 'text-slate-500 hover:text-slate-900'"
-                                @click="portal = 'technician'; setEmailAndPass('bob@example.com', 'password')">
-                            Technician
-                        </button>
-                        <button type="button" 
-                                class="flex-1 py-2 rounded-lg font-bold transition-all text-center"
-                                :class="portal === 'staff' ? 'bg-white text-blue-600 shadow-sm font-extrabold' : 'text-slate-500 hover:text-slate-900'"
-                                @click="portal = 'staff'; setEmailAndPass('alex@example.com', 'password')">
-                            Employee
-                        </button>
-                    </div>
-                @endif
+                <!-- Role Selector Tabs (When Staff Mode Active) -->
+                <div x-show="isStaff" x-cloak class="flex p-1 bg-slate-100 rounded-xl mb-5 text-xs">
+                    <button type="button" 
+                            class="flex-1 py-2 rounded-lg font-bold transition-all text-center"
+                            :class="portal === 'admin' ? 'bg-white text-blue-600 shadow-sm font-extrabold' : 'text-slate-500 hover:text-slate-900'"
+                            @click="portal = 'admin'; setEmailAndPass('test@example.com', 'password')">
+                        Admin
+                    </button>
+                    <button type="button" 
+                            class="flex-1 py-2 rounded-lg font-bold transition-all text-center"
+                            :class="portal === 'technician' ? 'bg-white text-blue-600 shadow-sm font-extrabold' : 'text-slate-500 hover:text-slate-900'"
+                            @click="portal = 'technician'; setEmailAndPass('bob@example.com', 'password')">
+                        Technician
+                    </button>
+                    <button type="button" 
+                            class="flex-1 py-2 rounded-lg font-bold transition-all text-center"
+                            :class="portal === 'staff' ? 'bg-white text-blue-600 shadow-sm font-extrabold' : 'text-slate-500 hover:text-slate-900'"
+                            @click="portal = 'staff'; setEmailAndPass('alex@example.com', 'password')">
+                        Employee
+                    </button>
+                </div>
 
                 <!-- Google OAuth Login Link -->
                 <a href="{{ route('auth.google', ['portal' => $isStaffPortal ? 'staff' : 'customer', 'mode' => 'login']) }}" 
@@ -218,55 +249,53 @@
                     <div class="pt-2">
                         <button type="submit" 
                                 class="w-full py-3.5 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold text-sm shadow-lg shadow-blue-500/25 flex items-center justify-center space-x-2 transition-all hover:scale-[1.01] active:scale-[0.99]">
-                            <span>{{ $isStaffPortal ? 'Log in to Operations ERP' : 'Log in to Customer Portal' }}</span>
+                            <span x-text="isStaff ? 'Log in to Operations ERP' : 'Log in to Customer Portal'">{{ $isStaffPortal ? 'Log in to Operations ERP' : 'Log in to Customer Portal' }}</span>
                             <span class="text-base leading-none">→</span>
                         </button>
                     </div>
                 </form>
 
-                @if(!$isStaffPortal)
-                    <div class="text-center mt-3.5 text-xs text-slate-500">
-                        <span>New customer? </span>
-                        <a href="{{ route('register') }}" class="text-blue-600 font-bold hover:underline">
-                            Create an account / Sign up →
-                        </a>
-                    </div>
-                @endif
+                <div x-show="!isStaff" class="text-center mt-3.5 text-xs text-slate-500">
+                    <span>New customer? </span>
+                    <a href="{{ route('register') }}" class="text-blue-600 font-bold hover:underline">
+                        Create an account / Sign up →
+                    </a>
+                </div>
 
                 <!-- Demo Credentials Quick Helper -->
                 <div class="mt-5 p-3 bg-slate-50 border border-slate-200 rounded-2xl">
                     <div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-2 flex items-center justify-between">
-                        <span>{{ $isStaffPortal ? 'Staff Demo Logins' : 'Customer Demo Logins' }}</span>
+                        <span x-text="isStaff ? 'Staff Demo Logins' : 'Customer Demo Logins'">{{ $isStaffPortal ? 'Staff Demo Logins' : 'Customer Demo Logins' }}</span>
                         <span class="text-blue-600 font-semibold lowercase">click to autofill</span>
                     </div>
 
-                    @if($isStaffPortal)
-                        <div class="grid grid-cols-3 gap-1.5 text-[11px]">
-                            <div class="p-1.5 bg-white rounded-lg border border-slate-100 cursor-pointer hover:border-blue-300 hover:bg-blue-50/40 transition text-center" @click="portal = 'admin'; setEmailAndPass('test@example.com', 'password')">
-                                <span class="font-bold text-slate-800 block text-[10px]">Admin</span>
-                                <span class="text-slate-500 font-mono text-[9px] block truncate">test@example.com</span>
-                            </div>
-                            <div class="p-1.5 bg-white rounded-lg border border-slate-100 cursor-pointer hover:border-blue-300 hover:bg-blue-50/40 transition text-center" @click="portal = 'technician'; setEmailAndPass('bob@example.com', 'password')">
-                                <span class="font-bold text-slate-800 block text-[10px]">Technician</span>
-                                <span class="text-slate-500 font-mono text-[9px] block truncate">bob@example.com</span>
-                            </div>
-                            <div class="p-1.5 bg-white rounded-lg border border-slate-100 cursor-pointer hover:border-blue-300 hover:bg-blue-50/40 transition text-center" @click="portal = 'staff'; setEmailAndPass('alex@example.com', 'password')">
-                                <span class="font-bold text-slate-800 block text-[10px]">Staff</span>
-                                <span class="text-slate-500 font-mono text-[9px] block truncate">alex@example.com</span>
-                            </div>
+                    <!-- Staff Logins -->
+                    <div x-show="isStaff" x-cloak class="grid grid-cols-3 gap-1.5 text-[11px]">
+                        <div class="p-1.5 bg-white rounded-lg border border-slate-100 cursor-pointer hover:border-blue-300 hover:bg-blue-50/40 transition text-center" @click="portal = 'admin'; setEmailAndPass('test@example.com', 'password')">
+                            <span class="font-bold text-slate-800 block text-[10px]">Admin</span>
+                            <span class="text-slate-500 font-mono text-[9px] block truncate">test@example.com</span>
                         </div>
-                    @else
-                        <div class="grid grid-cols-2 gap-2 text-[11px]">
-                            <div class="p-2 bg-white rounded-xl border border-slate-100 cursor-pointer hover:border-blue-400 hover:bg-blue-50/40 transition shadow-xs" @click="portal = 'customer'; setEmailAndPass('customer@example.com', 'password')">
-                                <span class="font-bold text-blue-900 block text-xs">Demo Customer</span>
-                                <span class="text-slate-500 font-mono text-[10px]">customer@example.com</span>
-                            </div>
-                            <div class="p-2 bg-white rounded-xl border border-slate-100 cursor-pointer hover:border-blue-400 hover:bg-blue-50/40 transition shadow-xs" @click="portal = 'customer'; setEmailAndPass('srinithish.p@example.com', 'password')">
-                                <span class="font-bold text-blue-900 block text-xs">Srinithish P</span>
-                                <span class="text-slate-500 font-mono text-[10px]">srinithish.p@example.com</span>
-                            </div>
+                        <div class="p-1.5 bg-white rounded-lg border border-slate-100 cursor-pointer hover:border-blue-300 hover:bg-blue-50/40 transition text-center" @click="portal = 'technician'; setEmailAndPass('bob@example.com', 'password')">
+                            <span class="font-bold text-slate-800 block text-[10px]">Technician</span>
+                            <span class="text-slate-500 font-mono text-[9px] block truncate">bob@example.com</span>
                         </div>
-                    @endif
+                        <div class="p-1.5 bg-white rounded-lg border border-slate-100 cursor-pointer hover:border-blue-300 hover:bg-blue-50/40 transition text-center" @click="portal = 'staff'; setEmailAndPass('alex@example.com', 'password')">
+                            <span class="font-bold text-slate-800 block text-[10px]">Staff</span>
+                            <span class="text-slate-500 font-mono text-[9px] block truncate">alex@example.com</span>
+                        </div>
+                    </div>
+
+                    <!-- Customer Logins -->
+                    <div x-show="!isStaff" class="grid grid-cols-2 gap-2 text-[11px]">
+                        <div class="p-2 bg-white rounded-xl border border-slate-100 cursor-pointer hover:border-blue-400 hover:bg-blue-50/40 transition shadow-xs" @click="portal = 'customer'; setEmailAndPass('customer@example.com', 'password')">
+                            <span class="font-bold text-blue-900 block text-xs">Demo Customer</span>
+                            <span class="text-slate-500 font-mono text-[10px]">customer@example.com</span>
+                        </div>
+                        <div class="p-2 bg-white rounded-xl border border-slate-100 cursor-pointer hover:border-blue-400 hover:bg-blue-50/40 transition shadow-xs" @click="portal = 'customer'; setEmailAndPass('srinithish.p@example.com', 'password')">
+                            <span class="font-bold text-blue-900 block text-xs">Srinithish P</span>
+                            <span class="text-slate-500 font-mono text-[10px]">srinithish.p@example.com</span>
+                        </div>
+                    </div>
 
                     <div class="text-[10px] text-center text-slate-400 mt-1.5">Password for all accounts: <strong class="text-slate-700 font-mono">password</strong></div>
                 </div>
