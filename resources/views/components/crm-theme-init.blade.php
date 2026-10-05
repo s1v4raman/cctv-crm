@@ -132,16 +132,23 @@
         if (!hex) hex = '#be123c';
         
         let hoverHex = hex;
+        let tr = 190, tg = 18, tb = 60;
         try {
-            let num = parseInt(hex.replace('#', ''), 16);
-            let r = Math.max(0, ((num >> 16) & 255) - 25);
-            let g = Math.max(0, ((num >> 8) & 255) - 25);
-            let b = Math.max(0, (num & 255) - 25);
-            hoverHex = '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+            let clean = hex.replace('#', '');
+            if (clean.length === 3) clean = clean.split('').map(function(c) { return c + c; }).join('');
+            let num = parseInt(clean, 16);
+            tr = (num >> 16) & 255;
+            tg = (num >> 8) & 255;
+            tb = num & 255;
+            let hr = Math.max(0, tr - 25);
+            let hg = Math.max(0, tg - 25);
+            let hb = Math.max(0, tb - 25);
+            hoverHex = '#' + ((1 << 24) + (hr << 16) + (hg << 8) + hb).toString(16).slice(1);
         } catch(e) {}
 
         document.documentElement.style.setProperty('--crm-accent', hex);
         document.documentElement.style.setProperty('--crm-accent-hover', hoverHex);
+        document.documentElement.style.setProperty('--crm-accent-rgb', tr + ', ' + tg + ', ' + tb);
 
         let styleEl = document.getElementById('crm-dynamic-theme-overrides');
         if (!styleEl) {
@@ -155,6 +162,7 @@
                 --crm-accent: ${hex} !important;
                 --crm-accent-hover: ${hoverHex} !important;
                 --crm-accent-shadow: ${hex}40 !important;
+                --crm-accent-rgb: ${tr}, ${tg}, ${tb} !important;
                 --brand-blue: ${hex} !important;
                 --brand-blue-hover: ${hoverHex} !important;
             }
@@ -231,6 +239,11 @@
             a.crm-customer-action-btn,
             .crm-customer-header-action,
             a.crm-customer-header-action,
+            .crm-hub-primary-btn,
+            button.crm-hub-primary-btn,
+            a.crm-hub-primary-btn,
+            .crm-hub-subnav-pill,
+            a.crm-hub-subnav-pill,
             a[class*="from-amber-500"],
             a[class*="to-amber-600"],
             a[class*="bg-amber-500"]:not([href*="range="]),
@@ -291,6 +304,11 @@
             a.crm-customer-action-btn:hover,
             .crm-customer-header-action:hover,
             a.crm-customer-header-action:hover,
+            .crm-hub-primary-btn:hover,
+            button.crm-hub-primary-btn:hover,
+            a.crm-hub-primary-btn:hover,
+            .crm-hub-subnav-pill:hover,
+            a.crm-hub-subnav-pill:hover,
             a[class*="from-amber-500"]:hover,
             a[class*="to-amber-600"]:hover,
             a[class*="bg-amber-500"]:not([href*="range="]):hover,
@@ -323,6 +341,34 @@
                 border-color: ${hoverHex} !important;
                 color: #ffffff !important;
                 box-shadow: 0 6px 18px -1px ${hex}66 !important;
+            }
+
+            /* Hub Secondary Module Navigation Buttons */
+            .crm-hub-action-btn,
+            a.crm-hub-action-btn,
+            button.crm-hub-action-btn {
+                background-color: ${hex}16 !important;
+                border-color: ${hex}38 !important;
+                color: ${hex} !important;
+            }
+            .crm-hub-action-btn svg,
+            a.crm-hub-action-btn svg {
+                color: ${hex} !important;
+            }
+            .crm-hub-action-btn:hover,
+            a.crm-hub-action-btn:hover,
+            button.crm-hub-action-btn:hover {
+                background: linear-gradient(135deg, ${hex}, ${hoverHex}) !important;
+                background-color: ${hex} !important;
+                border-color: ${hex} !important;
+                color: #ffffff !important;
+                box-shadow: 0 4px 12px -1px ${hex}55 !important;
+            }
+            .crm-hub-action-btn:hover svg,
+            a.crm-hub-action-btn:hover svg,
+            .crm-hub-action-btn:hover span,
+            a.crm-hub-action-btn:hover span {
+                color: #ffffff !important;
             }
 
             /* 3. FILTER BUTTONS & FILTER CONTROLS */

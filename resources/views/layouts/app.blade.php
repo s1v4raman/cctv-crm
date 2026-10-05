@@ -413,7 +413,7 @@
                                 </a>
                             @endif
 
-                            {{-- Clean Dark / Light Mode Toggle Button Only --}}
+                            {{-- Clean Dark / Light Mode Toggle Button --}}
                             <button type="button" 
                                     @click="toggleTheme()" 
                                     class="p-2.5 rounded-xl text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-800 transition shrink-0 cursor-pointer shadow-2xs"
@@ -429,6 +429,9 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
                                 </svg>
                             </button>
+
+                            {{-- Dedicated Quick Theme & Color Palette Toggle Button --}}
+                            <x-zoho-theme-customizer :inline="false" />
 
                             {{-- Notification Bell (Role-Aware & Live) --}}
                             @php

@@ -15,27 +15,37 @@
                     <h1 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Finance & Accounting Analytics</h1>
                 </div>
             </div>
-            <div class="flex items-center gap-2">
-                <a href="{{ route('invoices.index') }}" class="inline-flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition shadow-sm hover:opacity-90" style="background-color: #059669 !important; color: #ffffff !important; border: 1px solid #047857 !important;">
-                    <svg class="w-3.5 h-3.5" style="color: #ffffff !important;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                    <span style="color: #ffffff !important; font-weight: 700 !important;">Invoices</span>
+            <div class="flex items-center gap-2 flex-wrap">
+                <a href="{{ route('invoices.index') }}" 
+                   class="crm-hub-action-btn inline-flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all duration-200 shadow-xs cursor-pointer"
+                   style="background-color: rgba(var(--crm-accent-rgb, 190, 18, 60), 0.1); color: var(--crm-accent, #be123c); border: 1px solid rgba(var(--crm-accent-rgb, 190, 18, 60), 0.3);">
+                    <svg class="w-3.5 h-3.5 transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    <span>Invoices</span>
                 </a>
-                <a href="{{ route('finance.receivables.index') }}" class="inline-flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition shadow-sm hover:opacity-90" style="background-color: #4f46e5 !important; color: #ffffff !important; border: 1px solid #4338ca !important;">
-                    <svg class="w-3.5 h-3.5" style="color: #ffffff !important;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    <span style="color: #ffffff !important; font-weight: 700 !important;">AR / Aging</span>
+                <a href="{{ route('finance.receivables.index') }}" 
+                   class="crm-hub-action-btn inline-flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all duration-200 shadow-xs cursor-pointer"
+                   style="background-color: rgba(var(--crm-accent-rgb, 190, 18, 60), 0.1); color: var(--crm-accent, #be123c); border: 1px solid rgba(var(--crm-accent-rgb, 190, 18, 60), 0.3);">
+                    <svg class="w-3.5 h-3.5 transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span>AR / Aging</span>
                 </a>
-                <a href="{{ route('finance.payables.index') }}" class="inline-flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition shadow-sm hover:opacity-90" style="background-color: #e11d48 !important; color: #ffffff !important; border: 1px solid #be123c !important;">
-                    <svg class="w-3.5 h-3.5" style="color: #ffffff !important;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
-                    <span style="color: #ffffff !important; font-weight: 700 !important;">AP / Vendor</span>
+                <a href="{{ route('finance.payables.index') }}" 
+                   class="crm-hub-action-btn inline-flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all duration-200 shadow-xs cursor-pointer"
+                   style="background-color: rgba(var(--crm-accent-rgb, 190, 18, 60), 0.1); color: var(--crm-accent, #be123c); border: 1px solid rgba(var(--crm-accent-rgb, 190, 18, 60), 0.3);">
+                    <svg class="w-3.5 h-3.5 transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+                    <span>AP / Vendor</span>
                 </a>
-                <a href="{{ route('finance.gst.index') }}" class="inline-flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition shadow-sm hover:opacity-90" style="background-color: #d97706 !important; color: #ffffff !important; border: 1px solid #b45309 !important;">
-                    <svg class="w-3.5 h-3.5" style="color: #ffffff !important;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/></svg>
-                    <span style="color: #ffffff !important; font-weight: 700 !important;">GST</span>
+                <a href="{{ route('finance.gst.index') }}" 
+                   class="crm-hub-action-btn inline-flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all duration-200 shadow-xs cursor-pointer"
+                   style="background-color: rgba(var(--crm-accent-rgb, 190, 18, 60), 0.1); color: var(--crm-accent, #be123c); border: 1px solid rgba(var(--crm-accent-rgb, 190, 18, 60), 0.3);">
+                    <svg class="w-3.5 h-3.5 transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/></svg>
+                    <span>GST</span>
                 </a>
-                <a href="{{ route('employee.hub') }}" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition shadow-sm hover:opacity-90" style="background-color: #0d9488 !important; color: #ffffff !important; border: 1px solid #0f766e !important;">
-                    <svg class="w-3.5 h-3.5" style="color: #ffffff !important;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                    <span style="color: #ffffff !important; font-weight: 700 !important;">Workforce Hub</span>
-                    <svg class="w-3.5 h-3.5" style="color: #ffffff !important;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                <a href="{{ route('employee.hub') }}" 
+                   class="crm-hub-primary-btn inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold text-white transition-all duration-200 shadow-xs hover:opacity-95 cursor-pointer"
+                   style="background: linear-gradient(135deg, var(--crm-accent, #be123c), var(--crm-accent-hover, #9f1239)); border: 1px solid var(--crm-accent, #be123c); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(190,18,60,0.35));">
+                    <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                    <span class="text-white font-bold">Workforce Hub</span>
+                    <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                 </a>
             </div>
         </div>
