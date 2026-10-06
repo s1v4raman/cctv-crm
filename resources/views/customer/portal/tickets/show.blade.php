@@ -3,9 +3,9 @@
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
                 <div class="flex items-center gap-2">
-                    <a href="{{ route('portal.tickets') }}" class="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline">← Back to All Tickets</a>
+                    <a href="{{ route('portal.tickets') }}" class="text-xs font-semibold hover:underline" style="color: var(--crm-accent, #2563eb);">← Back to All Tickets</a>
                     <span class="text-slate-400">/</span>
-                    <span class="text-xs font-mono font-bold text-blue-600 dark:text-blue-400 uppercase">#{{ $ticket->ticket_no }}</span>
+                    <span class="text-xs font-mono font-bold uppercase" style="color: var(--crm-accent, #2563eb);">#{{ $ticket->ticket_no }}</span>
                 </div>
                 <h1 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight mt-1 font-heading">{{ $ticket->title }}</h1>
                 <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Logged on {{ $ticket->created_at->format('l, d M Y at h:i A') }}</p>
@@ -67,7 +67,7 @@
                 }
             @endphp
             <div class="bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200/90 dark:border-slate-800 p-6 shadow-xs">
-                <div class="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 mb-5">Live Service Progress</div>
+                <div class="text-xs font-bold uppercase tracking-wider mb-5" style="color: var(--crm-accent, #2563eb);">Live Service Progress</div>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {{-- Step 1 --}}
                     <div class="flex items-center gap-3">
@@ -137,12 +137,12 @@
                                 Assigned field engineer: <strong class="text-slate-800 dark:text-white">{{ $ticket->assignedTechnician->name }}</strong>.
                             @endif
                             @if($ticket->scheduled_date)
-                                Scheduled visit date: <strong class="text-blue-600 dark:text-blue-400">{{ $ticket->scheduled_date->format('l, d M Y') }}</strong>.
+                                Scheduled visit date: <strong style="color: var(--crm-accent, #2563eb);">{{ $ticket->scheduled_date->format('l, d M Y') }}</strong>.
                             @endif
                         </p>
                         @if($ticket->resolution_notes && !str_starts_with($ticket->resolution_notes, 'DECLINED'))
                             <div class="mt-2 p-3 bg-white dark:bg-slate-900 rounded-xl text-xs text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800">
-                                <strong class="text-blue-600 dark:text-blue-400">Admin Note:</strong> {{ $ticket->resolution_notes }}
+                                <strong style="color: var(--crm-accent, #2563eb);">Admin Note:</strong> {{ $ticket->resolution_notes }}
                             </div>
                         @endif
                     </div>
@@ -216,14 +216,14 @@
                             @if($ticket->resolved_at)
                                 <div class="text-xs text-slate-500 dark:text-slate-400 pt-2 flex items-center gap-1.5 font-mono">
                                     <span>Resolved on:</span>
-                                    <strong class="text-blue-600 dark:text-blue-400">{{ \Carbon\Carbon::parse($ticket->resolved_at)->format('d M Y, h:i A') }}</strong>
+                                    <strong style="color: var(--crm-accent, #2563eb);">{{ \Carbon\Carbon::parse($ticket->resolved_at)->format('d M Y, h:i A') }}</strong>
                                 </div>
                             @endif
                         </div>
                     @else
                         {{-- In-progress timeline badge --}}
                         <div class="bg-white dark:bg-[#0f172a] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-5 text-slate-700 dark:text-slate-300 flex items-start gap-3 shadow-xs">
-                            <div class="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 flex items-center justify-center shrink-0 font-bold">
+                            <div class="w-8 h-8 rounded-xl crm-customer-icon-box flex items-center justify-center shrink-0 font-bold" style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.1); color: var(--crm-accent, #2563eb); border: 1px solid rgba(var(--crm-accent-rgb, 37, 99, 235), 0.25);">
                                 ℹ
                             </div>
                             <div class="text-xs leading-relaxed">
@@ -240,12 +240,12 @@
 
                     {{-- Status Card --}}
                     <div class="bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200/90 dark:border-slate-800 p-5 shadow-xs space-y-4 text-xs">
-                        <h3 class="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">Ticket Information</h3>
+                        <h3 class="text-xs font-bold uppercase tracking-wider" style="color: var(--crm-accent, #2563eb);">Ticket Information</h3>
 
                         <div class="space-y-3">
                             <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
                                 <span class="text-slate-500 dark:text-slate-400">Ticket No:</span>
-                                <span class="font-mono font-bold text-blue-600 dark:text-blue-400">#{{ $ticket->ticket_no }}</span>
+                                <span class="font-mono font-bold" style="color: var(--crm-accent, #2563eb);">#{{ $ticket->ticket_no }}</span>
                             </div>
 
                             <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
@@ -261,7 +261,7 @@
                             @if($ticket->scheduled_date)
                                 <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
                                     <span class="text-slate-500 dark:text-slate-400">Scheduled Site Visit:</span>
-                                    <strong class="text-blue-600 dark:text-blue-400">{{ \Carbon\Carbon::parse($ticket->scheduled_date)->format('d M Y') }}</strong>
+                                    <strong style="color: var(--crm-accent, #2563eb);">{{ \Carbon\Carbon::parse($ticket->scheduled_date)->format('d M Y') }}</strong>
                                 </div>
                             @endif
 
@@ -282,8 +282,8 @@
                     {{-- Need Assistance CTA --}}
                     <div class="bg-white dark:bg-[#0f172a] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-5 shadow-xs space-y-3 text-xs">
                         <h4 class="text-sm font-bold text-slate-900 dark:text-white font-heading">Need to expedite this ticket?</h4>
-                        <p class="text-slate-500 dark:text-slate-400 text-xs">Call our CCTV central desk quoting ticket <strong class="text-blue-600 dark:text-blue-400">#{{ $ticket->ticket_no }}</strong>.</p>
-                        <div class="bg-slate-50 dark:bg-slate-800 rounded-xl p-3 font-mono font-bold text-sm text-center text-blue-600 dark:text-blue-400 border border-slate-200 dark:border-slate-700">
+                        <p class="text-slate-500 dark:text-slate-400 text-xs">Call our CCTV central desk quoting ticket <strong style="color: var(--crm-accent, #2563eb);">#{{ $ticket->ticket_no }}</strong>.</p>
+                        <div class="bg-slate-50 dark:bg-slate-800 rounded-xl p-3 font-mono font-bold text-sm text-center border border-slate-200 dark:border-slate-700" style="color: var(--crm-accent, #2563eb);">
                             +91 98765 43210
                         </div>
                     </div>

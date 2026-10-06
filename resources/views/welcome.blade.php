@@ -8,8 +8,16 @@
         content="Precision IT Systems - Innovative AI CCTV Cameras & Smart Security Solutions. 4K Color Night Vision, Enterprise Surveillance, Cloud VMS, and 24/7 Support.">
     <title>Precision IT Systems | Smart AI CCTV Cameras & Security Solutions</title>
 
-    <!-- Zoho CRM Theme & Realtime Dynamic Logo Recoloring Engine -->
-    <x-crm-theme-init />
+    <!-- Signature Brand Colors Permanently Locked (Independent from CRM user themes) -->
+    <style>
+        :root {
+            --crm-accent: #1366e2 !important;
+            --crm-accent-hover: #0e4db0 !important;
+            --crm-accent-shadow: rgba(19, 102, 226, 0.25) !important;
+            --brand-blue: #1366e2 !important;
+            --brand-blue-hover: #0e4db0 !important;
+        }
+    </style>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,6 +25,9 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&display=swap"
         rel="stylesheet">
+
+    <!-- Scripts & Styles via Vite (Precompiled local assets guarantee normal styling even if Edge or extensions block CDNs) -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <!-- Tailwind CSS Play CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -179,7 +190,7 @@
                         <!-- Authenticated User Profile Initial Badge -->
                         <button type="button"
                             class="w-10 h-10 rounded-2xl flex items-center justify-center font-black text-base text-white shadow-md transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none ring-2 ring-slate-200/90 dark:ring-slate-700/80 hover:ring-blue-500/50 cursor-pointer select-none shrink-0"
-                            style="background: linear-gradient(135deg, #be123c 0%, #1d4ed8 100%);"
+                            style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);"
                             title="My Account: {{ Auth::user()->name }} (Click to view profile)">
                             <span class="drop-shadow-xs">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
                         </button>

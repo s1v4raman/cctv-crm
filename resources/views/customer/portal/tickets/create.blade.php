@@ -3,7 +3,7 @@
         <div class="flex items-center justify-between">
             <div>
                 <div class="flex items-center gap-2">
-                    <a href="{{ route('portal.tickets') }}" class="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline">← Back to Tickets</a>
+                    <a href="{{ route('portal.tickets') }}" class="text-xs font-semibold hover:underline" style="color: var(--crm-accent, #2563eb);">← Back to Tickets</a>
                     <span class="text-slate-400">/</span>
                     <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Helpdesk</span>
                 </div>
@@ -113,7 +113,7 @@
                         </a>
                         <button type="submit" 
                                 class="crm-customer-action-btn px-5 py-2.5 text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-xs transition-all duration-200 cursor-pointer"
-                                style="background: linear-gradient(135deg, var(--crm-accent, #be123c), var(--crm-accent-hover, #9f1239)); border: 1px solid var(--crm-accent, #be123c); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(190,18,60,0.35));">
+                                style="background-color: var(--crm-accent, #2563eb); border: 1px solid var(--crm-accent, #2563eb); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(37,99,235,0.35));">
                             Submit Service Request
                         </button>
                     </div>

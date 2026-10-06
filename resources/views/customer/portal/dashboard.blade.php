@@ -3,7 +3,8 @@
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
                 <div class="flex items-center gap-2">
-                    <span class="px-2.5 py-0.5 text-xs font-semibold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-400 rounded-full border border-blue-200 dark:border-blue-800">
+                    <span class="px-2.5 py-0.5 text-xs font-semibold crm-customer-pill rounded-full border"
+                          style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.1); color: var(--crm-accent, #2563eb); border-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.25);">
                         Customer Portal
                     </span>
                     <span class="text-xs text-slate-500 dark:text-slate-400 font-mono">Site ID: #{{ $lead ? $lead->id : 'Guest' }}</span>
@@ -20,7 +21,7 @@
                 <button type="button" 
                         onclick="document.getElementById('siteSurveyBookingModal').classList.remove('hidden')"
                         class="crm-customer-action-btn inline-flex items-center gap-2 px-3.5 py-2 text-white font-semibold text-xs rounded-xl shadow-xs transition-all duration-200 cursor-pointer"
-                        style="background: linear-gradient(135deg, var(--crm-accent, #be123c), var(--crm-accent-hover, #9f1239)); border: 1px solid var(--crm-accent, #be123c); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(190,18,60,0.35));">
+                        style="background-color: var(--crm-accent, #2563eb); border: 1px solid var(--crm-accent, #2563eb); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(37,99,235,0.35));">
                     <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                     </svg>
@@ -37,7 +38,7 @@
 
                 <a href="{{ route('home') }}" 
                    class="inline-flex items-center gap-2 px-3.5 py-2 bg-white dark:bg-[#0f172a] hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200/90 dark:border-slate-800 text-xs font-semibold rounded-xl shadow-xs transition-colors">
-                    <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4" style="color: var(--crm-accent, #2563eb);" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
                     </svg>
                     <span>Smart CCTV Store</span>
@@ -87,14 +88,15 @@
                             </div>
                         </div>
                         <a href="{{ route('portal.tickets.show', $latestWorkTicket) }}" 
-                           class="px-4 py-2.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-xl shadow-xs transition shrink-0 text-center">
+                           class="crm-customer-action-btn px-4 py-2.5 text-white text-xs font-bold rounded-xl shadow-xs transition shrink-0 text-center cursor-pointer"
+                           style="background-color: var(--crm-accent, #2563eb); border: 1px solid var(--crm-accent, #2563eb); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(37,99,235,0.35));">
                             Track Request Live →
                         </a>
                     </div>
                 @else
-                    <div class="p-6 bg-white dark:bg-[#0f172a] border border-blue-100 dark:border-blue-900/40 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs">
+                    <div class="p-6 bg-white dark:bg-[#0f172a] border border-slate-200/90 dark:border-slate-800 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs">
                         <div class="flex items-start gap-4">
-                            <div class="p-3.5 bg-blue-600 text-white rounded-2xl shadow-xs text-xl font-bold">🚀</div>
+                            <div class="p-3.5 text-white rounded-2xl shadow-xs text-xl font-bold" style="background-color: var(--crm-accent, #2563eb);">🚀</div>
                             <div>
                                 <h3 class="text-lg font-bold text-slate-900 dark:text-white font-heading">Welcome to Precision IT Systems Client Portal</h3>
                                 <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-2xl leading-relaxed">
@@ -106,7 +108,7 @@
                             <button type="button" 
                                     onclick="document.getElementById('siteSurveyBookingModal').classList.remove('hidden')"
                                     class="crm-customer-action-btn px-4 py-2.5 text-white text-xs font-bold rounded-xl shadow-xs transition-all duration-200 cursor-pointer"
-                                    style="background: linear-gradient(135deg, var(--crm-accent, #be123c), var(--crm-accent-hover, #9f1239)); border: 1px solid var(--crm-accent, #be123c); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(190,18,60,0.35));">
+                                    style="background-color: var(--crm-accent, #2563eb); border: 1px solid var(--crm-accent, #2563eb); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(37,99,235,0.35));">
                                 📅 Book Free Survey
                             </button>
                             <a href="{{ route('home') }}" 
@@ -121,13 +123,15 @@
                 <div class="bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-xs overflow-hidden" x-data="{ expanded: true }">
                     <div class="px-6 py-4 bg-slate-50/70 dark:bg-slate-900/60 border-b border-slate-200/90 dark:border-slate-800 flex items-center justify-between cursor-pointer" @click="expanded = !expanded">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-lg border border-blue-200 dark:border-blue-900/50">
+                            <div class="w-10 h-10 rounded-xl crm-customer-icon-box flex items-center justify-center font-bold text-lg border"
+                                 style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.1); color: var(--crm-accent, #2563eb); border-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.25);">
                                 🛠️
                             </div>
                             <div>
                                 <h2 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 font-heading">
                                     <span>Site Details & Work / Support Request</span>
-                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full crm-customer-pill border"
+                                          style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.12); color: var(--crm-accent, #2563eb); border-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.25);">
                                         {{ empty($lead->site_address) ? 'Action Required' : 'Step 1' }}
                                     </span>
                                 </h2>
@@ -188,7 +192,7 @@
                                 <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">⚡ Average engineer assignment response time: &lt; 30 minutes</span>
                                 <button type="submit" 
                                         class="crm-customer-action-btn px-6 py-2.5 text-white font-bold text-xs rounded-xl shadow-xs transition-all duration-200 cursor-pointer"
-                                        style="background: linear-gradient(135deg, var(--crm-accent, #be123c), var(--crm-accent-hover, #9f1239)); border: 1px solid var(--crm-accent, #be123c); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(190,18,60,0.35));">
+                                        style="background-color: var(--crm-accent, #2563eb); border: 1px solid var(--crm-accent, #2563eb); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(37,99,235,0.35));">
                                     Submit Request to Operations →
                                 </button>
                             </div>
@@ -200,25 +204,26 @@
                 <div class="space-y-4">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
                         <div>
-                            <span class="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">Past Deployments & Portfolio</span>
+                            <span class="text-xs font-bold uppercase tracking-wider" style="color: var(--crm-accent, #2563eb);">Past Deployments & Portfolio</span>
                             <h2 class="text-xl font-bold text-slate-900 dark:text-white font-heading">Featured CCTV Projects Done by Our Team</h2>
                             <p class="text-xs text-slate-500 dark:text-slate-400">Inspect real-world surveillance infrastructure deployed across commercial, residential, and industrial sites.</p>
                         </div>
-                        <a href="{{ route('home') }}" class="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline shrink-0">
+                        <a href="{{ route('home') }}" class="text-xs font-semibold hover:underline shrink-0" style="color: var(--crm-accent, #2563eb);">
                             Explore All Models on Storefront →
                         </a>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         @foreach($companyProjects as $proj)
-                            <div class="bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-xs overflow-hidden hover:border-blue-300 dark:hover:border-blue-800 transition group">
+                            <div class="bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-xs overflow-hidden transition group">
                                 <div class="relative h-48 overflow-hidden bg-slate-100 dark:bg-slate-950">
                                     <img src="{{ $proj['image'] }}" alt="{{ $proj['title'] }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                                     <div class="absolute top-3 left-3 flex items-center gap-2">
                                         <span class="px-2.5 py-1 rounded-lg bg-slate-900/80 backdrop-blur-xs text-white text-[10px] font-bold uppercase tracking-wider border border-white/10">
                                             {{ $proj['category'] }}
                                         </span>
-                                        <span class="px-2.5 py-1 rounded-lg bg-blue-600 text-white text-[10px] font-bold uppercase tracking-wider shadow-xs">
+                                        <span class="crm-customer-badge px-2.5 py-1 rounded-lg text-white text-[10px] font-bold uppercase tracking-wider shadow-xs"
+                                              style="background-color: var(--crm-accent, #2563eb);">
                                             {{ $proj['badge'] }}
                                         </span>
                                     </div>
@@ -227,8 +232,8 @@
                                     </div>
                                 </div>
                                 <div class="p-5 space-y-2">
-                                    <h3 class="text-base font-bold text-slate-900 dark:text-white font-heading group-hover:text-blue-600 dark:group-hover:text-blue-400 transition">{{ $proj['title'] }}</h3>
-                                    <div class="text-[11px] font-bold text-blue-600 dark:text-blue-400 font-mono">{{ $proj['tech'] }}</div>
+                                    <h3 class="text-base font-bold text-slate-900 dark:text-white font-heading transition">{{ $proj['title'] }}</h3>
+                                    <div class="text-[11px] font-bold font-mono" style="color: var(--crm-accent, #2563eb);">{{ $proj['tech'] }}</div>
                                     <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">{{ $proj['description'] }}</p>
                                 </div>
                             </div>
@@ -239,19 +244,20 @@
                 {{-- SECTION 2: CUTTING EDGE TECHNOLOGIES USED --}}
                 <div class="space-y-4">
                     <div class="border-b border-slate-200 dark:border-slate-800 pb-3">
-                        <span class="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">Enterprise AI Security</span>
+                        <span class="text-xs font-bold uppercase tracking-wider" style="color: var(--crm-accent, #2563eb);">Enterprise AI Security</span>
                         <h2 class="text-xl font-bold text-slate-900 dark:text-white font-heading">Advanced AI CCTV Technologies We Deploy</h2>
                         <p class="text-xs text-slate-500 dark:text-slate-400">Next-generation hardware offering deep learning intrusion detection, 4K ColorVu, and perimeter tripwires.</p>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         @foreach($technologies as $tech)
-                            <div class="bg-white dark:bg-[#0f172a] rounded-2xl p-5 border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-2.5 hover:border-blue-300 dark:hover:border-blue-800 transition">
+                            <div class="bg-white dark:bg-[#0f172a] rounded-2xl p-5 border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-2.5 transition">
                                 <div class="flex items-center justify-between">
                                     <div class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xl">
                                         {{ $tech['icon'] }}
                                     </div>
-                                    <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800">
+                                    <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full crm-customer-pill border"
+                                          style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.1); color: var(--crm-accent, #2563eb); border-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.25);">
                                         {{ $tech['badge'] }}
                                     </span>
                                 </div>
@@ -271,10 +277,11 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     
                     {{-- 1. Installed Equipment --}}
-                    <div class="bg-white dark:bg-[#0f172a] rounded-2xl p-5 border border-slate-200/90 dark:border-slate-800 shadow-xs flex flex-col justify-between hover:border-blue-300 dark:hover:border-blue-800 transition group">
+                    <div class="bg-white dark:bg-[#0f172a] rounded-2xl p-5 border border-slate-200/90 dark:border-slate-800 shadow-xs flex flex-col justify-between transition group">
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">CCTV Equipment</span>
-                            <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 flex items-center justify-center font-bold">
+                            <div class="w-10 h-10 rounded-xl crm-customer-icon-box border flex items-center justify-center font-bold"
+                                 style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.1); color: var(--crm-accent, #2563eb); border-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.25);">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
                             </div>
                         </div>
@@ -292,7 +299,7 @@
                             </div>
                         </div>
                         <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
-                            <a href="{{ route('portal.equipment') }}" class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center justify-between">
+                            <a href="{{ route('portal.equipment') }}" class="text-xs font-bold hover:underline flex items-center justify-between" style="color: var(--crm-accent, #2563eb);">
                                 <span>View all installed units</span>
                                 <span>→</span>
                             </a>
@@ -387,7 +394,8 @@
                             </div>
                         </div>
                         <a href="{{ route('portal.quotations') }}" 
-                           class="px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-xl shadow-xs transition shrink-0">
+                           class="crm-customer-action-btn px-5 py-2.5 text-white text-xs font-bold rounded-xl shadow-xs transition shrink-0 cursor-pointer"
+                           style="background-color: var(--crm-accent, #2563eb); border: 1px solid var(--crm-accent, #2563eb); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(37,99,235,0.35));">
                             Review Quotations →
                         </a>
                     </div>
@@ -439,7 +447,9 @@
                                     <h2 class="text-base font-bold text-slate-900 dark:text-white font-heading">Your CCTV Cameras & Installed Assets</h2>
                                     <p class="text-xs text-slate-500 dark:text-slate-400">Live warranty health for equipment on your site</p>
                                 </div>
-                                <a href="{{ route('portal.equipment') }}" class="px-3 py-1.5 bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 dark:hover:bg-blue-900/80 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800 font-bold text-xs rounded-xl transition">
+                                <a href="{{ route('portal.equipment') }}" 
+                                   class="px-3 py-1.5 crm-customer-pill border font-bold text-xs rounded-xl transition"
+                                   style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.1); color: var(--crm-accent, #2563eb); border-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.25);">
                                     View All ({{ $totalEquipment }})
                                 </a>
                             </div>
@@ -473,12 +483,12 @@
                                                             📍 {{ $item->location_tag ?: 'Main Site' }}
                                                         </span>
                                                     </td>
-                                                    <td class="px-5 py-3.5 font-mono text-[11px] text-blue-600 dark:text-blue-400 font-bold">
+                                                    <td class="px-5 py-3.5 font-mono text-[11px] font-bold" style="color: var(--crm-accent, #2563eb);">
                                                         {{ $item->serial_number ?: 'N/A' }}
                                                     </td>
                                                     <td class="px-5 py-3.5">
                                                         @if($item->mfg_warranty_status === 'active')
-                                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                                                             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
                                                                 ● Active ({{ $item->mfg_days_remaining }}d left)
                                                             </span>
                                                         @elseif($item->mfg_warranty_status === 'expiring_soon')
@@ -530,12 +540,12 @@
                                         <div class="p-4 hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition flex items-center justify-between gap-4">
                                             <div class="space-y-1">
                                                 <div class="flex items-center gap-2">
-                                                    <span class="font-mono text-xs font-bold text-blue-600 dark:text-blue-400">#{{ $ticket->ticket_no }}</span>
+                                                    <span class="font-mono text-xs font-bold" style="color: var(--crm-accent, #2563eb);">#{{ $ticket->ticket_no }}</span>
                                                     <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase
                                                         @if($ticket->status === 'resolved' || $ticket->status === 'closed') bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800
                                                         @elseif($ticket->status === 'cancelled') bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800
                                                         @elseif($ticket->status === 'in_progress') bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800
-                                                        @elseif($ticket->status === 'assigned') bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800
+                                                        @elseif($ticket->status === 'assigned') crm-customer-pill border" style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.1); color: var(--crm-accent, #2563eb); border-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.25);
                                                         @else bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 @endif">
                                                         @if($ticket->status === 'cancelled') ✕ Declined
                                                         @elseif($ticket->status === 'assigned') ✓ Accepted
@@ -550,7 +560,8 @@
                                                 </div>
                                             </div>
                                             <a href="{{ route('portal.tickets.show', $ticket) }}" 
-                                               class="px-3.5 py-1.5 bg-[#2563eb] hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-xs transition shrink-0">
+                                               class="crm-customer-action-btn px-3.5 py-1.5 text-white font-bold text-xs rounded-xl shadow-xs transition shrink-0 cursor-pointer"
+                                               style="background-color: var(--crm-accent, #2563eb); box-shadow: 0 2px 8px var(--crm-accent-shadow, rgba(37,99,235,0.3));">
                                                 View Timeline →
                                             </a>
                                         </div>
@@ -579,11 +590,11 @@
                             @if($activeAmc)
                                 <div>
                                     <div class="text-xs font-semibold uppercase text-slate-500 dark:text-slate-400">Contract No</div>
-                                    <div class="text-lg font-mono font-bold text-blue-600 dark:text-blue-400">{{ $activeAmc->contract_no }}</div>
+                                    <div class="text-lg font-mono font-bold" style="color: var(--crm-accent, #2563eb);">{{ $activeAmc->contract_no }}</div>
                                 </div>
 
                                 <div class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3.5 space-y-1">
-                                    <div class="text-[10px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">Next Scheduled Routine Visit</div>
+                                    <div class="text-[10px] font-bold uppercase tracking-wider" style="color: var(--crm-accent, #2563eb);">Next Scheduled Routine Visit</div>
                                     <div class="text-sm font-bold text-slate-900 dark:text-white">
                                         {{ $nextVisit ? \Carbon\Carbon::parse($nextVisit->scheduled_date)->format('l, d M Y') : 'All visits completed for cycle' }}
                                     </div>
@@ -595,7 +606,8 @@
                                 </div>
 
                                 <a href="{{ route('portal.amc') }}" 
-                                   class="block w-full py-2.5 text-center bg-[#2563eb] hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-xs transition">
+                                   class="crm-customer-action-btn block w-full py-2.5 text-center text-white font-bold text-xs rounded-xl shadow-xs transition cursor-pointer"
+                                   style="background-color: var(--crm-accent, #2563eb); box-shadow: 0 4px 12px var(--crm-accent-shadow, rgba(37,99,235,0.3));">
                                     View Full AMC Details & Visits
                                 </a>
                             @else
@@ -609,7 +621,8 @@
                                 <form method="POST" action="{{ route('portal.amc.renew') }}">
                                     @csrf
                                     <button type="submit" 
-                                            class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-xs transition">
+                                            class="crm-customer-action-btn w-full py-2.5 text-white font-bold text-xs rounded-xl shadow-xs transition cursor-pointer"
+                                            style="background-color: var(--crm-accent, #2563eb); border: 1px solid var(--crm-accent, #2563eb); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(37,99,235,0.35));">
                                         Request AMC Coverage Quote
                                     </button>
                                 </form>
@@ -619,7 +632,7 @@
                         {{-- Support Hotline Box --}}
                         <div class="bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200/90 dark:border-slate-800 p-5 shadow-xs space-y-3">
                             <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2 font-heading">
-                                <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                                <svg class="w-4 h-4" style="color: var(--crm-accent, #2563eb);" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
                                 CCTV Helpdesk Support
                             </h3>
                             <p class="text-xs text-slate-500 dark:text-slate-400">
@@ -628,11 +641,11 @@
                             <div class="space-y-2 pt-1 text-xs">
                                 <div class="flex items-center justify-between p-2.5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700">
                                     <span class="text-slate-500 dark:text-slate-400 font-semibold">Support Desk:</span>
-                                    <a href="tel:+919677257774" class="text-blue-600 dark:text-blue-400 font-mono font-bold hover:underline">+91 96772 57774</a>
+                                    <a href="tel:+919677257774" class="font-mono font-bold hover:underline" style="color: var(--crm-accent, #2563eb);">+91 96772 57774</a>
                                 </div>
                                 <div class="flex items-center justify-between p-2.5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700">
                                     <span class="text-slate-500 dark:text-slate-400 font-semibold">Email:</span>
-                                    <a href="mailto:precisionitsystem@gmail.com" class="text-blue-600 dark:text-blue-400 font-semibold hover:underline">precisionitsystem@gmail.com</a>
+                                    <a href="mailto:precisionitsystem@gmail.com" class="font-semibold hover:underline" style="color: var(--crm-accent, #2563eb);">precisionitsystem@gmail.com</a>
                                 </div>
                             </div>
                         </div>
@@ -653,7 +666,8 @@
         <div class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-xl w-full p-6 sm:p-8 shadow-2xl space-y-5 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100">
             <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
                 <div class="flex items-center gap-2.5">
-                    <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-xl border border-blue-200 dark:border-blue-800">
+                    <div class="w-10 h-10 rounded-xl crm-customer-icon-box flex items-center justify-center font-bold text-xl border"
+                         style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.1); color: var(--crm-accent, #2563eb); border-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.25);">
                         📐
                     </div>
                     <div>
@@ -788,7 +802,7 @@
                     </button>
                     <button type="submit"
                             class="crm-customer-action-btn px-6 py-2.5 text-white font-bold text-xs rounded-xl shadow-xs transition-all duration-200 cursor-pointer"
-                            style="background: linear-gradient(135deg, var(--crm-accent, #be123c), var(--crm-accent-hover, #9f1239)); border: 1px solid var(--crm-accent, #be123c); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(190,18,60,0.35));">
+                            style="background-color: var(--crm-accent, #2563eb); border: 1px solid var(--crm-accent, #2563eb); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(37,99,235,0.35));">
                         Confirm Survey Booking →
                     </button>
                 </div>

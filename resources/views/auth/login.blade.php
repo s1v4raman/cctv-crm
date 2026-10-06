@@ -17,13 +17,24 @@
 
     <title>Sign In - {{ $isStaffPortal ? 'Precision IT Systems ERP Operations' : 'Precision IT Systems Customer Portal' }}</title>
 
-    <!-- Zoho CRM Theme & Realtime Dynamic Logo Recoloring Engine -->
-    <x-crm-theme-init />
+    <!-- Signature Brand Colors Permanently Locked (Independent from CRM user themes) -->
+    <style>
+        :root {
+            --crm-accent: #2563eb !important;
+            --crm-accent-hover: #1d4ed8 !important;
+            --crm-accent-shadow: rgba(37, 99, 235, 0.25) !important;
+            --brand-blue: #2563eb !important;
+            --brand-blue-hover: #1d4ed8 !important;
+        }
+    </style>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Scripts & Styles via Vite (Precompiled local assets guarantee normal styling even if Edge or extensions block CDNs) -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <!-- Tailwind CSS & Alpine.js -->
     <script src="https://cdn.tailwindcss.com"></script>

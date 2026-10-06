@@ -7,8 +7,16 @@
 
         <title>{{ config('app.name', 'Precision IT Systems') }}</title>
 
-        <!-- Zoho CRM Theme & Realtime Dynamic Logo Recoloring Engine -->
-        <x-crm-theme-init />
+        <!-- Signature Brand Colors Permanently Locked (Independent from CRM user themes) -->
+        <style>
+            :root {
+                --crm-accent: #2563eb !important;
+                --crm-accent-hover: #1d4ed8 !important;
+                --crm-accent-shadow: rgba(37, 99, 235, 0.25) !important;
+                --brand-blue: #2563eb !important;
+                --brand-blue-hover: #1d4ed8 !important;
+            }
+        </style>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">

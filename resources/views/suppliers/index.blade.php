@@ -23,13 +23,14 @@
 
         .btn-amber {
             display: inline-flex; align-items: center; gap: 0.5rem;
-            background: linear-gradient(135deg, #f59e0b, #d97706); color: #020617 !important;
+            background-color: var(--crm-accent, #2563eb); color: #ffffff !important;
             padding: 0.55rem 1.15rem; border-radius: 0.65rem;
             font-size: 0.85rem; font-weight: 700; text-decoration: none;
-            box-shadow: 0 4px 14px rgba(245, 158, 11, 0.25);
+            box-shadow: 0 4px 14px var(--crm-accent-shadow, rgba(37, 99, 235, 0.3));
             transition: all 0.2s ease-in-out;
         }
-        .btn-amber:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4); color: #000 !important; }
+        .btn-amber:hover { transform: translateY(-1px); box-shadow: 0 6px 20px var(--crm-accent-shadow, rgba(37, 99, 235, 0.45)); color: #ffffff !important; }
+        .btn-amber * { color: #ffffff !important; }
 
         .stat-grid {
             display: grid;
@@ -76,17 +77,18 @@
             padding:.5rem .85rem; font-size:.85rem; color:#f8fafc;
             outline:none; transition: all .15s; min-width: 260px;
         }
-        .filter-bar input:focus { border-color:#f59e0b; }
+        .filter-bar input:focus { border-color:var(--crm-accent, #2563eb); }
 
         .btn-filter {
             display: inline-flex; align-items: center; gap: 0.35rem;
             padding: .5rem 1.1rem; border-radius: .5rem;
-            background: linear-gradient(135deg, #3b82f6, #2563eb); color: #ffffff !important;
+            background-color: var(--crm-accent, #2563eb); color: #ffffff !important;
             font-size: .85rem; font-weight: 700;
             border: none; cursor: pointer;
+            box-shadow: 0 4px 12px var(--crm-accent-shadow, rgba(37, 99, 235, 0.3));
             transition: all .15s ease-in-out;
         }
-        .btn-filter:hover { background: #1d4ed8; }
+        .btn-filter:hover { background: var(--crm-accent-hover, #1d4ed8); }
 
         .btn-clear {
             display: inline-flex; align-items: center;

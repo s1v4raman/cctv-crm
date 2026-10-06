@@ -3,7 +3,7 @@
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
                 <div class="flex items-center gap-2">
-                    <a href="{{ route('portal.dashboard') }}" class="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline">← Back to Overview</a>
+                    <a href="{{ route('portal.dashboard') }}" class="text-xs font-semibold hover:underline" style="color: var(--crm-accent, #2563eb);">← Back to Overview</a>
                     <span class="text-slate-400">/</span>
                     <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Feasibility</span>
                 </div>
@@ -12,7 +12,7 @@
             </div>
             <a href="{{ route('portal.tickets.create') }}" 
                class="crm-customer-action-btn inline-flex items-center gap-2 px-4 py-2 text-white text-xs font-bold rounded-xl shadow-xs transition-all duration-200 cursor-pointer"
-               style="background: linear-gradient(135deg, var(--crm-accent, #be123c), var(--crm-accent-hover, #9f1239)); border: 1px solid var(--crm-accent, #be123c); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(190,18,60,0.35));">
+               style="background-color: var(--crm-accent, #2563eb); border: 1px solid var(--crm-accent, #2563eb); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(37,99,235,0.35));">
                 <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
                 <span>Request New Site Survey</span>
             </a>
@@ -24,7 +24,7 @@
 
             @if(!$hasLead || $surveys->isEmpty())
                 <div class="bg-white dark:bg-[#0f172a] rounded-2xl p-10 border border-slate-200/90 dark:border-slate-800 shadow-xs text-center max-w-2xl mx-auto space-y-4">
-                    <div class="w-16 h-16 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 flex items-center justify-center mx-auto font-bold text-2xl">
+                    <div class="w-16 h-16 rounded-2xl crm-customer-icon-box flex items-center justify-center mx-auto font-bold text-2xl" style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.1); color: var(--crm-accent, #2563eb); border: 1px solid rgba(var(--crm-accent-rgb, 37, 99, 235), 0.25);">
                         📐
                     </div>
                     <h2 class="text-xl font-bold text-slate-900 dark:text-white font-heading">No Site Surveys On Record</h2>
@@ -34,7 +34,7 @@
                     <div class="pt-2">
                         <a href="{{ route('portal.tickets.create') }}" 
                            class="crm-customer-action-btn inline-flex items-center gap-2 px-6 py-2.5 text-white font-bold text-xs rounded-xl shadow-xs transition-all duration-200 cursor-pointer"
-                           style="background: linear-gradient(135deg, var(--crm-accent, #be123c), var(--crm-accent-hover, #9f1239)); border: 1px solid var(--crm-accent, #be123c); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(190,18,60,0.35));">
+                           style="background-color: var(--crm-accent, #2563eb); border: 1px solid var(--crm-accent, #2563eb); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(37,99,235,0.35));">
                             Book Free Site Survey Now →
                         </a>
                     </div>
@@ -59,7 +59,7 @@
                                 @foreach($surveys as $survey)
                                     <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition">
                                         <td class="px-6 py-4">
-                                            <div class="font-mono text-xs font-bold text-blue-600 dark:text-blue-400">SURVEY #{{ $survey->id }}</div>
+                                            <div class="font-mono text-xs font-bold" style="color: var(--crm-accent, #2563eb);">SURVEY #{{ $survey->id }}</div>
                                             <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 truncate max-w-xs">
                                                 📍 {{ $survey->site_address ?: ($lead->site_address ?: 'Registered Site') }}
                                             </div>

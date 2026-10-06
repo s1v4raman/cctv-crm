@@ -69,4 +69,35 @@ class ProfileController extends Controller
 
         return Redirect::to('/');
     }
+
+    /**
+     * Update the user's personal theme preferences (per-user theme customization).
+     */
+    public function updateTheme(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $validated = $request->validate([
+            'accent'     => ['nullable', 'string', 'max:20'],
+            'mode'       => ['nullable', 'string', 'max:20'],
+            'themeStyle' => ['nullable', 'string', 'max:20'],
+        ]);
+
+        $user = $request->user();
+        if (isset($validated['accent'])) {
+            $user->theme_accent = $validated['accent'];
+        }
+        if (isset($validated['mode'])) {
+            $user->theme_mode = $validated['mode'];
+        }
+        if (isset($validated['themeStyle'])) {
+            $user->theme_style = $validated['themeStyle'];
+        }
+        $user->save();
+
+        return response()->json([
+            'success'      => true,
+            'theme_accent' => $user->theme_accent,
+            'theme_mode'   => $user->theme_mode,
+            'theme_style'  => $user->theme_style,
+        ]);
+    }
 }

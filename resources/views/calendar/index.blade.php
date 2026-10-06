@@ -9,16 +9,16 @@
                 <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Live operational timetable for site surveys, CCTV installations, AMC maintenance visits, and SLA service tickets</p>
             </div>
             <div class="flex items-center gap-2">
-                <a href="{{ route('site-surveys.create') }}" class="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs shadow-xs transition flex items-center gap-1">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                <a href="{{ route('site-surveys.create') }}" class="crm-btn-primary px-3 py-1.5 rounded-xl text-white font-bold text-xs shadow-xs transition flex items-center gap-1" style="background: linear-gradient(135deg, var(--crm-accent, #2563eb), var(--crm-accent-hover, #1d4ed8)); border: 1px solid var(--crm-accent, #2563eb);">
+                    <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                     <span>Survey</span>
                 </a>
-                <a href="{{ route('jobs.create-general') }}" class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-xs transition flex items-center gap-1">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                <a href="{{ route('jobs.create-general') }}" class="crm-btn-primary px-3 py-1.5 rounded-xl text-white font-bold text-xs shadow-xs transition flex items-center gap-1" style="background: linear-gradient(135deg, var(--crm-accent, #2563eb), var(--crm-accent-hover, #1d4ed8)); border: 1px solid var(--crm-accent, #2563eb);">
+                    <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                     <span>Installation</span>
                 </a>
-                <a href="{{ route('service-tickets.create') }}" class="px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-xs transition flex items-center gap-1">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                <a href="{{ route('service-tickets.create') }}" class="crm-btn-primary px-3 py-1.5 rounded-xl text-white font-bold text-xs shadow-xs transition flex items-center gap-1" style="background: linear-gradient(135deg, var(--crm-accent, #2563eb), var(--crm-accent-hover, #1d4ed8)); border: 1px solid var(--crm-accent, #2563eb);">
+                    <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                     <span>Ticket</span>
                 </a>
             </div>
@@ -118,17 +118,17 @@
                 </div>
 
                 {{-- Today's Active Dispatches --}}
-                <div class="saas-card p-3.5 flex items-center justify-between border-blue-200 dark:border-blue-900/50 bg-gradient-to-br from-blue-50/50 to-indigo-50/40 dark:from-blue-950/20 dark:to-indigo-950/20">
+                <div class="saas-card p-3.5 flex items-center justify-between border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
                     <div>
-                        <div class="text-[11px] font-bold text-blue-700 dark:text-blue-300 uppercase tracking-wider flex items-center gap-1.5">
-                            <span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
+                        <div class="text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5" style="color: var(--crm-accent, #2563eb);">
+                            <span class="w-2 h-2 rounded-full animate-pulse" style="background-color: var(--crm-accent, #2563eb);"></span>
                             Today's Active
                         </div>
-                        <div class="text-xl font-extrabold text-blue-700 dark:text-blue-300 font-heading mt-0.5" x-text="todayEvents.length">
+                        <div class="text-xl font-extrabold font-heading mt-0.5" style="color: var(--crm-accent, #2563eb);" x-text="todayEvents.length">
                             {{ $stats['today'] }}
                         </div>
                     </div>
-                    <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-xs">
+                    <div class="w-9 h-9 rounded-xl text-white flex items-center justify-center shadow-xs" style="background-color: var(--crm-accent, #2563eb);">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                     </div>
                 </div>
@@ -175,18 +175,21 @@
                     {{-- Right: View Mode Toggle (Month / Week / Agenda) --}}
                     <div class="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800/80 rounded-xl self-start sm:self-auto">
                         <button type="button" @click="currentView = 'month'" 
-                                :class="currentView === 'month' ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs font-bold' : 'text-slate-600 dark:text-slate-400 font-medium hover:text-slate-900'"
-                                class="px-3 py-1.5 rounded-lg text-xs transition">
+                                :style="currentView === 'month' ? { backgroundColor: 'var(--crm-accent, #2563eb)', color: '#ffffff', boxShadow: '0 2px 8px -1px var(--crm-accent, #2563eb)' } : {}"
+                                :class="currentView !== 'month' ? 'text-slate-600 dark:text-slate-400 font-medium hover:text-slate-900 dark:hover:text-white' : 'font-bold shadow-xs'"
+                                class="px-3 py-1.5 rounded-lg text-xs transition cursor-pointer">
                             Month
                         </button>
                         <button type="button" @click="currentView = 'week'" 
-                                :class="currentView === 'week' ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs font-bold' : 'text-slate-600 dark:text-slate-400 font-medium hover:text-slate-900'"
-                                class="px-3 py-1.5 rounded-lg text-xs transition">
+                                :style="currentView === 'week' ? { backgroundColor: 'var(--crm-accent, #2563eb)', color: '#ffffff', boxShadow: '0 2px 8px -1px var(--crm-accent, #2563eb)' } : {}"
+                                :class="currentView !== 'week' ? 'text-slate-600 dark:text-slate-400 font-medium hover:text-slate-900 dark:hover:text-white' : 'font-bold shadow-xs'"
+                                class="px-3 py-1.5 rounded-lg text-xs transition cursor-pointer">
                             Week
                         </button>
                         <button type="button" @click="currentView = 'agenda'" 
-                                :class="currentView === 'agenda' ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs font-bold' : 'text-slate-600 dark:text-slate-400 font-medium hover:text-slate-900'"
-                                class="px-3 py-1.5 rounded-lg text-xs transition">
+                                :style="currentView === 'agenda' ? { backgroundColor: 'var(--crm-accent, #2563eb)', color: '#ffffff', boxShadow: '0 2px 8px -1px var(--crm-accent, #2563eb)' } : {}"
+                                :class="currentView !== 'agenda' ? 'text-slate-600 dark:text-slate-400 font-medium hover:text-slate-900 dark:hover:text-white' : 'font-bold shadow-xs'"
+                                class="px-3 py-1.5 rounded-lg text-xs transition cursor-pointer">
                             Agenda
                         </button>
                     </div>
@@ -433,17 +436,18 @@
                     
                     {{-- Card 1: Today's Field Dispatches --}}
                     <div class="saas-card overflow-hidden">
-                        <div class="p-3.5 border-b border-slate-100 dark:border-slate-800 bg-gradient-to-r from-blue-600 to-indigo-600 text-white flex items-center justify-between">
+                        <div class="p-3.5 border-b border-slate-100 dark:border-slate-800 text-white flex items-center justify-between"
+                             style="background-color: var(--crm-accent, #2563eb);">
                             <div class="flex items-center gap-2">
                                 <div class="w-7 h-7 rounded-lg bg-white/20 flex items-center justify-center">
                                     <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                                 </div>
                                 <div>
-                                    <h4 class="font-extrabold text-sm leading-tight">Today's Field Dispatches</h4>
-                                    <span class="text-[10px] text-blue-100 font-medium">{{ now()->format('l, d M Y') }}</span>
+                                    <h4 class="font-extrabold text-sm leading-tight text-white">Today's Field Dispatches</h4>
+                                    <span class="text-[10px] text-white/80 font-medium">{{ now()->format('l, d M Y') }}</span>
                                 </div>
                             </div>
-                            <span class="px-2 py-0.5 rounded-full text-[11px] font-black bg-white text-blue-700 shadow-2xs" x-text="todayEvents.length">
+                            <span class="px-2 py-0.5 rounded-full text-[11px] font-black bg-white shadow-2xs" style="color: var(--crm-accent, #2563eb);" x-text="todayEvents.length">
                                 {{ count($todayEvents) }}
                             </span>
                         </div>

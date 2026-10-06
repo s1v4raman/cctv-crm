@@ -4,9 +4,9 @@
     {{-- Sidebar Top: Brand Logo matching Mockup (Maximized Size & Crisp Proportions) --}}
     <div class="h-20 shrink-0 flex items-center justify-between px-4 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-[#0f172a] transition-colors duration-200">
         <a href="{{ auth()->user()->role === 'technician' ? route('technician.dashboard') : (auth()->user()->isCustomer() ? route('portal.dashboard') : route('dashboard')) }}" class="flex items-center gap-3 group overflow-hidden">
-            <img src="{{ asset('logo.png') }}" alt="Precision IT Systems" class="crm-brand-logo h-14 w-14 object-contain group-hover:scale-105 transition-transform shrink-0 drop-shadow-xs" :class="sidebarCollapsed ? 'lg:h-10 lg:w-10' : ''">
+            <img src="{{ asset('logos/logo_' . ltrim(auth()->user()->theme_accent ?? '2563eb', '#') . '.png') }}" alt="Precision IT Systems" class="crm-brand-logo h-14 w-14 object-contain group-hover:scale-105 transition-transform shrink-0 drop-shadow-xs" :class="sidebarCollapsed ? 'lg:h-10 lg:w-10' : ''" onerror="this.src='{{ asset('logo.png') }}'">
             <div :class="sidebarCollapsed ? 'lg:hidden' : ''" class="min-w-0">
-                <span class="block text-base font-black tracking-tight text-slate-900 dark:text-slate-100 truncate">Precision IT <span class="crm-brand-accent-text text-blue-600 dark:text-blue-400">Systems</span></span>
+                <span class="block text-base font-black tracking-tight text-slate-900 dark:text-slate-100 truncate">Precision IT <span class="crm-brand-accent-text" style="color: var(--crm-accent, #2563eb);">Systems</span></span>
                 <span class="block text-xs font-extrabold uppercase tracking-widest text-slate-400 dark:text-slate-500 font-mono mt-0.5 truncate">CRM SUITE</span>
             </div>
         </a>
@@ -142,6 +142,12 @@
                 <div :class="sidebarCollapsed ? 'lg:hidden' : ''" class="px-3 mb-1.5 text-xs font-bold tracking-wider uppercase text-slate-400 dark:text-slate-500">Field Operations</div>
                 <div :class="sidebarCollapsed ? 'hidden lg:block' : 'hidden'" class="my-2 border-t border-slate-100 dark:border-slate-800"></div>
                 <div class="space-y-1">
+                    <a :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('projects.index') }}" 
+                       class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('projects.*') ? 'crm-active-link !bg-blue-600 !text-white shadow-md shadow-blue-500/25' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white' }}">
+                        <svg class="w-5 h-5 {{ request()->routeIs('projects.*') ? '!text-white' : 'text-indigo-500 dark:text-indigo-400' }}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                        <span :class="sidebarCollapsed ? 'lg:hidden' : ''" class="{{ request()->routeIs('projects.*') ? '!text-white font-bold' : '' }}">Project Handling</span>
+                    </a>
+
                     <a :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('jobs.index') }}" 
                        class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('jobs.*') ? 'crm-active-link !bg-blue-600 !text-white shadow-md shadow-blue-500/25' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white' }}">
                         <svg class="w-5 h-5 {{ request()->routeIs('jobs.*') ? '!text-white' : 'text-blue-500 dark:text-blue-400' }}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
@@ -282,7 +288,7 @@
     <div class="shrink-0 p-3.5 border-t border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/60 transition-colors">
         <div class="flex items-center justify-between gap-2.5" :class="sidebarCollapsed ? 'lg:justify-center' : ''">
             <div class="flex items-center gap-3 min-w-0">
-                <div class="w-9 h-9 rounded-xl text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-xs ring-2 ring-white dark:ring-slate-900 crm-user-avatar" style="background: linear-gradient(135deg, var(--crm-accent, #2563eb), var(--crm-accent-hover, #1d4ed8));">
+                <div class="w-9 h-9 rounded-xl text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-xs ring-2 ring-white dark:ring-slate-900 crm-user-avatar" style="background-color: var(--crm-accent, #2563eb);">
                     {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                 </div>
                 <div class="min-w-0 truncate" :class="sidebarCollapsed ? 'lg:hidden' : ''">
@@ -309,15 +315,21 @@
     <div class="hidden lg:block shrink-0 px-3.5 py-2.5 border-t border-slate-100 dark:border-slate-800 text-center">
         <button @click="toggleSidebarCollapsed()" 
                 type="button" 
-                class="w-full flex items-center gap-2 p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition text-sm font-semibold cursor-pointer"
+                class="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition text-xs font-semibold cursor-pointer"
                 :class="sidebarCollapsed ? 'justify-center' : 'justify-between'"
                 :title="sidebarCollapsed ? 'Expand Sidebar to Full View (Ctrl+B)' : 'Collapse Sidebar to Dock (Ctrl+B)'">
-            <span :class="sidebarCollapsed ? 'hidden' : 'flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 font-semibold'">
-                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" /></svg>
-                Collapse
+            <span class="flex items-center gap-2 min-w-0" :class="sidebarCollapsed ? 'hidden' : ''">
+                <svg class="w-4 h-4 shrink-0 transition-transform duration-200" style="width: 16px; height: 16px; min-width: 16px; max-width: 16px; min-height: 16px; max-height: 16px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+                </svg>
+                <span class="truncate">Collapse</span>
             </span>
-            <span :class="sidebarCollapsed ? 'hidden' : 'text-xs text-slate-400 font-mono bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded'">Ctrl+B</span>
-            <svg :class="sidebarCollapsed ? 'w-5 h-5 text-slate-400 rotate-180' : 'hidden'" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" /></svg>
+            <span class="text-[10px] text-slate-400 font-mono bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-700/60 shrink-0" :class="sidebarCollapsed ? 'hidden' : ''">Ctrl+B</span>
+            <span :class="sidebarCollapsed ? 'flex items-center justify-center' : 'hidden'">
+                <svg class="w-4 h-4 shrink-0 rotate-180 transition-transform duration-200" style="width: 16px; height: 16px; min-width: 16px; max-width: 16px; min-height: 16px; max-height: 16px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+                </svg>
+            </span>
         </button>
     </div>
 

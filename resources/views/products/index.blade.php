@@ -32,10 +32,11 @@
         .btn-amber {
             display:inline-flex; align-items:center; gap:.45rem;
             padding:.55rem 1.25rem; font-size:.82rem; font-weight:700;
-            background:linear-gradient(135deg, #f59e0b, #d97706); color:#020617 !important; border-radius:.65rem;
-            text-decoration:none; transition:all .2s; box-shadow:0 4px 14px rgba(245,158,11,0.25);
+            background-color:var(--crm-accent, #2563eb); color:#ffffff !important; border-radius:.65rem;
+            text-decoration:none; transition:all .2s; box-shadow:0 4px 14px var(--crm-accent-shadow, rgba(37,99,235,0.25));
         }
-        .btn-amber:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(245,158,11,0.4); color:#020617 !important; }
+        .btn-amber * { color:#ffffff !important; }
+        .btn-amber:hover { transform:translateY(-1px); box-shadow:0 6px 20px var(--crm-accent-shadow, rgba(37,99,235,0.4)); color:#ffffff !important; }
 
         /* Filter bar */
         .filter-bar {
@@ -48,13 +49,13 @@
             padding:.5rem .85rem; font-size:.82rem; color:#f8fafc;
             outline:none; transition:border-color .15s;
         }
-        .filter-bar input:focus, .filter-bar select:focus { border-color:#f59e0b; }
+        .filter-bar input:focus, .filter-bar select:focus { border-color:var(--crm-accent, #2563eb); }
         .filter-bar input { min-width:220px; }
 
         html:not(.dark) .pg-card { background:#ffffff; border-color:#e2e8f0; box-shadow:0 4px 16px rgba(0,0,0,0.05); }
         html:not(.dark) .filter-bar { background:#ffffff; border-bottom:1px solid #e2e8f0; }
         html:not(.dark) .filter-bar input, html:not(.dark) .filter-bar select { border-color:#cbd5e1; color:#0f172a; background:#ffffff; }
-        html:not(.dark) .filter-bar input:focus, html:not(.dark) .filter-bar select:focus { border-color:#2563eb; }
+        html:not(.dark) .filter-bar input:focus, html:not(.dark) .filter-bar select:focus { border-color:var(--crm-accent, #2563eb); }
 
         /* Table */
         .p-table { width:100%; border-collapse:collapse; }
@@ -142,7 +143,7 @@
                         <option value="accessory" @selected(request('category') === 'accessory')>Accessories</option>
                         <option value="service" @selected(request('category') === 'service')>Labor / Service</option>
                     </select>
-                    <button type="submit" class="px-3 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-lg transition shadow">
+                    <button type="submit" class="px-3 py-2 text-white font-bold text-xs rounded-lg transition shadow" style="background-color: var(--crm-accent, #2563eb);">
                         Search
                     </button>
                     @if(request('search') || request('category'))

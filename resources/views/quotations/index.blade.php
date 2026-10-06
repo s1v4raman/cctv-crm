@@ -73,7 +73,7 @@
             padding:.5rem .9rem; font-size:.82rem; color:#ffffff;
             outline:none; transition:border-color .15s;
         }
-        .filter-bar input:focus, .filter-bar select:focus { border-color:#f59e0b; }
+        .filter-bar input:focus, .filter-bar select:focus { border-color:var(--crm-accent, #f59e0b); }
         .filter-bar input { min-width:220px; }
 
         /* Table */
@@ -93,11 +93,11 @@
         .q-table tbody td.right { text-align:right; }
 
         .cell-no  { font-size:.85rem; font-weight:700; color:#ffffff; }
-        .cell-no a { color:#f59e0b; text-decoration:none; transition:color .15s; }
-        .cell-no a:hover { color:#fbbf24; }
+        .cell-no a { color:var(--crm-accent, #f59e0b); text-decoration:none; transition:color .15s; }
+        .cell-no a:hover { color:var(--crm-accent-hover, #fbbf24); }
         .cell-sub { font-size:.72rem; color:#94a3b8; margin-top:.1rem; }
         .cell-text { font-size:.83rem; color:#cbd5e1; }
-        .cell-amount { font-size:.9rem; font-weight:800; color:#f59e0b; font-family:'Outfit', sans-serif; }
+        .cell-amount { font-size:.9rem; font-weight:800; color:var(--crm-accent, #f59e0b); font-family:'Outfit', sans-serif; }
         .cell-date { font-size:.75rem; color:#94a3b8; white-space:nowrap; font-weight:600; }
 
         /* Status badges */
@@ -194,7 +194,7 @@
                         <option value="rejected" @selected(request('status') === 'rejected')>Rejected</option>
                         <option value="expired" @selected(request('status') === 'expired')>Expired</option>
                     </select>
-                    <button type="submit" class="px-3 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-lg transition shadow">
+                    <button type="submit" class="px-3 py-2 text-white font-bold text-xs rounded-lg transition shadow" style="background-color: var(--crm-accent, #2563eb);">
                         Search
                     </button>
                     @if(request('search') || request('status'))
@@ -233,7 +233,7 @@
                                     </td>
 
                                     <td>
-                                        <div class="cell-text" style="font-weight:600;color:#1e293b">
+                                        <div class="cell-text font-semibold text-slate-800 dark:text-slate-100">
                                             {{ $quotation->lead->customer_name ?? '—' }}
                                         </div>
                                         @if($quotation->lead?->phone)

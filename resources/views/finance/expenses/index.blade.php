@@ -27,7 +27,8 @@
 
                 <button type="button" 
                         onclick="document.getElementById('submitExpenseModal').classList.remove('hidden')"
-                        class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-500/20 transition">
+                        class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-white text-xs font-bold shadow-md transition cursor-pointer"
+                        style="background-color: var(--crm-accent, #2563eb);">
                     <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
                     </svg>
@@ -234,13 +235,15 @@
                 <div class="border-b border-slate-200 dark:border-slate-800 px-4 sm:px-6 pt-4 flex items-center justify-between flex-wrap gap-3">
                     <div class="flex space-x-2">
                         <a href="{{ route('finance.expenses.index', ['tab' => 'my_claims', 'month' => $selectedMonth]) }}" 
-                           class="pb-3 px-3 text-xs font-bold border-b-2 transition {{ $tab === 'my_claims' ? 'border-blue-600 text-blue-600 dark:text-blue-400' : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300' }}">
+                           class="pb-3 px-3 text-xs font-bold border-b-2 transition {{ $tab === 'my_claims' ? 'crm-tab-active font-extrabold' : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300' }}"
+                           @if($tab === 'my_claims') style="color: var(--crm-accent, #2563eb); border-color: var(--crm-accent, #2563eb);" @endif>
                             📝 My Claims ({{ $myClaims->total() }})
                         </a>
 
                         @if($isAdmin)
                             <a href="{{ route('finance.expenses.index', ['tab' => 'all_claims', 'month' => $selectedMonth]) }}" 
-                               class="pb-3 px-3 text-xs font-bold border-b-2 transition {{ $tab === 'all_claims' ? 'border-blue-600 text-blue-600 dark:text-blue-400' : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300' }}">
+                               class="pb-3 px-3 text-xs font-bold border-b-2 transition {{ $tab === 'all_claims' ? 'crm-tab-active font-extrabold' : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300' }}"
+                               @if($tab === 'all_claims') style="color: var(--crm-accent, #2563eb); border-color: var(--crm-accent, #2563eb);" @endif>
                                 👥 Master Workforce Claims Ledger ({{ $allClaims->total() }})
                             </a>
                         @endif
@@ -252,7 +255,7 @@
 
                         <input type="month" name="month" value="{{ $selectedMonth }}" onchange="this.form.submit()" class="text-xs rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 py-1.5 px-3">
 
-                        <select name="category" onchange="this.form.submit()" class="text-xs rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 py-1.5 px-3">
+                        <select name="category" onchange="this.form.submit()" class="text-xs rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 py-1.5 pl-3 pr-8">
                             <option value="">All Categories</option>
                             <option value="fuel_travel" {{ $categoryFilter === 'fuel_travel' ? 'selected' : '' }}>Fuel &amp; Travel</option>
                             <option value="hardware_tools" {{ $categoryFilter === 'hardware_tools' ? 'selected' : '' }}>Hardware Tools</option>
@@ -262,7 +265,7 @@
                             <option value="other" {{ $categoryFilter === 'other' ? 'selected' : '' }}>Other</option>
                         </select>
 
-                        <select name="status" onchange="this.form.submit()" class="text-xs rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 py-1.5 px-3">
+                        <select name="status" onchange="this.form.submit()" class="text-xs rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 py-1.5 pl-3 pr-8">
                             <option value="">All Statuses</option>
                             <option value="pending" {{ $statusFilter === 'pending' ? 'selected' : '' }}>Pending</option>
                             <option value="approved" {{ $statusFilter === 'approved' ? 'selected' : '' }}>Approved</option>
@@ -272,7 +275,7 @@
                         </select>
 
                         @if($tab === 'all_claims' && $isAdmin)
-                            <select name="employee_id" onchange="this.form.submit()" class="text-xs rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 py-1.5 px-3">
+                            <select name="employee_id" onchange="this.form.submit()" class="text-xs rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 py-1.5 pl-3 pr-8">
                                 <option value="">All Employees</option>
                                 @foreach($workforce as $emp)
                                     <option value="{{ $emp->id }}" {{ $employeeFilter == $emp->id ? 'selected' : '' }}>{{ $emp->name }}</option>
@@ -608,7 +611,7 @@
                     <button type="button" onclick="document.getElementById('submitExpenseModal').classList.add('hidden')" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 dark:text-slate-400">
                         Cancel
                     </button>
-                    <button type="submit" class="px-5 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-md transition">
+                    <button type="submit" class="px-5 py-2 text-xs font-bold text-white rounded-xl shadow-md transition cursor-pointer" style="background-color: var(--crm-accent, #2563eb);">
                         Submit Claim
                     </button>
                 </div>

@@ -524,7 +524,8 @@
                         <form method="POST" action="{{ route('alerts.run-sweep') }}">
                             @csrf
                             <button type="submit"
-                                    class="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs uppercase tracking-wider transition shadow-lg shadow-amber-500/20">
+                                    class="w-full py-2.5 rounded-xl text-white font-bold text-xs uppercase tracking-wider transition shadow-sm"
+                                    style="background-color: var(--crm-accent, #2563eb);">
                                 ⚡ Run Reminder Sweep Now
                             </button>
                         </form>

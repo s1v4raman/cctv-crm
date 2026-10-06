@@ -3,7 +3,7 @@
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
                 <div class="flex items-center gap-2">
-                    <a href="{{ route('portal.dashboard') }}" class="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline">← Back to Overview</a>
+                    <a href="{{ route('portal.dashboard') }}" class="text-xs font-semibold hover:underline" style="color: var(--crm-accent, #2563eb);">← Back to Overview</a>
                     <span class="text-slate-400">/</span>
                     <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Asset Register</span>
                 </div>
@@ -12,7 +12,7 @@
             </div>
             <a href="{{ route('portal.tickets.create') }}" 
                class="crm-customer-action-btn inline-flex items-center gap-2 px-4 py-2 text-white text-xs font-bold rounded-xl shadow-xs transition-all duration-200 cursor-pointer"
-               style="background: linear-gradient(135deg, var(--crm-accent, #be123c), var(--crm-accent-hover, #9f1239)); border: 1px solid var(--crm-accent, #be123c); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(190,18,60,0.35));">
+               style="background-color: var(--crm-accent, #2563eb); border: 1px solid var(--crm-accent, #2563eb); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(37,99,235,0.35));">
                 <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 <span>Report Breakdown</span>
             </a>
@@ -24,7 +24,7 @@
 
             @if(!$hasLead || $equipment->isEmpty() && !request('search'))
                 <div class="bg-white dark:bg-[#0f172a] rounded-2xl p-10 border border-slate-200/90 dark:border-slate-800 shadow-xs text-center max-w-2xl mx-auto space-y-4">
-                    <div class="w-16 h-16 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-900/50 flex items-center justify-center mx-auto font-bold text-2xl">
+                    <div class="w-16 h-16 rounded-2xl crm-customer-icon-box flex items-center justify-center mx-auto font-bold text-2xl" style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.1); color: var(--crm-accent, #2563eb); border: 1px solid rgba(var(--crm-accent-rgb, 37, 99, 235), 0.25);">
                         📹
                     </div>
                     <h2 class="text-xl font-bold text-slate-900 dark:text-white font-heading">No CCTV Cameras Registered Yet</h2>
@@ -34,7 +34,7 @@
                     <div class="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
                         <a href="{{ route('portal.dashboard') }}" 
                            class="crm-customer-action-btn px-5 py-2.5 text-white font-bold text-xs rounded-xl shadow-xs transition-all duration-200 cursor-pointer"
-                           style="background: linear-gradient(135deg, var(--crm-accent, #be123c), var(--crm-accent-hover, #9f1239)); border: 1px solid var(--crm-accent, #be123c); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(190,18,60,0.35));">
+                           style="background-color: var(--crm-accent, #2563eb); border: 1px solid var(--crm-accent, #2563eb); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(37,99,235,0.35));">
                             Configure Site Address on Overview →
                         </a>
                         <a href="{{ route('home') }}" class="px-5 py-2.5 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs rounded-xl border border-slate-200 dark:border-slate-700 transition">
@@ -66,7 +66,7 @@
                     </div>
                     <div class="bg-white dark:bg-[#0f172a] rounded-2xl p-5 border border-slate-200/90 dark:border-slate-800 shadow-xs">
                         <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Service Coverage</div>
-                        <div class="text-2xl font-black text-blue-600 dark:text-blue-400 font-heading mt-1">
+                        <div class="text-2xl font-black font-heading mt-1" style="color: var(--crm-accent, #2563eb);">
                             {{ $equipment->filter(fn($e) => $e->service_warranty_status === 'active')->count() }} <span class="text-xs text-slate-500 dark:text-slate-400 font-normal">Covered</span>
                         </div>
                         <div class="text-[11px] text-slate-500 dark:text-slate-400 font-medium mt-1">Zero Labor Charges</div>
@@ -84,7 +84,7 @@
                         </div>
                         <button type="submit" 
                                 class="crm-customer-action-btn px-4 py-2 text-white text-xs font-bold rounded-xl shadow-xs transition-all duration-200 shrink-0 cursor-pointer"
-                                style="background: linear-gradient(135deg, var(--crm-accent, #be123c), var(--crm-accent-hover, #9f1239)); border: 1px solid var(--crm-accent, #be123c); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(190,18,60,0.35));">
+                                style="background-color: var(--crm-accent, #2563eb); border: 1px solid var(--crm-accent, #2563eb); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(37,99,235,0.35));">
                             Search
                         </button>
                         @if(request('search'))
@@ -131,7 +131,7 @@
                                             </span>
                                         </td>
                                         <td class="px-6 py-4">
-                                            <div class="font-mono text-xs text-blue-600 dark:text-blue-400 font-bold">{{ $item->serial_number ?: 'N/A' }}</div>
+                                            <div class="font-mono text-xs font-bold" style="color: var(--crm-accent, #2563eb);">{{ $item->serial_number ?: 'N/A' }}</div>
                                             @if($item->mac_address)
                                                 <div class="font-mono text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">MAC: {{ $item->mac_address }}</div>
                                             @endif
@@ -163,7 +163,7 @@
                                         </td>
                                         <td class="px-6 py-4">
                                             @if($item->service_warranty_status === 'active')
-                                                <div class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                                                <div class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold crm-customer-pill border" style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.1); color: var(--crm-accent, #2563eb); border-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.25);">
                                                     <span>● Covered</span>
                                                     <span class="text-blue-600 dark:text-blue-400 font-medium">({{ $item->service_days_remaining }}d)</span>
                                                 </div>

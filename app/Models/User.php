@@ -37,6 +37,7 @@ class User extends Authenticatable
     }
     protected $fillable = [
         'name', 'email', 'password', 'role', 'lead_id', 'google_id', 'avatar',
+        'theme_accent', 'theme_mode', 'theme_style',
     ];
 
     public function lead(): \Illuminate\Database\Eloquent\Relations\BelongsTo

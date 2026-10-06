@@ -13,7 +13,7 @@
                             {{ $siteSurvey->status === 'completed' ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800' : 'bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800' }}">
                             {{ $siteSurvey->status === 'completed' ? '✓ Inspection Completed' : '⏳ Scheduled Visit' }}
                         </span>
-                        <span class="text-xs text-blue-600 dark:text-blue-400 font-mono font-bold">Survey #{{ $siteSurvey->id }}</span>
+                        <span class="text-xs font-mono font-bold" style="color: var(--crm-accent, #2563eb);">Survey #{{ $siteSurvey->id }}</span>
                     </div>
                     <h1 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight mt-0.5 font-heading">
                         Site Survey & Feasibility Report
@@ -22,7 +22,7 @@
             </div>
 
             <div class="flex items-center gap-3">
-                <a href="{{ route('portal.quotations') }}" class="px-4 py-2 rounded-xl bg-[#2563eb] hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider shadow-xs transition flex items-center gap-1.5">
+                <a href="{{ route('portal.quotations') }}" class="crm-customer-action-btn px-4 py-2 rounded-xl text-white font-bold text-xs uppercase tracking-wider shadow-xs transition flex items-center gap-1.5 cursor-pointer" style="background-color: var(--crm-accent, #2563eb); border: 1px solid var(--crm-accent, #2563eb); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(37,99,235,0.35));">
                     <span>📄 Review Quotations →</span>
                 </a>
             </div>
@@ -49,7 +49,7 @@
                     <div class="space-y-1">
                         <h3 class="text-base font-bold text-amber-900 dark:text-amber-300 font-heading">Site Survey Scheduled</h3>
                         <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300">
-                            Engineer <strong class="text-slate-800 dark:text-white">{{ $siteSurvey->surveyedBy?->name ?? 'Field Engineer' }}</strong> is scheduled to inspect your installation site on <strong class="text-blue-600 dark:text-blue-400">{{ $siteSurvey->survey_date->format('l, d M Y') }}</strong>.
+                            Engineer <strong class="text-slate-800 dark:text-white">{{ $siteSurvey->surveyedBy?->name ?? 'Field Engineer' }}</strong> is scheduled to inspect your installation site on <strong style="color: var(--crm-accent, #2563eb);">{{ $siteSurvey->survey_date->format('l, d M Y') }}</strong>.
                         </p>
                     </div>
                 </div>
@@ -64,7 +64,7 @@
                 </div>
                 <div class="bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-xs p-5">
                     <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Estimated Cable Run</span>
-                    <div class="text-3xl font-black text-blue-600 dark:text-blue-400 font-heading mt-2">{{ $siteSurvey->cable_length_estimate ? $siteSurvey->cable_length_estimate . ' Mtr' : 'Pending assessment' }}</div>
+                    <div class="text-3xl font-black font-heading mt-2" style="color: var(--crm-accent, #2563eb);">{{ $siteSurvey->cable_length_estimate ? $siteSurvey->cable_length_estimate . ' Mtr' : 'Pending assessment' }}</div>
                     <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">High quality CAT6 / RG-59 cabling</p>
                 </div>
                 <div class="bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-xs p-5">

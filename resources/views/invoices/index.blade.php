@@ -146,7 +146,7 @@
                         <option value="paid" @selected(request('status') === 'paid')>Paid</option>
                         <option value="overdue" @selected(request('status') === 'overdue')>Overdue</option>
                     </select>
-                    <button type="submit" class="px-3 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl transition shadow">
+                    <button type="submit" class="px-3 py-2 text-white font-bold text-xs rounded-xl transition shadow" style="background-color: var(--crm-accent, #2563eb);">
                         Search
                     </button>
                     @if(request('search') || request('status'))

@@ -20,7 +20,8 @@
                 <form method="POST" action="{{ route('alerts.run-sweep') }}">
                     @csrf
                     <button type="submit"
-                            class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 text-xs font-extrabold shadow-[0_4px_14px_rgba(245,158,11,0.25)] transition">
+                            class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-white text-xs font-bold shadow-xs transition"
+                            style="background-color: var(--crm-accent, #2563eb);">
                         ⚡ Run Reminder Sweep
                     </button>
                 </form>
@@ -76,7 +77,7 @@
                             <p class="text-xs text-slate-400">Dispatch a custom WhatsApp message, SMS, or Email directly to a client or technician.</p>
                         </div>
                     </div>
-                    <button type="button" class="text-xs font-bold text-amber-400 hover:underline">
+                    <button type="button" class="text-xs font-bold hover:underline" style="color: var(--crm-accent, #2563eb);">
                         <span x-show="!open">+ Open Composer</span>
                         <span x-show="open">&minus; Hide Composer</span>
                     </button>
@@ -87,7 +88,7 @@
                         @csrf
                         <div>
                             <label class="block font-bold text-slate-400 mb-1">Dispatch Channel <span class="text-rose-400">*</span></label>
-                            <select name="channel" required class="w-full text-xs rounded-xl bg-[#060913] border-slate-700 text-slate-200 focus:border-amber-400 focus:ring-amber-400 font-semibold">
+                            <select name="channel" required class="w-full text-xs rounded-xl bg-[#060913] border-slate-700 text-slate-200 focus:border-blue-400 focus:ring-blue-400 font-semibold">
                                 <option value="whatsapp">💬 WhatsApp Direct</option>
                                 <option value="email">✉️ Email Notification</option>
                                 <option value="sms">📱 SMS Text</option>
@@ -96,31 +97,31 @@
 
                         <div>
                             <label class="block font-bold text-slate-400 mb-1">Recipient Name <span class="text-rose-400">*</span></label>
-                            <input type="text" name="recipient_name" required placeholder="e.g. John Doe" class="w-full text-xs rounded-xl bg-[#060913] border-slate-700 text-slate-200 focus:border-amber-400 focus:ring-amber-400">
+                            <input type="text" name="recipient_name" required placeholder="e.g. John Doe" class="w-full text-xs rounded-xl bg-[#060913] border-slate-700 text-slate-200 focus:border-blue-400 focus:ring-blue-400">
                         </div>
 
                         <div>
                             <label class="block font-bold text-slate-400 mb-1">Recipient Phone / Mobile</label>
-                            <input type="text" name="phone" placeholder="e.g. 9876543210" class="w-full text-xs rounded-xl bg-[#060913] border-slate-700 text-slate-200 focus:border-amber-400 focus:ring-amber-400">
+                            <input type="text" name="phone" placeholder="e.g. 9876543210" class="w-full text-xs rounded-xl bg-[#060913] border-slate-700 text-slate-200 focus:border-blue-400 focus:ring-blue-400">
                         </div>
 
                         <div class="sm:col-span-2">
                             <label class="block font-bold text-slate-400 mb-1">Email Subject (If sending email)</label>
-                            <input type="text" name="subject" placeholder="e.g. Important Service Notification regarding your CCTV setup" class="w-full text-xs rounded-xl bg-[#060913] border-slate-700 text-slate-200 focus:border-amber-400 focus:ring-amber-400">
+                            <input type="text" name="subject" placeholder="e.g. Important Service Notification regarding your CCTV setup" class="w-full text-xs rounded-xl bg-[#060913] border-slate-700 text-slate-200 focus:border-blue-400 focus:ring-blue-400">
                         </div>
 
                         <div>
                             <label class="block font-bold text-slate-400 mb-1">Recipient Email (If sending email)</label>
-                            <input type="email" name="email" placeholder="e.g. customer@example.com" class="w-full text-xs rounded-xl bg-[#060913] border-slate-700 text-slate-200 focus:border-amber-400 focus:ring-amber-400">
+                            <input type="email" name="email" placeholder="e.g. customer@example.com" class="w-full text-xs rounded-xl bg-[#060913] border-slate-700 text-slate-200 focus:border-blue-400 focus:ring-blue-400">
                         </div>
 
                         <div class="sm:col-span-3">
                             <label class="block font-bold text-slate-400 mb-1">Message Body <span class="text-rose-400">*</span></label>
-                            <textarea name="message" rows="3" required placeholder="Type your message content here..." class="w-full text-xs rounded-xl bg-[#060913] border-slate-700 text-slate-200 focus:border-amber-400 focus:ring-amber-400"></textarea>
+                            <textarea name="message" rows="3" required placeholder="Type your message content here..." class="w-full text-xs rounded-xl bg-[#060913] border-slate-700 text-slate-200 focus:border-blue-400 focus:ring-blue-400"></textarea>
                         </div>
 
                         <div class="sm:col-span-3 flex justify-end">
-                            <button type="submit" class="px-5 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 rounded-xl text-xs font-extrabold shadow-sm transition">
+                            <button type="submit" class="px-5 py-2.5 text-white rounded-xl text-xs font-bold shadow-xs transition" style="background-color: var(--crm-accent, #2563eb);">
                                 Dispatch Message Now &rarr;
                             </button>
                         </div>
@@ -154,7 +155,7 @@
                         </select>
                     </div>
                     <div class="flex items-end gap-2">
-                        <button type="submit" class="flex-1 py-2 px-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold transition">
+                        <button type="submit" class="flex-1 py-2 px-4 text-white rounded-xl text-xs font-bold transition shadow-xs" style="background-color: var(--crm-accent, #2563eb);">
                             Filter
                         </button>
                         @if(request()->anyFilled(['search', 'channel', 'status', 'event']))

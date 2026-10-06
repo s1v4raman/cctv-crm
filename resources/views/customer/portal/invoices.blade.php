@@ -3,7 +3,7 @@
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
                 <div class="flex items-center gap-2">
-                    <a href="{{ route('portal.dashboard') }}" class="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline">← Back to Overview</a>
+                    <a href="{{ route('portal.dashboard') }}" class="text-xs font-semibold hover:underline" style="color: var(--crm-accent, #2563eb);">← Back to Overview</a>
                     <span class="text-slate-400">/</span>
                     <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Billing</span>
                 </div>
@@ -21,7 +21,7 @@
                 <div class="bg-white dark:bg-[#0f172a] rounded-2xl border border-blue-100 dark:border-blue-900/40 p-6 shadow-xs space-y-4">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                         <div>
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 px-2.5 py-1 rounded-full">
+                            <span class="text-[10px] font-bold uppercase tracking-wider crm-customer-pill border px-2.5 py-1 rounded-full" style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.1); color: var(--crm-accent, #2563eb); border-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.25);">
                                 🛡️ Active Quotations · Advance & Full Payment
                             </span>
                             <h2 class="text-lg font-bold text-slate-900 dark:text-white font-heading mt-2">
@@ -42,7 +42,7 @@
                                 <div>
                                     <div class="flex justify-between items-start">
                                         <div>
-                                            <span class="text-xs font-mono font-bold text-blue-600 dark:text-blue-400">#{{ $quote->quotation_no }}</span>
+                                            <span class="text-xs font-mono font-bold" style="color: var(--crm-accent, #2563eb);">#{{ $quote->quotation_no }}</span>
                                             <h3 class="text-sm font-bold text-slate-900 dark:text-white mt-0.5">CCTV Installation Quotation</h3>
                                         </div>
                                         <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold {{ $quote->status === 'accepted' ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800' : 'bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800' }}">
@@ -64,7 +64,7 @@
                                 <div class="flex items-center gap-2 pt-2 border-t border-slate-200 dark:border-slate-700 flex-wrap">
                                     <a href="{{ route('payment.checkout.quotation', $quote) }}"
                                        class="crm-customer-action-btn flex-1 min-w-[140px] px-3.5 py-2 text-white font-bold text-xs rounded-xl shadow-xs text-center transition-all duration-200 cursor-pointer"
-                                       style="background: linear-gradient(135deg, var(--crm-accent, #be123c), var(--crm-accent-hover, #9f1239)); border: 1px solid var(--crm-accent, #be123c); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(190,18,60,0.35));">
+                                       style="background-color: var(--crm-accent, #2563eb); border: 1px solid var(--crm-accent, #2563eb); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(37,99,235,0.35));">
                                         💳 Pay Advance / Cash →
                                     </a>
                                     <a href="{{ route('quotations.public-pdf', ['quotation' => $quote->id]) }}" target="_blank"
@@ -81,7 +81,7 @@
             @if(!$hasLead || $invoices->isEmpty())
                 @if(!isset($pendingQuotations) || $pendingQuotations->isEmpty())
                     <div class="bg-white dark:bg-[#0f172a] rounded-2xl p-10 border border-slate-200/90 dark:border-slate-800 shadow-xs text-center max-w-2xl mx-auto space-y-4">
-                        <div class="w-16 h-16 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 flex items-center justify-center mx-auto mb-3 font-bold text-2xl">
+                        <div class="w-16 h-16 rounded-2xl crm-customer-icon-box flex items-center justify-center mx-auto mb-3 font-bold text-2xl" style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.1); color: var(--crm-accent, #2563eb); border: 1px solid rgba(var(--crm-accent-rgb, 37, 99, 235), 0.25);">
                             🧾
                         </div>
                         <h3 class="text-xl font-bold text-slate-900 dark:text-white font-heading">No Invoices Issued Yet</h3>
@@ -89,7 +89,7 @@
                         <div class="pt-2">
                             <a href="{{ route('portal.quotations') }}" 
                                class="crm-customer-action-btn inline-flex items-center gap-2 px-5 py-2.5 text-white font-bold text-xs rounded-xl shadow-xs transition-all duration-200 cursor-pointer"
-                               style="background: linear-gradient(135deg, var(--crm-accent, #be123c), var(--crm-accent-hover, #9f1239)); border: 1px solid var(--crm-accent, #be123c); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(190,18,60,0.35));">
+                               style="background-color: var(--crm-accent, #2563eb); border: 1px solid var(--crm-accent, #2563eb); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(37,99,235,0.35));">
                                 Review CCTV Quotations →
                             </a>
                         </div>
@@ -141,7 +141,7 @@
                                 @foreach($invoices as $invoice)
                                     <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition">
                                         <td class="px-6 py-4">
-                                            <div class="font-mono text-xs font-bold text-blue-600 dark:text-blue-400">{{ $invoice->invoice_no }}</div>
+                                            <div class="font-mono text-xs font-bold" style="color: var(--crm-accent, #2563eb);">{{ $invoice->invoice_no }}</div>
                                             @if($invoice->quotation)
                                                 <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 font-mono">Quote #{{ $invoice->quotation->quotation_no }}</div>
                                             @endif
@@ -184,7 +184,8 @@
                                             <div class="flex items-center justify-end gap-2 flex-wrap">
                                                 @if($invoice->balanceDue() > 0)
                                                     <a href="{{ route('payment.checkout.invoice', $invoice) }}"
-                                                       class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-[#2563eb] hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-xs transition">
+                                                       class="crm-customer-action-btn inline-flex items-center gap-1.5 px-3.5 py-1.5 text-white font-bold text-xs rounded-xl shadow-xs transition cursor-pointer"
+                                                       style="background-color: var(--crm-accent, #2563eb); border: 1px solid var(--crm-accent, #2563eb); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(37,99,235,0.35));">
                                                         <span>💳 Pay Online</span>
                                                         <span>→</span>
                                                     </a>
@@ -228,7 +229,7 @@
             {{-- 4-in-1 Supported Payment Methods Box --}}
             <div class="bg-white dark:bg-[#0f172a] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-6 shadow-xs space-y-4">
                 <div>
-                    <span class="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 block">
+                    <span class="text-xs font-bold uppercase tracking-wider block" style="color: var(--crm-accent, #2563eb);">
                         💳 Accepted Payment Methods
                     </span>
                     <h3 class="text-lg font-bold text-slate-900 dark:text-white font-heading mt-1">
@@ -243,7 +244,7 @@
                     {{-- Method 1: Instant Online Gateway --}}
                     <div class="bg-slate-50 dark:bg-slate-800/60 p-4 rounded-xl border border-slate-200 dark:border-slate-700 space-y-1.5">
                         <div class="text-xl">⚡</div>
-                        <h4 class="text-xs font-bold text-blue-700 dark:text-blue-300 uppercase tracking-wide">1. Instant Online</h4>
+                        <h4 class="text-xs font-bold uppercase tracking-wide" style="color: var(--crm-accent, #2563eb);">1. Instant Online</h4>
                         <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
                             Google Pay, PhonePe, Paytm, all Credit/Debit Cards & NetBanking (50+ banks) via Razorpay.
                         </p>
@@ -272,8 +273,8 @@
                         <div class="text-xl">🏛️</div>
                         <h4 class="text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wide">4. Bank NEFT / RTGS</h4>
                         <p class="text-[10px] text-slate-500 dark:text-slate-400 font-mono leading-tight">
-                            A/C: <span class="text-blue-600 dark:text-blue-400 font-bold">50200012345678</span><br>
-                            IFSC: <span class="text-blue-600 dark:text-blue-400 font-bold">HDFC0001234</span><br>
+                            A/C: <span class="font-bold" style="color: var(--crm-accent, #2563eb);">50200012345678</span><br>
+                            IFSC: <span class="font-bold" style="color: var(--crm-accent, #2563eb);">HDFC0001234</span><br>
                             HDFC Bank Limited
                         </p>
                     </div>

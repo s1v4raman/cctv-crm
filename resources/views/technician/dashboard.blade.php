@@ -63,8 +63,8 @@
             gap: 0.4rem;
         }
         .tab-btn.active {
-            color: #2563eb;
-            border-bottom-color: #2563eb;
+            color: var(--crm-accent, #2563eb);
+            border-bottom-color: var(--crm-accent, #2563eb);
             font-weight: 700;
         }
         .tab-btn:hover:not(.active) {
@@ -207,21 +207,25 @@
         }
 
         .btn-submit {
-            padding: 0.55rem 1.25rem;
-            font-size: 0.82rem;
+            padding: 0.55rem 1.15rem;
+            font-size: 0.8rem;
             font-weight: 700;
-            border: none;
-            border-radius: 0.6rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 0.75rem;
             cursor: pointer;
             transition: all 0.2s;
             display: inline-flex;
             align-items: center;
             gap: 0.4rem;
+            background: #ffffff;
+            color: #334155;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
-        .btn-green  { background: #059669; color: #ffffff; }
-        .btn-green:hover  { background: #047857; }
-        .btn-blue { background: #2563eb; color: #ffffff; }
-        .btn-blue:hover { background: #1d4ed8; }
+        .btn-submit:hover {
+            background: #f8fafc;
+            color: #0f172a;
+            border-color: #94a3b8;
+        }
 
         /* Alert */
         .alert-success {
@@ -400,7 +404,8 @@
                     </div>
                     <div class="flex items-center gap-2.5 flex-wrap">
                         <button type="button" onclick="openBarcodeScanner('tech-barcode-modal', null, handleTechScannedCode)"
-                                class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs transition-colors">
+                                class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-white text-xs font-bold shadow-xs transition-colors cursor-pointer"
+                                style="background-color: var(--crm-accent, #2563eb);">
                             📸 Open Camera Scanner
                         </button>
                         <a href="{{ route('equipment.create') }}"
@@ -577,11 +582,11 @@
                                     </div>
 
                                     <div class="flex items-center justify-between mt-3 flex-wrap gap-2">
-                                        <button type="submit" class="btn-submit btn-green">
-                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                        <button type="submit" class="btn-submit">
+                                            <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                                             Save Status Update
                                         </button>
-                                        <a href="{{ route('jcr.create-ticket', $ticket) }}" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#2563eb] hover:bg-blue-700 text-white text-xs font-bold shadow-xs transition-colors">
+                                        <a href="{{ route('jcr.create-ticket', $ticket) }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-white text-xs font-bold shadow-xs transition-colors" style="background-color: var(--crm-accent, #2563eb);">
                                             ✍️ Customer Sign-off (JCR) &rarr;
                                         </a>
                                     </div>
@@ -655,12 +660,12 @@
                                     <textarea name="notes" class="form-textarea mb-3" placeholder="Describe what was installed, tested, or any issues…">{{ $job->installation_notes }}</textarea>
                                     
                                     <div class="flex items-center justify-between mt-3 flex-wrap gap-2">
-                                        <button type="submit" class="btn-submit btn-blue">
-                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                        <button type="submit" class="btn-submit">
+                                            <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                                             Save Status
                                         </button>
-                                        <a href="{{ route('jcr.create-job', $job) }}" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-colors">
-                                            ✍️ Complete & Sign-off (JCR) &rarr;
+                                        <a href="{{ route('jcr.create-job', $job) }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-white text-xs font-bold shadow-xs transition-colors" style="background-color: var(--crm-accent, #2563eb);">
+                                            ✍️ Complete &amp; Sign-off (JCR) &rarr;
                                         </a>
                                     </div>
                                 </div>
@@ -731,11 +736,11 @@
                                     <textarea name="completion_notes" class="form-textarea mb-3" placeholder="Describe what was serviced, checked, cleaned, or replaced…" required></textarea>
                                     
                                     <div class="flex items-center justify-between mt-3 flex-wrap gap-2">
-                                        <button type="submit" class="btn-submit btn-green">
-                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                        <button type="submit" class="btn-submit">
+                                            <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                                             Quick Complete
                                         </button>
-                                        <a href="{{ route('jcr.create-visit', $visit) }}" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold shadow-xs transition-colors">
+                                        <a href="{{ route('jcr.create-visit', $visit) }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-white text-xs font-bold shadow-xs transition-colors" style="background-color: var(--crm-accent, #2563eb);">
                                             ✍️ Customer Sign-off (JCR) &rarr;
                                         </a>
                                     </div>
@@ -911,7 +916,7 @@
                                 <h4 class="text-sm font-bold text-white mt-0.5">${data.product_name}</h4>
                                 <div class="text-xs text-slate-300">SKU: ${data.sku} &middot; Model: ${data.model_no || 'N/A'} &middot; Stock: <strong class="text-emerald-400">${data.stock_quantity} in stock</strong></div>
                             </div>
-                            <a href="{{ route('equipment.create') }}?product_id=${data.id}&serial=${encodeURIComponent(code)}" class="bg-[#2563eb] hover:bg-blue-600 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition-colors">
+                            <a href="{{ route('equipment.create') }}?product_id=${data.id}&serial=${encodeURIComponent(code)}" class="text-white text-xs font-bold px-3.5 py-2 rounded-xl transition-colors" style="background-color: var(--crm-accent, #2563eb);">
                                 + Install at Client Site
                             </a>
                         </div>
@@ -923,7 +928,7 @@
                                 <div class="text-xs font-bold text-rose-400">❌ No record found for S/N: ${code}</div>
                                 <div class="text-xs text-slate-300">This hardware serial has not yet been registered to a customer site.</div>
                             </div>
-                            <a href="{{ route('equipment.create') }}?serial=${encodeURIComponent(code)}" class="bg-[#2563eb] hover:bg-blue-600 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition-colors">
+                            <a href="{{ route('equipment.create') }}?serial=${encodeURIComponent(code)}" class="text-white text-xs font-bold px-3.5 py-2 rounded-xl transition-colors" style="background-color: var(--crm-accent, #2563eb);">
                                 + Register New Asset Now
                             </a>
                         </div>

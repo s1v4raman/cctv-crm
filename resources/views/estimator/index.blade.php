@@ -2,13 +2,13 @@
     <x-slot name="header">
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center text-slate-950 shadow-lg shadow-amber-500/20 font-black">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-lg font-black" style="background-color: var(--crm-accent, #2563eb); box-shadow: 0 4px 14px var(--crm-accent-shadow, rgba(37,99,235,0.3));">
                     ⚡
                 </div>
                 <div>
                     <h2 class="text-2xl font-black tracking-wider text-white uppercase font-['Outfit'] flex items-center gap-2">
                         CCTV Storage & Sizing Estimator
-                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">Auto-BOM Engine</span>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-mono font-bold" style="color: var(--crm-accent, #2563eb); background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.12); border: 1px solid rgba(var(--crm-accent-rgb, 37, 99, 235), 0.3);">Auto-BOM Engine</span>
                     </h2>
                     <p class="text-xs text-slate-400 font-mono">
                         Calculate exact HDD storage, network PoE load, cabling rolls & auto-generate official Quotations in 1-click.
@@ -66,13 +66,15 @@
                         <div class="grid grid-cols-2 gap-2 bg-[#060913] p-1.5 rounded-xl border border-slate-800">
                             <button type="button" 
                                     @click="systemType = 'ip'; recalculateAll()"
-                                    :class="systemType === 'ip' ? 'bg-amber-500 text-slate-950 font-black shadow-lg shadow-amber-500/20' : 'text-slate-400 hover:text-white font-semibold'"
+                                    :style="systemType === 'ip' ? { backgroundColor: 'var(--crm-accent, #2563eb)', color: '#ffffff', boxShadow: '0 4px 12px var(--crm-accent-shadow, rgba(37,99,235,0.3))' } : {}"
+                                    :class="systemType !== 'ip' ? 'text-slate-400 hover:text-white font-semibold' : 'font-black'"
                                     class="py-2 text-xs rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer">
                                 <span>🌐 IP Network (NVR)</span>
                             </button>
                             <button type="button" 
                                     @click="systemType = 'analog'; recalculateAll()"
-                                    :class="systemType === 'analog' ? 'bg-amber-500 text-slate-950 font-black shadow-lg shadow-amber-500/20' : 'text-slate-400 hover:text-white font-semibold'"
+                                    :style="systemType === 'analog' ? { backgroundColor: 'var(--crm-accent, #2563eb)', color: '#ffffff', boxShadow: '0 4px 12px var(--crm-accent-shadow, rgba(37,99,235,0.3))' } : {}"
+                                    :class="systemType !== 'analog' ? 'text-slate-400 hover:text-white font-semibold' : 'font-black'"
                                     class="py-2 text-xs rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer">
                                 <span>📹 HD Analog (DVR)</span>
                             </button>
@@ -113,7 +115,7 @@
                     <div class="bg-[#0F172A] rounded-2xl p-6 border border-white/10 shadow-xl">
                         <div class="flex items-center justify-between pb-3 border-b border-white/5 mb-4">
                             <h3 class="text-sm font-bold uppercase tracking-wider text-slate-300 font-['Outfit'] flex items-center gap-2">
-                                <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+                                <span class="w-2.5 h-2.5 rounded-full" style="background-color: var(--crm-accent, #2563eb);"></span>
                                 Global Retention & Recording Profile
                             </h3>
                             <span class="text-xs font-mono text-slate-400">All Camera Zones</span>
@@ -125,16 +127,16 @@
                                     Target Retention Period (Days)
                                 </label>
                                 <div class="flex items-center gap-3">
-                                    <input type="range" min="7" max="180" step="1" x-model.number="retentionDays" @input="recalculateAll()" class="w-full accent-amber-400 h-2 bg-slate-800 rounded-lg cursor-pointer">
-                                    <div class="w-24 text-center font-bold text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-lg text-xs font-mono border border-amber-500/30">
+                                    <input type="range" min="7" max="180" step="1" x-model.number="retentionDays" @input="recalculateAll()" class="w-full h-2 bg-slate-800 rounded-lg cursor-pointer" style="accent-color: var(--crm-accent, #2563eb);">
+                                    <div class="w-24 text-center font-bold px-2.5 py-1 rounded-lg text-xs font-mono" style="color: var(--crm-accent, #2563eb); background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.12); border: 1px solid rgba(var(--crm-accent-rgb, 37, 99, 235), 0.3);">
                                         <span x-text="retentionDays"></span> <span>Days</span>
                                     </div>
                                 </div>
                                 <div class="flex justify-between text-[10px] font-mono text-slate-500 mt-1.5 px-1">
-                                    <span @click="retentionDays = 15; recalculateAll()" class="cursor-pointer hover:text-amber-400">15d</span>
-                                    <span @click="retentionDays = 30; recalculateAll()" class="cursor-pointer hover:text-amber-400 font-bold text-slate-300">30d (Std)</span>
-                                    <span @click="retentionDays = 60; recalculateAll()" class="cursor-pointer hover:text-amber-400">60d</span>
-                                    <span @click="retentionDays = 90; recalculateAll()" class="cursor-pointer hover:text-amber-400">90d</span>
+                                    <span @click="retentionDays = 15; recalculateAll()" class="cursor-pointer hover:underline" style="color: var(--crm-accent, #2563eb);">15d</span>
+                                    <span @click="retentionDays = 30; recalculateAll()" class="cursor-pointer hover:underline font-bold text-slate-300">30d (Std)</span>
+                                    <span @click="retentionDays = 60; recalculateAll()" class="cursor-pointer hover:underline" style="color: var(--crm-accent, #2563eb);">60d</span>
+                                    <span @click="retentionDays = 90; recalculateAll()" class="cursor-pointer hover:underline" style="color: var(--crm-accent, #2563eb);">90d</span>
                                 </div>
                             </div>
 
@@ -162,7 +164,8 @@
                                 <p class="text-xs text-slate-400 font-mono">Configure camera resolutions, codecs & locations</p>
                             </div>
                             <button type="button" @click="addCameraZone()" 
-                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 hover:bg-amber-500/20 text-xs font-bold transition">
+                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer"
+                                    style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.12); color: var(--crm-accent, #2563eb); border: 1px solid rgba(var(--crm-accent-rgb, 37, 99, 235), 0.3);">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
                                 <span>Add Camera Group</span>
                             </button>
@@ -394,7 +397,8 @@
                             <span>Add Custom Item</span>
                         </button>
                         <button type="button" @click="syncBomFromCalculations()" 
-                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-black transition shadow-lg shadow-amber-500/20">
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-white text-xs font-black transition shadow-lg"
+                                style="background-color: var(--crm-accent, #2563eb); box-shadow: 0 4px 14px var(--crm-accent-shadow, rgba(37,99,235,0.25));">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                             <span>Refresh BOM</span>
                         </button>
@@ -498,7 +502,8 @@
                                 <button type="button" 
                                         @click="submitQuotationConversion()" 
                                         :disabled="isSubmitting || !selectedLeadId || bomItems.length === 0"
-                                        class="w-full py-3.5 px-5 rounded-xl font-black text-sm uppercase tracking-wider bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 transition-all">
+                                        class="w-full py-3.5 px-5 rounded-xl font-black text-sm uppercase tracking-wider text-white disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg transition-all"
+                                        style="background-color: var(--crm-accent, #2563eb); box-shadow: 0 4px 14px var(--crm-accent-shadow, rgba(37,99,235,0.3));">
                                     <svg x-show="!isSubmitting" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                     <svg x-show="isSubmitting" class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
                                     <span x-text="isSubmitting ? 'Generating Quotation...' : '📄 1-Click Convert BOM to Official Quotation'"></span>

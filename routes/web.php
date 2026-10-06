@@ -38,6 +38,7 @@ use App\Http\Controllers\AccountsReceivableController;
 use App\Http\Controllers\AccountsPayableController;
 use App\Http\Controllers\PettyCashController;
 use App\Http\Controllers\ModuleHubController;
+use App\Http\Controllers\ProjectController;
 
 // Mobile Phone Remote Barcode Scanner Companion & Live Sync
 Route::get('/mobile-scanner/{token?}', [MobileScannerSyncController::class, 'show'])->name('mobile.scanner');
@@ -96,6 +97,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::post('/profile/theme', [ProfileController::class, 'updateTheme'])->name('profile.theme');
 
     // ================================================================
     // ADMIN ONLY â€” Full Read + Write + Delete for all modules
@@ -271,6 +273,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Operations Calendar & Dispatch
         Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
         Route::get('/calendar/events', [CalendarController::class, 'events'])->name('calendar.events');
+
+        // Project Handling & Documentation Module
+        Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
+        Route::get('/projects/create', [ProjectController::class, 'create'])->name('projects.create');
+        Route::post('/projects', [ProjectController::class, 'store'])->name('projects.store');
+        Route::get('/projects/export-csv', [ProjectController::class, 'exportCsv'])->name('projects.export-csv');
+        Route::get('/projects/{project}', [ProjectController::class, 'show'])->name('projects.show');
+        Route::get('/projects/{project}/edit', [ProjectController::class, 'edit'])->name('projects.edit');
+        Route::put('/projects/{project}', [ProjectController::class, 'update'])->name('projects.update');
+        Route::delete('/projects/{project}', [ProjectController::class, 'destroy'])->name('projects.destroy');
+        Route::patch('/projects/{project}/status', [ProjectController::class, 'updateStatus'])->name('projects.updateStatus');
+        Route::post('/projects/{project}/documents', [ProjectController::class, 'uploadDocuments'])->name('projects.documents.upload');
+        Route::get('/projects/{project}/documents/{document}/download', [ProjectController::class, 'downloadDocument'])->name('projects.documents.download');
+        Route::get('/projects/{project}/documents/{document}/view', [ProjectController::class, 'viewDocument'])->name('projects.documents.view');
+        Route::delete('/projects/{project}/documents/{document}', [ProjectController::class, 'deleteDocument'])->name('projects.documents.destroy');
 
         // Leads Read-Only
         Route::get('/leads', [LeadController::class, 'index'])->name('leads.index');

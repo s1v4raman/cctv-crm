@@ -161,14 +161,15 @@ aside nav a[class*="!bg-blue-600"]:hover {
     color: #334155 !important;
     border: 1px solid #cbd5e1;
     font-weight: 600;
-    font-size: 0.875rem;
-    padding: 0.625rem 1.25rem;
+    font-size: 0.9375rem;
+    min-height: 42px;
+    padding: 0.55rem 1.25rem;
     border-radius: 0.75rem;
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     transition: all 0.15s ease;
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.45rem;
     text-decoration: none;
     cursor: pointer;
 }
@@ -191,28 +192,29 @@ html.dark .btn-dark:hover {
     color: #ffffff !important;
 }
 
-.btn-amber {
+.btn-amber, .btn-primary {
     background-color: var(--crm-accent, #be123c);
     color: #ffffff !important;
-    font-weight: 600;
-    font-size: 0.875rem;
-    padding: 0.625rem 1.25rem;
+    font-weight: 700;
+    font-size: 0.9375rem;
+    min-height: 44px;
+    padding: 0.625rem 1.35rem;
     border-radius: 0.75rem;
     box-shadow: 0 1px 2px 0 var(--crm-accent-shadow, rgba(190, 18, 60, 0.25));
     transition: all 0.15s ease;
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.45rem;
     text-decoration: none;
     border: 1px solid var(--crm-accent, #be123c);
     cursor: pointer;
 }
-.btn-amber:hover {
+.btn-amber:hover, .btn-primary:hover {
     background-color: var(--crm-accent-hover, #9f1239);
     border-color: var(--crm-accent-hover, #9f1239);
 }
 
-/* Modern Clean Input & Select styling */
+/* Modern Clean Input & Select styling - Normal Webpage View Size */
 input[type="text"],
 input[type="search"],
 input[type="email"],
@@ -221,12 +223,25 @@ input[type="number"],
 input[type="date"],
 input[type="datetime-local"],
 input[type="tel"],
-select,
-textarea {
+select {
     background-color: #ffffff;
-    border-color: #e2e8f0;
+    border-color: #cbd5e1;
     color: #0f172a;
     border-radius: 0.75rem;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    min-height: 44px;
+    padding: 0.625rem 0.95rem;
+}
+
+textarea {
+    background-color: #ffffff;
+    border-color: #cbd5e1;
+    color: #0f172a;
+    border-radius: 0.75rem;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    padding: 0.75rem 0.95rem;
 }
 
 html.dark input[type="text"],
@@ -247,9 +262,32 @@ html.dark textarea {
 input:focus,
 select:focus,
 textarea:focus {
-    border-color: #2563eb !important;
-    --tw-ring-color: rgba(37, 99, 235, 0.15) !important;
+    border-color: var(--crm-accent, #2563eb) !important;
+    --tw-ring-color: var(--crm-accent-shadow, rgba(37, 99, 235, 0.2)) !important;
     outline: none !important;
+}
+
+/* Standard Ergonomic Form Labels Across CRM */
+.form-label,
+label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #334155;
+    display: inline-block;
+    margin-bottom: 0.35rem;
+}
+
+html.dark .form-label,
+html.dark label {
+    color: #cbd5e1;
+}
+
+/* Filter Bars Across CRM Modules - Clear Normal View */
+.filter-bar input,
+.filter-bar select {
+    min-height: 44px !important;
+    font-size: 0.9375rem !important;
+    padding: 0.55rem 1rem !important;
 }
 
 /* SaaS Data Table */
@@ -719,26 +757,26 @@ html.dark table.pg-table tbody td {
     color: #0f172a !important;
 }
 .cell-name a {
-    color: #2563eb !important;
+    color: var(--crm-accent, #2563eb) !important;
     text-decoration: none !important;
     transition: color 0.15s ease !important;
 }
 .cell-name a:hover {
-    color: #1d4ed8 !important;
+    color: var(--crm-accent-hover, #1d4ed8) !important;
     text-decoration: underline !important;
 }
 .cell-no {
     font-size: 0.85rem !important;
     font-weight: 700 !important;
-    color: #2563eb !important;
+    color: var(--crm-accent, #2563eb) !important;
     text-decoration: none !important;
 }
 .cell-no a {
-    color: #2563eb !important;
+    color: var(--crm-accent, #2563eb) !important;
     text-decoration: none !important;
 }
 .cell-no a:hover {
-    color: #1d4ed8 !important;
+    color: var(--crm-accent-hover, #1d4ed8) !important;
     text-decoration: underline !important;
 }
 .cell-sub {
@@ -767,16 +805,16 @@ html.dark .cell-name {
     color: #ffffff !important;
 }
 html.dark .cell-name a {
-    color: #60a5fa !important;
+    color: var(--crm-accent, #60a5fa) !important;
 }
 html.dark .cell-name a:hover {
-    color: #93c5fd !important;
+    color: var(--crm-accent-hover, #93c5fd) !important;
 }
 html.dark .cell-no {
-    color: #60a5fa !important;
+    color: var(--crm-accent, #60a5fa) !important;
 }
 html.dark .cell-no a {
-    color: #60a5fa !important;
+    color: var(--crm-accent, #60a5fa) !important;
 }
 html.dark .cell-sub {
     color: #94a3b8 !important;

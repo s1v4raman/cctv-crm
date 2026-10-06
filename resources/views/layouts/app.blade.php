@@ -8,7 +8,7 @@
         <title>{{ config('app.name', 'Precision IT Systems CRM') }} | Smart Operations</title>
 
         <!-- Zoho CRM Theme & Realtime Dynamic Logo Engine -->
-        <x-crm-theme-init />
+        <x-crm-theme-init :userId="auth()->id()" :userAccent="auth()->user()->theme_accent" :userMode="auth()->user()->theme_mode" :userStyle="auth()->user()->theme_style" />
 
         <!-- Google Fonts matching SaaS Mockup -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -66,31 +66,31 @@
             }
 
             :root {
-                --crm-accent: #be123c;
-                --crm-accent-hover: #9f1239;
+                --crm-accent: {{ auth()->user()->theme_accent ?? '#2563eb' }};
+                --crm-accent-hover: {{ auth()->user()->theme_accent ?? '#2563eb' }};
             }
             .accent-bg {
-                background-color: var(--crm-accent, #be123c) !important;
+                background-color: var(--crm-accent, #2563eb) !important;
             }
             .accent-text {
-                color: var(--crm-accent, #be123c) !important;
+                color: var(--crm-accent, #2563eb) !important;
             }
             .accent-border {
-                border-color: var(--crm-accent, #be123c) !important;
+                border-color: var(--crm-accent, #2563eb) !important;
             }
 
             /* Active sidebar navigation item */
             aside nav a.crm-active-link,
             aside nav a[class*="!bg-blue-600"],
             .crm-active-link {
-                background-color: var(--crm-accent, #be123c) !important;
-                border-color: var(--crm-accent, #be123c) !important;
+                background-color: var(--crm-accent, #2563eb) !important;
+                border-color: var(--crm-accent, #2563eb) !important;
                 color: #ffffff !important;
             }
             aside nav a.crm-active-link:hover,
             aside nav a[class*="!bg-blue-600"]:hover {
-                background-color: var(--crm-accent-hover, #9f1239) !important;
-                border-color: var(--crm-accent-hover, #9f1239) !important;
+                background-color: var(--crm-accent-hover, #2563eb) !important;
+                border-color: var(--crm-accent-hover, #2563eb) !important;
             }
 
             /* Clicking / active button feedback */
@@ -98,15 +98,16 @@
             .btn-primary:active,
             .btn-blue:active,
             aside nav a:active {
-                background-color: var(--crm-accent-hover, #1d4ed8) !important;
-                border-color: var(--crm-accent-hover, #1d4ed8) !important;
+                background-color: var(--crm-accent-hover, #2563eb) !important;
+                border-color: var(--crm-accent-hover, #2563eb) !important;
                 transform: scale(0.98);
             }
 
             /* Brand Logo Tile & User Avatars */
             .crm-brand-tile,
             .crm-user-avatar {
-                background: linear-gradient(135deg, var(--crm-accent, #2563eb), var(--crm-accent-hover, #1d4ed8)) !important;
+                background-color: var(--crm-accent, #2563eb) !important;
+                background-image: none !important;
             }
             .crm-brand-tile-inner,
             .crm-brand-tile > div {
@@ -124,10 +125,12 @@
               shortcutsModalOpen: false,
               mobileNavOpen: false,
               isDark: document.documentElement.classList.contains('dark'),
-              toggleTheme() {
+              async toggleTheme() {
                   const isCurrentlyDark = document.documentElement.classList.contains('dark');
                   const newMode = isCurrentlyDark ? 'day' : 'night';
-                  localStorage.setItem('crm_mode', newMode);
+                  const currentUserId = {{ json_encode(auth()->id()) }};
+                  const modeKey = currentUserId ? ('crm_mode_user_' + currentUserId) : 'crm_mode';
+                  try { localStorage.setItem(modeKey, newMode); } catch(e) {}
                   if (newMode === 'night') {
                       document.documentElement.classList.add('dark');
                       this.isDark = true;
@@ -135,7 +138,21 @@
                       document.documentElement.classList.remove('dark');
                       this.isDark = false;
                   }
-                  window.dispatchEvent(new CustomEvent('theme-changed', { detail: { isDark: this.isDark, mode: newMode } }));
+                  window.dispatchEvent(new CustomEvent('theme-changed', { 
+                      detail: { userId: currentUserId, isDark: this.isDark, mode: newMode } 
+                  }));
+                  try {
+                      const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                      await fetch('/profile/theme', {
+                          method: 'POST',
+                          headers: {
+                              'Content-Type': 'application/json',
+                              'X-CSRF-TOKEN': token || '',
+                              'Accept': 'application/json'
+                          },
+                          body: JSON.stringify({ mode: newMode })
+                      });
+                  } catch(e) {}
               }
           }"
           @keydown.window="
@@ -264,24 +281,17 @@
                                 </svg>
                             </button>
 
-                            <div class="flex items-center gap-2.5 min-w-0">
-                                <a href="{{ auth()->user()->role === 'technician' ? route('technician.dashboard') : (auth()->user()->isCustomer() ? route('portal.dashboard') : route('dashboard')) }}" 
-                                   class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-sm font-bold border border-blue-200/70 dark:border-blue-800/60 shrink-0">
-                                    <span class="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400 animate-pulse"></span>
-                                    <span>Precision IT Systems CRM</span>
-                                </a>
-                                <span class="text-slate-300 dark:text-slate-700 hidden md:inline">/</span>
-                                <span class="text-sm font-semibold text-slate-600 dark:text-slate-400 truncate hidden md:inline">
-                                    {{ auth()->user()->role === 'technician' ? 'Field Station' : (auth()->user()->isCustomer() ? 'Client Portal' : 'Command Center') }}
+                            <div class="flex items-center gap-2 min-w-0">
+                                <span class="text-sm sm:text-base font-bold text-slate-800 dark:text-slate-100 truncate flex items-center gap-2">
+                                    <span class="w-2 h-2 rounded-full animate-pulse shrink-0" style="background-color: var(--crm-accent, #2563eb);"></span>
+                                    <span class="tracking-tight">{{ auth()->user()->role === 'technician' ? 'Field Station' : (auth()->user()->isCustomer() ? 'Client Portal' : 'Command Center') }}</span>
                                 </span>
                             </div>
                         </div>
 
-                        {{-- Right side: Search, Quick Action, Theme Toggle, Notification Bell & User Dropdown --}}
-                        <div class="flex items-center gap-2 sm:gap-3 shrink-0">
-                            
-                            {{-- Global Omnisearch: Inline on Desktop (md:), Icon Button on Mobile (< md) --}}
-                            <div class="hidden md:block relative w-56 lg:w-64 xl:w-72" @click.away="open = false">
+                        {{-- Center Section: Global Omnisearch with Proper Normal Size & Wide Breathing Room --}}
+                        <div class="hidden md:flex flex-1 items-center justify-center px-4 lg:px-8 max-w-xl mx-auto">
+                            <div class="relative w-full max-w-sm lg:max-w-md" @click.away="open = false">
                                 <div class="relative flex items-center">
                                     <svg class="w-4 h-4 text-slate-400 dark:text-slate-400 absolute left-3.5 pointer-events-none shrink-0" style="width: 16px; height: 16px; min-width: 16px; max-width: 16px; min-height: 16px; max-height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
@@ -295,7 +305,7 @@
                                            @keydown.arrow-up.prevent="navigate(-1)"
                                            @keydown.enter.prevent="selectActive()"
                                            placeholder="Search leads, jobs, quotes... (Ctrl+K)" 
-                                           class="w-full pl-10 pr-9 py-2 text-sm bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl focus:bg-white dark:focus:bg-slate-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 shadow-2xs transition-all">
+                                           class="w-full pl-10 pr-9 py-2 text-xs sm:text-sm bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl focus:bg-white dark:focus:bg-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 shadow-2xs transition-all outline-none">
                                     
                                     {{-- Clear button or loading spinner --}}
                                     <div class="absolute right-2.5 flex items-center">
@@ -306,7 +316,7 @@
                                             </svg>
                                         </template>
                                         <template x-if="!loading && query.length > 0">
-                                            <button @click="clear()" type="button" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs font-bold leading-none p-0.5">
+                                            <button @click="clear()" type="button" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs font-bold leading-none p-0.5 cursor-pointer">
                                                 &times;
                                             </button>
                                         </template>
@@ -321,7 +331,7 @@
                                      x-transition:leave="transition ease-in duration-100"
                                      x-transition:leave-start="opacity-100 translate-y-0 scale-100"
                                      x-transition:leave-end="opacity-0 translate-y-1 scale-98"
-                                     class="absolute right-0 mt-2 w-80 sm:w-96 max-h-96 overflow-y-auto bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl py-2 z-50 divide-y divide-slate-100 dark:divide-slate-800"
+                                     class="absolute left-0 right-0 mt-2 w-full max-h-96 overflow-y-auto bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl py-2 z-50 divide-y divide-slate-100 dark:divide-slate-800"
                                      style="display: none;">
                                     
                                     {{-- Results list --}}
@@ -357,11 +367,15 @@
                                     </template>
                                 </div>
                             </div>
+                        </div>
 
+                        {{-- Right side: Quick Action, Theme Toggle, Notification Bell & User Dropdown --}}
+                        <div class="flex items-center gap-2 sm:gap-2.5 shrink-0">
+                            
                             {{-- Mobile Omnisearch Trigger Button (Icon button on mobile) --}}
                             <button @click="mobileSearchOpen = true; $nextTick(() => { $refs.mobileSearchInput.focus(); if (query.trim().length >= 2) open = true; })" 
                                     type="button"
-                                    class="md:hidden p-2 rounded-xl text-slate-600 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition shrink-0"
+                                    class="md:hidden p-2 rounded-xl text-slate-600 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition shrink-0 cursor-pointer"
                                     title="Search (leads, jobs, quotes)">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                             </button>
@@ -370,10 +384,11 @@
                                 {{-- Quick Create Dropdown for Admin/Staff --}}
                                 <div x-data="{ open: false }" class="relative shrink-0">
                                     <button @click="open = !open" 
-                                            class="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 dark:hover:bg-blue-900/60 text-blue-700 dark:text-blue-300 font-bold text-sm border border-blue-200 dark:border-blue-800 transition shadow-2xs">
-                                        <svg class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                                            class="crm-quick-action-btn inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-xl font-bold text-sm transition shadow-2xs cursor-pointer"
+                                            style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.12); color: var(--crm-accent, #2563eb); border: 1px solid rgba(var(--crm-accent-rgb, 37, 99, 235), 0.3);">
+                                        <svg class="w-3.5 h-3.5" style="color: var(--crm-accent, #2563eb);" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
                                         <span class="hidden sm:inline">Quick Action</span>
-                                        <svg class="w-3 h-3 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                                        <svg class="w-3 h-3" style="color: var(--crm-accent, #2563eb);" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
                                     </button>
 
                                     <div x-show="open" 
@@ -407,31 +422,65 @@
                                 {{-- Quick Report Button for Customer (Dynamic Accent) --}}
                                 <a href="{{ route('portal.tickets.create') }}" 
                                    class="crm-customer-header-action inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-white font-bold text-sm transition shadow-sm"
-                                   style="background: linear-gradient(135deg, var(--crm-accent, #be123c), var(--crm-accent-hover, #9f1239)); border: 1px solid var(--crm-accent, #be123c);">
+                                   style="background-color: var(--crm-accent, #2563eb); border: 1px solid var(--crm-accent, #2563eb);">
                                     <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
                                     <span class="hidden sm:inline">Report Issue</span>
                                 </a>
                             @endif
 
-                            {{-- Clean Dark / Light Mode Toggle Button --}}
-                            <button type="button" 
-                                    @click="toggleTheme()" 
-                                    class="p-2.5 rounded-xl text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-800 transition shrink-0 cursor-pointer shadow-2xs"
-                                    :title="isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
-                                    aria-label="Toggle Dark/Light Mode">
-                                {{-- Sun icon in Dark Mode --}}
-                                <svg x-show="isDark" class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <circle cx="12" cy="12" r="4"/>
-                                    <path stroke-linecap="round" d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41m14.14-14.14l-1.41 1.41"/>
-                                </svg>
-                                {{-- Moon icon in Light Mode --}}
-                                <svg x-show="!isDark" class="w-4 h-4 text-slate-600 dark:text-slate-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
-                                </svg>
-                            </button>
-
-                            {{-- Dedicated Quick Theme & Color Palette Toggle Button --}}
-                            <x-zoho-theme-customizer :inline="false" />
+                            {{-- Clean Dark / Light Mode Toggle Button (Matching User Design) --}}
+                            <div x-data="{ 
+                                    isDark: document.documentElement.classList.contains('dark'),
+                                    init() {
+                                        const observer = new MutationObserver(() => {
+                                            this.isDark = document.documentElement.classList.contains('dark');
+                                        });
+                                        observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+                                    },
+                                    toggle() {
+                                        this.isDark = !this.isDark;
+                                        if (this.isDark) {
+                                            document.documentElement.classList.add('dark');
+                                        } else {
+                                            document.documentElement.classList.remove('dark');
+                                        }
+                                        const mode = this.isDark ? 'dark' : 'day';
+                                        try {
+                                            const modeKey = window.crmModeStorageKey || 'crm_mode';
+                                            localStorage.setItem(modeKey, mode);
+                                        } catch(e) {}
+                                        window.dispatchEvent(new CustomEvent('crm-mode-changed', { detail: { mode } }));
+                                        fetch('{{ route('profile.theme') }}', {
+                                            method: 'POST',
+                                            headers: {
+                                                'Content-Type': 'application/json',
+                                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                            },
+                                            body: JSON.stringify({ mode: mode })
+                                        }).catch(() => {});
+                                    }
+                                }" 
+                                class="shrink-0">
+                                <button type="button" 
+                                        @click="toggle()" 
+                                        class="w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200 cursor-pointer shadow-xs bg-[#0F172A] hover:bg-[#1E293B] border border-slate-700/80 dark:bg-[#0F172A] dark:hover:bg-[#1E293B] dark:border-slate-700/80 text-amber-400 hover:scale-105 active:scale-95"
+                                        :title="isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
+                                        aria-label="Toggle Dark/Light Mode">
+                                    {{-- Sun icon in Dark Mode (Golden sun with central disc and 8 rays, matching user's image) --}}
+                                    <template x-if="isDark">
+                                        <svg class="w-4 h-4 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.6)]" viewBox="0 0 24 24" fill="currentColor">
+                                            <circle cx="12" cy="12" r="5" />
+                                            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                                        </svg>
+                                    </template>
+                                    {{-- Moon icon in Light Mode --}}
+                                    <template x-if="!isDark">
+                                        <svg class="w-4 h-4 text-slate-300 hover:text-amber-400 transition-colors" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+                                        </svg>
+                                    </template>
+                                </button>
+                            </div>
 
                             {{-- Notification Bell (Role-Aware & Live) --}}
                             @php
@@ -624,8 +673,8 @@
                             <div x-data="{ open: false }" class="relative shrink-0 ml-1.5 mr-2">
                                 <button @click="open = !open" 
                                         type="button"
-                                        class="w-10 h-10 rounded-2xl flex items-center justify-center font-black text-base text-white shadow-md transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none ring-2 ring-slate-200/90 dark:ring-slate-700/80 hover:ring-rose-500/50 dark:hover:ring-blue-500/50 cursor-pointer select-none"
-                                        style="background: linear-gradient(135deg, var(--crm-accent, #be123c) 0%, #1d4ed8 100%);"
+                                        class="w-10 h-10 rounded-2xl flex items-center justify-center font-black text-base text-white shadow-md transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none ring-2 ring-slate-200/90 dark:ring-slate-700/80 cursor-pointer select-none"
+                                        style="background-color: var(--crm-accent, #2563eb);"
                                         aria-label="User account menu"
                                         aria-expanded="false"
                                         :aria-expanded="open.toString()"
@@ -644,7 +693,7 @@
                                     {{-- User info header --}}
                                     <div class="px-4 py-2.5 border-b border-slate-100 dark:border-slate-800">
                                         <div class="flex items-center gap-2.5 mb-1.5">
-                                            <div class="w-8 h-8 rounded-full text-white flex items-center justify-center font-bold text-xs shrink-0 crm-user-avatar" style="background: linear-gradient(135deg, var(--crm-accent, #2563eb), var(--crm-accent-hover, #1d4ed8));">
+                                            <div class="w-8 h-8 rounded-full text-white flex items-center justify-center font-bold text-xs shrink-0 crm-user-avatar" style="background-color: var(--crm-accent, #2563eb);">
                                                 {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                                             </div>
                                             <div class="min-w-0 flex-1">
@@ -659,7 +708,7 @@
 
                                     {{-- Theme & Color Palette Settings embedded in User Profile --}}
                                     <div class="px-4 py-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60">
-                                        <x-zoho-theme-customizer :inline="true" />
+                                        <x-zoho-theme-customizer :inline="true" :userId="auth()->id()" :userAccent="auth()->user()->theme_accent" :userMode="auth()->user()->theme_mode" :userStyle="auth()->user()->theme_style" />
                                     </div>
 
                                     {{-- Quick Links --}}

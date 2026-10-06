@@ -80,24 +80,24 @@
             display: inline-flex; align-items: center; gap: 0.4rem;
             padding: 0.45rem 0.85rem; border-radius: 0.5rem;
             font-size: 0.78rem; font-weight: 800;
-            background: #2563eb !important;
+            background-color: var(--crm-accent, #2563eb) !important;
             color: #ffffff !important;
             border: none; cursor: pointer;
-            box-shadow: 0 4px 12px -2px rgba(37, 99, 235, 0.35);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
             transition: all .15s ease-in-out;
         }
-        .btn-adjust:hover { background: #1d4ed8 !important; transform: translateY(-1px); }
+        .btn-adjust:hover { background-color: var(--crm-accent-hover, #1d4ed8) !important; }
 
         .btn-filter {
             display: inline-flex; align-items: center; gap: 0.35rem;
             padding: .5rem 1.1rem; border-radius: .6rem;
-            background: #2563eb !important;
+            background-color: var(--crm-accent, #2563eb) !important;
             color: #ffffff !important;
             font-size: .82rem; font-weight: 800;
             border: none; cursor: pointer;
-            box-shadow: 0 4px 12px -2px rgba(37, 99, 235, 0.35);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
         }
-        .btn-filter:hover { background: #1d4ed8 !important; }
+        .btn-filter:hover { background-color: var(--crm-accent-hover, #1d4ed8) !important; }
 
         .btn-clear {
             display: inline-flex; align-items: center;

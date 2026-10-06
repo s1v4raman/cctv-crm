@@ -1,41 +1,19 @@
-@props(['inline' => false])
+@props([
+    'inline' => true,
+    'userId' => null,
+    'userAccent' => null,
+    'userMode' => null,
+    'userStyle' => null,
+])
 
 {{-- Zoho CRM Inspired Mode & Theme Customizer Component --}}
-<div x-data="zohoThemeManager()" x-init="init()" class="{{ $inline ? 'w-full select-none text-slate-800 dark:text-slate-100' : 'relative shrink-0' }}" @click.away="open = false">
-    @if(!$inline)
-        {{-- Trigger Button in Top Header (when used as popover) --}}
-        <button type="button" 
-                @click="open = !open" 
-                class="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-800 transition relative flex items-center justify-center cursor-pointer shrink-0 shadow-2xs group"
-                :title="'Display & Theme Preferences (Current: ' + mode.toUpperCase() + ')'"
-                aria-label="Display and theme settings">
-            
-            {{-- Palette Icon --}}
-            <svg class="w-4 h-4 transition-transform duration-200 group-hover:rotate-12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/>
-            </svg>
-
-            {{-- Active Accent Dot Indicator --}}
-            <span class="absolute bottom-1 right-1 w-2.5 h-2.5 rounded-full ring-2 ring-white dark:ring-slate-900 shadow-2xs transition-colors"
-                  :style="{ backgroundColor: accent }"></span>
-        </button>
-    @endif
-
-    {{-- Content Panel (Popover if !$inline, direct block if $inline) --}}
-    <div @if(!$inline)
-            x-show="open" 
-            x-cloak
-            x-transition:enter="transition ease-out duration-150"
-            x-transition:enter-start="transform opacity-0 scale-95 translate-y-1"
-            x-transition:enter-end="transform opacity-100 scale-100 translate-y-0"
-            x-transition:leave="transition ease-in duration-100"
-            x-transition:leave-start="transform opacity-100 scale-100 translate-y-0"
-            x-transition:leave-end="transform opacity-0 scale-95 translate-y-1"
-            class="absolute right-0 mt-2.5 w-76 sm:w-80 bg-white dark:bg-[#0f172a] rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-4 z-50 select-none text-slate-800 dark:text-slate-100"
-            style="display: none;"
-         @else
-            class="w-full text-slate-800 dark:text-slate-100"
-         @endif>
+<div x-data="zohoThemeManager({
+    userId: {{ json_encode($userId ?? (auth()->check() ? auth()->id() : null)) }},
+    userAccent: {{ json_encode($userAccent ?? (auth()->check() ? auth()->user()->theme_accent : null)) }},
+    userMode: {{ json_encode($userMode ?? (auth()->check() ? auth()->user()->theme_mode : null)) }},
+    userStyle: {{ json_encode($userStyle ?? (auth()->check() ? auth()->user()->theme_style : null)) }}
+})" x-init="init()" class="w-full select-none text-slate-800 dark:text-slate-100">
+    <div class="w-full text-slate-800 dark:text-slate-100">
 
         {{-- Section 1: Mode --}}
         <div class="mb-3.5">
@@ -152,99 +130,140 @@
                 </template>
             </div>
         </div>
-
-        @if(!$inline)
-            {{-- Bottom Status Note --}}
-            <div class="mt-3 pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[10px] text-slate-400">
-                <span>Instant sync enabled</span>
-                <span class="font-mono text-slate-500" x-text="accent"></span>
-            </div>
-        @endif
-
     </div>
 </div>
 
 <script>
-if (typeof window.zohoThemeManager !== 'function') {
-    window.zohoThemeManager = function() {
-        return {
-            open: false,
-            mode: localStorage.getItem('crm_mode') || 'auto',
-            themeStyle: localStorage.getItem('crm_theme_style') || 'dark',
-            accent: localStorage.getItem('crm_accent') || '#be123c', // Default Ruby Red
-            colors: [
-                { name: 'Navy', hex: '#1e293b' },
-                { name: 'Teal', hex: '#0d9488' },
-                { name: 'Forest Green', hex: '#16a34a' },
-                { name: 'Olive Green', hex: '#65a30d' },
-                { name: 'Amber Gold', hex: '#d97706' },
-                { name: 'Terracotta Rust', hex: '#c2410c' },
-                { name: 'Ruby Red', hex: '#be123c' },
-                { name: 'Plum Magenta', hex: '#831843' },
-                { name: 'Deep Purple', hex: '#581c87' },
-                { name: 'Indigo', hex: '#4338ca' },
-                { name: 'Royal Blue', hex: '#2563eb' },
-                { name: 'Ocean Blue', hex: '#0284c7' },
-                { name: 'Espresso Brown', hex: '#78350f' }
-            ],
-            init() {
-                this.applyTheme();
-                
-                // Watch for external theme-changed events
-                window.addEventListener('theme-changed', (e) => {
-                    if (e.detail) {
-                        if (e.detail.mode) this.mode = e.detail.mode;
-                        if (e.detail.accent) this.accent = e.detail.accent;
-                        if (e.detail.themeStyle) this.themeStyle = e.detail.themeStyle;
-                    }
-                });
+window.zohoThemeManager = function(cfg = {}) {
+    const currentUserId = cfg.userId || window.crmCurrentUserId || null;
+    const accentKey = currentUserId ? ('crm_accent_user_' + currentUserId) : 'crm_accent';
+    const modeKey = currentUserId ? ('crm_mode_user_' + currentUserId) : 'crm_mode';
+    const styleKey = currentUserId ? ('crm_theme_style_user_' + currentUserId) : 'crm_theme_style';
 
-                // Watch for OS preference change when in 'auto' mode
-                const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-                mediaQuery.addEventListener('change', () => {
-                    if (this.mode === 'auto') {
-                        this.applyTheme();
-                    }
-                });
-            },
-            setMode(newMode) {
-                this.mode = newMode;
-                localStorage.setItem('crm_mode', newMode);
-                this.applyTheme();
-            },
-            setThemeStyle(newStyle) {
-                this.themeStyle = newStyle;
-                localStorage.setItem('crm_theme_style', newStyle);
-                this.applyTheme();
-            },
-            setAccent(hex) {
-                this.accent = hex;
-                localStorage.setItem('crm_accent', hex);
-                this.applyTheme();
-            },
-            applyTheme() {
-                const isDark = (this.mode === 'night') || 
-                               (this.mode === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
-                
-                if (isDark) {
-                    document.documentElement.classList.add('dark');
-                } else {
-                    document.documentElement.classList.remove('dark');
-                }
+    let storedMode = null;
+    let storedStyle = null;
+    let storedAccent = null;
+    try {
+        storedMode = localStorage.getItem(modeKey);
+        storedStyle = localStorage.getItem(styleKey);
+        storedAccent = localStorage.getItem(accentKey);
+    } catch(e) {}
 
-                document.documentElement.setAttribute('data-header-theme', this.themeStyle);
-                document.documentElement.style.setProperty('--crm-accent', this.accent);
-                
-                if (typeof window.applyGlobalCrmAccent === 'function') {
-                    window.applyGlobalCrmAccent(this.accent);
+    const initialMode = storedMode || cfg.userMode || 'auto';
+    const initialStyle = storedStyle || cfg.userStyle || 'dark';
+    const initialAccent = storedAccent || cfg.userAccent || '#2563eb';
+
+    return {
+        userId: currentUserId,
+        accentKey: accentKey,
+        modeKey: modeKey,
+        styleKey: styleKey,
+        open: false,
+        mode: initialMode,
+        themeStyle: initialStyle,
+        accent: initialAccent,
+        colors: [
+            { name: 'Royal Blue', hex: '#2563eb' },
+            { name: 'Navy', hex: '#1e293b' },
+            { name: 'Teal', hex: '#0d9488' },
+            { name: 'Forest Green', hex: '#16a34a' },
+            { name: 'Olive Green', hex: '#65a30d' },
+            { name: 'Amber Gold', hex: '#d97706' },
+            { name: 'Terracotta Rust', hex: '#c2410c' },
+            { name: 'Ruby Red', hex: '#be123c' },
+            { name: 'Plum Magenta', hex: '#831843' },
+            { name: 'Deep Purple', hex: '#581c87' },
+            { name: 'Indigo', hex: '#4338ca' },
+            { name: 'Ocean Blue', hex: '#0284c7' },
+            { name: 'Espresso Brown', hex: '#78350f' }
+        ],
+        init() {
+            this.applyTheme();
+            
+            // Watch for external theme-changed events strictly for this user
+            window.addEventListener('theme-changed', (e) => {
+                if (e.detail && (!e.detail.userId || e.detail.userId == this.userId)) {
+                    if (e.detail.mode) this.mode = e.detail.mode;
+                    if (e.detail.accent) this.accent = e.detail.accent;
+                    if (e.detail.themeStyle) this.themeStyle = e.detail.themeStyle;
                 }
-                
-                // Dispatch event for any real-time UI subscribers
-                window.dispatchEvent(new CustomEvent('theme-changed', {
-                    detail: { isDark: isDark, mode: this.mode, themeStyle: this.themeStyle, accent: this.accent }
-                }));
+            });
+
+            // Watch for OS preference change when in 'auto' mode
+            const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+            mediaQuery.addEventListener('change', () => {
+                if (this.mode === 'auto') {
+                    this.applyTheme();
+                }
+            });
+        },
+        setMode(newMode) {
+            this.mode = newMode;
+            try { localStorage.setItem(this.modeKey, newMode); } catch(e) {}
+            this.applyTheme();
+            this.persistToDatabase();
+        },
+        setThemeStyle(newStyle) {
+            this.themeStyle = newStyle;
+            try { localStorage.setItem(this.styleKey, newStyle); } catch(e) {}
+            this.applyTheme();
+            this.persistToDatabase();
+        },
+        setAccent(hex) {
+            this.accent = hex;
+            try { localStorage.setItem(this.accentKey, hex); } catch(e) {}
+            this.applyTheme();
+            this.persistToDatabase();
+        },
+        async persistToDatabase() {
+            if (!this.userId) return;
+            try {
+                const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                await fetch('/profile/theme', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': token || '',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        accent: this.accent,
+                        mode: this.mode,
+                        themeStyle: this.themeStyle
+                    })
+                });
+            } catch(e) {
+                console.warn('Persist theme preference failed:', e);
             }
-        };
+        },
+        applyTheme() {
+            const isDark = (this.mode === 'night') || 
+                           (this.mode === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            
+            if (isDark) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+
+            document.documentElement.setAttribute('data-header-theme', this.themeStyle);
+            document.documentElement.style.setProperty('--crm-accent', this.accent);
+            
+            if (typeof window.applyGlobalCrmAccent === 'function') {
+                window.applyGlobalCrmAccent(this.accent);
+            }
+            
+            // Dispatch event for any real-time UI subscribers, tagged with this.userId
+            window.dispatchEvent(new CustomEvent('theme-changed', {
+                detail: { 
+                    userId: this.userId,
+                    isDark: isDark, 
+                    mode: this.mode, 
+                    themeStyle: this.themeStyle, 
+                    accent: this.accent 
+                }
+            }));
+        }
     };
-}
+};
 </script>

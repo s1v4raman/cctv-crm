@@ -73,11 +73,18 @@
             display:inline-flex; align-items:center; gap:0.3rem;
             padding:0.35rem 0.7rem; border-radius:0.45rem;
             font-size:0.72rem; font-weight:700;
-            background:#eff6ff; color:#2563eb !important;
-            border:1px solid #dbeafe; text-decoration:none; transition:all .15s;
+            background:rgba(var(--crm-accent-rgb, 37, 99, 235), 0.1);
+            color:var(--crm-accent, #2563eb) !important;
+            border:1px solid rgba(var(--crm-accent-rgb, 37, 99, 235), 0.25);
+            text-decoration:none; transition:all .15s;
         }
-        .btn-view:hover { background:#2563eb; color:#ffffff !important; }
-        html.dark .btn-view { background:rgba(59,130,246,.15); color:#60a5fa !important; border-color:rgba(59,130,246,.3); }
+        .btn-view:hover { background:var(--crm-accent, #2563eb); color:#ffffff !important; }
+        html.dark .btn-view {
+            background:rgba(var(--crm-accent-rgb, 37, 99, 235), 0.15);
+            color:var(--crm-accent, #60a5fa) !important;
+            border-color:rgba(var(--crm-accent-rgb, 37, 99, 235), 0.3);
+        }
+        html.dark .btn-view:hover { background:var(--crm-accent, #2563eb); color:#ffffff !important; }
 
         .pg-links { padding:1rem 1.25rem; border-top:1px solid #e2e8f0; }
         html.dark .pg-links { border-top-color:#1e293b; }
@@ -159,7 +166,7 @@
                         <option value="expired" @selected(request('status') === 'expired')>Expired</option>
                         <option value="cancelled" @selected(request('status') === 'cancelled')>Cancelled</option>
                     </select>
-                    <button type="submit" class="px-3 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl transition shadow">
+                    <button type="submit" class="px-3 py-2 text-white font-bold text-xs rounded-xl transition shadow" style="background-color: var(--crm-accent, #2563eb);">
                         Search
                     </button>
                     @if(request('search') || request('status'))

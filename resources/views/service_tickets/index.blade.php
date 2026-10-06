@@ -216,7 +216,7 @@
 
                     <button type="submit"
                             class="btn-filter"
-                            style="display: inline-flex; align-items: center; justify-content: center; background-color: var(--crm-accent, #be123c); color: #ffffff !important; border-radius: 8px; padding: 7px 14px; font-size: 12px; font-weight: 700; cursor: pointer; border: none; box-shadow: 0 1px 2px rgba(0,0,0,0.1); transition: all 0.15s;">
+                            style="display: inline-flex; align-items: center; justify-content: center; background-color: var(--crm-accent, #2563eb); color: #ffffff !important; border-radius: 8px; padding: 7px 14px; font-size: 12px; font-weight: 700; cursor: pointer; border: none; box-shadow: 0 1px 2px rgba(0,0,0,0.1); transition: all 0.15s;">
                         Filter
                     </button>
 

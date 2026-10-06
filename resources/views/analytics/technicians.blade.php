@@ -10,7 +10,7 @@
             <div class="flex items-center gap-2">
                 <a href="{{ route('analytics.technicians.export-pdf', ['range' => $selectedRange, 'start_date' => $startDate->format('Y-m-d'), 'end_date' => $endDate->format('Y-m-d')]) }}"
                    class="crm-btn-primary btn-amber inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-white text-xs font-black shadow-lg transition"
-                   style="background: linear-gradient(135deg, var(--crm-accent, #f59e0b), var(--crm-accent-hover, #d97706));">
+                   style="background-color: var(--crm-accent, #2563eb);">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
                     Export Technician Scorecard PDF
                 </a>
@@ -27,23 +27,23 @@
             {{-- Navigation Sub-Tabs --}}
             <div class="flex items-center gap-2 border-b border-white/10 pb-4 overflow-x-auto">
                 <a href="{{ route('analytics.index', ['range' => $selectedRange]) }}"
-                   class="px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap {{ request()->routeIs('analytics.index') ? 'crm-tab-active text-white font-black shadow-lg' : 'text-slate-400 hover:text-white bg-[#0F172A] border border-white/10' }}"
-                   @if(request()->routeIs('analytics.index')) style="background: linear-gradient(135deg, var(--crm-accent, #f59e0b), var(--crm-accent-hover, #d97706)); color: #fff;" @endif>
+                   class="px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap {{ request()->routeIs('analytics.index') ? 'crm-tab-active text-white font-black shadow-xs' : 'text-slate-400 hover:text-white bg-[#0F172A] border border-white/10' }}"
+                   @if(request()->routeIs('analytics.index')) style="background-color: var(--crm-accent, #2563eb); color: #fff;" @endif>
                     📊 Executive Overview
                 </a>
                 <a href="{{ route('analytics.technicians', ['range' => $selectedRange]) }}"
-                   class="px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap {{ request()->routeIs('analytics.technicians') ? 'crm-tab-active text-white font-black shadow-lg' : 'text-slate-400 hover:text-white bg-[#0F172A] border border-white/10' }}"
-                   @if(request()->routeIs('analytics.technicians')) style="background: linear-gradient(135deg, var(--crm-accent, #f59e0b), var(--crm-accent-hover, #d97706)); color: #fff;" @endif>
+                   class="px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap {{ request()->routeIs('analytics.technicians') ? 'crm-tab-active text-white font-black shadow-xs' : 'text-slate-400 hover:text-white bg-[#0F172A] border border-white/10' }}"
+                   @if(request()->routeIs('analytics.technicians')) style="background-color: var(--crm-accent, #2563eb); color: #fff;" @endif>
                     🛠️ Technician Performance (FTFR & MTTR)
                 </a>
                 <a href="{{ route('analytics.mrr-retention', ['range' => $selectedRange]) }}"
-                   class="px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap {{ request()->routeIs('analytics.mrr-retention') ? 'crm-tab-active text-white font-black shadow-lg' : 'text-slate-400 hover:text-white bg-[#0F172A] border border-white/10' }}"
-                   @if(request()->routeIs('analytics.mrr-retention')) style="background: linear-gradient(135deg, var(--crm-accent, #f59e0b), var(--crm-accent-hover, #d97706)); color: #fff;" @endif>
+                   class="px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap {{ request()->routeIs('analytics.mrr-retention') ? 'crm-tab-active text-white font-black shadow-xs' : 'text-slate-400 hover:text-white bg-[#0F172A] border border-white/10' }}"
+                   @if(request()->routeIs('analytics.mrr-retention')) style="background-color: var(--crm-accent, #2563eb); color: #fff;" @endif>
                     📈 Monthly Revenue & AMC Retention
                 </a>
                 <a href="{{ route('analytics.cost-profit', ['range' => $selectedRange]) }}"
-                   class="px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap {{ request()->routeIs('analytics.cost-profit') ? 'crm-tab-active text-white font-black shadow-lg' : 'text-slate-400 hover:text-white bg-[#0F172A] border border-white/10' }}"
-                   @if(request()->routeIs('analytics.cost-profit')) style="background: linear-gradient(135deg, var(--crm-accent, #f59e0b), var(--crm-accent-hover, #d97706)); color: #fff;" @endif>
+                   class="px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap {{ request()->routeIs('analytics.cost-profit') ? 'crm-tab-active text-white font-black shadow-xs' : 'text-slate-400 hover:text-white bg-[#0F172A] border border-white/10' }}"
+                   @if(request()->routeIs('analytics.cost-profit')) style="background-color: var(--crm-accent, #2563eb); color: #fff;" @endif>
                     💰 Cost & Profit Analysis
                 </a>
             </div>
@@ -54,8 +54,8 @@
                     <span class="text-slate-400 font-mono font-bold uppercase tracking-wider text-[11px] mr-2">Timeframe:</span>
                     @foreach(['today' => 'Today', 'this_month' => 'This Month', 'last_month' => 'Last Month', 'this_quarter' => 'This Quarter', 'this_year' => 'This Year (FY)', 'all_time' => 'All Time'] as $rKey => $rLabel)
                         <a href="{{ route('analytics.technicians', ['range' => $rKey]) }}"
-                           class="px-3.5 py-1.5 rounded-xl font-bold transition text-xs {{ $selectedRange === $rKey ? 'crm-pill-active text-white font-black shadow-lg' : 'bg-[#060913] border border-slate-700 text-slate-300 hover:border-slate-500 hover:text-white' }}"
-                           @if($selectedRange === $rKey) style="background: linear-gradient(135deg, var(--crm-accent, #f59e0b), var(--crm-accent-hover, #d97706)); color: #fff;" @endif>
+                           class="px-3.5 py-1.5 rounded-xl font-bold transition text-xs {{ $selectedRange === $rKey ? 'crm-pill-active text-white font-black shadow-xs' : 'bg-[#060913] border border-slate-700 text-slate-300 hover:border-slate-500 hover:text-white' }}"
+                           @if($selectedRange === $rKey) style="background-color: var(--crm-accent, #2563eb); color: #fff;" @endif>
                             {{ $rLabel }}
                         </a>
                     @endforeach

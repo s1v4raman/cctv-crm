@@ -2,22 +2,26 @@
     <x-slot name="header">
         <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div class="min-w-0">
-                <div class="flex items-center gap-2 mb-1">
-                    <span class="text-sm font-semibold text-slate-500 dark:text-slate-400">Welcome back, <strong class="text-slate-800 dark:text-slate-200">{{ Auth::user()->name }}</strong> 👋</span>
-                    <span class="text-slate-300 dark:text-slate-700">•</span>
-                    <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200/80 dark:border-emerald-800/80">
+                <div class="flex items-center flex-wrap gap-2 mb-1">
+                    <span class="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5 whitespace-nowrap">
+                        <span>Welcome back,</span>
+                        <strong class="font-bold text-slate-800 dark:text-slate-100">{{ Auth::user()->name }}</strong>
+                        <span class="inline-block select-none">👋</span>
+                    </span>
+                    <span class="text-slate-300 dark:text-slate-600 hidden sm:inline">•</span>
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200/80 dark:border-emerald-800/80 shadow-2xs">
                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                        Live Grid
+                        <span>Live Grid</span>
                     </span>
                 </div>
-                <h2 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight font-heading">
+                <h2 class="text-xl sm:text-2xl lg:text-[26px] font-extrabold text-slate-900 dark:text-white tracking-tight font-heading leading-tight">
                     @if($isAdmin)
                         Operations &amp; Executive Command Center
                     @else
                         Workforce Operations Command Center
                     @endif
                 </h2>
-                <p class="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
+                <p class="mt-1 text-xs sm:text-sm text-slate-500 dark:text-slate-400">
                     @if($isAdmin)
                         CCTV Operations, Automated Quotations, Financials &amp; Field Telemetry
                     @else
@@ -27,34 +31,34 @@
             </div>
             
             <div class="flex flex-wrap items-center gap-2 sm:gap-2.5 shrink-0">
-                <div class="flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3.5 py-2 rounded-xl shadow-xs">
-                    <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <div class="flex items-center gap-2 text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-300 bg-slate-100/90 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 rounded-xl shadow-2xs">
+                    <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
                     <span id="last-updated">Connecting live grid...</span>
                 </div>
 
                 @if($isAdmin)
-                    <a href="{{ route('leads.create') }}" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 active:scale-95 rounded-xl shadow-xs transition-all">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <a href="{{ route('leads.create') }}" class="btn-primary inline-flex items-center gap-1.5 px-3.5 py-2 text-xs sm:text-sm font-bold !text-white rounded-xl shadow-xs transition-all active:scale-95" style="color: #ffffff !important;">
+                        <svg class="w-4 h-4 !text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
                         </svg>
-                        <span>New Lead</span>
+                        <span class="!text-white">New Lead</span>
                     </a>
                     
-                    <a href="{{ route('quotations.create-general') }}" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 active:scale-95 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xs transition-all">
-                        <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <a href="{{ route('quotations.create-general') }}" class="btn-secondary inline-flex items-center gap-1.5 px-3.5 py-2 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 active:scale-95 border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xs transition-all">
+                        <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/>
                         </svg>
                         <span>New Quote</span>
                     </a>
 
-                    <a href="{{ route('jobs.create-general') }}" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 active:scale-95 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xs transition-all">
-                        <svg class="w-4 h-4 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <a href="{{ route('jobs.create-general') }}" class="btn-secondary inline-flex items-center gap-1.5 px-3.5 py-2 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 active:scale-95 border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xs transition-all">
+                        <svg class="w-4 h-4 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437l1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008z"/>
                         </svg>
                         <span>New Job</span>
                     </a>
 
-                    <a href="{{ route('products.index') }}" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 active:scale-95 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xs transition-all">
+                    <a href="{{ route('products.index') }}" class="btn-secondary inline-flex items-center gap-1.5 px-3.5 py-2 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 active:scale-95 border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xs transition-all">
                         <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
                         </svg>
