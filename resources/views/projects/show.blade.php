@@ -85,7 +85,7 @@
                         @csrf
                         @method('PATCH')
                         <input type="hidden" name="status" value="in_progress">
-                        <button type="submit" class="px-3 py-2 rounded-xl text-xs font-bold bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 hover:bg-amber-100 border border-amber-300 dark:border-amber-700 transition-colors flex items-center gap-1.5">
+                        <button type="submit" class="px-4 py-2.5 rounded-xl min-h-[42px] text-sm font-bold bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 hover:bg-amber-100 border border-amber-300 dark:border-amber-700 transition-colors flex items-center gap-1.5">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                             Set In Progress
                         </button>
@@ -98,7 +98,7 @@
                         @csrf
                         @method('PATCH')
                         <input type="hidden" name="status" value="completed">
-                        <button type="submit" class="px-3 py-2 rounded-xl text-xs font-bold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 border border-emerald-300 dark:border-emerald-700 transition-colors flex items-center gap-1.5">
+                        <button type="submit" class="px-4 py-2.5 rounded-xl min-h-[42px] text-sm font-bold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 border border-emerald-300 dark:border-emerald-700 transition-colors flex items-center gap-1.5">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                             Mark as Done (100%)
                         </button>
@@ -111,7 +111,7 @@
                         @csrf
                         @method('PATCH')
                         <input type="hidden" name="status" value="incompleted">
-                        <button type="submit" class="px-3 py-2 rounded-xl text-xs font-bold bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 hover:bg-rose-100 border border-rose-300 dark:border-rose-700 transition-colors flex items-center gap-1.5">
+                        <button type="submit" class="px-4 py-2.5 rounded-xl min-h-[42px] text-sm font-bold bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 hover:bg-rose-100 border border-rose-300 dark:border-rose-700 transition-colors flex items-center gap-1.5">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
                             Mark Incomplete
                         </button>
@@ -124,7 +124,7 @@
                         @csrf
                         @method('PATCH')
                         <input type="hidden" name="status" value="on_hold">
-                        <button type="submit" class="px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 border border-slate-300 dark:border-slate-700 transition-colors flex items-center gap-1.5">
+                        <button type="submit" class="px-4 py-2.5 rounded-xl min-h-[42px] text-sm font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 border border-slate-300 dark:border-slate-700 transition-colors flex items-center gap-1.5">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                             Put On Hold
                         </button>
@@ -284,14 +284,14 @@
                         @csrf
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div>
-                                <label for="document_title" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">
+                                <label for="document_title" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                                     Document Title / Category (Optional)
                                 </label>
                                 <input type="text" id="document_title" name="document_title" placeholder="e.g. CCTV Blueprint Layout Rev 2"
                                        class="w-full text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500">
                             </div>
                             <div>
-                                <label for="upload_notes" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">
+                                <label for="upload_notes" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                                     Notes (Optional)
                                 </label>
                                 <input type="text" id="upload_notes" name="notes" placeholder="e.g. Approved by client site supervisor"

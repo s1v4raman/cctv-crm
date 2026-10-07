@@ -192,7 +192,7 @@
                 <form :action="'/portal/quotations/' + selectedQuoteId + '/reject'" method="POST" class="space-y-4">
                     @csrf
                     <div class="space-y-1.5">
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                             Feedback / Reason for Declining (Optional)
                         </label>
                         <textarea name="rejection_reason" rows="3" 

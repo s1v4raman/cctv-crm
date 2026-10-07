@@ -412,8 +412,8 @@
                 <form action="{{ route('finance.petty_cash.advance') }}" method="POST" class="space-y-4">
                     @csrf
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Target Field Custodian (Technician / Staff) *</label>
-                        <select name="custodian_id" required class="w-full px-3.5 py-2 text-xs font-medium rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-blue-500 focus:border-blue-500">
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Target Field Custodian (Technician / Staff) *</label>
+                        <select name="custodian_id" required class="w-full px-3.5 py-2.5 min-h-[44px] text-sm font-medium rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-blue-500 focus:border-blue-500">
                             <option value="">-- Select Field Custodian --</option>
                             @foreach($technicians as $tech)
                                 <option value="{{ $tech->id }}">{{ $tech->name }} ({{ ucfirst($tech->role) }} - {{ $tech->phone ?? $tech->email }})</option>
@@ -423,25 +423,25 @@
 
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Advance Amount (&#8377;) *</label>
-                            <input type="number" step="1" min="1" name="amount" required placeholder="e.g. 5000" class="w-full px-3.5 py-2 text-xs font-bold rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-blue-500 focus:border-blue-500 font-mono">
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Advance Amount (&#8377;) *</label>
+                            <input type="number" step="1" min="1" name="amount" required placeholder="e.g. 5000" class="w-full px-3.5 py-2.5 min-h-[44px] text-sm font-bold rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-blue-500 focus:border-blue-500 font-mono">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Disbursement Date *</label>
-                            <input type="date" name="transaction_date" value="{{ date('Y-m-d') }}" required class="w-full px-3.5 py-2 text-xs font-medium rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-blue-500 focus:border-blue-500">
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Disbursement Date *</label>
+                            <input type="date" name="transaction_date" value="{{ date('Y-m-d') }}" required class="w-full px-3.5 py-2.5 min-h-[44px] text-sm font-medium rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-blue-500 focus:border-blue-500">
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Purpose / Notes</label>
-                        <textarea name="notes" rows="2" placeholder="e.g. Weekly field cash float for surveillance equipment site supplies.." class="w-full px-3.5 py-2 text-xs font-medium rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-blue-500 focus:border-blue-500"></textarea>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Purpose / Notes</label>
+                        <textarea name="notes" rows="2" placeholder="e.g. Weekly field cash float for surveillance equipment site supplies.." class="w-full px-3.5 py-2.5 min-h-[44px] text-sm font-medium rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-blue-500 focus:border-blue-500"></textarea>
                     </div>
 
                     <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-                        <button type="button" @click="advanceModal = false" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs rounded-xl transition">
+                        <button type="button" @click="advanceModal = false" class="px-5 py-2.5 min-h-[44px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-sm rounded-xl transition">
                             Cancel
                         </button>
-                        <button type="submit" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs rounded-xl shadow-md transition">
+                        <button type="submit" class="px-6 py-2.5 min-h-[44px] bg-blue-600 hover:bg-blue-700 text-white font-black text-sm rounded-xl shadow-md transition">
                             Disburse Float
                         </button>
                     </div>
@@ -472,8 +472,8 @@
                 <form action="{{ route('finance.petty_cash.collection') }}" method="POST" class="space-y-4">
                     @csrf
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Receiving Technician (Custodian) *</label>
-                        <select name="custodian_id" required class="w-full px-3.5 py-2 text-xs font-medium rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-teal-500 focus:border-teal-500">
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Receiving Technician (Custodian) *</label>
+                        <select name="custodian_id" required class="w-full px-3.5 py-2.5 min-h-[44px] text-sm font-medium rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-teal-500 focus:border-teal-500">
                             @foreach($technicians as $tech)
                                 <option value="{{ $tech->id }}">{{ $tech->name }} ({{ ucfirst($tech->role) }})</option>
                             @endforeach
@@ -482,24 +482,24 @@
 
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Amount Collected (&#8377;) *</label>
-                            <input type="number" step="1" min="1" name="amount" required placeholder="e.g. 3500" class="w-full px-3.5 py-2 text-xs font-bold rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-teal-500 focus:border-teal-500 font-mono">
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Amount Collected (&#8377;) *</label>
+                            <input type="number" step="1" min="1" name="amount" required placeholder="e.g. 3500" class="w-full px-3.5 py-2.5 min-h-[44px] text-sm font-bold rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-teal-500 focus:border-teal-500 font-mono">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Collection Date *</label>
-                            <input type="date" name="transaction_date" value="{{ date('Y-m-d') }}" required class="w-full px-3.5 py-2 text-xs font-medium rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-teal-500 focus:border-teal-500">
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Collection Date *</label>
+                            <input type="date" name="transaction_date" value="{{ date('Y-m-d') }}" required class="w-full px-3.5 py-2.5 min-h-[44px] text-sm font-medium rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-teal-500 focus:border-teal-500">
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Customer / Client Name *</label>
-                        <input type="text" name="customer_name" required placeholder="e.g. Apollo Diagnostics / Dr. Rajesh" class="w-full px-3.5 py-2 text-xs font-medium rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-teal-500 focus:border-teal-500">
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Customer / Client Name *</label>
+                        <input type="text" name="customer_name" required placeholder="e.g. Apollo Diagnostics / Dr. Rajesh" class="w-full px-3.5 py-2.5 min-h-[44px] text-sm font-medium rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-teal-500 focus:border-teal-500">
                     </div>
 
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Link to Invoice (Optional)</label>
-                            <select name="invoice_id" class="w-full px-3.5 py-2 text-xs font-medium rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-teal-500 focus:border-teal-500">
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Link to Invoice (Optional)</label>
+                            <select name="invoice_id" class="w-full px-3.5 py-2.5 min-h-[44px] text-sm font-medium rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-teal-500 focus:border-teal-500">
                                 <option value="">-- No Specific Invoice --</option>
                                 @foreach($pendingInvoices as $inv)
                                     <option value="{{ $inv->id }}">{{ $inv->invoice_no }} (&#8377;{{ number_format($inv->balanceDue(), 2) }} due - {{ $inv->quotation?->lead?->customer_name }})</option>
@@ -507,16 +507,16 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Receipt / Slip # (Optional)</label>
-                            <input type="text" name="receipt_reference" placeholder="e.g. SLIP-1092" class="w-full px-3.5 py-2 text-xs font-medium rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-teal-500 focus:border-teal-500">
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Receipt / Slip # (Optional)</label>
+                            <input type="text" name="receipt_reference" placeholder="e.g. SLIP-1092" class="w-full px-3.5 py-2.5 min-h-[44px] text-sm font-medium rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-teal-500 focus:border-teal-500">
                         </div>
                     </div>
 
                     <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-                        <button type="button" @click="collectionModal = false" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs rounded-xl transition">
+                        <button type="button" @click="collectionModal = false" class="px-5 py-2.5 min-h-[44px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-sm rounded-xl transition">
                             Cancel
                         </button>
-                        <button type="submit" class="px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white font-black text-xs rounded-xl shadow-md transition">
+                        <button type="submit" class="px-6 py-2.5 min-h-[44px] bg-teal-600 hover:bg-teal-700 text-white font-black text-sm rounded-xl shadow-md transition">
                             Save Collection
                         </button>
                     </div>
@@ -547,8 +547,8 @@
                 <form action="{{ route('finance.petty_cash.expense') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
                     @csrf
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Paying Account / Wallet *</label>
-                        <select name="petty_cash_account_id" required class="w-full px-3.5 py-2 text-xs font-medium rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-amber-500 focus:border-amber-500">
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Paying Account / Wallet *</label>
+                        <select name="petty_cash_account_id" required class="w-full px-3.5 py-2.5 min-h-[44px] text-sm font-medium rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-amber-500 focus:border-amber-500">
                             @foreach($accounts as $acc)
                                 <option value="{{ $acc['id'] }}">{{ $acc['name'] }} (Balance: &#8377;{{ number_format($acc['current_balance'], 2) }})</option>
                             @endforeach
@@ -557,8 +557,8 @@
 
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Expense Category *</label>
-                            <select name="category" required class="w-full px-3.5 py-2 text-xs font-medium rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-amber-500 focus:border-amber-500">
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Expense Category *</label>
+                            <select name="category" required class="w-full px-3.5 py-2.5 min-h-[44px] text-sm font-medium rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-amber-500 focus:border-amber-500">
                                 <option value="hardware_conduits">Hardware, PVC Pipes & Conduits</option>
                                 <option value="materials">Screws, Fasteners & Cable Clips</option>
                                 <option value="travel_fuel">Vehicle Petrol / Conveyance</option>
@@ -569,26 +569,26 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Expense Amount (&#8377;) *</label>
-                            <input type="number" step="0.50" min="0.50" name="amount" required placeholder="e.g. 450" class="w-full px-3.5 py-2 text-xs font-bold rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-amber-500 focus:border-amber-500 font-mono">
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Expense Amount (&#8377;) *</label>
+                            <input type="number" step="0.50" min="0.50" name="amount" required placeholder="e.g. 450" class="w-full px-3.5 py-2.5 min-h-[44px] text-sm font-bold rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-amber-500 focus:border-amber-500 font-mono">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Vendor / Payee Name</label>
-                            <input type="text" name="vendor_payee_name" placeholder="e.g. Sri Balaji Hardware" class="w-full px-3.5 py-2 text-xs font-medium rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-amber-500 focus:border-amber-500">
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Vendor / Payee Name</label>
+                            <input type="text" name="vendor_payee_name" placeholder="e.g. Sri Balaji Hardware" class="w-full px-3.5 py-2.5 min-h-[44px] text-sm font-medium rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-amber-500 focus:border-amber-500">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Date of Purchase *</label>
-                            <input type="date" name="transaction_date" value="{{ date('Y-m-d') }}" required class="w-full px-3.5 py-2 text-xs font-medium rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-amber-500 focus:border-amber-500">
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Date of Purchase *</label>
+                            <input type="date" name="transaction_date" value="{{ date('Y-m-d') }}" required class="w-full px-3.5 py-2.5 min-h-[44px] text-sm font-medium rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-amber-500 focus:border-amber-500">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Attach Job (Optional)</label>
-                            <select name="job_id" class="w-full px-3.5 py-2 text-xs font-medium rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-amber-500 focus:border-amber-500">
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Attach Job (Optional)</label>
+                            <select name="job_id" class="w-full px-3.5 py-2.5 min-h-[44px] text-sm font-medium rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-amber-500 focus:border-amber-500">
                                 <option value="">-- General Site Expense --</option>
                                 @foreach($activeJobs as $j)
                                     <option value="{{ $j->id }}">{{ $j->job_no }} ({{ $j->lead?->customer_name }})</option>
@@ -596,21 +596,21 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Attach Bill Photo / Voucher</label>
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Attach Bill Photo / Voucher</label>
                             <input type="file" name="receipt_photo" accept="image/*,.pdf" class="w-full text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100">
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Description / Remarks</label>
-                        <textarea name="notes" rows="2" placeholder="e.g. 5 pcs 1-inch PVC elbow bends and 2 packets plastic anchors.." class="w-full px-3.5 py-2 text-xs font-medium rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-amber-500 focus:border-amber-500"></textarea>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Description / Remarks</label>
+                        <textarea name="notes" rows="2" placeholder="e.g. 5 pcs 1-inch PVC elbow bends and 2 packets plastic anchors.." class="w-full px-3.5 py-2.5 min-h-[44px] text-sm font-medium rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-amber-500 focus:border-amber-500"></textarea>
                     </div>
 
                     <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-                        <button type="button" @click="expenseModal = false" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs rounded-xl transition">
+                        <button type="button" @click="expenseModal = false" class="px-5 py-2.5 min-h-[44px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-sm rounded-xl transition">
                             Cancel
                         </button>
-                        <button type="submit" class="px-5 py-2 bg-amber-600 hover:bg-amber-700 text-white font-black text-xs rounded-xl shadow-md transition">
+                        <button type="submit" class="px-6 py-2.5 min-h-[44px] bg-amber-600 hover:bg-amber-700 text-white font-black text-sm rounded-xl shadow-md transition">
                             Record Expense
                         </button>
                     </div>
@@ -641,8 +641,8 @@
                 <form action="{{ route('finance.petty_cash.handover') }}" method="POST" class="space-y-4">
                     @csrf
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Source Field Wallet *</label>
-                        <select name="source_account_id" required class="w-full px-3.5 py-2 text-xs font-medium rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500">
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Source Field Wallet *</label>
+                        <select name="source_account_id" required class="w-full px-3.5 py-2.5 min-h-[44px] text-sm font-medium rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500">
                             @foreach($accounts as $acc)
                                 @if($acc['account_type'] === 'field_wallet')
                                     <option value="{{ $acc['id'] }}">{{ $acc['name'] }} (In-Hand: &#8377;{{ number_format($acc['current_balance'], 2) }})</option>
@@ -653,39 +653,39 @@
 
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Destination *</label>
-                            <select name="destination_type" required class="w-full px-3.5 py-2 text-xs font-medium rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500">
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Destination *</label>
+                            <select name="destination_type" required class="w-full px-3.5 py-2.5 min-h-[44px] text-sm font-medium rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500">
                                 <option value="main_vault">Head Office Safe Vault</option>
                                 <option value="bank_deposit">Company Current Bank Account</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Handover Amount (&#8377;) *</label>
-                            <input type="number" step="1" min="1" name="amount" required placeholder="e.g. 10000" class="w-full px-3.5 py-2 text-xs font-bold rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500 font-mono">
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Handover Amount (&#8377;) *</label>
+                            <input type="number" step="1" min="1" name="amount" required placeholder="e.g. 10000" class="w-full px-3.5 py-2.5 min-h-[44px] text-sm font-bold rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500 font-mono">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Handover Date *</label>
-                            <input type="date" name="transaction_date" value="{{ date('Y-m-d') }}" required class="w-full px-3.5 py-2 text-xs font-medium rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500">
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Handover Date *</label>
+                            <input type="date" name="transaction_date" value="{{ date('Y-m-d') }}" required class="w-full px-3.5 py-2.5 min-h-[44px] text-sm font-medium rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Bank / Vault Ack Ref #</label>
-                            <input type="text" name="bank_ack_no" placeholder="e.g. DEPOSIT-SLIP-8821" class="w-full px-3.5 py-2 text-xs font-medium rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500">
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Bank / Vault Ack Ref #</label>
+                            <input type="text" name="bank_ack_no" placeholder="e.g. DEPOSIT-SLIP-8821" class="w-full px-3.5 py-2.5 min-h-[44px] text-sm font-medium rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500">
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Handover Remarks</label>
-                        <textarea name="notes" rows="2" placeholder="e.g. Handover of weekend collected advances from commercial site.." class="w-full px-3.5 py-2 text-xs font-medium rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500"></textarea>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Handover Remarks</label>
+                        <textarea name="notes" rows="2" placeholder="e.g. Handover of weekend collected advances from commercial site.." class="w-full px-3.5 py-2.5 min-h-[44px] text-sm font-medium rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500"></textarea>
                     </div>
 
                     <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-                        <button type="button" @click="handoverModal = false" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs rounded-xl transition">
+                        <button type="button" @click="handoverModal = false" class="px-5 py-2.5 min-h-[44px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-sm rounded-xl transition">
                             Cancel
                         </button>
-                        <button type="submit" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs rounded-xl shadow-md transition">
+                        <button type="submit" class="px-6 py-2.5 min-h-[44px] bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm rounded-xl shadow-md transition">
                             Process Handover
                         </button>
                     </div>

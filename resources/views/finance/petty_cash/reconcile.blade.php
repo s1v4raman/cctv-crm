@@ -231,7 +231,7 @@
 
                             <div class="space-y-4">
                                 <div>
-                                    <label class="block text-xs font-semibold text-gray-600 mb-1">Reconciliation Date *</label>
+                                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Reconciliation Date *</label>
                                     <input type="date" name="reconciliation_date" value="{{ date('Y-m-d') }}" required class="w-full rounded-xl border-gray-200 text-sm focus:border-indigo-500 focus:ring-indigo-500">
                                 </div>
 
@@ -259,7 +259,7 @@
                                 </div>
 
                                 <div>
-                                    <label class="block text-xs font-semibold text-gray-600 mb-1">Remarks / Variance Explanation</label>
+                                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Remarks / Variance Explanation</label>
                                     <textarea name="reconciliation_notes" rows="3" placeholder="Explain reasons if there is any shortage/excess, or notes on physical count verification..." class="w-full rounded-xl border-gray-200 text-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
                                 </div>
                             </div>

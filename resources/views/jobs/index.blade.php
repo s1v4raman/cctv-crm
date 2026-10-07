@@ -149,7 +149,10 @@
 
                 <form method="GET" action="{{ route('jobs.index') }}" class="filter-bar flex items-center gap-2 flex-wrap">
                     <div class="relative flex-1 min-w-[220px]">
-                        <input type="text" name="search" id="job-search" value="{{ request('search') }}" placeholder="Search job no, customer, tech…" oninput="filterJobs()" class="w-full">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        </div>
+                        <input type="text" name="search" id="job-search" value="{{ request('search') }}" placeholder="Search job no, customer, tech…" oninput="filterJobs()" style="padding-left: 2.75rem !important;" class="w-full pl-11">
                     </div>
                     <select name="status" id="job-status-filter" onchange="this.form.submit()">
                         <option value="">All Statuses</option>
@@ -160,11 +163,11 @@
                         <option value="completed" @selected(request('status') === 'completed')>Completed</option>
                         <option value="cancelled" @selected(request('status') === 'cancelled')>Cancelled</option>
                     </select>
-                    <button type="submit" class="px-3 py-2 text-white font-bold text-xs rounded-lg transition shadow" style="background-color: var(--crm-accent, #2563eb);">
+                    <button type="submit" class="btn-amber min-h-[44px] px-5 py-2.5 text-sm font-bold rounded-xl transition shadow">
                         Search
                     </button>
                     @if(request('search') || request('status'))
-                        <a href="{{ route('jobs.index') }}" class="px-2.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-lg transition">
+                        <a href="{{ route('jobs.index') }}" class="btn-secondary min-h-[44px] px-4 py-2.5 text-sm font-semibold rounded-xl transition">
                             Clear
                         </a>
                     @endif

@@ -137,20 +137,20 @@
                 {{-- Search & filter bar --}}
                 <form method="GET" action="{{ route('invoices.index') }}" class="p-4 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0b1120] flex items-center gap-2 flex-wrap">
                     <div class="relative flex-1 min-w-[220px]">
-                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Search invoice #, customer, phone, address…" class="w-full text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#0f172a] text-slate-800 dark:text-white px-3 py-2">
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Search invoice #, customer, phone, address…" class="w-full text-sm min-h-[44px] rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#0f172a] text-slate-800 dark:text-white px-3.5 py-2.5">
                     </div>
-                    <select name="status" onchange="this.form.submit()" class="text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#0f172a] text-slate-800 dark:text-white px-3 py-2">
+                    <select name="status" onchange="this.form.submit()" class="text-sm min-h-[44px] rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#0f172a] text-slate-800 dark:text-white px-3.5 py-2.5">
                         <option value="">All Statuses</option>
                         <option value="unpaid" @selected(request('status') === 'unpaid')>Unpaid</option>
                         <option value="partially_paid" @selected(request('status') === 'partially_paid')>Partially Paid</option>
                         <option value="paid" @selected(request('status') === 'paid')>Paid</option>
                         <option value="overdue" @selected(request('status') === 'overdue')>Overdue</option>
                     </select>
-                    <button type="submit" class="px-3 py-2 text-white font-bold text-xs rounded-xl transition shadow" style="background-color: var(--crm-accent, #2563eb);">
+                    <button type="submit" class="btn-amber min-h-[44px] px-5 py-2.5 text-sm font-bold rounded-xl transition shadow">
                         Search
                     </button>
                     @if(request('search') || request('status'))
-                        <a href="{{ route('invoices.index') }}" class="px-2.5 py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold rounded-xl transition">
+                        <a href="{{ route('invoices.index') }}" class="btn-secondary min-h-[44px] px-4 py-2.5 text-sm font-semibold rounded-xl transition">
                             Clear
                         </a>
                     @endif

@@ -159,7 +159,7 @@
 
                                 {{-- WhatsApp Template --}}
                                 <div>
-                                    <label class="block text-[10px] font-mono uppercase tracking-widest text-slate-400 mb-1.5">
+                                    <label class="block text-sm font-semibold text-slate-300 mb-1.5">
                                         💬 WhatsApp Message Text (Supports *bold*, _italic_, newlines)
                                     </label>
                                     <textarea name="whatsapp_template" rows="4" required class="w-full text-xs font-mono rounded-xl border border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:outline-none p-3 leading-relaxed">{{ $template->whatsapp_template }}</textarea>
@@ -167,7 +167,7 @@
 
                                 {{-- SMS Template --}}
                                 <div>
-                                    <label class="block text-[10px] font-mono uppercase tracking-widest text-slate-400 mb-1.5">
+                                    <label class="block text-sm font-semibold text-slate-300 mb-1.5">
                                         📱 SMS Text (Single / 160-char format)
                                     </label>
                                     <textarea name="sms_template" rows="2" class="w-full text-xs font-mono rounded-xl border border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:outline-none p-3 leading-relaxed">{{ $template->sms_template }}</textarea>
@@ -176,20 +176,20 @@
                                 {{-- Email Subject & Body --}}
                                 <div class="grid grid-cols-1 gap-3.5">
                                     <div>
-                                        <label class="block text-[10px] font-mono uppercase tracking-widest text-slate-400 mb-1.5">
+                                        <label class="block text-sm font-semibold text-slate-300 mb-1.5">
                                             ✉️ Email Subject Line
                                         </label>
                                         <input type="text" name="email_subject" value="{{ $template->email_subject }}" required class="w-full text-xs font-semibold rounded-xl border border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:outline-none p-2.5">
                                     </div>
 
                                     <div>
-                                        <label class="block text-[10px] font-mono uppercase tracking-widest text-slate-400 mb-1.5">Email HTML Body</label>
+                                        <label class="block text-sm font-semibold text-slate-300 mb-1.5">Email HTML Body</label>
                                         <textarea name="email_body" rows="4" required class="w-full text-xs font-mono rounded-xl border border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:outline-none p-3 leading-relaxed">{{ $template->email_body }}</textarea>
                                     </div>
                                 </div>
 
                                 <div class="flex justify-end pt-2">
-                                    <button type="submit" class="px-5 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 rounded-xl text-xs font-black uppercase tracking-wider shadow-lg shadow-amber-500/20 transition">
+                                    <button type="submit" class="px-6 py-2.5 min-h-[44px] bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 rounded-xl text-sm font-bold uppercase tracking-wider shadow-lg shadow-amber-500/20 transition">
                                         Save Template Changes &rarr;
                                     </button>
                                 </div>

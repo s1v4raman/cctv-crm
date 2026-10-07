@@ -253,9 +253,9 @@
                     <form method="GET" action="{{ route('finance.expenses.index') }}" class="flex items-center gap-2 pb-3 flex-wrap">
                         <input type="hidden" name="tab" value="{{ $tab }}">
 
-                        <input type="month" name="month" value="{{ $selectedMonth }}" onchange="this.form.submit()" class="text-xs rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 py-1.5 px-3">
+                        <input type="month" name="month" value="{{ $selectedMonth }}" onchange="this.form.submit()" class="text-sm min-h-[44px] rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 py-1.5 px-3">
 
-                        <select name="category" onchange="this.form.submit()" class="text-xs rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 py-1.5 pl-3 pr-8">
+                        <select name="category" onchange="this.form.submit()" class="text-sm min-h-[44px] rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 py-1.5 pl-3 pr-8">
                             <option value="">All Categories</option>
                             <option value="fuel_travel" {{ $categoryFilter === 'fuel_travel' ? 'selected' : '' }}>Fuel &amp; Travel</option>
                             <option value="hardware_tools" {{ $categoryFilter === 'hardware_tools' ? 'selected' : '' }}>Hardware Tools</option>
@@ -265,7 +265,7 @@
                             <option value="other" {{ $categoryFilter === 'other' ? 'selected' : '' }}>Other</option>
                         </select>
 
-                        <select name="status" onchange="this.form.submit()" class="text-xs rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 py-1.5 pl-3 pr-8">
+                        <select name="status" onchange="this.form.submit()" class="text-sm min-h-[44px] rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 py-1.5 pl-3 pr-8">
                             <option value="">All Statuses</option>
                             <option value="pending" {{ $statusFilter === 'pending' ? 'selected' : '' }}>Pending</option>
                             <option value="approved" {{ $statusFilter === 'approved' ? 'selected' : '' }}>Approved</option>
@@ -275,7 +275,7 @@
                         </select>
 
                         @if($tab === 'all_claims' && $isAdmin)
-                            <select name="employee_id" onchange="this.form.submit()" class="text-xs rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 py-1.5 pl-3 pr-8">
+                            <select name="employee_id" onchange="this.form.submit()" class="text-sm min-h-[44px] rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 py-1.5 pl-3 pr-8">
                                 <option value="">All Employees</option>
                                 @foreach($workforce as $emp)
                                     <option value="{{ $emp->id }}" {{ $employeeFilter == $emp->id ? 'selected' : '' }}>{{ $emp->name }}</option>
@@ -362,7 +362,7 @@
                                                 <form action="{{ route('finance.expenses.cancel', $c) }}" method="POST" onsubmit="return confirm('Cancel this pending claim?')">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="text-rose-600 hover:text-rose-800 dark:text-rose-400 text-xs font-bold underline">
+                                                    <button type="submit" class="text-rose-600 hover:text-rose-800 dark:text-rose-400 text-sm font-semibold underline">
                                                         Cancel Claim
                                                     </button>
                                                 </form>
@@ -450,13 +450,13 @@
                                                     <form action="{{ route('finance.expenses.approve', $ac) }}" method="POST">
                                                         @csrf
                                                         @method('PATCH')
-                                                        <button type="submit" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition">
+                                                        <button type="submit" class="min-h-[38px] px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-semibold transition">
                                                             Approve
                                                         </button>
                                                     </form>
                                                     <button type="button" 
                                                             onclick="openRejectClaimModal('{{ $ac->id }}', '{{ $ac->claim_no }}', '{{ addslashes($ac->user?->name) }}', '₹{{ number_format((float) $ac->amount, 2) }}')"
-                                                            class="px-2.5 py-1 bg-rose-50 text-rose-600 border border-rose-200 rounded-lg text-xs font-bold hover:bg-rose-100 transition">
+                                                            class="min-h-[38px] px-3.5 py-2 bg-rose-50 text-rose-600 border border-rose-200 rounded-lg text-sm font-semibold hover:bg-rose-100 transition">
                                                         Reject
                                                     </button>
                                                 @elseif($ac->status === 'approved')
@@ -511,7 +511,7 @@
                     {{-- Category --}}
                     <div>
                         <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Expense Category *</label>
-                        <select name="expense_category" id="expenseCategorySelect" onchange="toggleKmSection(this.value)" required class="w-full text-xs rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5">
+                        <select name="expense_category" id="expenseCategorySelect" onchange="toggleKmSection(this.value)" required class="w-full text-sm min-h-[44px] rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5">
                             <option value="fuel_travel">Fuel &amp; Travel (Per-KM Calculation)</option>
                             <option value="hardware_tools">Hardware Tools, Cables &amp; Connectors</option>
                             <option value="food_lodging">Meals &amp; On-Site Allowance</option>
@@ -525,7 +525,7 @@
                     <div>
                         <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Expense Date *</label>
                         <input type="date" name="expense_date" required value="{{ now()->toDateString() }}" 
-                               class="w-full text-xs rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5">
+                               class="w-full text-sm min-h-[44px] rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5">
                     </div>
                 </div>
 
@@ -541,24 +541,24 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                         <div>
                             <input type="text" name="travel_from" placeholder="From Location (e.g. Office / HSR Layout)" 
-                                   class="w-full text-xs rounded-xl border-purple-200 dark:border-purple-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2">
+                                   class="w-full text-sm min-h-[44px] rounded-xl border-purple-200 dark:border-purple-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2">
                         </div>
                         <div>
                             <input type="text" name="travel_to" placeholder="To Client Site (e.g. Cyber City Tower)" 
-                                   class="w-full text-xs rounded-xl border-purple-200 dark:border-purple-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2">
+                                   class="w-full text-sm min-h-[44px] rounded-xl border-purple-200 dark:border-purple-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-2.5 items-center">
                         <div>
-                            <label class="block text-[11px] font-semibold text-purple-800 dark:text-purple-300 mb-0.5">Total Kilometers</label>
+                            <label class="block text-sm font-semibold text-purple-800 dark:text-purple-300 mb-1">Total Kilometers</label>
                             <input type="number" step="0.1" name="travel_distance_km" id="kmInput" oninput="calculateKmAmount()" placeholder="e.g. 25.5" 
-                                   class="w-full text-xs rounded-xl border-purple-200 dark:border-purple-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2">
+                                   class="w-full text-sm min-h-[44px] rounded-xl border-purple-200 dark:border-purple-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2">
                         </div>
                         <div>
-                            <label class="block text-[11px] font-semibold text-purple-800 dark:text-purple-300 mb-0.5">Rate / KM (₹)</label>
+                            <label class="block text-sm font-semibold text-purple-800 dark:text-purple-300 mb-1">Rate / KM (₹)</label>
                             <input type="number" step="0.5" name="rate_per_km" id="rateInput" value="6.0" oninput="calculateKmAmount()" 
-                                   class="w-full text-xs rounded-xl border-purple-200 dark:border-purple-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2">
+                                   class="w-full text-sm min-h-[44px] rounded-xl border-purple-200 dark:border-purple-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2">
                         </div>
                     </div>
                 </div>
@@ -574,7 +574,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                         <label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Link to Installation Job (Optional)</label>
-                        <select name="installation_job_id" class="w-full text-xs rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5">
+                        <select name="installation_job_id" class="w-full text-sm min-h-[44px] rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5">
                             <option value="">None / General Expense</option>
                             @foreach($activeJobs as $job)
                                 <option value="{{ $job->id }}">{{ $job->job_no }} - {{ $job->quotation?->lead?->customer_name }}</option>
@@ -584,7 +584,7 @@
 
                     <div>
                         <label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Link to Service Ticket (Optional)</label>
-                        <select name="service_ticket_id" class="w-full text-xs rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5">
+                        <select name="service_ticket_id" class="w-full text-sm min-h-[44px] rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5">
                             <option value="">None / General</option>
                             @foreach($activeTickets as $ticket)
                                 <option value="{{ $ticket->id }}">{{ $ticket->ticket_no }} - {{ $ticket->title }}</option>
@@ -597,7 +597,7 @@
                 <div>
                     <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Description / Purpose *</label>
                     <textarea name="description" rows="2" required placeholder="State exact purpose of travel or list items bought on-site..." 
-                              class="w-full text-xs rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5"></textarea>
+                              class="w-full text-sm min-h-[44px] rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5"></textarea>
                 </div>
 
                 {{-- Receipt Upload --}}
@@ -611,7 +611,7 @@
                     <button type="button" onclick="document.getElementById('submitExpenseModal').classList.add('hidden')" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 dark:text-slate-400">
                         Cancel
                     </button>
-                    <button type="submit" class="px-5 py-2 text-xs font-bold text-white rounded-xl shadow-md transition cursor-pointer" style="background-color: var(--crm-accent, #2563eb);">
+                    <button type="submit" class="px-6 py-2.5 min-h-[44px] text-sm font-bold text-white rounded-xl shadow-md transition cursor-pointer" style="background-color: var(--crm-accent, #2563eb);">
                         Submit Claim
                     </button>
                 </div>
@@ -642,14 +642,14 @@
                 <div>
                     <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Rejection Reason *</label>
                     <textarea name="rejection_reason" rows="3" required placeholder="e.g. Receipt photo unclear, kilometers exceeded standard route..." 
-                              class="w-full text-xs rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5"></textarea>
+                              class="w-full text-sm min-h-[44px] rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5"></textarea>
                 </div>
 
                 <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
                     <button type="button" onclick="document.getElementById('rejectClaimModal').classList.add('hidden')" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 dark:text-slate-400">
                         Back
                     </button>
-                    <button type="submit" class="px-5 py-2 text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-xl shadow-md transition">
+                    <button type="submit" class="px-6 py-2.5 min-h-[44px] text-sm font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-xl shadow-md transition">
                         Confirm Rejection
                     </button>
                 </div>
@@ -678,7 +678,7 @@
 
                 <div>
                     <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Disbursal Method *</label>
-                    <select name="payment_method" required class="w-full text-xs rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5">
+                    <select name="payment_method" required class="w-full text-sm min-h-[44px] rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5">
                         <option value="upi">UPI Instant Transfer (GPay / PhonePe / Paytm)</option>
                         <option value="bank_transfer">Direct Bank Transfer (NEFT / IMPS)</option>
                         <option value="cash">Petty Cash Payment</option>
@@ -689,14 +689,14 @@
                 <div>
                     <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Transaction / UTR Reference (Optional)</label>
                     <input type="text" name="payment_reference" placeholder="e.g. UPI-99881234 / NEFT-HDFC-991" 
-                           class="w-full text-xs rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5">
+                           class="w-full text-sm min-h-[44px] rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5">
                 </div>
 
                 <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
                     <button type="button" onclick="document.getElementById('payClaimModal').classList.add('hidden')" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 dark:text-slate-400">
                         Cancel
                     </button>
-                    <button type="submit" class="px-5 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-md transition">
+                    <button type="submit" class="px-6 py-2.5 min-h-[44px] text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-md transition">
                         Confirm Disbursal
                     </button>
                 </div>

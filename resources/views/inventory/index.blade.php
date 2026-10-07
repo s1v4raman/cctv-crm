@@ -395,7 +395,7 @@
                         </div>
 
                         <div class="mb-4">
-                            <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Movement Action</label>
+                            <label class="block text-sm font-semibold text-slate-200 mb-1.5">Movement Action</label>
                             <div class="grid grid-cols-3 gap-2">
                                 <label class="flex items-center justify-center p-2.5 rounded-xl border text-xs font-bold cursor-pointer text-center transition-all"
                                        :class="adjustType === 'in' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 shadow-sm' : 'bg-[#060913] text-slate-400 border-slate-800 hover:border-slate-700'">
@@ -416,14 +416,14 @@
                         </div>
 
                         <div class="mb-4">
-                            <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1"
+                            <label class="block text-sm font-semibold text-slate-200 mb-1.5"
                                    x-text="adjustType === 'adjustment' ? 'New Exact Stock Count' : 'Quantity'"></label>
                             <input type="number" name="quantity" min="0" required x-model="adjustQty"
                                    class="w-full border border-slate-700 bg-[#060913] rounded-xl px-3.5 py-2.5 text-sm font-semibold text-white focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400">
                         </div>
 
                         <div class="mb-5">
-                            <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Reason / Notes</label>
+                            <label class="block text-sm font-semibold text-slate-200 mb-1.5">Reason / Notes</label>
                             <input type="text" name="notes" placeholder="e.g., Vendor Invoice #4812, Physical audit, Damaged" x-model="adjustNotes"
                                    class="w-full border border-slate-700 bg-[#060913] rounded-xl px-3.5 py-2 text-sm text-slate-200 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400">
                         </div>

@@ -79,7 +79,7 @@
 
             {{-- Flexible Payment Plan Options (Advance vs Full Total) --}}
             <div class="mb-5">
-                <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2.5">
+                <label class="block text-sm font-semibold text-slate-300 mb-1.5">
                     1. Choose Payment Option
                 </label>
                 <div class="grid grid-cols-2 gap-2.5 sm:gap-3">
@@ -110,7 +110,7 @@
             {{-- Custom Amount Input (Collapsible/Editable) --}}
             <div class="mb-6 bg-slate-900/40 p-3 rounded-2xl border border-slate-800/80">
                 <div class="flex items-center justify-between mb-1.5">
-                    <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                    <label class="text-sm font-semibold text-slate-300">
                         Amount to Pay (₹):
                     </label>
                     <span class="text-[10px] text-slate-500">Max: ₹{{ number_format((float)$fullAmount, 2) }}</span>
@@ -127,7 +127,7 @@
 
             {{-- 2. Choose Payment Method Tabs --}}
             <div class="mb-3">
-                <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
+                <label class="block text-sm font-semibold text-slate-300 mb-1.5">
                     2. Select Payment Method
                 </label>
                 <div class="grid grid-cols-3 gap-1.5 p-1 bg-slate-900/90 rounded-xl border border-slate-800">

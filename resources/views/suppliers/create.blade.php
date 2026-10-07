@@ -163,7 +163,7 @@
 
                     <div class="mb-6 flex items-center gap-2">
                         <input type="checkbox" id="is_active" name="is_active" value="1" @checked(old('is_active', true)) class="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer">
-                        <label for="is_active" class="text-xs font-bold text-gray-800 cursor-pointer">
+                        <label for="is_active" class="text-sm font-semibold text-slate-700 dark:text-slate-300 cursor-pointer">
                             Active Supplier (Available for Purchase Orders)
                         </label>
                     </div>

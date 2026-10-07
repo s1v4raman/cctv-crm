@@ -197,7 +197,7 @@
                 </p>
 
                 <div class="space-y-1.5">
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                         Additional Requirements / Notes (Optional)
                     </label>
                     <textarea name="notes" rows="3" 

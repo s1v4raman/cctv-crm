@@ -53,11 +53,11 @@
                     <!-- Customer & AMC section -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                         <div>
-                            <label class="block text-xs font-extrabold text-slate-300 uppercase tracking-wider mb-2">
+                            <label class="block text-sm font-semibold text-slate-200 mb-1.5">
                                 Customer / Site Lead <span class="text-amber-400">*</span>
                             </label>
                             <select name="lead_id" required 
-                                    class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
+                                    class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl border border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20">
                                 @foreach($leads as $lead)
                                     <option value="{{ $lead->id }}" {{ old('lead_id', $ticket->lead_id) == $lead->id ? 'selected' : '' }}>
                                         {{ $lead->customer_name }} ({{ $lead->phone }})
@@ -67,11 +67,11 @@
                         </div>
 
                         <div>
-                            <label class="block text-xs font-extrabold text-slate-300 uppercase tracking-wider mb-2">
+                            <label class="block text-sm font-semibold text-slate-200 mb-1.5">
                                 Covered Under AMC?
                             </label>
                             <select name="amc_contract_id" 
-                                    class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
+                                    class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl border border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20">
                                 <option value="">-- No AMC / Standalone --</option>
                                 @foreach($amcContracts as $amc)
                                     <option value="{{ $amc->id }}" {{ old('amc_contract_id', $ticket->amc_contract_id) == $amc->id ? 'selected' : '' }}>
@@ -85,11 +85,11 @@
                     <!-- Issue Type, Priority, Status -->
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
                         <div>
-                            <label class="block text-xs font-extrabold text-slate-300 uppercase tracking-wider mb-2">
+                            <label class="block text-sm font-semibold text-slate-200 mb-1.5">
                                 Issue Category <span class="text-amber-400">*</span>
                             </label>
                             <select name="issue_type" required 
-                                    class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
+                                    class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl border border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20">
                                 @foreach(\App\Models\ServiceTicket::issueTypeOptions() as $k => $label)
                                     <option value="{{ $k }}" {{ old('issue_type', $ticket->issue_type) === $k ? 'selected' : '' }}>{{ $label }}</option>
                                 @endforeach
@@ -97,11 +97,11 @@
                         </div>
 
                         <div>
-                            <label class="block text-xs font-extrabold text-slate-300 uppercase tracking-wider mb-2">
+                            <label class="block text-sm font-semibold text-slate-200 mb-1.5">
                                 Priority Level <span class="text-amber-400">*</span>
                             </label>
                             <select name="priority" required 
-                                    class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
+                                    class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl border border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20">
                                 @foreach(\App\Models\ServiceTicket::priorityOptions() as $k => $label)
                                     <option value="{{ $k }}" {{ old('priority', $ticket->priority) === $k ? 'selected' : '' }}>{{ $label }}</option>
                                 @endforeach
@@ -109,11 +109,11 @@
                         </div>
 
                         <div>
-                            <label class="block text-xs font-extrabold text-slate-300 uppercase tracking-wider mb-2">
+                            <label class="block text-sm font-semibold text-slate-200 mb-1.5">
                                 Status <span class="text-amber-400">*</span>
                             </label>
                             <select name="status" required 
-                                    class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
+                                    class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl border border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20">
                                 @foreach(\App\Models\ServiceTicket::statusOptions() as $k => $label)
                                     <option value="{{ $k }}" {{ old('status', $ticket->status) === $k ? 'selected' : '' }}>{{ $label }}</option>
                                 @endforeach
@@ -123,19 +123,19 @@
 
                     <!-- Title & Details -->
                     <div>
-                        <label class="block text-xs font-extrabold text-slate-300 uppercase tracking-wider mb-2">
+                        <label class="block text-sm font-semibold text-slate-200 mb-1.5">
                             Complaint Title / Summary <span class="text-amber-400">*</span>
                         </label>
                         <input type="text" name="title" value="{{ old('title', $ticket->title) }}" required 
-                            class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
+                            class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl border border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20">
                     </div>
 
                     <div>
-                        <label class="block text-xs font-extrabold text-slate-300 uppercase tracking-wider mb-2">
+                        <label class="block text-sm font-semibold text-slate-200 mb-1.5">
                             Detailed Description <span class="text-amber-400">*</span>
                         </label>
                         <textarea name="description" rows="3" required
-                            class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">{{ old('description', $ticket->description) }}</textarea>
+                            class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl border border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20">{{ old('description', $ticket->description) }}</textarea>
                     </div>
 
                     <!-- Dispatch & Scheduling -->
@@ -147,11 +147,11 @@
                         
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
+                                <label class="block text-sm font-semibold text-slate-200 mb-1.5">
                                     Assigned Technician
                                 </label>
                                 <select name="assigned_technician_id" 
-                                        class="w-full text-xs rounded-xl border-slate-700 bg-[#0b1120] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
+                                        class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl border border-slate-700 bg-[#0b1120] text-white focus:border-amber-400 focus:ring-amber-400/20">
                                     <option value="">-- Unassigned --</option>
                                     @foreach($technicians as $tech)
                                         <option value="{{ $tech->id }}" {{ old('assigned_technician_id', $ticket->assigned_technician_id) == $tech->id ? 'selected' : '' }}>
@@ -162,11 +162,11 @@
                             </div>
 
                             <div>
-                                <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
+                                <label class="block text-sm font-semibold text-slate-200 mb-1.5">
                                     Scheduled Date
                                 </label>
                                 <input type="date" name="scheduled_date" value="{{ old('scheduled_date', $ticket->scheduled_date?->format('Y-m-d')) }}"
-                                    class="w-full text-xs rounded-xl border-slate-700 bg-[#0b1120] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
+                                    class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl border border-slate-700 bg-[#0b1120] text-white focus:border-amber-400 focus:ring-amber-400/20">
                             </div>
                         </div>
                     </div>
@@ -179,38 +179,38 @@
                         </div>
 
                         <div>
-                            <label class="block text-xs font-extrabold text-slate-300 uppercase tracking-wider mb-1">
+                            <label class="block text-sm font-semibold text-slate-200 mb-1.5">
                                 Troubleshooting Notes
                             </label>
                             <textarea name="troubleshooting_notes" rows="2"
-                                class="w-full text-xs rounded-xl border-slate-700 bg-[#0b1120] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">{{ old('troubleshooting_notes', $ticket->troubleshooting_notes) }}</textarea>
+                                class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl border border-slate-700 bg-[#0b1120] text-white focus:border-amber-400 focus:ring-amber-400/20">{{ old('troubleshooting_notes', $ticket->troubleshooting_notes) }}</textarea>
                         </div>
 
                         <div>
-                            <label class="block text-xs font-extrabold text-slate-300 uppercase tracking-wider mb-1">
+                            <label class="block text-sm font-semibold text-slate-200 mb-1.5">
                                 Parts Replaced
                             </label>
                             <input type="text" name="parts_replaced" value="{{ old('parts_replaced', $ticket->parts_replaced) }}"
-                                class="w-full text-xs rounded-xl border-slate-700 bg-[#0b1120] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
+                                class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl border border-slate-700 bg-[#0b1120] text-white focus:border-amber-400 focus:ring-amber-400/20">
                         </div>
 
                         <div>
-                            <label class="block text-xs font-extrabold text-slate-300 uppercase tracking-wider mb-1">
+                            <label class="block text-sm font-semibold text-slate-200 mb-1.5">
                                 Resolution Notes
                             </label>
                             <textarea name="resolution_notes" rows="2"
-                                class="w-full text-xs rounded-xl border-slate-700 bg-[#0b1120] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">{{ old('resolution_notes', $ticket->resolution_notes) }}</textarea>
+                                class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl border border-slate-700 bg-[#0b1120] text-white focus:border-amber-400 focus:ring-amber-400/20">{{ old('resolution_notes', $ticket->resolution_notes) }}</textarea>
                         </div>
                     </div>
 
                     <!-- Billing -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                         <div>
-                            <label class="block text-xs font-extrabold text-slate-300 uppercase tracking-wider mb-2">
+                            <label class="block text-sm font-semibold text-slate-200 mb-1.5">
                                 Billing Type <span class="text-amber-400">*</span>
                             </label>
                             <select name="billing_type" required 
-                                    class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
+                                    class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl border border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20">
                                 <option value="warranty_amc" {{ old('billing_type', $ticket->billing_type) === 'warranty_amc' ? 'selected' : '' }}>🛡️ Warranty / AMC (Free)</option>
                                 <option value="billable" {{ old('billing_type', $ticket->billing_type) === 'billable' ? 'selected' : '' }}>💰 Billable Repair</option>
                                 <option value="free_courtesy" {{ old('billing_type', $ticket->billing_type) === 'free_courtesy' ? 'selected' : '' }}>🎁 Free Courtesy Visit</option>
@@ -218,21 +218,21 @@
                         </div>
 
                         <div>
-                            <label class="block text-xs font-extrabold text-slate-300 uppercase tracking-wider mb-2">
+                            <label class="block text-sm font-semibold text-slate-200 mb-1.5">
                                 Charge / Amount (₹)
                             </label>
                             <input type="number" step="0.01" name="cost" value="{{ old('cost', $ticket->cost) }}"
-                                class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
+                                class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl border border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20">
                         </div>
                     </div>
 
                     <div class="pt-4 border-t border-slate-800 flex items-center justify-end gap-3">
                         <a href="{{ route('service-tickets.show', $ticket) }}"
-                           class="px-4 py-2.5 rounded-xl border border-slate-700 text-xs font-bold text-slate-400 hover:text-white hover:bg-slate-800 transition">
+                           class="btn-secondary min-h-[44px] px-5 py-2.5 text-sm font-semibold rounded-xl border border-slate-700 text-slate-400 hover:text-white hover:bg-slate-800 transition">
                             Cancel
                         </a>
                         <button type="submit"
-                                class="btn-amber">
+                                class="btn-amber min-h-[44px] px-6 py-2.5 text-sm font-bold">
                             <span>Save Changes</span>
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                         </button>

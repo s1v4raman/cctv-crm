@@ -186,21 +186,21 @@
                             <form method="POST" action="{{ route('rma.dispatch', $rma) }}" class="space-y-3.5">
                                 @csrf
                                 <div>
-                                    <label class="block text-[10px] font-mono uppercase tracking-widest text-slate-400 mb-1.5">Shipping Carrier <span class="text-amber-400">*</span></label>
-                                    <input type="text" name="shipping_courier" required placeholder="e.g. DTDC, Blue Dart" class="w-full bg-[#060913] border border-slate-700 rounded-xl p-2.5 text-xs text-white focus:border-amber-400 focus:outline-none">
+                                    <label class="block text-sm font-semibold text-slate-300 mb-1.5">Shipping Carrier <span class="text-amber-400">*</span></label>
+                                    <input type="text" name="shipping_courier" required placeholder="e.g. DTDC, Blue Dart" class="w-full bg-[#060913] border border-slate-700 rounded-xl px-3.5 py-2.5 min-h-[44px] text-sm text-white focus:border-amber-400 focus:outline-none">
                                 </div>
 
                                 <div>
-                                    <label class="block text-[10px] font-mono uppercase tracking-widest text-slate-400 mb-1.5">Consignment / AWB No.</label>
-                                    <input type="text" name="tracking_number" placeholder="e.g. D19283741" class="w-full bg-[#060913] border border-slate-700 rounded-xl p-2.5 text-xs text-white font-mono focus:border-amber-400 focus:outline-none">
+                                    <label class="block text-sm font-semibold text-slate-300 mb-1.5">Consignment / AWB No.</label>
+                                    <input type="text" name="tracking_number" placeholder="e.g. D19283741" class="w-full bg-[#060913] border border-slate-700 rounded-xl px-3.5 py-2.5 min-h-[44px] text-sm text-white font-mono focus:border-amber-400 focus:outline-none">
                                 </div>
 
                                 <div>
-                                    <label class="block text-[10px] font-mono uppercase tracking-widest text-slate-400 mb-1.5">Dispatched Date <span class="text-amber-400">*</span></label>
-                                    <input type="date" name="dispatched_date" value="{{ now()->format('Y-m-d') }}" required class="w-full bg-[#060913] border border-slate-700 rounded-xl p-2.5 text-xs text-white font-mono focus:border-amber-400 focus:outline-none">
+                                    <label class="block text-sm font-semibold text-slate-300 mb-1.5">Dispatched Date <span class="text-amber-400">*</span></label>
+                                    <input type="date" name="dispatched_date" value="{{ now()->format('Y-m-d') }}" required class="w-full bg-[#060913] border border-slate-700 rounded-xl px-3.5 py-2.5 min-h-[44px] text-sm text-white font-mono focus:border-amber-400 focus:outline-none">
                                 </div>
 
-                                <button type="submit" class="w-full py-2.5 px-4 bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-400 hover:to-sky-500 text-white rounded-xl text-xs font-bold uppercase tracking-wider shadow-lg shadow-sky-500/20 transition">
+                                <button type="submit" class="w-full min-h-[44px] py-2.5 px-5 bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-400 hover:to-sky-500 text-white rounded-xl text-sm font-bold uppercase tracking-wider shadow-lg shadow-sky-500/20 transition">
                                     Mark Dispatched & Save AWB &rarr;
                                 </button>
                             </form>
@@ -218,8 +218,8 @@
                             <form method="POST" action="{{ route('rma.resolution', $rma) }}" class="space-y-3.5">
                                 @csrf
                                 <div>
-                                    <label class="block text-[10px] font-mono uppercase tracking-widest text-slate-400 mb-1.5">Resolution Outcome <span class="text-amber-400">*</span></label>
-                                    <select name="resolution_type" required class="w-full bg-[#060913] border border-slate-700 rounded-xl p-2.5 text-xs text-white focus:border-amber-400 focus:outline-none" onchange="toggleReplacementFields(this.value)">
+                                    <label class="block text-sm font-semibold text-slate-300 mb-1.5">Resolution Outcome <span class="text-amber-400">*</span></label>
+                                    <select name="resolution_type" required class="w-full bg-[#060913] border border-slate-700 rounded-xl px-3.5 py-2.5 min-h-[44px] text-sm text-white focus:border-amber-400 focus:outline-none" onchange="toggleReplacementFields(this.value)">
                                         <option value="replacement">✨ Brand New Replacement (New S/N)</option>
                                         <option value="repaired_unit">🔧 Original Unit Repaired & Returned</option>
                                         <option value="credit_note">💰 Vendor Credit Note / Refund</option>
@@ -228,26 +228,26 @@
                                 </div>
 
                                 <div id="replacementSerialNumberDiv">
-                                    <label class="block text-[10px] font-mono uppercase tracking-widest text-slate-400 mb-1.5">New Serial Number (S/N) <span class="text-amber-400">*</span></label>
-                                    <input type="text" name="replacement_serial_number" placeholder="Enter new serial number" class="w-full bg-[#060913] border border-slate-700 rounded-xl p-2.5 text-xs text-white font-mono focus:border-amber-400 focus:outline-none">
+                                    <label class="block text-sm font-semibold text-slate-300 mb-1.5">New Serial Number (S/N) <span class="text-amber-400">*</span></label>
+                                    <input type="text" name="replacement_serial_number" placeholder="Enter new serial number" class="w-full bg-[#060913] border border-slate-700 rounded-xl px-3.5 py-2.5 min-h-[44px] text-sm text-white font-mono focus:border-amber-400 focus:outline-none">
                                 </div>
 
                                 <div id="replacementMacDiv">
-                                    <label class="block text-[10px] font-mono uppercase tracking-widest text-slate-400 mb-1.5">New MAC Address</label>
-                                    <input type="text" name="replacement_mac_address" placeholder="e.g. 54:C8:01:B3:99:11" class="w-full bg-[#060913] border border-slate-700 rounded-xl p-2.5 text-xs text-white font-mono focus:border-amber-400 focus:outline-none">
+                                    <label class="block text-sm font-semibold text-slate-300 mb-1.5">New MAC Address</label>
+                                    <input type="text" name="replacement_mac_address" placeholder="e.g. 54:C8:01:B3:99:11" class="w-full bg-[#060913] border border-slate-700 rounded-xl px-3.5 py-2.5 min-h-[44px] text-sm text-white font-mono focus:border-amber-400 focus:outline-none">
                                 </div>
 
                                 <div>
-                                    <label class="block text-[10px] font-mono uppercase tracking-widest text-slate-400 mb-1.5">Received Date <span class="text-amber-400">*</span></label>
-                                    <input type="date" name="received_from_vendor_date" value="{{ now()->format('Y-m-d') }}" required class="w-full bg-[#060913] border border-slate-700 rounded-xl p-2.5 text-xs text-white font-mono focus:border-amber-400 focus:outline-none">
+                                    <label class="block text-sm font-semibold text-slate-300 mb-1.5">Received Date <span class="text-amber-400">*</span></label>
+                                    <input type="date" name="received_from_vendor_date" value="{{ now()->format('Y-m-d') }}" required class="w-full bg-[#060913] border border-slate-700 rounded-xl px-3.5 py-2.5 min-h-[44px] text-sm text-white font-mono focus:border-amber-400 focus:outline-none">
                                 </div>
 
                                 <div>
-                                    <label class="block text-[10px] font-mono uppercase tracking-widest text-slate-400 mb-1.5">Resolution Notes</label>
-                                    <textarea name="vendor_repair_notes" rows="2" placeholder="e.g. Replaced mainboard, tested OK..." class="w-full bg-[#060913] border border-slate-700 rounded-xl p-2.5 text-xs text-white focus:border-amber-400 focus:outline-none"></textarea>
+                                    <label class="block text-sm font-semibold text-slate-300 mb-1.5">Resolution Notes</label>
+                                    <textarea name="vendor_repair_notes" rows="2" placeholder="e.g. Replaced mainboard, tested OK..." class="w-full bg-[#060913] border border-slate-700 rounded-xl px-3.5 py-2.5 min-h-[44px] text-sm text-white focus:border-amber-400 focus:outline-none"></textarea>
                                 </div>
 
-                                <button type="submit" class="w-full py-2.5 px-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white rounded-xl text-xs font-bold uppercase tracking-wider shadow-lg shadow-emerald-500/20 transition">
+                                <button type="submit" class="w-full min-h-[44px] py-2.5 px-5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white rounded-xl text-sm font-bold uppercase tracking-wider shadow-lg shadow-emerald-500/20 transition">
                                     Inward & Update Equipment &rarr;
                                 </button>
                             </form>

@@ -282,10 +282,10 @@
                 </div>
 
                 <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-                    <button type="button" onclick="document.getElementById('whatsappModal').classList.add('hidden')" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 dark:text-slate-400">
+                    <button type="button" onclick="document.getElementById('whatsappModal').classList.add('hidden')" class="btn-secondary min-h-[44px] px-4 py-2.5 text-sm font-semibold rounded-xl text-slate-600 hover:text-slate-800 dark:text-slate-400">
                         Cancel
                     </button>
-                    <button type="submit" onclick="setTimeout(() => document.getElementById('whatsappModal').classList.add('hidden'), 500)" class="px-5 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-md transition flex items-center gap-1.5">
+                    <button type="submit" onclick="setTimeout(() => document.getElementById('whatsappModal').classList.add('hidden'), 500)" class="btn-primary min-h-[44px] px-5 py-2.5 text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-md transition flex items-center gap-2">
                         <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
                             <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.698c.983.54 1.776.818 2.796.818 3.182 0 5.768-2.587 5.768-5.769.001-3.181-2.585-5.767-5.768-5.767zm9.969 5.766c0 5.495-4.474 9.969-9.969 9.969-1.748 0-3.385-.453-4.819-1.246l-5.212 1.367 1.391-5.084c-.887-1.493-1.391-3.238-1.391-5.006 0-5.495 4.474-9.969 9.969-9.969 5.495 0 9.969 4.474 9.969 9.969z"/>
                         </svg>

@@ -149,17 +149,17 @@
 
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Your Full Name *</label>
+                                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Your Full Name *</label>
                                     <input type="text" name="customer_name" required value="{{ auth()->user()->name }}"
                                            class="w-full text-xs font-medium rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 text-slate-900 dark:text-white placeholder-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 py-2.5 px-3">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Phone / WhatsApp *</label>
+                                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Phone / WhatsApp *</label>
                                     <input type="tel" name="phone" required placeholder="+91 98765 43210" value="{{ $lead && $lead->phone !== 'Pending update' ? $lead->phone : '' }}"
                                            class="w-full text-xs font-medium rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 text-slate-900 dark:text-white placeholder-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 py-2.5 px-3">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Email Address *</label>
+                                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Email Address *</label>
                                     <input type="email" name="email" required value="{{ auth()->user()->email }}"
                                            class="w-full text-xs font-medium rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 text-slate-900 dark:text-white placeholder-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 py-2.5 px-3">
                                 </div>
@@ -167,12 +167,12 @@
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Installation Site / Premises Address *</label>
+                                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Installation Site / Premises Address *</label>
                                     <input type="text" name="site_address" required placeholder="e.g. Tower 3, Prestige Tech Park, Bangalore" value="{{ $lead?->site_address }}"
                                            class="w-full text-xs font-medium rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 text-slate-900 dark:text-white placeholder-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 py-2.5 px-3">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Primary Request Type *</label>
+                                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Primary Request Type *</label>
                                     <select name="work_type" class="w-full text-xs font-medium rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 text-slate-900 dark:text-white focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 py-2.5 px-3">
                                         <option value="cctv_installation">📹 New CCTV Camera System Installation</option>
                                         <option value="cctv_upgrade">🔄 Existing CCTV System Upgrade / 4K Transition</option>
@@ -183,7 +183,7 @@
                             </div>
 
                             <div>
-                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Requirement Notes / Camera Locations</label>
+                                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Requirement Notes / Camera Locations</label>
                                 <textarea name="description" rows="3" placeholder="Describe number of cameras needed, indoor/outdoor zones, night vision requirements, or issues with existing setup..."
                                           class="w-full text-xs font-medium rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 text-slate-900 dark:text-white placeholder-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 p-3"></textarea>
                             </div>
@@ -191,7 +191,7 @@
                             <div class="flex items-center justify-between pt-2">
                                 <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">⚡ Average engineer assignment response time: &lt; 30 minutes</span>
                                 <button type="submit" 
-                                        class="crm-customer-action-btn px-6 py-2.5 text-white font-bold text-xs rounded-xl shadow-xs transition-all duration-200 cursor-pointer"
+                                        class="crm-customer-action-btn px-6 py-2.5 min-h-[44px] text-white font-bold text-sm rounded-xl shadow-xs transition-all duration-200 cursor-pointer"
                                         style="background-color: var(--crm-accent, #2563eb); border: 1px solid var(--crm-accent, #2563eb); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(37,99,235,0.35));">
                                     Submit Request to Operations →
                                 </button>
@@ -717,15 +717,15 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {{-- Preferred Date --}}
                     <div>
-                        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Preferred Date *</label>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Preferred Date *</label>
                         <input type="date" name="preferred_date" required min="{{ date('Y-m-d') }}" x-model="surveyDate"
-                               class="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-medium py-2.5 px-3 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20">
+                               class="w-full text-sm min-h-[44px] rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-medium py-2.5 px-3.5 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20">
                     </div>
 
                     {{-- Preferred Time Slot --}}
                     <div>
-                        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Time Slot Window *</label>
-                        <select x-model="timeSlot" class="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-medium py-2.5 px-3 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20">
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Time Slot Window *</label>
+                        <select x-model="timeSlot" class="w-full text-sm min-h-[44px] rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-medium py-2.5 px-3.5 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20">
                             <option value="morning">🌅 Morning (10:00 AM – 01:00 PM)</option>
                             <option value="afternoon">🌇 Afternoon (02:00 PM – 05:00 PM)</option>
                         </select>
@@ -735,8 +735,8 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {{-- Premises Type --}}
                     <div>
-                        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Premises Type *</label>
-                        <select x-model="premisesType" class="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-medium py-2.5 px-3 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20">
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Premises Type *</label>
+                        <select x-model="premisesType" class="w-full text-sm min-h-[44px] rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-medium py-2.5 px-3.5 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20">
                             <option value="commercial_office">🏢 Commercial Office / IT Floor</option>
                             <option value="villa">🏡 Residential Villa / House</option>
                             <option value="apartment">🏘️ Apartment Complex / Society</option>
@@ -747,8 +747,8 @@
 
                     {{-- Camera Scope --}}
                     <div>
-                        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Approximate Cameras *</label>
-                        <select x-model="cameraScope" class="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-medium py-2.5 px-3 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20">
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Approximate Cameras *</label>
+                        <select x-model="cameraScope" class="w-full text-sm min-h-[44px] rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-medium py-2.5 px-3.5 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20">
                             <option value="2_4">2 to 4 Cameras</option>
                             <option value="5_8" selected>5 to 8 Cameras</option>
                             <option value="9_16">9 to 16 Cameras</option>
@@ -761,35 +761,35 @@
                 {{-- Contact Info Row --}}
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Your Name *</label>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Your Name *</label>
                         <input type="text" name="customer_name" required value="{{ auth()->user()->name }}"
-                               class="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-medium py-2.5 px-3 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20">
+                               class="w-full text-sm min-h-[44px] rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-medium py-2.5 px-3.5 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20">
                     </div>
                     <div>
-                        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Phone / WhatsApp *</label>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Phone / WhatsApp *</label>
                         <input type="tel" name="phone" required placeholder="+91 98765 43210" value="{{ $lead && $lead->phone !== 'Pending update' ? $lead->phone : '' }}"
-                               class="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-medium py-2.5 px-3 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20">
+                               class="w-full text-sm min-h-[44px] rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-medium py-2.5 px-3.5 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Email Address *</label>
+                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Email Address *</label>
                     <input type="email" name="email" required value="{{ auth()->user()->email }}"
-                           class="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-medium py-2.5 px-3 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20">
+                           class="w-full text-sm min-h-[44px] rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-medium py-2.5 px-3.5 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20">
                 </div>
 
                 {{-- Site Address & Directions --}}
                 <div>
-                    <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Installation Site Address & Landmark *</label>
+                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Installation Site Address & Landmark *</label>
                     <input type="text" name="site_address" required placeholder="e.g. Tower 3, Tech Park, Outer Ring Road, Bengaluru" value="{{ $lead?->site_address }}"
-                           class="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-medium py-2.5 px-3 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20">
+                           class="w-full text-sm min-h-[44px] rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-medium py-2.5 px-3.5 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20">
                 </div>
 
                 {{-- Additional Notes --}}
                 <div>
-                    <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">GPS Pin / Gate & Parking Directions (Optional)</label>
+                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">GPS Pin / Gate & Parking Directions (Optional)</label>
                     <textarea x-model="notes" rows="2" placeholder="e.g. Enter through Gate 2, ask for security desk at reception, parking available in basement..."
-                              class="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-medium p-3 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20"></textarea>
+                              class="w-full text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-medium p-3.5 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20"></textarea>
                 </div>
 
                 {{-- Hidden auto-compiled description --}}
@@ -797,11 +797,11 @@
 
                 <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-200 dark:border-slate-800">
                     <button type="button" onclick="document.getElementById('siteSurveyBookingModal').classList.add('hidden')"
-                            class="px-4 py-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold rounded-xl transition border border-slate-200 dark:border-slate-700">
+                            class="px-5 py-2.5 min-h-[44px] bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-sm font-semibold rounded-xl transition border border-slate-200 dark:border-slate-700">
                         Cancel
                     </button>
                     <button type="submit"
-                            class="crm-customer-action-btn px-6 py-2.5 text-white font-bold text-xs rounded-xl shadow-xs transition-all duration-200 cursor-pointer"
+                            class="crm-customer-action-btn px-6 py-2.5 min-h-[44px] text-white font-bold text-sm rounded-xl shadow-xs transition-all duration-200 cursor-pointer"
                             style="background-color: var(--crm-accent, #2563eb); border: 1px solid var(--crm-accent, #2563eb); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(37,99,235,0.35));">
                         Confirm Survey Booking →
                     </button>

@@ -41,7 +41,7 @@
                 <div class="bg-[#0f172a] rounded-2xl p-6 shadow-2xl border border-slate-800 space-y-4" style="background-color: #0f172a;">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Target Supplier / Vendor <span class="text-amber-400">*</span></label>
+                            <label class="block text-sm font-semibold text-slate-200 mb-1.5">Target Supplier / Vendor <span class="text-amber-400">*</span></label>
                             <select name="supplier_id" required class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
                                 @foreach($suppliers as $supplier)
                                     <option value="{{ $supplier->id }}" @selected(old('supplier_id', $rma->supplier_id) == $supplier->id)>
@@ -51,7 +51,7 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Product Model</label>
+                            <label class="block text-sm font-semibold text-slate-200 mb-1.5">Product Model</label>
                             <select name="product_id" class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
                                 <option value="">Select Product (Optional)</option>
                                 @foreach($products as $prod)
@@ -65,12 +65,12 @@
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Faulty Serial Number (S/N) <span class="text-amber-400">*</span></label>
+                            <label class="block text-sm font-semibold text-slate-200 mb-1.5">Faulty Serial Number (S/N) <span class="text-amber-400">*</span></label>
                             <input type="text" name="faulty_serial_number" value="{{ old('faulty_serial_number', $rma->faulty_serial_number) }}" required 
                                 class="w-full text-xs font-mono font-bold rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">MAC Address (Optional)</label>
+                            <label class="block text-sm font-semibold text-slate-200 mb-1.5">MAC Address (Optional)</label>
                             <input type="text" name="faulty_mac_address" value="{{ old('faulty_mac_address', $rma->faulty_mac_address) }}" 
                                 class="w-full text-xs font-mono rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
                         </div>
@@ -78,7 +78,7 @@
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Fault Category <span class="text-amber-400">*</span></label>
+                            <label class="block text-sm font-semibold text-slate-200 mb-1.5">Fault Category <span class="text-amber-400">*</span></label>
                             <select name="fault_category" required class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
                                 @foreach(\App\Models\RmaClaim::faultCategories() as $key => $label)
                                     <option value="{{ $key }}" @selected(old('fault_category', $rma->fault_category) === $key)>{{ $label }}</option>
@@ -86,7 +86,7 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Warranty Status at Claim <span class="text-amber-400">*</span></label>
+                            <label class="block text-sm font-semibold text-slate-200 mb-1.5">Warranty Status at Claim <span class="text-amber-400">*</span></label>
                             <select name="warranty_status_at_claim" required class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5 font-bold">
                                 <option value="under_warranty" @selected(old('warranty_status_at_claim', $rma->warranty_status_at_claim) === 'under_warranty')>🟢 Under Manufacturer Warranty</option>
                                 <option value="out_of_warranty" @selected(old('warranty_status_at_claim', $rma->warranty_status_at_claim) === 'out_of_warranty')>🔴 Out of Warranty</option>
@@ -97,19 +97,19 @@
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Vendor's RMA Ref #</label>
+                            <label class="block text-sm font-semibold text-slate-200 mb-1.5">Vendor's RMA Ref #</label>
                             <input type="text" name="vendor_rma_ref" value="{{ old('vendor_rma_ref', $rma->vendor_rma_ref) }}" 
                                 class="w-full text-xs font-mono rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Expected Return Date</label>
+                            <label class="block text-sm font-semibold text-slate-200 mb-1.5">Expected Return Date</label>
                             <input type="date" name="expected_return_date" value="{{ old('expected_return_date', $rma->expected_return_date?->format('Y-m-d')) }}" 
                                 class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Defect Description <span class="text-amber-400">*</span></label>
+                        <label class="block text-sm font-semibold text-slate-200 mb-1.5">Defect Description <span class="text-amber-400">*</span></label>
                         <textarea name="issue_description" rows="3" required 
                             class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">{{ old('issue_description', $rma->issue_description) }}</textarea>
                     </div>

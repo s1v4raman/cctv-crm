@@ -38,11 +38,11 @@
                     <!-- Date Filter Form -->
                     <form action="{{ route('finance.petty_cash.ledger', $account) }}" method="GET" class="lg:col-span-2 flex items-end gap-3">
                         <div class="flex-1">
-                            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">From Date</label>
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">From Date</label>
                             <input type="date" name="from_date" value="{{ $filters['from_date'] ?? '' }}" class="w-full rounded-xl border-gray-200 text-sm focus:border-indigo-500 focus:ring-indigo-500">
                         </div>
                         <div class="flex-1">
-                            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">To Date</label>
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">To Date</label>
                             <input type="date" name="to_date" value="{{ $filters['to_date'] ?? '' }}" class="w-full rounded-xl border-gray-200 text-sm focus:border-indigo-500 focus:ring-indigo-500">
                         </div>
                         <button type="submit" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl shadow-md shadow-indigo-600/20 transition">

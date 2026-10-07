@@ -111,7 +111,7 @@
             </button>
 
             <!-- Flip Camera Overlay Button (floating in top left of camera) -->
-            <button type="button" onclick="switchMobileCamera()"
+            <button type="button" id="mobileFlipBtn" onclick="switchMobileCamera()"
                 class="absolute top-3 left-3 w-10 h-10 rounded-full bg-slate-900/70 border border-slate-700/60 text-white flex items-center justify-center shadow-lg active:scale-95 transition-all">
                 🔄
             </button>
@@ -136,15 +136,15 @@
         <!-- Camera Control Bar -->
         <div class="grid grid-cols-2 gap-2 mt-3">
             <!-- Snap Photo Fallback -->
-            <label class="flex items-center justify-center space-x-2 py-3 px-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold border border-slate-700/80 cursor-pointer shadow-md active:scale-98 transition-all">
+            <label class="flex items-center justify-center space-x-2 min-h-[44px] py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-sm font-semibold border border-slate-700/80 cursor-pointer shadow-md active:scale-98 transition-all">
                 <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                 <span>Snap / Upload Photo</span>
-                <input type="file" accept="image/*" capture="environment" onchange="handleMobileImageUpload(event)" class="hidden">
+                <input type="file" accept="image/*" onchange="handleMobileImageUpload(event)" class="hidden">
             </label>
 
             <!-- Manual Entry / Type S/N Button -->
             <button type="button" onclick="openManualEntryPrompt()"
-                class="flex items-center justify-center space-x-2 py-3 px-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold border border-slate-700/80 shadow-md active:scale-98 transition-all">
+                class="flex items-center justify-center space-x-2 min-h-[44px] py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-sm font-semibold border border-slate-700/80 shadow-md active:scale-98 transition-all">
                 <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                 <span>Type S/N Manually</span>
             </button>
@@ -182,6 +182,19 @@
         let isScanningActive = true;
         let animationFrameId = null;
         let recentScans = [];
+        let cachedMobileVideoDevices = [];
+        let currentMobileDeviceIndex = 0;
+        let isSwitchingCamera = false;
+
+        async function getMobileVideoDevices() {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return [];
+            try {
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                return devices.filter(d => d.kind === 'videoinput');
+            } catch (e) {
+                return [];
+            }
+        }
 
         // Initialize camera on page load
         document.addEventListener('DOMContentLoaded', () => {
@@ -190,9 +203,10 @@
             setInterval(sendHeartbeat, 15000); // Heartbeat every 15s
         });
 
-        async function initMobileCamera() {
+        async function initMobileCamera(preferDeviceId = null) {
             const video = document.getElementById('scannerVideo');
             const status = document.getElementById('scannerStatusPill');
+            const flipBtn = document.getElementById('mobileFlipBtn');
 
             if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
                 if (status) status.innerText = 'Live camera not supported. Use "Snap / Upload Photo" below.';
@@ -200,30 +214,95 @@
             }
 
             try {
+                if (animationFrameId) {
+                    cancelAnimationFrame(animationFrameId);
+                    animationFrameId = null;
+                }
                 if (currentStream) {
                     currentStream.getTracks().forEach(t => t.stop());
+                    currentStream = null;
+                    videoTrack = null;
+                }
+                if (video) {
+                    video.srcObject = null;
                 }
 
-                const constraints = {
-                    video: {
-                        facingMode: { ideal: currentFacingMode },
-                        width: { ideal: 1920 },
-                        height: { ideal: 1080 }
-                    }
-                };
+                // Allow OS camera driver to release hardware lock
+                await new Promise(r => setTimeout(r, 80));
 
-                const stream = await navigator.mediaDevices.getUserMedia(constraints);
+                let constraints;
+                if (preferDeviceId) {
+                    constraints = {
+                        video: {
+                            deviceId: { exact: preferDeviceId },
+                            width: { ideal: 1920 },
+                            height: { ideal: 1080 }
+                        }
+                    };
+                } else {
+                    constraints = {
+                        video: {
+                            facingMode: { ideal: currentFacingMode },
+                            width: { ideal: 1920 },
+                            height: { ideal: 1080 }
+                        }
+                    };
+                }
+
+                let stream;
+                try {
+                    stream = await navigator.mediaDevices.getUserMedia(constraints);
+                } catch (strictErr) {
+                    console.warn('Strict constraints failed, attempting fallback...', strictErr);
+                    if (preferDeviceId) {
+                        try {
+                            stream = await navigator.mediaDevices.getUserMedia({
+                                video: { deviceId: preferDeviceId }
+                            });
+                        } catch (e1) {
+                            stream = await navigator.mediaDevices.getUserMedia({
+                                video: { facingMode: { ideal: currentFacingMode } }
+                            });
+                        }
+                    } else {
+                        try {
+                            stream = await navigator.mediaDevices.getUserMedia({
+                                video: { facingMode: { ideal: currentFacingMode } }
+                            });
+                        } catch (e2) {
+                            stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                        }
+                    }
+                }
+
                 currentStream = stream;
                 videoTrack = stream.getVideoTracks()[0];
                 video.srcObject = stream;
                 await video.play();
 
-                if (status) status.innerText = 'Scanning... Center barcode inside the box';
+                const devices = await getMobileVideoDevices();
+                cachedMobileVideoDevices = devices;
+                if (videoTrack) {
+                    const settings = videoTrack.getSettings ? videoTrack.getSettings() : {};
+                    if (settings.deviceId) {
+                        const idx = devices.findIndex(d => d.deviceId === settings.deviceId);
+                        if (idx !== -1) currentMobileDeviceIndex = idx;
+                    }
+                }
+
+                const label = (videoTrack && videoTrack.label) ? videoTrack.label : (currentFacingMode === 'user' ? 'Front Camera' : 'Back Camera');
+                if (status) status.innerText = `Active: ${label.substring(0, 30)}... Point at barcode`;
                 isScanningActive = true;
                 startScanLoop();
             } catch (err) {
                 console.warn('Camera stream error:', err);
                 if (status) status.innerText = 'Camera access blocked. Tap "Snap / Upload Photo".';
+            } finally {
+                isSwitchingCamera = false;
+                if (flipBtn) {
+                    flipBtn.disabled = false;
+                    flipBtn.style.opacity = '1';
+                }
             }
         }
 
@@ -346,6 +425,7 @@
         async function handleMobileImageUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
+            event.target.value = '';
 
             const status = document.getElementById('scannerStatusPill');
             if (status) status.innerText = 'Analyzing photo for barcode...';
@@ -402,9 +482,37 @@
         }
 
         // Flip Camera
-        function switchMobileCamera() {
-            currentFacingMode = currentFacingMode === 'environment' ? 'user' : 'environment';
-            initMobileCamera();
+        async function switchMobileCamera() {
+            if (isSwitchingCamera) return;
+            isSwitchingCamera = true;
+
+            const flipBtn = document.getElementById('mobileFlipBtn');
+            const status = document.getElementById('scannerStatusPill');
+            if (flipBtn) {
+                flipBtn.disabled = true;
+                flipBtn.style.opacity = '0.5';
+            }
+            if (status) status.innerText = '🔄 Switching camera...';
+
+            let devices = await getMobileVideoDevices();
+            if (!devices || devices.length === 0) {
+                devices = cachedMobileVideoDevices || [];
+            } else {
+                cachedMobileVideoDevices = devices;
+            }
+
+            if (devices.length > 1) {
+                currentMobileDeviceIndex = (currentMobileDeviceIndex + 1) % devices.length;
+                const nextDevice = devices[currentMobileDeviceIndex];
+                currentFacingMode = currentFacingMode === 'environment' ? 'user' : 'environment';
+                await initMobileCamera(nextDevice.deviceId);
+            } else {
+                currentFacingMode = currentFacingMode === 'environment' ? 'user' : 'environment';
+                if (devices.length === 1 && status) {
+                    status.innerText = '🔄 Toggling camera mode... (1 physical camera detected)';
+                }
+                await initMobileCamera(null);
+            }
         }
 
         // Heartbeat

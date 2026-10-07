@@ -35,13 +35,12 @@
         }
 
         .form-label {
-            display: block; font-size: 0.75rem; font-weight: 700;
-            text-transform: uppercase; letter-spacing: 0.05em;
+            display: block; font-size: 0.875rem; font-weight: 600;
             color: #475569; margin-bottom: 0.4rem;
         }
         .form-input, .form-select, .form-textarea {
             width: 100%; border: 1px solid #cbd5e1; border-radius: 0.6rem;
-            padding: 0.65rem 0.85rem; font-size: 0.875rem; color: #1e293b;
+            min-height: 44px; padding: 0.625rem 0.95rem; font-size: 0.9375rem; border-radius: 0.75rem; color: #1e293b;
             background: #fff; outline: none; transition: all 0.15s;
         }
         .form-input:focus, .form-select:focus, .form-textarea:focus {
@@ -50,8 +49,7 @@
 
         .btn-submit-primary {
             display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
-            padding: 0.65rem 1.5rem; border-radius: 0.5rem;
-            font-size: 0.875rem; font-weight: 700;
+            min-height: 44px; padding: 0.625rem 1.5rem; border-radius: 0.75rem; font-size: 0.9375rem; font-weight: 700;
             background-color: #4f46e5; color: #ffffff !important;
             border: 1px solid #4338ca; cursor: pointer;
             box-shadow: 0 2px 4px rgba(79, 70, 229, 0.25);
@@ -65,8 +63,7 @@
 
         .btn-cancel {
             display: inline-flex; align-items: center; justify-content: center;
-            padding: 0.65rem 1.25rem; border-radius: 0.5rem;
-            font-size: 0.875rem; font-weight: 600;
+            min-height: 44px; padding: 0.625rem 1.25rem; border-radius: 0.75rem; font-size: 0.9375rem; font-weight: 600;
             background-color: #ffffff; color: #475569 !important;
             border: 1px solid #cbd5e1; text-decoration: none;
             transition: all 0.15s ease-in-out;
@@ -231,15 +228,15 @@
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                             <div>
-                                <label class="block text-xs font-bold text-slate-300 mb-1">Installation Date</label>
+                                <label class="block text-sm font-semibold text-slate-200 mb-1.5">Installation Date</label>
                                 <input type="date" name="installation_date" value="{{ old('installation_date', $equipment->installation_date?->format('Y-m-d')) }}" class="form-input text-sm">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-slate-300 mb-1">Mfg Warranty Expiry</label>
+                                <label class="block text-sm font-semibold text-slate-200 mb-1.5">Mfg Warranty Expiry</label>
                                 <input type="date" name="manufacturer_warranty_expiry" value="{{ old('manufacturer_warranty_expiry', $equipment->manufacturer_warranty_expiry?->format('Y-m-d')) }}" class="form-input text-sm">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-slate-300 mb-1">Service Warranty Expiry</label>
+                                <label class="block text-sm font-semibold text-slate-200 mb-1.5">Service Warranty Expiry</label>
                                 <input type="date" name="service_warranty_expiry" value="{{ old('service_warranty_expiry', $equipment->service_warranty_expiry?->format('Y-m-d')) }}" class="form-input text-sm">
                             </div>
                         </div>

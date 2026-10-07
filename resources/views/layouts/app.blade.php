@@ -37,7 +37,6 @@
                 }
             }
         </script>
-        <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
         <!-- Scripts & Styles via Vite -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -114,71 +113,154 @@
                 background-color: var(--crm-accent, #2563eb) !important;
             }
         </style>
+
+        <script>
+            // Precision IT Systems Global CRM State & Shortcuts Engine
+            window.crmSidebar = {
+                get collapsed() {
+                    return localStorage.getItem('crm_sidebar_collapsed') === 'true';
+                },
+                set collapsed(val) {
+                    localStorage.setItem('crm_sidebar_collapsed', val ? 'true' : 'false');
+                },
+                toggle() {
+                    const next = !this.collapsed;
+                    this.collapsed = next;
+                    window.dispatchEvent(new CustomEvent('sidebar-collapsed-changed', { detail: { collapsed: next } }));
+                    return next;
+                }
+            };
+            window.toggleSidebarCollapsed = function() {
+                return window.crmSidebar.toggle();
+            };
+
+            window.crmShortcuts = {
+                open: false,
+                toggle() {
+                    this.open = !this.open;
+                    window.dispatchEvent(new CustomEvent('shortcuts-toggle', { detail: { open: this.open } }));
+                    return this.open;
+                }
+            };
+            window.crmToggleShortcuts = function() {
+                return window.crmShortcuts.toggle();
+            };
+
+            window.crmToggleTheme = async function() {
+                const isCurrentlyDark = document.documentElement.classList.contains('dark');
+                const newMode = isCurrentlyDark ? 'day' : 'night';
+                const currentUserId = {{ json_encode(auth()->id()) }};
+                const modeKey = currentUserId ? ('crm_mode_user_' + currentUserId) : 'crm_mode';
+                try { localStorage.setItem(modeKey, newMode); } catch(e) {}
+                if (newMode === 'night') {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+                window.dispatchEvent(new CustomEvent('theme-changed', { 
+                    detail: { userId: currentUserId, isDark: (newMode === 'night'), mode: newMode } 
+                }));
+                try {
+                    const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                    await fetch('/profile/theme', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': token || '',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({ mode: newMode })
+                    });
+                } catch(e) {}
+            };
+
+            // Bulletproof keyboard shortcuts listener (Active on ALL pages)
+            window.addEventListener('keydown', function(e) {
+                const activeTag = document.activeElement ? document.activeElement.tagName.toUpperCase() : '';
+                const isInput = ['INPUT', 'TEXTAREA', 'SELECT'].includes(activeTag) || document.activeElement?.isContentEditable;
+
+                // 1. Ctrl+B / Cmd+B: Toggle Sidebar (Always active across all pages)
+                if ((e.ctrlKey || e.metaKey) && (e.key === 'b' || e.key === 'B')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    window.crmSidebar.toggle();
+                    return;
+                }
+
+                // 2. Ctrl+K / Cmd+K: Focus Global Search (Always active)
+                if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (window.innerWidth < 768) {
+                        window.dispatchEvent(new CustomEvent('open-mobile-search'));
+                    } else {
+                        const searchInput = document.querySelector('[x-ref="searchInput"], #job-search, input[name="search"], #searchModalInput');
+                        if (searchInput) {
+                            searchInput.focus();
+                            searchInput.select?.();
+                        }
+                    }
+                    return;
+                }
+
+                // 3. Shortcuts Modal: '?' (when not typing in form field) OR Ctrl+/
+                if (((e.ctrlKey || e.metaKey) && e.key === '/') || (e.key === '?' && !isInput)) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    window.crmShortcuts.toggle();
+                    return;
+                }
+
+                // 4. Escape: Close open modals, search popups, mobile drawer
+                if (e.key === 'Escape') {
+                    window.dispatchEvent(new CustomEvent('shortcuts-close'));
+                    window.dispatchEvent(new CustomEvent('close-all-modals'));
+                    return;
+                }
+
+                // 5. Alt+T: Toggle Theme (Dark / Light)
+                if (e.altKey && (e.key === 't' || e.key === 'T')) {
+                    e.preventDefault();
+                    window.crmToggleTheme();
+                    return;
+                }
+
+                // 6. Alt Navigation Shortcuts (when not typing in form field):
+                if (!isInput && e.altKey) {
+                    if (e.key === 'd' || e.key === 'D') {
+                        e.preventDefault();
+                        window.location.href = '{{ auth()->user()->role === 'technician' ? route('technician.dashboard') : (auth()->user()->isCustomer() ? route('portal.dashboard') : route('dashboard')) }}';
+                    } else if (e.key === 'a' || e.key === 'A') {
+                        e.preventDefault();
+                        window.location.href = '{{ route('attendance.index') }}';
+                    } else if (e.key === 'l' || e.key === 'L') {
+                        @if(auth()->user()->isAdmin() || auth()->user()->isStaff())
+                            e.preventDefault();
+                            window.location.href = '{{ route('leads.index') }}';
+                        @endif
+                    }
+                }
+            });
+        </script>
     </head>
     <body class="h-full font-sans antialiased text-slate-800 dark:text-slate-100 bg-[#f8fafc] dark:bg-[#060913] selection:bg-blue-600 selection:text-white" 
           x-data="{ 
               sidebarOpen: false, 
-              sidebarCollapsed: false,
+              sidebarCollapsed: window.crmSidebar ? window.crmSidebar.collapsed : false,
               toggleSidebarCollapsed() {
-                  this.sidebarCollapsed = !this.sidebarCollapsed;
+                  this.sidebarCollapsed = window.crmSidebar.toggle();
               },
               shortcutsModalOpen: false,
               mobileNavOpen: false,
               isDark: document.documentElement.classList.contains('dark'),
-              async toggleTheme() {
-                  const isCurrentlyDark = document.documentElement.classList.contains('dark');
-                  const newMode = isCurrentlyDark ? 'day' : 'night';
-                  const currentUserId = {{ json_encode(auth()->id()) }};
-                  const modeKey = currentUserId ? ('crm_mode_user_' + currentUserId) : 'crm_mode';
-                  try { localStorage.setItem(modeKey, newMode); } catch(e) {}
-                  if (newMode === 'night') {
-                      document.documentElement.classList.add('dark');
-                      this.isDark = true;
-                  } else {
-                      document.documentElement.classList.remove('dark');
-                      this.isDark = false;
-                  }
-                  window.dispatchEvent(new CustomEvent('theme-changed', { 
-                      detail: { userId: currentUserId, isDark: this.isDark, mode: newMode } 
-                  }));
-                  try {
-                      const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-                      await fetch('/profile/theme', {
-                          method: 'POST',
-                          headers: {
-                              'Content-Type': 'application/json',
-                              'X-CSRF-TOKEN': token || '',
-                              'Accept': 'application/json'
-                          },
-                          body: JSON.stringify({ mode: newMode })
-                      });
-                  } catch(e) {}
+              toggleTheme() {
+                  window.crmToggleTheme();
               }
           }"
-          @keydown.window="
-              if (($event.ctrlKey || $event.metaKey) && $event.key.toLowerCase() === 'b') {
-                  $event.preventDefault();
-                  toggleSidebarCollapsed();
-              } else if (($event.ctrlKey || $event.metaKey) && $event.key === '/') {
-                  $event.preventDefault();
-                  shortcutsModalOpen = !shortcutsModalOpen;
-              } else if ($event.key === '?' && !['INPUT', 'TEXTAREA'].includes($event.target.tagName)) {
-                  $event.preventDefault();
-                  shortcutsModalOpen = !shortcutsModalOpen;
-              } else if ($event.altKey && $event.key.toLowerCase() === 't') {
-                  $event.preventDefault();
-                  toggleTheme();
-              } else if ($event.altKey && $event.key.toLowerCase() === 'd') {
-                  $event.preventDefault();
-                  window.location.href = '{{ auth()->user()->role === 'technician' ? route('technician.dashboard') : (auth()->user()->isCustomer() ? route('portal.dashboard') : route('dashboard')) }}';
-              } else if ($event.altKey && $event.key.toLowerCase() === 'a') {
-                  $event.preventDefault();
-                  window.location.href = '{{ route('attendance.index') }}';
-              } else if ($event.altKey && $event.key.toLowerCase() === 'l' && {{ (auth()->user()->isAdmin() || auth()->user()->isStaff()) ? 'true' : 'false' }}) {
-                  $event.preventDefault();
-                  window.location.href = '{{ route('leads.index') }}';
-              }
-          ">
+          @sidebar-collapsed-changed.window="sidebarCollapsed = $event.detail.collapsed"
+          @shortcuts-toggle.window="shortcutsModalOpen = $event.detail.open"
+          @shortcuts-close.window="shortcutsModalOpen = false"
+          @open-mobile-search.window="mobileSearchOpen = true; $nextTick(() => $refs.mobileSearchInput?.focus())">
         
             {{-- ════════════════════════════════════════════════════════════════ --}}
             {{-- SECUREVISION UNIFIED ENTERPRISE SAAS CRM SUITE (ALL ROLES)        --}}
@@ -272,6 +354,7 @@
 
                             {{-- Laptop / Desktop Sidebar Collapse Toggle Button (Laptop View) --}}
                             <button @click="toggleSidebarCollapsed()" 
+                                    onclick="window.crmSidebar.toggle()"
                                     type="button"
                                     class="hidden lg:inline-flex items-center justify-center p-2 rounded-xl text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition-all shadow-2xs cursor-pointer shrink-0"
                                     :title="sidebarCollapsed ? 'Expand Sidebar to Full View (Ctrl+B)' : 'Collapse Sidebar to Compact Dock (Ctrl+B)'"
@@ -305,7 +388,8 @@
                                            @keydown.arrow-up.prevent="navigate(-1)"
                                            @keydown.enter.prevent="selectActive()"
                                            placeholder="Search leads, jobs, quotes... (Ctrl+K)" 
-                                           class="w-full pl-10 pr-9 py-2 text-xs sm:text-sm bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl focus:bg-white dark:focus:bg-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 shadow-2xs transition-all outline-none">
+                                           style="padding-left: 2.85rem !important;"
+                                           class="w-full pl-11 pr-9 py-2 text-xs sm:text-sm bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl focus:bg-white dark:focus:bg-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 shadow-2xs transition-all outline-none">
                                     
                                     {{-- Clear button or loading spinner --}}
                                     <div class="absolute right-2.5 flex items-center">
@@ -721,7 +805,7 @@
                                             <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                                             Storefront View
                                         </a>
-                                        <button @click="shortcutsModalOpen = true; open = false" type="button" class="w-full text-left flex items-center justify-between px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-blue-600 transition cursor-pointer">
+                                        <button @click="$dispatch('shortcuts-toggle'); window.crmShortcuts.toggle(); open = false" onclick="window.crmShortcuts.toggle()" type="button" class="w-full text-left flex items-center justify-between px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-blue-600 transition cursor-pointer">
                                             <div class="flex items-center gap-2">
                                                 <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                                                 <span>Keyboard Shortcuts</span>
@@ -768,7 +852,8 @@
                                        @keydown.arrow-up.prevent="navigate(-1)"
                                        @keydown.enter.prevent="selectActive()"
                                        placeholder="Search leads, jobs, quotes, serials..." 
-                                       class="w-full pl-9 pr-8 py-2 text-xs bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl focus:bg-white dark:focus:bg-slate-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 shadow-2xs">
+                                       style="padding-left: 2.75rem !important;"
+                                       class="w-full pl-11 pr-8 py-2 text-xs bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl focus:bg-white dark:focus:bg-slate-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 shadow-2xs">
                                 
                                 {{-- Clear button or loading spinner --}}
                                 <div class="absolute right-2.5 flex items-center">

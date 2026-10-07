@@ -44,7 +44,7 @@
                     <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
                         <div>
                             <label for="quotation_date"
-                                   class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+                                   class="block text-sm font-semibold text-slate-200 mb-1.5">
                                 Quotation Date
                             </label>
 
@@ -53,7 +53,7 @@
                                    name="quotation_date"
                                    value="{{ old('quotation_date', now()->format('Y-m-d')) }}"
                                    required
-                                   class="mt-1 block w-full rounded-xl border border-slate-700/80 bg-[#060913] text-slate-100 text-sm px-3 py-2 shadow-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition">
+                                   class="mt-1 block w-full rounded-xl border border-slate-700/80 bg-[#060913] text-slate-100 text-sm px-3.5 py-2.5 min-h-[44px] shadow-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition">
 
                             @error('quotation_date')
                                 <p class="mt-1 text-xs font-semibold text-rose-400">{{ $message }}</p>
@@ -62,7 +62,7 @@
 
                         <div>
                             <label for="valid_until"
-                                   class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+                                   class="block text-sm font-semibold text-slate-200 mb-1.5">
                                 Valid Until
                             </label>
 
@@ -70,7 +70,7 @@
                                    id="valid_until"
                                    name="valid_until"
                                    value="{{ old('valid_until', now()->addDays(15)->format('Y-m-d')) }}"
-                                   class="mt-1 block w-full rounded-xl border border-slate-700/80 bg-[#060913] text-slate-100 text-sm px-3 py-2 shadow-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition">
+                                   class="mt-1 block w-full rounded-xl border border-slate-700/80 bg-[#060913] text-slate-100 text-sm px-3.5 py-2.5 min-h-[44px] shadow-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition">
 
                             @error('valid_until')
                                 <p class="mt-1 text-xs font-semibold text-rose-400">{{ $message }}</p>
@@ -79,7 +79,7 @@
 
                         <div>
                             <label for="tax_percent"
-                                   class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+                                   class="block text-sm font-semibold text-slate-200 mb-1.5">
                                 GST / Tax (%)
                             </label>
 
@@ -90,7 +90,7 @@
                                    max="100"
                                    step="0.01"
                                    value="{{ old('tax_percent', 18) }}"
-                                   class="mt-1 block w-full rounded-xl border border-slate-700/80 bg-[#060913] text-slate-100 text-sm px-3 py-2 shadow-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition font-mono">
+                                   class="mt-1 block w-full rounded-xl border border-slate-700/80 bg-[#060913] text-slate-100 text-sm px-3.5 py-2.5 min-h-[44px] shadow-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition font-mono">
 
                             @error('tax_percent')
                                 <p class="mt-1 text-xs font-semibold text-rose-400">{{ $message }}</p>
@@ -168,7 +168,7 @@
                                                        required
                                                        autocomplete="off"
                                                        placeholder="Search camera, NVR, cable..."
-                                                       class="item-name block w-full rounded-xl border border-slate-700/80 bg-[#060913] text-slate-100 text-xs px-3 py-2 shadow-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500 placeholder-slate-500">
+                                                       class="item-name block w-full rounded-xl border border-slate-700/80 bg-[#060913] text-slate-100 text-sm px-3 py-2 shadow-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500 placeholder-slate-500">
 
                                                 <div class="product-results absolute left-2 right-2 z-50 mt-1 hidden max-h-64 overflow-y-auto rounded-xl border border-slate-700 bg-[#0b1120] shadow-2xl divide-y divide-slate-800">
                                                 </div>
@@ -179,7 +179,7 @@
                                                        name="items[{{ $index }}][description]"
                                                        value="{{ $item['description'] ?? '' }}"
                                                        placeholder="Optional specification"
-                                                       class="item-description block w-full rounded-xl border border-slate-700/80 bg-[#060913] text-slate-100 text-xs px-3 py-2 shadow-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500 placeholder-slate-500">
+                                                       class="item-description block w-full rounded-xl border border-slate-700/80 bg-[#060913] text-slate-100 text-sm px-3 py-2 shadow-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500 placeholder-slate-500">
                                             </td>
 
                                             <td class="p-2 align-top">
@@ -189,12 +189,12 @@
                                                        min="0.01"
                                                        step="0.01"
                                                        required
-                                                       class="quantity w-24 rounded-xl border border-slate-700/80 bg-[#060913] text-slate-100 text-xs px-3 py-2 shadow-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500 font-mono">
+                                                       class="quantity w-24 rounded-xl border border-slate-700/80 bg-[#060913] text-slate-100 text-sm px-3 py-2 shadow-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500 font-mono">
                                             </td>
 
                                             <td class="p-2 align-top">
                                                 <select name="items[{{ $index }}][unit]"
-                                                        class="item-unit w-24 rounded-xl border border-slate-700/80 bg-[#060913] text-slate-100 text-xs px-3 py-2 shadow-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500">
+                                                        class="item-unit w-24 rounded-xl border border-slate-700/80 bg-[#060913] text-slate-100 text-sm px-3 py-2 shadow-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500">
                                                     <option value="Nos" @selected(($item['unit'] ?? 'Nos') === 'Nos')>Nos</option>
                                                     <option value="Mtr" @selected(($item['unit'] ?? '') === 'Mtr')>Mtr</option>
                                                     <option value="Box" @selected(($item['unit'] ?? '') === 'Box')>Box</option>
@@ -210,7 +210,7 @@
                                                        min="0"
                                                        step="0.01"
                                                        required
-                                                       class="unit-price w-32 rounded-xl border border-slate-700/80 bg-[#060913] text-slate-100 text-xs px-3 py-2 shadow-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500 font-mono">
+                                                       class="unit-price w-32 rounded-xl border border-slate-700/80 bg-[#060913] text-slate-100 text-sm px-3 py-2 shadow-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500 font-mono">
                                             </td>
 
                                             <td class="line-total p-2 text-right text-xs font-bold text-amber-400 font-mono align-middle">
@@ -233,7 +233,7 @@
                     <div class="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2">
                         <div>
                             <label for="notes"
-                                   class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+                                   class="block text-sm font-semibold text-slate-200 mb-1.5">
                                 Notes / Terms & Conditions
                             </label>
 
@@ -280,12 +280,12 @@
 
                     <div class="sticky bottom-0 z-40 mt-8 flex items-center justify-end gap-3 border-t border-slate-800 bg-[#0b1120]/95 backdrop-blur-md px-6 py-4 rounded-b-2xl shadow-2xl">
                         <a href="{{ route('leads.show', $lead) }}"
-                           class="inline-flex items-center justify-center px-5 py-2.5 bg-slate-800/90 hover:bg-slate-700 text-slate-300 hover:text-white font-bold text-xs uppercase tracking-wider rounded-xl border border-slate-700 shadow-sm transition">
+                           class="inline-flex items-center justify-center px-5 py-2.5 bg-slate-800/90 hover:bg-slate-700 text-slate-300 hover:text-white font-semibold text-sm rounded-xl min-h-[44px] border border-slate-700 shadow-sm transition">
                             Cancel
                         </a>
 
                         <button type="submit"
-                                class="btn-amber min-w-40 py-2.5">
+                                class="btn-amber min-w-44 min-h-[44px] py-2.5 px-6 text-sm font-bold">
                             Save Quotation
                         </button>
                     </div>
@@ -307,7 +307,7 @@
                        required
                        autocomplete="off"
                        placeholder="Search camera, NVR, cable..."
-                       class="item-name block w-full rounded-xl border border-slate-700/80 bg-[#060913] text-slate-100 text-xs px-3 py-2 shadow-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500 placeholder-slate-500">
+                       class="item-name block w-full rounded-xl border border-slate-700/80 bg-[#060913] text-slate-100 text-sm px-3 py-2 shadow-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500 placeholder-slate-500">
 
                 <div class="product-results absolute left-2 right-2 z-50 mt-1 hidden max-h-64 overflow-y-auto rounded-xl border border-slate-700 bg-[#0b1120] shadow-2xl divide-y divide-slate-800">
                 </div>
@@ -317,7 +317,7 @@
                 <input type="text"
                        name="items[__INDEX__][description]"
                        placeholder="Optional specification"
-                       class="item-description block w-full rounded-xl border border-slate-700/80 bg-[#060913] text-slate-100 text-xs px-3 py-2 shadow-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500 placeholder-slate-500">
+                       class="item-description block w-full rounded-xl border border-slate-700/80 bg-[#060913] text-slate-100 text-sm px-3 py-2 shadow-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500 placeholder-slate-500">
             </td>
 
             <td class="p-2 align-top">
@@ -327,12 +327,12 @@
                        min="0.01"
                        step="0.01"
                        required
-                       class="quantity w-24 rounded-xl border border-slate-700/80 bg-[#060913] text-slate-100 text-xs px-3 py-2 shadow-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500 font-mono">
+                       class="quantity w-24 rounded-xl border border-slate-700/80 bg-[#060913] text-slate-100 text-sm px-3 py-2 shadow-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500 font-mono">
             </td>
 
             <td class="p-2 align-top">
                 <select name="items[__INDEX__][unit]"
-                        class="item-unit w-24 rounded-xl border border-slate-700/80 bg-[#060913] text-slate-100 text-xs px-3 py-2 shadow-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500">
+                        class="item-unit w-24 rounded-xl border border-slate-700/80 bg-[#060913] text-slate-100 text-sm px-3 py-2 shadow-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500">
                     <option value="Nos">Nos</option>
                     <option value="Mtr">Mtr</option>
                     <option value="Box">Box</option>
@@ -348,7 +348,7 @@
                        min="0"
                        step="0.01"
                        required
-                       class="unit-price w-32 rounded-xl border border-slate-700/80 bg-[#060913] text-slate-100 text-xs px-3 py-2 shadow-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500 font-mono">
+                       class="unit-price w-32 rounded-xl border border-slate-700/80 bg-[#060913] text-slate-100 text-sm px-3 py-2 shadow-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500 font-mono">
             </td>
 
             <td class="line-total p-2 text-right text-xs font-bold text-amber-400 font-mono align-middle">

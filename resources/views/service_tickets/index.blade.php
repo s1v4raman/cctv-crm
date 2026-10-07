@@ -184,11 +184,11 @@
                     <div class="flex-1 min-w-[200px]">
                         <input type="text" name="search" value="{{ request('search') }}" 
                             placeholder="Search ticket #, issue, customer, phone..."
-                            class="w-full text-xs rounded-lg border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:border-indigo-500 py-2">
+                            class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:border-indigo-500">
                     </div>
 
                     <div>
-                        <select name="issue_type" class="filter-select text-xs">
+                        <select name="issue_type" class="filter-select text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl">
                             <option value="">All Categories</option>
                             @foreach(\App\Models\ServiceTicket::issueTypeOptions() as $k => $label)
                                 <option value="{{ $k }}" {{ request('issue_type') === $k ? 'selected' : '' }}>{{ $label }}</option>
@@ -197,7 +197,7 @@
                     </div>
 
                     <div>
-                        <select name="priority" class="filter-select text-xs">
+                        <select name="priority" class="filter-select text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl">
                             <option value="">All Priorities</option>
                             @foreach(\App\Models\ServiceTicket::priorityOptions() as $k => $label)
                                 <option value="{{ $k }}" {{ request('priority') === $k ? 'selected' : '' }}>{{ $label }}</option>
@@ -206,7 +206,7 @@
                     </div>
 
                     <div>
-                        <select name="technician_id" class="filter-select text-xs">
+                        <select name="technician_id" class="filter-select text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl">
                             <option value="">All Technicians</option>
                             @foreach($technicians as $tech)
                                 <option value="{{ $tech->id }}" {{ request('technician_id') == $tech->id ? 'selected' : '' }}>{{ $tech->name }}</option>
@@ -216,13 +216,13 @@
 
                     <button type="submit"
                             class="btn-filter"
-                            style="display: inline-flex; align-items: center; justify-content: center; background-color: var(--crm-accent, #2563eb); color: #ffffff !important; border-radius: 8px; padding: 7px 14px; font-size: 12px; font-weight: 700; cursor: pointer; border: none; box-shadow: 0 1px 2px rgba(0,0,0,0.1); transition: all 0.15s;">
+                            style="display: inline-flex; align-items: center; justify-content: center; background-color: var(--crm-accent, #2563eb); color: #ffffff !important; border-radius: 8px; min-height: 44px; padding: 10px 18px; font-size: 14px; font-weight: 700; cursor: pointer; border: none; box-shadow: 0 1px 2px rgba(0,0,0,0.1); transition: all 0.15s;">
                         Filter
                     </button>
 
                     @if(request()->hasAny(['search', 'status', 'priority', 'technician_id', 'issue_type']))
                         <a href="{{ route('service-tickets.index', ['tab' => $activeTab]) }}"
-                           style="display: inline-flex; align-items: center; font-size: 12px; color: #64748b; text-decoration: none; font-weight: 600; padding: 7px 10px;"
+                           style="display: inline-flex; align-items: center; min-height: 44px; font-size: 14px; color: #64748b; text-decoration: none; font-weight: 600; padding: 10px 14px;"
                            onmouseover="this.style.color='#1e293b'" onmouseout="this.style.color='#64748b'">
                             Reset
                         </a>
@@ -426,12 +426,12 @@
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
-                                    <label class="block text-[11px] font-bold text-slate-300 mb-1">Customer Full Name *</label>
+                                    <label class="block text-sm font-semibold text-slate-300 mb-1.5">Customer Full Name *</label>
                                     <input type="text" name="customer_name" required placeholder="e.g. Ramesh Kumar" value="Ramesh Kumar"
                                         class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
                                 </div>
                                 <div>
-                                    <label class="block text-[11px] font-bold text-slate-300 mb-1">Customer Email Address *</label>
+                                    <label class="block text-sm font-semibold text-slate-300 mb-1.5">Customer Email Address *</label>
                                     <input type="email" name="email" required placeholder="e.g. ramesh@techcorp.com" value="customer@example.com"
                                         class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
                                 </div>
@@ -439,12 +439,12 @@
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
-                                    <label class="block text-[11px] font-bold text-slate-300 mb-1">Phone Number (Optional)</label>
+                                    <label class="block text-sm font-semibold text-slate-300 mb-1.5">Phone Number (Optional)</label>
                                     <input type="tel" name="phone" placeholder="e.g. +91 98765 43210" value="+91 98765 43210"
                                         class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
                                 </div>
                                 <div>
-                                    <label class="block text-[11px] font-bold text-slate-300 mb-1">Priority Override</label>
+                                    <label class="block text-sm font-semibold text-slate-300 mb-1.5">Priority Override</label>
                                     <select name="priority" class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
                                         <option value="">Auto-Detect from Email Keywords</option>
                                         <option value="critical">🔴 Critical / Emergency</option>
@@ -456,13 +456,13 @@
                             </div>
 
                             <div>
-                                <label class="block text-[11px] font-bold text-slate-300 mb-1">Email Subject *</label>
+                                <label class="block text-sm font-semibold text-slate-300 mb-1.5">Email Subject *</label>
                                 <input type="text" name="subject" required placeholder="e.g. Camera 3 offline" value="Camera 3 offline and NVR beeping sound at Sector 18 site"
                                     class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
                             </div>
 
                             <div>
-                                <label class="block text-[11px] font-bold text-slate-300 mb-1">Email Body Description *</label>
+                                <label class="block text-sm font-semibold text-slate-300 mb-1.5">Email Body Description *</label>
                                 <textarea name="body" required rows="3" placeholder="Describe the fault..."
                                     class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">Hi Support Team, Our main entrance camera #3 went black this morning and the NVR recorder has started making a continuous beeping alert sound. Please dispatch a technician urgently.</textarea>
                             </div>

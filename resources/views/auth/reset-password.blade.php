@@ -96,7 +96,7 @@
 
                     <!-- Email Address -->
                     <div>
-                        <label for="email" class="block text-xs font-bold text-slate-800 mb-1.5">Email Address</label>
+                        <label for="email" class="block text-sm font-semibold text-slate-800 dark:text-slate-200 mb-1.5">Email Address</label>
                         <input id="email" type="email" name="email" 
                                value="{{ old('email', $request->email) }}" 
                                required autofocus autocomplete="username" 
@@ -105,7 +105,7 @@
 
                     <!-- New Password -->
                     <div>
-                        <label for="password" class="block text-xs font-bold text-slate-800 mb-1.5">New Password</label>
+                        <label for="password" class="block text-sm font-semibold text-slate-800 dark:text-slate-200 mb-1.5">New Password</label>
                         <input id="password" :type="showPassword ? 'text' : 'password'" name="password" 
                                required autocomplete="new-password" 
                                placeholder="At least 8 characters" 
@@ -114,7 +114,7 @@
 
                     <!-- Confirm New Password -->
                     <div>
-                        <label for="password_confirmation" class="block text-xs font-bold text-slate-800 mb-1.5">Confirm New Password</label>
+                        <label for="password_confirmation" class="block text-sm font-semibold text-slate-800 dark:text-slate-200 mb-1.5">Confirm New Password</label>
                         <input id="password_confirmation" :type="showPassword ? 'text' : 'password'" name="password_confirmation" 
                                required autocomplete="new-password" 
                                placeholder="Re-type new password" 

@@ -115,7 +115,7 @@
                             </a>
                             <form method="POST" action="{{ route('quotations.markSent', $quotation) }}">
                                 @csrf @method('PATCH')
-                                <button type="submit" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#2563eb] hover:bg-blue-700 text-white text-xs font-bold transition shadow-xs">
+                                <button type="submit" class="inline-flex items-center gap-1.5 px-4 py-2.5 min-h-[42px] rounded-xl bg-[#2563eb] hover:bg-blue-700 text-white text-sm font-bold transition shadow-xs">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/></svg>
                                     Mark as Sent
                                 </button>
@@ -123,7 +123,7 @@
                             <form method="POST" action="{{ route('quotations.destroy', $quotation) }}"
                                   onsubmit="return confirm('Delete {{ addslashes($quotation->quotation_no) }}? This cannot be undone.')">
                                 @csrf @method('DELETE')
-                                <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/60 text-xs font-bold transition shadow-2xs">
+                                <button type="submit" class="inline-flex items-center gap-1.5 px-4 py-2.5 min-h-[42px] rounded-xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/60 text-sm font-bold transition shadow-2xs">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>
                                     Delete
                                 </button>
@@ -139,7 +139,7 @@
                                     Mark Accepted
                                 </button>
                             </form>
-                            <button type="button" onclick="document.getElementById('reject-modal').classList.add('open')" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/60 text-xs font-bold transition shadow-2xs">
+                            <button type="button" onclick="document.getElementById('reject-modal').classList.add('open')" class="inline-flex items-center gap-1.5 px-4 py-2.5 min-h-[42px] rounded-xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/60 text-sm font-bold transition shadow-2xs">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                                 Mark Rejected
                             </button>
@@ -155,7 +155,7 @@
                             @else
                                 <form method="POST" action="{{ route('jobs.store', $quotation) }}">
                                     @csrf
-                                    <button type="submit" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold transition shadow-xs">
+                                    <button type="submit" class="inline-flex items-center gap-1.5 px-5 py-2.5 min-h-[42px] rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-sm font-bold transition shadow-xs">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
                                         Create Installation Job
                                     </button>
@@ -395,12 +395,12 @@
             <p class="text-xs text-slate-400 mb-4">Please provide the reason why the customer rejected this quotation.</p>
             <form method="POST" action="{{ route('quotations.reject', $quotation) }}">
                 @csrf
-                <textarea name="rejection_reason" class="w-full bg-[#060913] border border-slate-700 rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:border-rose-500 focus:outline-none min-h-[100px] mb-4" required
+                <textarea name="rejection_reason" class="w-full bg-[#060913] border border-slate-700 rounded-xl p-3 text-sm text-white placeholder-slate-500 focus:border-rose-500 focus:outline-none min-h-[100px] mb-4" required
                           placeholder="e.g. Price too high, customer chose another vendor…"></textarea>
                 <div class="flex justify-end gap-3">
                     <button type="button" onclick="document.getElementById('reject-modal').classList.remove('open')"
-                            class="px-4 py-2 rounded-xl border border-slate-700 bg-slate-800 text-slate-300 text-xs font-bold hover:bg-slate-700 transition">Cancel</button>
-                    <button type="submit" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition">Confirm Rejection</button>
+                            class="min-h-[44px] px-5 py-2.5 rounded-xl border border-slate-700 bg-slate-800 text-slate-300 text-sm font-semibold hover:bg-slate-700 transition">Cancel</button>
+                    <button type="submit" class="min-h-[44px] px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-sm font-bold transition">Confirm Rejection</button>
                 </div>
             </form>
         </div>
@@ -450,28 +450,28 @@
                 @csrf
 
                 <div class="mb-4">
-                    <label class="block text-[10px] font-mono uppercase tracking-widest text-slate-400 mb-1.5">Recipient Email *</label>
+                    <label class="block text-sm font-semibold text-slate-300 mb-1.5">Recipient Email *</label>
                     <input type="email" name="email" required value="{{ old('email', $quotation->lead->email) }}" placeholder="client@example.com"
-                           class="w-full bg-[#060913] border border-slate-700 rounded-xl p-2.5 text-xs text-white focus:border-amber-400 focus:outline-none">
+                           class="w-full bg-[#060913] border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm min-h-[44px] text-white focus:border-amber-400 focus:outline-none">
                 </div>
 
                 <div class="mb-4">
-                    <label class="block text-[10px] font-mono uppercase tracking-widest text-slate-400 mb-1.5">Subject *</label>
+                    <label class="block text-sm font-semibold text-slate-300 mb-1.5">Subject *</label>
                     <input type="text" name="subject" required value="{{ $quotation->getEmailSubject() }}"
-                           class="w-full bg-[#060913] border border-slate-700 rounded-xl p-2.5 text-xs text-white focus:border-amber-400 focus:outline-none">
+                           class="w-full bg-[#060913] border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm min-h-[44px] text-white focus:border-amber-400 focus:outline-none">
                 </div>
 
                 <div class="grid grid-cols-2 gap-3 mb-4">
                     <div>
-                        <label class="block text-[10px] font-mono uppercase tracking-widest text-slate-400 mb-1.5">PDF Template Style</label>
-                        <select name="pdf_format" class="w-full bg-[#060913] border border-slate-700 rounded-xl p-2.5 text-xs text-white focus:border-amber-400 focus:outline-none">
+                        <label class="block text-sm font-semibold text-slate-300 mb-1.5">PDF Template Style</label>
+                        <select name="pdf_format" class="w-full bg-[#060913] border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm min-h-[44px] text-white focus:border-amber-400 focus:outline-none">
                             <option value="1">Executive Modern (Format 1)</option>
                             <option value="2">Technical Detailed (Format 2)</option>
                             <option value="3">Classic Formal (Format 3)</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-[10px] font-mono uppercase tracking-widest text-slate-400 mb-1.5">Attachment</label>
+                        <label class="block text-sm font-semibold text-slate-300 mb-1.5">Attachment</label>
                         <div class="bg-[#060913] p-2.5 border border-dashed border-slate-700 rounded-xl text-xs text-slate-400 font-mono">
                             📎 Quotation-{{ $quotation->quotation_no }}.pdf
                         </div>
@@ -479,9 +479,9 @@
                 </div>
 
                 <div class="mb-5">
-                    <label class="block text-[10px] font-mono uppercase tracking-widest text-slate-400 mb-1.5">Custom Notes for Customer</label>
+                    <label class="block text-sm font-semibold text-slate-300 mb-1.5">Custom Notes for Customer</label>
                     <textarea name="custom_message" rows="2" placeholder="e.g. As discussed during our survey, includes 2-year AMC..."
-                              class="w-full bg-[#060913] border border-slate-700 rounded-xl p-2.5 text-xs text-white focus:border-amber-400 focus:outline-none"></textarea>
+                              class="w-full bg-[#060913] border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm min-h-[44px] text-white focus:border-amber-400 focus:outline-none"></textarea>
                 </div>
 
                 <div class="flex items-center justify-between pt-4 border-t border-white/10">
@@ -489,8 +489,8 @@
                         ⚙️ SMTP Settings
                     </a>
                     <div class="flex gap-3">
-                        <button type="button" onclick="closeEmailModal()" class="px-4 py-2 rounded-xl border border-slate-700 bg-slate-800 text-slate-300 text-xs font-bold hover:bg-slate-700 transition">Cancel</button>
-                        <button type="submit" class="px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold transition shadow-lg shadow-sky-600/20">
+                        <button type="button" onclick="closeEmailModal()" class="px-5 py-2.5 min-h-[44px] rounded-xl border border-slate-700 bg-slate-800 text-slate-300 text-sm font-semibold hover:bg-slate-700 transition">Cancel</button>
+                        <button type="submit" class="px-5 py-2.5 min-h-[44px] rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-sm font-bold transition shadow-lg shadow-sky-600/20">
                             🚀 Send Email
                         </button>
                     </div>
@@ -545,7 +545,7 @@
             {{-- Step 1: Format Selection --}}
             <div class="mb-4">
                 <div class="flex items-center justify-between mb-2">
-                    <label class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-2 font-heading">
+                    <label class="text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-2 font-heading">
                         <span class="w-4 h-4 rounded-full bg-blue-600 text-white font-black flex items-center justify-center text-[10px]">1</span>
                         Choose Quotation PDF Format & Style
                     </label>
@@ -581,7 +581,7 @@
             {{-- Step 2: Contact Details --}}
             <div class="bg-slate-50 dark:bg-[#060913] border border-slate-200 dark:border-slate-800 rounded-xl p-4 mb-4">
                 <div class="flex items-center justify-between mb-3">
-                    <label class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-2 font-heading">
+                    <label class="text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-2 font-heading">
                         <span class="w-4 h-4 rounded-full bg-blue-600 text-white font-black flex items-center justify-center text-[10px]">2</span>
                         Customer Contact & Target Mobile
                     </label>
@@ -592,17 +592,17 @@
 
                 <div class="grid grid-cols-2 gap-3 mb-3">
                     <div>
-                        <label class="block text-[10px] font-mono uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-1 font-bold">Customer Name</label>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Customer Name</label>
                         <input type="text" id="wa-customer-name" value="{{ $quotation->lead?->customer_name ?? 'Valued Customer' }}"
                                placeholder="e.g. John Doe"
                                oninput="onWhatsAppNameInput(this.value)"
-                               class="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs text-slate-900 dark:text-white font-semibold focus:border-blue-500 focus:outline-none shadow-2xs">
+                               class="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 min-h-[44px] text-sm text-slate-900 dark:text-white font-medium focus:border-blue-500 focus:outline-none shadow-2xs">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-mono uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-1 font-bold">WhatsApp Phone *</label>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">WhatsApp Phone *</label>
                         <input type="tel" id="wa-customer-phone" value="{{ $quotation->getWhatsAppPhone() ?: $quotation->lead?->phone }}" placeholder="e.g. 9876543210"
                                oninput="onWhatsAppPhoneInput(this.value)"
-                               class="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 text-xs text-slate-900 dark:text-white font-mono font-bold focus:border-blue-500 focus:outline-none shadow-2xs">
+                               class="w-full bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 min-h-[44px] text-sm text-slate-900 dark:text-white font-mono font-bold focus:border-blue-500 focus:outline-none shadow-2xs">
                     </div>
                 </div>
 
@@ -620,7 +620,7 @@
             {{-- Step 3: Message Text --}}
             <div class="mb-5">
                 <div class="flex items-center justify-between mb-1.5">
-                    <label class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-2 font-heading">
+                    <label class="text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-2 font-heading">
                         <span class="w-4 h-4 rounded-full bg-blue-600 text-white font-black flex items-center justify-center text-[10px]">3</span>
                         WhatsApp Proposal Message Preview
                     </label>

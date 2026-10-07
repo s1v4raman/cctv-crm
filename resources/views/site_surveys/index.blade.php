@@ -28,19 +28,19 @@
                 {{-- Search & filter bar --}}
                 <form method="GET" action="{{ route('site-surveys.index') }}" class="p-4 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0b1120] flex items-center gap-2 flex-wrap">
                     <div class="relative flex-1 min-w-[220px]">
-                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Search customer, address, contact, technician…" class="w-full text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#0f172a] text-slate-800 dark:text-white px-3 py-2">
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Search customer, address, contact, technician…" class="w-full text-sm min-h-[44px] rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#0f172a] text-slate-800 dark:text-white px-3.5 py-2.5">
                     </div>
-                    <select name="status" onchange="this.form.submit()" class="text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#0f172a] text-slate-800 dark:text-white px-3 py-2">
+                    <select name="status" onchange="this.form.submit()" class="text-sm min-h-[44px] rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#0f172a] text-slate-800 dark:text-white px-3.5 py-2.5">
                         <option value="">All Statuses</option>
                         <option value="scheduled" @selected(request('status') === 'scheduled')>Scheduled</option>
                         <option value="completed" @selected(request('status') === 'completed')>Completed</option>
                         <option value="cancelled" @selected(request('status') === 'cancelled')>Cancelled</option>
                     </select>
-                    <button type="submit" class="px-3 py-2 text-white font-bold text-xs rounded-xl transition shadow" style="background-color: var(--crm-accent, #2563eb);">
-                        Search
-                    </button>
+                    <button type="submit" class="btn-amber min-h-[44px] px-5 py-2.5 text-sm font-bold rounded-xl transition shadow">
+                    Search
+                </button>
                     @if(request('search') || request('status'))
-                        <a href="{{ route('site-surveys.index') }}" class="px-2.5 py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold rounded-xl transition">
+                        <a href="{{ route('site-surveys.index') }}" class="btn-secondary min-h-[44px] px-4 py-2.5 text-sm font-semibold rounded-xl transition">
                             Clear
                         </a>
                     @endif

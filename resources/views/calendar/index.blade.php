@@ -166,7 +166,8 @@
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                         </div>
                         <input type="text" x-model="searchQuery" placeholder="Filter by customer, site address, ticket #..." 
-                               class="w-full pl-9 pr-8 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/60 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-blue-500 transition">
+                               style="padding-left: 2.75rem !important;"
+                               class="w-full pl-11 pr-8 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/60 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-blue-500 transition">
                         <button x-show="searchQuery" @click="searchQuery = ''" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                         </button>
@@ -240,7 +241,7 @@
                     {{-- Technician filter & quick status --}}
                     <div class="flex items-center gap-2">
                         <div class="flex items-center gap-1.5">
-                            <label class="text-slate-400 font-semibold text-[11px]">Technician:</label>
+                            <label class="text-slate-300 font-semibold text-sm">Technician:</label>
                             <select x-model="filterTech" class="text-xs py-1 px-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 focus:ring-1 focus:ring-blue-500">
                                 <option value="all">All Field Staff</option>
                                 @foreach($technicians as $tech)
@@ -250,7 +251,7 @@
                         </div>
 
                         <div class="flex items-center gap-1.5">
-                            <label class="text-slate-400 font-semibold text-[11px]">Status:</label>
+                            <label class="text-slate-300 font-semibold text-sm">Status:</label>
                             <select x-model="filterStatus" class="text-xs py-1 px-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 focus:ring-1 focus:ring-blue-500">
                                 <option value="all">All Statuses</option>
                                 <option value="pending">Pending / Scheduled</option>

@@ -417,21 +417,21 @@
                 <form :action="reminderRoute" method="POST" class="space-y-4">
                     @csrf
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Notification Channel</label>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Notification Channel</label>
                         <div class="grid grid-cols-2 gap-2">
-                            <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer text-xs font-semibold">
+                            <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer text-sm font-medium">
                                 <input type="radio" name="channel" value="all" checked class="text-indigo-600 focus:ring-indigo-500">
                                 <span>🚀 All (WhatsApp + SMS + Email)</span>
                             </label>
-                            <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer text-xs font-semibold">
+                            <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer text-sm font-medium">
                                 <input type="radio" name="channel" value="whatsapp" class="text-indigo-600 focus:ring-indigo-500">
                                 <span>💬 WhatsApp Direct</span>
                             </label>
-                            <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer text-xs font-semibold">
+                            <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer text-sm font-medium">
                                 <input type="radio" name="channel" value="sms" class="text-indigo-600 focus:ring-indigo-500">
                                 <span>📱 SMS Text</span>
                             </label>
-                            <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer text-xs font-semibold">
+                            <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer text-sm font-medium">
                                 <input type="radio" name="channel" value="email" class="text-indigo-600 focus:ring-indigo-500">
                                 <span>✉️ Email Notice</span>
                             </label>

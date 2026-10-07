@@ -98,12 +98,12 @@
                         @if(!$myAttendanceToday || !$myAttendanceToday->clock_in)
                             <form method="POST" action="{{ route('attendance.clock-in') }}" class="flex items-center gap-2">
                                 @csrf
-                                <select name="location_type" class="text-xs font-semibold rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-700 dark:text-slate-200">
+                                <select name="location_type" class="text-sm font-medium rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3.5 py-2.5 min-h-[44px] text-slate-700 dark:text-slate-200">
                                     <option value="office">🏢 Office</option>
                                     <option value="on_site">🔧 On-Site Client</option>
                                     <option value="remote">🏠 Remote / Field</option>
                                 </select>
-                                <button type="submit" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md shadow-emerald-600/25 flex items-center gap-2 transition">
+                                <button type="submit" class="px-6 py-2.5 min-h-[44px] rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md shadow-emerald-600/25 flex items-center gap-2 transition">
                                     <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
                                     Clock In Now
                                 </button>
@@ -115,7 +115,7 @@
                             </div>
                             <form method="POST" action="{{ route('attendance.clock-out') }}">
                                 @csrf
-                                <button type="submit" class="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-md shadow-rose-600/25 flex items-center gap-2 transition">
+                                <button type="submit" class="px-6 py-2.5 min-h-[44px] rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-sm shadow-md shadow-rose-600/25 flex items-center gap-2 transition">
                                     <span>🏁</span>
                                     Clock Out &amp; Complete Shift
                                 </button>
@@ -233,7 +233,7 @@
                         <input type="hidden" name="search" value="{{ $search }}">
 
                         <div class="flex items-center gap-2">
-                            <label class="text-xs font-bold text-slate-500 dark:text-slate-400">Select Date:</label>
+                            <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Select Date:</label>
                             <input type="date" 
                                    name="date" 
                                    value="{{ $selectedDate }}" 
@@ -268,7 +268,7 @@
                             <input type="hidden" name="date" value="{{ $selectedDate }}">
                             <input type="hidden" name="status" value="present">
                             <input type="hidden" name="target" value="unmarked">
-                            <button type="submit" class="px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-xs font-bold transition flex items-center gap-1.5">
+                            <button type="submit" class="min-h-[44px] px-4 py-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-sm font-bold transition flex items-center gap-2">
                                 <span>⚡</span> Mark Unmarked as Present
                             </button>
                         </form>
@@ -496,7 +496,7 @@
                         <input type="hidden" name="search" value="{{ $search }}">
 
                         <div class="flex items-center gap-2">
-                            <label class="text-xs font-bold text-slate-500 dark:text-slate-400">Jump to Date in Week:</label>
+                            <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Jump to Date in Week:</label>
                             <input type="date" 
                                    name="week_date" 
                                    value="{{ $weekInput }}" 
@@ -717,7 +717,7 @@
                         <input type="hidden" name="search" value="{{ $search }}">
 
                         <div class="flex items-center gap-2">
-                            <label class="text-xs font-bold text-slate-500 dark:text-slate-400">Select Month:</label>
+                            <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Select Month:</label>
                             <input type="month" 
                                    name="month" 
                                    value="{{ $selectedMonth }}" 
@@ -943,7 +943,7 @@
                 <input type="hidden" name="tab" value="{{ $tab }}">
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Employee *</label>
+                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Employee *</label>
                     <select name="user_id" id="modalUserId" required class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
                         @foreach($employees as $emp)
                             <option value="{{ $emp->id }}">{{ $emp->name }} ({{ ucfirst($emp->role) }})</option>
@@ -953,11 +953,11 @@
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Date *</label>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Date *</label>
                         <input type="date" name="date" id="modalDate" value="{{ $selectedDate }}" required class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Status *</label>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Status *</label>
                         <select name="status" id="modalStatus" required onchange="adjustModalHoursByStatus(this.value)" class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
                             <option value="present">Present (Full Day)</option>
                             <option value="late">Late Arrival</option>
@@ -970,28 +970,28 @@
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Clock In</label>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Clock In</label>
                         <input type="time" name="clock_in" id="modalClockIn" value="09:00" class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Clock Out</label>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Clock Out</label>
                         <input type="time" name="clock_out" id="modalClockOut" value="18:00" class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Total Hours</label>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Total Hours</label>
                         <input type="number" step="0.25" name="total_hours" id="modalTotalHours" placeholder="e.g. 8.0" class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Overtime (Hrs)</label>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Overtime (Hrs)</label>
                         <input type="number" step="0.25" name="overtime_hours" id="modalOvertimeHours" placeholder="e.g. 1.5" class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Location</label>
+                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Location</label>
                     <select name="location_type" id="modalLocation" class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
                         <option value="office">🏢 Office</option>
                         <option value="on_site">🔧 On-Site Client</option>
@@ -1000,13 +1000,13 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Remarks / Notes</label>
+                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Remarks / Notes</label>
                     <input type="text" name="notes" id="modalNotes" placeholder="Optional notes (e.g. Approved leave, Client site installation)" class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
                 </div>
 
                 <div class="flex items-center justify-end gap-2 pt-2">
-                    <button type="button" onclick="document.getElementById('manualAttendanceModal').classList.add('hidden')" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800">Cancel</button>
-                    <button type="submit" class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-500/25">Save Record</button>
+                    <button type="button" onclick="document.getElementById('manualAttendanceModal').classList.add('hidden')" class="px-5 py-2.5 min-h-[44px] rounded-xl text-sm font-semibold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800">Cancel</button>
+                    <button type="submit" class="px-6 py-2.5 min-h-[44px] rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold shadow-md shadow-blue-500/25">Save Record</button>
                 </div>
             </form>
         </div>
@@ -1025,7 +1025,7 @@
                 <input type="hidden" name="mode" value="bulk_range">
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Select Employee *</label>
+                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Select Employee *</label>
                     <select name="user_id" id="bulkUserId" required class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
                         @foreach($employees as $emp)
                             <option value="{{ $emp->id }}">{{ $emp->name }} ({{ ucfirst($emp->role) }})</option>
@@ -1035,18 +1035,18 @@
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Start Date *</label>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Start Date *</label>
                         <input type="date" name="start_date" id="bulkStartDate" value="{{ $selectedDate }}" required class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">End Date *</label>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">End Date *</label>
                         <input type="date" name="end_date" id="bulkEndDate" value="{{ $selectedDate }}" required class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Status *</label>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Status *</label>
                         <select name="status" required class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
                             <option value="present">Present (Full Day)</option>
                             <option value="late">Late Arrival</option>
@@ -1056,7 +1056,7 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Daily Hours</label>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Daily Hours</label>
                         <input type="number" step="0.25" name="daily_hours" value="8.0" placeholder="e.g. 8.0" class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
                     </div>
                 </div>
@@ -1069,8 +1069,8 @@
                 </div>
 
                 <div class="flex items-center justify-end gap-2 pt-2">
-                    <button type="button" onclick="document.getElementById('bulkAttendanceModal').classList.add('hidden')" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800">Cancel</button>
-                    <button type="submit" class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-500/25">Apply Range Fill</button>
+                    <button type="button" onclick="document.getElementById('bulkAttendanceModal').classList.add('hidden')" class="px-5 py-2.5 min-h-[44px] rounded-xl text-sm font-semibold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800">Cancel</button>
+                    <button type="submit" class="px-6 py-2.5 min-h-[44px] rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold shadow-md shadow-blue-500/25">Apply Range Fill</button>
                 </div>
             </form>
         </div>

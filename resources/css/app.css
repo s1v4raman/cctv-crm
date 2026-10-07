@@ -231,7 +231,10 @@ select {
     font-size: 0.9375rem;
     line-height: 1.5;
     min-height: 44px;
-    padding: 0.625rem 0.95rem;
+    padding-top: 0.625rem;
+    padding-bottom: 0.625rem;
+    padding-left: 0.95rem;
+    padding-right: 0.95rem;
 }
 
 textarea {
@@ -287,7 +290,28 @@ html.dark label {
 .filter-bar select {
     min-height: 44px !important;
     font-size: 0.9375rem !important;
-    padding: 0.55rem 1rem !important;
+    padding-top: 0.55rem !important;
+    padding-bottom: 0.55rem !important;
+    padding-right: 1rem !important;
+    padding-left: 1rem;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   UNIVERSAL SEARCH BAR & ICON PROTECTION (Zero Overlap Guaranteed)
+   Ensures placeholder & typed text NEVER overlap left search/filter icons
+   ═══════════════════════════════════════════════════════════════════════ */
+.pl-9, input.pl-9, input[class*="pl-9"] { padding-left: 2.5rem !important; }
+.pl-10, input.pl-10, input[class*="pl-10"] { padding-left: 2.85rem !important; }
+.pl-11, input.pl-11, input[class*="pl-11"] { padding-left: 3rem !important; }
+.pl-12, input.pl-12, input[class*="pl-12"] { padding-left: 3.25rem !important; }
+.pl-14, input.pl-14, input[class*="pl-14"] { padding-left: 3.75rem !important; }
+
+/* Any input positioned inside a relative wrapper containing an absolute SVG */
+.relative:has(> svg) > input,
+.relative:has(> div svg) > input,
+.search-icon-input,
+[data-search-input] {
+    padding-left: 2.85rem !important;
 }
 
 /* SaaS Data Table */
@@ -484,9 +508,10 @@ html.dark .filter-bar {
 .filter-select {
     background-color: #f8fafc !important;
     border: 1px solid #cbd5e1 !important;
-    border-radius: 0.65rem !important;
-    padding: 0.5rem 0.9rem !important;
-    font-size: 0.82rem !important;
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+    padding-right: 0.9rem !important;
+    padding-left: 0.9rem;
     color: #0f172a !important;
     outline: none !important;
     transition: border-color 0.15s, box-shadow 0.15s !important;
@@ -1032,7 +1057,10 @@ html.dark .form-label {
     width: 100% !important;
     border: 1px solid #cbd5e1 !important;
     border-radius: 0.65rem !important;
-    padding: 0.65rem 0.85rem !important;
+    padding-top: 0.65rem !important;
+    padding-bottom: 0.65rem !important;
+    padding-right: 0.85rem !important;
+    padding-left: 0.85rem;
     font-size: 0.875rem !important;
     color: #0f172a !important;
     background: #ffffff !important;

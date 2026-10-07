@@ -88,7 +88,7 @@
                         @csrf
                         <div>
                             <label class="block font-bold text-slate-400 mb-1">Dispatch Channel <span class="text-rose-400">*</span></label>
-                            <select name="channel" required class="w-full text-xs rounded-xl bg-[#060913] border-slate-700 text-slate-200 focus:border-blue-400 focus:ring-blue-400 font-semibold">
+                            <select name="channel" required class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-[#060913] border border-slate-700 text-slate-200 focus:border-blue-400 focus:ring-blue-400 font-semibold">
                                 <option value="whatsapp">💬 WhatsApp Direct</option>
                                 <option value="email">✉️ Email Notification</option>
                                 <option value="sms">📱 SMS Text</option>
@@ -97,31 +97,31 @@
 
                         <div>
                             <label class="block font-bold text-slate-400 mb-1">Recipient Name <span class="text-rose-400">*</span></label>
-                            <input type="text" name="recipient_name" required placeholder="e.g. John Doe" class="w-full text-xs rounded-xl bg-[#060913] border-slate-700 text-slate-200 focus:border-blue-400 focus:ring-blue-400">
+                            <input type="text" name="recipient_name" required placeholder="e.g. John Doe" class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-[#060913] border border-slate-700 text-slate-200 focus:border-blue-400 focus:ring-blue-400">
                         </div>
 
                         <div>
                             <label class="block font-bold text-slate-400 mb-1">Recipient Phone / Mobile</label>
-                            <input type="text" name="phone" placeholder="e.g. 9876543210" class="w-full text-xs rounded-xl bg-[#060913] border-slate-700 text-slate-200 focus:border-blue-400 focus:ring-blue-400">
+                            <input type="text" name="phone" placeholder="e.g. 9876543210" class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-[#060913] border border-slate-700 text-slate-200 focus:border-blue-400 focus:ring-blue-400">
                         </div>
 
                         <div class="sm:col-span-2">
                             <label class="block font-bold text-slate-400 mb-1">Email Subject (If sending email)</label>
-                            <input type="text" name="subject" placeholder="e.g. Important Service Notification regarding your CCTV setup" class="w-full text-xs rounded-xl bg-[#060913] border-slate-700 text-slate-200 focus:border-blue-400 focus:ring-blue-400">
+                            <input type="text" name="subject" placeholder="e.g. Important Service Notification regarding your CCTV setup" class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-[#060913] border border-slate-700 text-slate-200 focus:border-blue-400 focus:ring-blue-400">
                         </div>
 
                         <div>
                             <label class="block font-bold text-slate-400 mb-1">Recipient Email (If sending email)</label>
-                            <input type="email" name="email" placeholder="e.g. customer@example.com" class="w-full text-xs rounded-xl bg-[#060913] border-slate-700 text-slate-200 focus:border-blue-400 focus:ring-blue-400">
+                            <input type="email" name="email" placeholder="e.g. customer@example.com" class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-[#060913] border border-slate-700 text-slate-200 focus:border-blue-400 focus:ring-blue-400">
                         </div>
 
                         <div class="sm:col-span-3">
                             <label class="block font-bold text-slate-400 mb-1">Message Body <span class="text-rose-400">*</span></label>
-                            <textarea name="message" rows="3" required placeholder="Type your message content here..." class="w-full text-xs rounded-xl bg-[#060913] border-slate-700 text-slate-200 focus:border-blue-400 focus:ring-blue-400"></textarea>
+                            <textarea name="message" rows="3" required placeholder="Type your message content here..." class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-[#060913] border border-slate-700 text-slate-200 focus:border-blue-400 focus:ring-blue-400"></textarea>
                         </div>
 
                         <div class="sm:col-span-3 flex justify-end">
-                            <button type="submit" class="px-5 py-2.5 text-white rounded-xl text-xs font-bold shadow-xs transition" style="background-color: var(--crm-accent, #2563eb);">
+                            <button type="submit" class="btn-amber min-h-[44px] px-6 py-2.5 text-sm font-bold rounded-xl shadow-xs transition">
                                 Dispatch Message Now &rarr;
                             </button>
                         </div>
@@ -133,12 +133,12 @@
             <div class="bg-[#0f172a] rounded-2xl p-4 mb-6 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.5)] border border-white/5">
                 <form method="GET" action="{{ route('alerts.index') }}" class="grid grid-cols-1 sm:grid-cols-4 gap-3">
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-400 mb-1">Search Logs</label>
-                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Recipient, Phone, Message text..." class="w-full text-xs rounded-xl bg-[#060913] border-slate-700 text-slate-200 focus:border-amber-400 focus:ring-amber-400">
+                        <label class="block text-sm font-semibold text-slate-300 mb-1.5">Search Logs</label>
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Recipient, Phone, Message text..." class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-[#060913] border border-slate-700 text-slate-200 focus:border-amber-400 focus:ring-amber-400">
                     </div>
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-400 mb-1">Channel</label>
-                        <select name="channel" class="w-full text-xs rounded-xl bg-[#060913] border-slate-700 text-slate-200 focus:border-amber-400 focus:ring-amber-400">
+                        <label class="block text-sm font-semibold text-slate-300 mb-1.5">Channel</label>
+                        <select name="channel" class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-[#060913] border border-slate-700 text-slate-200 focus:border-amber-400 focus:ring-amber-400">
                             <option value="">All Channels</option>
                             <option value="whatsapp" @selected(request('channel') === 'whatsapp')>💬 WhatsApp</option>
                             <option value="sms" @selected(request('channel') === 'sms')>📱 SMS</option>
@@ -146,8 +146,8 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-400 mb-1">Status</label>
-                        <select name="status" class="w-full text-xs rounded-xl bg-[#060913] border-slate-700 text-slate-200 focus:border-amber-400 focus:ring-amber-400">
+                        <label class="block text-sm font-semibold text-slate-300 mb-1.5">Status</label>
+                        <select name="status" class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-[#060913] border border-slate-700 text-slate-200 focus:border-amber-400 focus:ring-amber-400">
                             <option value="">All Statuses</option>
                             <option value="sent" @selected(request('status') === 'sent')>Sent</option>
                             <option value="delivered" @selected(request('status') === 'delivered')>Delivered</option>
@@ -155,11 +155,11 @@
                         </select>
                     </div>
                     <div class="flex items-end gap-2">
-                        <button type="submit" class="flex-1 py-2 px-4 text-white rounded-xl text-xs font-bold transition shadow-xs" style="background-color: var(--crm-accent, #2563eb);">
+                        <button type="submit" class="btn-amber min-h-[44px] flex-1 px-5 py-2.5 text-sm font-bold rounded-xl transition shadow-xs">
                             Filter
                         </button>
                         @if(request()->anyFilled(['search', 'channel', 'status', 'event']))
-                            <a href="{{ route('alerts.index') }}" class="py-2 px-3 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold">
+                            <a href="{{ route('alerts.index') }}" class="btn-secondary min-h-[44px] px-4 py-2.5 text-sm font-semibold rounded-xl">
                                 Reset
                             </a>
                         @endif

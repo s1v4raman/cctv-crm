@@ -129,7 +129,7 @@
 
                     <!-- Full Name -->
                     <div>
-                        <label for="name" class="block text-xs font-bold text-slate-800 mb-1">Full Name *</label>
+                        <label for="name" class="block text-sm font-semibold text-slate-800 dark:text-slate-200 mb-1.5">Full Name *</label>
                         <input id="name" type="text" name="name" 
                                value="{{ old('name') }}" 
                                required autofocus autocomplete="name" 
@@ -139,7 +139,7 @@
 
                     <!-- Email Address -->
                     <div>
-                        <label for="email" class="block text-xs font-bold text-slate-800 mb-1">Email Address *</label>
+                        <label for="email" class="block text-sm font-semibold text-slate-800 dark:text-slate-200 mb-1.5">Email Address *</label>
                         <input id="email" type="email" name="email" 
                                value="{{ old('email') }}" 
                                required autocomplete="username" 
@@ -149,7 +149,7 @@
 
                     <!-- Phone Number (Optional) -->
                     <div>
-                        <label for="phone" class="block text-xs font-bold text-slate-800 mb-1">Mobile / Phone <span class="text-slate-400 font-normal">(Optional)</span></label>
+                        <label for="phone" class="block text-sm font-semibold text-slate-800 dark:text-slate-200 mb-1.5">Mobile / Phone <span class="text-slate-400 font-normal">(Optional)</span></label>
                         <input id="phone" type="text" name="phone" 
                                value="{{ old('phone') }}" 
                                placeholder="e.g. +91 98765 43210" 
@@ -159,14 +159,14 @@
                     <!-- Password Grid -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
-                            <label for="password" class="block text-xs font-bold text-slate-800 mb-1">Password *</label>
+                            <label for="password" class="block text-sm font-semibold text-slate-800 dark:text-slate-200 mb-1.5">Password *</label>
                             <input id="password" :type="showPassword ? 'text' : 'password'" name="password" 
                                    required autocomplete="new-password" 
                                    placeholder="At least 8 chars" 
                                    class="w-full px-4 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent text-slate-900 placeholder-slate-400 bg-white transition-all shadow-xs">
                         </div>
                         <div>
-                            <label for="password_confirmation" class="block text-xs font-bold text-slate-800 mb-1">Confirm Password *</label>
+                            <label for="password_confirmation" class="block text-sm font-semibold text-slate-800 dark:text-slate-200 mb-1.5">Confirm Password *</label>
                             <input id="password_confirmation" :type="showPassword ? 'text' : 'password'" name="password_confirmation" 
                                    required autocomplete="new-password" 
                                    placeholder="Re-type password" 

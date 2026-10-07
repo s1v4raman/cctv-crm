@@ -382,7 +382,7 @@
                                                 <form action="{{ route('leaves.cancel', $l) }}" method="POST" onsubmit="return confirm('Cancel this pending leave request?')">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="text-rose-600 hover:text-rose-800 dark:text-rose-400 text-xs font-bold underline">
+                                                    <button type="submit" class="text-rose-600 hover:text-rose-800 dark:text-rose-400 text-sm font-semibold underline">
                                                         Cancel Request
                                                     </button>
                                                 </form>
@@ -469,13 +469,13 @@
                                                     <form action="{{ route('leaves.approve', $al) }}" method="POST">
                                                         @csrf
                                                         @method('PATCH')
-                                                        <button type="submit" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition">
+                                                        <button type="submit" class="min-h-[38px] px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-semibold transition">
                                                             Approve
                                                         </button>
                                                     </form>
                                                     <button type="button" 
                                                             onclick="openRejectModal('{{ $al->id }}', '{{ addslashes($al->user->name) }}', '{{ $al->leave_type_label }}')"
-                                                            class="px-2.5 py-1 bg-rose-50 text-rose-600 border border-rose-200 rounded-lg text-xs font-bold hover:bg-rose-100 transition">
+                                                            class="min-h-[38px] px-3.5 py-2 bg-rose-50 text-rose-600 border border-rose-200 rounded-lg text-sm font-semibold hover:bg-rose-100 transition">
                                                         Reject
                                                     </button>
                                                 </div>
@@ -580,7 +580,7 @@
                     <button type="button" onclick="document.getElementById('applyLeaveModal').classList.add('hidden')" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 dark:text-slate-400">
                         Cancel
                     </button>
-                    <button type="submit" class="px-5 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-md transition">
+                    <button type="submit" class="px-6 py-2.5 min-h-[44px] text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-md transition">
                         Submit Application
                     </button>
                 </div>
@@ -618,7 +618,7 @@
                     <button type="button" onclick="document.getElementById('rejectLeaveModal').classList.add('hidden')" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 dark:text-slate-400">
                         Back
                     </button>
-                    <button type="submit" class="px-5 py-2 text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-xl shadow-md transition">
+                    <button type="submit" class="px-6 py-2.5 min-h-[44px] text-sm font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-xl shadow-md transition">
                         Confirm Rejection
                     </button>
                 </div>

@@ -233,46 +233,46 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Base Monthly Salary (₹) *</label>
-                    <input type="number" step="100" name="base_salary_monthly" id="fBaseMonthly" required placeholder="e.g. 35000" oninput="recalcRates()" class="w-full text-xs font-bold font-mono rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-900 dark:text-white">
+                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Base Monthly Salary (₹) *</label>
+                    <input type="number" step="100" name="base_salary_monthly" id="fBaseMonthly" required placeholder="e.g. 35000" oninput="recalcRates()" class="w-full text-sm min-h-[44px] font-bold font-mono rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3.5 py-2.5 text-slate-900 dark:text-white">
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Daily Rate (₹)</label>
-                        <input type="number" step="10" name="daily_rate" id="fDailyRate" placeholder="e.g. 1346.15" class="w-full text-xs font-semibold font-mono rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Daily Rate (₹)</label>
+                        <input type="number" step="10" name="daily_rate" id="fDailyRate" placeholder="e.g. 1346.15" class="w-full text-sm min-h-[44px] font-semibold font-mono rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3.5 py-2.5 text-slate-800 dark:text-slate-200">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Weekly Rate (₹)</label>
-                        <input type="number" step="50" name="weekly_rate" id="fWeeklyRate" placeholder="e.g. 8076.92" class="w-full text-xs font-semibold font-mono rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Hourly Base (₹)</label>
-                        <input type="number" step="1" name="hourly_rate" id="fHourlyRate" placeholder="e.g. 168.27" class="w-full text-xs font-semibold font-mono rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Overtime / Hr (₹)</label>
-                        <input type="number" step="1" name="overtime_hourly_rate" id="fOvertimeHourlyRate" placeholder="e.g. 210.00" class="w-full text-xs font-semibold font-mono rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Weekly Rate (₹)</label>
+                        <input type="number" step="50" name="weekly_rate" id="fWeeklyRate" placeholder="e.g. 8076.92" class="w-full text-sm min-h-[44px] font-semibold font-mono rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3.5 py-2.5 text-slate-800 dark:text-slate-200">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Travel / Site Allowance (₹)</label>
-                        <input type="number" step="50" name="travel_allowance" id="fTravelAllowance" placeholder="0.00" class="w-full text-xs font-semibold font-mono rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Hourly Base (₹)</label>
+                        <input type="number" step="1" name="hourly_rate" id="fHourlyRate" placeholder="e.g. 168.27" class="w-full text-sm min-h-[44px] font-semibold font-mono rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3.5 py-2.5 text-slate-800 dark:text-slate-200">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Monthly Deductions (₹)</label>
-                        <input type="number" step="50" name="deductions" id="fDeductions" placeholder="0.00" class="w-full text-xs font-semibold font-mono rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Overtime / Hr (₹)</label>
+                        <input type="number" step="1" name="overtime_hourly_rate" id="fOvertimeHourlyRate" placeholder="e.g. 210.00" class="w-full text-sm min-h-[44px] font-semibold font-mono rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3.5 py-2.5 text-slate-800 dark:text-slate-200">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Payment Method</label>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Travel / Site Allowance (₹)</label>
+                        <input type="number" step="50" name="travel_allowance" id="fTravelAllowance" placeholder="0.00" class="w-full text-sm min-h-[44px] font-semibold font-mono rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3.5 py-2.5 text-slate-800 dark:text-slate-200">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Monthly Deductions (₹)</label>
+                        <input type="number" step="50" name="deductions" id="fDeductions" placeholder="0.00" class="w-full text-sm min-h-[44px] font-semibold font-mono rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3.5 py-2.5 text-slate-800 dark:text-slate-200">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Payment Method</label>
                         <select name="payment_method" id="fPaymentMethod" class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
                             <option value="bank_transfer">Bank Transfer (NEFT/IMPS)</option>
                             <option value="upi">UPI / GPay</option>
@@ -281,34 +281,34 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">UPI ID (if applicable)</label>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">UPI ID (if applicable)</label>
                         <input type="text" name="upi_id" id="fUpiId" placeholder="e.g. mobile@upi" class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-3 gap-2">
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Bank Name</label>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Bank Name</label>
                         <input type="text" name="bank_name" id="fBankName" placeholder="HDFC, SBI" class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2.5 py-2 text-slate-800 dark:text-slate-200">
                     </div>
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Account No.</label>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Account No.</label>
                         <input type="text" name="bank_account_number" id="fBankAcc" placeholder="1234567890" class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2.5 py-2 text-slate-800 dark:text-slate-200">
                     </div>
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">IFSC Code</label>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">IFSC Code</label>
                         <input type="text" name="bank_ifsc" id="fBankIfsc" placeholder="HDFC0001234" class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2.5 py-2 text-slate-800 dark:text-slate-200">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Salary Structure Notes</label>
+                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Salary Structure Notes</label>
                     <input type="text" name="notes" id="fNotes" placeholder="e.g. Certified on-site field engineer scale" class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
                 </div>
 
                 <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
-                    <button type="button" onclick="document.getElementById('salaryModal').classList.add('hidden')" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800">Cancel</button>
-                    <button type="submit" class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-500/25">Save Salary Structure</button>
+                    <button type="button" onclick="document.getElementById('salaryModal').classList.add('hidden')" class="px-5 py-2.5 min-h-[44px] rounded-xl text-sm font-semibold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800">Cancel</button>
+                    <button type="submit" class="px-6 py-2.5 min-h-[44px] rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold shadow-md shadow-blue-500/25">Save Salary Structure</button>
                 </div>
             </form>
         </div>

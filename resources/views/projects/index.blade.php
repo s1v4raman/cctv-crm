@@ -134,6 +134,7 @@
                         </div>
                         <input type="search" name="search" value="{{ $search }}"
                                placeholder="e.g. TechPark, Apex Logistics, PRJ-2026-0001..." 
+                               style="padding-left: 3.25rem !important;"
                                class="w-full pl-12 pr-4 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 transition-all">
                     </div>
                 </div>

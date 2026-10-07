@@ -218,7 +218,7 @@
 
                     <!-- Email Address Field -->
                     <div>
-                        <label for="email" class="block text-xs font-bold text-slate-800 mb-1.5">Email Address</label>
+                        <label for="email" class="block text-sm font-semibold text-slate-800 dark:text-slate-200 mb-1.5">Email Address</label>
                         <input id="email" type="email" name="email" 
                                value="{{ old('email', $isStaffPortal ? 'test@example.com' : 'customer@example.com') }}" 
                                required autofocus autocomplete="username" 
@@ -228,7 +228,7 @@
 
                     <!-- Password Field with Show/Hide Eye Toggle -->
                     <div>
-                        <label for="password" class="block text-xs font-bold text-slate-800 mb-1.5">Password</label>
+                        <label for="password" class="block text-sm font-semibold text-slate-800 dark:text-slate-200 mb-1.5">Password</label>
                         <div class="relative">
                             <input id="password" :type="showPassword ? 'text' : 'password'" name="password" 
                                    value="password" required autocomplete="current-password" 

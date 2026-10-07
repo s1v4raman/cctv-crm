@@ -100,7 +100,7 @@
 
                     <!-- Email Address -->
                     <div>
-                        <label for="email" class="block text-xs font-bold text-slate-800 mb-1.5">Email Address</label>
+                        <label for="email" class="block text-sm font-semibold text-slate-800 dark:text-slate-200 mb-1.5">Email Address</label>
                         <input id="email" type="email" name="email" 
                                value="{{ old('email') }}" 
                                required autofocus autocomplete="username" 

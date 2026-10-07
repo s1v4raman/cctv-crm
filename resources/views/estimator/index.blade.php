@@ -42,7 +42,7 @@
                     
                     {{-- Lead Selector --}}
                     <div class="md:col-span-5">
-                        <label class="block text-[10px] font-mono uppercase tracking-widest text-slate-400 mb-1.5 flex items-center justify-between">
+                        <label class="block text-sm font-semibold text-slate-300 mb-1.5 flex items-center justify-between">
                             <span>Target Customer / Lead <span class="text-amber-400">*</span></span>
                             @if(!empty($initialData['survey_id']))
                                 <span class="text-[10px] text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded font-mono font-semibold">Loaded from Site Survey #{{ $initialData['survey_id'] }}</span>
@@ -60,7 +60,7 @@
 
                     {{-- System Topology Switch --}}
                     <div class="md:col-span-4">
-                        <label class="block text-[10px] font-mono uppercase tracking-widest text-slate-400 mb-1.5">
+                        <label class="block text-sm font-semibold text-slate-300 mb-1.5">
                             System Architecture
                         </label>
                         <div class="grid grid-cols-2 gap-2 bg-[#060913] p-1.5 rounded-xl border border-slate-800">
@@ -83,7 +83,7 @@
 
                     {{-- Quick Template Presets --}}
                     <div class="md:col-span-3">
-                        <label class="block text-[10px] font-mono uppercase tracking-widest text-slate-400 mb-1.5">
+                        <label class="block text-sm font-semibold text-slate-300 mb-1.5">
                             Quick Setup Presets
                         </label>
                         <div class="flex items-center gap-2">
@@ -123,7 +123,7 @@
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                             <div>
-                                <label class="block text-[10px] font-mono uppercase tracking-widest text-slate-400 mb-1.5">
+                                <label class="block text-sm font-semibold text-slate-300 mb-1.5">
                                     Target Retention Period (Days)
                                 </label>
                                 <div class="flex items-center gap-3">
@@ -141,7 +141,7 @@
                             </div>
 
                             <div>
-                                <label class="block text-[10px] font-mono uppercase tracking-widest text-slate-400 mb-1.5">
+                                <label class="block text-sm font-semibold text-slate-300 mb-1.5">
                                     Default Cable Distance (Meters / Point)
                                 </label>
                                 <div class="flex items-center gap-3">
@@ -185,7 +185,7 @@
 
                                         <div class="flex items-center gap-3">
                                             <div class="flex items-center gap-1.5 bg-[#0F172A] px-2.5 py-1 rounded-lg border border-slate-700">
-                                                <label class="text-[11px] font-mono text-slate-400">Qty:</label>
+                                                <label class="text-sm font-mono text-slate-300">Qty:</label>
                                                 <input type="number" min="1" max="128" x-model.number="zone.quantity" @input="recalculateAll()" class="w-12 text-center font-bold text-xs p-0 border-0 bg-transparent text-amber-400 focus:ring-0">
                                             </div>
 
@@ -199,7 +199,7 @@
                                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
                                         
                                         <div>
-                                            <label class="block text-[10px] font-mono font-bold text-slate-400 uppercase">Resolution</label>
+                                            <label class="block text-sm font-semibold text-slate-300 mb-1.5">Resolution</label>
                                             <select x-model="zone.resolution" @change="recalculateAll()" class="w-full text-xs rounded-lg border border-slate-700 py-1.5 px-2 bg-[#0F172A] text-white focus:border-amber-400 focus:outline-none">
                                                 <option value="2MP">2 MP (1080p FHD)</option>
                                                 <option value="3MP">3 MP (2K)</option>
@@ -210,7 +210,7 @@
                                         </div>
 
                                         <div>
-                                            <label class="block text-[10px] font-mono font-bold text-slate-400 uppercase">Compression</label>
+                                            <label class="block text-sm font-semibold text-slate-300 mb-1.5">Compression</label>
                                             <select x-model="zone.codec" @change="recalculateAll()" class="w-full text-xs rounded-lg border border-slate-700 py-1.5 px-2 bg-[#0F172A] text-white focus:border-amber-400 focus:outline-none">
                                                 <option value="H265_PLUS">H.265+ (Smart 70%)</option>
                                                 <option value="H265">H.265 (HEVC 50%)</option>
@@ -220,7 +220,7 @@
                                         </div>
 
                                         <div>
-                                            <label class="block text-[10px] font-mono font-bold text-slate-400 uppercase">Frame Rate</label>
+                                            <label class="block text-sm font-semibold text-slate-300 mb-1.5">Frame Rate</label>
                                             <select x-model.number="zone.fps" @change="recalculateAll()" class="w-full text-xs rounded-lg border border-slate-700 py-1.5 px-2 bg-[#0F172A] text-white focus:border-amber-400 focus:outline-none">
                                                 <option value="12">12 FPS (Storage Saver)</option>
                                                 <option value="15">15 FPS (Commercial)</option>
@@ -231,7 +231,7 @@
                                         </div>
 
                                         <div>
-                                            <label class="block text-[10px] font-mono font-bold text-slate-400 uppercase">Recording Mode</label>
+                                            <label class="block text-sm font-semibold text-slate-300 mb-1.5">Recording Mode</label>
                                             <select x-model.number="zone.hoursPerDay" @change="recalculateAll()" class="w-full text-xs rounded-lg border border-slate-700 py-1.5 px-2 bg-[#0F172A] text-white focus:border-amber-400 focus:outline-none">
                                                 <option value="24">24/7 Continuous (24h)</option>
                                                 <option value="16">Extended Motion (16h)</option>
@@ -464,7 +464,7 @@
                         
                         {{-- Notes & Terms --}}
                         <div class="lg:col-span-6 space-y-2">
-                            <label class="block text-[10px] font-mono uppercase tracking-widest text-slate-400">Quotation Remarks / Engineering Notes</label>
+                            <label class="block text-sm font-semibold text-slate-300 mb-1">Quotation Remarks / Engineering Notes</label>
                             <textarea x-model="quotationNotes" rows="4" class="w-full text-xs font-mono rounded-xl border border-slate-700 bg-[#060913] focus:border-amber-400 focus:outline-none p-3 text-slate-300" placeholder="e.g., Includes 1-year warranty, Cat6 cable conduits, and mobile app configuration."></textarea>
                         </div>
 

@@ -87,7 +87,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <div class="flex items-center justify-between mb-1.5">
-                                <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider">Faulty Unit Serial Number (S/N) <span class="text-amber-400">*</span></label>
+                                <label class="block text-sm font-semibold text-slate-200 mb-1.5">Faulty Unit Serial Number (S/N) <span class="text-amber-400">*</span></label>
                                 <button type="button" onclick="openBarcodeScanner('rma-barcode-modal', 'rma_serial_input', onRmaBarcodeScanned)"
                                         class="text-xs font-bold text-amber-400 hover:text-amber-300 inline-flex items-center gap-1 transition">
                                     📷 Scan Barcode
@@ -104,13 +104,13 @@
                             <div id="rma-scan-feedback" style="display:none;font-size:11px;margin-top:4px;"></div>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">MAC / IP Address (Optional)</label>
+                            <label class="block text-sm font-semibold text-slate-200 mb-1.5">MAC / IP Address (Optional)</label>
                             <input type="text" id="rma_mac_input" name="faulty_mac_address" value="{{ old('faulty_mac_address', $prefilledEquipment?->mac_address) }}" placeholder="e.g. 54:C8:01:A2:FE:9B" 
                                 class="w-full text-xs font-mono rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Product Model (Catalog)</label>
+                            <label class="block text-sm font-semibold text-slate-200 mb-1.5">Product Model (Catalog)</label>
                             <select name="product_id" class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
                                 <option value="">Select Catalog Product (Optional)</option>
                                 @foreach($products as $prod)
@@ -122,7 +122,7 @@
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Customer / Organization (Optional)</label>
+                            <label class="block text-sm font-semibold text-slate-200 mb-1.5">Customer / Organization (Optional)</label>
                             <select name="lead_id" class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
                                 <option value="">None (Warehouse / Direct Stock)</option>
                                 @foreach($leads as $l)
@@ -144,7 +144,7 @@
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                         <div>
-                            <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Target Supplier / Vendor Service Center <span class="text-amber-400">*</span></label>
+                            <label class="block text-sm font-semibold text-slate-200 mb-1.5">Target Supplier / Vendor Service Center <span class="text-amber-400">*</span></label>
                             <select name="supplier_id" required class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
                                 <option value="">Select Supplier</option>
                                 @foreach($suppliers as $supplier)
@@ -155,7 +155,7 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Warranty Status at Claim <span class="text-amber-400">*</span></label>
+                            <label class="block text-sm font-semibold text-slate-200 mb-1.5">Warranty Status at Claim <span class="text-amber-400">*</span></label>
                             <select name="warranty_status_at_claim" required class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5 font-bold">
                                 <option value="under_warranty" @selected(old('warranty_status_at_claim', $warrantyStatus) === 'under_warranty')>🟢 Under Manufacturer Warranty</option>
                                 <option value="out_of_warranty" @selected(old('warranty_status_at_claim', $warrantyStatus) === 'out_of_warranty')>🔴 Out of Warranty (Chargeable Service)</option>
@@ -166,12 +166,12 @@
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Vendor RMA Reference # (Optional)</label>
+                            <label class="block text-sm font-semibold text-slate-200 mb-1.5">Vendor RMA Reference # (Optional)</label>
                             <input type="text" name="vendor_rma_ref" value="{{ old('vendor_rma_ref') }}" placeholder="e.g. HIK-SERVICE-9821" 
                                 class="w-full text-xs font-mono rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Expected Return / Resolution Date</label>
+                            <label class="block text-sm font-semibold text-slate-200 mb-1.5">Expected Return / Resolution Date</label>
                             <input type="date" name="expected_return_date" value="{{ old('expected_return_date', now()->addDays(7)->format('Y-m-d')) }}" 
                                 class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
                         </div>
@@ -186,7 +186,7 @@
                     </div>
 
                     <div class="mb-4">
-                        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Fault Category <span class="text-amber-400">*</span></label>
+                        <label class="block text-sm font-semibold text-slate-200 mb-1.5">Fault Category <span class="text-amber-400">*</span></label>
                         <select name="fault_category" required class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
                             @foreach(\App\Models\RmaClaim::faultCategories() as $key => $label)
                                 <option value="{{ $key }}" @selected(old('fault_category') === $key)>{{ $label }}</option>
@@ -195,7 +195,7 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Detailed Defect Description & Symptoms <span class="text-amber-400">*</span></label>
+                        <label class="block text-sm font-semibold text-slate-200 mb-1.5">Detailed Defect Description & Symptoms <span class="text-amber-400">*</span></label>
                         <textarea name="issue_description" rows="3" required 
                             class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5" 
                             placeholder="Describe symptom: e.g. Camera powers on with 12V DC, but sensor sends purple screen feeds. Tested with separate POE switch port. No physical damage.">{{ old('issue_description', $prefilledTicket?->description) }}</textarea>

@@ -269,19 +269,19 @@
                             @csrf
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                                 <div>
-                                    <label class="block text-[10px] font-mono uppercase tracking-widest text-slate-400 mb-1.5">Payment Amount (₹) <span class="text-amber-400">*</span></label>
+                                    <label class="block text-sm font-semibold text-slate-300 mb-1.5">Payment Amount (₹) <span class="text-amber-400">*</span></label>
                                     <input type="number" name="amount" min="0.01" step="0.01" max="{{ $invoice->balanceDue() }}" value="{{ old('amount', $invoice->balanceDue()) }}" required class="w-full bg-[#060913] border border-slate-700 rounded-xl p-2.5 text-xs text-white font-mono font-bold focus:border-amber-400 focus:outline-none">
                                     @error('amount') <div class="text-xs text-rose-400 mt-1 font-semibold">{{ $message }}</div> @enderror
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] font-mono uppercase tracking-widest text-slate-400 mb-1.5">Date Paid <span class="text-amber-400">*</span></label>
+                                    <label class="block text-sm font-semibold text-slate-300 mb-1.5">Date Paid <span class="text-amber-400">*</span></label>
                                     <input type="date" name="paid_on" value="{{ old('paid_on', now()->format('Y-m-d')) }}" required class="w-full bg-[#060913] border border-slate-700 rounded-xl p-2.5 text-xs text-white font-mono focus:border-amber-400 focus:outline-none">
                                     @error('paid_on') <div class="text-xs text-rose-400 mt-1 font-semibold">{{ $message }}</div> @enderror
                                 </div>
                             </div>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                                 <div>
-                                    <label class="block text-[10px] font-mono uppercase tracking-widest text-slate-400 mb-1.5">Payment Method <span class="text-amber-400">*</span></label>
+                                    <label class="block text-sm font-semibold text-slate-300 mb-1.5">Payment Method <span class="text-amber-400">*</span></label>
                                     <select name="method" class="w-full bg-[#060913] border border-slate-700 rounded-xl p-2.5 text-xs text-white focus:border-amber-400 focus:outline-none" required>
                                         <option value="cash" @selected(old('method') === 'cash')>💵 Cash</option>
                                         <option value="upi" @selected(old('method') === 'upi')>📱 UPI (GPay / PhonePe / Paytm)</option>
@@ -294,19 +294,19 @@
                                     @error('method') <div class="text-xs text-rose-400 mt-1 font-semibold">{{ $message }}</div> @enderror
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] font-mono uppercase tracking-widest text-slate-400 mb-1.5">Reference / Transaction / UTR No.</label>
+                                    <label class="block text-sm font-semibold text-slate-300 mb-1.5">Reference / Transaction / UTR No.</label>
                                     <input type="text" name="reference_no" value="{{ old('reference_no') }}" placeholder="e.g. UPI-202689128, Cheque #004812" class="w-full bg-[#060913] border border-slate-700 rounded-xl p-2.5 text-xs text-white font-mono focus:border-amber-400 focus:outline-none">
                                     @error('reference_no') <div class="text-xs text-rose-400 mt-1 font-semibold">{{ $message }}</div> @enderror
                                 </div>
                             </div>
                             <div class="mb-4">
-                                <label class="block text-[10px] font-mono uppercase tracking-widest text-slate-400 mb-1.5">Payment Notes (Optional)</label>
-                                <input type="text" name="notes" value="{{ old('notes') }}" placeholder="e.g. 50% advance received on site" class="w-full bg-[#060913] border border-slate-700 rounded-xl p-2.5 text-xs text-white focus:border-amber-400 focus:outline-none">
+                                <label class="block text-sm font-semibold text-slate-300 mb-1.5">Payment Notes (Optional)</label>
+                                <input type="text" name="notes" value="{{ old('notes') }}" placeholder="e.g. 50% advance received on site" class="w-full bg-[#060913] border border-slate-700 rounded-xl min-h-[44px] px-3.5 py-2.5 text-sm text-white focus:border-amber-400 focus:outline-none">
                                 <p class="text-[10px] text-slate-500 font-mono mt-1">Receipt PDF will automatically be generated and sent via WhatsApp and Email upon recording.</p>
                                 @error('notes') <div class="text-xs text-rose-400 mt-1 font-semibold">{{ $message }}</div> @enderror
                             </div>
 
-                            <button type="submit" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white font-black text-xs uppercase tracking-wider flex items-center gap-2 shadow-lg shadow-emerald-500/20 transition">
+                            <button type="submit" class="min-h-[44px] px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white font-bold text-sm flex items-center gap-2 shadow-lg shadow-emerald-500/20 transition">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                                 Record Payment & Generate Receipt
                             </button>

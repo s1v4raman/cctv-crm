@@ -156,7 +156,7 @@
 
                         <div class="space-y-4">
                             <div>
-                                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                                <label class="block text-sm font-semibold text-slate-300 mb-1.5">
                                     Troubleshooting Notes / Root Cause
                                 </label>
                                 <div class="text-xs text-slate-300 bg-[#060913] p-3.5 rounded-xl border border-slate-800 min-h-[45px] whitespace-pre-line">
@@ -165,7 +165,7 @@
                             </div>
 
                             <div>
-                                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                                <label class="block text-sm font-semibold text-slate-300 mb-1.5">
                                     Replacement Parts Used
                                 </label>
                                 <div class="text-xs text-slate-300 bg-[#060913] p-3.5 rounded-xl border border-slate-800 min-h-[35px] whitespace-pre-line">
@@ -174,7 +174,7 @@
                             </div>
 
                             <div>
-                                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                                <label class="block text-sm font-semibold text-slate-300 mb-1.5">
                                     Final Resolution / Commissioning Note
                                 </label>
                                 <div class="text-xs text-emerald-300 bg-emerald-950/20 p-3.5 rounded-xl border border-emerald-500/30 min-h-[45px] whitespace-pre-line">
@@ -204,7 +204,7 @@
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block font-bold text-slate-300 uppercase tracking-wider text-[10px] mb-1">Change Status</label>
+                                    <label class="block text-sm font-semibold text-slate-300 mb-1.5">Change Status</label>
                                     <select name="status" class="w-full bg-[#060913] border border-slate-700 text-white rounded-xl px-3.5 py-2.5 focus:border-amber-400 focus:outline-none">
                                         @foreach(\App\Models\ServiceTicket::statusOptions() as $k => $label)
                                             <option value="{{ $k }}" {{ $ticket->status === $k ? 'selected' : '' }}>{{ $label }}</option>
@@ -212,20 +212,20 @@
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block font-bold text-slate-300 uppercase tracking-wider text-[10px] mb-1">Parts Replaced (Optional)</label>
+                                    <label class="block text-sm font-semibold text-slate-300 mb-1.5">Parts Replaced (Optional)</label>
                                     <input type="text" name="parts_replaced" value="{{ $ticket->parts_replaced }}" placeholder="e.g. 1x BNC Connector, 1x 12V SMPS Adapter"
                                         class="w-full bg-[#060913] border border-slate-700 text-white rounded-xl px-3.5 py-2.5 focus:border-amber-400 focus:outline-none">
                                 </div>
                             </div>
 
                             <div>
-                                <label class="block font-bold text-slate-300 uppercase tracking-wider text-[10px] mb-1">Troubleshooting Notes</label>
+                                <label class="block text-sm font-semibold text-slate-300 mb-1.5">Troubleshooting Notes</label>
                                 <textarea name="troubleshooting_notes" rows="2" placeholder="Describe diagnosis and root cause..."
                                     class="w-full bg-[#060913] border border-slate-700 text-white rounded-xl px-3.5 py-2.5 focus:border-amber-400 focus:outline-none">{{ $ticket->troubleshooting_notes }}</textarea>
                             </div>
 
                             <div>
-                                <label class="block font-bold text-slate-300 uppercase tracking-wider text-[10px] mb-1">Resolution Summary</label>
+                                <label class="block text-sm font-semibold text-slate-300 mb-1.5">Resolution Summary</label>
                                 <textarea name="resolution_notes" rows="2" placeholder="Describe actions taken to fix the issue..."
                                     class="w-full bg-[#060913] border border-slate-700 text-white rounded-xl px-3.5 py-2.5 focus:border-amber-400 focus:outline-none">{{ $ticket->resolution_notes }}</textarea>
                             </div>
@@ -298,7 +298,7 @@
                         <form method="POST" action="{{ route('service-tickets.assign', $ticket) }}" class="space-y-3 text-xs">
                             @csrf
                             <div>
-                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Re-assign Technician</label>
+                                <label class="block text-sm font-semibold text-slate-300 mb-1.5">Re-assign Technician</label>
                                 <select name="assigned_technician_id" required class="w-full bg-[#060913] border border-slate-700 text-white rounded-xl px-3.5 py-2.5 focus:border-amber-400 focus:outline-none">
                                     <option value="">-- Choose Technician --</option>
                                     @foreach($technicians as $tech)
@@ -309,12 +309,12 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Scheduled Visit Date</label>
+                                <label class="block text-sm font-semibold text-slate-300 mb-1.5">Scheduled Visit Date</label>
                                 <input type="date" name="scheduled_date" value="{{ $ticket->scheduled_date?->format('Y-m-d') }}"
                                     class="w-full bg-[#060913] border border-slate-700 text-white rounded-xl px-3.5 py-2.5 focus:border-amber-400 focus:outline-none">
                             </div>
                             <button type="submit"
-                                    class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold text-xs transition">
+                                    class="w-full min-h-[44px] py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold text-sm transition">
                                 🚀 Update Dispatch
                             </button>
                         </form>
@@ -370,7 +370,7 @@
                             @csrf
 
                             <div>
-                                <label class="block font-bold text-slate-300 uppercase tracking-wider text-[10px] mb-1">Assign Field Technician (Optional)</label>
+                                <label class="block text-sm font-semibold text-slate-300 mb-1.5">Assign Field Technician (Optional)</label>
                                 <select name="assigned_technician_id" class="w-full bg-[#060913] border border-slate-700 text-white rounded-xl px-3.5 py-2.5 focus:border-amber-400 focus:outline-none">
                                     <option value="">-- Assign Later --</option>
                                     @foreach($technicians as $tech)
@@ -382,22 +382,22 @@
                             </div>
 
                             <div>
-                                <label class="block font-bold text-slate-300 uppercase tracking-wider text-[10px] mb-1">Scheduled On-Site Visit Date</label>
+                                <label class="block text-sm font-semibold text-slate-300 mb-1.5">Scheduled On-Site Visit Date</label>
                                 <input type="date" name="scheduled_date" value="{{ $ticket->scheduled_date?->format('Y-m-d') ?: now()->addDay()->format('Y-m-d') }}"
                                     class="w-full bg-[#060913] border border-slate-700 text-white rounded-xl px-3.5 py-2.5 focus:border-amber-400 focus:outline-none">
                             </div>
 
                             <div>
-                                <label class="block font-bold text-slate-300 uppercase tracking-wider text-[10px] mb-1">Approval Note for Customer (Optional)</label>
+                                <label class="block text-sm font-semibold text-slate-300 mb-1.5">Approval Note for Customer (Optional)</label>
                                 <textarea name="admin_notes" rows="2" placeholder="e.g. Your CCTV site survey & work request has been approved. Our certified technician will arrive on the scheduled date."
                                     class="w-full bg-[#060913] border border-slate-700 text-white rounded-xl px-3.5 py-2.5 focus:border-amber-400 focus:outline-none"></textarea>
                             </div>
 
                             <div class="pt-3 flex items-center justify-end gap-2.5 border-t border-white/10">
-                                <button type="button" @click="showAcceptModal = false" class="px-4 py-2.5 rounded-xl border border-slate-700 text-slate-300 font-bold text-xs hover:bg-slate-800">
+                                <button type="button" @click="showAcceptModal = false" class="px-5 py-2.5 min-h-[44px] rounded-xl border border-slate-700 text-slate-300 font-semibold text-sm hover:bg-slate-800">
                                     Cancel
                                 </button>
-                                <button type="submit" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-slate-950 font-black text-xs shadow-lg shadow-emerald-500/20 transition flex items-center gap-1.5">
+                                <button type="submit" class="px-6 py-2.5 min-h-[44px] rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-slate-950 font-black text-sm shadow-lg shadow-emerald-500/20 transition flex items-center gap-1.5">
                                     <span>✓ Confirm Approval & Accept</span>
                                 </button>
                             </div>
@@ -437,16 +437,16 @@
                             @csrf
 
                             <div>
-                                <label class="block font-bold text-slate-300 uppercase tracking-wider text-[10px] mb-1">Reason for Declining * (Visible to Customer)</label>
+                                <label class="block text-sm font-semibold text-slate-300 mb-1.5">Reason for Declining * (Visible to Customer)</label>
                                 <textarea name="rejection_reason" required rows="3" placeholder="Please specify why this work request is being declined..."
                                     class="w-full bg-[#060913] border border-slate-700 text-white rounded-xl px-3.5 py-2.5 focus:border-rose-400 focus:outline-none"></textarea>
                             </div>
 
                             <div class="pt-3 flex items-center justify-end gap-2.5 border-t border-white/10">
-                                <button type="button" @click="showRejectModal = false" class="px-4 py-2.5 rounded-xl border border-slate-700 text-slate-300 font-bold text-xs hover:bg-slate-800">
+                                <button type="button" @click="showRejectModal = false" class="px-5 py-2.5 min-h-[44px] rounded-xl border border-slate-700 text-slate-300 font-semibold text-sm hover:bg-slate-800">
                                     Cancel
                                 </button>
-                                <button type="submit" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-400 hover:to-rose-500 text-white font-extrabold text-xs shadow-lg shadow-rose-500/20 transition flex items-center gap-1.5">
+                                <button type="submit" class="px-6 py-2.5 min-h-[44px] rounded-xl bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-400 hover:to-rose-500 text-white font-extrabold text-sm shadow-lg shadow-rose-500/20 transition flex items-center gap-1.5">
                                     <span>✕ Decline Request</span>
                                 </button>
                             </div>

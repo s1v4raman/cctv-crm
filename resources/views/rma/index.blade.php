@@ -58,12 +58,12 @@
             <div class="bg-[#0f172a] rounded-2xl p-4 mb-6 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.5)] border border-white/5">
                 <form method="GET" action="{{ route('rma.index') }}" class="grid grid-cols-1 sm:grid-cols-5 gap-3">
                     <div class="sm:col-span-2">
-                        <label class="block text-[11px] font-bold text-slate-400 mb-1">Search Keyword</label>
-                        <input type="text" name="search" value="{{ request('search') }}" placeholder="RMA #, Serial #, Vendor AWB, Customer..." class="w-full text-xs rounded-xl bg-[#060913] border-slate-700 text-slate-200 focus:border-amber-400 focus:ring-amber-400">
+                        <label class="block text-sm font-semibold text-slate-300 mb-1.5">Search Keyword</label>
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="RMA #, Serial #, Vendor AWB, Customer..." class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-[#060913] border-slate-700 text-slate-200 focus:border-amber-400 focus:ring-amber-400">
                     </div>
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-400 mb-1">Supplier / Vendor</label>
-                        <select name="supplier_id" class="w-full text-xs rounded-xl bg-[#060913] border-slate-700 text-slate-200 focus:border-amber-400 focus:ring-amber-400">
+                        <label class="block text-sm font-semibold text-slate-300 mb-1.5">Supplier / Vendor</label>
+                        <select name="supplier_id" class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-[#060913] border-slate-700 text-slate-200 focus:border-amber-400 focus:ring-amber-400">
                             <option value="">All Suppliers</option>
                             @foreach($suppliers as $supplier)
                                 <option value="{{ $supplier->id }}" @selected(request('supplier_id') == $supplier->id)>{{ $supplier->name }}</option>
@@ -71,8 +71,8 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-400 mb-1">Status</label>
-                        <select name="status" class="w-full text-xs rounded-xl bg-[#060913] border-slate-700 text-slate-200 focus:border-amber-400 focus:ring-amber-400">
+                        <label class="block text-sm font-semibold text-slate-300 mb-1.5">Status</label>
+                        <select name="status" class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-[#060913] border-slate-700 text-slate-200 focus:border-amber-400 focus:ring-amber-400">
                             <option value="">All Statuses</option>
                             @foreach(\App\Models\RmaClaim::statusLabels() as $key => $label)
                                 <option value="{{ $key }}" @selected(request('status') === $key)>{{ $label }}</option>
@@ -80,11 +80,11 @@
                         </select>
                     </div>
                     <div class="flex items-end gap-2">
-                        <button type="submit" class="flex-1 py-2 px-4 text-white rounded-xl text-xs font-bold transition" style="background-color: var(--crm-accent, #2563eb);">
+                        <button type="submit" class="btn-amber min-h-[44px] px-5 py-2.5 text-sm font-bold rounded-xl transition" style="background-color: var(--crm-accent, #2563eb);">
                             Filter
                         </button>
                         @if(request()->anyFilled(['search', 'status', 'supplier_id', 'warranty']))
-                            <a href="{{ route('rma.index') }}" class="py-2 px-3 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold">
+                            <a href="{{ route('rma.index') }}" class="btn-secondary min-h-[44px] px-4 py-2.5 text-sm font-semibold rounded-xl">
                                 Reset
                             </a>
                         @endif

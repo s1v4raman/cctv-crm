@@ -133,15 +133,15 @@
             <form method="GET" action="{{ route('finance.job-costing.index') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
                 <!-- Search -->
                 <div>
-                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Search Job / Client</label>
+                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Search Job / Client</label>
                     <input type="text" name="search" value="{{ $filters['search'] }}" placeholder="Job #, Customer, Phone..."
-                           class="w-full rounded-xl border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-xs font-semibold focus:ring-2 focus:ring-emerald-500">
+                           class="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-sm min-h-[44px] px-3.5 py-2.5 font-medium focus:ring-2 focus:ring-emerald-500">
                 </div>
 
                 <!-- Margin Status Filter -->
                 <div>
-                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Profitability Health</label>
-                    <select name="margin_status" class="w-full rounded-xl border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-xs font-semibold focus:ring-2 focus:ring-emerald-500">
+                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Profitability Health</label>
+                    <select name="margin_status" class="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-sm min-h-[44px] px-3.5 py-2.5 font-medium focus:ring-2 focus:ring-emerald-500">
                         <option value="">All Profit Tiers</option>
                         <option value="high_profit" {{ $filters['margin_status'] === 'high_profit' ? 'selected' : '' }}>🟢 High Margin (≥ 35%)</option>
                         <option value="healthy" {{ $filters['margin_status'] === 'healthy' ? 'selected' : '' }}>🔵 Healthy Margin (20% - 35%)</option>
@@ -152,8 +152,8 @@
 
                 <!-- Technician Filter -->
                 <div>
-                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Technician</label>
-                    <select name="technician_id" class="w-full rounded-xl border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-xs font-semibold focus:ring-2 focus:ring-emerald-500">
+                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Technician</label>
+                    <select name="technician_id" class="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-sm min-h-[44px] px-3.5 py-2.5 font-medium focus:ring-2 focus:ring-emerald-500">
                         <option value="">All Technicians</option>
                         @foreach($technicians as $tech)
                             <option value="{{ $tech->id }}" {{ (string)$filters['technician_id'] === (string)$tech->id ? 'selected' : '' }}>
@@ -165,8 +165,8 @@
 
                 <!-- Date Range -->
                 <div>
-                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Time Period</label>
-                    <select name="range" class="w-full rounded-xl border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-xs font-semibold focus:ring-2 focus:ring-emerald-500">
+                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Time Period</label>
+                    <select name="range" class="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-sm min-h-[44px] px-3.5 py-2.5 font-medium focus:ring-2 focus:ring-emerald-500">
                         <option value="all" {{ $range === 'all' ? 'selected' : '' }}>All Time</option>
                         <option value="this_month" {{ $range === 'this_month' ? 'selected' : '' }}>This Month</option>
                         <option value="last_month" {{ $range === 'last_month' ? 'selected' : '' }}>Last Month</option>
@@ -175,10 +175,10 @@
 
                 <!-- Submit / Reset Buttons -->
                 <div class="flex items-end gap-2">
-                    <button type="submit" class="flex-1 py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-md transition">
+                    <button type="submit" class="flex-1 min-h-[44px] py-2.5 px-5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold rounded-xl shadow-md transition">
                         Filter Jobs
                     </button>
-                    <a href="{{ route('finance.job-costing.index') }}" class="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-bold rounded-xl transition">
+                    <a href="{{ route('finance.job-costing.index') }}" class="min-h-[44px] py-2.5 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-sm font-semibold rounded-xl transition">
                         Reset
                     </a>
                 </div>

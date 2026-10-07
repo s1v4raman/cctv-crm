@@ -148,21 +148,21 @@
 
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             <div>
-                                <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Recommended Cameras *</label>
+                                <label class="block text-sm font-semibold text-slate-200 mb-1.5">Recommended Cameras *</label>
                                 <input type="number" name="camera_count_recommended" required min="1" placeholder="e.g. 4" value="{{ old('camera_count_recommended', $siteSurvey->camera_count_recommended ?: 4) }}"
                                     class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 py-2.5">
                                 @error('camera_count_recommended') <span class="text-xs text-rose-400">{{ $message }}</span> @enderror
                             </div>
 
                             <div>
-                                <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Estimated Cable Length (Mtr) *</label>
+                                <label class="block text-sm font-semibold text-slate-200 mb-1.5">Estimated Cable Length (Mtr) *</label>
                                 <input type="number" name="cable_length_estimate" required min="1" step="0.5" placeholder="e.g. 90" value="{{ old('cable_length_estimate', $siteSurvey->cable_length_estimate ?: 50) }}"
                                     class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 py-2.5">
                                 @error('cable_length_estimate') <span class="text-xs text-rose-400">{{ $message }}</span> @enderror
                             </div>
 
                             <div>
-                                <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">DVR / NVR Placement *</label>
+                                <label class="block text-sm font-semibold text-slate-200 mb-1.5">DVR / NVR Placement *</label>
                                 <input type="text" name="dvr_location" required placeholder="e.g. 1st Floor Server Room" value="{{ old('dvr_location', $siteSurvey->dvr_location ?: 'Server Room / Office') }}"
                                     class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 py-2.5">
                                 @error('dvr_location') <span class="text-xs text-rose-400">{{ $message }}</span> @enderror
@@ -171,19 +171,19 @@
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Power Sockets & UPS Availability</label>
+                                <label class="block text-sm font-semibold text-slate-200 mb-1.5">Power Sockets & UPS Availability</label>
                                 <input type="text" name="power_availability" placeholder="e.g. 2x 230V Sockets available, connected to 1KVA UPS" value="{{ old('power_availability', $siteSurvey->power_availability) }}"
                                     class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 py-2.5">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Site Obstacles & Challenges</label>
+                                <label class="block text-sm font-semibold text-slate-200 mb-1.5">Site Obstacles & Challenges</label>
                                 <input type="text" name="challenges" placeholder="e.g. High false ceiling, masonry drilling required for outdoor entry" value="{{ old('challenges', $siteSurvey->challenges) }}"
                                     class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 py-2.5">
                             </div>
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Detailed On-Site Observations & Recommendations *</label>
+                            <label class="block text-sm font-semibold text-slate-200 mb-1.5">Detailed On-Site Observations & Recommendations *</label>
                             <textarea name="visit_notes" required rows="3" placeholder="Describe camera coverage angles, conduit routing, and storage requirements..."
                                 class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20">{{ old('visit_notes', $siteSurvey->visit_notes) }}</textarea>
                             @error('visit_notes') <span class="text-xs text-rose-400">{{ $message }}</span> @enderror

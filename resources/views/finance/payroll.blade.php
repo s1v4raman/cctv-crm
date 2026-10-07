@@ -98,18 +98,18 @@
             <div class="pg-card p-4 flex flex-wrap items-center justify-between gap-4">
                 <form method="GET" action="{{ route('finance.payroll.index') }}" class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
                     <div>
-                        <label class="text-[10px] font-bold text-slate-400 uppercase block mb-1">Select Month</label>
+                        <label class="text-sm font-semibold text-slate-700 dark:text-slate-300 block mb-1.5">Select Month</label>
                         <input type="month" 
                                name="month" 
                                value="{{ $selectedMonth }}" 
                                onchange="this.form.submit()"
-                               class="text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3.5 py-1.5 text-slate-800 dark:text-slate-200 font-mono">
+                               class="text-sm min-h-[44px] rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3.5 py-2.5 text-slate-800 dark:text-slate-200 font-mono">
                     </div>
 
                     <div>
-                        <label class="text-[10px] font-bold text-slate-400 uppercase block mb-1">Payment Status</label>
+                        <label class="text-sm font-semibold text-slate-700 dark:text-slate-300 block mb-1.5">Payment Status</label>
                         <select name="status" onchange="this.form.submit()" 
-                                class="text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-1.5 text-slate-800 dark:text-slate-200">
+                                class="text-sm min-h-[44px] rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3.5 py-2.5 text-slate-800 dark:text-slate-200">
                             <option value="">All Statuses</option>
                             <option value="draft" {{ $statusFilter === 'draft' ? 'selected' : '' }}>Draft</option>
                             <option value="approved" {{ $statusFilter === 'approved' ? 'selected' : '' }}>Approved</option>
@@ -118,9 +118,9 @@
                     </div>
 
                     <div>
-                        <label class="text-[10px] font-bold text-slate-400 uppercase block mb-1">Employee Filter</label>
+                        <label class="text-sm font-semibold text-slate-700 dark:text-slate-300 block mb-1.5">Employee Filter</label>
                         <select name="user_id" onchange="this.form.submit()" 
-                                class="text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-1.5 text-slate-800 dark:text-slate-200">
+                                class="text-sm min-h-[44px] rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3.5 py-2.5 text-slate-800 dark:text-slate-200">
                             <option value="">All Employees</option>
                             @foreach($internalUsers as $u)
                                 <option value="{{ $u->id }}" {{ $employeeId == $u->id ? 'selected' : '' }}>{{ $u->name }} ({{ ucfirst($u->role) }})</option>
@@ -318,17 +318,17 @@
                 @csrf
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Payroll Cycle Type</label>
+                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Payroll Cycle Type</label>
                     <div class="grid grid-cols-3 gap-2">
-                        <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-semibold">
+                        <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 text-sm font-medium">
                             <input type="radio" name="period_type" value="monthly" checked onchange="adjustDateDefaults('monthly')">
                             <span>Monthly</span>
                         </label>
-                        <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-semibold">
+                        <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 text-sm font-medium">
                             <input type="radio" name="period_type" value="weekly" onchange="adjustDateDefaults('weekly')">
                             <span>Weekly</span>
                         </label>
-                        <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-semibold">
+                        <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 text-sm font-medium">
                             <input type="radio" name="period_type" value="daily" onchange="adjustDateDefaults('daily')">
                             <span>Per-Day</span>
                         </label>
@@ -337,13 +337,13 @@
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Period Start</label>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Period Start</label>
                         <input type="date" id="gen_period_start" name="period_start" required
                                value="{{ \Carbon\Carbon::parse($selectedMonth . '-01')->startOfMonth()->toDateString() }}"
                                class="w-full text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200 font-mono">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Period End</label>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Period End</label>
                         <input type="date" id="gen_period_end" name="period_end" required
                                value="{{ \Carbon\Carbon::parse($selectedMonth . '-01')->endOfMonth()->toDateString() }}"
                                class="w-full text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200 font-mono">
@@ -351,7 +351,7 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Target Employees</label>
+                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Target Employees</label>
                     <select name="user_id" class="w-full text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
                         <option value="">All Salaried Employees (Internal)</option>
                         @foreach($internalUsers as $u)
@@ -369,7 +369,7 @@
                     <button type="button" onclick="closeGenerateModal()" class="px-4 py-2 text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl">
                         Cancel
                     </button>
-                    <button type="submit" class="px-5 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-md transition">
+                    <button type="submit" class="px-6 py-2.5 min-h-[44px] text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-md transition">
                         Run Batch Calculation
                     </button>
                 </div>
@@ -390,7 +390,7 @@
             <form id="statusForm" method="POST" action="" class="mt-4 space-y-4">
                 @csrf
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Status</label>
+                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Status</label>
                     <select id="modal_status" name="status" required class="w-full text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
                         <option value="draft">Draft</option>
                         <option value="approved">Approved (Ready for disbursal)</option>
@@ -399,19 +399,19 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Payment Date (if paid)</label>
+                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Payment Date (if paid)</label>
                     <input type="date" id="modal_payment_date" name="payment_date" value="{{ now()->toDateString() }}"
                            class="w-full text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200 font-mono">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Payment Reference / UTR Number</label>
+                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Payment Reference / UTR Number</label>
                     <input type="text" id="modal_payment_reference" name="payment_reference" placeholder="e.g. UTR-982736192 or Cheque #004"
                            class="w-full text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Notes</label>
+                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Notes</label>
                     <textarea id="modal_notes" name="notes" rows="2" placeholder="Optional audit notes..."
                               class="w-full text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200"></textarea>
                 </div>
@@ -420,7 +420,7 @@
                     <button type="button" onclick="closeStatusModal()" class="px-4 py-2 text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl">
                         Cancel
                     </button>
-                    <button type="submit" class="px-5 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-md transition">
+                    <button type="submit" class="px-6 py-2.5 min-h-[44px] text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-md transition">
                         Save Status
                     </button>
                 </div>

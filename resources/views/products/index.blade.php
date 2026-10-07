@@ -143,11 +143,11 @@
                         <option value="accessory" @selected(request('category') === 'accessory')>Accessories</option>
                         <option value="service" @selected(request('category') === 'service')>Labor / Service</option>
                     </select>
-                    <button type="submit" class="px-3 py-2 text-white font-bold text-xs rounded-lg transition shadow" style="background-color: var(--crm-accent, #2563eb);">
+                    <button type="submit" class="btn-amber min-h-[44px] px-5 py-2.5 text-sm font-bold rounded-xl transition shadow">
                         Search
                     </button>
                     @if(request('search') || request('category'))
-                        <a href="{{ route('products.index') }}" class="px-2.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-lg transition">
+                        <a href="{{ route('products.index') }}" class="btn-secondary min-h-[44px] px-4 py-2.5 text-sm font-semibold rounded-xl transition">
                             Clear
                         </a>
                     @endif

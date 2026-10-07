@@ -75,16 +75,20 @@
                             style="padding:.45rem .8rem;background:#1e293b;color:#f8fafc;border:1px solid #334155;border-radius:.6rem;font-size:.75rem;font-weight:700;display:inline-flex;align-items:center;gap:.35rem;cursor:pointer;">
                         💡 Torch
                     </button>
-                    <button type="button" onclick="switchCamera('{{ $modalId }}')"
-                            style="padding:.45rem .8rem;background:#1e293b;color:#f8fafc;border:1px solid #334155;border-radius:.6rem;font-size:.75rem;font-weight:700;display:inline-flex;align-items:center;gap:.35rem;cursor:pointer;">
+                    <button type="button" id="{{ $modalId }}-flip-btn" onclick="switchCamera('{{ $modalId }}')"
+                            style="padding:.45rem .8rem;background:#1e293b;color:#f8fafc;border:1px solid #334155;border-radius:.6rem;font-size:.75rem;font-weight:700;display:inline-flex;align-items:center;gap:.35rem;cursor:pointer;transition:all 0.2s ease;">
                         🔄 Flip Cam
                     </button>
                 </div>
 
-                <div>
-                    <label style="padding:.45rem .9rem;background:#2563eb;color:#fff;border-radius:.6rem;font-size:.75rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:.35rem;box-shadow:0 4px 12px rgba(37,99,235,0.25);">
-                        📁 Snap / Upload Image
-                        <input type="file" accept="image/*" capture="environment" onchange="handleBarcodeImageUpload(event, '{{ $modalId }}')" style="display:none;">
+                <div style="display:flex;gap:.5rem;align-items:center;">
+                    <button type="button" onclick="snapBarcodeCurrentFrame('{{ $modalId }}')"
+                            style="padding:.45rem .85rem;background:#059669;color:#fff;border-radius:.6rem;border:none;font-size:.75rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:.35rem;box-shadow:0 4px 12px rgba(5,150,105,0.3);">
+                        📸 Snap
+                    </button>
+                    <label style="padding:.45rem .85rem;background:#2563eb;color:#fff;border-radius:.6rem;font-size:.75rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:.35rem;box-shadow:0 4px 12px rgba(37,99,235,0.25);">
+                        📁 Upload Image
+                        <input type="file" accept="image/*" onchange="handleBarcodeImageUpload(event, '{{ $modalId }}')" style="display:none;">
                     </label>
                 </div>
             </div>
@@ -106,6 +110,21 @@
 <script>
 window.barcodeScannerState = window.barcodeScannerState || {};
 
+function isMobileScannerDevice() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+           (window.innerWidth <= 768 && ('ontouchstart' in window));
+}
+
+async function getBarcodeVideoDevices() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return [];
+    try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        return devices.filter(d => d.kind === 'videoinput');
+    } catch (e) {
+        return [];
+    }
+}
+
 function openBarcodeScanner(modalId, targetInputId = null, onDetectedCallback = null, defaultTab = 'laptop') {
     const modal = document.getElementById(modalId);
     if (!modal) return;
@@ -117,14 +136,17 @@ function openBarcodeScanner(modalId, targetInputId = null, onDetectedCallback = 
         callback: onDetectedCallback,
         stream: null,
         animFrame: null,
-        currentFacingMode: 'environment',
+        currentFacingMode: isMobileScannerDevice() ? 'environment' : 'user',
+        videoDevices: [],
+        currentDeviceIndex: 0,
+        isSwitching: false,
         torchOn: false,
         track: null,
         activeTab: 'laptop',
         pollInterval: null
     };
 
-    // Auto-start camera immediately (works on both desktop & mobile browser)
+    // Auto-start camera immediately (works on desktop & mobile browser)
     startBarcodeCamera(modalId);
 }
 
@@ -135,14 +157,17 @@ function closeBarcodeScanner(modalId) {
 
     const state = window.barcodeScannerState[modalId];
     if (state) {
-        if (state.stream) {
-            state.stream.getTracks().forEach(t => t.stop());
-            state.stream = null;
-        }
         if (state.animFrame) {
             cancelAnimationFrame(state.animFrame);
             state.animFrame = null;
         }
+        if (state.stream) {
+            state.stream.getTracks().forEach(t => t.stop());
+            state.stream = null;
+        }
+        state.track = null;
+        const video = document.getElementById(`${modalId}-video`);
+        if (video) video.srcObject = null;
         if (state.pollInterval) {
             clearInterval(state.pollInterval);
             state.pollInterval = null;
@@ -151,48 +176,148 @@ function closeBarcodeScanner(modalId) {
 }
 
 function switchScannerTab(modalId, tab) {
-    // Legacy function kept for compatibility — only laptop tab exists now
+    // Legacy function kept for compatibility
     startBarcodeCamera(modalId);
 }
 
-// Mobile relay polling removed — app now opens directly on mobile browser.
-
-async function startBarcodeCamera(modalId) {
+async function startBarcodeCamera(modalId, preferDeviceId = null) {
     const state = window.barcodeScannerState[modalId];
     if (!state) return;
 
     const video = document.getElementById(`${modalId}-video`);
     const status = document.getElementById(`${modalId}-status`);
+    const flipBtn = document.getElementById(`${modalId}-flip-btn`);
 
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        if (status) status.innerText = 'Camera not supported. Use Chrome on Android or Safari on iPhone.';
+        if (status) status.innerText = 'Camera not supported. Please use Chrome on Android or Safari on iOS.';
         return;
     }
 
     try {
-        if (state.stream) {
-            state.stream.getTracks().forEach(t => t.stop());
+        // Cancel active scanning frame loop
+        if (state.animFrame) {
+            cancelAnimationFrame(state.animFrame);
+            state.animFrame = null;
         }
 
-        const constraints = {
-            video: {
-                facingMode: { ideal: state.currentFacingMode },
-                width: { ideal: 1280 },
-                height: { ideal: 720 }
-            }
-        };
+        // Cleanly terminate active stream and disconnect video element
+        if (state.stream) {
+            state.stream.getTracks().forEach(t => t.stop());
+            state.stream = null;
+            state.track = null;
+        }
+        if (video) {
+            video.srcObject = null;
+        }
 
-        const stream = await navigator.mediaDevices.getUserMedia(constraints);
+        // Allow camera hardware driver a brief moment (80ms) to release
+        await new Promise(r => setTimeout(r, 80));
+
+        let stream = null;
+        const isMobile = isMobileScannerDevice();
+
+        // 1. Select constraints based on device type
+        let primaryConstraints;
+        if (preferDeviceId) {
+            primaryConstraints = {
+                video: { deviceId: { exact: preferDeviceId }, width: { ideal: 1280 }, height: { ideal: 720 } }
+            };
+        } else if (isMobile) {
+            primaryConstraints = {
+                video: {
+                    facingMode: { ideal: state.currentFacingMode || 'environment' },
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 }
+                }
+            };
+        } else {
+            // Laptop / Desktop PC: Avoid restrictive facingMode to prevent OverconstrainedError on webcams
+            primaryConstraints = {
+                video: { width: { ideal: 1280 }, height: { ideal: 720 } }
+            };
+        }
+
+        try {
+            stream = await navigator.mediaDevices.getUserMedia(primaryConstraints);
+        } catch (strictErr) {
+            console.warn('Primary camera constraints failed, attempting basic { video: true }...', strictErr);
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            } catch (fallbackErr) {
+                throw fallbackErr;
+            }
+        }
+
         state.stream = stream;
         state.track = stream.getVideoTracks()[0];
+        state.lastError = null;
         video.srcObject = stream;
-        await video.play();
 
-        if (status) status.innerText = 'Scanning... Hold camera steady over barcode/tag.';
+        // Ensure video is actively decoding frames
+        await new Promise((resolve) => {
+            if (video.videoWidth > 0 && video.readyState >= 2) {
+                resolve();
+            } else {
+                const onReady = () => {
+                    video.removeEventListener('loadeddata', onReady);
+                    video.removeEventListener('canplay', onReady);
+                    resolve();
+                };
+                video.addEventListener('loadeddata', onReady);
+                video.addEventListener('canplay', onReady);
+                setTimeout(resolve, 800);
+            }
+        });
+
+        try {
+            await video.play();
+        } catch (playErr) {
+            console.warn('Video play error:', playErr);
+        }
+
+        // Enumerate devices once stream permission is granted
+        const devices = await getBarcodeVideoDevices();
+        state.videoDevices = devices;
+        if (state.track) {
+            const currentSettings = state.track.getSettings ? state.track.getSettings() : {};
+            const currentId = currentSettings.deviceId;
+            if (currentId) {
+                const foundIdx = devices.findIndex(d => d.deviceId === currentId);
+                if (foundIdx !== -1) {
+                    state.currentDeviceIndex = foundIdx;
+                }
+            }
+        }
+
+        const label = (state.track && state.track.label)
+            ? state.track.label
+            : (isMobile ? 'Mobile Rear Camera' : 'Laptop Integrated Camera');
+
+        if (status) {
+            status.innerHTML = `<span style="color:#4ade80;">●</span> Active: ${label.substring(0, 32)}... Hold steady over barcode.`;
+        }
+
         scanBarcodeLoop(modalId);
     } catch (err) {
         console.warn('Camera stream error:', err);
-        if (status) status.innerText = 'Camera blocked or unavailable. Tap "Scan with Mobile Phone" tab above!';
+        state.lastError = err.name || 'Error';
+        let errorMsg = '⚠️ Camera blocked or unavailable. Click "📁 Upload Image" or check permissions.';
+        if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+            errorMsg = '🚫 Camera blocked! Click 🔒 in your address bar and set Camera to "Allow", then click Retry.';
+        } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
+            errorMsg = '⚠️ Camera in use by another app (Zoom/Teams). Please close it and click Retry.';
+        } else if (err.name === 'NotFoundError') {
+            errorMsg = '⚠️ No camera hardware found on this computer. Use "📁 Upload Image".';
+        }
+        if (status) {
+            status.innerHTML = `<span style="color:#fca5a5;">${errorMsg}</span>`;
+        }
+    } finally {
+        state.isSwitching = false;
+        if (flipBtn) {
+            flipBtn.disabled = false;
+            flipBtn.style.opacity = '1';
+        }
     }
 }
 
@@ -271,9 +396,67 @@ function handleBarcodeDetected(modalId, code) {
     }, 600);
 }
 
+async function snapBarcodeCurrentFrame(modalId) {
+    const state = window.barcodeScannerState[modalId];
+    const video = document.getElementById(`${modalId}-video`);
+    const status = document.getElementById(`${modalId}-status`);
+    const canvas = document.getElementById(`${modalId}-canvas`);
+
+    if (!state || !state.stream) {
+        if (state && (state.lastError === 'NotAllowedError' || state.lastError === 'PermissionDeniedError')) {
+            alert('🚫 Camera Permission is Blocked in your browser!\n\nTo allow it:\n1. Look at the address bar at the top (where http://127.0.0.1:8000 is written).\n2. Click the Lock / Tune icon (🔒 or 🎚️) on the left of the URL.\n3. Change "Camera" permission from "Block" to "Allow".\n4. Re-open this scanner or reload the page.\n\nYou can also click "📁 Upload Image" below to choose a photo directly from your computer.');
+        } else if (state && (state.lastError === 'NotReadableError' || state.lastError === 'TrackStartError')) {
+            alert('⚠️ Camera is currently in use by another application (Zoom, Teams, Skype, etc.).\n\nPlease close the other app and click "🔄 Flip Cam" to retry, or use "📁 Upload Image".');
+        } else {
+            alert('⚠️ Camera stream is not connected.\n\nPlease click "📁 Upload Image" to scan from a photo file, or ensure camera permissions are allowed in your browser.');
+        }
+        return;
+    }
+
+    if (!video || !canvas) return;
+
+    // Gracefully wait up to 500ms if stream is active but first frame is still decoding
+    if (video.videoWidth === 0 || video.readyState < 2) {
+        if (status) status.innerText = '⏳ Waiting for camera frame...';
+        await new Promise(r => setTimeout(r, 400));
+    }
+
+    if (status) status.innerText = '⚡ Snapping frame and scanning barcode...';
+
+    const width = video.videoWidth || 1280;
+    const height = video.videoHeight || 720;
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0, width, height);
+
+    if ('BarcodeDetector' in window) {
+        try {
+            const detector = new BarcodeDetector({
+                formats: ['code_128', 'code_39', 'code_93', 'ean_13', 'ean_8', 'qr_code', 'upc_a', 'upc_e', 'data_matrix']
+            });
+            const barcodes = await detector.detect(canvas);
+            if (barcodes.length > 0 && barcodes[0].rawValue) {
+                handleBarcodeDetected(modalId, barcodes[0].rawValue);
+                return;
+            }
+        } catch (e) {
+            console.warn('BarcodeDetector error on snap:', e);
+        }
+    }
+
+    const manual = prompt('Could not auto-read barcode from current snap. Enter S/N manually or try again:');
+    if (manual) {
+        handleBarcodeDetected(modalId, manual);
+    } else if (status) {
+        status.innerText = 'Hold barcode closer and center in red line, then tap Snap again.';
+    }
+}
+
 async function handleBarcodeImageUpload(event, modalId) {
     const file = event.target.files[0];
     if (!file) return;
+    event.target.value = ''; // Reset so the same file can be selected again if needed
 
     const status = document.getElementById(`${modalId}-status`);
     if (status) status.innerText = 'Processing uploaded image...';
@@ -305,23 +488,61 @@ async function handleBarcodeImageUpload(event, modalId) {
 
 function toggleTorch(modalId) {
     const state = window.barcodeScannerState[modalId];
+    const btn = document.getElementById(`${modalId}-torch-btn`);
     if (state && state.track && state.track.applyConstraints) {
         state.torchOn = !state.torchOn;
         state.track.applyConstraints({
             advanced: [{ torch: state.torchOn }]
+        }).then(() => {
+            if (btn) {
+                btn.style.background = state.torchOn ? '#eab308' : '#1e293b';
+                btn.style.color = state.torchOn ? '#0f172a' : '#f8fafc';
+                btn.style.borderColor = state.torchOn ? '#ca8a04' : '#334155';
+            }
         }).catch(() => {
-            alert('Torch/Flashlight is not supported on this webcam/device.');
+            state.torchOn = false;
+            alert('Torch / Flashlight is not supported on this webcam/device.');
         });
     } else {
         alert('Torch control unavailable on this camera stream.');
     }
 }
 
-function switchCamera(modalId) {
+async function switchCamera(modalId) {
     const state = window.barcodeScannerState[modalId];
-    if (state) {
+    if (!state || state.isSwitching) return;
+    state.isSwitching = true;
+
+    const status = document.getElementById(`${modalId}-status`);
+    const flipBtn = document.getElementById(`${modalId}-flip-btn`);
+    if (flipBtn) {
+        flipBtn.disabled = true;
+        flipBtn.style.opacity = '0.5';
+    }
+    if (status) status.innerText = '🔄 Switching camera...';
+
+    // Fetch latest devices
+    let devices = await getBarcodeVideoDevices();
+    if (!devices || devices.length === 0) {
+        devices = state.videoDevices || [];
+    } else {
+        state.videoDevices = devices;
+    }
+
+    if (devices.length > 1) {
+        // Multi-camera device: cycle to next physical deviceId
+        state.currentDeviceIndex = (state.currentDeviceIndex + 1) % devices.length;
+        const targetDevice = devices[state.currentDeviceIndex];
+        // Toggle logical facing mode flag
         state.currentFacingMode = state.currentFacingMode === 'environment' ? 'user' : 'environment';
-        startBarcodeCamera(modalId);
+        await startBarcodeCamera(modalId, targetDevice.deviceId);
+    } else {
+        // Single webcam detected or browser hasn't exposed device IDs
+        state.currentFacingMode = state.currentFacingMode === 'environment' ? 'user' : 'environment';
+        if (devices.length === 1 && status) {
+            status.innerText = '🔄 Toggling camera mode... (1 physical camera detected)';
+        }
+        await startBarcodeCamera(modalId, null);
     }
 }
 </script>

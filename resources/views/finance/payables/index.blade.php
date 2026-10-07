@@ -505,7 +505,7 @@
 
                     <template x-if="!modalSupplierId">
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Select Supplier / Vendor *</label>
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Select Supplier / Vendor *</label>
                             <select name="supplier_id" required
                                     class="w-full px-3.5 py-2 text-xs font-semibold rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500">
                                 <option value="">-- Choose Vendor / Supplier --</option>
@@ -521,12 +521,12 @@
 
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Disbursement Amount (₹) *</label>
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Disbursement Amount (₹) *</label>
                             <input type="number" step="0.01" min="0.01" name="amount" :value="modalAmount" required
                                    class="w-full px-3.5 py-2 text-xs font-bold rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Payment Date *</label>
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Payment Date *</label>
                             <input type="date" name="payment_date" value="{{ date('Y-m-d') }}" required
                                    class="w-full px-3.5 py-2 text-xs font-medium rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500">
                         </div>
@@ -534,7 +534,7 @@
 
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Payment Method *</label>
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Payment Method *</label>
                             <select name="payment_method" required
                                     class="w-full px-3.5 py-2 text-xs font-medium rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500">
                                 <option value="neft_rtgs">NEFT / RTGS (Bank Transfer)</option>
@@ -545,14 +545,14 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Bank Ref / UTR / Cheque #</label>
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Bank Ref / UTR / Cheque #</label>
                             <input type="text" name="transaction_reference" placeholder="e.g. UTR12345678"
                                    class="w-full px-3.5 py-2 text-xs font-medium rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500">
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Payment Remarks / Notes</label>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Payment Remarks / Notes</label>
                         <textarea name="notes" rows="2" placeholder="Optional settlement notes..."
                                   class="w-full px-3.5 py-2 text-xs font-medium rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500"></textarea>
                     </div>

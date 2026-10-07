@@ -32,7 +32,7 @@
 
                     {{-- Issue Title --}}
                     <div class="space-y-1.5">
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                             Summary / Problem Title <span class="text-rose-600 dark:text-rose-400">*</span>
                         </label>
                         <input type="text" name="title" value="{{ old('title') }}" required autofocus
@@ -46,7 +46,7 @@
                         
                         {{-- Issue Category --}}
                         <div class="space-y-1.5">
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                                 Problem Category <span class="text-rose-600 dark:text-rose-400">*</span>
                             </label>
                             <select name="issue_type" required 
@@ -61,7 +61,7 @@
 
                         {{-- Priority --}}
                         <div class="space-y-1.5">
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                                 Severity / Urgency <span class="text-rose-600 dark:text-rose-400">*</span>
                             </label>
                             <select name="priority" required 
@@ -78,7 +78,7 @@
 
                     {{-- Affected Equipment (Optional) --}}
                     <div class="space-y-1.5">
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                             Affected Device / Location (Optional)
                         </label>
                         <select name="equipment_id" 
@@ -96,7 +96,7 @@
 
                     {{-- Description --}}
                     <div class="space-y-1.5">
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                             Detailed Symptoms & Description <span class="text-rose-600 dark:text-rose-400">*</span>
                         </label>
                         <textarea name="description" rows="4" required
@@ -108,11 +108,11 @@
                     {{-- Action Buttons --}}
                     <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-3">
                         <a href="{{ route('portal.tickets') }}" 
-                           class="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold transition">
+                           class="px-5 py-2.5 min-h-[44px] rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-sm font-semibold transition">
                             Cancel
                         </a>
                         <button type="submit" 
-                                class="crm-customer-action-btn px-5 py-2.5 text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-xs transition-all duration-200 cursor-pointer"
+                                class="crm-customer-action-btn px-6 py-2.5 min-h-[44px] text-white text-sm font-bold rounded-xl shadow-xs transition-all duration-200 cursor-pointer"
                                 style="background-color: var(--crm-accent, #2563eb); border: 1px solid var(--crm-accent, #2563eb); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(37,99,235,0.35));">
                             Submit Service Request
                         </button>

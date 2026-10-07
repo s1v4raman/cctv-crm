@@ -229,15 +229,15 @@
 
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             <div>
-                                <label class="block font-bold text-slate-300 uppercase tracking-wider text-[10px] mb-1">Scheduled Date</label>
+                                <label class="block font-semibold text-slate-300 text-sm mb-1.5">Scheduled Date</label>
                                 <input type="date" name="scheduled_date"
                                        value="{{ $job->scheduled_date?->format('Y-m-d') }}"
-                                       class="w-full bg-[#060913] border border-slate-700 text-white rounded-xl px-3.5 py-2.5 focus:border-amber-400 focus:outline-none">
+                                       class="w-full bg-[#060913] border border-slate-700 text-white rounded-xl px-3.5 py-2.5 min-h-[44px] text-sm focus:border-amber-400 focus:outline-none">
                             </div>
 
                             <div>
-                                <label class="block font-bold text-slate-300 uppercase tracking-wider text-[10px] mb-1">Assigned Technician</label>
-                                <select name="assigned_technician_id" class="w-full bg-[#060913] border border-slate-700 text-white rounded-xl px-3.5 py-2.5 focus:border-amber-400 focus:outline-none">
+                                <label class="block font-semibold text-slate-300 text-sm mb-1.5">Assigned Technician</label>
+                                <select name="assigned_technician_id" class="w-full bg-[#060913] border border-slate-700 text-white rounded-xl px-3.5 py-2.5 min-h-[44px] text-sm focus:border-amber-400 focus:outline-none">
                                     <option value="">Select Technician...</option>
                                     @foreach ($technicians as $tech)
                                         <option value="{{ $tech->id }}" @selected($job->assigned_technician_id == $tech->id)>
@@ -248,8 +248,8 @@
                             </div>
 
                             <div>
-                                <label class="block font-bold text-slate-300 uppercase tracking-wider text-[10px] mb-1">Job Status</label>
-                                <select name="status" class="w-full bg-[#060913] border border-slate-700 text-white rounded-xl px-3.5 py-2.5 focus:border-amber-400 focus:outline-none">
+                                <label class="block font-semibold text-slate-300 text-sm mb-1.5">Job Status</label>
+                                <select name="status" class="w-full bg-[#060913] border border-slate-700 text-white rounded-xl px-3.5 py-2.5 min-h-[44px] text-sm focus:border-amber-400 focus:outline-none">
                                     @foreach (['pending','scheduled','assigned','in_progress','completed','cancelled'] as $s)
                                         <option value="{{ $s }}" @selected($job->status === $s)>
                                             {{ ucfirst(str_replace('_', ' ', $s)) }}
@@ -260,14 +260,14 @@
                         </div>
 
                         <div>
-                            <label class="block font-bold text-slate-300 uppercase tracking-wider text-[10px] mb-1">Installation Notes</label>
+                            <label class="block font-semibold text-slate-300 text-sm mb-1.5">Installation Notes</label>
                             <textarea name="installation_notes" rows="3"
                                       placeholder="Any notes about this installation…"
-                                      class="w-full bg-[#060913] border border-slate-700 text-white rounded-xl px-3.5 py-2.5 focus:border-amber-400 focus:outline-none">{{ $job->installation_notes }}</textarea>
+                                      class="w-full bg-[#060913] border border-slate-700 text-white rounded-xl px-3.5 py-2.5 min-h-[44px] text-sm focus:border-amber-400 focus:outline-none">{{ $job->installation_notes }}</textarea>
                         </div>
 
                         <div class="pt-2">
-                            <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-extrabold text-xs rounded-xl shadow-lg shadow-amber-500/20 transition">
+                            <button type="submit" class="btn-amber min-h-[44px] px-6 py-2.5 text-sm font-bold rounded-xl shadow-lg transition">
                                 Save Work Order Changes
                             </button>
                         </div>
