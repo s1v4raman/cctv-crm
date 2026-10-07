@@ -103,8 +103,14 @@ try {
 echo "=> Running database seeders..."
 php artisan db:seed --force || echo "=> Seeders finished or already run."
 
+# Flush any previous caches to guarantee latest views and designs compile freshly
+echo "=> Flushing stale view, route, and config caches..."
+php artisan optimize:clear || true
+php artisan view:clear || true
+php artisan cache:clear || true
+
 # Cache Laravel configuration, routes, and views for production performance
-echo "=> Caching Laravel configuration, routes, and views..."
+echo "=> Caching fresh Laravel configuration, routes, and views..."
 php artisan config:cache || true
 php artisan route:cache || true
 php artisan view:cache || true
