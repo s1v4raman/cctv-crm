@@ -54,8 +54,7 @@ Route::get('/api/global-search', [\App\Http\Controllers\Api\GlobalSearchControll
 Route::get('/', [StorefrontController::class, 'index'])->name('home');
 Route::post('/public/inquire', [StorefrontController::class, 'inquire'])->name('public.inquire');
 
-// Public Project Portfolio Analysis (Shareable link for external reviewers/clients)
-Route::get('/projects/analysis/share', [ProjectController::class, 'publicAnalysis'])->name('projects.public-analysis');
+// 1-Click Interactive Demo Access for Projects Module
 Route::get('/demo/projects', [ProjectController::class, 'demoAccess'])->name('projects.demo-access');
 
 // Inbound Email Webhook (Handles customer emails from Mailgun, SendGrid, Postmark, AWS SES, or custom webhook)

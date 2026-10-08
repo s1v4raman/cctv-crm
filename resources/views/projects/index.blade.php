@@ -9,14 +9,6 @@
                 <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Track ongoing, completed, and pending company projects with attached blueprints and documentation</p>
             </div>
             <div class="flex items-center gap-3 flex-wrap">
-                <a href="{{ route('projects.public-analysis') }}" target="_blank" 
-                   title="Open Shareable Public Analysis Link"
-                   class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 hover:bg-blue-100 transition-colors">
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-1.757l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" />
-                    </svg>
-                    <span>Share Analysis Link</span>
-                </a>
                 <a href="{{ route('projects.export-csv', request()->all()) }}" class="btn-secondary">
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
