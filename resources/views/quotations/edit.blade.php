@@ -153,8 +153,9 @@
 
                             <button type="button"
                                     id="add-row"
-                                    class="btn-amber inline-flex items-center gap-1.5 px-3.5 py-2 text-xs">
-                                + Add Custom Item
+                                    class="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-xl bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                                <span>Add Custom Item</span>
                             </button>
                         </div>
 
@@ -260,7 +261,7 @@
 
                                             <td class="p-2 text-right align-middle">
                                                 <button type="button"
-                                                        class="remove-row rounded-lg bg-rose-500/10 border border-rose-500/20 px-2.5 py-1.5 text-xs font-bold text-rose-500 dark:text-rose-400 hover:bg-rose-500/20 transition cursor-pointer">
+                                                        class="remove-row inline-flex items-center justify-center px-3 py-1.5 rounded-lg text-rose-600 dark:text-rose-400 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/50 border border-rose-200/80 dark:border-rose-800/60 font-bold text-xs transition cursor-pointer">
                                                     Remove
                                                 </button>
                                             </td>
@@ -308,13 +309,15 @@
 
                     <div class="sticky bottom-0 z-30 mt-8 flex items-center justify-end gap-3 border-t border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-6 py-4 rounded-b-2xl shadow-lg">
                         <a href="{{ route('quotations.show', $quotation) }}"
-                           class="inline-flex items-center justify-center px-5 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs rounded-xl min-h-[44px] border border-slate-200 dark:border-slate-700 shadow-xs transition">
+                           class="inline-flex items-center justify-center px-6 py-2.5 bg-white hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-sm rounded-xl min-h-[44px] border border-slate-300 dark:border-slate-600 shadow-xs transition cursor-pointer">
                             Cancel
                         </a>
 
                         <button type="submit"
-                                class="btn-primary min-w-44 min-h-[44px] py-2.5 px-6 text-sm font-bold shadow-md hover:scale-[1.01] active:scale-[0.99] transition-all">
-                            Save Changes
+                                class="inline-flex items-center justify-center gap-2 px-7 py-2.5 rounded-xl text-white font-bold text-sm bg-blue-600 hover:bg-blue-700 active:scale-[0.99] shadow-md shadow-blue-500/20 transition-all min-h-[44px] min-w-44 cursor-pointer"
+                                style="background-color: var(--crm-accent, #2563eb) !important; color: #ffffff !important;">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                            <span>Save Changes</span>
                         </button>
                     </div>
                 </form>
@@ -382,7 +385,7 @@
 
             <td class="p-2 text-right align-middle">
                 <button type="button"
-                        class="remove-row rounded-lg bg-rose-500/10 border border-rose-500/20 px-2.5 py-1.5 text-xs font-bold text-rose-500 dark:text-rose-400 hover:bg-rose-500/20 transition cursor-pointer">
+                        class="remove-row inline-flex items-center justify-center px-3 py-1.5 rounded-lg text-rose-600 dark:text-rose-400 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/50 border border-rose-200/80 dark:border-rose-800/60 font-bold text-xs transition cursor-pointer">
                     Remove
                 </button>
             </td>

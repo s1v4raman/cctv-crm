@@ -150,6 +150,9 @@
                     window.dispatchEvent(new CustomEvent('shortcuts-close'));
                 }
             };
+            window.crmOpenShortcuts = function() {
+                window.crmShortcuts.open();
+            };
             window.crmToggleShortcuts = function() {
                 return window.crmShortcuts.toggle();
             };
@@ -212,7 +215,9 @@
                 }
 
                 // 3. Shortcuts Modal: '?' (when not typing in form field) OR Ctrl+/
-                if (((e.ctrlKey || e.metaKey) && e.key === '/') || (e.key === '?' && !isInput)) {
+                const isQuestionKey = (e.key === '?' || (e.shiftKey && (e.key === '/' || e.code === 'Slash')));
+                const isCtrlSlash = (e.ctrlKey || e.metaKey) && (e.key === '/' || e.code === 'Slash');
+                if (isCtrlSlash || (isQuestionKey && !isInput)) {
                     e.preventDefault();
                     e.stopPropagation();
                     window.crmShortcuts.toggle();
@@ -818,12 +823,12 @@
                                             <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                                             Storefront View
                                         </a>
-                                        <button @click="$dispatch('shortcuts-toggle-action'); open = false" type="button" class="w-full text-left flex items-center justify-between px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-blue-600 transition cursor-pointer">
+                                        <button @click.stop="window.crmOpenShortcuts(); open = false" onclick="window.crmOpenShortcuts()" type="button" class="w-full text-left flex items-center justify-between px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-blue-600 transition cursor-pointer">
                                             <div class="flex items-center gap-2">
                                                 <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                                                <span>Keyboard Shortcuts</span>
+                                                <span class="font-medium text-xs text-slate-700 dark:text-slate-200">Keyboard Shortcuts</span>
                                             </div>
-                                            <kbd class="px-1.5 py-0.2 text-[9px] font-mono font-bold bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-500">?</kbd>
+                                            <kbd class="px-2 py-0.5 text-[10px] font-mono font-bold bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-700 dark:text-slate-300 shadow-2xs">?</kbd>
                                         </button>
                                     </div>
 
@@ -1101,16 +1106,18 @@
             {{-- ════════════════════════════════════════════════════════════════ --}}
             <div x-show="shortcutsModalOpen" 
                  x-cloak
+                 id="shortcuts-modal-overlay"
+                 @click.self="shortcutsModalOpen = false"
                  x-transition:enter="transition ease-out duration-200"
                  x-transition:enter-start="opacity-0"
                  x-transition:enter-end="opacity-100"
                  x-transition:leave="transition ease-in duration-150"
                  x-transition:leave-start="opacity-100"
                  x-transition:leave-end="opacity-0"
-                 class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4"
+                 class="fixed inset-0 z-[9999] overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4"
                  style="display: none;">
                 
-                <div @click.away="shortcutsModalOpen = false" 
+                <div @click.stop 
                      class="w-full max-w-lg bg-white dark:bg-[#0f172a] rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden transform transition-all">
                     
                     <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
