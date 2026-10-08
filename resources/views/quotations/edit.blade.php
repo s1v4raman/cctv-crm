@@ -469,7 +469,8 @@
         function positionDropdown(input) {
             if (!input || !productDropdown) return;
             const rect = input.getBoundingClientRect();
-            const minWidth = Math.max(rect.width, 380);
+            const availableWidth = Math.max(0, window.innerWidth - 32);
+            const targetWidth = Math.min(Math.max(rect.width, 380), availableWidth);
 
             // Compute space below vs above
             const spaceBelow = window.innerHeight - rect.bottom;
@@ -482,11 +483,11 @@
             }
 
             let left = rect.left;
-            if (left + minWidth > window.innerWidth - 16) {
-                left = window.innerWidth - minWidth - 16;
+            if (left + targetWidth > window.innerWidth - 16) {
+                left = window.innerWidth - targetWidth - 16;
             }
             productDropdown.style.left = `${Math.max(16, left)}px`;
-            productDropdown.style.width = `${minWidth}px`;
+            productDropdown.style.width = `${targetWidth}px`;
         }
 
         function updateHighlight() {

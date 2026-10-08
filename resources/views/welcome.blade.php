@@ -211,7 +211,7 @@
                     <div class="absolute right-0 top-full mt-2 hidden group-hover:block w-64 bg-white dark:bg-slate-900 shadow-2xl rounded-2xl border border-slate-100 dark:border-slate-800 py-2.5 z-50 transition-all">
                         @auth
                             <div class="px-4 py-2 border-b border-slate-100 dark:border-slate-800 mb-1">
-                                <span class="text-[10px] text-blue-600 font-bold block uppercase tracking-wider">Signed In</span>
+                                <span class="text-[10px] text-blue-600 font-bold block uppercase tracking-wider">Hello, {{ explode(' ', Auth::user()->name)[0] }}</span>
                                 <p class="text-xs font-bold text-slate-900 dark:text-white truncate">{{ Auth::user()->name }}</p>
                                 <p class="text-[10px] text-slate-500 dark:text-slate-400 truncate">{{ Auth::user()->email }}</p>
                             </div>

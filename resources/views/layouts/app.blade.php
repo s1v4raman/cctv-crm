@@ -357,8 +357,8 @@
                             }"
                             @sidebar-collapsed-changed.window="sidebarCollapsed = $event.detail.collapsed"
                             @keydown.escape.window="open = false; mobileSearchOpen = false"
-                            @keydown.window.prevent.ctrl.k="if (window.innerWidth < 768) { mobileSearchOpen = true; $nextTick(() => $refs.mobileSearchInput.focus()); } else { $refs.searchInput.focus(); open = true; }"
-                            @keydown.window.prevent.cmd.k="if (window.innerWidth < 768) { mobileSearchOpen = true; $nextTick(() => $refs.mobileSearchInput.focus()); } else { $refs.searchInput.focus(); open = true; }">
+                            @keydown.window.prevent.ctrl.k="if (window.innerWidth < 768) { mobileSearchOpen = true; $nextTick(() => $refs.mobileSearchInput?.focus()); } else { $refs.searchInput?.focus(); open = true; }"
+                            @keydown.window.prevent.cmd.k="if (window.innerWidth < 768) { mobileSearchOpen = true; $nextTick(() => $refs.mobileSearchInput?.focus()); } else { $refs.searchInput?.focus(); open = true; }">
                         
                         {{-- Left side: Mobile Drawer Toggle (Hamburger Menu for Modules), Laptop View Collapse Toggle & Sleek Context Pill --}}
                         <div class="flex items-center gap-2 sm:gap-3 shrink-0">
