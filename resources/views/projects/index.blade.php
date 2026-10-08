@@ -140,12 +140,10 @@
                     {{-- All --}}
                     @php $isAllActive = ($typeFilter === 'all' || !$typeFilter); @endphp
                     <a href="{{ route('projects.index', array_merge(request()->query(), ['type' => 'all'])) }}"
-                       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all"
-                       style="{{ $isAllActive ? 'background-color: var(--crm-accent, #2563eb); color: #ffffff !important; box-shadow: 0 4px 10px -2px rgba(37, 99, 235, 0.35);' : 'background-color: #f1f5f9; color: #475569 !important;' }}">
+                       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all {{ $isAllActive ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300' }}">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h7"/></svg>
-                        <span style="{{ $isAllActive ? 'color: #ffffff !important;' : '' }}">All</span>
-                        <span class="text-[10px] px-1.5 py-0.2 rounded-full font-bold"
-                              style="{{ $isAllActive ? 'background-color: rgba(255,255,255,0.25); color: #ffffff !important;' : 'background-color: #e2e8f0; color: #475569;' }}">
+                        <span>All</span>
+                        <span class="text-[10px] px-1.5 py-0.2 rounded-full font-bold {{ $isAllActive ? 'bg-white/25 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300' }}">
                             {{ $totalProjectsCount }}
                         </span>
                     </a>
@@ -153,12 +151,10 @@
                     {{-- Terminal Attendance --}}
                     @php $isAttendanceActive = ($typeFilter === 'hardware_attendance'); @endphp
                     <a href="{{ route('projects.index', array_merge(request()->query(), ['type' => 'hardware_attendance'])) }}"
-                       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all"
-                       style="{{ $isAttendanceActive ? 'background-color: #9333ea; color: #ffffff !important; box-shadow: 0 4px 10px -2px rgba(147, 51, 234, 0.35);' : 'background-color: #f1f5f9; color: #475569 !important;' }}">
+                       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all {{ $isAttendanceActive ? 'bg-purple-600 text-white shadow-sm' : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300' }}">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        <span style="{{ $isAttendanceActive ? 'color: #ffffff !important;' : '' }}">Terminal Attendance</span>
-                        <span class="text-[10px] px-1.5 py-0.2 rounded-full font-bold"
-                              style="{{ $isAttendanceActive ? 'background-color: rgba(255,255,255,0.25); color: #ffffff !important;' : 'background-color: #f3e8ff; color: #7e22ce;' }}">
+                        <span>Terminal Attendance</span>
+                        <span class="text-[10px] px-1.5 py-0.2 rounded-full font-bold {{ $isAttendanceActive ? 'bg-white/25 text-white' : 'bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300' }}">
                             {{ $hardwareAttendanceCount }}
                         </span>
                     </a>
@@ -166,12 +162,10 @@
                     {{-- CCTV Surveillance --}}
                     @php $isCctvActive = ($typeFilter === 'hardware_cctv'); @endphp
                     <a href="{{ route('projects.index', array_merge(request()->query(), ['type' => 'hardware_cctv'])) }}"
-                       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all"
-                       style="{{ $isCctvActive ? 'background-color: #2563eb; color: #ffffff !important; box-shadow: 0 4px 10px -2px rgba(37, 99, 235, 0.35);' : 'background-color: #f1f5f9; color: #475569 !important;' }}">
+                       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all {{ $isCctvActive ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300' }}">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                        <span style="{{ $isCctvActive ? 'color: #ffffff !important;' : '' }}">CCTV Surveillance</span>
-                        <span class="text-[10px] px-1.5 py-0.2 rounded-full font-bold"
-                              style="{{ $isCctvActive ? 'background-color: rgba(255,255,255,0.25); color: #ffffff !important;' : 'background-color: #dbeafe; color: #1d4ed8;' }}">
+                        <span>CCTV Surveillance</span>
+                        <span class="text-[10px] px-1.5 py-0.2 rounded-full font-bold {{ $isCctvActive ? 'bg-white/25 text-white' : 'bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300' }}">
                             {{ $hardwareCctvCount }}
                         </span>
                     </a>
@@ -179,12 +173,10 @@
                     {{-- Web & Apps --}}
                     @php $isWebActive = ($typeFilter === 'software_web'); @endphp
                     <a href="{{ route('projects.index', array_merge(request()->query(), ['type' => 'software_web'])) }}"
-                       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all"
-                       style="{{ $isWebActive ? 'background-color: #0891b2; color: #ffffff !important; box-shadow: 0 4px 10px -2px rgba(8, 145, 178, 0.35);' : 'background-color: #f1f5f9; color: #475569 !important;' }}">
+                       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all {{ $isWebActive ? 'bg-cyan-600 text-white shadow-sm' : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300' }}">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>
-                        <span style="{{ $isWebActive ? 'color: #ffffff !important;' : '' }}">Web & Apps</span>
-                        <span class="text-[10px] px-1.5 py-0.2 rounded-full font-bold"
-                              style="{{ $isWebActive ? 'background-color: rgba(255,255,255,0.25); color: #ffffff !important;' : 'background-color: #cffafe; color: #0e7490;' }}">
+                        <span>Web & Apps</span>
+                        <span class="text-[10px] px-1.5 py-0.2 rounded-full font-bold {{ $isWebActive ? 'bg-white/25 text-white' : 'bg-cyan-100 dark:bg-cyan-950/60 text-cyan-700 dark:text-cyan-300' }}">
                             {{ $softwareWebCount }}
                         </span>
                     </a>
@@ -192,12 +184,10 @@
                     {{-- Hybrid Turnkey --}}
                     @php $isHybridActive = ($typeFilter === 'hybrid'); @endphp
                     <a href="{{ route('projects.index', array_merge(request()->query(), ['type' => 'hybrid'])) }}"
-                       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all"
-                       style="{{ $isHybridActive ? 'background-color: #d97706; color: #ffffff !important; box-shadow: 0 4px 10px -2px rgba(217, 119, 6, 0.35);' : 'background-color: #f1f5f9; color: #475569 !important;' }}">
+                       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all {{ $isHybridActive ? 'bg-amber-600 text-white shadow-sm' : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300' }}">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                        <span style="{{ $isHybridActive ? 'color: #ffffff !important;' : '' }}">Hybrid Turnkey</span>
-                        <span class="text-[10px] px-1.5 py-0.2 rounded-full font-bold"
-                              style="{{ $isHybridActive ? 'background-color: rgba(255,255,255,0.25); color: #ffffff !important;' : 'background-color: #fef3c7; color: #b45309;' }}">
+                        <span>Hybrid Turnkey</span>
+                        <span class="text-[10px] px-1.5 py-0.2 rounded-full font-bold {{ $isHybridActive ? 'bg-white/25 text-white' : 'bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300' }}">
                             {{ $hybridCount }}
                         </span>
                     </a>
@@ -306,10 +296,9 @@
                 {{-- Submit and Reset Buttons --}}
                 <div class="flex items-center gap-2">
                     <button type="submit" 
-                            class="text-xs font-bold py-2.5 px-4 rounded-xl inline-flex items-center justify-center gap-1.5 transition-all shadow-sm"
-                            style="background-color: var(--crm-accent, #2563eb); color: #ffffff !important;">
+                            class="btn-primary text-xs py-2.5 px-4 shadow-sm inline-flex items-center justify-center gap-1.5">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                        <span style="color: #ffffff !important;">Filter</span>
+                        <span>Filter</span>
                     </button>
                     @if($search || $statusFilter !== 'all' || $priorityFilter !== 'all' || ($typeFilter && $typeFilter !== 'all'))
                     <a href="{{ route('projects.index') }}" 

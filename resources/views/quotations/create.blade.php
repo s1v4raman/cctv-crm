@@ -2,18 +2,18 @@
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <div>
-                <h1 class="text-xl font-extrabold text-white tracking-tight font-heading flex items-center gap-2.5">
-                    <span class="w-2.5 h-2.5 rounded-full bg-amber-400 shadow-sm shadow-amber-400"></span>
+                <h1 class="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight font-heading flex items-center gap-2.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-amber-500 shadow-sm shadow-amber-500"></span>
                     Create Quotation
                 </h1>
 
-                <p class="mt-1 text-xs text-slate-400">
-                    Customer: <strong class="text-white">{{ $lead->customer_name }}</strong> · <span class="text-slate-300 font-mono">{{ $lead->phone }}</span>
+                <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                    Customer: <strong class="text-slate-900 dark:text-white font-semibold">{{ $lead->customer_name }}</strong> · <span class="text-slate-600 dark:text-slate-300 font-mono">{{ $lead->phone }}</span>
                 </p>
             </div>
 
             <a href="{{ route('leads.show', $lead) }}"
-               class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 text-xs font-bold transition shadow-sm">
+               class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 text-xs font-bold transition shadow-xs">
                 ← Back to Lead
             </a>
         </div>
@@ -21,14 +21,14 @@
 
     <div class="py-8">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="overflow-visible bg-[#0f172a] border border-slate-800/80 shadow-2xl rounded-2xl">
+            <div class="overflow-visible bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm rounded-2xl">
                 <form method="POST"
                       action="{{ route('quotations.store', $lead) }}"
                       class="p-6">
                     @csrf
 
                     @if ($errors->any())
-                        <div class="mb-6 rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-rose-300">
+                        <div class="mb-6 rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-rose-700 dark:text-rose-300">
                             <p class="font-bold text-xs">
                                 Please correct the highlighted quotation fields.
                             </p>
@@ -44,7 +44,7 @@
                     <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
                         <div>
                             <label for="quotation_date"
-                                   class="block text-sm font-semibold text-slate-200 mb-1.5">
+                                   class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                                 Quotation Date
                             </label>
 
@@ -53,16 +53,16 @@
                                    name="quotation_date"
                                    value="{{ old('quotation_date', now()->format('Y-m-d')) }}"
                                    required
-                                   class="mt-1 block w-full rounded-xl border border-slate-700/80 bg-[#060913] text-slate-100 text-sm px-3.5 py-2.5 min-h-[44px] shadow-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition">
+                                   class="mt-1 block w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm px-3.5 py-2.5 min-h-[44px] shadow-xs focus:bg-white dark:focus:bg-slate-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition">
 
                             @error('quotation_date')
-                                <p class="mt-1 text-xs font-semibold text-rose-400">{{ $message }}</p>
+                                <p class="mt-1 text-xs font-semibold text-rose-500 dark:text-rose-400">{{ $message }}</p>
                             @enderror
                         </div>
 
                         <div>
                             <label for="valid_until"
-                                   class="block text-sm font-semibold text-slate-200 mb-1.5">
+                                   class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                                 Valid Until
                             </label>
 
@@ -70,16 +70,16 @@
                                    id="valid_until"
                                    name="valid_until"
                                    value="{{ old('valid_until', now()->addDays(15)->format('Y-m-d')) }}"
-                                   class="mt-1 block w-full rounded-xl border border-slate-700/80 bg-[#060913] text-slate-100 text-sm px-3.5 py-2.5 min-h-[44px] shadow-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition">
+                                   class="mt-1 block w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm px-3.5 py-2.5 min-h-[44px] shadow-xs focus:bg-white dark:focus:bg-slate-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition">
 
                             @error('valid_until')
-                                <p class="mt-1 text-xs font-semibold text-rose-400">{{ $message }}</p>
+                                <p class="mt-1 text-xs font-semibold text-rose-500 dark:text-rose-400">{{ $message }}</p>
                             @enderror
                         </div>
 
                         <div>
                             <label for="tax_percent"
-                                   class="block text-sm font-semibold text-slate-200 mb-1.5">
+                                   class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                                 GST / Tax (%)
                             </label>
 
@@ -90,10 +90,10 @@
                                    max="100"
                                    step="0.01"
                                    value="{{ old('tax_percent', 18) }}"
-                                   class="mt-1 block w-full rounded-xl border border-slate-700/80 bg-[#060913] text-slate-100 text-sm px-3.5 py-2.5 min-h-[44px] shadow-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition font-mono">
+                                   class="mt-1 block w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm px-3.5 py-2.5 min-h-[44px] shadow-xs focus:bg-white dark:focus:bg-slate-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition font-mono">
 
                             @error('tax_percent')
-                                <p class="mt-1 text-xs font-semibold text-rose-400">{{ $message }}</p>
+                                <p class="mt-1 text-xs font-semibold text-rose-500 dark:text-rose-400">{{ $message }}</p>
                             @enderror
                         </div>
                     </div>
@@ -155,7 +155,7 @@
                                     @endphp
 
                                     @foreach ($items as $index => $item)
-                                        <tr class="item-row border-b border-slate-800/80 hover:bg-slate-800/20 transition">
+                                        <tr class="item-row border-b border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/20 transition">
                                             <td class="relative p-2 align-top">
                                                 <input type="hidden"
                                                        class="product-id"
@@ -168,10 +168,7 @@
                                                        required
                                                        autocomplete="off"
                                                        placeholder="Search camera, NVR, cable..."
-                                                       class="item-name block w-full rounded-xl border border-slate-700/80 bg-[#060913] text-slate-100 text-sm px-3 py-2 shadow-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500 placeholder-slate-500">
-
-                                                <div class="product-results absolute left-2 right-2 z-50 mt-1 hidden max-h-64 overflow-y-auto rounded-xl border border-slate-700 bg-[#0b1120] shadow-2xl divide-y divide-slate-800">
-                                                </div>
+                                                       class="item-name block w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-sm px-3 py-2 shadow-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500 placeholder-slate-400">
                                             </td>
 
                                             <td class="p-2 align-top">
@@ -179,7 +176,7 @@
                                                        name="items[{{ $index }}][description]"
                                                        value="{{ $item['description'] ?? '' }}"
                                                        placeholder="Optional specification"
-                                                       class="item-description block w-full rounded-xl border border-slate-700/80 bg-[#060913] text-slate-100 text-sm px-3 py-2 shadow-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500 placeholder-slate-500">
+                                                       class="item-description block w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-sm px-3 py-2 shadow-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500 placeholder-slate-400">
                                             </td>
 
                                             <td class="p-2 align-top">
@@ -189,12 +186,12 @@
                                                        min="0.01"
                                                        step="0.01"
                                                        required
-                                                       class="quantity w-24 rounded-xl border border-slate-700/80 bg-[#060913] text-slate-100 text-sm px-3 py-2 shadow-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500 font-mono">
+                                                       class="quantity w-24 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-sm px-3 py-2 shadow-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500 font-mono">
                                             </td>
 
                                             <td class="p-2 align-top">
                                                 <select name="items[{{ $index }}][unit]"
-                                                        class="item-unit w-24 rounded-xl border border-slate-700/80 bg-[#060913] text-slate-100 text-sm px-3 py-2 shadow-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500">
+                                                        class="item-unit w-24 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-sm px-3 py-2 shadow-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
                                                     <option value="Nos" @selected(($item['unit'] ?? 'Nos') === 'Nos')>Nos</option>
                                                     <option value="Mtr" @selected(($item['unit'] ?? '') === 'Mtr')>Mtr</option>
                                                     <option value="Box" @selected(($item['unit'] ?? '') === 'Box')>Box</option>
@@ -210,16 +207,16 @@
                                                        min="0"
                                                        step="0.01"
                                                        required
-                                                       class="unit-price w-32 rounded-xl border border-slate-700/80 bg-[#060913] text-slate-100 text-sm px-3 py-2 shadow-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500 font-mono">
+                                                       class="unit-price w-32 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-sm px-3 py-2 shadow-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500 font-mono">
                                             </td>
 
-                                            <td class="line-total p-2 text-right text-xs font-bold text-amber-400 font-mono align-middle">
+                                            <td class="line-total p-2 text-right text-xs font-bold text-slate-800 dark:text-amber-400 font-mono align-middle">
                                                 ₹0.00
                                             </td>
 
                                             <td class="p-2 text-right align-middle">
                                                 <button type="button"
-                                                        class="remove-row rounded-lg bg-rose-500/10 border border-rose-500/20 px-2.5 py-1.5 text-xs font-bold text-rose-400 hover:bg-rose-500/20 transition">
+                                                        class="remove-row rounded-lg bg-rose-500/10 border border-rose-500/20 px-2.5 py-1.5 text-xs font-bold text-rose-500 dark:text-rose-400 hover:bg-rose-500/20 transition cursor-pointer">
                                                     Remove
                                                 </button>
                                             </td>
@@ -233,7 +230,7 @@
                     <div class="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2">
                         <div>
                             <label for="notes"
-                                   class="block text-sm font-semibold text-slate-200 mb-1.5">
+                                   class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                                 Notes / Terms & Conditions
                             </label>
 
@@ -241,20 +238,20 @@
                                       name="notes"
                                       rows="6"
                                       placeholder="Installation terms, warranty details, payment schedule..."
-                                      class="mt-1 block w-full rounded-xl border border-slate-700/80 bg-[#060913] text-slate-100 text-xs p-3 shadow-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500 placeholder-slate-500 leading-relaxed">{{ old('notes') }}</textarea>
+                                      class="mt-1 block w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs p-3 shadow-xs focus:bg-white dark:focus:bg-slate-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 placeholder-slate-400 leading-relaxed">{{ old('notes') }}</textarea>
 
                             @error('notes')
-                                <p class="mt-1 text-xs font-semibold text-rose-400">{{ $message }}</p>
+                                <p class="mt-1 text-xs font-semibold text-rose-500 dark:text-rose-400">{{ $message }}</p>
                             @enderror
                         </div>
 
-                        <div class="rounded-2xl bg-[#060913] border border-slate-800 p-5 space-y-3">
-                            <div class="flex justify-between items-center text-xs text-slate-400">
+                        <div class="rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/90 dark:border-slate-700/80 p-5 space-y-3">
+                            <div class="flex justify-between items-center text-xs text-slate-600 dark:text-slate-400">
                                 <span>Subtotal</span>
-                                <span id="subtotal-display" class="font-bold text-slate-200 font-mono text-sm">₹0.00</span>
+                                <span id="subtotal-display" class="font-bold text-slate-900 dark:text-slate-100 font-mono text-sm">₹0.00</span>
                             </div>
 
-                            <div class="flex items-center justify-between gap-3 text-xs text-slate-400">
+                            <div class="flex items-center justify-between gap-3 text-xs text-slate-600 dark:text-slate-400">
                                 <label for="discount">Discount (₹)</label>
 
                                 <input type="number"
@@ -263,29 +260,29 @@
                                        min="0"
                                        step="0.01"
                                        value="{{ old('discount', 0) }}"
-                                       class="w-32 rounded-lg border border-slate-700/80 bg-[#0b1120] text-slate-100 text-right text-xs px-2.5 py-1.5 shadow-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500 font-mono">
+                                       class="w-32 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-right text-xs px-2.5 py-1.5 shadow-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500 font-mono">
                             </div>
 
-                            <div class="flex justify-between items-center text-xs text-slate-400">
+                            <div class="flex justify-between items-center text-xs text-slate-600 dark:text-slate-400">
                                 <span>GST Amount</span>
-                                <span id="tax-display" class="font-bold text-slate-200 font-mono text-sm">₹0.00</span>
+                                <span id="tax-display" class="font-bold text-slate-900 dark:text-slate-100 font-mono text-sm">₹0.00</span>
                             </div>
 
-                            <div class="mt-2 flex justify-between items-center border-t border-slate-800 pt-3 text-sm font-extrabold text-white">
+                            <div class="mt-2 flex justify-between items-center border-t border-slate-200 dark:border-slate-700 pt-3 text-sm font-extrabold text-slate-900 dark:text-white">
                                 <span>Grand Total</span>
-                                <span id="grand-total-display" class="text-amber-400 font-mono text-xl font-black">₹0.00</span>
+                                <span id="grand-total-display" class="text-blue-600 dark:text-amber-400 font-mono text-xl font-black">₹0.00</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="sticky bottom-0 z-40 mt-8 flex items-center justify-end gap-3 border-t border-slate-800 bg-[#0b1120]/95 backdrop-blur-md px-6 py-4 rounded-b-2xl shadow-2xl">
+                    <div class="sticky bottom-0 z-30 mt-8 flex items-center justify-end gap-3 border-t border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-6 py-4 rounded-b-2xl shadow-lg">
                         <a href="{{ route('leads.show', $lead) }}"
-                           class="inline-flex items-center justify-center px-5 py-2.5 bg-slate-800/90 hover:bg-slate-700 text-slate-300 hover:text-white font-semibold text-sm rounded-xl min-h-[44px] border border-slate-700 shadow-sm transition">
+                           class="inline-flex items-center justify-center px-5 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs rounded-xl min-h-[44px] border border-slate-200 dark:border-slate-700 shadow-xs transition">
                             Cancel
                         </a>
 
                         <button type="submit"
-                                class="btn-amber min-w-44 min-h-[44px] py-2.5 px-6 text-sm font-bold">
+                                class="btn-primary min-w-44 min-h-[44px] py-2.5 px-6 text-sm font-bold shadow-md hover:scale-[1.01] active:scale-[0.99] transition-all">
                             Save Quotation
                         </button>
                     </div>
@@ -295,7 +292,7 @@
     </div>
 
     <template id="item-row-template">
-        <tr class="item-row border-b border-slate-800/80 hover:bg-slate-800/20 transition">
+        <tr class="item-row border-b border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/20 transition">
             <td class="relative p-2 align-top">
                 <input type="hidden"
                        class="product-id"
@@ -307,17 +304,14 @@
                        required
                        autocomplete="off"
                        placeholder="Search camera, NVR, cable..."
-                       class="item-name block w-full rounded-xl border border-slate-700/80 bg-[#060913] text-slate-100 text-sm px-3 py-2 shadow-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500 placeholder-slate-500">
-
-                <div class="product-results absolute left-2 right-2 z-50 mt-1 hidden max-h-64 overflow-y-auto rounded-xl border border-slate-700 bg-[#0b1120] shadow-2xl divide-y divide-slate-800">
-                </div>
+                       class="item-name block w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-sm px-3 py-2 shadow-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500 placeholder-slate-400">
             </td>
 
             <td class="p-2 align-top">
                 <input type="text"
                        name="items[__INDEX__][description]"
                        placeholder="Optional specification"
-                       class="item-description block w-full rounded-xl border border-slate-700/80 bg-[#060913] text-slate-100 text-sm px-3 py-2 shadow-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500 placeholder-slate-500">
+                       class="item-description block w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-sm px-3 py-2 shadow-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500 placeholder-slate-400">
             </td>
 
             <td class="p-2 align-top">
@@ -327,12 +321,12 @@
                        min="0.01"
                        step="0.01"
                        required
-                       class="quantity w-24 rounded-xl border border-slate-700/80 bg-[#060913] text-slate-100 text-sm px-3 py-2 shadow-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500 font-mono">
+                       class="quantity w-24 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-sm px-3 py-2 shadow-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500 font-mono">
             </td>
 
             <td class="p-2 align-top">
                 <select name="items[__INDEX__][unit]"
-                        class="item-unit w-24 rounded-xl border border-slate-700/80 bg-[#060913] text-slate-100 text-sm px-3 py-2 shadow-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500">
+                        class="item-unit w-24 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-sm px-3 py-2 shadow-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
                     <option value="Nos">Nos</option>
                     <option value="Mtr">Mtr</option>
                     <option value="Box">Box</option>
@@ -348,21 +342,26 @@
                        min="0"
                        step="0.01"
                        required
-                       class="unit-price w-32 rounded-xl border border-slate-700/80 bg-[#060913] text-slate-100 text-sm px-3 py-2 shadow-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500 font-mono">
+                       class="unit-price w-32 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-sm px-3 py-2 shadow-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500 font-mono">
             </td>
 
-            <td class="line-total p-2 text-right text-xs font-bold text-amber-400 font-mono align-middle">
+            <td class="line-total p-2 text-right text-xs font-bold text-slate-800 dark:text-amber-400 font-mono align-middle">
                 ₹0.00
             </td>
 
             <td class="p-2 text-right align-middle">
                 <button type="button"
-                        class="remove-row rounded-lg bg-rose-500/10 border border-rose-500/20 px-2.5 py-1.5 text-xs font-bold text-rose-400 hover:bg-rose-500/20 transition">
+                        class="remove-row rounded-lg bg-rose-500/10 border border-rose-500/20 px-2.5 py-1.5 text-xs font-bold text-rose-500 dark:text-rose-400 hover:bg-rose-500/20 transition cursor-pointer">
                     Remove
                 </button>
             </td>
         </tr>
     </template>
+
+    {{-- Floating Portal for Quotation Product Autocomplete Search (Theme-adaptive & never clipped by table overflow) --}}
+    <div id="quotation-product-dropdown" 
+         class="fixed z-[99999] hidden max-h-72 overflow-y-auto rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 shadow-2xl divide-y divide-slate-100 dark:divide-slate-800">
+    </div>
 
     <script>
         const itemsBody = document.getElementById('items-body');
@@ -407,60 +406,105 @@
             document.getElementById('grand-total-display').textContent = money(grandTotal);
         }
 
+        const productDropdown = document.getElementById('quotation-product-dropdown');
+        let activeRow = null;
+        let activeInput = null;
+        let highlightedIndex = -1;
+        let currentProducts = [];
+
         function hideAllProductResults() {
-            document.querySelectorAll('.product-results').forEach((resultsBox) => {
-                resultsBox.innerHTML = '';
-                resultsBox.classList.add('hidden');
+            if (productDropdown) {
+                productDropdown.innerHTML = '';
+                productDropdown.classList.add('hidden');
+            }
+            activeRow = null;
+            activeInput = null;
+            highlightedIndex = -1;
+            currentProducts = [];
+        }
+
+        function positionDropdown(input) {
+            if (!input || !productDropdown) return;
+            const rect = input.getBoundingClientRect();
+            const minWidth = Math.max(rect.width, 380);
+
+            // Compute space below vs above
+            const spaceBelow = window.innerHeight - rect.bottom;
+            const dropdownHeight = Math.min(productDropdown.scrollHeight || 260, 280);
+
+            if (spaceBelow < dropdownHeight + 10 && rect.top > dropdownHeight + 10) {
+                productDropdown.style.top = `${Math.max(10, rect.top - dropdownHeight - 6)}px`;
+            } else {
+                productDropdown.style.top = `${rect.bottom + 6}px`;
+            }
+
+            let left = rect.left;
+            if (left + minWidth > window.innerWidth - 16) {
+                left = window.innerWidth - minWidth - 16;
+            }
+            productDropdown.style.left = `${Math.max(16, left)}px`;
+            productDropdown.style.width = `${minWidth}px`;
+        }
+
+        function updateHighlight() {
+            if (!productDropdown) return;
+            const buttons = productDropdown.querySelectorAll('.product-item-btn');
+            buttons.forEach((btn, idx) => {
+                if (idx === highlightedIndex) {
+                    btn.classList.add('bg-blue-50/90', 'dark:bg-slate-800', 'border-l-blue-600', 'dark:border-l-blue-400');
+                    btn.classList.remove('border-l-transparent');
+                    btn.scrollIntoView({ block: 'nearest' });
+                } else {
+                    btn.classList.remove('bg-blue-50/90', 'dark:bg-slate-800', 'border-l-blue-600', 'dark:border-l-blue-400');
+                    btn.classList.add('border-l-transparent');
+                }
             });
         }
 
         function escapeHtml(value) {
             const element = document.createElement('div');
             element.textContent = value || '';
-
             return element.innerHTML;
         }
 
         function selectProduct(row, product) {
+            if (!row || !product) return;
             row.querySelector('.product-id').value = product.id;
             row.querySelector('.item-name').value = product.name;
             row.querySelector('.item-description').value = product.description || '';
             row.querySelector('.item-unit').value = product.unit;
             row.querySelector('.unit-price').value = product.unit_price;
 
-            const resultsBox = row.querySelector('.product-results');
-            resultsBox.innerHTML = '';
-            resultsBox.classList.add('hidden');
-
+            hideAllProductResults();
             calculateTotals();
 
-            row.querySelector('.quantity').focus();
-            row.querySelector('.quantity').select();
+            const quantityInput = row.querySelector('.quantity');
+            if (quantityInput) {
+                quantityInput.focus();
+                quantityInput.select();
+            }
         }
 
         async function showProductResults(row, searchValue) {
-            const resultsBox = row.querySelector('.product-results');
+            activeRow = row;
+            activeInput = row.querySelector('.item-name');
             const searchText = searchValue.trim();
 
             if (searchText.length < 1) {
-                resultsBox.innerHTML = '';
-                resultsBox.classList.add('hidden');
+                hideAllProductResults();
                 return;
             }
 
             if (searchController) {
                 searchController.abort();
             }
-
             searchController = new AbortController();
 
             try {
                 const response = await fetch(
                     `{{ route('products.search') }}?q=${encodeURIComponent(searchText)}`,
                     {
-                        headers: {
-                            Accept: 'application/json'
-                        },
+                        headers: { Accept: 'application/json' },
                         signal: searchController.signal
                     }
                 );
@@ -470,36 +514,43 @@
                 }
 
                 const products = await response.json();
+                currentProducts = products;
+                highlightedIndex = -1;
 
                 if (products.length === 0) {
-                    resultsBox.innerHTML = `
-                        <div class="px-3 py-3 text-xs text-slate-400">
-                            No catalogue product found. You can enter a custom item manually.
+                    productDropdown.innerHTML = `
+                        <div class="px-4 py-3.5 text-xs text-slate-500 dark:text-slate-400 text-center font-medium">
+                            No catalogue product found for "<span class="text-slate-800 dark:text-slate-200 font-bold">${escapeHtml(searchText)}</span>". Enter custom specification manually.
                         </div>
                     `;
-
-                    resultsBox.classList.remove('hidden');
+                    positionDropdown(activeInput);
+                    productDropdown.classList.remove('hidden');
                     return;
                 }
 
-                resultsBox.innerHTML = '';
+                productDropdown.innerHTML = '';
 
-                products.forEach((product) => {
+                products.forEach((product, idx) => {
                     const button = document.createElement('button');
-
                     button.type = 'button';
-                    button.className = 'block w-full border-b border-slate-800 px-3 py-2.5 text-left hover:bg-slate-800 transition last:border-b-0';
+                    button.dataset.index = idx;
+                    button.className = 'product-item-btn w-full px-4 py-3 text-left transition-colors flex items-start justify-between gap-3 cursor-pointer bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800/80 border-l-4 border-l-transparent group';
 
                     button.innerHTML = `
-                        <div class="flex items-start justify-between gap-3">
-                            <div>
-                                <div class="font-bold text-xs text-white">${escapeHtml(product.name)}</div>
-                                <div class="mt-0.5 text-[11px] text-slate-400">${escapeHtml(product.description || '')}</div>
+                        <div class="min-w-0 flex-1">
+                            <div class="font-bold text-xs text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                ${escapeHtml(product.name)}
                             </div>
-
-                            <div class="whitespace-nowrap text-xs font-extrabold text-amber-400 font-mono">
+                            ${product.description ? `
+                                <div class="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
+                                    ${escapeHtml(product.description)}
+                                </div>
+                            ` : ''}
+                        </div>
+                        <div class="shrink-0 text-right">
+                            <span class="inline-block px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200/80 dark:border-emerald-800/50 shadow-2xs">
                                 ${money(product.unit_price)}
-                            </div>
+                            </span>
                         </div>
                     `;
 
@@ -508,19 +559,20 @@
                         selectProduct(row, product);
                     });
 
-                    resultsBox.appendChild(button);
+                    productDropdown.appendChild(button);
                 });
 
-                resultsBox.classList.remove('hidden');
+                positionDropdown(activeInput);
+                productDropdown.classList.remove('hidden');
             } catch (error) {
                 if (error.name !== 'AbortError') {
-                    resultsBox.innerHTML = `
-                        <div class="px-3 py-3 text-xs text-rose-400">
-                            Unable to search products. Please try again.
+                    productDropdown.innerHTML = `
+                        <div class="px-4 py-3 text-xs text-rose-500 dark:text-rose-400 text-center">
+                            Unable to search catalogue products.
                         </div>
                     `;
-
-                    resultsBox.classList.remove('hidden');
+                    positionDropdown(activeInput);
+                    productDropdown.classList.remove('hidden');
                 }
             }
         }
@@ -534,26 +586,45 @@
 
             itemNameInput.addEventListener('input', () => {
                 productIdInput.value = '';
-
                 clearTimeout(searchTimer);
-                hideAllProductResults();
 
                 searchTimer = setTimeout(() => {
                     showProductResults(row, itemNameInput.value);
-                }, 250);
+                }, 200);
             });
 
             itemNameInput.addEventListener('focus', () => {
                 if (itemNameInput.value.trim() !== '') {
-                    hideAllProductResults();
                     showProductResults(row, itemNameInput.value);
                 }
             });
 
             itemNameInput.addEventListener('blur', () => {
                 setTimeout(() => {
-                    row.querySelector('.product-results').classList.add('hidden');
-                }, 150);
+                    hideAllProductResults();
+                }, 200);
+            });
+
+            itemNameInput.addEventListener('keydown', (e) => {
+                if (!productDropdown || productDropdown.classList.contains('hidden') || currentProducts.length === 0) return;
+
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    highlightedIndex = (highlightedIndex + 1) % currentProducts.length;
+                    updateHighlight();
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    highlightedIndex = (highlightedIndex - 1 + currentProducts.length) % currentProducts.length;
+                    updateHighlight();
+                } else if (e.key === 'Enter') {
+                    if (highlightedIndex >= 0 && highlightedIndex < currentProducts.length) {
+                        e.preventDefault();
+                        selectProduct(row, currentProducts[highlightedIndex]);
+                    }
+                } else if (e.key === 'Escape') {
+                    e.preventDefault();
+                    hideAllProductResults();
+                }
             });
 
             quantityInput.addEventListener('input', calculateTotals);
@@ -567,10 +638,30 @@
                     return;
                 }
 
+                hideAllProductResults();
                 row.remove();
                 calculateTotals();
             });
         }
+
+        // Global listeners for positioning and click away
+        window.addEventListener('scroll', () => {
+            if (activeInput && productDropdown && !productDropdown.classList.contains('hidden')) {
+                positionDropdown(activeInput);
+            }
+        }, true);
+
+        window.addEventListener('resize', () => {
+            if (activeInput && productDropdown && !productDropdown.classList.contains('hidden')) {
+                positionDropdown(activeInput);
+            }
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!event.target.closest('#quotation-product-dropdown') && !event.target.closest('.item-name')) {
+                hideAllProductResults();
+            }
+        });
 
         function addNewItemRow() {
             const index = nextItemIndex++;
@@ -581,22 +672,17 @@
             );
 
             const row = itemsBody.lastElementChild;
-
             bindRowEvents(row);
-
             return row;
         }
 
         addRowButton.addEventListener('click', () => {
             const row = addNewItemRow();
-
             row.scrollIntoView({
                 behavior: 'smooth',
                 block: 'center'
             });
-
             row.querySelector('.item-name').focus();
-
             calculateTotals();
         });
 
@@ -606,12 +692,6 @@
 
         taxPercentInput.addEventListener('input', calculateTotals);
         discountInput.addEventListener('input', calculateTotals);
-
-        document.addEventListener('click', (event) => {
-            if (!event.target.closest('.item-row')) {
-                hideAllProductResults();
-            }
-        });
 
         calculateTotals();
     </script>
