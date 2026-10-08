@@ -16,11 +16,11 @@
                     Export CSV
                 </a>
                 @if(auth()->user()->isAdmin() || auth()->user()->isStaff())
-                <a href="{{ route('projects.create') }}" class="btn-amber">
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <a href="{{ route('projects.create') }}" class="btn-primary shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
                     </svg>
-                    + New Project
+                    <span>New Project</span>
                 </a>
                 @endif
             </div>
@@ -342,7 +342,12 @@
                     @if($search || $statusFilter !== 'all' || $priorityFilter !== 'all' || ($typeFilter && $typeFilter !== 'all'))
                         <a href="{{ route('projects.index') }}" class="btn-secondary text-xs py-2 px-4">Reset Filter</a>
                     @endif
-                    <a href="{{ route('projects.create') }}" class="btn-amber text-xs py-2 px-4">+ Create Project</a>
+                    <a href="{{ route('projects.create') }}" class="btn-primary text-xs py-2 px-4 shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        <span>Create Project</span>
+                    </a>
                 </div>
             </div>
         @else
