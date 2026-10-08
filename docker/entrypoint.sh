@@ -93,7 +93,16 @@ try {
             'email_verified_at' => now(),
         ]
     );
-    echo '=> Admin and Customer accounts created and verified successfully.' . PHP_EOL;
+    \App\Models\User::updateOrCreate(
+        ['email' => 'reviewer@cctvcrm.com'],
+        [
+            'name' => 'Project Reviewer & Analyst',
+            'password' => bcrypt('reviewer123'),
+            'role' => 'staff',
+            'email_verified_at' => now(),
+        ]
+    );
+    echo '=> Admin, Customer, and Reviewer accounts created and verified successfully.' . PHP_EOL;
 } catch (\Throwable \$e) {
     echo '=> Account creation error: ' . \$e->getMessage() . PHP_EOL;
 }
