@@ -97,10 +97,156 @@
                 </div>
             </div>
 
-            {{-- 2. Status, Progress & Priority --}}
+            {{-- 2. Project Classification & Domain Specs (Hardware & Software) --}}
+            <div x-data="{ projectType: '{{ old('project_type', $project->project_type ?? 'hardware_attendance') }}' }" class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 space-y-5">
+                <div class="border-b border-slate-100 dark:border-slate-800 pb-3 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="w-7 h-7 rounded-lg bg-purple-50 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold text-xs">2</span>
+                        <div>
+                            <h3 class="text-base font-bold text-slate-900 dark:text-white">Project Classification & Technical Architecture</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Configure parameters for Terminal Camera Attendance, CCTV Hardware, or Webpage Engineering</p>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Type Radio / Selector Grid --}}
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
+                        Select Project Module / Type <span class="text-rose-500">*</span>
+                    </label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                        {{-- Hardware: Terminal Camera Attendance --}}
+                        <label class="relative flex flex-col p-3.5 rounded-xl border cursor-pointer transition-all"
+                               :class="projectType === 'hardware_attendance' ? 'border-purple-500 bg-purple-50/50 dark:bg-purple-950/30 ring-2 ring-purple-500/20' : 'border-slate-200 dark:border-slate-700 hover:border-purple-300'">
+                            <input type="radio" name="project_type" value="hardware_attendance" x-model="projectType" class="sr-only">
+                            <span class="text-xs font-bold text-purple-700 dark:text-purple-300 flex items-center gap-1.5 mb-1">
+                                <span>⏱</span> Terminal Attendance
+                            </span>
+                            <span class="text-[11px] text-slate-500 dark:text-slate-400 leading-tight">Biometric & AI facial recognition terminal systems</span>
+                        </label>
+
+                        {{-- Hardware: CCTV --}}
+                        <label class="relative flex flex-col p-3.5 rounded-xl border cursor-pointer transition-all"
+                               :class="projectType === 'hardware_cctv' ? 'border-blue-500 bg-blue-50/50 dark:bg-blue-950/30 ring-2 ring-blue-500/20' : 'border-slate-200 dark:border-slate-700 hover:border-blue-300'">
+                            <input type="radio" name="project_type" value="hardware_cctv" x-model="projectType" class="sr-only">
+                            <span class="text-xs font-bold text-blue-700 dark:text-blue-300 flex items-center gap-1.5 mb-1">
+                                <span>📸</span> CCTV Hardware
+                            </span>
+                            <span class="text-[11px] text-slate-500 dark:text-slate-400 leading-tight">IP Cameras, NVR, PoE cabling & site surveillance</span>
+                        </label>
+
+                        {{-- Software: Webpage --}}
+                        <label class="relative flex flex-col p-3.5 rounded-xl border cursor-pointer transition-all"
+                               :class="projectType === 'software_web' ? 'border-cyan-500 bg-cyan-50/50 dark:bg-cyan-950/30 ring-2 ring-cyan-500/20' : 'border-slate-200 dark:border-slate-700 hover:border-cyan-300'">
+                            <input type="radio" name="project_type" value="software_web" x-model="projectType" class="sr-only">
+                            <span class="text-xs font-bold text-cyan-700 dark:text-cyan-300 flex items-center gap-1.5 mb-1">
+                                <span>🌐</span> Webpage & App
+                            </span>
+                            <span class="text-[11px] text-slate-500 dark:text-slate-400 leading-tight">Web application, client portal, APIs & dashboards</span>
+                        </label>
+
+                        {{-- Hybrid --}}
+                        <label class="relative flex flex-col p-3.5 rounded-xl border cursor-pointer transition-all"
+                               :class="projectType === 'hybrid' ? 'border-indigo-500 bg-indigo-50/50 dark:bg-indigo-950/30 ring-2 ring-indigo-500/20' : 'border-slate-200 dark:border-slate-700 hover:border-indigo-300'">
+                            <input type="radio" name="project_type" value="hybrid" x-model="projectType" class="sr-only">
+                            <span class="text-xs font-bold text-indigo-700 dark:text-indigo-300 flex items-center gap-1.5 mb-1">
+                                <span>⚡</span> Hybrid (Turnkey)
+                            </span>
+                            <span class="text-[11px] text-slate-500 dark:text-slate-400 leading-tight">Both physical hardware and dedicated web platform</span>
+                        </label>
+                    </div>
+                </div>
+
+                {{-- Conditional Hardware Specifications Panel --}}
+                <div x-show="projectType === 'hardware_attendance' || projectType === 'hardware_cctv' || projectType === 'hybrid'"
+                     x-transition class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-4">
+                    <div class="flex items-center gap-2 text-xs font-bold text-purple-700 dark:text-purple-300 uppercase tracking-wider">
+                        <span>⏱ Terminal & Camera Hardware Parameters</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Attendance Terminals Count</label>
+                            <input type="number" min="0" name="hardware_specs[terminal_count]" value="{{ old('hardware_specs.terminal_count', $project->hardware_specs['terminal_count'] ?? 0) }}"
+                                   placeholder="e.g. 4 Terminals"
+                                   class="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Camera Channels Count</label>
+                            <input type="number" min="0" name="hardware_specs[camera_count]" value="{{ old('hardware_specs.camera_count', $project->hardware_specs['camera_count'] ?? 0) }}"
+                                   placeholder="e.g. 16 Cameras"
+                                   class="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Device Brand / Model</label>
+                            <input type="text" name="hardware_specs[device_brand]" value="{{ old('hardware_specs.device_brand', $project->hardware_specs['device_brand'] ?? '') }}"
+                                   placeholder="e.g. ZKTeco ProFace X / Hikvision MinMoe"
+                                   class="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Terminal IP Subnet / Network</label>
+                            <input type="text" name="hardware_specs[terminal_ip]" value="{{ old('hardware_specs.terminal_ip', $project->hardware_specs['terminal_ip'] ?? '') }}"
+                                   placeholder="e.g. 192.168.1.50 - 192.168.1.60"
+                                   class="w-full text-xs font-mono rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Attendance Sync Mode</label>
+                            <select name="hardware_specs[attendance_sync_mode]" class="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
+                                <option value="face_recognition" {{ old('hardware_specs.attendance_sync_mode', $project->hardware_specs['attendance_sync_mode'] ?? '') === 'face_recognition' ? 'selected' : '' }}>AI Face Recognition Terminal</option>
+                                <option value="biometric_fingerprint" {{ old('hardware_specs.attendance_sync_mode', $project->hardware_specs['attendance_sync_mode'] ?? '') === 'biometric_fingerprint' ? 'selected' : '' }}>Biometric Fingerprint Scanner</option>
+                                <option value="rfid_card" {{ old('hardware_specs.attendance_sync_mode', $project->hardware_specs['attendance_sync_mode'] ?? '') === 'rfid_card' ? 'selected' : '' }}>RFID Proximity Card Terminal</option>
+                                <option value="n_a" {{ old('hardware_specs.attendance_sync_mode', $project->hardware_specs['attendance_sync_mode'] ?? '') === 'n_a' ? 'selected' : '' }}>Not Applicable (CCTV Only)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Conditional Software Specifications Panel --}}
+                <div x-show="projectType === 'software_web' || projectType === 'hybrid'"
+                     x-transition class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-4">
+                    <div class="flex items-center gap-2 text-xs font-bold text-cyan-700 dark:text-cyan-300 uppercase tracking-wider">
+                        <span>🌐 Software Architecture & Webpage Parameters</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Live / Staging Webpage URL</label>
+                            <input type="url" name="software_specs[webpage_url]" value="{{ old('software_specs.webpage_url', $project->software_specs['webpage_url'] ?? '') }}"
+                                   placeholder="https://portal.clientcompany.com"
+                                   class="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Source Repository URL</label>
+                            <input type="url" name="software_specs[repository_url]" value="{{ old('software_specs.repository_url', $project->software_specs['repository_url'] ?? '') }}"
+                                   placeholder="https://github.com/organization/project"
+                                   class="w-full text-xs font-mono rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Tech Stack (comma separated)</label>
+                            <input type="text" name="software_specs[tech_stack]" value="{{ old('software_specs.tech_stack', $project->software_specs['tech_stack'] ?? '') }}"
+                                   placeholder="Laravel, Tailwind CSS, Alpine.js, REST API"
+                                   class="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Deployment Server / Host</label>
+                            <input type="text" name="software_specs[deployment_server]" value="{{ old('software_specs.deployment_server', $project->software_specs['deployment_server'] ?? '') }}"
+                                   placeholder="Ubuntu 24.04 LTS / Nginx / Cloudflare"
+                                   class="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- 3. Status, Progress & Priority --}}
             <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 space-y-4">
                 <div class="border-b border-slate-100 dark:border-slate-800 pb-3 flex items-center gap-2">
-                    <span class="w-7 h-7 rounded-lg bg-amber-50 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold text-xs">2</span>
+                    <span class="w-7 h-7 rounded-lg bg-amber-50 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold text-xs">3</span>
                     <h3 class="text-base font-bold text-slate-900 dark:text-white">Status, Schedule & Progress</h3>
                 </div>
 
@@ -203,10 +349,10 @@
                 </div>
             </div>
 
-            {{-- 3. Contact Person & Scope Description --}}
+            {{-- 4. Contact Person & Scope Description --}}
             <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 space-y-4">
                 <div class="border-b border-slate-100 dark:border-slate-800 pb-3 flex items-center gap-2">
-                    <span class="w-7 h-7 rounded-lg bg-teal-50 dark:bg-teal-900/40 text-teal-600 dark:text-teal-400 flex items-center justify-center font-bold text-xs">3</span>
+                    <span class="w-7 h-7 rounded-lg bg-teal-50 dark:bg-teal-900/40 text-teal-600 dark:text-teal-400 flex items-center justify-center font-bold text-xs">4</span>
                     <h3 class="text-base font-bold text-slate-900 dark:text-white">Client Contact & Technical Scope</h3>
                 </div>
 
@@ -251,11 +397,11 @@
                 </div>
             </div>
 
-            {{-- 4. Attach Additional Files & PDFs --}}
+            {{-- 5. Attach Additional Files & PDFs --}}
             <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 space-y-4">
                 <div class="border-b border-slate-100 dark:border-slate-800 pb-3 flex items-center justify-between">
                     <div class="flex items-center gap-2">
-                        <span class="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-xs">4</span>
+                        <span class="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-xs">5</span>
                         <div>
                             <h3 class="text-base font-bold text-slate-900 dark:text-white">Upload Additional Documents & PDFs</h3>
                             <p class="text-xs text-slate-500 dark:text-slate-400">Add more blueprints, contracts, completion sign-offs</p>

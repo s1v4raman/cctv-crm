@@ -15,6 +15,7 @@ class Project extends Model
     protected $fillable = [
         'project_code',
         'title',
+        'project_type',
         'company_name',
         'lead_id',
         'site_address',
@@ -33,6 +34,8 @@ class Project extends Model
         'assigned_to',
         'created_by',
         'notes',
+        'hardware_specs',
+        'software_specs',
     ];
 
     protected $casts = [
@@ -42,7 +45,19 @@ class Project extends Model
         'budget' => 'decimal:2',
         'actual_cost' => 'decimal:2',
         'progress_percentage' => 'integer',
+        'hardware_specs' => 'array',
+        'software_specs' => 'array',
     ];
+
+    public static function projectTypeOptions(): array
+    {
+        return [
+            'hardware_attendance' => 'Terminal Camera & Attendance',
+            'hardware_cctv'       => 'CCTV Surveillance & Security',
+            'software_web'        => 'Webpage & Web Application',
+            'hybrid'              => 'Hybrid (Hardware + Software)',
+        ];
+    }
 
     public static function statusOptions(): array
     {
@@ -160,5 +175,29 @@ class Project extends Model
         }
 
         return $query->where('status', $status);
+    }
+
+    public function getProjectTypeLabelAttribute(): string
+    {
+        return static::projectTypeOptions()[$this->project_type] ?? ucfirst(str_replace('_', ' ', $this->project_type ?? 'hardware_cctv'));
+    }
+
+    public function getProjectTypeBadgeClassesAttribute(): string
+    {
+        return match ($this->project_type) {
+            'hardware_attendance' => 'bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800',
+            'software_web'        => 'bg-cyan-50 dark:bg-cyan-950/60 text-cyan-700 dark:text-cyan-300 border-cyan-200 dark:border-cyan-800',
+            'hybrid'              => 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800',
+            default               => 'bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800',
+        };
+    }
+
+    public function scopeByType(Builder $query, ?string $type): Builder
+    {
+        if (!$type || $type === 'all') {
+            return $query;
+        }
+
+        return $query->where('project_type', $type);
     }
 }

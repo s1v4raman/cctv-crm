@@ -16,6 +16,9 @@
                         <span class="text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full border {{ $project->status_badge_classes }}">
                             {{ $project->status_label }}
                         </span>
+                        <span class="text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full border {{ $project->project_type_badge_classes }}">
+                            {{ $project->project_type_label }}
+                        </span>
                     </div>
                     <div class="flex items-center gap-2 mt-0.5 text-xs text-blue-600 dark:text-blue-400 font-bold">
                         <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
@@ -192,6 +195,157 @@
                         @endif
                     </div>
                 </div>
+
+                {{-- Hardware & Terminal Camera Specifications Card --}}
+                @if(in_array($project->project_type, ['hardware_attendance', 'hardware_cctv', 'hybrid']) || !empty($project->hardware_specs))
+                <div class="bg-white dark:bg-slate-900 rounded-2xl border border-purple-200 dark:border-purple-900/40 shadow-sm p-5 space-y-4">
+                    <div class="border-b border-purple-100 dark:border-purple-900/40 pb-3 flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <span class="w-7 h-7 rounded-lg bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 flex items-center justify-center font-bold text-xs">
+                                ⏱
+                            </span>
+                            <div>
+                                <h3 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Terminal & Camera Hardware</h3>
+                                <p class="text-[11px] text-slate-400">Attendance Terminals & Surveillance Network</p>
+                            </div>
+                        </div>
+                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
+                            Hardware Ops
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 text-xs">
+                        <div class="p-3 rounded-xl bg-purple-50/60 dark:bg-purple-950/20 border border-purple-100 dark:border-purple-900/30">
+                            <span class="text-slate-400 block font-medium text-[11px]">Attendance Terminals:</span>
+                            <span class="text-lg font-black text-purple-700 dark:text-purple-300 font-heading">
+                                {{ $project->hardware_specs['terminal_count'] ?? 0 }} Units
+                            </span>
+                        </div>
+                        <div class="p-3 rounded-xl bg-blue-50/60 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900/30">
+                            <span class="text-slate-400 block font-medium text-[11px]">Camera Channels:</span>
+                            <span class="text-lg font-black text-blue-700 dark:text-blue-300 font-heading">
+                                {{ $project->hardware_specs['camera_count'] ?? 0 }} Cams
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2 text-xs">
+                        @if(!empty($project->hardware_specs['device_brand']))
+                        <div class="flex items-center justify-between py-1 border-b border-slate-100 dark:border-slate-800">
+                            <span class="text-slate-400 font-medium">Terminal Brand / Model:</span>
+                            <span class="font-bold text-slate-800 dark:text-slate-200">{{ $project->hardware_specs['device_brand'] }}</span>
+                        </div>
+                        @endif
+
+                        @if(!empty($project->hardware_specs['terminal_ip']))
+                        <div class="flex items-center justify-between py-1 border-b border-slate-100 dark:border-slate-800">
+                            <span class="text-slate-400 font-medium">IP Subnet / Address:</span>
+                            <span class="font-mono font-bold text-slate-800 dark:text-slate-200">{{ $project->hardware_specs['terminal_ip'] }}</span>
+                        </div>
+                        @endif
+
+                        <div class="flex items-center justify-between py-1 border-b border-slate-100 dark:border-slate-800">
+                            <span class="text-slate-400 font-medium">Punch Sync Mode:</span>
+                            <span class="font-bold text-purple-600 dark:text-purple-400 uppercase text-[11px]">
+                                {{ str_replace('_', ' ', $project->hardware_specs['attendance_sync_mode'] ?? 'Face Recognition') }}
+                            </span>
+                        </div>
+
+                        <div class="flex items-center justify-between py-1">
+                            <span class="text-slate-400 font-medium">Cloud / CRM Sync:</span>
+                            <span class="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                Synchronized
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="pt-2 border-t border-purple-100 dark:border-purple-900/40">
+                        <a href="{{ route('attendance.index') }}" class="w-full py-2 px-3 rounded-xl bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/40 dark:hover:bg-purple-900/60 border border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            Launch Employee Attendance Hub &rarr;
+                        </a>
+                    </div>
+                </div>
+                @endif
+
+                {{-- Software Architecture & Webpage Stack Card --}}
+                @if(in_array($project->project_type, ['software_web', 'hybrid']) || !empty($project->software_specs))
+                <div class="bg-white dark:bg-slate-900 rounded-2xl border border-cyan-200 dark:border-cyan-900/40 shadow-sm p-5 space-y-4">
+                    <div class="border-b border-cyan-100 dark:border-cyan-900/40 pb-3 flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <span class="w-7 h-7 rounded-lg bg-cyan-100 dark:bg-cyan-900/40 text-cyan-700 dark:text-cyan-300 flex items-center justify-center font-bold text-xs">
+                                🌐
+                            </span>
+                            <div>
+                                <h3 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Webpage & Software Stack</h3>
+                                <p class="text-[11px] text-slate-400">Web App, Client Portal & Integrations</p>
+                            </div>
+                        </div>
+                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-cyan-50 dark:bg-cyan-950/60 text-cyan-700 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-800">
+                            Software Web
+                        </span>
+                    </div>
+
+                    <div class="space-y-3 text-xs">
+                        @if(!empty($project->software_specs['webpage_url']))
+                        <div>
+                            <span class="text-slate-400 block font-medium mb-1">Webpage / Portal URL:</span>
+                            <a href="{{ $project->software_specs['webpage_url'] }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-cyan-600 dark:text-cyan-400 font-bold hover:underline break-all">
+                                <span>{{ $project->software_specs['webpage_url'] }}</span>
+                                <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                            </a>
+                        </div>
+                        @endif
+
+                        @if(!empty($project->software_specs['repository_url']))
+                        <div>
+                            <span class="text-slate-400 block font-medium mb-1">Source Repository:</span>
+                            <a href="{{ $project->software_specs['repository_url'] }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-slate-700 dark:text-slate-300 font-mono hover:text-cyan-500 break-all">
+                                <svg class="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+                                <span>{{ $project->software_specs['repository_url'] }}</span>
+                            </a>
+                        </div>
+                        @endif
+
+                        @if(!empty($project->software_specs['tech_stack']))
+                        <div>
+                            <span class="text-slate-400 block font-medium mb-1.5">Tech Stack:</span>
+                            <div class="flex flex-wrap gap-1.5">
+                                @foreach(explode(',', $project->software_specs['tech_stack']) as $tech)
+                                    <span class="px-2 py-0.5 rounded-md bg-cyan-50 dark:bg-cyan-950/60 text-cyan-800 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-800 text-[11px] font-bold">
+                                        {{ trim($tech) }}
+                                    </span>
+                                @endforeach
+                            </div>
+                        </div>
+                        @endif
+
+                        @if(!empty($project->software_specs['deployment_server']))
+                        <div>
+                            <span class="text-slate-400 block font-medium">Hosting / Server:</span>
+                            <span class="font-semibold text-slate-800 dark:text-slate-200">{{ $project->software_specs['deployment_server'] }}</span>
+                        </div>
+                        @endif
+
+                        @if(!empty($project->software_specs['milestones']) && is_array($project->software_specs['milestones']))
+                        <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
+                            <span class="text-slate-400 block font-medium mb-1.5">Software Milestones:</span>
+                            <div class="space-y-1.5">
+                                @foreach($project->software_specs['milestones'] as $m)
+                                    <div class="flex items-center justify-between text-[11px] p-1.5 rounded-lg bg-slate-50 dark:bg-slate-800/60">
+                                        <span class="font-medium text-slate-700 dark:text-slate-300">{{ $m['name'] ?? 'Milestone' }}</span>
+                                        <span class="font-bold uppercase text-[9px] px-1.5 py-0.5 rounded {{ ($m['status'] ?? '') === 'completed' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300' : (($m['status'] ?? '') === 'in_progress' ? 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300' : 'bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300') }}">
+                                            {{ $m['status'] ?? 'Pending' }}
+                                        </span>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+                @endif
 
                 {{-- Schedule & Financials Card --}}
                 <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-4">

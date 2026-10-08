@@ -66,7 +66,7 @@
             </a>
 
             {{-- In Progress --}}
-            <a href="{{ route('projects.index', ['status' => 'in_progress']) }}" class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:border-amber-500/50 transition-all group {{ $statusFilter === 'in_progress' ? 'ring-2 ring-amber-500/50' : '' }}">
+            <a href="{{ route('projects.index', array_merge(request()->query(), ['status' => 'in_progress'])) }}" class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:border-amber-500/50 transition-all group {{ $statusFilter === 'in_progress' ? 'ring-2 ring-amber-500/50' : '' }}">
                 <div class="flex items-center justify-between">
                     <span class="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">In Progress</span>
                     <span class="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -80,7 +80,7 @@
             </a>
 
             {{-- Done / Completed --}}
-            <a href="{{ route('projects.index', ['status' => 'completed']) }}" class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:border-emerald-500/50 transition-all group {{ $statusFilter === 'completed' ? 'ring-2 ring-emerald-500/50' : '' }}">
+            <a href="{{ route('projects.index', array_merge(request()->query(), ['status' => 'completed'])) }}" class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:border-emerald-500/50 transition-all group {{ $statusFilter === 'completed' ? 'ring-2 ring-emerald-500/50' : '' }}">
                 <div class="flex items-center justify-between">
                     <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Done / Completed</span>
                     <span class="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -94,7 +94,7 @@
             </a>
 
             {{-- Incomplete / Pending --}}
-            <a href="{{ route('projects.index', ['status' => 'incompleted']) }}" class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:border-rose-500/50 transition-all group {{ $statusFilter === 'incompleted' ? 'ring-2 ring-rose-500/50' : '' }}">
+            <a href="{{ route('projects.index', array_merge(request()->query(), ['status' => 'incompleted'])) }}" class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:border-rose-500/50 transition-all group {{ $statusFilter === 'incompleted' ? 'ring-2 ring-rose-500/50' : '' }}">
                 <div class="flex items-center justify-between">
                     <span class="text-xs font-bold text-rose-600 dark:text-rose-400 uppercase tracking-wider">Incomplete</span>
                     <span class="w-8 h-8 rounded-lg bg-rose-50 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -121,6 +121,66 @@
             </div>
         </div>
 
+        {{-- Domain Segmentation & Project Type Ribbon --}}
+        <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-2xl p-4 sm:p-5 text-white shadow-lg border border-indigo-900/40">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-bold tracking-wider uppercase bg-indigo-500/30 text-indigo-300 px-2.5 py-0.5 rounded-full border border-indigo-400/30">Analytics & Segmentation</span>
+                        <h4 class="text-sm font-bold text-white">Software & Hardware Project Modules</h4>
+                    </div>
+                    <p class="text-xs text-slate-300 mt-1">Classification across Biometric Terminal Attendance, Surveillance Hardware & Webpage Engineering</p>
+                </div>
+                {{-- Quick Type Switch Filter Pills --}}
+                <div class="flex items-center gap-2 flex-wrap">
+                    <a href="{{ route('projects.index', array_merge(request()->query(), ['type' => 'all'])) }}"
+                       class="text-xs px-3 py-1.5 rounded-xl font-bold transition-all {{ ($typeFilter === 'all' || !$typeFilter) ? 'bg-white text-slate-900 shadow-sm' : 'bg-white/10 hover:bg-white/20 text-slate-200' }}">
+                        All ({{ $totalProjectsCount }})
+                    </a>
+                    <a href="{{ route('projects.index', array_merge(request()->query(), ['type' => 'hardware_attendance'])) }}"
+                       class="text-xs px-3 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1.5 {{ $typeFilter === 'hardware_attendance' ? 'bg-purple-500 text-white shadow-sm' : 'bg-purple-950/60 hover:bg-purple-900/80 text-purple-200 border border-purple-800/60' }}">
+                        <span>⏱ Terminal Attendance</span>
+                        <span class="bg-purple-400/30 text-[10px] px-1.5 py-0.2 rounded-full">{{ $hardwareAttendanceCount }}</span>
+                    </a>
+                    <a href="{{ route('projects.index', array_merge(request()->query(), ['type' => 'hardware_cctv'])) }}"
+                       class="text-xs px-3 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1.5 {{ $typeFilter === 'hardware_cctv' ? 'bg-blue-600 text-white shadow-sm' : 'bg-blue-950/60 hover:bg-blue-900/80 text-blue-200 border border-blue-800/60' }}">
+                        <span>📸 CCTV Hardware</span>
+                        <span class="bg-blue-400/30 text-[10px] px-1.5 py-0.2 rounded-full">{{ $hardwareCctvCount }}</span>
+                    </a>
+                    <a href="{{ route('projects.index', array_merge(request()->query(), ['type' => 'software_web'])) }}"
+                       class="text-xs px-3 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1.5 {{ $typeFilter === 'software_web' ? 'bg-cyan-500 text-white shadow-sm' : 'bg-cyan-950/60 hover:bg-cyan-900/80 text-cyan-200 border border-cyan-800/60' }}">
+                        <span>🌐 Webpage & Apps</span>
+                        <span class="bg-cyan-400/30 text-[10px] px-1.5 py-0.2 rounded-full">{{ $softwareWebCount }}</span>
+                    </a>
+                    <a href="{{ route('projects.index', array_merge(request()->query(), ['type' => 'hybrid'])) }}"
+                       class="text-xs px-3 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1.5 {{ $typeFilter === 'hybrid' ? 'bg-indigo-500 text-white shadow-sm' : 'bg-indigo-950/60 hover:bg-indigo-900/80 text-indigo-200 border border-indigo-800/60' }}">
+                        <span>⚡ Hybrid Turnkey</span>
+                        <span class="bg-indigo-400/30 text-[10px] px-1.5 py-0.2 rounded-full">{{ $hybridCount }}</span>
+                    </a>
+                </div>
+            </div>
+
+            {{-- Sub-metrics valuation bar --}}
+            <div class="mt-3 pt-3 border-t border-white/10 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                <div>
+                    <span class="text-slate-400 block text-[11px]">Hardware Capital:</span>
+                    <span class="font-extrabold text-blue-300">₹{{ number_format($hardwareValuation, 0) }}</span>
+                </div>
+                <div>
+                    <span class="text-slate-400 block text-[11px]">Software / Web Value:</span>
+                    <span class="font-extrabold text-cyan-300">₹{{ number_format($softwareValuation, 0) }}</span>
+                </div>
+                <div>
+                    <span class="text-slate-400 block text-[11px]">Attendance Terminals:</span>
+                    <span class="font-extrabold text-purple-300">{{ $hardwareAttendanceCount }} Deployments</span>
+                </div>
+                <div>
+                    <span class="text-slate-400 block text-[11px]">Software Portals:</span>
+                    <span class="font-extrabold text-emerald-300">{{ $softwareWebCount }} Active Sites</span>
+                </div>
+            </div>
+        </div>
+
         {{-- 2. Search & Filter Bar (Company Search prioritized) --}}
         <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 sm:p-6">
             <p class="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-3">Search & Filter Projects</p>
@@ -133,14 +193,26 @@
                             <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                         </div>
                         <input type="search" name="search" value="{{ $search }}"
-                               placeholder="e.g. TechPark, Apex Logistics, PRJ-2026-0001..." 
-                               style="padding-left: 3.25rem !important;"
-                               class="w-full pl-12 pr-4 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 transition-all">
+                                placeholder="e.g. TechPark, Apex Logistics, PRJ-2026-0001..." 
+                                style="padding-left: 3.25rem !important;"
+                                class="w-full pl-12 pr-4 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 transition-all">
                     </div>
                 </div>
 
-                {{-- Status Filter --}}
+                {{-- Project Type Filter --}}
                 <div class="w-full sm:w-56">
+                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Module / Type</label>
+                    <select name="type" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2">
+                        <option value="all" {{ ($typeFilter === 'all' || !$typeFilter) ? 'selected' : '' }}>All Project Types</option>
+                        <option value="hardware_attendance" {{ $typeFilter === 'hardware_attendance' ? 'selected' : '' }}>⏱ Terminal Attendance</option>
+                        <option value="hardware_cctv" {{ $typeFilter === 'hardware_cctv' ? 'selected' : '' }}>📸 CCTV Hardware</option>
+                        <option value="software_web" {{ $typeFilter === 'software_web' ? 'selected' : '' }}>🌐 Webpage & Apps</option>
+                        <option value="hybrid" {{ $typeFilter === 'hybrid' ? 'selected' : '' }}>⚡ Hybrid (Turnkey)</option>
+                    </select>
+                </div>
+
+                {{-- Status Filter --}}
+                <div class="w-full sm:w-48">
                     <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Status</label>
                     <select name="status" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2">
                         <option value="all" {{ $statusFilter === 'all' ? 'selected' : '' }}>All Statuses</option>
@@ -153,7 +225,7 @@
                 </div>
 
                 {{-- Priority Filter --}}
-                <div class="w-full sm:w-44">
+                <div class="w-full sm:w-40">
                     <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Priority</label>
                     <select name="priority" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2">
                         <option value="all" {{ $priorityFilter === 'all' ? 'selected' : '' }}>All Priorities</option>
@@ -170,7 +242,7 @@
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                         Search
                     </button>
-                    @if($search || $statusFilter !== 'all' || $priorityFilter !== 'all')
+                    @if($search || $statusFilter !== 'all' || $priorityFilter !== 'all' || ($typeFilter && $typeFilter !== 'all'))
                     <a href="{{ route('projects.index') }}" class="btn-secondary">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                         Clear
@@ -193,11 +265,11 @@
                     @if($search)
                         No project matches your search for "<span class="font-semibold text-slate-700 dark:text-slate-300">{{ $search }}</span>". Try searching by another company name or clear filters.
                     @else
-                        No projects match the selected criteria. Start by registering your first installation project.
+                        No projects match the selected criteria. Start by registering your first installation or web project.
                     @endif
                 </p>
                 <div class="mt-5 flex justify-center gap-3">
-                    @if($search || $statusFilter !== 'all' || $priorityFilter !== 'all')
+                    @if($search || $statusFilter !== 'all' || $priorityFilter !== 'all' || ($typeFilter && $typeFilter !== 'all'))
                         <a href="{{ route('projects.index') }}" class="btn-secondary text-xs py-2 px-4">Reset Filter</a>
                     @endif
                     <a href="{{ route('projects.create') }}" class="btn-amber text-xs py-2 px-4">+ Create Project</a>
@@ -210,7 +282,7 @@
                         {{-- Card Header --}}
                         <div class="p-5 pb-3">
                             <div class="flex items-start justify-between gap-2 mb-2">
-                                <div class="flex items-center gap-2">
+                                <div class="flex items-center gap-1.5 flex-wrap">
                                     <span class="text-xs font-mono font-bold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
                                         {{ $project->project_code }}
                                     </span>
@@ -223,8 +295,23 @@
                                 </span>
                             </div>
 
+                            {{-- Project Type Pill --}}
+                            <div class="mb-2">
+                                <span class="inline-flex items-center gap-1 text-[11px] font-extrabold px-2.5 py-0.5 rounded-md border {{ $project->project_type_badge_classes }}">
+                                    @if($project->project_type === 'hardware_attendance')
+                                        ⏱ Terminal Attendance
+                                    @elseif($project->project_type === 'software_web')
+                                        🌐 Webpage & App
+                                    @elseif($project->project_type === 'hybrid')
+                                        ⚡ Hybrid Turnkey
+                                    @else
+                                        📸 CCTV Hardware
+                                    @endif
+                                </span>
+                            </div>
+
                             {{-- Company & Project Title --}}
-                            <div class="mt-2">
+                            <div>
                                 <div class="flex items-center gap-1.5 text-xs font-extrabold text-blue-600 dark:text-blue-400">
                                     <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                                     <span class="truncate" title="{{ $project->company_name }}">{{ $project->company_name }}</span>
@@ -240,8 +327,29 @@
                                 @endif
                             </div>
 
+                            {{-- Domain Specific Technical Chip --}}
+                            @if(!empty($project->hardware_specs) && ($project->hardware_specs['terminal_count'] ?? 0 || $project->hardware_specs['camera_count'] ?? 0))
+                                <div class="mt-2.5 p-2 rounded-xl bg-purple-50/70 dark:bg-purple-950/30 border border-purple-200/60 dark:border-purple-800/40 text-[11px] flex items-center justify-between text-purple-800 dark:text-purple-300">
+                                    <span class="font-semibold flex items-center gap-1">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                        {{ $project->hardware_specs['terminal_count'] ?? 0 }} Terminals • {{ $project->hardware_specs['camera_count'] ?? 0 }} Cameras
+                                    </span>
+                                    @if(!empty($project->hardware_specs['device_brand']))
+                                        <span class="text-[10px] bg-purple-100 dark:bg-purple-900/60 px-1.5 py-0.5 rounded font-bold truncate max-w-[120px]">{{ $project->hardware_specs['device_brand'] }}</span>
+                                    @endif
+                                </div>
+                            @elseif(!empty($project->software_specs) && (!empty($project->software_specs['webpage_url']) || !empty($project->software_specs['tech_stack'])))
+                                <div class="mt-2.5 p-2 rounded-xl bg-cyan-50/70 dark:bg-cyan-950/30 border border-cyan-200/60 dark:border-cyan-800/40 text-[11px] flex items-center justify-between text-cyan-800 dark:text-cyan-300">
+                                    <span class="font-semibold truncate flex items-center gap-1">
+                                        <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>
+                                        {{ $project->software_specs['webpage_url'] ? Str::limit($project->software_specs['webpage_url'], 26) : Str::limit($project->software_specs['tech_stack'], 26) }}
+                                    </span>
+                                    <span class="text-[10px] bg-cyan-100 dark:bg-cyan-900/60 px-1.5 py-0.5 rounded font-bold">Web Stack</span>
+                                </div>
+                            @endif
+
                             {{-- Progress Bar --}}
-                            <div class="mt-4">
+                            <div class="mt-3.5">
                                 <div class="flex items-center justify-between text-xs mb-1 font-semibold">
                                     <span class="text-slate-600 dark:text-slate-400">Completion</span>
                                     <span class="text-slate-900 dark:text-white font-bold">{{ $project->progress_percentage }}%</span>

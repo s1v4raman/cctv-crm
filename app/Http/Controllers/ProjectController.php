@@ -21,6 +21,7 @@ class ProjectController extends Controller
         $search = trim($request->input('search', ''));
         $statusFilter = $request->input('status', 'all');
         $priorityFilter = $request->input('priority', 'all');
+        $typeFilter = $request->input('type', 'all');
         $assignedFilter = $request->input('assigned_to');
 
         // Overall Global KPIs (computed before filters)
@@ -29,6 +30,15 @@ class ProjectController extends Controller
         $completedCount = Project::where('status', 'completed')->count();
         $incompletedCount = Project::whereIn('status', ['incompleted', 'on_hold'])->count();
         $totalValuation = (float) Project::sum('budget');
+
+        // Project Type Segmentation Analytics
+        $hardwareCctvCount = Project::where('project_type', 'hardware_cctv')->count();
+        $hardwareAttendanceCount = Project::where('project_type', 'hardware_attendance')->count();
+        $softwareWebCount = Project::where('project_type', 'software_web')->count();
+        $hybridCount = Project::where('project_type', 'hybrid')->count();
+
+        $hardwareValuation = (float) Project::whereIn('project_type', ['hardware_cctv', 'hardware_attendance'])->sum('budget');
+        $softwareValuation = (float) Project::where('project_type', 'software_web')->sum('budget');
 
         // Filtered Query
         $query = Project::with(['assignedUser', 'documents', 'lead'])
@@ -44,6 +54,10 @@ class ProjectController extends Controller
 
         if ($priorityFilter && $priorityFilter !== 'all') {
             $query->where('priority', $priorityFilter);
+        }
+
+        if ($typeFilter && $typeFilter !== 'all') {
+            $query->byType($typeFilter);
         }
 
         if ($assignedFilter) {
@@ -68,18 +82,27 @@ class ProjectController extends Controller
             ->get();
 
         $leads = Lead::orderBy('customer_name')->limit(60)->get();
+        $projectTypes = Project::projectTypeOptions();
 
         return view('projects.index', compact(
             'projects',
             'search',
             'statusFilter',
             'priorityFilter',
+            'typeFilter',
             'assignedFilter',
             'totalProjectsCount',
             'inProgressCount',
             'completedCount',
             'incompletedCount',
             'totalValuation',
+            'hardwareCctvCount',
+            'hardwareAttendanceCount',
+            'softwareWebCount',
+            'hybridCount',
+            'hardwareValuation',
+            'softwareValuation',
+            'projectTypes',
             'teamMembers',
             'leads'
         ));
@@ -92,11 +115,12 @@ class ProjectController extends Controller
     {
         $teamMembers = User::whereIn('role', ['admin', 'staff', 'technician'])->orderBy('name')->get();
         $leads = Lead::orderBy('customer_name')->get();
+        $projectTypes = Project::projectTypeOptions();
 
         // Auto-suggest next project code
         $nextCode = 'PRJ-' . date('Y') . '-' . str_pad(Project::count() + 1, 4, '0', STR_PAD_LEFT);
 
-        return view('projects.create', compact('teamMembers', 'leads', 'nextCode'));
+        return view('projects.create', compact('teamMembers', 'leads', 'nextCode', 'projectTypes'));
     }
 
     /**
@@ -107,6 +131,7 @@ class ProjectController extends Controller
         $validated = $request->validate([
             'company_name' => 'required|string|max:255',
             'title' => 'required|string|max:255',
+            'project_type' => 'required|in:hardware_attendance,hardware_cctv,software_web,hybrid',
             'project_code' => 'nullable|string|max:50|unique:projects,project_code',
             'lead_id' => 'nullable|exists:leads,id',
             'site_address' => 'nullable|string|max:255',
@@ -123,6 +148,8 @@ class ProjectController extends Controller
             'deadline' => 'nullable|date',
             'assigned_to' => 'nullable|exists:users,id',
             'notes' => 'nullable|string',
+            'hardware_specs' => 'nullable|array',
+            'software_specs' => 'nullable|array',
             'documents.*' => 'nullable|file|max:30720', // max 30MB per file
         ]);
 
@@ -159,8 +186,9 @@ class ProjectController extends Controller
         $project->load(['documents.uploader', 'assignedUser', 'creator', 'lead']);
 
         $teamMembers = User::whereIn('role', ['admin', 'staff', 'technician'])->orderBy('name')->get();
+        $projectTypes = Project::projectTypeOptions();
 
-        return view('projects.show', compact('project', 'teamMembers'));
+        return view('projects.show', compact('project', 'teamMembers', 'projectTypes'));
     }
 
     /**
@@ -170,8 +198,9 @@ class ProjectController extends Controller
     {
         $teamMembers = User::whereIn('role', ['admin', 'staff', 'technician'])->orderBy('name')->get();
         $leads = Lead::orderBy('customer_name')->get();
+        $projectTypes = Project::projectTypeOptions();
 
-        return view('projects.edit', compact('project', 'teamMembers', 'leads'));
+        return view('projects.edit', compact('project', 'teamMembers', 'leads', 'projectTypes'));
     }
 
     /**
@@ -182,6 +211,7 @@ class ProjectController extends Controller
         $validated = $request->validate([
             'company_name' => 'required|string|max:255',
             'title' => 'required|string|max:255',
+            'project_type' => 'required|in:hardware_attendance,hardware_cctv,software_web,hybrid',
             'project_code' => 'required|string|max:50|unique:projects,project_code,' . $project->id,
             'lead_id' => 'nullable|exists:leads,id',
             'site_address' => 'nullable|string|max:255',
@@ -198,6 +228,8 @@ class ProjectController extends Controller
             'deadline' => 'nullable|date',
             'assigned_to' => 'nullable|exists:users,id',
             'notes' => 'nullable|string',
+            'hardware_specs' => 'nullable|array',
+            'software_specs' => 'nullable|array',
             'documents.*' => 'nullable|file|max:30720',
         ]);
 
@@ -348,6 +380,9 @@ class ProjectController extends Controller
         if ($status = $request->input('status')) {
             $query->byStatus($status);
         }
+        if ($type = $request->input('type')) {
+            $query->byType($type);
+        }
         if ($priority = $request->input('priority')) {
             if ($priority !== 'all') {
                 $query->where('priority', $priority);
@@ -365,12 +400,15 @@ class ProjectController extends Controller
             $file = fopen('php://output', 'w');
             fputcsv($file, [
                 'Project Code',
+                'Project Type',
                 'Company Name',
                 'Project Title',
                 'Status',
                 'Priority',
                 'Progress %',
                 'Budget (INR)',
+                'Hardware Terminals/Cameras',
+                'Software Webpage / App',
                 'Site Address',
                 'Contact Person',
                 'Contact Phone',
@@ -382,14 +420,30 @@ class ProjectController extends Controller
             ]);
 
             foreach ($projects as $prj) {
+                $hwSummary = 'N/A';
+                if (!empty($prj->hardware_specs)) {
+                    $terms = $prj->hardware_specs['terminal_count'] ?? 0;
+                    $cams = $prj->hardware_specs['camera_count'] ?? 0;
+                    $brand = $prj->hardware_specs['device_brand'] ?? '';
+                    $hwSummary = "{$terms} Terminals, {$cams} Cams" . ($brand ? " ({$brand})" : '');
+                }
+
+                $swSummary = 'N/A';
+                if (!empty($prj->software_specs)) {
+                    $swSummary = $prj->software_specs['webpage_url'] ?? ($prj->software_specs['tech_stack'] ?? 'Web App');
+                }
+
                 fputcsv($file, [
                     $prj->project_code,
+                    $prj->project_type_label,
                     $prj->company_name,
                     $prj->title,
                     $prj->status_label,
                     ucfirst($prj->priority),
                     $prj->progress_percentage . '%',
                     number_format((float) $prj->budget, 2, '.', ''),
+                    $hwSummary,
+                    $swSummary,
                     $prj->site_address ?? 'N/A',
                     $prj->contact_person ?? 'N/A',
                     $prj->contact_phone ?? 'N/A',
