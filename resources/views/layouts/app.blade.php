@@ -126,6 +126,11 @@
                 toggle() {
                     const next = !this.collapsed;
                     this.collapsed = next;
+                    try {
+                        if (window.Alpine && window.Alpine.store && window.Alpine.store('sidebar')) {
+                            window.Alpine.store('sidebar').collapsed = next;
+                        }
+                    } catch(e) {}
                     window.dispatchEvent(new CustomEvent('sidebar-collapsed-changed', { detail: { collapsed: next } }));
                     return next;
                 }
@@ -297,6 +302,7 @@
                     {{-- Modern SaaS Top Navigation Bar (Zoho CRM Standard Comfortable Scale) --}}
                     <header class="h-16 sm:h-[70px] bg-white dark:bg-[#0f172a] border-b border-slate-200/80 dark:border-slate-800 px-4 sm:px-5 md:px-6 flex items-center justify-between sticky top-0 z-30 shadow-2xs transition-colors duration-200 relative"
                             x-data="{
+                                sidebarCollapsed: window.crmSidebar ? window.crmSidebar.collapsed : false,
                                 query: '',
                                 results: [],
                                 open: false,
@@ -337,6 +343,7 @@
                                     }
                                 }
                             }"
+                            @sidebar-collapsed-changed.window="sidebarCollapsed = $event.detail.collapsed"
                             @keydown.escape.window="open = false; mobileSearchOpen = false"
                             @keydown.window.prevent.ctrl.k="if (window.innerWidth < 768) { mobileSearchOpen = true; $nextTick(() => $refs.mobileSearchInput.focus()); } else { $refs.searchInput.focus(); open = true; }"
                             @keydown.window.prevent.cmd.k="if (window.innerWidth < 768) { mobileSearchOpen = true; $nextTick(() => $refs.mobileSearchInput.focus()); } else { $refs.searchInput.focus(); open = true; }">
@@ -353,8 +360,7 @@
                             </button>
 
                             {{-- Laptop / Desktop Sidebar Collapse Toggle Button (Laptop View) --}}
-                            <button @click="toggleSidebarCollapsed()" 
-                                    onclick="window.crmSidebar.toggle()"
+                            <button @click="window.crmSidebar.toggle()" 
                                     type="button"
                                     class="hidden lg:inline-flex items-center justify-center p-2 rounded-xl text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition-all shadow-2xs cursor-pointer shrink-0"
                                     :title="sidebarCollapsed ? 'Expand Sidebar to Full View (Ctrl+B)' : 'Collapse Sidebar to Compact Dock (Ctrl+B)'"

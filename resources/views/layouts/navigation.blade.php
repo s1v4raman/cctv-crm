@@ -313,8 +313,7 @@
 
     {{-- Desktop Collapse Footer Bar (Laptop View) --}}
     <div class="hidden lg:block shrink-0 px-3.5 py-2.5 border-t border-slate-100 dark:border-slate-800 text-center">
-        <button @click="toggleSidebarCollapsed()" 
-                onclick="window.crmSidebar.toggle()"
+        <button @click="window.crmSidebar.toggle()" 
                 type="button" 
                 class="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition text-xs font-semibold cursor-pointer"
                 :class="sidebarCollapsed ? 'justify-center' : 'justify-between'"
