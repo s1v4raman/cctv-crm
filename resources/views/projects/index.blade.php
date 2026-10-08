@@ -121,104 +121,92 @@
             </div>
         </div>
 
-        {{-- Domain Segmentation & Project Type Ribbon --}}
-        <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-2xl p-4 sm:p-5 text-white shadow-lg border border-indigo-900/40">
-            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                <div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-xs font-bold tracking-wider uppercase bg-indigo-500/30 text-indigo-300 px-2.5 py-0.5 rounded-full border border-indigo-400/30">Analytics & Segmentation</span>
-                        <h4 class="text-sm font-bold text-white">Software & Hardware Project Modules</h4>
-                    </div>
-                    <p class="text-xs text-slate-300 mt-1">Classification across Biometric Terminal Attendance, Surveillance Hardware & Webpage Engineering</p>
+        {{-- Unified Filter & Domain Segmentation Hub --}}
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-4 sm:p-5 space-y-4">
+            
+            {{-- Top Row: Category Tabs (Segmented Control) --}}
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 pb-3.5 border-b border-slate-100 dark:border-slate-800">
+                <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Project Modules</span>
                 </div>
-                {{-- Quick Type Switch Filter Pills --}}
-                <div class="flex items-center gap-2 flex-wrap">
+
+                {{-- Segmented Track Pills --}}
+                <div class="flex items-center gap-1.5 flex-wrap">
                     <a href="{{ route('projects.index', array_merge(request()->query(), ['type' => 'all'])) }}"
-                       class="text-xs px-3 py-1.5 rounded-xl font-bold transition-all {{ ($typeFilter === 'all' || !$typeFilter) ? 'bg-white text-slate-900 shadow-sm' : 'bg-white/10 hover:bg-white/20 text-slate-200' }}">
-                        All ({{ $totalProjectsCount }})
+                       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all {{ ($typeFilter === 'all' || !$typeFilter) ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-sm font-bold' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200/70 dark:hover:bg-slate-700/60' }}">
+                        <span>All</span>
+                        <span class="text-[10px] px-1.5 py-0.2 rounded-full {{ ($typeFilter === 'all' || !$typeFilter) ? 'bg-slate-700 text-slate-200 dark:bg-slate-200 dark:text-slate-800' : 'bg-slate-200/80 dark:bg-slate-700 text-slate-500 dark:text-slate-400' }}">{{ $totalProjectsCount }}</span>
                     </a>
+
                     <a href="{{ route('projects.index', array_merge(request()->query(), ['type' => 'hardware_attendance'])) }}"
-                       class="text-xs px-3 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1.5 {{ $typeFilter === 'hardware_attendance' ? 'bg-purple-500 text-white shadow-sm' : 'bg-purple-950/60 hover:bg-purple-900/80 text-purple-200 border border-purple-800/60' }}">
+                       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all {{ $typeFilter === 'hardware_attendance' ? 'bg-purple-600 text-white shadow-sm font-bold' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200/70 dark:hover:bg-slate-700/60' }}">
                         <span>⏱ Terminal Attendance</span>
-                        <span class="bg-purple-400/30 text-[10px] px-1.5 py-0.2 rounded-full">{{ $hardwareAttendanceCount }}</span>
+                        <span class="text-[10px] px-1.5 py-0.2 rounded-full {{ $typeFilter === 'hardware_attendance' ? 'bg-purple-800 text-purple-100' : 'bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-300' }}">{{ $hardwareAttendanceCount }}</span>
                     </a>
+
                     <a href="{{ route('projects.index', array_merge(request()->query(), ['type' => 'hardware_cctv'])) }}"
-                       class="text-xs px-3 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1.5 {{ $typeFilter === 'hardware_cctv' ? 'bg-blue-600 text-white shadow-sm' : 'bg-blue-950/60 hover:bg-blue-900/80 text-blue-200 border border-blue-800/60' }}">
-                        <span>📸 CCTV Hardware</span>
-                        <span class="bg-blue-400/30 text-[10px] px-1.5 py-0.2 rounded-full">{{ $hardwareCctvCount }}</span>
+                       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all {{ $typeFilter === 'hardware_cctv' ? 'bg-blue-600 text-white shadow-sm font-bold' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200/70 dark:hover:bg-slate-700/60' }}">
+                        <span>📹 CCTV Surveillance</span>
+                        <span class="text-[10px] px-1.5 py-0.2 rounded-full {{ $typeFilter === 'hardware_cctv' ? 'bg-blue-800 text-blue-100' : 'bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300' }}">{{ $hardwareCctvCount }}</span>
                     </a>
+
                     <a href="{{ route('projects.index', array_merge(request()->query(), ['type' => 'software_web'])) }}"
-                       class="text-xs px-3 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1.5 {{ $typeFilter === 'software_web' ? 'bg-cyan-500 text-white shadow-sm' : 'bg-cyan-950/60 hover:bg-cyan-900/80 text-cyan-200 border border-cyan-800/60' }}">
-                        <span>🌐 Webpage & Apps</span>
-                        <span class="bg-cyan-400/30 text-[10px] px-1.5 py-0.2 rounded-full">{{ $softwareWebCount }}</span>
+                       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all {{ $typeFilter === 'software_web' ? 'bg-cyan-600 text-white shadow-sm font-bold' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200/70 dark:hover:bg-slate-700/60' }}">
+                        <span>🌐 Web & Apps</span>
+                        <span class="text-[10px] px-1.5 py-0.2 rounded-full {{ $typeFilter === 'software_web' ? 'bg-cyan-800 text-cyan-100' : 'bg-cyan-100 dark:bg-cyan-900/40 text-cyan-600 dark:text-cyan-300' }}">{{ $softwareWebCount }}</span>
                     </a>
+
                     <a href="{{ route('projects.index', array_merge(request()->query(), ['type' => 'hybrid'])) }}"
-                       class="text-xs px-3 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1.5 {{ $typeFilter === 'hybrid' ? 'bg-indigo-500 text-white shadow-sm' : 'bg-indigo-950/60 hover:bg-indigo-900/80 text-indigo-200 border border-indigo-800/60' }}">
+                       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all {{ $typeFilter === 'hybrid' ? 'bg-amber-600 text-white shadow-sm font-bold' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200/70 dark:hover:bg-slate-700/60' }}">
                         <span>⚡ Hybrid Turnkey</span>
-                        <span class="bg-indigo-400/30 text-[10px] px-1.5 py-0.2 rounded-full">{{ $hybridCount }}</span>
+                        <span class="text-[10px] px-1.5 py-0.2 rounded-full {{ $typeFilter === 'hybrid' ? 'bg-amber-800 text-amber-100' : 'bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-300' }}">{{ $hybridCount }}</span>
                     </a>
                 </div>
             </div>
 
-            {{-- Sub-metrics valuation bar --}}
-            <div class="mt-3 pt-3 border-t border-white/10 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                <div>
-                    <span class="text-slate-400 block text-[11px]">Hardware Capital:</span>
-                    <span class="font-extrabold text-blue-300">₹{{ number_format($hardwareValuation, 0) }}</span>
+            {{-- Domain Intelligence Stat Strip (Clean, light & dark compatible) --}}
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-800">
+                    <span class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 block">Hardware Capital</span>
+                    <span class="text-sm font-extrabold text-blue-600 dark:text-blue-400">₹{{ number_format($hardwareValuation, 0) }}</span>
                 </div>
-                <div>
-                    <span class="text-slate-400 block text-[11px]">Software / Web Value:</span>
-                    <span class="font-extrabold text-cyan-300">₹{{ number_format($softwareValuation, 0) }}</span>
+                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-800">
+                    <span class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 block">Software / Web Value</span>
+                    <span class="text-sm font-extrabold text-cyan-600 dark:text-cyan-400">₹{{ number_format($softwareValuation, 0) }}</span>
                 </div>
-                <div>
-                    <span class="text-slate-400 block text-[11px]">Attendance Terminals:</span>
-                    <span class="font-extrabold text-purple-300">{{ $hardwareAttendanceCount }} Deployments</span>
+                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-800">
+                    <span class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 block">Attendance Terminals</span>
+                    <span class="text-sm font-extrabold text-purple-600 dark:text-purple-400">{{ $hardwareAttendanceCount }} Deployments</span>
                 </div>
-                <div>
-                    <span class="text-slate-400 block text-[11px]">Software Portals:</span>
-                    <span class="font-extrabold text-emerald-300">{{ $softwareWebCount }} Active Sites</span>
+                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-800">
+                    <span class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 block">Software Portals</span>
+                    <span class="text-sm font-extrabold text-emerald-600 dark:text-emerald-400">{{ $softwareWebCount }} Active Sites</span>
                 </div>
             </div>
-        </div>
 
-        {{-- 2. Search & Filter Bar (Company Search prioritized) --}}
-        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 sm:p-6">
-            <p class="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-3">Search & Filter Projects</p>
-            <form method="GET" action="{{ route('projects.index') }}" class="flex flex-col lg:flex-row items-stretch lg:items-end gap-4">
+            {{-- Search & Refinement Form --}}
+            <form method="GET" action="{{ route('projects.index') }}" class="pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-col lg:flex-row items-stretch lg:items-center gap-3">
+                <input type="hidden" name="type" value="{{ $typeFilter }}">
+                
                 {{-- Search Box --}}
                 <div class="relative flex-1">
-                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Search by Company / Title / Code</label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                        </div>
-                        <input type="search" name="search" value="{{ $search }}"
-                                placeholder="e.g. TechPark, Apex Logistics, PRJ-2026-0001..." 
-                                style="padding-left: 3.25rem !important;"
-                                class="w-full pl-12 pr-4 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 transition-all">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                     </div>
-                </div>
-
-                {{-- Project Type Filter --}}
-                <div class="w-full sm:w-56">
-                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Module / Type</label>
-                    <select name="type" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2">
-                        <option value="all" {{ ($typeFilter === 'all' || !$typeFilter) ? 'selected' : '' }}>All Project Types</option>
-                        <option value="hardware_attendance" {{ $typeFilter === 'hardware_attendance' ? 'selected' : '' }}>⏱ Terminal Attendance</option>
-                        <option value="hardware_cctv" {{ $typeFilter === 'hardware_cctv' ? 'selected' : '' }}>📸 CCTV Hardware</option>
-                        <option value="software_web" {{ $typeFilter === 'software_web' ? 'selected' : '' }}>🌐 Webpage & Apps</option>
-                        <option value="hybrid" {{ $typeFilter === 'hybrid' ? 'selected' : '' }}>⚡ Hybrid (Turnkey)</option>
-                    </select>
+                    <input type="search" name="search" value="{{ $search }}"
+                           placeholder="Search company, project title, or code..." 
+                           style="padding-left: 2.5rem !important;"
+                           class="w-full pl-10 pr-4 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50">
                 </div>
 
                 {{-- Status Filter --}}
-                <div class="w-full sm:w-48">
-                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Status</label>
-                    <select name="status" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2">
+                <div class="w-full sm:w-44">
+                    <select name="status" class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500/50">
                         <option value="all" {{ $statusFilter === 'all' ? 'selected' : '' }}>All Statuses</option>
                         <option value="in_progress" {{ $statusFilter === 'in_progress' ? 'selected' : '' }}>In Progress</option>
                         <option value="completed" {{ $statusFilter === 'completed' ? 'selected' : '' }}>Done / Completed</option>
-                        <option value="incompleted" {{ $statusFilter === 'incompleted' ? 'selected' : '' }}>Incompleted / Pending</option>
+                        <option value="incompleted" {{ $statusFilter === 'incompleted' ? 'selected' : '' }}>Incomplete</option>
                         <option value="on_hold" {{ $statusFilter === 'on_hold' ? 'selected' : '' }}>On Hold</option>
                         <option value="cancelled" {{ $statusFilter === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
                     </select>
@@ -226,8 +214,7 @@
 
                 {{-- Priority Filter --}}
                 <div class="w-full sm:w-40">
-                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Priority</label>
-                    <select name="priority" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2">
+                    <select name="priority" class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500/50">
                         <option value="all" {{ $priorityFilter === 'all' ? 'selected' : '' }}>All Priorities</option>
                         <option value="urgent" {{ $priorityFilter === 'urgent' ? 'selected' : '' }}>🔴 Urgent</option>
                         <option value="high" {{ $priorityFilter === 'high' ? 'selected' : '' }}>🟠 High</option>
@@ -237,14 +224,13 @@
                 </div>
 
                 {{-- Submit and Reset Buttons --}}
-                <div class="flex items-center gap-3 pb-0">
-                    <button type="submit" class="btn-amber flex-1 sm:flex-none justify-center">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                        Search
+                <div class="flex items-center gap-2">
+                    <button type="submit" class="btn-amber text-xs py-2 px-4 justify-center">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        <span>Filter</span>
                     </button>
                     @if($search || $statusFilter !== 'all' || $priorityFilter !== 'all' || ($typeFilter && $typeFilter !== 'all'))
-                    <a href="{{ route('projects.index') }}" class="btn-secondary">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                    <a href="{{ route('projects.index') }}" class="btn-secondary text-xs py-2 px-3" title="Clear all filters">
                         Clear
                     </a>
                     @endif
