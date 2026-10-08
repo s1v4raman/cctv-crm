@@ -558,7 +558,7 @@
                                 </div>
                             </div>
 
-                            <!-- Badge Row – placed below slider, no overlap -->
+                            <!-- Badge Row - placed below slider, no overlap -->
                             <div class="mt-3 flex items-center gap-3 px-1">
                                 <div class="w-9 h-9 rounded-xl bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center flex-shrink-0 shadow-sm">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -670,8 +670,8 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-12">
                     <!-- Feature 01 -->
                     <div class="space-y-3">
-                        <div class="flex items-baseline space-x-3">
-                            <span class="text-xl font-extrabold text-blue-600 font-heading">01 —</span>
+                        <div class="flex items-center space-x-3">
+                            <span class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200/60 dark:border-blue-900/60 flex items-center justify-center text-xs font-bold font-mono shrink-0">01</span>
                             <h3 class="text-lg font-bold text-slate-900 dark:text-white font-heading">High Quality Hardware</h3>
                         </div>
                         <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed pl-11">
@@ -681,8 +681,8 @@
 
                     <!-- Feature 02 -->
                     <div class="space-y-3">
-                        <div class="flex items-baseline space-x-3">
-                            <span class="text-xl font-extrabold text-blue-600 font-heading">02 —</span>
+                        <div class="flex items-center space-x-3">
+                            <span class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200/60 dark:border-blue-900/60 flex items-center justify-center text-xs font-bold font-mono shrink-0">02</span>
                             <h3 class="text-lg font-bold text-slate-900 dark:text-white font-heading">Dedicated 24/7 Support</h3>
                         </div>
                         <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed pl-11">
@@ -692,8 +692,8 @@
 
                     <!-- Feature 03 -->
                     <div class="space-y-3">
-                        <div class="flex items-baseline space-x-3">
-                            <span class="text-xl font-extrabold text-blue-600 font-heading">03 —</span>
+                        <div class="flex items-center space-x-3">
+                            <span class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200/60 dark:border-blue-900/60 flex items-center justify-center text-xs font-bold font-mono shrink-0">03</span>
                             <h3 class="text-lg font-bold text-slate-900 dark:text-white font-heading">30-Day Money-back Guarantee</h3>
                         </div>
                         <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed pl-11">
@@ -703,8 +703,8 @@
 
                     <!-- Feature 04 -->
                     <div class="space-y-3">
-                        <div class="flex items-baseline space-x-3">
-                            <span class="text-xl font-extrabold text-blue-600 font-heading">04 —</span>
+                        <div class="flex items-center space-x-3">
+                            <span class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200/60 dark:border-blue-900/60 flex items-center justify-center text-xs font-bold font-mono shrink-0">04</span>
                             <h3 class="text-lg font-bold text-slate-900 dark:text-white font-heading">Agile and Fast Working Style</h3>
                         </div>
                         <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed pl-11">
@@ -714,9 +714,9 @@
 
                     <!-- Feature 05 -->
                     <div class="space-y-3">
-                        <div class="flex items-baseline space-x-3">
-                            <span class="text-xl font-extrabold text-blue-600 font-heading">05 —</span>
-                            <h3 class="text-lg font-bold text-slate-900 dark:text-white font-heading">Some Apps are Free</h3>
+                        <div class="flex items-center space-x-3">
+                            <span class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200/60 dark:border-blue-900/60 flex items-center justify-center text-xs font-bold font-mono shrink-0">05</span>
+                            <h3 class="text-lg font-bold text-slate-900 dark:text-white font-heading">Complimentary Mobile Clients</h3>
                         </div>
                         <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed pl-11">
                             Feature-rich iOS, Android, and desktop monitoring clients with instant AI push notifications included lifetime with zero recurring monthly subscription fees.
@@ -725,8 +725,8 @@
 
                     <!-- Feature 06 -->
                     <div class="space-y-3">
-                        <div class="flex items-baseline space-x-3">
-                            <span class="text-xl font-extrabold text-blue-600 font-heading">06 —</span>
+                        <div class="flex items-center space-x-3">
+                            <span class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200/60 dark:border-blue-900/60 flex items-center justify-center text-xs font-bold font-mono shrink-0">06</span>
                             <h3 class="text-lg font-bold text-slate-900 dark:text-white font-heading">High Level of Usability</h3>
                         </div>
                         <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed pl-11">
