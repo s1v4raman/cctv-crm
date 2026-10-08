@@ -535,7 +535,12 @@ class AttendanceController extends Controller
                 $count++;
             }
 
-            return back()->with('status', "✅ Batch attendance updated for {$count} employee(s) on " . Carbon::parse($date)->format('d M Y') . ".");
+            $statusLabel = ucfirst(str_replace('_', ' ', $status));
+            if ($count === 0) {
+                return back()->with('status', "ℹ️ No unmarked employees found for " . Carbon::parse($date)->format('d M Y') . ".");
+            }
+
+            return back()->with('status', "✅ Marked {$count} employee(s) as {$statusLabel} on " . Carbon::parse($date)->format('d M Y') . ".");
         }
 
         if ($mode === 'bulk_range') {

@@ -262,7 +262,7 @@
                         </a>
 
                         {{-- Quick Mark All Unmarked as Present --}}
-                        <form method="POST" action="{{ route('attendance.batch-store') }}" class="inline ml-2" onsubmit="return confirm('Mark all unmarked employees as Present (Full Day 8h) for {{ \Carbon\Carbon::parse($selectedDate)->format('d M Y') }}?');">
+                        <form method="POST" action="{{ route('attendance.batch-store') }}" class="inline ml-1" onsubmit="return confirm('Mark all unmarked employees as Present (Full Day 8h) for {{ \Carbon\Carbon::parse($selectedDate)->format('d M Y') }}?');">
                             @csrf
                             <input type="hidden" name="mode" value="bulk_day">
                             <input type="hidden" name="date" value="{{ $selectedDate }}">
@@ -270,6 +270,19 @@
                             <input type="hidden" name="target" value="unmarked">
                             <button type="submit" class="min-h-[44px] px-4 py-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-sm font-bold transition flex items-center gap-2">
                                 <span>⚡</span> Mark Unmarked as Present
+                            </button>
+                        </form>
+
+                        {{-- Quick Mark All Unmarked as Absent --}}
+                        <form method="POST" action="{{ route('attendance.batch-store') }}" class="inline ml-1" onsubmit="return confirm('Mark all unmarked employees as Absent (0h) for {{ \Carbon\Carbon::parse($selectedDate)->format('d M Y') }}?');">
+                            @csrf
+                            <input type="hidden" name="mode" value="bulk_day">
+                            <input type="hidden" name="date" value="{{ $selectedDate }}">
+                            <input type="hidden" name="status" value="absent">
+                            <input type="hidden" name="target" value="unmarked">
+                            <button type="submit" class="min-h-[44px] px-4 py-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/60 hover:bg-rose-100 dark:hover:bg-rose-900/60 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800 text-sm font-bold transition flex items-center gap-2">
+                                <svg class="w-4 h-4 text-rose-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                                <span>Mark Unmarked as Absent</span>
                             </button>
                         </form>
                     </div>
