@@ -39,6 +39,12 @@ use App\Http\Controllers\AccountsPayableController;
 use App\Http\Controllers\PettyCashController;
 use App\Http\Controllers\ModuleHubController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\SiteController;
+use App\Http\Controllers\WorkerController;
+use App\Http\Controllers\WorkDayController;
+use App\Http\Controllers\IpDeviceController;
+use App\Http\Controllers\WageController;
+use App\Http\Controllers\ProjectDocumentController;
 
 // Mobile Phone Remote Barcode Scanner Companion & Live Sync
 Route::get('/mobile-scanner/{token?}', [MobileScannerSyncController::class, 'show'])->name('mobile.scanner');
@@ -277,7 +283,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
         Route::get('/calendar/events', [CalendarController::class, 'events'])->name('calendar.events');
 
-        // Project Handling & Documentation Module
+        // SecureVision Projects Module Redesign
         Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
         Route::get('/projects/create', [ProjectController::class, 'create'])->name('projects.create');
         Route::post('/projects', [ProjectController::class, 'store'])->name('projects.store');
@@ -287,10 +293,49 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('/projects/{project}', [ProjectController::class, 'update'])->name('projects.update');
         Route::delete('/projects/{project}', [ProjectController::class, 'destroy'])->name('projects.destroy');
         Route::patch('/projects/{project}/status', [ProjectController::class, 'updateStatus'])->name('projects.updateStatus');
-        Route::post('/projects/{project}/documents', [ProjectController::class, 'uploadDocuments'])->name('projects.documents.upload');
-        Route::get('/projects/{project}/documents/{document}/download', [ProjectController::class, 'downloadDocument'])->name('projects.documents.download');
-        Route::get('/projects/{project}/documents/{document}/view', [ProjectController::class, 'viewDocument'])->name('projects.documents.view');
-        Route::delete('/projects/{project}/documents/{document}', [ProjectController::class, 'deleteDocument'])->name('projects.documents.destroy');
+        Route::post('/projects/{project}/approve', [ProjectController::class, 'approve'])->name('projects.approve');
+        Route::post('/projects/{project}/reject', [ProjectController::class, 'reject'])->name('projects.reject');
+        Route::post('/projects/{project}/materials', [ProjectController::class, 'addMaterial'])->name('projects.materials.store');
+        Route::delete('/projects/{project}/materials/{material}', [ProjectController::class, 'deleteMaterial'])->name('projects.materials.destroy');
+
+        // Project Documents & Delivery Challans
+        Route::post('/projects/{project}/documents', [ProjectDocumentController::class, 'store'])->name('projects.documents.store');
+        Route::get('/projects/documents/{document}/download', [ProjectDocumentController::class, 'download'])->name('projects.documents.download');
+        Route::get('/projects/documents/{document}/view', [ProjectDocumentController::class, 'view'])->name('projects.documents.view');
+        Route::delete('/projects/documents/{document}', [ProjectDocumentController::class, 'destroy'])->name('projects.documents.destroy');
+        Route::get('/documents/to-invoice', [ProjectDocumentController::class, 'toInvoice'])->name('documents.to-invoice');
+        Route::post('/documents/mark-invoiced', [ProjectDocumentController::class, 'markInvoiced'])->name('documents.mark-invoiced');
+
+        // Client Installation Sites
+        Route::get('/sites/search', [SiteController::class, 'search'])->name('sites.search');
+        Route::post('/sites/check-duplicate', [SiteController::class, 'checkDuplicate'])->name('sites.check-duplicate');
+        Route::resource('sites', SiteController::class);
+
+        // Daily-Wage Workers
+        Route::post('/workers/quick-store', [WorkerController::class, 'quickStore'])->name('workers.quick-store');
+        Route::post('/workers/quick-add', [WorkerController::class, 'quickStore'])->name('workers.quick-add');
+        Route::resource('workers', WorkerController::class);
+
+        // Work Days & Attendance Logger
+        Route::post('/projects/{project}/work-days', [WorkDayController::class, 'store'])->name('projects.work-days.store');
+        Route::delete('/projects/{project}/work-days/{workDay}', [WorkDayController::class, 'destroy'])->name('projects.work-days.destroy');
+        Route::post('/projects/attendances/{attendance}/unlock', [WorkDayController::class, 'unlockAttendance'])->name('projects.attendances.unlock');
+
+        // IP Devices Registry & Configuration
+        Route::post('/projects/{project}/devices', [IpDeviceController::class, 'store'])->name('projects.devices.store');
+        Route::post('/projects/{project}/devices/bulk', [IpDeviceController::class, 'bulkStore'])->name('projects.devices.bulk');
+        Route::post('/projects/{project}/devices/bulk-store', [IpDeviceController::class, 'bulkStore'])->name('projects.devices.bulk-store');
+        Route::put('/projects/{project}/devices/{device}', [IpDeviceController::class, 'update'])->name('projects.devices.update');
+        Route::delete('/projects/{project}/devices/{device}', [IpDeviceController::class, 'destroy'])->name('projects.devices.destroy');
+        Route::post('/projects/{project}/devices/{device}/reveal', [IpDeviceController::class, 'revealPassword'])->name('projects.devices.reveal');
+        Route::get('/projects/{project}/devices/export', [IpDeviceController::class, 'export'])->name('projects.devices.export');
+
+        // Sunday Weekly Wages Console
+        Route::get('/wages', [WageController::class, 'index'])->name('wages.index');
+        Route::post('/wages/advance', [WageController::class, 'recordAdvance'])->name('wages.advance');
+        Route::post('/wages/settle', [WageController::class, 'settlePayment'])->name('wages.settle');
+        Route::get('/wages/signature-sheet', [WageController::class, 'printSignatureSheet'])->name('wages.signature-sheet');
+        Route::get('/wages/export-csv', [WageController::class, 'exportCsv'])->name('wages.export-csv');
 
         // Leads Read-Only
         Route::get('/leads', [LeadController::class, 'index'])->name('leads.index');

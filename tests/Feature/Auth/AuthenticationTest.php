@@ -140,7 +140,7 @@ class AuthenticationTest extends TestCase
             ->get(route('auth.google.callback'));
 
         $this->assertAuthenticated();
-        $user = \App\Models\User::where('email', 'newcustomer@gmail.com')->first();
+        $user = User::where('email', 'newcustomer@gmail.com')->first();
         $this->assertNotNull($user);
         $this->assertEquals('customer', $user->role);
         $this->assertEquals('google-123456', $user->google_id);

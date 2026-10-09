@@ -70,6 +70,19 @@ class TechnicianPortalController extends Controller
             ->orderByDesc('updated_at')
             ->get();
 
+        // Assigned Infrastructure & Installation Projects (SecureVision Projects Module)
+        $assignedProjects = \App\Models\Project::with(['site', 'company', 'materials', 'ipDevices', 'leadTechnician', 'assignedUser'])
+            ->where(function ($q) use ($technicianId) {
+                $q->where('lead_technician_id', $technicianId)
+                  ->orWhere('assigned_to', $technicianId)
+                  ->orWhere('created_by', $technicianId);
+            })
+            ->orderByRaw("CASE WHEN status = 'in_progress' THEN 1 WHEN status = 'approved' THEN 2 WHEN status = 'pending_approval' THEN 3 ELSE 4 END")
+            ->latest('updated_at')
+            ->get();
+
+        $allProjectsCount = \App\Models\Project::count();
+
         return view('technician.dashboard', compact(
             'activeJobs',
             'completedJobs',
@@ -78,7 +91,9 @@ class TechnicianPortalController extends Controller
             'activeTickets',
             'completedTickets',
             'activeSurveys',
-            'completedSurveys'
+            'completedSurveys',
+            'assignedProjects',
+            'allProjectsCount'
         ));
     }
 

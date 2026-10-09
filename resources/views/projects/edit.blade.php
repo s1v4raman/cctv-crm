@@ -85,6 +85,21 @@
                             @endforeach
                         </select>
                     </div>
+
+                    {{-- Installation Site --}}
+                    <div class="md:col-span-2">
+                        <label for="site_id" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                            Installation Site / Campus
+                        </label>
+                        <select id="site_id" name="site_id" class="w-full text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                            <option value="">-- Select or link installation site --</option>
+                            @foreach($sites as $st)
+                                <option value="{{ $st->id }}" {{ old('site_id', $project->site_id) == $st->id ? 'selected' : '' }}>
+                                    {{ $st->name }} ({{ $st->site_code ?? 'SIT-' . $st->id }}) - {{ $st->city ?? $st->address }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
 
                 {{-- Site Address --}}
@@ -114,7 +129,37 @@
                     <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                         Select Project Module / Type <span class="text-rose-500">*</span>
                     </label>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                        {{-- Hardware: CCTV --}}
+                        <label class="relative flex flex-col p-3.5 rounded-xl border cursor-pointer transition-all"
+                               :class="projectType === 'hardware_cctv' ? 'border-blue-500 bg-blue-50/50 dark:bg-blue-950/30 ring-2 ring-blue-500/20' : 'border-slate-200 dark:border-slate-700 hover:border-blue-300'">
+                            <input type="radio" name="project_type" value="hardware_cctv" x-model="projectType" class="sr-only">
+                            <span class="text-xs font-bold text-blue-700 dark:text-blue-300 flex items-center gap-1.5 mb-1">
+                                <span>📹</span> CCTV Hardware
+                            </span>
+                            <span class="text-[11px] text-slate-500 dark:text-slate-400 leading-tight">IP Cameras, NVR, PoE cabling &amp; site surveillance</span>
+                        </label>
+
+                        {{-- Networking --}}
+                        <label class="relative flex flex-col p-3.5 rounded-xl border cursor-pointer transition-all"
+                               :class="projectType === 'networking' ? 'border-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/30 ring-2 ring-emerald-500/20' : 'border-slate-200 dark:border-slate-700 hover:border-emerald-300'">
+                            <input type="radio" name="project_type" value="networking" x-model="projectType" class="sr-only">
+                            <span class="text-xs font-bold text-emerald-700 dark:text-emerald-300 flex items-center gap-1.5 mb-1">
+                                <span>🌐</span> Network &amp; Wi-Fi
+                            </span>
+                            <span class="text-[11px] text-slate-500 dark:text-slate-400 leading-tight">Structured cabling, switches, routers &amp; Wi-Fi APs</span>
+                        </label>
+
+                        {{-- Access Control --}}
+                        <label class="relative flex flex-col p-3.5 rounded-xl border cursor-pointer transition-all"
+                               :class="projectType === 'access_control' ? 'border-amber-500 bg-amber-50/50 dark:bg-amber-950/30 ring-2 ring-amber-500/20' : 'border-slate-200 dark:border-slate-700 hover:border-amber-300'">
+                            <input type="radio" name="project_type" value="access_control" x-model="projectType" class="sr-only">
+                            <span class="text-xs font-bold text-amber-700 dark:text-amber-300 flex items-center gap-1.5 mb-1">
+                                <span>🚪</span> Access Control
+                            </span>
+                            <span class="text-[11px] text-slate-500 dark:text-slate-400 leading-tight">Door controllers, electromagnetic locks &amp; exit sensors</span>
+                        </label>
+
                         {{-- Hardware: Terminal Camera Attendance --}}
                         <label class="relative flex flex-col p-3.5 rounded-xl border cursor-pointer transition-all"
                                :class="projectType === 'hardware_attendance' ? 'border-purple-500 bg-purple-50/50 dark:bg-purple-950/30 ring-2 ring-purple-500/20' : 'border-slate-200 dark:border-slate-700 hover:border-purple-300'">
@@ -122,17 +167,7 @@
                             <span class="text-xs font-bold text-purple-700 dark:text-purple-300 flex items-center gap-1.5 mb-1">
                                 <span>⏱</span> Terminal Attendance
                             </span>
-                            <span class="text-[11px] text-slate-500 dark:text-slate-400 leading-tight">Biometric & AI facial recognition terminal systems</span>
-                        </label>
-
-                        {{-- Hardware: CCTV --}}
-                        <label class="relative flex flex-col p-3.5 rounded-xl border cursor-pointer transition-all"
-                               :class="projectType === 'hardware_cctv' ? 'border-blue-500 bg-blue-50/50 dark:bg-blue-950/30 ring-2 ring-blue-500/20' : 'border-slate-200 dark:border-slate-700 hover:border-blue-300'">
-                            <input type="radio" name="project_type" value="hardware_cctv" x-model="projectType" class="sr-only">
-                            <span class="text-xs font-bold text-blue-700 dark:text-blue-300 flex items-center gap-1.5 mb-1">
-                                <span>📸</span> CCTV Hardware
-                            </span>
-                            <span class="text-[11px] text-slate-500 dark:text-slate-400 leading-tight">IP Cameras, NVR, PoE cabling & site surveillance</span>
+                            <span class="text-[11px] text-slate-500 dark:text-slate-400 leading-tight">Biometric &amp; AI facial recognition terminal systems</span>
                         </label>
 
                         {{-- Software: Webpage --}}
@@ -140,9 +175,9 @@
                                :class="projectType === 'software_web' ? 'border-cyan-500 bg-cyan-50/50 dark:bg-cyan-950/30 ring-2 ring-cyan-500/20' : 'border-slate-200 dark:border-slate-700 hover:border-cyan-300'">
                             <input type="radio" name="project_type" value="software_web" x-model="projectType" class="sr-only">
                             <span class="text-xs font-bold text-cyan-700 dark:text-cyan-300 flex items-center gap-1.5 mb-1">
-                                <span>🌐</span> Webpage & App
+                                <span>💻</span> Webpage &amp; App
                             </span>
-                            <span class="text-[11px] text-slate-500 dark:text-slate-400 leading-tight">Web application, client portal, APIs & dashboards</span>
+                            <span class="text-[11px] text-slate-500 dark:text-slate-400 leading-tight">Web application, client portal, APIs &amp; dashboards</span>
                         </label>
 
                         {{-- Hybrid --}}
@@ -308,10 +343,25 @@
                                class="w-full text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500">
                     </div>
 
-                    {{-- Lead Technician / Assigned Engineer --}}
+                    {{-- Lead Field Technician --}}
+                    <div>
+                        <label for="lead_technician_id" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                            🛠️ Lead Field Technician
+                        </label>
+                        <select id="lead_technician_id" name="lead_technician_id" class="w-full text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                            <option value="">-- No Technician Assigned --</option>
+                            @foreach($teamMembers as $user)
+                                <option value="{{ $user->id }}" {{ old('lead_technician_id', $project->lead_technician_id) == $user->id ? 'selected' : '' }}>
+                                    {{ $user->name }} ({{ ucfirst($user->role) }})
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    {{-- Assigned Project Manager / Staff --}}
                     <div>
                         <label for="assigned_to" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                            Lead Engineer / Assignee
+                            👤 Project Manager / Assignee
                         </label>
                         <select id="assigned_to" name="assigned_to" class="w-full text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500">
                             <option value="">-- Unassigned --</option>

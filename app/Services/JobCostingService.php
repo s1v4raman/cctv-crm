@@ -157,7 +157,7 @@ class JobCostingService
         return [
             'job'                   => $job,
             'job_no'                => $job->job_no,
-            'scheduled_date'        => $job->scheduled_date?->format('d M Y') ?? 'N/A',
+            'scheduled_date'        => $job->scheduled_date ? Carbon::parse($job->scheduled_date)->format('d M Y') : 'N/A',
             'status'                => $job->status,
             'customer_name'         => $lead?->company_legal_name ?: ($lead?->customer_name ?: 'Client'),
             'customer_phone'        => $lead?->phone ?? 'N/A',
@@ -246,6 +246,7 @@ class JobCostingService
         $slimCount = 0;
         $lossMakingCount = 0;
 
+        /** @var \App\Models\InstallationJob $job */
         foreach ($jobs as $job) {
             $costing = $this->calculateJobCosting($job);
 

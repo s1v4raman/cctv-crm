@@ -54,6 +54,7 @@ class GstComplianceService
         $totalOutputIgst = 0.0;
         $totalOutputTax = 0.0;
 
+        /** @var \App\Models\Invoice $inv */
         foreach ($invoices as $inv) {
             $lead = $inv->quotation?->lead;
             $customerGstin = trim((string) ($lead?->gstin ?? ''));
@@ -338,7 +339,7 @@ class GstComplianceService
             $expenseItcRecords[] = [
                 'claim_id'       => $exp->id,
                 'claim_no'       => $exp->claim_no,
-                'expense_date'   => $exp->expense_date?->format('d-m-Y'),
+                'expense_date'   => $exp->expense_date ? Carbon::parse($exp->expense_date)->format('d-m-Y') : null,
                 'employee_name'  => $exp->user?->name ?? 'Technician',
                 'category'       => $exp->category_label,
                 'description'    => $exp->description,

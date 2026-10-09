@@ -126,7 +126,7 @@ class LeaveRequestController extends Controller
             $period = CarbonPeriod::create($startDate, $endDate);
             $workingDays = 0;
             foreach ($period as $date) {
-                if ($date->dayOfWeek !== Carbon::SUNDAY) {
+                if (!$date->isSunday()) {
                     $workingDays++;
                 }
             }
@@ -195,7 +195,7 @@ class LeaveRequestController extends Controller
             $period = CarbonPeriod::create($leave->start_date, $leave->end_date);
             foreach ($period as $date) {
                 // Skip Sundays for automatic on-leave records
-                if ($date->dayOfWeek === Carbon::SUNDAY && !$leave->is_half_day) {
+                if ($date->isSunday() && !$leave->is_half_day) {
                     continue;
                 }
 
@@ -226,8 +226,8 @@ class LeaveRequestController extends Controller
             $alertService->sendAlert('leave_status_updated', $leave->user ?? Auth::user(), [
                 'employee_name'  => $leave->user?->name ?? 'Employee',
                 'leave_type'     => $leave->leave_type_label,
-                'start_date'     => \Carbon\Carbon::parse($leave->start_date)->format('d M Y'),
-                'end_date'       => \Carbon\Carbon::parse($leave->end_date)->format('d M Y'),
+                'start_date'     => Carbon::parse($leave->start_date)->format('d M Y'),
+                'end_date'       => Carbon::parse($leave->end_date)->format('d M Y'),
                 'days_count'     => $leave->days_count,
                 'status'         => 'Approved',
                 'actioner_name'  => Auth::user()->name,
@@ -272,8 +272,8 @@ class LeaveRequestController extends Controller
             $alertService->sendAlert('leave_status_updated', $leave->user ?? Auth::user(), [
                 'employee_name'  => $leave->user?->name ?? 'Employee',
                 'leave_type'     => $leave->leave_type_label,
-                'start_date'     => \Carbon\Carbon::parse($leave->start_date)->format('d M Y'),
-                'end_date'       => \Carbon\Carbon::parse($leave->end_date)->format('d M Y'),
+                'start_date'     => Carbon::parse($leave->start_date)->format('d M Y'),
+                'end_date'       => Carbon::parse($leave->end_date)->format('d M Y'),
                 'days_count'     => $leave->days_count,
                 'status'         => 'Rejected',
                 'actioner_name'  => Auth::user()->name,

@@ -31,8 +31,8 @@ class AttendanceController extends Controller
 
         $weekInput = $request->input('week_date', $selectedDate);
         $weekCarbon = Carbon::parse($weekInput);
-        $weekStart = $weekCarbon->copy()->startOfWeek(Carbon::MONDAY);
-        $weekEnd = $weekCarbon->copy()->endOfWeek(Carbon::SUNDAY);
+        $weekStart = $weekCarbon->copy()->startOfWeek(\Carbon\CarbonInterface::MONDAY);
+        $weekEnd = $weekCarbon->copy()->endOfWeek(\Carbon\CarbonInterface::SUNDAY);
 
         $roleFilter = $request->input('role');
         $search = trim((string) $request->input('search', ''));

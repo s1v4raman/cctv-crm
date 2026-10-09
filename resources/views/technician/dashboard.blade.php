@@ -321,8 +321,8 @@
                 <div class="alert-success">✅ {{ session('status') }}</div>
             @endif
 
-            {{-- Stats Bar (4 Clean Cards with Pastel Accents) --}}
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
+            {{-- Stats Bar (5 Clean Metric Cards) --}}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
                 
                 {{-- Active Repairs --}}
                 <div class="bg-white dark:bg-[#0f172a] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-5 shadow-xs transition-colors duration-200">
@@ -388,6 +388,23 @@
                     </div>
                 </div>
 
+                {{-- Infrastructure Projects & ACS Sites --}}
+                <div onclick="switchTab('projects', document.querySelector('.tab-bar .tab-btn:nth-child(4)'))" 
+                     class="bg-white dark:bg-[#0f172a] border border-blue-200/90 dark:border-blue-900/60 rounded-2xl p-5 shadow-xs cursor-pointer hover:border-blue-500 transition-all duration-200">
+                    <div class="flex items-center justify-between">
+                        <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
+                            🏢
+                        </div>
+                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-400 border border-blue-100 dark:border-blue-900/50">
+                            Active Field
+                        </span>
+                    </div>
+                    <div class="mt-3">
+                        <div class="text-3xl font-extrabold text-blue-600 dark:text-blue-400 tracking-tight">{{ $assignedProjects->count() }}</div>
+                        <div class="text-xs font-medium text-slate-500 dark:text-slate-400 mt-1">Projects &middot; Sites &amp; Attendance</div>
+                    </div>
+                </div>
+
             </div>
 
             {{-- On-Site Mobile Barcode & Serial Scanner Quick Tool --}}
@@ -441,6 +458,12 @@
                         <span class="bg-indigo-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{{ $activeJobs->count() }}</span>
                     @endif
                 </button>
+                <button class="tab-btn" onclick="switchTab('projects', this)">
+                    🏢 Projects &amp; Sites
+                    @if($assignedProjects->count() > 0)
+                        <span class="bg-blue-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{{ $assignedProjects->count() }}</span>
+                    @endif
+                </button>
                 <button class="tab-btn" onclick="switchTab('visits', this)">
                     🔧 AMC Visits
                     @if($activeVisits->count() > 0)
@@ -450,6 +473,145 @@
                 <button class="tab-btn" onclick="switchTab('history', this)">
                     📋 History
                 </button>
+            </div>
+
+            {{-- Tab: Assigned Projects & Sites --}}
+            <div id="tab-projects" class="tab-content">
+                @forelse($assignedProjects as $prj)
+                    <div class="tech-card">
+                        <div class="card-head">
+                            <div class="card-head-left">
+                                <div class="card-icon bg-blue-50 text-blue-600 font-bold">🏢</div>
+                                <div>
+                                    <div class="card-title flex items-center gap-2 flex-wrap">
+                                        <span>{{ $prj->title }}</span>
+                                        <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-blue-50 text-blue-600 border border-blue-200">
+                                            {{ $prj->project_code }}
+                                        </span>
+                                    </div>
+                                    <div class="card-sub">
+                                        Type: <strong>{{ $prj->project_type_label }}</strong> &bull; Client: {{ $prj->company_name ?? ($prj->site?->client_name ?? 'Client') }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                {!! $prj->status_badge !!}
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            @if($prj->site)
+                                <div class="info-row">
+                                    <span class="info-label">📍 Site:</span>
+                                    <span><strong>{{ $prj->site->name }}</strong> ({{ $prj->site->address }}, {{ $prj->site->city }})</span>
+                                </div>
+                            @endif
+
+                            @if($prj->contact_person || $prj->contact_phone)
+                                <div class="info-row">
+                                    <span class="info-label">👤 Contact:</span>
+                                    <span>{{ $prj->contact_person }} @if($prj->contact_phone) (<a href="tel:{{ $prj->contact_phone }}" class="text-blue-600 font-semibold">{{ $prj->contact_phone }}</a>) @endif</span>
+                                </div>
+                            @endif
+
+                            {{-- Project Metrics Snapshot --}}
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 my-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 text-xs">
+                                <div>
+                                    <span class="text-slate-400 block text-[11px]">Hardware Specs</span>
+                                    <span class="font-bold text-slate-800 dark:text-slate-200">
+                                        @if($prj->project_type === 'hardware_attendance')
+                                            {{ $prj->hardware_specs['terminal_count'] ?? 0 }} Terminals &bull; {{ $prj->hardware_specs['camera_count'] ?? 0 }} Cams
+                                        @elseif($prj->project_type === 'networking')
+                                            {{ $prj->requirements['network_drops'] ?? 'N/A' }} Drops &bull; {{ $prj->requirements['wifi_aps'] ?? 'N/A' }} APs
+                                        @elseif($prj->project_type === 'software_web')
+                                            {{ $prj->requirements['tech_stack'] ?? 'Web App' }}
+                                        @else
+                                            {{ $prj->requirements['cctv_count'] ?? 'N/A' }} Cams &bull; {{ $prj->requirements['cabling_metres'] ?? 'N/A' }}m
+                                        @endif
+                                    </span>
+                                </div>
+                                <div>
+                                    <span class="text-slate-400 block text-[11px]">BOM Materials</span>
+                                    <span class="font-bold text-slate-800 dark:text-slate-200">{{ $prj->materials->count() }} Items</span>
+                                </div>
+                                <div>
+                                    <span class="text-slate-400 block text-[11px]">IP Devices</span>
+                                    <span class="font-bold text-slate-800 dark:text-slate-200">{{ $prj->ipDevices->count() }} Configured</span>
+                                </div>
+                                <div>
+                                    <span class="text-slate-400 block text-[11px]">Your Role</span>
+                                    <span class="font-bold text-blue-600 dark:text-blue-400">
+                                        {{ $prj->lead_technician_id == auth()->id() ? 'Lead Engineer In-Charge' : 'Assigned Technician' }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            {{-- Configured Devices Telemetry Preview (Face Terminals, Cameras & Switches) --}}
+                            @if($prj->ipDevices->count() > 0)
+                                <div class="mt-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
+                                    <div class="flex items-center justify-between text-xs mb-2">
+                                        <span class="font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                                            <span>⚡ Terminal Camera &amp; Network Register:</span>
+                                            <span class="text-blue-600 font-mono">({{ $prj->ipDevices->count() }} registered)</span>
+                                        </span>
+                                        <a href="{{ route('projects.show', [$prj, 'tab' => 'devices']) }}" class="text-[11px] font-semibold text-blue-600 hover:underline">
+                                            Manage Devices &rarr;
+                                        </a>
+                                    </div>
+                                    <div class="flex flex-wrap gap-1.5">
+                                        @foreach($prj->ipDevices->take(4) as $dev)
+                                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-medium bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">
+                                                <span class="w-1.5 h-1.5 rounded-full {{ $dev->status === 'online' ? 'bg-emerald-500' : 'bg-slate-400' }}"></span>
+                                                <strong class="font-mono text-blue-600 dark:text-blue-400">{{ $dev->ip_address }}</strong>
+                                                <span class="text-slate-500 truncate max-w-[150px]">{{ $dev->device_name }}</span>
+                                            </span>
+                                        @endforeach
+                                        @if($prj->ipDevices->count() > 4)
+                                            <span class="text-[11px] text-slate-400 self-center font-semibold">+{{ $prj->ipDevices->count() - 4 }} more</span>
+                                        @endif
+                                    </div>
+                                </div>
+                            @endif
+
+                            <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between flex-wrap gap-2">
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    @if($prj->contact_phone)
+                                        <a href="tel:{{ $prj->contact_phone }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100 transition-colors">
+                                            📞 Call Client
+                                        </a>
+                                    @endif
+                                    @if($prj->site?->navigate_url)
+                                        <a href="{{ $prj->site->navigate_url }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-semibold hover:bg-emerald-100 transition-colors">
+                                            📍 GPS Directions
+                                        </a>
+                                    @endif
+                                    <a href="{{ route('projects.show', [$prj, 'tab' => 'work_days']) }}" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 text-xs font-bold hover:bg-amber-100 transition-colors">
+                                        ⏱ Daily Attendance
+                                    </a>
+                                    <a href="{{ route('projects.show', [$prj, 'tab' => 'devices']) }}" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300 text-xs font-bold hover:bg-purple-100 transition-colors">
+                                        ⚡ IP Terminals
+                                    </a>
+                                </div>
+                                <a href="{{ route('projects.show', $prj) }}" class="btn-submit btn-blue">
+                                    <span>👁️ View Project Scope, BOM &amp; Devices &rarr;</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                        <h4>No Projects Assigned to You Yet</h4>
+                        <p class="text-xs text-slate-400 mb-4">When an administrator assigns you as the Lead Engineer on an installation project, it will appear here.</p>
+                        <div class="flex justify-center gap-3">
+                            <a href="{{ route('projects.index') }}" class="btn-secondary text-xs px-4 py-2">
+                                📋 Browse All Projects ({{ $allProjectsCount }})
+                            </a>
+                            <a href="{{ route('projects.create') }}" class="btn-primary text-xs px-4 py-2">
+                                + Create New Project
+                            </a>
+                        </div>
+                    </div>
+                @endforelse
             </div>
 
             {{-- Tab: Site Surveys --}}

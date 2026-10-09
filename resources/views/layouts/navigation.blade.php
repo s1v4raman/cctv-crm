@@ -31,6 +31,24 @@
                         <svg class="w-5 h-5 {{ request()->routeIs('technician.*') ? '!text-white' : 'text-blue-500 dark:text-blue-400' }}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"/></svg>
                         <span :class="sidebarCollapsed ? 'lg:hidden' : ''" class="{{ request()->routeIs('technician.*') ? '!text-white font-bold' : '' }}">Field Work Orders</span>
                     </a>
+
+                    <a :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('projects.index') }}" 
+                       class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('projects.*') ? 'crm-active-link !bg-blue-600 !text-white shadow-md shadow-blue-500/25' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white' }}">
+                        <svg class="w-5 h-5 {{ request()->routeIs('projects.*') ? '!text-white' : 'text-indigo-500 dark:text-indigo-400' }}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                        <span :class="sidebarCollapsed ? 'lg:hidden' : ''" class="{{ request()->routeIs('projects.*') ? '!text-white font-bold' : '' }}">Projects &amp; Sites</span>
+                    </a>
+
+                    <a :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('sites.index') }}" 
+                       class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('sites.*') ? 'crm-active-link !bg-blue-600 !text-white shadow-md shadow-blue-500/25' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white' }}">
+                        <svg class="w-5 h-5 {{ request()->routeIs('sites.*') ? '!text-white' : 'text-emerald-500 dark:text-emerald-400' }}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        <span :class="sidebarCollapsed ? 'lg:hidden' : ''" class="{{ request()->routeIs('sites.*') ? '!text-white font-bold' : '' }}">Installation Sites</span>
+                    </a>
+
+                    <a :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('workers.index') }}" 
+                       class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('workers.*') ? 'crm-active-link !bg-blue-600 !text-white shadow-md shadow-blue-500/25' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white' }}">
+                        <svg class="w-5 h-5 {{ request()->routeIs('workers.*') ? '!text-white' : 'text-amber-500 dark:text-amber-400' }}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                        <span :class="sidebarCollapsed ? 'lg:hidden' : ''" class="{{ request()->routeIs('workers.*') ? '!text-white font-bold' : '' }}">Daily Wage Workers</span>
+                    </a>
                 </div>
             </div>
 
@@ -145,7 +163,33 @@
                     <a :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('projects.index') }}" 
                        class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('projects.*') ? 'crm-active-link !bg-blue-600 !text-white shadow-md shadow-blue-500/25' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white' }}">
                         <svg class="w-5 h-5 {{ request()->routeIs('projects.*') ? '!text-white' : 'text-indigo-500 dark:text-indigo-400' }}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
-                        <span :class="sidebarCollapsed ? 'lg:hidden' : ''" class="{{ request()->routeIs('projects.*') ? '!text-white font-bold' : '' }}">Project Handling</span>
+                        <span :class="sidebarCollapsed ? 'lg:hidden' : ''" class="{{ request()->routeIs('projects.*') ? '!text-white font-bold' : '' }}">Projects &amp; Sites</span>
+                    </a>
+
+                    <a :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('sites.index') }}" 
+                       class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('sites.*') ? 'crm-active-link !bg-blue-600 !text-white shadow-md shadow-blue-500/25' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white' }}">
+                        <svg class="w-5 h-5 {{ request()->routeIs('sites.*') ? '!text-white' : 'text-emerald-500 dark:text-emerald-400' }}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        <span :class="sidebarCollapsed ? 'lg:hidden' : ''" class="{{ request()->routeIs('sites.*') ? '!text-white font-bold' : '' }}">Installation Sites</span>
+                    </a>
+
+                    <a :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('workers.index') }}" 
+                       class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('workers.*') ? 'crm-active-link !bg-blue-600 !text-white shadow-md shadow-blue-500/25' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white' }}">
+                        <svg class="w-5 h-5 {{ request()->routeIs('workers.*') ? '!text-white' : 'text-amber-500 dark:text-amber-400' }}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                        <span :class="sidebarCollapsed ? 'lg:hidden' : ''" class="{{ request()->routeIs('workers.*') ? '!text-white font-bold' : '' }}">Workers &amp; Daily Wages</span>
+                    </a>
+
+                    @if(auth()->user()->isAdmin())
+                    <a :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('wages.index') }}" 
+                       class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('wages.*') ? 'crm-active-link !bg-blue-600 !text-white shadow-md shadow-blue-500/25' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white' }}">
+                        <svg class="w-5 h-5 {{ request()->routeIs('wages.*') ? '!text-white' : 'text-green-500 dark:text-green-400' }}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span :class="sidebarCollapsed ? 'lg:hidden' : ''" class="{{ request()->routeIs('wages.*') ? '!text-white font-bold' : '' }}">Sunday Payday Hub</span>
+                    </a>
+                    @endif
+
+                    <a :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('documents.to-invoice') }}" 
+                       class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('documents.to-invoice') ? 'crm-active-link !bg-blue-600 !text-white shadow-md shadow-blue-500/25' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white' }}">
+                        <svg class="w-5 h-5 {{ request()->routeIs('documents.to-invoice') ? '!text-white' : 'text-amber-500 dark:text-amber-400' }}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/></svg>
+                        <span :class="sidebarCollapsed ? 'lg:hidden' : ''" class="{{ request()->routeIs('documents.to-invoice') ? '!text-white font-bold' : '' }}">Ready to Invoice (DCs)</span>
                     </a>
 
                     <a :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('jobs.index') }}" 

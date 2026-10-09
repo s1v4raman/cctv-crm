@@ -191,8 +191,8 @@
                 {{-- 👑 ADMIN FULL EXECUTIVE DASHBOARD --}}
                 {{-- ========================================================================= --}}
 
-                {{-- ── 1. Top 4 Metric Cards (Executive) ── --}}
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
+                {{-- ── 1. Top 5 Metric Cards (Executive) ── --}}
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
 
                     {{-- Total Leads Card --}}
                     <div class="bg-white dark:bg-[#0f172a] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-5 shadow-xs hover:shadow-md transition-all duration-200">
@@ -276,6 +276,26 @@
                             </div>
                         </div>
                     </div>
+
+                    {{-- Projects & Infrastructure Portfolio Card --}}
+                    <a href="{{ route('projects.index') }}" class="block bg-white dark:bg-[#0f172a] border border-blue-200/90 dark:border-blue-900/60 rounded-2xl p-5 shadow-xs hover:border-blue-500 hover:shadow-md transition-all duration-200 group">
+                        <div class="flex items-center justify-between">
+                            <div class="w-11 h-11 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-[#2563eb] dark:text-blue-400 flex items-center justify-center group-hover:scale-105 transition-transform">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                                </svg>
+                            </div>
+                            <span class="inline-flex items-center text-xs font-semibold px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800">
+                                <span id="stat-projects-in-progress">0</span> active
+                            </span>
+                        </div>
+                        <div class="mt-4">
+                            <div class="text-3xl font-extrabold text-blue-600 dark:text-blue-400 tracking-tight" id="stat-total-projects">0</div>
+                            <div class="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">
+                                Projects &amp; Sites &middot; <strong class="text-slate-700 dark:text-slate-200 font-semibold" id="stat-project-val">₹0</strong>
+                            </div>
+                        </div>
+                    </a>
 
                 </div>
 
@@ -818,6 +838,13 @@
             if (elOpenJobs) elOpenJobs.textContent = s.open_jobs || 0;
             const elInprogJobs = document.getElementById('stat-inprogress-jobs');
             if (elInprogJobs) elInprogJobs.textContent = s.in_progress_jobs || 0;
+
+            const elTotPrj = document.getElementById('stat-total-projects');
+            if (elTotPrj) elTotPrj.textContent = s.total_projects || 0;
+            const elInprogPrj = document.getElementById('stat-projects-in-progress');
+            if (elInprogPrj) elInprogPrj.textContent = s.in_progress_projects || 0;
+            const elValPrj = document.getElementById('stat-project-val');
+            if (elValPrj) elValPrj.textContent = money(s.total_project_valuation || 0);
             
             const elDraft = document.getElementById('stat-draft-quotes');
             if (elDraft) elDraft.textContent = s.draft_quotations || 0;

@@ -7,6 +7,25 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int $user_id
+ * @property \Carbon\Carbon|string|null $date
+ * @property string|null $clock_in
+ * @property string|null $clock_out
+ * @property string $status
+ * @property float|string|null $total_hours
+ * @property float|string|null $overtime_hours
+ * @property string|null $location_type
+ * @property string|null $notes
+ * @property int|null $marked_by
+ * @property-read float $working_hours
+ * @property-read string $status_badge_class
+ * @property-read string $status_label
+ * @property-read string $formatted_clock_in
+ * @property-read string $formatted_clock_out
+ * @method static \Illuminate\Database\Eloquent\Builder whereDate(string $column, mixed $operator = null, mixed $value = null, string $boolean = 'and')
+ */
 class EmployeeAttendance extends Model
 {
     use HasFactory;
@@ -95,8 +114,8 @@ class EmployeeAttendance extends Model
             $diffMinutes = abs($out->diffInMinutes($in));
             $hours = round($diffMinutes / 60, 2);
 
-            $this->total_hours = $hours;
-            $this->overtime_hours = max(0.00, round($hours - $standardShiftHours, 2));
+            $this->attributes['total_hours'] = $hours;
+            $this->attributes['overtime_hours'] = max(0.00, round($hours - $standardShiftHours, 2));
 
             if ($this->status === 'present' && $hours < 5.0 && $hours > 0) {
                 $this->status = 'half_day';

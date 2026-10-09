@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('project_code')->unique();
             $table->string('title');
-            $table->string('company_name')->index();
+            $table->string('company_name')->nullable()->index();
             $table->foreignId('lead_id')->nullable()->constrained('leads')->nullOnDelete();
             $table->string('site_address')->nullable();
             $table->string('contact_person')->nullable();

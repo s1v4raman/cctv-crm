@@ -1,577 +1,1421 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div class="flex items-center gap-3">
-                <a href="{{ route('projects.index') }}" class="p-2 rounded-xl bg-white dark:bg-slate-800 text-slate-500 hover:text-slate-800 dark:hover:text-white border border-slate-200 dark:border-slate-700 transition-colors" title="Back to Projects">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                </a>
-                <div>
-                    <div class="flex items-center gap-2 flex-wrap">
-                        <span class="font-mono text-xs font-bold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
-                            {{ $project->project_code }}
-                        </span>
-                        <h2 class="text-xl font-extrabold text-slate-900 dark:text-white font-heading tracking-tight">
-                            {{ $project->title }}
-                        </h2>
-                        <span class="text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full border {{ $project->status_badge_classes }}">
-                            {{ $project->status_label }}
-                        </span>
-                        <span class="text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full border {{ $project->project_type_badge_classes }}">
-                            {{ $project->project_type_label }}
-                        </span>
-                    </div>
-                    <div class="flex items-center gap-2 mt-0.5 text-xs text-blue-600 dark:text-blue-400 font-bold">
-                        <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-                        <span>Company: {{ $project->company_name }}</span>
-                    </div>
+            <div>
+                <div class="flex items-center gap-2.5 flex-wrap">
+                    <a href="{{ route('projects.index') }}" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                    </a>
+                    <h2 class="text-xl font-extrabold text-slate-900 dark:text-white font-heading tracking-tight">{{ $project->title }}</h2>
+                    <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800">
+                        {{ $project->project_code }}
+                    </span>
+                    {!! $project->company_badge !!}
+                    {!! $project->status_badge !!}
+                </div>
+                <div class="flex items-center gap-3 text-xs text-slate-400 mt-1 flex-wrap">
+                    @if($project->site)
+                        <span>Site: <a href="{{ route('sites.show', $project->site) }}" class="font-semibold text-slate-700 dark:text-slate-300 hover:underline">{{ $project->site->name }}</a></span>
+                        <span>&bull;</span>
+                    @endif
+                    <span>Lead Tech: <strong class="text-slate-700 dark:text-slate-300">{{ $project->leadTechnician?->name ?? 'Unassigned' }}</strong></span>
+                    <span>&bull;</span>
+                    <span>Type: <strong class="text-slate-700 dark:text-slate-300">{{ $project->project_type_label }}</strong></span>
                 </div>
             </div>
 
-            <div class="flex items-center gap-3 flex-wrap">
-                @if(auth()->user()->isAdmin() || auth()->user()->isStaff())
-                <a href="{{ route('projects.edit', $project) }}" class="btn-secondary">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
-                    Edit Project
-                </a>
-                <form action="{{ route('projects.destroy', $project) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this project and all its uploaded files?');" class="inline">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="p-2 rounded-xl text-rose-600 hover:text-white hover:bg-rose-600 border border-rose-200 dark:border-rose-900/50 transition-colors" title="Delete Project">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                    </button>
-                </form>
+            <div class="flex items-center gap-2 flex-wrap">
+                @if(auth()->user()->isAdmin() || ($project->created_by === auth()->id() && in_array($project->status, ['draft', 'pending_approval'])))
+                    <a href="{{ route('projects.edit', $project) }}" class="btn-secondary text-xs">Edit Info</a>
+                @endif
+
+                @if(auth()->user()->isAdmin())
+                    {{-- Status transition dropdown (Admin only per matrix) --}}
+                    <form method="POST" action="{{ route('projects.updateStatus', $project) }}" class="inline-block">
+                        @csrf
+                        @method('PATCH')
+                        <select name="status" onchange="this.form.submit()" class="px-2.5 py-1.5 text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white outline-none focus:ring-2 focus:ring-blue-500">
+                            @foreach(['draft' => 'Draft', 'pending_approval' => 'Pending Approval', 'approved' => 'Approved', 'in_progress' => 'In Progress', 'completed' => 'Completed', 'on_hold' => 'On Hold', 'cancelled' => 'Cancelled'] as $sVal => $sLbl)
+                                <option value="{{ $sVal }}" {{ $project->status === $sVal ? 'selected' : '' }}>{{ $sLbl }}</option>
+                            @endforeach
+                        </select>
+                    </form>
                 @endif
             </div>
         </div>
     </x-slot>
 
-    <div class="py-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-6">
+    <div class="py-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-6"
+         x-data="{
+             currentTab: '{{ $activeTab }}',
+             approveModalOpen: false,
+             rejectModalOpen: false,
+             materialModalOpen: false,
+             documentModalOpen: false,
+             workDayModalOpen: false,
+             deviceModalOpen: false,
+             bulkDeviceModalOpen: false,
+
+             // Device password reveal state
+             revealedPasswords: {},
+             async revealPassword(deviceId) {
+                 if (this.revealedPasswords[deviceId]) {
+                     delete this.revealedPasswords[deviceId];
+                     return;
+                 }
+                 try {
+                     const res = await fetch(`/projects/{{ $project->id }}/devices/${deviceId}/reveal`, {
+                         method: 'POST',
+                         headers: {
+                             'Content-Type': 'application/json',
+                             'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                         }
+                     });
+                     const data = await res.json();
+                     if (data.success) {
+                         this.revealedPasswords[deviceId] = data.password;
+                     }
+                 } catch (e) {
+                     alert('Error revealing password');
+                 }
+             }
+         }">
 
         {{-- Flash Alerts --}}
         @if (session('status'))
             <div class="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-sm flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                    <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    <span>{{ session('status') }}</span>
-                </div>
-                <button type="button" onclick="this.parentElement.remove()" class="text-emerald-600 hover:text-emerald-900 dark:hover:text-white">&times;</button>
+                <span>{{ session('status') }}</span>
+                <button type="button" onclick="this.parentElement.remove()" class="text-emerald-600 hover:text-emerald-900">&times;</button>
             </div>
         @endif
+
         @if (session('error'))
             <div class="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 text-sm flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                    <svg class="w-5 h-5 text-rose-600 dark:text-rose-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                    <span>{{ session('error') }}</span>
-                </div>
-                <button type="button" onclick="this.parentElement.remove()" class="text-rose-600 hover:text-rose-900 dark:hover:text-white">&times;</button>
+                <span>{{ session('error') }}</span>
+                <button type="button" onclick="this.parentElement.remove()" class="text-rose-600 hover:text-rose-900">&times;</button>
             </div>
         @endif
 
-        {{-- Status Quick-Switcher Strip & Progress Control --}}
-        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5">
-            <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
-                <div class="flex-1 w-full">
-                    <div class="flex items-center justify-between text-xs font-bold mb-2">
-                        <span class="text-slate-600 dark:text-slate-400 uppercase tracking-wider">Overall Project Progress</span>
-                        <span class="text-base text-slate-900 dark:text-white font-extrabold">{{ $project->progress_percentage }}% Completed</span>
+        {{-- Admin Approval / Rejection Banner --}}
+        @if($project->status === 'pending_approval')
+            <div class="p-5 rounded-2xl bg-amber-50/80 dark:bg-amber-950/40 border-2 border-amber-300 dark:border-amber-700/60 shadow-md flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div class="flex items-start gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center font-bold text-lg shrink-0">
+                        ⏳
                     </div>
-                    <div class="w-full h-3 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
-                        <div class="h-full rounded-full transition-all duration-500 {{ $project->progress_bar_color }}" style="width: {{ $project->progress_percentage }}%"></div>
+                    <div>
+                        <h4 class="font-extrabold text-amber-900 dark:text-amber-200 text-sm">Project Pending Administrator Approval</h4>
+                        <p class="text-xs text-amber-700 dark:text-amber-300 mt-0.5">
+                            Created by {{ $project->creator?->name ?? 'Staff' }} on {{ $project->created_at->format('d M Y') }}. Assign an executing company and per-metre cabling rate to approve.
+                        </p>
                     </div>
                 </div>
 
-                {{-- 1-Click Status Switcher Buttons --}}
-                <div class="flex items-center gap-2 flex-wrap">
-                    {{-- Set In Progress --}}
-                    @if($project->status !== 'in_progress')
-                    <form action="{{ route('projects.updateStatus', $project) }}" method="POST">
-                        @csrf
-                        @method('PATCH')
-                        <input type="hidden" name="status" value="in_progress">
-                        <button type="submit" class="px-4 py-2.5 rounded-xl min-h-[42px] text-sm font-bold bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 hover:bg-amber-100 border border-amber-300 dark:border-amber-700 transition-colors flex items-center gap-1.5">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                            Set In Progress
+                @if(auth()->user()->isAdmin())
+                    <div class="flex items-center gap-2 shrink-0">
+                        <button type="button" @click="rejectModalOpen = true" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-slate-800 text-rose-600 border border-rose-300 dark:border-rose-800 hover:bg-rose-50 transition">
+                            Reject
                         </button>
-                    </form>
+                        <button type="button" @click="approveModalOpen = true" class="px-4 py-1.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-md transition">
+                            ✓ Approve Project
+                        </button>
+                    </div>
+                @else
+                    <span class="text-xs font-semibold text-amber-600 italic">Waiting for Admin sign-off</span>
+                @endif
+            </div>
+        @elseif($project->status === 'rejected')
+            <div class="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 text-xs">
+                <strong>Project Rejected:</strong> {{ $project->rejection_reason ?? 'No reason recorded.' }}
+            </div>
+        @endif
+
+        {{-- 5-Tab Navigation Bar --}}
+        <div class="border-b border-slate-200 dark:border-slate-800">
+            <nav class="flex space-x-6 text-sm font-bold">
+                <button type="button" @click="currentTab = 'overview'" :class="currentTab === 'overview' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3' : 'text-slate-400 pb-3 hover:text-slate-600'">
+                    1. Overview
+                </button>
+                <button type="button" @click="currentTab = 'materials'" :class="currentTab === 'materials' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3' : 'text-slate-400 pb-3 hover:text-slate-600'">
+                    2. Materials ({{ $project->materials->count() }})
+                </button>
+                <button type="button" @click="currentTab = 'documents'" :class="currentTab === 'documents' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3' : 'text-slate-400 pb-3 hover:text-slate-600'">
+                    3. Documents &bull; DCs ({{ $project->documents->count() }})
+                    @if($uninvoicedDcCount > 0)
+                        <span class="ml-1 px-1.5 py-0.5 text-[10px] rounded-full bg-amber-100 text-amber-700 font-bold">{{ $uninvoicedDcCount }} unbilled</span>
+                    @endif
+                </button>
+                <button type="button" @click="currentTab = 'work_days'" :class="currentTab === 'work_days' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3' : 'text-slate-400 pb-3 hover:text-slate-600'">
+                    4. Work Days &bull; Wages ({{ $project->workDays->count() }})
+                </button>
+                <button type="button" @click="currentTab = 'ip_devices'" :class="currentTab === 'ip_devices' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3' : 'text-slate-400 pb-3 hover:text-slate-600'">
+                    5. IP Devices ({{ $project->ipDevices->count() }})
+                </button>
+            </nav>
+        </div>
+
+        {{-- ════════════════════════════════════════════════════════════════ --}}
+        {{-- TAB 1: OVERVIEW                                                  --}}
+        {{-- ════════════════════════════════════════════════════════════════ --}}
+        <div x-show="currentTab === 'overview'" class="space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                {{-- Left 2 Cols: Site, Requirements, Finance --}}
+                <div class="lg:col-span-2 space-y-6">
+
+                    {{-- Site Location Card --}}
+                    @if($project->site)
+                        <div class="p-6 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
+                            <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                                <h3 class="font-extrabold text-slate-900 dark:text-white text-sm flex items-center gap-2">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                                    Installation Site Details
+                                </h3>
+                                <a href="{{ $project->site->navigate_url }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100 transition">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                    <span>Get GPS Directions</span>
+                                </a>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                                <div>
+                                    <span class="text-xs text-slate-400 block">Site Name</span>
+                                    <span class="font-bold text-slate-900 dark:text-white">{{ $project->site->name }}</span>
+                                </div>
+                                <div>
+                                    <span class="text-xs text-slate-400 block">Client Contact</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200">{{ $project->site->client_name ?? '—' }} ({{ $project->site->client_phone ?? 'No phone' }})</span>
+                                </div>
+                                <div class="sm:col-span-2">
+                                    <span class="text-xs text-slate-400 block">Address</span>
+                                    <span class="text-slate-700 dark:text-slate-300">{{ $project->site->address }}, {{ $project->site->city }} {{ $project->site->pincode }}</span>
+                                </div>
+                            </div>
+                        </div>
                     @endif
 
-                    {{-- Mark Done / Completed --}}
-                    @if($project->status !== 'completed')
-                    <form action="{{ route('projects.updateStatus', $project) }}" method="POST">
-                        @csrf
-                        @method('PATCH')
-                        <input type="hidden" name="status" value="completed">
-                        <button type="submit" class="px-4 py-2.5 rounded-xl min-h-[42px] text-sm font-bold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 border border-emerald-300 dark:border-emerald-700 transition-colors flex items-center gap-1.5">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                            Mark as Done (100%)
-                        </button>
-                    </form>
+                    {{-- Scope & Technical Requirements --}}
+                    <div class="p-6 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
+                        <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                            <h3 class="font-extrabold text-slate-900 dark:text-white text-sm flex items-center gap-2">
+                                @if($project->project_type === 'software_web')
+                                    <span class="w-2.5 h-2.5 rounded-full bg-cyan-500"></span>
+                                    <span>Web Engineering &amp; Application Scope</span>
+                                @elseif($project->project_type === 'networking')
+                                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                                    <span>Network Cabling &amp; Infrastructure Scope</span>
+                                @elseif($project->project_type === 'access_control')
+                                    <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                                    <span>Access Control &amp; Security Scope</span>
+                                @elseif($project->project_type === 'hardware_attendance')
+                                    <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
+                                    <span>Biometric Attendance Scope</span>
+                                @elseif($project->project_type === 'hybrid')
+                                    <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
+                                    <span>Hybrid Turnkey Scope &amp; Architecture</span>
+                                @else
+                                    <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+                                    <span>CCTV Surveillance Scope &amp; Specs</span>
+                                @endif
+                            </h3>
+                            <span class="text-[11px] font-bold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200/70 dark:border-slate-700">
+                                {{ $project->project_type_label }}
+                            </span>
+                        </div>
+
+                        {{-- Dynamic Scope Metric Grid based on Project Type --}}
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm">
+                            @if($project->project_type === 'software_web')
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                                    <span class="text-xs text-slate-400 block">Architecture</span>
+                                    <span class="font-extrabold text-slate-900 dark:text-white text-sm">{{ $project->requirements['app_architecture'] ?? 'Modular Web App' }}</span>
+                                </div>
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                                    <span class="text-xs text-slate-400 block">Primary Tech Stack</span>
+                                    <span class="font-extrabold text-slate-900 dark:text-white text-sm">{{ $project->requirements['tech_stack'] ?? 'Laravel, Tailwind, Alpine' }}</span>
+                                </div>
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                                    <span class="text-xs text-slate-400 block">Cloud Hosting</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['cloud_hosting'] ?? 'Cloud Server' }}</span>
+                                </div>
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 sm:col-span-2">
+                                    <span class="text-xs text-slate-400 block">Core Modules</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['core_modules'] ?? 'Auth, Dashboard, REST API' }}</span>
+                                </div>
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                                    <span class="text-xs text-slate-400 block">Domain &amp; SSL</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['domain_ssl'] ?? 'Configured' }}</span>
+                                </div>
+
+                            @elseif($project->project_type === 'networking')
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                                    <span class="text-xs text-slate-400 block">Network Drops</span>
+                                    <span class="font-extrabold text-slate-900 dark:text-white text-base">{{ $project->requirements['network_drops'] ?? 'N/A' }} Drops</span>
+                                </div>
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                                    <span class="text-xs text-slate-400 block">Wi-Fi Access Points</span>
+                                    <span class="font-extrabold text-slate-900 dark:text-white text-base">{{ $project->requirements['wifi_access_points'] ?? 'N/A' }} APs</span>
+                                </div>
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                                    <span class="text-xs text-slate-400 block">Est. Cabling</span>
+                                    <span class="font-extrabold text-slate-900 dark:text-white text-base">{{ $project->requirements['cabling_metres'] ?? 'N/A' }} m</span>
+                                </div>
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                                    <span class="text-xs text-slate-400 block">Server Rack Size</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['server_rack_size'] ?? 'N/A' }}</span>
+                                </div>
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                                    <span class="text-xs text-slate-400 block">Switch Specification</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['switch_spec'] ?? 'N/A' }}</span>
+                                </div>
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                                    <span class="text-xs text-slate-400 block">Router / Gateway</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['router_gateway'] ?? 'N/A' }}</span>
+                                </div>
+
+                            @elseif($project->project_type === 'access_control')
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                                    <span class="text-xs text-slate-400 block">Controlled Doors</span>
+                                    <span class="font-extrabold text-slate-900 dark:text-white text-base">{{ $project->requirements['doors_count'] ?? 'N/A' }} Doors</span>
+                                </div>
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                                    <span class="text-xs text-slate-400 block">Auth Method</span>
+                                    <span class="font-extrabold text-slate-900 dark:text-white text-sm">{{ $project->requirements['auth_method'] ?? 'N/A' }}</span>
+                                </div>
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                                    <span class="text-xs text-slate-400 block">Lock Hardware</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['lock_type'] ?? 'N/A' }}</span>
+                                </div>
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                                    <span class="text-xs text-slate-400 block">Exit Device</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['exit_device'] ?? 'N/A' }}</span>
+                                </div>
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                                    <span class="text-xs text-slate-400 block">Controller Spec</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['controller_spec'] ?? 'N/A' }}</span>
+                                </div>
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                                    <span class="text-xs text-slate-400 block">Power Backup</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['backup_battery'] ?? 'N/A' }}</span>
+                                </div>
+
+                            @elseif($project->project_type === 'hardware_attendance')
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                                    <span class="text-xs text-slate-400 block">User Capacity</span>
+                                    <span class="font-extrabold text-slate-900 dark:text-white text-base">{{ $project->requirements['user_capacity'] ?? ($project->requirements['terminal_users'] ?? 'N/A') }} Users</span>
+                                </div>
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                                    <span class="text-xs text-slate-400 block">Comm. Protocol</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['comm_protocol'] ?? ($project->requirements['communication'] ?? 'TCP/IP Network') }}</span>
+                                </div>
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                                    <span class="text-xs text-slate-400 block">HRMS Sync</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['hrms_software'] ?? 'Automated Sync' }}</span>
+                                </div>
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                                    <span class="text-xs text-slate-400 block">Mounting Location</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['mounting_location'] ?? 'Entry / Reception' }}</span>
+                                </div>
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 sm:col-span-2">
+                                    <span class="text-xs text-slate-400 block">Battery &amp; Backup</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['power_backup'] ?? ($project->requirements['power_battery'] ?? 'Internal Battery') }}</span>
+                                </div>
+
+                            @elseif($project->project_type === 'hybrid')
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                                    <span class="text-xs text-slate-400 block">Hardware Endpoints</span>
+                                    <span class="font-extrabold text-slate-900 dark:text-white text-base">{{ $project->requirements['hardware_endpoints'] ?? 'N/A' }} Devices</span>
+                                </div>
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                                    <span class="text-xs text-slate-400 block">Edge Gateway</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['edge_gateway'] ?? 'IoT Hub' }}</span>
+                                </div>
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                                    <span class="text-xs text-slate-400 block">Storage / Server</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['server_storage'] ?? 'Micro-Server' }}</span>
+                                </div>
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 sm:col-span-2">
+                                    <span class="text-xs text-slate-400 block">Software Platform</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['software_platform'] ?? 'Web & Mobile' }}</span>
+                                </div>
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                                    <span class="text-xs text-slate-400 block">Alert Channels</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['alert_channels'] ?? 'Real-time' }}</span>
+                                </div>
+
+                            @else
+                                {{-- Default CCTV Surveillance Scope --}}
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                                    <span class="text-xs text-slate-400 block">CCTV Cameras</span>
+                                    <span class="font-extrabold text-slate-900 dark:text-white text-base">{{ $project->requirements['cctv_count'] ?? 'N/A' }} Nos</span>
+                                </div>
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                                    <span class="text-xs text-slate-400 block">NVR Channels</span>
+                                    <span class="font-extrabold text-slate-900 dark:text-white text-base">{{ $project->requirements['nvr_channels'] ?? 'N/A' }} Ch</span>
+                                </div>
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                                    <span class="text-xs text-slate-400 block">Est. Cabling</span>
+                                    <span class="font-extrabold text-slate-900 dark:text-white text-base">{{ $project->requirements['cabling_metres'] ?? 'N/A' }} m</span>
+                                </div>
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                                    <span class="text-xs text-slate-400 block">Power Supply</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['power_supply'] ?? 'N/A' }}</span>
+                                </div>
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                                    <span class="text-xs text-slate-400 block">Storage HDD</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['storage_hdd'] ?? 'N/A' }}</span>
+                                </div>
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                                    <span class="text-xs text-slate-400 block">Display / Screen</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['display_screen'] ?? 'N/A' }}</span>
+                                </div>
+                            @endif
+                        </div>
+
+                        {{-- Additional dynamic custom attributes if any other keys exist in requirements --}}
+                        @php
+                            $knownKeys = [
+                                'cctv_count', 'nvr_channels', 'cabling_metres', 'power_supply', 'display_screen', 'storage_hdd',
+                                'network_drops', 'wifi_access_points', 'server_rack_size', 'switch_spec', 'router_gateway',
+                                'app_architecture', 'tech_stack', 'cloud_hosting', 'core_modules', 'domain_ssl',
+                                'doors_count', 'auth_method', 'lock_type', 'exit_device', 'controller_spec', 'backup_battery',
+                                'user_capacity', 'comm_protocol', 'hrms_software', 'mounting_location', 'power_backup',
+                                'hardware_endpoints', 'software_platform', 'edge_gateway', 'server_storage', 'alert_channels',
+                                'special_requirements'
+                            ];
+                            $customRequirements = is_array($project->requirements) 
+                                ? array_diff_key($project->requirements, array_flip($knownKeys))
+                                : [];
+                        @endphp
+
+                        @if(!empty($customRequirements))
+                            <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
+                                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-2">Custom Scope Specifications</span>
+                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                    @foreach($customRequirements as $cKey => $cVal)
+                                        <div class="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800">
+                                            <span class="text-[10px] text-slate-400 uppercase block font-semibold">{{ ucwords(str_replace('_', ' ', $cKey)) }}</span>
+                                            <span class="text-xs font-bold text-slate-800 dark:text-slate-200">{{ is_array($cVal) ? json_encode($cVal) : $cVal }}</span>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
+                        @if(!empty($project->requirements['special_requirements']) || $project->description)
+                            <div class="pt-3 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-300">
+                                <span class="font-bold text-slate-400 block mb-1">Client Special Instructions:</span>
+                                <p class="whitespace-pre-line">{{ $project->requirements['special_requirements'] ?? $project->description }}</p>
+                            </div>
+                        @endif
+                    </div>
+
+                    {{-- Software & Web Application Portal Panel --}}
+                    @if($project->project_type === 'software_web' || $project->project_type === 'hybrid' || !empty($project->software_specs['webpage_url']) || !empty($project->software_specs['repository_url']))
+                        <div class="p-6 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
+                            <h3 class="font-extrabold text-slate-900 dark:text-white text-sm flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                                <span class="flex items-center gap-2">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-cyan-500"></span>
+                                    <span>Web Application &amp; Deployment Links</span>
+                                </span>
+                                @if(!empty($project->software_specs['webpage_url']))
+                                    <a href="{{ $project->software_specs['webpage_url'] }}" target="_blank" rel="noopener noreferrer" class="btn-primary text-xs py-1 px-2.5 flex items-center gap-1 shadow-xs">
+                                        <span>Open Live Site</span>
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                                    </a>
+                                @endif
+                            </h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                                    <span class="text-[11px] text-slate-400 block font-semibold mb-1">Live / Production Webpage</span>
+                                    @if(!empty($project->software_specs['webpage_url']))
+                                        <a href="{{ $project->software_specs['webpage_url'] }}" target="_blank" rel="noopener noreferrer" class="font-mono text-cyan-600 dark:text-cyan-400 hover:underline break-all">
+                                            {{ $project->software_specs['webpage_url'] }}
+                                        </a>
+                                    @else
+                                        <span class="text-slate-400 italic">Not set</span>
+                                    @endif
+                                </div>
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                                    <span class="text-[11px] text-slate-400 block font-semibold mb-1">Source Repository</span>
+                                    @if(!empty($project->software_specs['repository_url']))
+                                        <a href="{{ $project->software_specs['repository_url'] }}" target="_blank" rel="noopener noreferrer" class="font-mono text-blue-600 dark:text-blue-400 hover:underline break-all">
+                                            {{ $project->software_specs['repository_url'] }}
+                                        </a>
+                                    @else
+                                        <span class="text-slate-400 italic">Not set</span>
+                                    @endif
+                                </div>
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                                    <span class="text-[11px] text-slate-400 block font-semibold mb-1">Primary Tech Stack</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200">{{ $project->software_specs['tech_stack'] ?? ($project->requirements['tech_stack'] ?? 'Laravel & Tailwind') }}</span>
+                                </div>
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                                    <span class="text-[11px] text-slate-400 block font-semibold mb-1">Deployment Infrastructure</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200">{{ $project->software_specs['deployment_server'] ?? ($project->requirements['cloud_hosting'] ?? 'Cloud Hosting') }}</span>
+                                </div>
+                            </div>
+                        </div>
                     @endif
 
-                    {{-- Mark Incompleted / Action Needed --}}
-                    @if($project->status !== 'incompleted')
-                    <form action="{{ route('projects.updateStatus', $project) }}" method="POST">
-                        @csrf
-                        @method('PATCH')
-                        <input type="hidden" name="status" value="incompleted">
-                        <button type="submit" class="px-4 py-2.5 rounded-xl min-h-[42px] text-sm font-bold bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 hover:bg-rose-100 border border-rose-300 dark:border-rose-700 transition-colors flex items-center gap-1.5">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                            Mark Incomplete
-                        </button>
-                    </form>
+                    {{-- Hardware Terminal & Attendance Specs --}}
+                    @if($project->project_type === 'hardware_attendance' || !empty($project->hardware_specs['terminal_count']) || !empty($project->hardware_specs['camera_count']) || !empty($project->hardware_specs['device_brand']))
+                        <div class="p-6 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
+                            <h3 class="font-extrabold text-slate-900 dark:text-white text-sm flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                                <span class="flex items-center gap-2">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
+                                    <span>Terminal &amp; Camera Hardware Specifications</span>
+                                </span>
+                                <button type="button" @click="currentTab = 'ip_devices'" class="text-xs text-indigo-600 dark:text-indigo-400 font-bold hover:underline flex items-center gap-1">
+                                    <span>Open IP Devices Register ({{ $project->ipDevices->count() }}) &rarr;</span>
+                                </button>
+                            </h3>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm">
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                                    <span class="text-xs text-slate-400 block font-medium">Terminals Count</span>
+                                    <span class="font-extrabold text-indigo-600 dark:text-indigo-400 text-base">{{ $project->hardware_specs['terminal_count'] ?? 0 }} Units</span>
+                                </div>
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                                    <span class="text-xs text-slate-400 block font-medium">Cameras Count</span>
+                                    <span class="font-extrabold text-slate-900 dark:text-white text-base">{{ $project->hardware_specs['camera_count'] ?? 0 }} Units</span>
+                                </div>
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                                    <span class="text-xs text-slate-400 block font-medium">Device Brand / Model</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->hardware_specs['device_brand'] ?? 'ZKTeco / Hikvision' }}</span>
+                                </div>
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                                    <span class="text-xs text-slate-400 block font-medium">Terminal IP Subnet</span>
+                                    <span class="font-mono text-slate-800 dark:text-slate-200 text-xs">{{ $project->hardware_specs['terminal_ip'] ?? 'DHCP / Auto' }}</span>
+                                </div>
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 sm:col-span-2">
+                                    <span class="text-xs text-slate-400 block font-medium">Attendance Sync Mode</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ ucwords(str_replace('_', ' ', $project->hardware_specs['attendance_sync_mode'] ?? 'AI Face Recognition')) }}</span>
+                                </div>
+                            </div>
+                            <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
+                                <button type="button" @click="deviceModalOpen = true" class="btn-primary text-xs py-1 px-3 shadow-xs">
+                                    + Add Terminal / Camera to IP Register
+                                </button>
+                                <a href="{{ route('attendance.index') }}" class="text-xs text-blue-600 dark:text-blue-400 font-semibold hover:underline flex items-center gap-1">
+                                    <span>View Attendance &amp; Shift Hub</span>
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                </a>
+                            </div>
+                        </div>
                     @endif
 
-                    {{-- Put On Hold --}}
-                    @if($project->status !== 'on_hold')
-                    <form action="{{ route('projects.updateStatus', $project) }}" method="POST">
-                        @csrf
-                        @method('PATCH')
-                        <input type="hidden" name="status" value="on_hold">
-                        <button type="submit" class="px-4 py-2.5 rounded-xl min-h-[42px] text-sm font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 border border-slate-300 dark:border-slate-700 transition-colors flex items-center gap-1.5">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                            Put On Hold
-                        </button>
-                    </form>
-                    @endif
+                </div>
+
+                {{-- Right 1 Col: Team Assignment, Financials & Audit Log --}}
+                <div class="space-y-6">
+
+                    {{-- Assigned Team & Technical Execution Card --}}
+                    <div class="p-6 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
+                        <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                            <h3 class="font-extrabold text-slate-900 dark:text-white text-sm flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+                                Project Team &amp; Assignment
+                            </h3>
+                            @if(auth()->user()->isAdmin() || ($project->created_by === auth()->id() && in_array($project->status, ['draft', 'pending_approval'])))
+                                <a href="{{ route('projects.edit', $project) }}" class="text-xs text-blue-600 dark:text-blue-400 font-semibold hover:underline">
+                                    Edit &rarr;
+                                </a>
+                            @endif
+                        </div>
+
+                        <div class="space-y-3 text-xs">
+                            {{-- Lead Technician --}}
+                            <div class="p-3 rounded-xl bg-blue-50/50 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/40">
+                                <span class="text-[10px] text-blue-600 dark:text-blue-400 uppercase tracking-wider block font-bold mb-1">🛠️ Lead Technician (In-Charge)</span>
+                                @if($project->leadTechnician)
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <span class="font-bold text-slate-900 dark:text-white text-sm block">{{ $project->leadTechnician->name }}</span>
+                                            <span class="text-slate-500 text-[11px]">{{ $project->leadTechnician->email }}</span>
+                                        </div>
+                                        @if($project->leadTechnician->phone)
+                                            <a href="tel:{{ $project->leadTechnician->phone }}" class="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-[10px] shadow-xs">
+                                                📞 Call
+                                            </a>
+                                        @endif
+                                    </div>
+                                @else
+                                    <span class="text-slate-400 italic">No Lead Technician Assigned</span>
+                                @endif
+                            </div>
+
+                            {{-- Assigned Staff / Employee --}}
+                            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800">
+                                <span class="text-[10px] text-slate-400 uppercase tracking-wider block font-bold mb-1">👤 Assigned Staff / Employee</span>
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <span class="font-bold text-slate-900 dark:text-white text-xs block">{{ $project->assignedUser?->name ?? 'Unassigned' }}</span>
+                                        <span class="text-[11px] text-slate-500">{{ $project->assignedUser ? ucfirst($project->assignedUser->role) : '—' }}</span>
+                                    </div>
+                                    @if($project->creator)
+                                        <div class="text-right">
+                                            <span class="text-[10px] text-slate-400 block">Created By</span>
+                                            <span class="font-semibold text-slate-700 dark:text-slate-300 text-[11px]">{{ $project->creator->name }}</span>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+
+                            {{-- Executing Entity --}}
+                            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800">
+                                <span class="text-[10px] text-slate-400 uppercase tracking-wider block font-bold mb-1">🏢 Executing Entity</span>
+                                @if($project->company)
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <span class="font-bold text-slate-900 dark:text-white text-xs block">{{ $project->company->name }}</span>
+                                            <span class="text-[11px] text-emerald-600 font-semibold">✓ Admin Approved</span>
+                                        </div>
+                                        @if($project->approved_on)
+                                            <span class="text-[10px] text-slate-400 font-mono">{{ \Carbon\Carbon::parse($project->approved_on)->format('d M Y') }}</span>
+                                        @endif
+                                    </div>
+                                @else
+                                    <span class="text-amber-600 font-semibold italic text-xs">Pending Admin Company Assignment</span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Financial Stats Card --}}
+                    <div class="p-6 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
+                        <h3 class="font-extrabold text-slate-900 dark:text-white text-sm">Financial Breakdown</h3>
+
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-slate-800">
+                                <span class="text-xs text-slate-400">Budget Estimate</span>
+                                <span class="font-bold font-mono">₹{{ number_format($project->budget, 2) }}</span>
+                            </div>
+                            <div class="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-slate-800">
+                                <span class="text-xs text-slate-400">Approved Value</span>
+                                <span class="font-bold font-mono text-emerald-600">₹{{ number_format($project->approved_value ?? $project->budget, 2) }}</span>
+                            </div>
+                            <div class="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-slate-800">
+                                <span class="text-xs text-slate-400">Per-Metre Cabling Rate</span>
+                                <span class="font-bold font-mono text-blue-600">₹{{ number_format($project->per_metre_rate ?? 8.0, 2) }}/m</span>
+                            </div>
+                            <div class="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-slate-800">
+                                <span class="text-xs text-slate-400">Total Labor Spent</span>
+                                <span class="font-bold font-mono text-amber-600">₹{{ number_format($totalLaborCost, 2) }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Audit Trail Log --}}
+                    <div class="p-6 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-3">
+                        <h3 class="font-extrabold text-slate-900 dark:text-white text-sm">Project History &amp; Audit Trail</h3>
+
+                        <div class="space-y-3 max-h-60 overflow-y-auto pr-1">
+                            @forelse($project->auditLogs as $log)
+                                <div class="text-xs border-l-2 border-blue-500 pl-3 py-1">
+                                    <div class="font-bold text-slate-800 dark:text-slate-200">{{ $log->action_label }}</div>
+                                    <div class="text-[11px] text-slate-500">{{ $log->notes }}</div>
+                                    <div class="text-[10px] text-slate-400 mt-0.5">{{ $log->user?->name ?? 'System' }} &bull; {{ $log->created_at->diffForHumans() }}</div>
+                                </div>
+                            @empty
+                                <div class="text-xs text-slate-400 italic">No activity logged yet.</div>
+                            @endforelse
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        {{-- ════════════════════════════════════════════════════════════════ --}}
+        {{-- TAB 2: MATERIALS (BOM)                                           --}}
+        {{-- ════════════════════════════════════════════════════════════════ --}}
+        <div x-show="currentTab === 'materials'" x-cloak class="space-y-6">
+            <div class="rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden">
+                <div class="p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                    <div>
+                        <h3 class="font-extrabold text-slate-900 dark:text-white text-base">Bill of Materials (BOM)</h3>
+                        <p class="text-xs text-slate-500">Hardware, cabling and consumables allocated for this deployment</p>
+                    </div>
+
+                    <button type="button" @click="materialModalOpen = true" class="btn-primary text-xs shadow-md">
+                        + Add Material Item
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-slate-600 dark:text-slate-300">
+                        <thead class="bg-slate-50/80 dark:bg-slate-800/50 text-xs uppercase font-bold text-slate-500 border-b border-slate-100 dark:border-slate-800">
+                            <tr>
+                                <th class="px-5 py-3.5">Item Name</th>
+                                <th class="px-5 py-3.5 text-center">Quantity</th>
+                                <th class="px-5 py-3.5">Unit</th>
+                                <th class="px-5 py-3.5">Procurement Source</th>
+                                <th class="px-5 py-3.5">Local Shop Name</th>
+                                <th class="px-5 py-3.5 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 dark:border-slate-800">
+                            @forelse($project->materials as $mat)
+                                <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40">
+                                    <td class="px-5 py-3.5 font-bold text-slate-900 dark:text-white">
+                                        {{ $mat->item_name }}
+                                        @if($mat->notes)
+                                            <span class="text-xs text-slate-400 block font-normal">{{ $mat->notes }}</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-5 py-3.5 text-center font-bold font-mono">
+                                        {{ $mat->quantity }}
+                                    </td>
+                                    <td class="px-5 py-3.5 uppercase text-xs font-semibold">
+                                        {{ $mat->unit }}
+                                    </td>
+                                    <td class="px-5 py-3.5">
+                                        <span class="px-2 py-0.5 text-xs font-semibold rounded {{ $mat->source === 'warehouse' ? 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300' : 'bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300' }}">
+                                            {{ $mat->source === 'warehouse' ? 'Warehouse Dispatch' : 'Local Purchase' }}
+                                        </span>
+                                    </td>
+                                    <td class="px-5 py-3.5 text-xs text-slate-700 dark:text-slate-300">
+                                        {{ $mat->shop_name ?? '—' }}
+                                    </td>
+                                    <td class="px-5 py-3.5 text-right">
+                                        @if(auth()->user()->isAdmin())
+                                        <form method="POST" action="{{ route('projects.materials.destroy', ['project' => $project, 'material' => $mat]) }}" onsubmit="return confirm('Remove this material item?')" class="inline-block">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="text-rose-500 hover:text-rose-700 text-xs font-bold">
+                                                Delete
+                                            </button>
+                                        </form>
+                                        @else
+                                            <span class="text-slate-400 text-xs">—</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="px-5 py-12 text-center text-slate-400 text-xs">
+                                        No materials recorded in the Bill of Materials.
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
 
-        {{-- 2-Column Main Layout: Overview on Left, Documents & PDFs Hub on Right --}}
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-
-            {{-- LEFT COLUMN: Project Details & Information (5 Cols) --}}
-            <div class="lg:col-span-5 space-y-6">
-
-                {{-- Company & Client Details Card --}}
-                <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-4">
-                    <div class="border-b border-slate-100 dark:border-slate-800 pb-3 flex items-center justify-between">
-                        <h3 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Client & Site Information</h3>
-                        <span class="text-xs font-mono text-slate-500">ID: #{{ $project->id }}</span>
-                    </div>
-
-                    <div class="space-y-3 text-xs">
-                        <div>
-                            <span class="text-slate-400 block font-medium">Company Name:</span>
-                            <span class="text-sm font-bold text-slate-900 dark:text-white">{{ $project->company_name }}</span>
-                        </div>
-
-                        @if($project->site_address)
-                        <div>
-                            <span class="text-slate-400 block font-medium">Installation Site Address:</span>
-                            <span class="text-slate-800 dark:text-slate-200 font-semibold">{{ $project->site_address }}</span>
-                        </div>
-                        @endif
-
-                        <div class="grid grid-cols-2 gap-3 pt-1">
-                            <div>
-                                <span class="text-slate-400 block font-medium">Contact Person:</span>
-                                <span class="text-slate-800 dark:text-slate-200 font-semibold">{{ $project->contact_person ?? 'Not specified' }}</span>
-                            </div>
-                            <div>
-                                <span class="text-slate-400 block font-medium">Phone / Mobile:</span>
-                                @if($project->contact_phone)
-                                    <a href="tel:{{ $project->contact_phone }}" class="text-blue-600 dark:text-blue-400 font-semibold hover:underline">{{ $project->contact_phone }}</a>
-                                @else
-                                    <span class="text-slate-400">N/A</span>
-                                @endif
-                            </div>
-                        </div>
-
-                        @if($project->contact_email)
-                        <div>
-                            <span class="text-slate-400 block font-medium">Email:</span>
-                            <a href="mailto:{{ $project->contact_email }}" class="text-blue-600 dark:text-blue-400 font-semibold hover:underline">{{ $project->contact_email }}</a>
-                        </div>
-                        @endif
-
-                        @if($project->lead)
-                        <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
-                            <span class="text-slate-400 block font-medium">Linked CRM Lead:</span>
-                            <a href="{{ route('leads.show', $project->lead) }}" class="text-blue-600 dark:text-blue-400 font-bold hover:underline">
-                                {{ $project->lead->customer_name }} &rarr;
-                            </a>
-                        </div>
-                        @endif
-                    </div>
-                </div>
-
-                {{-- Hardware & Terminal Camera Specifications Card --}}
-                @if(in_array($project->project_type, ['hardware_attendance', 'hardware_cctv', 'hybrid']) || !empty($project->hardware_specs))
-                <div class="bg-white dark:bg-slate-900 rounded-2xl border border-purple-200 dark:border-purple-900/40 shadow-sm p-5 space-y-4">
-                    <div class="border-b border-purple-100 dark:border-purple-900/40 pb-3 flex items-center justify-between">
-                        <div class="flex items-center gap-2">
-                            <span class="w-7 h-7 rounded-lg bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 flex items-center justify-center font-bold text-xs">
-                                ⏱
-                            </span>
-                            <div>
-                                <h3 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Terminal & Camera Hardware</h3>
-                                <p class="text-[11px] text-slate-400">Attendance Terminals & Surveillance Network</p>
-                            </div>
-                        </div>
-                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
-                            Hardware Ops
-                        </span>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-3 text-xs">
-                        <div class="p-3 rounded-xl bg-purple-50/60 dark:bg-purple-950/20 border border-purple-100 dark:border-purple-900/30">
-                            <span class="text-slate-400 block font-medium text-[11px]">Attendance Terminals:</span>
-                            <span class="text-lg font-black text-purple-700 dark:text-purple-300 font-heading">
-                                {{ $project->hardware_specs['terminal_count'] ?? 0 }} Units
-                            </span>
-                        </div>
-                        <div class="p-3 rounded-xl bg-blue-50/60 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900/30">
-                            <span class="text-slate-400 block font-medium text-[11px]">Camera Channels:</span>
-                            <span class="text-lg font-black text-blue-700 dark:text-blue-300 font-heading">
-                                {{ $project->hardware_specs['camera_count'] ?? 0 }} Cams
-                            </span>
-                        </div>
-                    </div>
-
-                    <div class="space-y-2 text-xs">
-                        @if(!empty($project->hardware_specs['device_brand']))
-                        <div class="flex items-center justify-between py-1 border-b border-slate-100 dark:border-slate-800">
-                            <span class="text-slate-400 font-medium">Terminal Brand / Model:</span>
-                            <span class="font-bold text-slate-800 dark:text-slate-200">{{ $project->hardware_specs['device_brand'] }}</span>
-                        </div>
-                        @endif
-
-                        @if(!empty($project->hardware_specs['terminal_ip']))
-                        <div class="flex items-center justify-between py-1 border-b border-slate-100 dark:border-slate-800">
-                            <span class="text-slate-400 font-medium">IP Subnet / Address:</span>
-                            <span class="font-mono font-bold text-slate-800 dark:text-slate-200">{{ $project->hardware_specs['terminal_ip'] }}</span>
-                        </div>
-                        @endif
-
-                        <div class="flex items-center justify-between py-1 border-b border-slate-100 dark:border-slate-800">
-                            <span class="text-slate-400 font-medium">Punch Sync Mode:</span>
-                            <span class="font-bold text-purple-600 dark:text-purple-400 uppercase text-[11px]">
-                                {{ str_replace('_', ' ', $project->hardware_specs['attendance_sync_mode'] ?? 'Face Recognition') }}
-                            </span>
-                        </div>
-
-                        <div class="flex items-center justify-between py-1">
-                            <span class="text-slate-400 font-medium">Cloud / CRM Sync:</span>
-                            <span class="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
-                                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                                Synchronized
-                            </span>
-                        </div>
-                    </div>
-
-                    <div class="pt-2 border-t border-purple-100 dark:border-purple-900/40">
-                        <a href="{{ route('attendance.index') }}" class="w-full py-2 px-3 rounded-xl bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/40 dark:hover:bg-purple-900/60 border border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                            Launch Employee Attendance Hub &rarr;
-                        </a>
-                    </div>
-                </div>
-                @endif
-
-                {{-- Software Architecture & Webpage Stack Card --}}
-                @if(in_array($project->project_type, ['software_web', 'hybrid']) || !empty($project->software_specs))
-                <div class="bg-white dark:bg-slate-900 rounded-2xl border border-cyan-200 dark:border-cyan-900/40 shadow-sm p-5 space-y-4">
-                    <div class="border-b border-cyan-100 dark:border-cyan-900/40 pb-3 flex items-center justify-between">
-                        <div class="flex items-center gap-2">
-                            <span class="w-7 h-7 rounded-lg bg-cyan-100 dark:bg-cyan-900/40 text-cyan-700 dark:text-cyan-300 flex items-center justify-center font-bold text-xs">
-                                🌐
-                            </span>
-                            <div>
-                                <h3 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Webpage & Software Stack</h3>
-                                <p class="text-[11px] text-slate-400">Web App, Client Portal & Integrations</p>
-                            </div>
-                        </div>
-                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-cyan-50 dark:bg-cyan-950/60 text-cyan-700 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-800">
-                            Software Web
-                        </span>
-                    </div>
-
-                    <div class="space-y-3 text-xs">
-                        @if(!empty($project->software_specs['webpage_url']))
-                        <div>
-                            <span class="text-slate-400 block font-medium mb-1">Webpage / Portal URL:</span>
-                            <a href="{{ $project->software_specs['webpage_url'] }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-cyan-600 dark:text-cyan-400 font-bold hover:underline break-all">
-                                <span>{{ $project->software_specs['webpage_url'] }}</span>
-                                <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                            </a>
-                        </div>
-                        @endif
-
-                        @if(!empty($project->software_specs['repository_url']))
-                        <div>
-                            <span class="text-slate-400 block font-medium mb-1">Source Repository:</span>
-                            <a href="{{ $project->software_specs['repository_url'] }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-slate-700 dark:text-slate-300 font-mono hover:text-cyan-500 break-all">
-                                <svg class="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
-                                <span>{{ $project->software_specs['repository_url'] }}</span>
-                            </a>
-                        </div>
-                        @endif
-
-                        @if(!empty($project->software_specs['tech_stack']))
-                        <div>
-                            <span class="text-slate-400 block font-medium mb-1.5">Tech Stack:</span>
-                            <div class="flex flex-wrap gap-1.5">
-                                @foreach(explode(',', $project->software_specs['tech_stack']) as $tech)
-                                    <span class="px-2 py-0.5 rounded-md bg-cyan-50 dark:bg-cyan-950/60 text-cyan-800 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-800 text-[11px] font-bold">
-                                        {{ trim($tech) }}
-                                    </span>
-                                @endforeach
-                            </div>
-                        </div>
-                        @endif
-
-                        @if(!empty($project->software_specs['deployment_server']))
-                        <div>
-                            <span class="text-slate-400 block font-medium">Hosting / Server:</span>
-                            <span class="font-semibold text-slate-800 dark:text-slate-200">{{ $project->software_specs['deployment_server'] }}</span>
-                        </div>
-                        @endif
-
-                        @if(!empty($project->software_specs['milestones']) && is_array($project->software_specs['milestones']))
-                        <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
-                            <span class="text-slate-400 block font-medium mb-1.5">Software Milestones:</span>
-                            <div class="space-y-1.5">
-                                @foreach($project->software_specs['milestones'] as $m)
-                                    <div class="flex items-center justify-between text-[11px] p-1.5 rounded-lg bg-slate-50 dark:bg-slate-800/60">
-                                        <span class="font-medium text-slate-700 dark:text-slate-300">{{ $m['name'] ?? 'Milestone' }}</span>
-                                        <span class="font-bold uppercase text-[9px] px-1.5 py-0.5 rounded {{ ($m['status'] ?? '') === 'completed' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300' : (($m['status'] ?? '') === 'in_progress' ? 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300' : 'bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300') }}">
-                                            {{ $m['status'] ?? 'Pending' }}
-                                        </span>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                        @endif
-                    </div>
-                </div>
-                @endif
-
-                {{-- Schedule & Financials Card --}}
-                <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-4">
-                    <h3 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider border-b border-slate-100 dark:border-slate-800 pb-3">
-                        Timeline & Financials
-                    </h3>
-
-                    <div class="grid grid-cols-2 gap-4 text-xs">
-                        <div>
-                            <span class="text-slate-400 block font-medium">Start Date:</span>
-                            <span class="text-slate-800 dark:text-slate-200 font-bold">
-                                {{ $project->start_date ? \Carbon\Carbon::parse($project->start_date)->format('d M, Y') : 'Not set' }}
-                            </span>
-                        </div>
-                        <div>
-                            <span class="text-slate-400 block font-medium">Target Deadline:</span>
-                            <span class="text-slate-800 dark:text-slate-200 font-bold">
-                                {{ $project->deadline ? \Carbon\Carbon::parse($project->deadline)->format('d M, Y') : 'Not set' }}
-                            </span>
-                        </div>
-                        <div>
-                            <span class="text-slate-400 block font-medium">Budget Valuation:</span>
-                            <span class="text-base font-extrabold text-emerald-600 dark:text-emerald-400">
-                                {{ $project->budget ? '₹' . number_format($project->budget, 2) : '₹0.00' }}
-                            </span>
-                        </div>
-                        <div>
-                            <span class="text-slate-400 block font-medium">Actual Cost:</span>
-                            <span class="text-base font-extrabold text-slate-800 dark:text-slate-200">
-                                {{ $project->actual_cost ? '₹' . number_format($project->actual_cost, 2) : '₹0.00' }}
-                            </span>
-                        </div>
-                    </div>
-
-                    <div class="pt-2 border-t border-slate-100 dark:border-slate-800 text-xs">
-                        <span class="text-slate-400 block font-medium mb-1">Lead Engineer / Assignee:</span>
-                        <div class="flex items-center gap-2">
-                            <span class="w-7 h-7 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 font-extrabold flex items-center justify-center text-xs">
-                                {{ substr($project->assignedUser->name ?? 'U', 0, 1) }}
-                            </span>
-                            <span class="text-slate-900 dark:text-white font-bold">{{ $project->assignedUser->name ?? 'Unassigned' }}</span>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Scope Description & Notes --}}
-                @if($project->description || $project->notes)
-                <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-4">
-                    <h3 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider border-b border-slate-100 dark:border-slate-800 pb-3">
-                        Technical Scope & Notes
-                    </h3>
-                    @if($project->description)
+        {{-- ════════════════════════════════════════════════════════════════ --}}
+        {{-- TAB 3: DOCUMENTS & DELIVERY CHALLANS                             --}}
+        {{-- ════════════════════════════════════════════════════════════════ --}}
+        <div x-show="currentTab === 'documents'" x-cloak class="space-y-6">
+            <div class="rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden">
+                <div class="p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
                     <div>
-                        <span class="text-xs text-slate-400 block font-medium mb-1">Scope Description:</span>
-                        <p class="text-xs text-slate-700 dark:text-slate-300 whitespace-pre-line leading-relaxed bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl">
-                            {{ $project->description }}
-                        </p>
+                        <h3 class="font-extrabold text-slate-900 dark:text-white text-base">Documents &amp; Delivery Challans</h3>
+                        <p class="text-xs text-slate-500">Official dispatch challans, site blueprints, sign-offs &amp; customer invoices</p>
                     </div>
-                    @endif
-                    @if($project->notes)
-                    <div>
-                        <span class="text-xs text-slate-400 block font-medium mb-1">Internal Notes:</span>
-                        <p class="text-xs text-slate-700 dark:text-slate-300 whitespace-pre-line leading-relaxed bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/40 p-3 rounded-xl">
-                            {{ $project->notes }}
-                        </p>
-                    </div>
-                    @endif
+
+                    <button type="button" @click="documentModalOpen = true" class="btn-primary text-xs shadow-md">
+                        + Upload Document / DC
+                    </button>
                 </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-slate-600 dark:text-slate-300">
+                        <thead class="bg-slate-50/80 dark:bg-slate-800/50 text-xs uppercase font-bold text-slate-500 border-b border-slate-100 dark:border-slate-800">
+                            <tr>
+                                <th class="px-5 py-3.5">Type &amp; Title</th>
+                                <th class="px-5 py-3.5">DC Number &amp; Date</th>
+                                <th class="px-5 py-3.5">Items Summary</th>
+                                <th class="px-5 py-3.5 text-center">Invoice Status</th>
+                                <th class="px-5 py-3.5 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 dark:border-slate-800">
+                            @forelse($project->documents as $doc)
+                                <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40">
+                                    <td class="px-5 py-3.5">
+                                        <div class="font-bold text-slate-900 dark:text-white">{{ $doc->title }}</div>
+                                        <div class="text-xs text-slate-400">{{ $doc->document_type_label }} &bull; {{ $doc->formatted_file_size }}</div>
+                                    </td>
+                                    <td class="px-5 py-3.5 font-mono text-xs">
+                                        @if($doc->dc_number)
+                                            <span class="font-bold text-slate-800 dark:text-slate-200">{{ $doc->dc_number }}</span>
+                                            <div class="text-[11px] text-slate-400">{{ $doc->dc_date ? $doc->dc_date->format('d M Y') : '' }}</div>
+                                        @else
+                                            <span class="text-slate-400">—</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-5 py-3.5 text-xs max-w-xs">
+                                        {{ $doc->items_summary ?? '—' }}
+                                    </td>
+                                    <td class="px-5 py-3.5 text-center">
+                                        @if($doc->document_type === 'delivery_challan')
+                                            @if($doc->is_invoiced)
+                                                <span class="px-2.5 py-1 text-xs font-bold rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
+                                                    Invoiced: {{ $doc->invoice_number }}
+                                                </span>
+                                            @else
+                                                <span class="px-2.5 py-1 text-xs font-bold rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300">
+                                                    Ready to Invoice
+                                                </span>
+                                            @endif
+                                        @else
+                                            <span class="text-xs text-slate-400">—</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-5 py-3.5 text-right">
+                                        <div class="flex items-center justify-end gap-2">
+                                            <a href="{{ route('projects.documents.view', $doc) }}" target="_blank" class="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 transition" title="Preview">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                            </a>
+                                            <a href="{{ route('projects.documents.download', $doc) }}" class="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 transition" title="Download">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                            </a>
+                                            @if(auth()->user()->isAdmin())
+                                            <form method="POST" action="{{ route('projects.documents.destroy', $doc) }}" onsubmit="return confirm('Delete this document?')" class="inline-block">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 transition">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                                </button>
+                                            </form>
+                                            @endif
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="px-5 py-12 text-center text-slate-400 text-xs">
+                                        No documents or Delivery Challans uploaded yet.
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        {{-- ════════════════════════════════════════════════════════════════ --}}
+        {{-- TAB 4: WORK DAYS & DAILY WAGES                                   --}}
+        {{-- ════════════════════════════════════════════════════════════════ --}}
+        <div x-show="currentTab === 'work_days'" x-cloak class="space-y-6">
+
+            {{-- Summary KPI Cards --}}
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="p-5 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs">
+                    <span class="text-xs font-semibold uppercase text-slate-400">Total Man-Days</span>
+                    <div class="text-2xl font-black text-slate-900 dark:text-white mt-1">{{ $totalManDays }} Days</div>
+                </div>
+                <div class="p-5 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs">
+                    <span class="text-xs font-semibold uppercase text-slate-400">Cabling Metres Done</span>
+                    <div class="text-2xl font-black text-blue-600 dark:text-blue-400 mt-1 font-mono">{{ $totalCablingMetres }} m</div>
+                </div>
+                <div class="p-5 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs">
+                    <span class="text-xs font-semibold uppercase text-slate-400">Labor Wages Spent</span>
+                    <div class="text-2xl font-black text-amber-600 dark:text-amber-400 mt-1 font-mono">₹{{ number_format($totalLaborCost, 2) }}</div>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center">
+                <h3 class="font-extrabold text-slate-900 dark:text-white text-base">Work Day Logs &amp; Attendance Records</h3>
+                @if(!auth()->user()->isStaff())
+                    <button type="button" @click="workDayModalOpen = true" class="btn-primary text-xs shadow-md">
+                        + Log Daily Work Day
+                    </button>
                 @endif
             </div>
 
-            {{-- RIGHT COLUMN: Project Documents & PDFs Hub (7 Cols) --}}
-            <div class="lg:col-span-7 space-y-6">
-
-                {{-- Document Upload Card --}}
-                <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 space-y-4">
-                    <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-                        <div class="flex items-center gap-2">
-                            <span class="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-                            </span>
-                            <div>
-                                <h3 class="text-base font-bold text-slate-900 dark:text-white">Upload Project Documents & PDFs</h3>
-                                <p class="text-xs text-slate-500 dark:text-slate-400">Attach blueprints, CAD floor plans, contracts, site sign-offs</p>
+            <div class="space-y-4">
+                @forelse($project->workDays as $wd)
+                    <div class="rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden">
+                        <div class="px-5 py-3.5 bg-slate-50/80 dark:bg-slate-800/60 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <span class="font-black text-sm font-mono text-slate-900 dark:text-white">
+                                    📅 {{ $wd->work_date->format('d M Y (l)') }}
+                                </span>
+                                @if($wd->notes)
+                                    <span class="text-xs text-slate-500 italic">"{{ $wd->notes }}"</span>
+                                @endif
                             </div>
+
+                            @if(auth()->user()->isAdmin())
+                            <form method="POST" action="{{ route('projects.work-days.destroy', ['project' => $project, 'workDay' => $wd]) }}" onsubmit="return confirm('Remove this work day log?')" class="inline-block">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-rose-500 hover:text-rose-700 text-xs font-semibold">Delete Work Day</button>
+                            </form>
+                            @endif
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm text-slate-600 dark:text-slate-300">
+                                <thead class="text-xs uppercase font-bold text-slate-400 border-b border-slate-100 dark:border-slate-800">
+                                    <tr>
+                                        <th class="px-5 py-2.5">Worker Name</th>
+                                        <th class="px-5 py-2.5">Shift Type</th>
+                                        <th class="px-5 py-2.5">Rate Snapshot</th>
+                                        <th class="px-5 py-2.5">Cabling Metres</th>
+                                        <th class="px-5 py-2.5">Extras</th>
+                                        <th class="px-5 py-2.5 text-right">Row Total</th>
+                                        <th class="px-5 py-2.5 text-center">Settlement Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                                    @foreach($wd->attendances as $att)
+                                        <tr>
+                                            <td class="px-5 py-3 font-bold text-slate-900 dark:text-white">
+                                                {{ $att->worker->name }}
+                                            </td>
+                                            <td class="px-5 py-3">
+                                                <span class="px-2 py-0.5 text-xs font-semibold rounded {{ $att->attendance_type === 'full_day' ? 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300' : 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300' }}">
+                                                    {{ $att->attendance_type === 'full_day' ? 'Full Day' : 'Half Day' }}
+                                                </span>
+                                            </td>
+                                            <td class="px-5 py-3 font-mono text-xs">
+                                                ₹{{ number_format($att->daily_rate_snapshot, 2) }}
+                                            </td>
+                                            <td class="px-5 py-3 font-mono text-xs">
+                                                {{ $att->cabling_metres > 0 ? $att->cabling_metres . ' m (+₹' . number_format($att->cabling_amount, 2) . ')' : '—' }}
+                                            </td>
+                                            <td class="px-5 py-3 text-xs">
+                                                {{ $att->extra_amount > 0 ? '+₹' . number_format($att->extra_amount, 2) . ' (' . $att->extra_description . ')' : '—' }}
+                                            </td>
+                                            <td class="px-5 py-3 text-right font-bold font-mono text-slate-900 dark:text-white">
+                                                ₹{{ number_format($att->total_amount, 2) }}
+                                            </td>
+                                            <td class="px-5 py-3 text-center">
+                                                @if($att->is_paid)
+                                                    <div class="inline-flex items-center gap-1">
+                                                        <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
+                                                            🔒 Paid &amp; Locked
+                                                        </span>
+                                                        @if(auth()->user()->isAdmin())
+                                                            <form method="POST" action="{{ route('projects.attendances.unlock', $att) }}" class="inline-block" onsubmit="return confirm('Unlock this attendance record?')">
+                                                                @csrf
+                                                                <button type="submit" class="text-[10px] text-rose-500 hover:underline">Unlock</button>
+                                                            </form>
+                                                        @endif
+                                                    </div>
+                                                @else
+                                                    <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300">
+                                                        Unpaid
+                                                    </span>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
                         </div>
                     </div>
+                @empty
+                    <div class="p-12 text-center rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 text-slate-400 text-xs">
+                        No daily work shifts logged yet. Click "+ Log Daily Work Day" to record technician &amp; worker shifts.
+                    </div>
+                @endforelse
+            </div>
+        </div>
 
-                    <form action="{{ route('projects.documents.upload', $project) }}" method="POST" enctype="multipart/form-data" class="space-y-4">
-                        @csrf
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div>
-                                <label for="document_title" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                                    Document Title / Category (Optional)
-                                </label>
-                                <input type="text" id="document_title" name="document_title" placeholder="e.g. CCTV Blueprint Layout Rev 2"
-                                       class="w-full text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500">
-                            </div>
-                            <div>
-                                <label for="upload_notes" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                                    Notes (Optional)
-                                </label>
-                                <input type="text" id="upload_notes" name="notes" placeholder="e.g. Approved by client site supervisor"
-                                       class="w-full text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500">
-                            </div>
-                        </div>
+        {{-- ════════════════════════════════════════════════════════════════ --}}
+        {{-- TAB 5: IP DEVICES REGISTER                                       --}}
+        {{-- ════════════════════════════════════════════════════════════════ --}}
+        <div x-show="currentTab === 'ip_devices'" x-cloak class="space-y-6">
+            <div class="rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden">
+                <div class="p-5 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div>
+                        <h3 class="font-extrabold text-slate-900 dark:text-white text-base">Network IP Devices Register</h3>
+                        <p class="text-xs text-slate-500">Camera addressing, ports, RTSP streams &amp; encrypted credentials</p>
+                    </div>
 
-                        <div class="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-6 text-center hover:border-blue-500 transition-colors bg-slate-50/50 dark:bg-slate-800/30">
-                            <svg class="mx-auto h-10 w-10 text-slate-400 mb-3" stroke="currentColor" fill="none" viewBox="0 0 48 48">
-                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                            <div class="flex items-center justify-center gap-3 flex-wrap">
-                                <label for="project_files" class="cursor-pointer rounded-xl bg-white dark:bg-slate-800 px-4 py-2.5 font-bold text-sm text-blue-600 hover:text-blue-500 border border-slate-300 dark:border-slate-700 shadow-sm">
-                                    <span>📎 Select PDF / File(s)</span>
-                                    <input id="project_files" name="documents[]" type="file" multiple required class="sr-only" accept=".pdf,.doc,.docx,.xls,.xlsx,.dwg,.jpg,.jpeg,.png,.zip">
-                                </label>
-                            </div>
-                            <p class="text-sm text-slate-500 dark:text-slate-400 mt-2">PDF, CAD, Word, Excel, Images up to 30MB each</p>
-                        </div>
-
-                        <div class="flex justify-end">
-                            <button type="submit" class="btn-amber">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
-                                Upload & Attach Files
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <a href="{{ route('projects.devices.export', $project) }}" class="btn-secondary text-xs flex items-center gap-1.5">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                            <span>Export CSV</span>
+                        </a>
+                        @if(!auth()->user()->isStaff())
+                            <button type="button" @click="bulkDeviceModalOpen = true" class="btn-secondary text-xs flex items-center gap-1">
+                                ⚡ Bulk Sequential Generator
                             </button>
-                        </div>
-                    </form>
+                            <button type="button" @click="deviceModalOpen = true" class="btn-primary text-xs shadow-md">
+                                + Add Device
+                            </button>
+                        @endif
+                    </div>
                 </div>
 
-                {{-- Attached Documents List --}}
-                <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 space-y-4">
-                    <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-                        <div class="flex items-center gap-2">
-                            <h3 class="text-base font-bold text-slate-900 dark:text-white">Project Documents & Attached PDFs</h3>
-                            <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-                                {{ $project->documents->count() }}
-                            </span>
-                        </div>
-                    </div>
-
-                    @if($project->documents->isEmpty())
-                        <div class="text-center py-8 text-slate-400">
-                            <svg class="w-12 h-12 mx-auto text-slate-300 dark:text-slate-600 mb-2" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                            </svg>
-                            <p class="text-xs font-semibold">No documents or PDFs uploaded yet</p>
-                            <p class="text-[11px] text-slate-500 mt-0.5">Use the upload box above to attach architectural drawings, blueprints, or handover reports.</p>
-                        </div>
-                    @else
-                        <div class="space-y-3">
-                            @foreach($project->documents as $doc)
-                                <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/50 dark:bg-slate-800/40">
-                                    {{-- File Info --}}
-                                    <div class="flex items-start gap-3 min-w-0">
-                                        {{-- File Icon badge --}}
-                                        @if($doc->isPdf())
-                                            <div class="w-12 h-12 rounded-xl bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900/40 flex flex-col items-center justify-center flex-shrink-0">
-                                                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-                                                <span class="text-[9px] font-black uppercase">PDF</span>
-                                            </div>
-                                        @elseif($doc->isImage())
-                                            <div class="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/40 flex flex-col items-center justify-center flex-shrink-0">
-                                                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                                                <span class="text-[9px] font-black uppercase">IMG</span>
-                                            </div>
-                                        @else
-                                            <div class="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-900/40 flex flex-col items-center justify-center flex-shrink-0">
-                                                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                                                <span class="text-[9px] font-black uppercase">DOC</span>
-                                            </div>
-                                        @endif
-
-                                        {{-- Title and Details --}}
-                                        <div class="min-w-0">
-                                            <h4 class="text-sm font-bold text-slate-900 dark:text-white truncate" title="{{ $doc->file_name }}">
-                                                {{ $doc->title }}
-                                            </h4>
-                                            <p class="text-xs text-slate-500 dark:text-slate-400 font-mono truncate mt-0.5">
-                                                {{ $doc->file_name }} &bull; {{ $doc->formatted_file_size }}
-                                            </p>
-                                            <div class="text-xs text-slate-400 flex items-center gap-2 mt-0.5">
-                                                <span>{{ $doc->created_at->format('d M, Y H:i') }}</span>
-                                                @if($doc->uploader)
-                                                    <span>&bull; Uploaded by {{ $doc->uploader->name }}</span>
-                                                @endif
-                                            </div>
-                                            @if($doc->notes)
-                                                <p class="text-xs text-slate-600 dark:text-slate-300 italic mt-1 bg-white dark:bg-slate-900 px-2.5 py-1.5 rounded border border-slate-200 dark:border-slate-800">
-                                                    {{ $doc->notes }}
-                                                </p>
-                                            @endif
-                                        </div>
-                                    </div>
-
-                                    {{-- Actions: View PDF, Download, Delete --}}
-                                    <div class="flex items-center gap-2 self-end sm:self-center flex-shrink-0">
-                                        @if($doc->isPdf() || $doc->isImage())
-                                            <a href="{{ route('projects.documents.view', [$project, $doc]) }}" target="_blank"
-                                               class="btn-secondary text-blue-600 dark:text-blue-400" title="Preview in browser">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-slate-600 dark:text-slate-300">
+                        <thead class="bg-slate-50/80 dark:bg-slate-800/50 text-xs uppercase font-bold text-slate-500 border-b border-slate-100 dark:border-slate-800">
+                            <tr>
+                                <th class="px-5 py-3.5">Device Name</th>
+                                <th class="px-5 py-3.5">IP Address</th>
+                                <th class="px-5 py-3.5">Ports</th>
+                                <th class="px-5 py-3.5">Username</th>
+                                <th class="px-5 py-3.5">Password</th>
+                                <th class="px-5 py-3.5 text-center">Status</th>
+                                <th class="px-5 py-3.5 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                            @forelse($project->ipDevices as $dev)
+                                <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40">
+                                    <td class="px-5 py-3.5">
+                                        <div class="font-bold text-slate-900 dark:text-white">{{ $dev->device_name }}</div>
+                                        <div class="text-xs text-slate-400">{{ $dev->device_type ?? 'Camera' }} &bull; {{ $dev->location ?? 'Main Area' }}</div>
+                                    </td>
+                                    <td class="px-5 py-3.5 font-mono font-bold text-xs text-blue-600 dark:text-blue-400">
+                                        {{ $dev->ip_address }}
+                                    </td>
+                                    <td class="px-5 py-3.5 text-xs font-mono">
+                                        Web: {{ $dev->web_port ?? 80 }} &bull; RTSP: {{ $dev->rtsp_port ?? 554 }}
+                                    </td>
+                                    <td class="px-5 py-3.5 font-mono text-xs">
+                                        {{ $dev->username ?? 'admin' }}
+                                    </td>
+                                    <td class="px-5 py-3.5 text-xs font-mono">
+                                        <div class="flex items-center gap-2">
+                                            <span x-text="revealedPasswords[{{ $dev->id }}] ? revealedPasswords[{{ $dev->id }}] : '••••••••'"></span>
+                                            <button type="button" @click="revealPassword({{ $dev->id }})" class="text-slate-400 hover:text-blue-600 cursor-pointer" title="Reveal Password (Logged to Audit Trail)">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                                                View PDF
-                                            </a>
-                                        @endif
-
-                                        <a href="{{ route('projects.documents.download', [$project, $doc]) }}"
-                                           class="btn-secondary" title="Download file">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                                            Download
-                                        </a>
-
-                                        @if(auth()->user()->isAdmin() || auth()->user()->isStaff())
-                                        <form action="{{ route('projects.documents.destroy', [$project, $doc]) }}" method="POST" onsubmit="return confirm('Delete document \'{{ $doc->file_name }}\'?');" class="inline">
+                                            </button>
+                                        </div>
+                                    </td>
+                                    <td class="px-5 py-3.5 text-center">
+                                        <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
+                                            {{ ucfirst($dev->status ?? 'Configured') }}
+                                        </span>
+                                    </td>
+                                    <td class="px-5 py-3.5 text-right">
+                                        @if(auth()->user()->isAdmin())
+                                        <form method="POST" action="{{ route('projects.devices.destroy', ['project' => $project, 'device' => $dev]) }}" onsubmit="return confirm('Delete this IP device?')" class="inline-block">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="p-2.5 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-slate-200 dark:border-slate-700 transition-colors" title="Delete file">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                            <button type="submit" class="text-rose-500 hover:text-rose-700 text-xs font-bold">
+                                                Delete
                                             </button>
                                         </form>
+                                        @else
+                                            <span class="text-slate-400 text-xs">—</span>
                                         @endif
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    @endif
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="7" class="px-5 py-12 text-center text-slate-400 text-xs">
+                                        No IP devices configured yet. Use "⚡ Bulk Sequential Generator" to auto-populate camera IPs.
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        {{-- ════════════════════════════════════════════════════════════════ --}}
+        {{-- MODALS SECTION                                                   --}}
+        {{-- ════════════════════════════════════════════════════════════════ --}}
+
+        {{-- Admin Approval Modal --}}
+        <div x-show="approveModalOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+            <div @click.away="approveModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                    <h3 class="font-bold text-slate-900 dark:text-white text-base">Approve &amp; Assign Executing Company</h3>
+                    <button type="button" @click="approveModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
                 </div>
 
+                <form method="POST" action="{{ route('projects.approve', $project) }}" class="space-y-4">
+                    @csrf
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Select Executing Company *</label>
+                        <select name="company_id" required class="w-full px-3.5 py-2.5 text-sm font-bold bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
+                            @foreach($companies as $comp)
+                                <option value="{{ $comp->id }}" {{ $project->company_id == $comp->id ? 'selected' : '' }}>
+                                    {{ $comp->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Per-Metre Cabling Rate (₹/m) *</label>
+                        <input type="number" step="0.5" name="per_metre_rate" value="{{ old('per_metre_rate', $project->per_metre_rate ?? 8.0) }}" required class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold font-mono outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Approved Project Value (₹)</label>
+                        <input type="number" step="0.5" name="approved_value" value="{{ old('approved_value', $project->budget) }}" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold font-mono outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Customer PO Number</label>
+                        <input type="text" name="po_number" value="{{ old('po_number', $project->po_number) }}" placeholder="e.g. PO-892" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-mono">
+                    </div>
+
+                    <div class="flex items-center justify-end gap-2 pt-2">
+                        <button type="button" @click="approveModalOpen = false" class="btn-secondary text-xs">Cancel</button>
+                        <button type="submit" class="btn-primary text-xs shadow-md">Confirm Approval</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {{-- Admin Rejection Modal --}}
+        <div x-show="rejectModalOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+            <div @click.away="rejectModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                    <h3 class="font-bold text-slate-900 dark:text-white text-base">Reject Project</h3>
+                    <button type="button" @click="rejectModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+                </div>
+
+                <form method="POST" action="{{ route('projects.reject', $project) }}" class="space-y-4">
+                    @csrf
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Rejection Reason *</label>
+                        <textarea name="rejection_reason" rows="3" required placeholder="Specify why this project cannot be approved..." class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none"></textarea>
+                    </div>
+
+                    <div class="flex items-center justify-end gap-2 pt-2">
+                        <button type="button" @click="rejectModalOpen = false" class="btn-secondary text-xs">Cancel</button>
+                        <button type="submit" class="px-4 py-2 text-xs font-bold rounded-xl bg-rose-600 text-white hover:bg-rose-700 shadow-md">Confirm Rejection</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {{-- Add Material Modal --}}
+        <div x-show="materialModalOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+            <div @click.away="materialModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                    <h3 class="font-bold text-slate-900 dark:text-white text-base">Add Material Line Item</h3>
+                    <button type="button" @click="materialModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+                </div>
+
+                <form method="POST" action="{{ route('projects.materials.store', $project) }}" class="space-y-4">
+                    @csrf
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Item Description *</label>
+                        <input type="text" name="item_name" required placeholder="e.g. 4-Channel SMPS Power Supply" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Quantity *</label>
+                            <input type="number" step="any" min="0.01" name="quantity" required placeholder="1" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-bold font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Unit *</label>
+                            <select name="unit" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                                <option value="nos">nos</option>
+                                <option value="mtr">mtr</option>
+                                <option value="box">box</option>
+                                <option value="roll">roll</option>
+                                <option value="pkt">pkt</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Sourcing Channel *</label>
+                        <select name="source" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                            <option value="warehouse">Warehouse Stock Dispatch</option>
+                            <option value="local_purchase">Direct Local Purchase</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Shop Name (if local purchase)</label>
+                        <input type="text" name="shop_name" placeholder="Vendor / Hardware shop name" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                    </div>
+
+                    <div class="flex items-center justify-end gap-2 pt-2">
+                        <button type="button" @click="materialModalOpen = false" class="btn-secondary text-xs">Cancel</button>
+                        <button type="submit" class="btn-primary text-xs shadow-md">Add Item</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {{-- Upload Document / Delivery Challan Modal --}}
+        <div x-show="documentModalOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+            <div @click.away="documentModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                    <h3 class="font-bold text-slate-900 dark:text-white text-base">Upload Document / Delivery Challan</h3>
+                    <button type="button" @click="documentModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+                </div>
+
+                <form method="POST" action="{{ route('projects.documents.store', $project) }}" enctype="multipart/form-data" class="space-y-4"
+                      x-data="{ docType: 'delivery_challan' }">
+                    @csrf
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Document Type *</label>
+                        <select name="document_type" x-model="docType" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-semibold">
+                            <option value="delivery_challan">Delivery Challan (DC)</option>
+                            <option value="purchase_order">Customer Purchase Order (PO)</option>
+                            <option value="site_drawing">Site Blueprint / Wiring Drawing</option>
+                            <option value="completion_signoff">Completion Sign-off Sheet</option>
+                            <option value="invoice">Customer Invoice</option>
+                            <option value="other">Other Document</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Document Title *</label>
+                        <input type="text" name="title" required placeholder="e.g. Delivery Challan #DC-892 (Camera &amp; Cables)" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                    </div>
+
+                    <div x-show="docType === 'delivery_challan'" class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">DC Number</label>
+                            <input type="text" name="dc_number" placeholder="DC-2026-0042" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">DC Date</label>
+                            <input type="date" name="dc_date" value="{{ now()->toDateString() }}" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                        </div>
+                    </div>
+
+                    <div x-show="docType === 'delivery_challan'">
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Items Summary in Challan</label>
+                        <textarea name="items_summary" rows="2" placeholder="e.g. 4x Dome Camera, 1x NVR, 150m CAT6 Cable" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Attach File (PDF, Image, up to 50MB) *</label>
+                        <input type="file" name="file" required class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                    </div>
+
+                    <div class="flex items-center justify-end gap-2 pt-2">
+                        <button type="button" @click="documentModalOpen = false" class="btn-secondary text-xs">Cancel</button>
+                        <button type="submit" class="btn-primary text-xs shadow-md">Upload Document</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {{-- Log Daily Work Day Modal --}}
+        <div x-show="workDayModalOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+            <div @click.away="workDayModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-2xl w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 max-h-[90vh] overflow-y-auto"
+                 x-data="{
+                     workersList: {{ $workers->toJson() }},
+                     rows: [
+                         { worker_id: '', attendance_type: 'full_day', daily_rate: 0, cabling_metres: 0, extra_amount: 0, extra_description: '', row_total: 0 }
+                     ],
+                     addRow() {
+                         this.rows.push({ worker_id: '', attendance_type: 'full_day', daily_rate: 0, cabling_metres: 0, extra_amount: 0, extra_description: '', row_total: 0 });
+                     },
+                     removeRow(i) {
+                         this.rows.splice(i, 1);
+                     },
+                     updateRate(row) {
+                         const found = this.workersList.find(w => w.id == row.worker_id);
+                         if (found) {
+                             row.daily_rate = found.daily_rate;
+                             this.calcRow(row);
+                         }
+                     },
+                     calcRow(row) {
+                         const base = (row.attendance_type === 'half_day') ? (row.daily_rate / 2) : row.daily_rate;
+                         const cabling = (parseFloat(row.cabling_metres) || 0) * {{ (float) ($project->per_metre_rate ?? 8.0) }};
+                         const extra = parseFloat(row.extra_amount) || 0;
+                         row.row_total = base + cabling + extra;
+                     }
+                 }">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                    <div>
+                        <h3 class="font-bold text-slate-900 dark:text-white text-base">Log Daily Labor Work Day</h3>
+                        <p class="text-xs text-slate-400">Snapshot worker rates &amp; calculate cabling metres extras (₹{{ $project->per_metre_rate ?? 8.0 }}/m)</p>
+                    </div>
+                    <button type="button" @click="workDayModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+                </div>
+
+                <form method="POST" action="{{ route('projects.work-days.store', $project) }}" class="space-y-4">
+                    @csrf
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Work Shift Date *</label>
+                            <input type="date" name="work_date" value="{{ now()->toDateString() }}" required class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-bold">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">General Shift Notes</label>
+                            <input type="text" name="notes" placeholder="e.g. Ground floor cabling completed" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 pt-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold uppercase text-slate-400">Worker Attendance Rows</span>
+                            <button type="button" @click="addRow()" class="btn-secondary text-xs">+ Add Worker</button>
+                        </div>
+
+                        <template x-for="(r, idx) in rows" :key="idx">
+                            <div class="p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/40 space-y-2">
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                    <div>
+                                        <label class="block text-[10px] font-bold uppercase text-slate-400 mb-0.5">Worker *</label>
+                                        <select :name="`attendances[${idx}][worker_id]`" x-model="r.worker_id" @change="updateRate(r)" required class="w-full px-2 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none font-bold">
+                                            <option value="">Select Worker...</option>
+                                            <template x-for="w in workersList" :key="w.id">
+                                                <option :value="w.id" x-text="`${w.name} (₹${w.daily_rate}/d)`"></option>
+                                            </template>
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-[10px] font-bold uppercase text-slate-400 mb-0.5">Shift *</label>
+                                        <select :name="`attendances[${idx}][attendance_type]`" x-model="r.attendance_type" @change="calcRow(r)" class="w-full px-2 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none">
+                                            <option value="full_day">Full Day</option>
+                                            <option value="half_day">Half Day</option>
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-[10px] font-bold uppercase text-slate-400 mb-0.5">Cabling Metres</label>
+                                        <input type="number" step="1" min="0" :name="`attendances[${idx}][cabling_metres]`" x-model="r.cabling_metres" @input="calcRow(r)" placeholder="0" class="w-full px-2 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg font-mono outline-none">
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 items-end">
+                                    <div>
+                                        <label class="block text-[10px] font-bold uppercase text-slate-400 mb-0.5">Extra Amount (₹)</label>
+                                        <input type="number" step="0.5" min="0" :name="`attendances[${idx}][extra_amount]`" x-model="r.extra_amount" @input="calcRow(r)" placeholder="0" class="w-full px-2 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg font-mono outline-none">
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-[10px] font-bold uppercase text-slate-400 mb-0.5">Extra Reason</label>
+                                        <input type="text" :name="`attendances[${idx}][extra_description]`" x-model="r.extra_description" placeholder="Travel / overtime..." class="w-full px-2 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none">
+                                    </div>
+
+                                    <div class="flex items-center justify-between">
+                                        <div class="text-xs font-mono">
+                                            Total: <strong class="text-slate-900 dark:text-white" x-text="`₹${r.row_total.toFixed(2)}`"></strong>
+                                        </div>
+                                        <button type="button" @click="removeRow(idx)" class="text-rose-500 hover:text-rose-700 text-xs font-bold" x-show="rows.length > 1">
+                                            Remove
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+
+                    <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
+                        <button type="button" @click="workDayModalOpen = false" class="btn-secondary text-xs">Cancel</button>
+                        <button type="submit" class="btn-primary text-xs shadow-md">Save Work Day Log</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {{-- Add Single IP Device Modal --}}
+        <div x-show="deviceModalOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+            <div @click.away="deviceModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                    <h3 class="font-bold text-slate-900 dark:text-white text-base">Add IP Device</h3>
+                    <button type="button" @click="deviceModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+                </div>
+
+                <form method="POST" action="{{ route('projects.devices.store', $project) }}" class="space-y-3">
+                    @csrf
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Device Name *</label>
+                        <input type="text" name="device_name" required placeholder="e.g. CAM-01 Front Gate" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-bold">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">IP Address *</label>
+                            <input type="text" name="ip_address" required placeholder="192.168.1.101" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono font-bold outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Device Type</label>
+                            <input type="text" name="device_type" placeholder="Dome Camera" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Web Port</label>
+                            <input type="number" name="web_port" value="80" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">RTSP Port</label>
+                            <input type="number" name="rtsp_port" value="554" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono outline-none">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Username</label>
+                            <input type="text" name="username" value="admin" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Password (Encrypted)</label>
+                            <input type="password" name="password" placeholder="••••••••" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono outline-none">
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-end gap-2 pt-2">
+                        <button type="button" @click="deviceModalOpen = false" class="btn-secondary text-xs">Cancel</button>
+                        <button type="submit" class="btn-primary text-xs shadow-md">Save Device</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {{-- Bulk Sequential Generator Modal --}}
+        <div x-show="bulkDeviceModalOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+            <div @click.away="bulkDeviceModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                    <div>
+                        <h3 class="font-bold text-slate-900 dark:text-white text-base">Bulk Sequential IP Generator</h3>
+                        <p class="text-xs text-slate-400">Generate multiple sequential camera IP rows in 1-click</p>
+                    </div>
+                    <button type="button" @click="bulkDeviceModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+                </div>
+
+                <form method="POST" action="{{ route('projects.devices.bulk', $project) }}" class="space-y-3">
+                    @csrf
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Start IP Address *</label>
+                        <input type="text" name="start_ip" value="192.168.1.101" required placeholder="192.168.1.101" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold font-mono outline-none">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Total Devices Count *</label>
+                            <input type="number" min="1" max="100" name="count" value="16" required class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold font-mono outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Device Prefix</label>
+                            <input type="text" name="name_prefix" value="Camera" required placeholder="Camera" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-bold">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Device Type</label>
+                        <input type="text" name="device_type" value="IP Camera" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Default Username</label>
+                            <input type="text" name="username" value="admin" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Default Password</label>
+                            <input type="password" name="password" placeholder="Pass123" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono outline-none">
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-end gap-2 pt-2">
+                        <button type="button" @click="bulkDeviceModalOpen = false" class="btn-secondary text-xs">Cancel</button>
+                        <button type="submit" class="btn-primary text-xs shadow-md">Generate All Rows</button>
+                    </div>
+                </form>
             </div>
         </div>
 

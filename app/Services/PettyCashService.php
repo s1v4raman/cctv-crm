@@ -114,13 +114,14 @@ class PettyCashService
         $result = [];
         $today = Carbon::today()->toDateString();
 
+        /** @var \App\Models\PettyCashAccount $acc */
         foreach ($accounts as $acc) {
             $latestTx = $acc->transactions->first();
             $latestReconciliation = DailyCashReconciliation::where('petty_cash_account_id', $acc->id)
                 ->latest('reconciliation_date')
                 ->first();
 
-            $isReconciledToday = $latestReconciliation && $latestReconciliation->reconciliation_date->toDateString() === $today;
+            $isReconciledToday = $latestReconciliation && Carbon::parse($latestReconciliation->reconciliation_date)->toDateString() === $today;
 
             $result[] = [
                 'account'              => $acc,
@@ -157,7 +158,7 @@ class PettyCashService
 
             $mainVault = PettyCashAccount::getMainVault();
             if ((float) $mainVault->current_balance < $amount) {
-                throw new InvalidArgumentException("Insufficient cash in Head Office Vault. Available: ₹" . number_format($mainVault->current_balance, 2));
+                throw new InvalidArgumentException("Insufficient cash in Head Office Vault. Available: ₹" . number_format((float) $mainVault->current_balance, 2));
             }
 
             // Resolve target custodian wallet
@@ -276,7 +277,7 @@ class PettyCashService
                 : PettyCashAccount::getOrCreateWalletForUser(Auth::user());
 
             if ((float) $account->current_balance < $amount) {
-                throw new InvalidArgumentException("Insufficient cash balance in {$account->name}. Available: ₹" . number_format($account->current_balance, 2));
+                throw new InvalidArgumentException("Insufficient cash balance in {$account->name}. Available: ₹" . number_format((float) $account->current_balance, 2));
             }
 
             $date = !empty($data['transaction_date']) ? Carbon::parse($data['transaction_date']) : Carbon::now();
@@ -326,7 +327,7 @@ class PettyCashService
 
             $sourceAccount = PettyCashAccount::findOrFail($data['source_account_id']);
             if ((float) $sourceAccount->current_balance < $amount) {
-                throw new InvalidArgumentException("Cannot handover more than current balance in {$sourceAccount->name}. Available: ₹" . number_format($sourceAccount->current_balance, 2));
+                throw new InvalidArgumentException("Cannot handover more than current balance in {$sourceAccount->name}. Available: ₹" . number_format((float) $sourceAccount->current_balance, 2));
             }
 
             $destinationType = $data['destination_type'] ?? 'main_vault'; // main_vault or bank_deposit
@@ -518,7 +519,7 @@ class PettyCashService
             'entries'         => array_reverse($ledgerEntries), // latest first for UI
             'total_inflow'    => round($totalIn, 2),
             'total_outflow'   => round($totalOut, 2),
-            'current_balance' => round($account->current_balance, 2),
+            'current_balance' => round((float) $account->current_balance, 2),
         ];
     }
 
@@ -559,7 +560,7 @@ class PettyCashService
         foreach ($transactions as $tx) {
             fputcsv($output, [
                 $tx->voucher_no,
-                $tx->transaction_date->format('Y-m-d'),
+                $tx->transaction_date ? Carbon::parse($tx->transaction_date)->format('Y-m-d') : '',
                 $tx->account?->name ?? 'Vault',
                 ucfirst(str_replace('_', ' ', $tx->transaction_type)),
                 ucfirst(str_replace('_', ' ', $tx->category ?? 'General')),

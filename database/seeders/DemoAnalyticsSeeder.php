@@ -39,12 +39,42 @@ use Illuminate\Support\Facades\Hash;
 
 class DemoAnalyticsSeeder extends Seeder
 {
+    private array $dates = [];
+    private array $users = [];
+    private $productsBySku;
+    private ?Supplier $supHikvision = null;
+    private ?Supplier $supDahua = null;
+
     public function run(): void
+    {
+        $this->initDates();
+        $this->cleanupAndSeedProducts();
+        $this->seedUsers();
+        $this->seedSalaryStructures();
+        // $this->seedAttendanceRecords(); // Disabled: Attendance is strictly manual only
+        $this->seedLeaveRequests();
+        $this->seedPayrollRecords();
+        $this->seedPettyCash();
+        $this->seedSuppliersAndPurchases();
+        $this->seedCustomerProjects();
+        $this->seedServiceTickets();
+        $this->seedRmaClaims();
+        $this->seedGstFilings();
+    }
+
+    private function initDates(): void
     {
         $now = Carbon::now();
         $startOfMonth = $now->copy()->startOfMonth();
         $thirtyDaysAgo = $now->copy()->subDays(30);
+        $lastMonthStart = $now->copy()->subMonth()->startOfMonth();
+        $lastMonthEnd = $now->copy()->subMonth()->endOfMonth();
+        $this->dates = compact('now', 'startOfMonth', 'thirtyDaysAgo', 'lastMonthStart', 'lastMonthEnd');
+    }
 
+    private function cleanupAndSeedProducts(): void
+    {
+        extract($this->dates);
         // =========================================================================
         // 1. PRODUCTS SEEDING (Ensuring Products are up-to-date with Cost Prices)
         // =========================================================================
@@ -81,6 +111,12 @@ class DemoAnalyticsSeeder extends Seeder
             return 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="100"><text x="10" y="55" font-family="Brush Script MT, cursive" font-size="32" fill="%231e3a8a">' . htmlspecialchars($name) . '</text></svg>';
         };
 
+        $this->productsBySku = $productsBySku;
+    }
+
+    private function seedUsers(): void
+    {
+        extract($this->dates);
         // =========================================================================
         // 2. USERS: ADMINS, STAFF & FIELD TECHNICIANS
         // =========================================================================
@@ -194,6 +230,18 @@ class DemoAnalyticsSeeder extends Seeder
 
         $technicians = [$techBob, $techRajesh, $techSuresh, $techVikram];
 
+        $this->users = compact(
+            'admin', 'adminSuresh',
+            'staffAlex', 'staffKesavan', 'staffPriya', 'staffAnand',
+            'techBob', 'techRajesh', 'techSuresh', 'techVikram',
+            'allEmployees', 'technicians'
+        );
+    }
+
+    private function seedSalaryStructures(): void
+    {
+        extract($this->dates);
+        extract($this->users);
         // =========================================================================
         // 3. SALARY STRUCTURES (EMPLOYEE SALARIES)
         // =========================================================================
@@ -232,6 +280,12 @@ class DemoAnalyticsSeeder extends Seeder
             );
         }
 
+    }
+
+    private function seedAttendanceRecords(): void
+    {
+        extract($this->dates);
+        extract($this->users);
         // =========================================================================
         // 4. ONE-MONTH ATTENDANCE RECORDS (Past 30 Days across all 10 employees)
         // =========================================================================
@@ -301,6 +355,12 @@ class DemoAnalyticsSeeder extends Seeder
             }
         }
 
+    }
+
+    private function seedLeaveRequests(): void
+    {
+        extract($this->dates);
+        extract($this->users);
         // =========================================================================
         // 5. LEAVE REQUESTS
         // =========================================================================
@@ -344,6 +404,12 @@ class DemoAnalyticsSeeder extends Seeder
             ]
         );
 
+    }
+
+    private function seedPayrollRecords(): void
+    {
+        extract($this->dates);
+        extract($this->users);
         // =========================================================================
         // 6. PAYROLL RECORDS (Previous Month Paid + Current Month Draft/Approved)
         // =========================================================================
@@ -412,6 +478,12 @@ class DemoAnalyticsSeeder extends Seeder
             );
         }
 
+    }
+
+    private function seedPettyCash(): void
+    {
+        extract($this->dates);
+        extract($this->users);
         // =========================================================================
         // 7. PETTY CASH ACCOUNTS & TRANSACTIONS
         // =========================================================================
@@ -497,6 +569,13 @@ class DemoAnalyticsSeeder extends Seeder
             ]
         );
 
+    }
+
+    private function seedSuppliersAndPurchases(): void
+    {
+        extract($this->dates);
+        extract($this->users);
+        $productsBySku = $this->productsBySku;
         // =========================================================================
         // 8. SUPPLIERS, PURCHASE ORDERS, VENDOR PAYMENTS & STOCK
         // =========================================================================
@@ -730,6 +809,18 @@ class DemoAnalyticsSeeder extends Seeder
             }
         }
 
+        $this->supHikvision = $supHikvision;
+        $this->supDahua = $supDahua;
+    }
+
+    private function seedCustomerProjects(): void
+    {
+        extract($this->dates);
+        extract($this->users);
+        $productsBySku = $this->productsBySku;
+        $createSignatureSvg = function(string $name) {
+            return 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="100"><text x="10" y="55" font-family="Brush Script MT, cursive" font-size="32" fill="%231e3a8a">' . htmlspecialchars($name) . '</text></svg>';
+        };
         // =========================================================================
         // 9. REALISTIC CUSTOMER BUYING & PROJECT FLOW DATA (PAST 30 DAYS)
         // =========================================================================
@@ -1914,6 +2005,12 @@ class DemoAnalyticsSeeder extends Seeder
             }
         }
 
+    }
+
+    private function seedServiceTickets(): void
+    {
+        extract($this->dates);
+        extract($this->users);
         // =========================================================================
         // 10. SERVICE TICKETS (TECHNICIAN PERFORMANCE, FTFR & MTTR METRICS)
         // =========================================================================
@@ -2084,6 +2181,14 @@ class DemoAnalyticsSeeder extends Seeder
             );
         }
 
+    }
+
+    private function seedRmaClaims(): void
+    {
+        extract($this->dates);
+        extract($this->users);
+        $productsBySku = $this->productsBySku;
+        $supHikvision = $this->supHikvision;
         // =========================================================================
         // 11. RMA CLAIMS & STATUS LOGS
         // =========================================================================
@@ -2120,6 +2225,12 @@ class DemoAnalyticsSeeder extends Seeder
             );
         }
 
+    }
+
+    private function seedGstFilings(): void
+    {
+        extract($this->dates);
+        extract($this->users);
         // =========================================================================
         // 12. GST FILINGS FOR FINANCIAL COMPLIANCE
         // =========================================================================

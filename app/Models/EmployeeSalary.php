@@ -58,16 +58,16 @@ class EmployeeSalary extends Model
 
         if ($monthly > 0) {
             if ((float) $this->daily_rate <= 0) {
-                $this->daily_rate = round($monthly / $monthlyWorkingDays, 2);
+                $this->attributes['daily_rate'] = round($monthly / $monthlyWorkingDays, 2);
             }
             if ((float) $this->weekly_rate <= 0) {
-                $this->weekly_rate = round($this->daily_rate * 6, 2);
+                $this->attributes['weekly_rate'] = round((float) $this->daily_rate * 6, 2);
             }
             if ((float) $this->hourly_rate <= 0) {
-                $this->hourly_rate = round($this->daily_rate / $dailyHours, 2);
+                $this->attributes['hourly_rate'] = round((float) $this->daily_rate / $dailyHours, 2);
             }
             if ((float) $this->overtime_hourly_rate <= 0) {
-                $this->overtime_hourly_rate = round($this->hourly_rate * 1.25, 2);
+                $this->attributes['overtime_hourly_rate'] = round((float) $this->hourly_rate * 1.25, 2);
             }
         }
     }

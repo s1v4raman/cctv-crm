@@ -64,6 +64,7 @@ class AccountsPayableService
             ],
         ];
 
+        /** @var PurchaseOrder $po */
         foreach ($purchaseOrders as $po) {
             $balance = (float) $po->balanceDue();
             if ($balance <= 0.01) {
@@ -120,6 +121,7 @@ class AccountsPayableService
             'total'             => $allActivePOs->count(),
         ];
 
+        /** @var PurchaseOrder $activePo */
         foreach ($allActivePOs as $activePo) {
             $match = $activePo->getThreeWayMatchStatus();
             $statusKey = $match['status'] ?? 'pending_inward';
@@ -338,8 +340,8 @@ class AccountsPayableService
                 'po_number'            => $po->po_number,
                 'supplier_name'        => $po->supplier ? ($po->supplier->company_name ?: $po->supplier->name) : 'Supplier',
                 'supplier_gst'         => $po->supplier?->gst_number ?? 'N/A',
-                'order_date'           => $po->order_date?->format('d M Y'),
-                'expected_delivery'    => $po->expected_delivery_date?->format('d M Y') ?? 'N/A',
+                'order_date'           => $po->order_date ? Carbon::parse($po->order_date)->format('d M Y') : null,
+                'expected_delivery'    => $po->expected_delivery_date ? Carbon::parse($po->expected_delivery_date)->format('d M Y') : 'N/A',
                 'po_status'            => $po->status,
                 'payment_status'       => $po->payment_status,
                 'total_amount'         => (float) $po->total,
@@ -387,6 +389,7 @@ class AccountsPayableService
         $pos = $query->get();
         $disbursements = [];
 
+        /** @var PurchaseOrder $po */
         foreach ($pos as $po) {
             $balance = (float) $po->balanceDue();
             if ($balance <= 0.01) {

@@ -77,8 +77,8 @@ class LeaveManagementWorkflowTest extends TestCase
         $leave = LeaveRequest::where('user_id', $this->employee->id)->first();
         $this->assertNotNull($leave);
         $this->assertEquals('casual', $leave->leave_type);
-        $this->assertEquals($startDate, $leave->start_date->toDateString());
-        $this->assertEquals($endDate, $leave->end_date->toDateString());
+        $this->assertEquals($startDate, \Carbon\Carbon::parse($leave->start_date)->toDateString());
+        $this->assertEquals($endDate, \Carbon\Carbon::parse($leave->end_date)->toDateString());
         $this->assertEquals('pending', $leave->status);
     }
 
@@ -172,7 +172,7 @@ class LeaveManagementWorkflowTest extends TestCase
      */
     public function test_admin_can_approve_leave_and_auto_mark_attendance(): void
     {
-        $startDate = now()->next(Carbon::MONDAY);
+        $startDate = now()->next(\Carbon\CarbonInterface::MONDAY);
         $endDate = $startDate->copy()->addDay();
 
         $leave = LeaveRequest::create([

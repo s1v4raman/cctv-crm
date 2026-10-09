@@ -85,7 +85,7 @@ class PettyCashController extends Controller
 
         try {
             $tx = $this->cashService->recordFloatAdvance($validated);
-            $msg = "✅ Float advance of ₹" . number_format($tx->amount, 2) . " disbursed successfully ({$tx->voucher_no}).";
+            $msg = "✅ Float advance of ₹" . number_format((float) $tx->amount, 2) . " disbursed successfully ({$tx->voucher_no}).";
             return back()->with('status', $msg)->with('success', $msg);
         } catch (\Exception $e) {
             return back()->withErrors(['amount' => $e->getMessage()])->withInput();
@@ -111,7 +111,7 @@ class PettyCashController extends Controller
 
         try {
             $tx = $this->cashService->recordFieldCollection($validated);
-            $msg = "✅ Cash collection of ₹" . number_format($tx->amount, 2) . " recorded successfully ({$tx->voucher_no}).";
+            $msg = "✅ Cash collection of ₹" . number_format((float) $tx->amount, 2) . " recorded successfully ({$tx->voucher_no}).";
             return back()->with('status', $msg)->with('success', $msg);
         } catch (\Exception $e) {
             return back()->withErrors(['amount' => $e->getMessage()])->withInput();
@@ -138,7 +138,7 @@ class PettyCashController extends Controller
 
         try {
             $tx = $this->cashService->recordDirectExpense($validated);
-            $msg = "✅ Expense of ₹" . number_format($tx->amount, 2) . " logged successfully ({$tx->voucher_no}).";
+            $msg = "✅ Expense of ₹" . number_format((float) $tx->amount, 2) . " logged successfully ({$tx->voucher_no}).";
             return back()->with('status', $msg)->with('success', $msg);
         } catch (\Exception $e) {
             return back()->withErrors(['amount' => $e->getMessage()])->withInput();
@@ -162,7 +162,7 @@ class PettyCashController extends Controller
 
         try {
             $tx = $this->cashService->recordCashHandover($validated);
-            $msg = "✅ Cash handover of ₹" . number_format($tx->amount, 2) . " processed successfully ({$tx->voucher_no}).";
+            $msg = "✅ Cash handover of ₹" . number_format((float) $tx->amount, 2) . " processed successfully ({$tx->voucher_no}).";
             return back()->with('status', $msg)->with('success', $msg);
         } catch (\Exception $e) {
             return back()->withErrors(['amount' => $e->getMessage()])->withInput();
@@ -205,9 +205,9 @@ class PettyCashController extends Controller
         $rec = $this->cashService->recordDailyReconciliation($validated);
 
         $statusMsg = match($rec->variance_status) {
-            'matched'  => "🟢 Perfect Match! Physical cash exactly equals system expected balance (₹" . number_format($rec->physical_counted_balance, 2) . ").",
-            'shortage' => "🔴 Cash Shortage Detected: Physical count is ₹" . number_format(abs($rec->variance_amount), 2) . " less than system expected balance.",
-            'excess'   => "🟡 Cash Excess Detected: Physical count is ₹" . number_format($rec->variance_amount, 2) . " more than system expected balance.",
+            'matched'  => "🟢 Perfect Match! Physical cash exactly equals system expected balance (₹" . number_format((float) $rec->physical_counted_balance, 2) . ").",
+            'shortage' => "🔴 Cash Shortage Detected: Physical count is ₹" . number_format(abs((float) $rec->variance_amount), 2) . " less than system expected balance.",
+            'excess'   => "🟡 Cash Excess Detected: Physical count is ₹" . number_format((float) $rec->variance_amount, 2) . " more than system expected balance.",
         };
 
         return redirect()->route('finance.petty_cash.index')

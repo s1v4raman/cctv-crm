@@ -331,7 +331,7 @@ class FinanceController extends Controller
                     $alertService->sendAlert('salary_disbursed', $payroll->user, [
                         'employee_name'     => $payroll->user->name,
                         'payroll_number'    => $payroll->payroll_number,
-                        'period_month'      => \Carbon\Carbon::parse($payroll->period_start)->format('F Y'),
+                        'period_month'      => Carbon::parse($payroll->period_start)->format('F Y'),
                         'net_salary'        => '₹' . number_format((float) $payroll->net_salary, 2),
                         'payment_method'    => ucfirst(str_replace('_', ' ', $paymentMethod)),
                         'payment_reference' => $payroll->payment_reference ?: 'Direct Credit',

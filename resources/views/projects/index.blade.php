@@ -3,7 +3,7 @@
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <div class="flex items-center gap-2">
-                    <h2 class="text-xl font-extrabold text-slate-900 dark:text-white font-heading tracking-tight">Project Handling & Tracking</h2>
+                    <h2 class="text-xl font-extrabold text-slate-900 dark:text-white font-heading tracking-tight">Project Handling &amp; Tracking</h2>
                     <span class="text-xs font-bold uppercase tracking-wider bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 px-2.5 py-1 rounded border border-indigo-200 dark:border-indigo-500/30">Operations Hub</span>
                 </div>
                 <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Track ongoing, completed, and pending company projects with attached blueprints and documentation</p>
@@ -107,6 +107,20 @@
                 </div>
             </a>
 
+            {{-- Pending Approval (Alert badge) --}}
+            <a href="{{ route('projects.index', array_merge(request()->query(), ['status' => 'pending_approval'])) }}" class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:border-amber-500/50 transition-all group {{ $pendingApprovalCount > 0 ? 'ring-2 ring-amber-500/50 bg-amber-50/20' : '' }}">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">Pending Approval</span>
+                    <span class="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </span>
+                </div>
+                <div class="mt-2 flex items-baseline gap-2">
+                    <span class="text-2xl font-black text-amber-600 dark:text-amber-400 font-heading">{{ $pendingApprovalCount }}</span>
+                    <span class="text-xs text-slate-400">Needs Review</span>
+                </div>
+            </a>
+
             {{-- Total Budget Valuation --}}
             <div class="col-span-2 lg:col-span-1 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
                 <div class="flex items-center justify-between">
@@ -175,7 +189,7 @@
                     <a href="{{ route('projects.index', array_merge(request()->query(), ['type' => 'software_web'])) }}"
                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all {{ $isWebActive ? 'bg-cyan-600 text-white shadow-sm' : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300' }}">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>
-                        <span>Web & Apps</span>
+                        <span>Webpage &amp; Apps</span>
                         <span class="text-[10px] px-1.5 py-0.2 rounded-full font-bold {{ $isWebActive ? 'bg-white/25 text-white' : 'bg-cyan-100 dark:bg-cyan-950/60 text-cyan-700 dark:text-cyan-300' }}">
                             {{ $softwareWebCount }}
                         </span>
@@ -255,6 +269,30 @@
                 </div>
             </div>
 
+            {{-- Quick Filter Pills --}}
+            <div class="flex items-center gap-2 overflow-x-auto pb-1 pt-1 text-xs">
+                <a href="{{ route('projects.index') }}" 
+                   class="px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap {{ !$assignedFilter && $statusFilter === 'all' ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200' }}">
+                    All Projects ({{ $totalProjectsCount }})
+                </a>
+                <a href="{{ route('projects.index', ['assigned' => auth()->id()]) }}" 
+                   class="px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap {{ $assignedFilter == auth()->id() ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200' }}">
+                    👤 My Assigned Projects
+                </a>
+                <a href="{{ route('projects.index', ['status' => 'pending_approval']) }}" 
+                   class="px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap {{ $statusFilter === 'pending_approval' ? 'bg-amber-600 text-white shadow-xs' : 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 hover:bg-amber-100' }}">
+                    ⏳ Pending Approval ({{ $pendingApprovalCount }})
+                </a>
+                <a href="{{ route('projects.index', ['status' => 'in_progress']) }}" 
+                   class="px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap {{ $statusFilter === 'in_progress' ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200' }}">
+                    ⚡ In Progress ({{ $inProgressCount }})
+                </a>
+                <a href="{{ route('projects.index', ['status' => 'completed']) }}" 
+                   class="px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap {{ $statusFilter === 'completed' ? 'bg-emerald-600 text-white shadow-xs' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200' }}">
+                    ✓ Completed ({{ $completedCount }})
+                </a>
+            </div>
+
             {{-- Search & Refinement Form --}}
             <form method="GET" action="{{ route('projects.index') }}" class="pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-col lg:flex-row items-stretch lg:items-center gap-3">
                 <input type="hidden" name="type" value="{{ $typeFilter }}">
@@ -270,20 +308,45 @@
                            class="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors">
                 </div>
 
-                {{-- Status Filter --}}
+                {{-- Company Filter --}}
                 <div class="w-full sm:w-44">
+                    <select name="company" class="w-full py-2.5 px-3 text-xs font-medium rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 text-slate-800 dark:text-white focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors">
+                        <option value="all">All Executing Companies</option>
+                        @foreach($companies as $comp)
+                            <option value="{{ $comp->id }}" {{ $companyFilter == $comp->id ? 'selected' : '' }}>{{ $comp->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                {{-- Assignee / Technician / Employee Filter --}}
+                <div class="w-full sm:w-48">
+                    <select name="assigned" class="w-full py-2.5 px-3 text-xs font-medium rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 text-slate-800 dark:text-white focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors">
+                        <option value="">All Engineers &amp; Assignees</option>
+                        @foreach($teamMembers as $tm)
+                            <option value="{{ $tm->id }}" {{ $assignedFilter == $tm->id ? 'selected' : '' }}>
+                                {{ $tm->name }} ({{ ucfirst($tm->role) }})
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                {{-- Status Filter --}}
+                <div class="w-full sm:w-36">
                     <select name="status" class="w-full py-2.5 px-3 text-xs font-medium rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 text-slate-800 dark:text-white focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors">
                         <option value="all" {{ $statusFilter === 'all' ? 'selected' : '' }}>All Statuses</option>
+                        <option value="pending_approval" {{ $statusFilter === 'pending_approval' ? 'selected' : '' }}>⏳ Pending Approval</option>
+                        <option value="approved" {{ $statusFilter === 'approved' ? 'selected' : '' }}>✓ Approved</option>
                         <option value="in_progress" {{ $statusFilter === 'in_progress' ? 'selected' : '' }}>In Progress</option>
                         <option value="completed" {{ $statusFilter === 'completed' ? 'selected' : '' }}>Done / Completed</option>
-                        <option value="incompleted" {{ $statusFilter === 'incompleted' ? 'selected' : '' }}>Incomplete</option>
+                        <option value="draft" {{ $statusFilter === 'draft' ? 'selected' : '' }}>Draft</option>
                         <option value="on_hold" {{ $statusFilter === 'on_hold' ? 'selected' : '' }}>On Hold</option>
+                        <option value="rejected" {{ $statusFilter === 'rejected' ? 'selected' : '' }}>Rejected</option>
                         <option value="cancelled" {{ $statusFilter === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
                     </select>
                 </div>
 
                 {{-- Priority Filter --}}
-                <div class="w-full sm:w-40">
+                <div class="w-full sm:w-32">
                     <select name="priority" class="w-full py-2.5 px-3 text-xs font-medium rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 text-slate-800 dark:text-white focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors">
                         <option value="all" {{ $priorityFilter === 'all' ? 'selected' : '' }}>All Priorities</option>
                         <option value="urgent" {{ $priorityFilter === 'urgent' ? 'selected' : '' }}>🔴 Urgent</option>
@@ -294,13 +357,13 @@
                 </div>
 
                 {{-- Submit and Reset Buttons --}}
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2 shrink-0">
                     <button type="submit" 
                             class="btn-primary text-xs py-2.5 px-4 shadow-sm inline-flex items-center justify-center gap-1.5">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                         <span>Filter</span>
                     </button>
-                    @if($search || $statusFilter !== 'all' || $priorityFilter !== 'all' || ($typeFilter && $typeFilter !== 'all'))
+                    @if($search || $statusFilter !== 'all' || $priorityFilter !== 'all' || ($typeFilter && $typeFilter !== 'all') || $assignedFilter || $companyFilter !== 'all')
                     <a href="{{ route('projects.index') }}" 
                        class="text-xs font-semibold py-2.5 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors" 
                        title="Clear all filters">
@@ -350,6 +413,7 @@
                                     <span class="text-xs font-mono font-bold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
                                         {{ $project->project_code }}
                                     </span>
+                                    {!! $project->company_badge !!}
                                     <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full border {{ $project->status_badge_classes }}">
                                         {{ $project->status_label }}
                                     </span>
@@ -412,6 +476,21 @@
                                 </div>
                             @endif
 
+                            {{-- Project Assigned Technician & Staff Chip --}}
+                            <div class="mt-2.5 p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 text-[11px] flex items-center justify-between gap-1">
+                                <div class="flex items-center gap-1.5 truncate">
+                                    <span class="text-xs">🛠️</span>
+                                    <span class="truncate">
+                                        <span class="text-slate-400">Tech:</span>
+                                        <strong class="text-slate-800 dark:text-slate-200">{{ $project->leadTechnician?->name ?? 'Unassigned' }}</strong>
+                                    </span>
+                                </div>
+                                <div class="flex items-center gap-1 truncate text-slate-500 dark:text-slate-400 text-[10px] shrink-0">
+                                    <span>👤</span>
+                                    <span>{{ $project->assignedUser?->name ?? ($project->creator?->name ?? 'Staff') }}</span>
+                                </div>
+                            </div>
+
                             {{-- Progress Bar --}}
                             <div class="mt-3.5">
                                 <div class="flex items-center justify-between text-xs mb-1 font-semibold">
@@ -446,23 +525,30 @@
 
                         {{-- Card Actions Footer --}}
                         <div class="p-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2 bg-white dark:bg-slate-900">
-                            {{-- Quick 1-click status dropdown --}}
-                            <form action="{{ route('projects.updateStatus', $project) }}" method="POST" class="inline-flex">
-                                @csrf
-                                @method('PATCH')
-                                <select name="status" onchange="this.form.submit()" class="text-xs py-1.5 px-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold cursor-pointer focus:ring-1 focus:ring-blue-500">
-                                    <option value="in_progress" {{ $project->status === 'in_progress' ? 'selected' : '' }}>• In Progress</option>
-                                    <option value="completed" {{ $project->status === 'completed' ? 'selected' : '' }}>✓ Done / Completed</option>
-                                    <option value="incompleted" {{ $project->status === 'incompleted' ? 'selected' : '' }}>! Incompleted</option>
-                                    <option value="on_hold" {{ $project->status === 'on_hold' ? 'selected' : '' }}>⏸ On Hold</option>
-                                </select>
-                            </form>
+                            @if(auth()->user()->isAdmin())
+                                {{-- Quick 1-click status dropdown (Admin Only per matrix) --}}
+                                <form action="{{ route('projects.updateStatus', $project) }}" method="POST" class="inline-flex">
+                                    @csrf
+                                    @method('PATCH')
+                                    <select name="status" onchange="this.form.submit()" class="text-xs py-1.5 px-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold cursor-pointer focus:ring-1 focus:ring-blue-500">
+                                        <option value="pending_approval" {{ $project->status === 'pending_approval' ? 'selected' : '' }}>⏳ Pending Approval</option>
+                                        <option value="approved" {{ $project->status === 'approved' ? 'selected' : '' }}>✓ Approved</option>
+                                        <option value="in_progress" {{ $project->status === 'in_progress' ? 'selected' : '' }}>• In Progress</option>
+                                        <option value="completed" {{ $project->status === 'completed' ? 'selected' : '' }}>✓ Done / Completed</option>
+                                        <option value="on_hold" {{ $project->status === 'on_hold' ? 'selected' : '' }}>⏸ On Hold</option>
+                                    </select>
+                                </form>
+                            @else
+                                <span class="text-[11px] font-semibold text-slate-500">
+                                    Status: <strong class="text-slate-700 dark:text-slate-300">{{ $project->status_label }}</strong>
+                                </span>
+                            @endif
 
                             <div class="flex items-center gap-1.5">
-                                <a href="{{ route('projects.show', $project) }}" class="btn-secondary text-xs py-1.5 px-3 font-bold" title="Open Project & View Documents">
-                                    View & Files
+                                <a href="{{ route('projects.show', $project) }}" class="btn-secondary text-xs py-1.5 px-3 font-bold" title="Open Project Scope & Tracking">
+                                    View & Files &rarr;
                                 </a>
-                                @if(auth()->user()->isAdmin() || auth()->user()->isStaff())
+                                @if(auth()->user()->isAdmin() || ($project->created_by === auth()->id() && in_array($project->status, ['draft', 'pending_approval'])))
                                 <a href="{{ route('projects.edit', $project) }}" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" title="Edit Project">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
                                 </a>

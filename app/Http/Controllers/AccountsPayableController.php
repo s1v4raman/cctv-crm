@@ -93,7 +93,7 @@ class AccountsPayableController extends Controller
         }
 
         $payment = $this->apService->recordVendorPayment($validated);
-        $msg = "✅ Vendor disbursement of ₹" . number_format($payment->amount, 2) . " recorded successfully ({$payment->payment_reference}).";
+        $msg = "✅ Vendor disbursement of ₹" . number_format((float) $payment->amount, 2) . " recorded successfully ({$payment->payment_reference}).";
 
         return back()->with('status', $msg)->with('success', $msg);
     }

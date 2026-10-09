@@ -70,6 +70,7 @@ class AccountsReceivableService
             ],
         ];
 
+        /** @var \App\Models\Invoice $inv */
         foreach ($invoices as $inv) {
             $balance = (float) $inv->balanceDue();
             if ($balance <= 0.01) {
@@ -296,6 +297,7 @@ class AccountsReceivableService
         $invoices = $query->get();
         $overdueList = [];
 
+        /** @var \App\Models\Invoice $inv */
         foreach ($invoices as $inv) {
             $balance = (float) $inv->balanceDue();
             if ($balance <= 0.01) {
@@ -438,6 +440,7 @@ class AccountsReceivableService
         $dispatchedCount = 0;
         $skippedCount = 0;
 
+        /** @var \App\Models\Invoice $inv */
         foreach ($invoices as $inv) {
             if ($inv->balanceDue() <= 0.01 || !$inv->quotation?->lead) {
                 continue;

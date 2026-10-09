@@ -311,7 +311,7 @@ class AttendanceAndFinanceModuleTest extends TestCase
     {
         $this->actingAs($this->admin);
 
-        $weekStart = now()->startOfWeek(\Carbon\Carbon::MONDAY)->toDateString();
+        $weekStart = now()->startOfWeek(\Carbon\CarbonInterface::MONDAY)->toDateString();
 
         // Create attendance for this week
         EmployeeAttendance::create([

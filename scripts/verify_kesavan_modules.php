@@ -167,7 +167,7 @@ $attendance = EmployeeAttendance::where('user_id', $kesavan->id)
 if (!$attendance) {
     $attendance = new EmployeeAttendance();
     $attendance->user_id = $kesavan->id;
-    $attendance->date = $today;
+    $attendance->date = \Carbon\Carbon::parse($today);
 }
 
 $attendance->status = 'present';

@@ -177,6 +177,11 @@ class DashboardController extends Controller
                 ->where('status', 'completed')
                 ->count(),
             'open_tickets' => ServiceTicket::whereIn('status', ['open', 'assigned', 'in_progress'])->count(),
+            'total_projects' => \App\Models\Project::count(),
+            'in_progress_projects' => \App\Models\Project::where('status', 'in_progress')->count(),
+            'pending_approval_projects' => \App\Models\Project::where('status', 'pending_approval')->count(),
+            'hardware_attendance_projects' => \App\Models\Project::where('project_type', 'hardware_attendance')->count(),
+            'total_project_valuation' => (float) \App\Models\Project::sum('budget'),
         ];
 
         $leadStatuses = [
