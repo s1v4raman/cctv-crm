@@ -25,14 +25,14 @@
                 @if($siteSurvey->contact_phone || $siteSurvey->lead->phone)
                     <a href="tel:{{ $siteSurvey->contact_phone ?: $siteSurvey->lead->phone }}" 
                        class="px-3.5 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-amber-400 border border-slate-700 font-bold text-xs transition flex items-center gap-1.5 shadow-sm">
-                        <span>📞 Call Contact</span>
+                        <span>Call Contact</span>
                     </a>
                 @endif
                 @if($siteSurvey->site_address || $siteSurvey->lead->site_address)
                     <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode($siteSurvey->site_address ?: $siteSurvey->lead->site_address) }}" 
                        target="_blank" 
                        class="px-3.5 py-2 rounded-xl bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/30 text-blue-300 font-bold text-xs transition flex items-center gap-1.5 shadow-sm">
-                        <span>📍 Open in Maps</span>
+                        <span>Open in Maps</span>
                     </a>
                 @endif
             </div>
@@ -57,13 +57,13 @@
                     </div>
                     <div>
                         <span class="text-slate-500 block uppercase text-[10px] font-bold">Installation Address</span>
-                        <span class="font-medium text-slate-300">📍 {{ $siteSurvey->site_address ?: ($siteSurvey->lead->site_address ?: 'Address not provided') }}</span>
+                        <span class="font-medium text-slate-300">{{ $siteSurvey->site_address ?: ($siteSurvey->lead->site_address ?: 'Address not provided') }}</span>
                     </div>
                 </div>
 
                 @if($siteSurvey->visit_notes && $siteSurvey->status !== 'completed')
                     <div class="p-3.5 rounded-xl bg-[#060913] border border-amber-500/30 text-xs">
-                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-amber-400 block mb-1">📋 Instructions & Customer Scope from Admin:</span>
+                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-amber-400 block mb-1">Instructions & Customer Scope from Admin:</span>
                         <p class="text-slate-200 font-medium whitespace-pre-line">{{ $siteSurvey->visit_notes }}</p>
                     </div>
                 @endif
@@ -142,7 +142,7 @@
 
                     <div class="bg-[#0f172a] rounded-2xl border border-slate-800 shadow-2xl p-6 space-y-4" style="background-color: #0f172a;">
                         <div class="flex items-center gap-2 pb-3 border-b border-slate-800">
-                            <span class="text-lg">📐</span>
+                            
                             <h2 class="text-base font-extrabold text-white font-heading">Technical Findings & Recommendations</h2>
                         </div>
 
@@ -194,7 +194,7 @@
                     <div class="bg-[#0f172a] rounded-2xl border border-slate-800 shadow-2xl p-6 space-y-4" x-data="photoUploader()" style="background-color: #0f172a;">
                         <div class="flex items-center justify-between pb-3 border-b border-slate-800">
                             <div class="flex items-center gap-2">
-                                <span class="text-lg">📸</span>
+                                
                                 <div>
                                     <h2 class="text-base font-extrabold text-white font-heading">Upload Site Photos & Camera Angles</h2>
                                     <p class="text-xs text-slate-400">Capture premises, entrance blind spots, server rack, and cable pathways</p>
@@ -205,8 +205,8 @@
                         <div class="border-2 border-dashed border-slate-700 hover:border-amber-500/50 rounded-2xl p-6 text-center bg-[#060913] transition cursor-pointer"
                              @click="$refs.photoInput.click()">
                             <input type="file" x-ref="photoInput" name="photos[]" multiple accept="image/*" class="hidden" @change="handleFiles($event)">
-                            <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 to-amber-600 text-slate-950 flex items-center justify-center mx-auto mb-2 text-xl font-black shadow-lg shadow-amber-500/20">
-                                📷
+                            <div class="w-10 h-10 rounded-[4px] bg-blue-600 text-white flex items-center justify-center mx-auto mb-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                             </div>
                             <p class="text-xs font-bold text-white">Click or Tap to Take/Upload Site Photos</p>
                             <p class="text-[11px] text-slate-400 mt-0.5">Supports PNG, JPG, JPEG up to 5MB each (Multiple photos allowed)</p>
@@ -230,8 +230,8 @@
                         <a href="{{ route('technician.dashboard') }}" class="px-5 py-2.5 rounded-xl border border-slate-700 text-slate-400 font-bold text-xs hover:text-white hover:bg-slate-800 transition">
                             Cancel
                         </a>
-                        <button type="submit" class="btn-amber">
-                            <span>✓ Complete Site Survey & Upload Photos</span>
+                        <button type="submit" class="px-5 py-2.5 rounded-[4px] bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs transition">
+                            <span>Complete Site Survey & Upload Photos</span>
                         </button>
                     </div>
                 </form>

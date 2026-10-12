@@ -65,7 +65,7 @@
         <!-- Target Field Notification -->
         <div class="mb-3 px-3 py-2 rounded-xl bg-blue-950/40 border border-blue-800/40 flex items-center justify-between">
             <div class="flex items-center space-x-2 text-xs">
-                <span class="text-blue-400">🎯 Scanning for:</span>
+                <span class="text-blue-400">Scanning for:</span>
                 <span class="font-bold text-white bg-blue-900/50 px-2 py-0.5 rounded text-[11px]">{{ $label }}</span>
             </div>
             <span class="text-[10px] text-slate-400">Instant Sync</span>

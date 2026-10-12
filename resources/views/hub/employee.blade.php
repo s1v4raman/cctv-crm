@@ -438,7 +438,7 @@
                         <div>
                             <div class="text-xs font-bold text-slate-900 dark:text-white">Run Payroll</div>
                             <div class="text-[10px] text-slate-400 {{ $isPayrollGenerated ? 'text-emerald-500' : 'text-amber-500' }}">
-                                {{ $isPayrollGenerated ? '✓ Generated' : '⚠ Pending Run' }}
+                                {{ $isPayrollGenerated ? 'Generated' : 'Pending Run' }}
                             </div>
                         </div>
                         <svg class="w-4 h-4 text-slate-300 ml-auto" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>

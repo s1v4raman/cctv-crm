@@ -9,9 +9,9 @@
                     <div class="flex items-center gap-2">
                         <h2 class="text-xl font-bold leading-tight text-gray-900">{{ $supplier->name }}</h2>
                         @if($supplier->is_active)
-                            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">Active</span>
+                            <span class="text-xs font-bold text-emerald-600">Active</span>
                         @else
-                            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-gray-100 text-gray-600 border border-gray-200">Inactive</span>
+                            <span class="text-xs font-bold text-slate-500">Inactive</span>
                         @endif
                     </div>
                     @if($supplier->company_name)
@@ -25,7 +25,7 @@
                     New Purchase Order
                 </a>
                 <a href="{{ route('suppliers.edit', $supplier) }}" class="btn-head-secondary">
-                    ✏️ Edit
+                    Edit
                 </a>
             </div>
         </div>
@@ -148,7 +148,7 @@
                         <div class="info-label">Phone / WhatsApp</div>
                         <div class="info-value">
                             @if($supplier->phone)
-                                <a href="tel:{{ $supplier->phone }}" class="text-indigo-600 hover:underline">📞 {{ $supplier->phone }}</a>
+                                <a href="tel:{{ $supplier->phone }}" class="text-indigo-600 hover:underline">{{ $supplier->phone }}</a>
                             @else — @endif
                         </div>
                     </div>
@@ -156,7 +156,7 @@
                         <div class="info-label">Email</div>
                         <div class="info-value text-xs font-semibold">
                             @if($supplier->email)
-                                <a href="mailto:{{ $supplier->email }}" class="text-indigo-600 hover:underline">✉️ {{ $supplier->email }}</a>
+                                <a href="mailto:{{ $supplier->email }}" class="text-indigo-600 hover:underline">{{ $supplier->email }}</a>
                             @else — @endif
                         </div>
                     </div>
@@ -175,7 +175,7 @@
                     <div class="col-span-2">
                         <div class="info-label">Warehouse Address</div>
                         <div class="info-value text-xs font-normal text-gray-700">
-                            📍 {{ $supplier->address ?: '—' }}{{ $supplier->city ? ", {$supplier->city}" : '' }}{{ $supplier->state ? ", {$supplier->state}" : '' }}
+                            {{ $supplier->address ?: '—' }}{{ $supplier->city ? ", {$supplier->city}" : '' }}{{ $supplier->state ? ", {$supplier->state}" : '' }}
                         </div>
                     </div>
                     @if($supplier->notes)

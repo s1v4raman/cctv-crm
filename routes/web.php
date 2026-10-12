@@ -24,6 +24,7 @@ use App\Http\Controllers\AlertNotificationController;
 use App\Http\Controllers\ExecutiveAnalyticsController;
 use App\Http\Controllers\InboundEmailSupportController;
 use App\Http\Controllers\Api\EquipmentLookupController;
+use App\Http\Controllers\Api\GlobalSearchController;
 use App\Http\Controllers\OnlinePaymentController;
 use App\Http\Controllers\StorefrontController;
 use App\Http\Controllers\CalendarController;
@@ -54,7 +55,7 @@ Route::post('/api/mobile-scanner/heartbeat/{token}', [MobileScannerSyncControlle
 Route::get('/api/mobile-scanner/lan-info', [MobileScannerSyncController::class, 'getLanInfo'])->name('api.mobile-scanner.lan-info');
 
 // Universal Global Omnisearch API
-Route::get('/api/global-search', [\App\Http\Controllers\Api\GlobalSearchController::class, 'search'])->name('api.global-search');
+Route::get('/api/global-search', [GlobalSearchController::class, 'search'])->name('api.global-search');
 
 // Public Amazon-style CCTV Storefront Homepage & Inquiry Engine
 Route::get('/', [StorefrontController::class, 'index'])->name('home');
@@ -423,7 +424,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/inventory/movements', [InventoryController::class, 'movements'])->name('inventory.movements');
 
         // Installed Equipment & Warranty API
-        Route::get('/api/equipment/lookup-serial', [\App\Http\Controllers\Api\EquipmentLookupController::class, 'lookup'])->name('equipment.lookup');
+        Route::get('/api/equipment/lookup-serial', [EquipmentLookupController::class, 'lookup'])->name('equipment.lookup');
 
         // RMA & Warranty Claims Read-Only
         Route::get('/rma', [RmaClaimController::class, 'index'])->name('rma.index');

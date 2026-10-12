@@ -2,149 +2,120 @@
     <x-slot name="header">
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <div class="flex items-center gap-2">
-                    <h2 class="text-xl font-extrabold text-slate-900 dark:text-white font-heading tracking-tight">Support &amp; Service Desk</h2>
-                    <span class="text-[10px] font-bold uppercase tracking-wider bg-rose-500/10 text-rose-600 dark:text-rose-400 px-2 py-0.5 rounded border border-rose-200 dark:border-rose-500/30">SLA 24/7</span>
-                </div>
-                <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Manage client camera issues, warranty repairs, technician dispatches, and SLA timers</p>
+                <h2 class="text-xl font-bold text-slate-900 dark:text-white font-heading tracking-tight">Service Tickets</h2>
             </div>
             <div class="flex items-center gap-2 flex-wrap">
-                <button type="button" @click="$dispatch('open-email-modal')" class="btn-dark">
-                    <svg class="w-4 h-4 mr-1.5 text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                    </svg>
+                <button type="button" @click="$dispatch('open-email-modal')" class="px-3 py-1.5 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition">
                     Email Gateway
                 </button>
-                <a href="{{ route('service-tickets.export-pdf', request()->query()) }}" class="btn-dark">
-                    <svg class="w-4 h-4 mr-1.5 text-rose-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
-                    </svg>
+                <a href="{{ route('service-tickets.export-pdf', request()->query()) }}" class="px-3 py-1.5 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition">
                     PDF Export
                 </a>
-                <a href="{{ route('service-tickets.create') }}" class="btn-amber">
-                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
-                    </svg>
-                    Log Ticket
+                <a href="{{ route('service-tickets.create') }}" class="px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition">
+                    + Log Ticket
                 </a>
             </div>
         </div>
     </x-slot>
 
     <style>
-        /* Status Tabs (override global for amber active style) */
-        .status-tab.active { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important; color: #020617 !important; border-color: #f59e0b !important; font-weight: 800; }
-        .status-tab.active .count-badge { background: rgba(0,0,0,0.25) !important; color: #020617 !important; font-weight: 800; }
-
-        /* Ticket-specific cell colors */
-        .cell-no { font-weight:700; color:#2563eb; text-decoration:none; }
-        .cell-no:hover { color:#1d4ed8; text-decoration:underline; }
-        html.dark .cell-no { color:#f59e0b; }
-        html.dark .cell-no:hover { color:#fbbf24; }
-        .cell-name { font-weight:700; color:#0f172a; }
-        html.dark .cell-name { color:#ffffff; }
-
-        /* Alert messages */
-        .alert-success {
-            background-color: #ecfdf5;
-            border: 1px solid #d1fae5;
-            color: #059669;
-            padding: 0.875rem 1rem;
-            border-radius: 0.75rem;
-            margin-bottom: 1.25rem;
-            font-size: 0.875rem;
+        .status-tab {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.82rem;
+            font-weight: 500;
+            color: #475569;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            text-decoration: none;
+            transition: border-color 0.15s;
+        }
+        html.dark .status-tab {
+            background: #0f172a;
+            border-color: #1e293b;
+            color: #94a3b8;
+        }
+        .status-tab.active {
+            background: #2563eb !important;
+            color: #ffffff !important;
+            border-color: #2563eb !important;
             font-weight: 600;
         }
-        html.dark .alert-success {
-            background-color: rgba(16,185,129,.1);
-            border-color: rgba(16,185,129,.3);
-            color: #34d399;
+        .status-tab .count-badge {
+            font-size: 0.75rem;
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            background: #f1f5f9;
+            color: #475569;
+        }
+        .status-tab.active .count-badge {
+            background: rgba(255, 255, 255, 0.25) !important;
+            color: #ffffff !important;
         }
 
-        /* Priority badges */
-        .badge-priority { display:inline-flex; align-items:center; gap:0.35rem; padding:.2rem .6rem; border-radius:999px; font-size:.7rem; font-weight:800; text-transform:uppercase; letter-spacing:.04em; }
-        .priority-critical { background:#fef2f2; color:#dc2626; border:1px solid #fee2e2; }
-        .priority-high     { background:#fff7ed; color:#c2410c; border:1px solid #fed7aa; }
-        .priority-medium   { background:#fffbeb; color:#d97706; border:1px solid #fde68a; }
-        .priority-low      { background:#f1f5f9; color:#475569; border:1px solid #e2e8f0; }
-        html.dark .priority-critical { background:rgba(244,63,94,.2); color:#fb7185; border-color:rgba(244,63,94,.4); }
-        html.dark .priority-high     { background:rgba(249,115,22,.2); color:#fb923c; border-color:rgba(249,115,22,.4); }
-        html.dark .priority-medium   { background:rgba(245,158,11,.2); color:#fbbf24; border-color:rgba(245,158,11,.4); }
-        html.dark .priority-low      { background:rgba(148,163,184,.2); color:#cbd5e1; border-color:rgba(148,163,184,.4); }
+        .cell-no { font-weight: 600; color: #2563eb; text-decoration: none; }
+        .cell-no:hover { text-decoration: underline; }
 
-        /* Status badges */
-        .badge-status { display:inline-flex; padding:.2rem .65rem; border-radius:999px; font-size:.7rem; font-weight:800; text-transform:uppercase; letter-spacing:.04em; }
-        .status-open       { background:#fef2f2; color:#dc2626; border:1px solid #fee2e2; }
-        .status-assigned   { background:#faf5ff; color:#7e22ce; border:1px solid #f3e8ff; }
-        .status-in_progress{ background:#fffbeb; color:#d97706; border:1px solid #fde68a; }
-        .status-resolved   { background:#ecfdf5; color:#059669; border:1px solid #d1fae5; }
-        .status-closed     { background:#f1f5f9; color:#475569; border:1px solid #e2e8f0; }
-        .status-cancelled  { background:#f1f5f9; color:#475569; border:1px solid #e2e8f0; }
-        html.dark .status-open        { background:rgba(244,63,94,.15); color:#fb7185; border-color:rgba(244,63,94,.3); }
-        html.dark .status-assigned    { background:rgba(168,85,247,.15); color:#c084fc; border-color:rgba(168,85,247,.3); }
-        html.dark .status-in_progress { background:rgba(245,158,11,.15); color:#fbbf24; border-color:rgba(245,158,11,.3); }
-        html.dark .status-resolved    { background:rgba(16,185,129,.15); color:#34d399; border-color:rgba(16,185,129,.3); }
-        html.dark .status-closed      { background:rgba(148,163,184,.15); color:#cbd5e1; border-color:rgba(148,163,184,.3); }
-        html.dark .status-cancelled   { background:rgba(148,163,184,.15); color:#cbd5e1; border-color:rgba(148,163,184,.3); }
+        .stat-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            padding: 10px 14px;
+        }
+        html.dark .stat-card {
+            background: #0f172a;
+            border-color: #1e293b;
+        }
+
+        /* Priority: plain bold colored text */
+        .badge-priority { font-size: 0.85rem; font-weight: 700; background: transparent !important; border: none !important; padding: 0 !important; }
+        .priority-critical { color: #dc2626 !important; }
+        .priority-high     { color: #ea580c !important; }
+        .priority-medium   { color: #d97706 !important; }
+        .priority-low      { color: #64748b !important; }
+
+        /* Status: plain bold colored text */
+        .badge-status { font-size: 0.85rem; font-weight: 700; background: transparent !important; border: none !important; padding: 0 !important; }
+        .status-open        { color: #dc2626 !important; }
+        .status-assigned    { color: #7e22ce !important; }
+        .status-in_progress { color: #d97706 !important; }
+        .status-resolved    { color: #16a34a !important; }
+        .status-closed      { color: #64748b !important; }
+        .status-cancelled   { color: #64748b !important; }
     </style>
 
     <div class="pg-wrap" x-data="{ emailModalOpen: false }" @open-email-modal.window="emailModalOpen = true">
         <div class="pg-inner">
             
             @if (session('success'))
-                <div class="alert-success">
+                <div class="mb-4 p-3 rounded bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs font-semibold">
                     {{ session('success') }}
                 </div>
             @endif
 
             <!-- Metric Summary Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5 mb-5">
                 <div class="stat-card">
-                    <div>
-                        <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Total Tickets</p>
-                        <h3 class="text-2xl font-bold text-slate-900 dark:text-white mt-1">{{ $metrics['total'] }}</h3>
-                    </div>
-                    <div class="p-3 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 rounded-xl">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                        </svg>
-                    </div>
+                    <p class="text-xs font-medium text-slate-500 dark:text-slate-400">Total Tickets</p>
+                    <h3 class="text-2xl font-bold text-slate-900 dark:text-white mt-1">{{ $metrics['total'] }}</h3>
                 </div>
 
                 <div class="stat-card">
-                    <div>
-                        <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Active / Open</p>
-                        <h3 class="text-2xl font-bold text-amber-600 dark:text-amber-400 mt-1">{{ $metrics['open'] }}</h3>
-                    </div>
-                    <div class="p-3 bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 rounded-xl">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                    </div>
+                    <p class="text-xs font-medium text-slate-500 dark:text-slate-400">Active / Open</p>
+                    <h3 class="text-2xl font-bold text-slate-900 dark:text-white mt-1">{{ $metrics['open'] }}</h3>
                 </div>
 
                 <div class="stat-card">
-                    <div>
-                        <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Critical / Urgent</p>
-                        <h3 class="text-2xl font-bold text-red-600 dark:text-rose-400 mt-1">{{ $metrics['critical'] }}</h3>
-                    </div>
-                    <div class="p-3 bg-red-50 dark:bg-rose-950/50 text-red-600 dark:text-rose-400 rounded-xl">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                        </svg>
-                    </div>
+                    <p class="text-xs font-medium text-slate-500 dark:text-slate-400">Critical / Urgent</p>
+                    <h3 class="text-2xl font-bold text-slate-900 dark:text-white mt-1">{{ $metrics['critical'] }}</h3>
                 </div>
 
                 <div class="stat-card">
-                    <div>
-                        <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">SLA Overdue (>48h)</p>
-                        <h3 class="text-2xl font-bold text-rose-600 dark:text-rose-400 mt-1">{{ $metrics['overdue'] }}</h3>
-                    </div>
-                    <div class="p-3 bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 rounded-xl">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                    </div>
+                    <p class="text-xs font-medium text-slate-500 dark:text-slate-400">SLA Overdue (>48h)</p>
+                    <h3 class="text-2xl font-bold text-slate-900 dark:text-white mt-1">{{ $metrics['overdue'] }}</h3>
                 </div>
             </div>
 
@@ -156,39 +127,39 @@
                 </a>
                 <a href="{{ route('service-tickets.index', array_merge(request()->except('tab', 'page'), ['tab' => 'critical'])) }}" 
                     class="status-tab {{ $activeTab === 'critical' ? 'active' : '' }}">
-                    🚨 Critical <span class="count-badge">{{ $tabCounts['critical'] }}</span>
+                    Critical <span class="count-badge">{{ $tabCounts['critical'] }}</span>
                 </a>
                 <a href="{{ route('service-tickets.index', array_merge(request()->except('tab', 'page'), ['tab' => 'open'])) }}" 
                     class="status-tab {{ $activeTab === 'open' ? 'active' : '' }}">
-                    ⚠️ Open & Assigned <span class="count-badge">{{ $tabCounts['open'] }}</span>
+                    Open & Assigned <span class="count-badge">{{ $tabCounts['open'] }}</span>
                 </a>
                 <a href="{{ route('service-tickets.index', array_merge(request()->except('tab', 'page'), ['tab' => 'in_progress'])) }}" 
                     class="status-tab {{ $activeTab === 'in_progress' ? 'active' : '' }}">
-                    🟡 In Progress <span class="count-badge">{{ $tabCounts['in_progress'] }}</span>
+                    In Progress <span class="count-badge">{{ $tabCounts['in_progress'] }}</span>
                 </a>
                 <a href="{{ route('service-tickets.index', array_merge(request()->except('tab', 'page'), ['tab' => 'resolved'])) }}" 
                     class="status-tab {{ $activeTab === 'resolved' ? 'active' : '' }}">
-                    🟢 Resolved <span class="count-badge">{{ $tabCounts['resolved'] }}</span>
+                    Resolved <span class="count-badge">{{ $tabCounts['resolved'] }}</span>
                 </a>
                 <a href="{{ route('service-tickets.index', array_merge(request()->except('tab', 'page'), ['tab' => 'closed'])) }}" 
                     class="status-tab {{ $activeTab === 'closed' ? 'active' : '' }}">
-                    📁 Closed <span class="count-badge">{{ $tabCounts['closed'] }}</span>
+                    Closed <span class="count-badge">{{ $tabCounts['closed'] }}</span>
                 </a>
             </div>
 
             <!-- Filters Bar -->
-            <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm mb-6">
-                <form method="GET" action="{{ route('service-tickets.index') }}" class="flex flex-wrap items-center gap-3">
+            <div class="mb-4">
+                <form method="GET" action="{{ route('service-tickets.index') }}" class="flex flex-wrap items-center gap-2">
                     <input type="hidden" name="tab" value="{{ $activeTab }}">
                     
                     <div class="flex-1 min-w-[200px]">
                         <input type="text" name="search" value="{{ request('search') }}" 
                             placeholder="Search ticket #, issue, customer, phone..."
-                            class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:border-indigo-500">
+                            class="w-full text-sm h-[38px] px-3 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-blue-600">
                     </div>
 
                     <div>
-                        <select name="issue_type" class="filter-select text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl">
+                        <select name="issue_type" class="text-sm h-[38px] px-3 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">
                             <option value="">All Categories</option>
                             @foreach(\App\Models\ServiceTicket::issueTypeOptions() as $k => $label)
                                 <option value="{{ $k }}" {{ request('issue_type') === $k ? 'selected' : '' }}>{{ $label }}</option>
@@ -197,7 +168,7 @@
                     </div>
 
                     <div>
-                        <select name="priority" class="filter-select text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl">
+                        <select name="priority" class="text-sm h-[38px] px-3 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">
                             <option value="">All Priorities</option>
                             @foreach(\App\Models\ServiceTicket::priorityOptions() as $k => $label)
                                 <option value="{{ $k }}" {{ request('priority') === $k ? 'selected' : '' }}>{{ $label }}</option>
@@ -206,7 +177,7 @@
                     </div>
 
                     <div>
-                        <select name="technician_id" class="filter-select text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl">
+                        <select name="technician_id" class="text-sm h-[38px] px-3 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">
                             <option value="">All Technicians</option>
                             @foreach($technicians as $tech)
                                 <option value="{{ $tech->id }}" {{ request('technician_id') == $tech->id ? 'selected' : '' }}>{{ $tech->name }}</option>
@@ -215,15 +186,13 @@
                     </div>
 
                     <button type="submit"
-                            class="btn-filter"
-                            style="display: inline-flex; align-items: center; justify-content: center; background-color: var(--crm-accent, #2563eb); color: #ffffff !important; border-radius: 8px; min-height: 44px; padding: 10px 18px; font-size: 14px; font-weight: 700; cursor: pointer; border: none; box-shadow: 0 1px 2px rgba(0,0,0,0.1); transition: all 0.15s;">
+                            class="h-[38px] px-4 rounded bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition">
                         Filter
                     </button>
 
                     @if(request()->hasAny(['search', 'status', 'priority', 'technician_id', 'issue_type']))
                         <a href="{{ route('service-tickets.index', ['tab' => $activeTab]) }}"
-                           style="display: inline-flex; align-items: center; min-height: 44px; font-size: 14px; color: #64748b; text-decoration: none; font-weight: 600; padding: 10px 14px;"
-                           onmouseover="this.style.color='#1e293b'" onmouseout="this.style.color='#64748b'">
+                           class="h-[38px] px-3 inline-flex items-center rounded border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-sm font-medium transition">
                             Reset
                         </a>
                     @endif
@@ -268,44 +237,44 @@
                                             <a href="{{ route('service-tickets.show', $ticket) }}" class="cell-no font-mono flex items-center gap-1.5">
                                                 {{ $ticket->ticket_no }}
                                                 @if($isEmailInbound)
-                                                    <span class="text-[9px] bg-indigo-100 text-indigo-700 px-1 py-0.2 rounded font-bold border border-indigo-200">
-                                                        ✉️ Email
+                                                    <span class="text-[10px] text-slate-500 font-medium">
+                                                        [Email]
                                                     </span>
                                                 @endif
                                             </a>
                                             <div class="flex items-center gap-1.5 mt-0.5">
                                                 @if($isDelayed)
-                                                    <span class="text-[10px] bg-rose-100 text-rose-700 px-1.5 py-0.5 rounded font-bold">
-                                                        ⚠️ {{ $ticket->created_at->diffForHumans(null, true) }} open
+                                                    <span class="text-xs text-red-600 font-semibold">
+                                                        {{ $ticket->created_at->diffForHumans(null, true) }} open
                                                     </span>
                                                 @else
-                                                    <span class="text-[10px] text-slate-400">
+                                                    <span class="text-xs text-slate-400">
                                                         {{ $ticket->created_at->diffForHumans() }}
                                                     </span>
                                                 @endif
                                             </div>
                                             @if($ticket->amc_contract_id)
-                                                <div class="text-[10px] text-emerald-600 font-semibold mt-0.5">
-                                                    🛡️ AMC Covered
+                                                <div class="text-xs text-emerald-600 font-medium mt-0.5">
+                                                    AMC Covered
                                                 </div>
                                             @endif
                                         </td>
                                         <td>
                                             @if($ticket->lead)
-                                                <a href="{{ route('leads.show', $ticket->lead) }}" class="font-bold text-slate-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 text-xs">
+                                                <a href="{{ route('leads.show', $ticket->lead) }}" class="font-semibold text-slate-900 dark:text-white hover:text-blue-600 text-xs">
                                                     {{ $ticket->lead->customer_name }}
                                                 </a>
                                                 <div class="text-[11px] text-slate-500 mt-0.5 flex items-center gap-2">
                                                     @if($ticket->lead->phone)
-                                                        <span>📞 {{ $ticket->lead->phone }}</span>
+                                                        <span>{{ $ticket->lead->phone }}</span>
                                                     @endif
                                                     @if($ticket->lead->email)
-                                                        <span class="text-indigo-600">✉️ {{ $ticket->lead->email }}</span>
+                                                        <span class="text-slate-500">{{ $ticket->lead->email }}</span>
                                                     @endif
                                                 </div>
                                                 @if($ticket->lead->site_address)
-                                                    <div class="text-[10px] text-slate-400 truncate max-w-[200px]" title="{{ $ticket->lead->site_address }}">
-                                                        📍 {{ $ticket->lead->site_address }}
+                                                    <div class="text-[11px] text-slate-400 truncate max-w-[200px]" title="{{ $ticket->lead->site_address }}">
+                                                        {{ $ticket->lead->site_address }}
                                                     </div>
                                                 @endif
                                             @else
@@ -320,25 +289,21 @@
                                         </td>
                                         <td>
                                             <span class="badge-priority priority-{{ $ticket->priority }}">
-                                                @if($ticket->priority === 'critical') 🔴 @elseif($ticket->priority === 'high') 🟠 @elseif($ticket->priority === 'medium') 🟡 @else ⚪ @endif
-                                                {{ $ticket->priority }}
+                                                {{ ucfirst($ticket->priority) }}
                                             </span>
                                         </td>
                                         <td>
                                             @if($ticket->assignedTechnician)
-                                                <div class="flex items-center gap-1.5 text-xs text-slate-700">
-                                                    <div class="w-5 h-5 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-[10px]">
-                                                        {{ substr($ticket->assignedTechnician->name, 0, 1) }}
-                                                    </div>
-                                                    <span>{{ $ticket->assignedTechnician->name }}</span>
+                                                <div class="text-xs text-slate-700 dark:text-slate-300">
+                                                    {{ $ticket->assignedTechnician->name }}
                                                 </div>
                                             @else
-                                                <span class="text-xs text-amber-600 font-medium">Unassigned</span>
+                                                <span class="text-xs text-slate-400">Unassigned</span>
                                             @endif
                                         </td>
                                         <td>
                                             @if($ticket->scheduled_date)
-                                                <span class="text-xs text-slate-600">
+                                                <span class="text-xs text-slate-600 dark:text-slate-400">
                                                     {{ $ticket->scheduled_date->format('d M Y') }}
                                                 </span>
                                             @else
@@ -350,10 +315,21 @@
                                                 {{ $ticket->status_label }}
                                             </span>
                                         </td>
-                                        <td style="text-align:right">
-                                            <a href="{{ route('service-tickets.show', $ticket) }}" class="inline-flex items-center text-xs font-semibold text-indigo-600 hover:text-indigo-800">
-                                                View &rsaquo;
-                                            </a>
+                                        <td class="whitespace-nowrap text-right text-sm" style="text-align:right;">
+                                            <div class="inline-flex items-center gap-1.5 justify-end">
+                                                <a href="{{ route('service-tickets.show', $ticket) }}" class="text-blue-600 hover:underline">View</a>
+                                                <span class="text-slate-300">|</span>
+                                                <a href="{{ route('service-tickets.edit', $ticket) }}" class="text-blue-600 hover:underline">Edit</a>
+                                                @if(auth()->user()->isAdmin())
+                                                    <span class="text-slate-300">|</span>
+                                                    <form method="POST" action="{{ route('service-tickets.destroy', $ticket) }}" class="inline"
+                                                          onsubmit="return confirm('Delete service ticket {{ addslashes($ticket->ticket_no) }}?')">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="text-red-600 hover:underline cursor-pointer bg-transparent border-0 p-0 font-medium">Delete</button>
+                                                    </form>
+                                                @endif
+                                            </div>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -384,12 +360,12 @@
             <div class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm" @click="emailModalOpen = false"></div>
 
             <div class="relative min-h-screen flex items-center justify-center p-4">
-                <div class="relative bg-[#0f172a] rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-slate-700 overflow-hidden text-slate-200" @click.stop style="background-color: #0f172a;">
+                <div class="relative bg-[#0f172a] rounded-[4px] max-w-xl w-full p-6 border border-slate-700 overflow-hidden text-slate-200" @click.stop style="background-color: #0f172a;">
                     
                     <div class="flex items-center justify-between pb-4 border-b border-slate-800">
                         <div class="flex items-center gap-2.5">
                             <div class="w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-500/30 text-amber-400 flex items-center justify-center font-bold">
-                                ✉️
+                                
                             </div>
                             <div>
                                 <h3 class="text-base font-extrabold text-white font-heading">Inbound Email Support Gateway</h3>
@@ -404,7 +380,7 @@
                     <!-- Webhook Info Box -->
                     <div class="mt-4 p-3.5 rounded-xl bg-[#060913] border border-slate-800 text-xs space-y-1">
                         <div class="font-bold flex items-center gap-1.5 text-amber-400">
-                            <span>🔗 Live Inbound Webhook Endpoint:</span>
+                            <span>Live Inbound Webhook Endpoint:</span>
                         </div>
                         <code class="block font-mono bg-[#0b1120] px-3 py-2 rounded-lg border border-slate-700 text-amber-300 text-[11px] select-all">
                             POST {{ url('/api/inbound-email') }}
@@ -428,12 +404,12 @@
                                 <div>
                                     <label class="block text-sm font-semibold text-slate-300 mb-1.5">Customer Full Name *</label>
                                     <input type="text" name="customer_name" required placeholder="e.g. Ramesh Kumar" value="Ramesh Kumar"
-                                        class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
+                                        class="w-full text-xs rounded-[4px] border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
                                 </div>
                                 <div>
                                     <label class="block text-sm font-semibold text-slate-300 mb-1.5">Customer Email Address *</label>
                                     <input type="email" name="email" required placeholder="e.g. ramesh@techcorp.com" value="customer@example.com"
-                                        class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
+                                        class="w-full text-xs rounded-[4px] border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
                                 </div>
                             </div>
 
@@ -441,16 +417,16 @@
                                 <div>
                                     <label class="block text-sm font-semibold text-slate-300 mb-1.5">Phone Number (Optional)</label>
                                     <input type="tel" name="phone" placeholder="e.g. +91 98765 43210" value="+91 98765 43210"
-                                        class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
+                                        class="w-full text-xs rounded-[4px] border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
                                 </div>
                                 <div>
                                     <label class="block text-sm font-semibold text-slate-300 mb-1.5">Priority Override</label>
-                                    <select name="priority" class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
+                                    <select name="priority" class="w-full text-xs rounded-[4px] border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
                                         <option value="">Auto-Detect from Email Keywords</option>
-                                        <option value="critical">🔴 Critical / Emergency</option>
-                                        <option value="high">🟠 High</option>
-                                        <option value="medium">🟡 Medium</option>
-                                        <option value="low">🟢 Low</option>
+                                        <option value="critical">Critical / Emergency</option>
+                                        <option value="high">High</option>
+                                        <option value="medium">Medium</option>
+                                        <option value="low">Low</option>
                                     </select>
                                 </div>
                             </div>
@@ -458,20 +434,20 @@
                             <div>
                                 <label class="block text-sm font-semibold text-slate-300 mb-1.5">Email Subject *</label>
                                 <input type="text" name="subject" required placeholder="e.g. Camera 3 offline" value="Camera 3 offline and NVR beeping sound at Sector 18 site"
-                                    class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
+                                    class="w-full text-xs rounded-[4px] border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
                             </div>
 
                             <div>
                                 <label class="block text-sm font-semibold text-slate-300 mb-1.5">Email Body Description *</label>
                                 <textarea name="body" required rows="3" placeholder="Describe the fault..."
-                                    class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">Hi Support Team, Our main entrance camera #3 went black this morning and the NVR recorder has started making a continuous beeping alert sound. Please dispatch a technician urgently.</textarea>
+                                    class="w-full text-xs rounded-[4px] border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">Hi Support Team, Our main entrance camera #3 went black this morning and the NVR recorder has started making a continuous beeping alert sound. Please dispatch a technician urgently.</textarea>
                             </div>
 
                             <div class="pt-2 flex items-center justify-end gap-2">
                                 <button type="button" @click="emailModalOpen = false" class="px-4 py-2 rounded-xl border border-slate-700 text-slate-400 font-bold text-xs hover:text-white hover:bg-slate-800 transition">
                                     Cancel
                                 </button>
-                                <button type="submit" class="btn-amber">
+                                <button type="submit" class="px-4 py-2 rounded-[4px] bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs transition inline-flex items-center gap-1.5">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
                                     </svg>

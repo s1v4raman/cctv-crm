@@ -2,9 +2,7 @@
     <x-slot name="header">
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-lg font-black" style="background-color: var(--crm-accent, #2563eb); box-shadow: 0 4px 14px var(--crm-accent-shadow, rgba(37,99,235,0.3));">
-                    ⚡
-                </div>
+
                 <div>
                     <h2 class="text-2xl font-black tracking-wider text-white uppercase font-['Outfit'] flex items-center gap-2">
                         CCTV Storage & Sizing Estimator
@@ -306,7 +304,7 @@
                         {{-- Bandwidth & PoE / SMPS --}}
                         <div class="bg-[#0F172A] rounded-2xl p-4 border border-white/10 shadow-xl space-y-2">
                             <div class="flex items-center gap-2 text-xs font-bold text-white font-['Outfit'] uppercase">
-                                <span class="p-1 rounded bg-amber-500/10 text-amber-400">⚡</span>
+                                
                                 Power & Network
                             </div>
 
@@ -384,7 +382,7 @@
                 <div class="p-5 bg-[#0B1120] border-b border-white/10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
                         <h3 class="text-sm font-bold uppercase tracking-wider text-white font-['Outfit'] flex items-center gap-2">
-                            <span>📦 Itemized Bill of Materials (BOM)</span>
+                            <span>Itemized Bill of Materials (BOM)</span>
                             <span class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">Auto-Matched Catalog</span>
                         </h3>
                         <p class="text-slate-400 text-xs font-mono mt-0.5">Edit quantities, replace products, or adjust unit rates prior to generating the formal quote.</p>

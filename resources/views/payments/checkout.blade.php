@@ -6,162 +6,147 @@
     <title>Secure Online Payment | {{ config('app.name', 'CCTV Security Solutions') }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0b0f19; color: #f8fafc; }
-        .glass-panel {
-            background: rgba(17, 24, 39, 0.85);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: #f8fafc; color: #1e293b; }
+        * { box-shadow: none !important; }
         .tab-btn.active {
-            background: #4f46e5;
+            background-color: #2563eb;
             color: #ffffff;
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
         }
     </style>
 </head>
-<body class="min-h-screen py-8 px-4 flex flex-col items-center justify-center">
+<body class="min-h-screen py-8 px-4 flex flex-col items-center justify-center bg-slate-50">
 
     <div class="w-full max-w-xl">
         {{-- Brand Bar --}}
-        <div class="flex items-center justify-between mb-6">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white text-xl shadow-lg shadow-indigo-500/30">
-                    🛡️
-                </div>
-                <div>
-                    <h1 class="text-lg font-bold text-white tracking-tight">{{ config('app.name') === 'Laravel' ? 'Precision IT Systems' : config('app.name') }}</h1>
-                    <p class="text-xs text-slate-400">256-Bit SSL Encrypted Payment Gateway</p>
-                </div>
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <h1 class="text-lg font-bold text-slate-900 tracking-tight">{{ config('app.name') === 'Laravel' ? 'Precision IT Systems' : config('app.name') }}</h1>
+                <p class="text-xs text-slate-500">256-Bit SSL Encrypted Payment Gateway</p>
             </div>
-            <div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-950/80 border border-emerald-500/30 text-emerald-400 text-xs font-bold">
-                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <div class="text-emerald-700 text-xs font-bold">
                 Instant Clearance
             </div>
         </div>
 
         {{-- Main Checkout Card --}}
-        <div class="glass-panel rounded-3xl p-6 sm:p-8 relative overflow-hidden">
+        <div class="bg-white border border-slate-300 rounded-[4px] p-6 relative">
             
             {{-- Bill Summary Box --}}
-            <div class="bg-slate-900/90 rounded-2xl p-5 border border-slate-800 mb-6">
-                <div class="flex justify-between items-start mb-3">
+            <div class="bg-slate-50 rounded-[4px] p-4 border border-slate-200 mb-5">
+                <div class="flex justify-between items-start mb-2">
                     <div>
-                        <span class="text-[10px] uppercase font-extrabold tracking-wider text-indigo-400">
+                        <span class="text-xs font-semibold text-slate-500">
                             {{ $invoice ? 'Tax Invoice' : 'Security Quotation' }}
                         </span>
-                        <h2 class="text-base font-bold text-white">
+                        <h2 class="text-base font-bold text-slate-900">
                             {{ $invoice ? $invoice->invoice_no : $quotation->quotation_no }}
                         </h2>
                     </div>
-                    <span id="badge-plan-status" class="px-2.5 py-1 rounded-lg text-xs font-extrabold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                    <span id="badge-plan-status" class="text-xs font-bold text-blue-600">
                         {{ $invoice ? ucfirst($invoice->status) : 'Advance Payment' }}
                     </span>
                 </div>
 
-                <div class="text-xs text-slate-400 mb-4">
-                    Customer: <strong class="text-slate-200">{{ $lead->customer_name }}</strong> · {{ $lead->phone }}
+                <div class="text-xs text-slate-600 mb-3">
+                    Customer: <strong class="text-slate-900">{{ $lead->customer_name }}</strong> · {{ $lead->phone }}
                 </div>
 
-                <div class="grid grid-cols-2 gap-3 pt-3 border-t border-slate-800 text-xs">
+                <div class="grid grid-cols-2 gap-3 pt-3 border-t border-slate-200 text-xs">
                     <div>
                         <span class="text-slate-500">Total Project Value:</span>
-                        <div class="font-bold text-slate-200">₹{{ number_format((float)$totalAmount, 2) }}</div>
+                        <div class="font-bold text-slate-900">₹{{ number_format((float)$totalAmount, 2) }}</div>
                     </div>
                     <div class="text-right">
                         <span class="text-slate-500" id="summary-payable-label">Selected Amount:</span>
-                        <div class="text-xl font-black text-emerald-400" id="summary-payable-val">₹{{ number_format((float)$payableAmount, 2) }}</div>
+                        <div class="text-lg font-bold text-emerald-700" id="summary-payable-val">₹{{ number_format((float)$payableAmount, 2) }}</div>
                     </div>
                 </div>
             </div>
 
             {{-- Flexible Payment Plan Options (Advance vs Full Total) --}}
             <div class="mb-5">
-                <label class="block text-sm font-semibold text-slate-300 mb-1.5">
+                <label class="block text-sm font-medium text-slate-700 mb-1.5">
                     1. Choose Payment Option
                 </label>
-                <div class="grid grid-cols-2 gap-2.5 sm:gap-3">
-                    {{-- Advance Deposit Pill --}}
+                <div class="grid grid-cols-2 gap-3">
+                    {{-- Advance Deposit --}}
                     <button type="button" id="plan-btn-advance" onclick="selectPaymentPlan('advance')" 
-                            class="flex flex-col text-left p-3.5 rounded-2xl border-2 border-indigo-500 bg-indigo-500/10 transition-all cursor-pointer">
+                            class="flex flex-col text-left p-3 rounded-[4px] border-2 border-blue-600 bg-blue-50/30 transition-colors cursor-pointer">
                         <div class="flex items-center justify-between w-full mb-1">
-                            <span class="text-xs font-bold text-indigo-300">💳 Pay Advance (50%)</span>
-                            <span class="w-3.5 h-3.5 rounded-full border-2 border-indigo-400 bg-indigo-400 flex items-center justify-center text-[9px] text-slate-950 font-black">✓</span>
+                            <span class="text-xs font-bold text-blue-800">Pay Advance (50%)</span>
+                            <span class="text-xs font-bold text-blue-600">Active</span>
                         </div>
-                        <div class="text-base font-black text-white">₹{{ number_format((float)$advanceAmount, 2) }}</div>
-                        <span class="text-[10px] text-slate-400 mt-0.5">Booking deposit before work starts</span>
+                        <div class="text-base font-bold text-slate-900">₹{{ number_format((float)$advanceAmount, 2) }}</div>
+                        <span class="text-xs text-slate-500 mt-0.5">Booking deposit before work starts</span>
                     </button>
 
-                    {{-- Full Payment Pill --}}
+                    {{-- Full Payment --}}
                     <button type="button" id="plan-btn-full" onclick="selectPaymentPlan('full')" 
-                            class="flex flex-col text-left p-3.5 rounded-2xl border-2 border-slate-800 bg-slate-900/50 hover:border-slate-700 transition-all cursor-pointer">
+                            class="flex flex-col text-left p-3 rounded-[4px] border border-slate-300 bg-white hover:border-slate-400 transition-colors cursor-pointer">
                         <div class="flex items-center justify-between w-full mb-1">
-                            <span class="text-xs font-bold text-slate-300">💰 Pay Full Total (100%)</span>
-                            <span id="plan-radio-full" class="w-3.5 h-3.5 rounded-full border-2 border-slate-600 bg-transparent"></span>
+                            <span class="text-xs font-bold text-slate-700">Pay Full Total (100%)</span>
+                            <span id="plan-radio-full" class="text-xs text-slate-400 font-normal">Select</span>
                         </div>
-                        <div class="text-base font-black text-white">₹{{ number_format((float)$fullAmount, 2) }}</div>
-                        <span class="text-[10px] text-slate-400 mt-0.5">Complete project payment</span>
+                        <div class="text-base font-bold text-slate-900">₹{{ number_format((float)$fullAmount, 2) }}</div>
+                        <span class="text-xs text-slate-500 mt-0.5">Complete project payment</span>
                     </button>
                 </div>
             </div>
 
-            {{-- Custom Amount Input (Collapsible/Editable) --}}
-            <div class="mb-6 bg-slate-900/40 p-3 rounded-2xl border border-slate-800/80">
+            {{-- Custom Amount Input --}}
+            <div class="mb-5 bg-slate-50 p-3 rounded-[4px] border border-slate-200">
                 <div class="flex items-center justify-between mb-1.5">
-                    <label class="text-sm font-semibold text-slate-300">
-                        Amount to Pay (₹):
+                    <label class="text-sm font-medium text-slate-700">
+                        Amount to Pay (₹)
                     </label>
-                    <span class="text-[10px] text-slate-500">Max: ₹{{ number_format((float)$fullAmount, 2) }}</span>
+                    <span class="text-xs text-slate-500">Max: ₹{{ number_format((float)$fullAmount, 2) }}</span>
                 </div>
                 <div class="relative">
-                    <span class="absolute left-4 top-2.5 text-base font-bold text-slate-400">₹</span>
+                    <span class="absolute left-3 top-2 text-sm font-bold text-slate-500">₹</span>
                     <input type="number" step="0.01" min="1" max="{{ $fullAmount }}" id="pay-amount-input" value="{{ $payableAmount }}"
-                           class="w-full pl-8 pr-24 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-base font-black text-white focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30">
-                    <button type="button" onclick="selectPaymentPlan('full')" class="absolute right-2 top-1.5 px-2.5 py-1 rounded-lg bg-indigo-950 text-indigo-300 hover:bg-indigo-900 text-[11px] font-bold border border-indigo-700/50">
+                           class="w-full pl-7 pr-20 py-2 bg-white border border-slate-300 rounded-[4px] text-sm font-bold text-slate-900 focus:outline-none focus:border-blue-600">
+                    <button type="button" onclick="selectPaymentPlan('full')" class="absolute right-1.5 top-1 px-2.5 py-1 rounded-[4px] bg-slate-100 text-slate-700 hover:bg-slate-200 text-xs font-medium border border-slate-300">
                         Set Full
                     </button>
                 </div>
             </div>
 
             {{-- 2. Choose Payment Method Tabs --}}
-            <div class="mb-3">
-                <label class="block text-sm font-semibold text-slate-300 mb-1.5">
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-slate-700 mb-1.5">
                     2. Select Payment Method
                 </label>
-                <div class="grid grid-cols-3 gap-1.5 p-1 bg-slate-900/90 rounded-xl border border-slate-800">
-                    <button type="button" onclick="switchPaymentTab('razorpay', this)" class="tab-btn active py-2.5 px-2 text-[11px] font-bold rounded-lg transition-all flex items-center justify-center gap-1 text-center">
-                        ⚡ Online (Cards/UPI)
+                <div class="grid grid-cols-3 gap-1 p-1 bg-slate-100 rounded-[4px] border border-slate-200">
+                    <button type="button" onclick="switchPaymentTab('razorpay', this)" class="tab-btn active py-2 px-2 text-xs font-medium rounded-[4px] transition-colors text-center">
+                        Online (Cards/UPI)
                     </button>
-                    <button type="button" onclick="switchPaymentTab('upi', this)" class="tab-btn py-2.5 px-2 text-[11px] font-bold text-slate-400 hover:text-white rounded-lg transition-all flex items-center justify-center gap-1 text-center">
-                        📱 Direct UPI QR Code
+                    <button type="button" onclick="switchPaymentTab('upi', this)" class="tab-btn py-2 px-2 text-xs font-medium text-slate-600 hover:text-slate-900 rounded-[4px] transition-colors text-center">
+                        Direct UPI QR Code
                     </button>
-                    <button type="button" onclick="switchPaymentTab('cash', this)" class="tab-btn py-2.5 px-2 text-[11px] font-bold text-slate-400 hover:text-white rounded-lg transition-all flex items-center justify-center gap-1 text-center">
-                        💵 Pay by Cash
+                    <button type="button" onclick="switchPaymentTab('cash', this)" class="tab-btn py-2 px-2 text-xs font-medium text-slate-600 hover:text-slate-900 rounded-[4px] transition-colors text-center">
+                        Pay by Cash
                     </button>
                 </div>
             </div>
 
             {{-- Tab 1: Razorpay Gateway Checkout --}}
-            <div id="tab-razorpay" class="payment-tab-content pt-2">
-                <div class="bg-indigo-950/40 border border-indigo-800/40 rounded-2xl p-3.5 mb-4 text-xs text-indigo-200 flex items-start gap-2.5">
-                    <span class="text-base">⚡</span>
-                    <div>
-                        <strong class="text-white">Instant Payment Confirmation:</strong>
-                        Google Pay, PhonePe, Paytm, all Credit/Debit Cards, NetBanking (50+ banks) & Wallets.
-                    </div>
+            <div id="tab-razorpay" class="payment-tab-content pt-1">
+                <div class="bg-blue-50 border border-blue-200 rounded-[4px] p-3 mb-4 text-xs text-blue-900">
+                    <strong class="font-bold">Instant Payment Confirmation:</strong>
+                    Google Pay, PhonePe, Paytm, all Credit/Debit Cards, NetBanking &amp; Wallets.
                 </div>
 
-                <button type="button" id="razorpay-pay-btn" onclick="initiateRazorpayPayment()"
-                        class="w-full py-3.5 px-5 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white font-extrabold text-sm rounded-2xl shadow-xl shadow-indigo-600/30 flex items-center justify-center gap-2 transition-all transform active:scale-95">
-                    <span id="btn-spinner" class="hidden animate-spin">⏳</span>
-                    <span id="razorpay-btn-label">Pay ₹{{ number_format((float)$payableAmount, 2) }} Online Now</span>
-                    <span class="text-indigo-200">→</span>
-                </button>
+                <div class="flex justify-end">
+                    <button type="button" id="razorpay-pay-btn" onclick="initiateRazorpayPayment()"
+                            class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-[4px] flex items-center justify-center gap-2 transition-colors cursor-pointer">
+                        <span id="btn-spinner" class="hidden">...</span>
+                        <span id="razorpay-btn-label">Pay ₹{{ number_format((float)$payableAmount, 2) }} Online Now</span>
+                    </button>
+                </div>
 
-                <div class="mt-3 flex items-center justify-center gap-3 text-slate-500 text-[11px]">
-                    <span>🔒 256-Bit SSL</span>
+                <div class="mt-4 flex items-center justify-center gap-3 text-slate-500 text-xs">
+                    <span>256-Bit SSL</span>
                     <span>•</span>
                     <span>RBI Compliant</span>
                     <span>•</span>
@@ -170,33 +155,33 @@
             </div>
 
             {{-- Tab 2: Dynamic UPI QR Code & Intent Apps --}}
-            <div id="tab-upi" class="payment-tab-content hidden pt-2">
-                <div class="text-center bg-slate-900/90 rounded-2xl p-5 border border-slate-800 mb-4">
-                    <p class="text-xs text-slate-400 mb-2">Scan with Google Pay, PhonePe, Paytm, or BHIM</p>
+            <div id="tab-upi" class="payment-tab-content hidden pt-1">
+                <div class="text-center bg-slate-50 rounded-[4px] p-4 border border-slate-200 mb-4">
+                    <p class="text-xs text-slate-600 mb-2">Scan with Google Pay, PhonePe, Paytm, or BHIM</p>
                     
-                    <div class="inline-block p-2.5 bg-white rounded-2xl shadow-lg mb-2.5">
+                    <div class="inline-block p-2 bg-white rounded-[4px] border border-slate-300 mb-2.5">
                         <img id="upi-qr-image" src="{{ $upiPayload['qr_image_url'] }}" alt="UPI Payment QR Code" class="w-44 h-44 mx-auto">
                     </div>
 
-                    <div class="text-xs font-mono text-slate-400 bg-slate-950 py-1.5 px-3 rounded-lg inline-flex items-center gap-2 border border-slate-800 mb-3">
+                    <div class="text-xs font-mono text-slate-700 bg-white py-1 px-3 rounded-[4px] inline-flex items-center gap-2 border border-slate-300 mb-3">
                         <span id="vpa-display">{{ $upiPayload['vpa'] }}</span>
-                        <button type="button" onclick="copyVpa()" class="text-indigo-400 hover:text-indigo-300 font-bold">Copy</button>
+                        <button type="button" onclick="copyVpa()" class="text-blue-600 hover:underline font-bold">Copy</button>
                     </div>
 
                     {{-- Deep Link for Mobile Devices --}}
-                    <div class="pt-3 border-t border-slate-800 flex flex-wrap justify-center gap-2">
-                        <a id="upi-intent-link" href="{{ $upiPayload['upi_url'] }}" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold inline-flex items-center gap-1.5 shadow-md">
-                            📱 Open UPI App Directly
+                    <div class="pt-3 border-t border-slate-200 flex flex-wrap justify-center gap-2">
+                        <a id="upi-intent-link" href="{{ $upiPayload['upi_url'] }}" class="px-4 py-2 rounded-[4px] bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold inline-flex items-center gap-1.5">
+                            Open UPI App Directly
                         </a>
                     </div>
                 </div>
 
                 {{-- Submit UTR / Reference after manual UPI Scan --}}
-                <div class="bg-slate-900/60 rounded-2xl p-4 border border-slate-800">
-                    <h4 class="text-xs font-bold text-slate-300 mb-1.5">Paid via UPI Scanner? Submit UTR for instant verification:</h4>
+                <div class="bg-slate-50 rounded-[4px] p-3 border border-slate-200">
+                    <h4 class="text-xs font-bold text-slate-700 mb-1.5">Paid via UPI Scanner? Submit UTR for instant verification:</h4>
                     <div class="flex gap-2">
-                        <input type="text" id="manual-utr-input" placeholder="e.g. 12-digit UTR: 421987654321" class="flex-1 px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white">
-                        <button type="button" onclick="submitManualUtr()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl font-bold">
+                        <input type="text" id="manual-utr-input" placeholder="e.g. 12-digit UTR: 421987654321" class="flex-1 px-3 py-1.5 bg-white border border-slate-300 rounded-[4px] text-xs text-slate-900 focus:outline-none focus:border-blue-600">
+                        <button type="button" onclick="submitManualUtr()" class="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-[4px]">
                             Verify
                         </button>
                     </div>
@@ -204,50 +189,51 @@
             </div>
 
             {{-- Tab 3: Pay by Cash on Site / Installation Handover --}}
-            <div id="tab-cash" class="payment-tab-content hidden pt-2">
-                <div class="bg-emerald-950/40 border border-emerald-800/40 rounded-2xl p-4 mb-4 text-xs text-emerald-200">
-                    <div class="flex items-center gap-2 text-white font-bold text-sm mb-1.5">
-                        <span>💵</span>
-                        <span>Cash Payment on Site / Handover</span>
+            <div id="tab-cash" class="payment-tab-content hidden pt-1">
+                <div class="bg-slate-50 border border-slate-200 rounded-[4px] p-4 mb-4 text-xs text-slate-700">
+                    <div class="text-slate-900 font-bold text-sm mb-1.5">
+                        Cash Payment on Site / Handover
                     </div>
-                    <p class="leading-relaxed text-emerald-100/90 mb-3">
-                        No online payment required right now. You can pay in <strong>Cash directly to our certified technician / installation engineer</strong> upon arrival at your site or after the CCTV system setup is complete.
+                    <p class="leading-relaxed text-slate-600 mb-3">
+                        No online payment required right now. You can pay in cash directly to our certified technician upon arrival at your site or after the CCTV system setup is complete.
                     </p>
-                    <div class="bg-slate-950/70 p-3 rounded-xl border border-emerald-900/50 space-y-1 text-slate-300 text-xs">
-                        <div class="flex justify-between"><span class="text-slate-400">Site Location:</span><span class="font-bold text-slate-200 text-right">{{ $lead->site_address ?: 'Customer Address' }}</span></div>
-                        <div class="flex justify-between"><span class="text-slate-400">Cash Amount:</span><strong class="text-emerald-400" id="cash-amount-display">₹{{ number_format((float)$payableAmount, 2) }}</strong></div>
-                        <div class="flex justify-between"><span class="text-slate-400">Receipt:</span><span class="text-slate-200">Official printed & digital receipt given on site</span></div>
+                    <div class="bg-white p-3 rounded-[4px] border border-slate-200 space-y-1 text-slate-700 text-xs">
+                        <div class="flex justify-between"><span class="text-slate-500">Site Location:</span><span class="font-bold text-slate-900 text-right">{{ $lead->site_address ?: 'Customer Address' }}</span></div>
+                        <div class="flex justify-between"><span class="text-slate-500">Cash Amount:</span><strong class="text-slate-900" id="cash-amount-display">₹{{ number_format((float)$payableAmount, 2) }}</strong></div>
+                        <div class="flex justify-between"><span class="text-slate-500">Receipt:</span><span class="text-slate-900">Official printed &amp; digital receipt given on site</span></div>
                     </div>
                 </div>
 
-                <button type="button" id="cash-confirm-btn" onclick="submitCashPaymentChoice()"
-                        class="w-full py-3.5 px-5 bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 text-white font-black text-sm rounded-2xl shadow-xl shadow-emerald-600/25 flex items-center justify-center gap-2 transition-all transform active:scale-95">
-                    <span id="cash-btn-spinner" class="hidden animate-spin">⏳</span>
-                    <span id="cash-btn-label">✓ Confirm Booking with Cash on Installation</span>
-                </button>
+                <div class="flex justify-end">
+                    <button type="button" id="cash-confirm-btn" onclick="submitCashPaymentChoice()"
+                            class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-[4px] flex items-center justify-center gap-2 transition-colors cursor-pointer">
+                        <span id="cash-btn-spinner" class="hidden">...</span>
+                        <span id="cash-btn-label">Confirm Booking with Cash on Installation</span>
+                    </button>
+                </div>
             </div>
 
-            {{-- Success Modal / Card (Hidden by default) --}}
-            <div id="payment-success-card" class="hidden absolute inset-0 bg-slate-950/98 p-8 flex flex-col items-center justify-center text-center z-20">
-                <div class="w-16 h-16 rounded-full bg-emerald-500/20 border-2 border-emerald-500 flex items-center justify-center text-3xl mb-4 text-emerald-400">
-                    ✓
+            {{-- Success Card (Hidden by default) --}}
+            <div id="payment-success-card" class="hidden absolute inset-0 bg-white p-8 flex flex-col items-center justify-center text-center z-20 rounded-[4px]">
+                <div class="text-emerald-600 font-bold text-2xl mb-2">
+                    Payment Successful
                 </div>
-                <h3 class="text-xl font-black text-white mb-1" id="success-heading">Payment Successful!</h3>
-                <p class="text-xs text-slate-400 mb-4" id="success-receipt-info">Receipt generated & dispatched via WhatsApp & Email.</p>
+                <h3 class="text-base font-bold text-slate-900 mb-1" id="success-heading">Payment Confirmed</h3>
+                <p class="text-xs text-slate-500 mb-4" id="success-receipt-info">Receipt generated and dispatched via WhatsApp and Email.</p>
 
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 w-full max-w-sm mb-6 text-left text-xs">
-                    <div class="flex justify-between py-1 border-b border-slate-800"><span class="text-slate-500">Receipt / Ref No:</span><strong class="text-slate-200" id="success-receipt-no">-</strong></div>
-                    <div class="flex justify-between py-1 border-b border-slate-800"><span class="text-slate-500">Amount:</span><strong class="text-emerald-400 font-bold" id="success-amount">-</strong></div>
-                    <div class="flex justify-between py-1 border-b border-slate-800"><span class="text-slate-500">Payment Mode:</span><strong class="text-indigo-300 font-bold" id="success-method">-</strong></div>
-                    <div class="flex justify-between py-1"><span class="text-slate-500">Status:</span><code class="text-emerald-300 text-[10px] font-bold" id="success-txn-id">Confirmed</code></div>
+                <div class="bg-slate-50 border border-slate-200 rounded-[4px] p-4 w-full max-w-sm mb-6 text-left text-xs">
+                    <div class="flex justify-between py-1 border-b border-slate-200"><span class="text-slate-500">Receipt / Ref No:</span><strong class="text-slate-900" id="success-receipt-no">-</strong></div>
+                    <div class="flex justify-between py-1 border-b border-slate-200"><span class="text-slate-500">Amount:</span><strong class="text-slate-900 font-bold" id="success-amount">-</strong></div>
+                    <div class="flex justify-between py-1 border-b border-slate-200"><span class="text-slate-500">Payment Mode:</span><strong class="text-slate-900 font-bold" id="success-method">-</strong></div>
+                    <div class="flex justify-between py-1"><span class="text-slate-500">Status:</span><span class="text-emerald-700 font-bold" id="success-txn-id">Confirmed</span></div>
                 </div>
 
                 <div class="flex flex-col sm:flex-row gap-3 w-full max-w-sm">
-                    <a id="download-receipt-link" href="#" target="_blank" class="flex-1 py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs text-center shadow-lg shadow-emerald-600/30">
-                        📄 View Receipt / Acknowledgement
+                    <a id="download-receipt-link" href="#" target="_blank" class="flex-1 py-2 px-4 rounded-[4px] bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs text-center">
+                        View Receipt
                     </a>
                     @if(auth()->check() && auth()->user()->isCustomer())
-                    <a href="{{ route('portal.dashboard') }}" class="py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs text-center">
+                    <a href="{{ route('portal.dashboard') }}" class="py-2 px-4 rounded-[4px] bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 font-bold text-xs text-center">
                         Back to Portal
                     </a>
                     @endif
@@ -257,7 +243,7 @@
         </div>
 
         {{-- Footer --}}
-        <div class="mt-6 text-center text-xs text-slate-500">
+        <div class="mt-4 text-center text-xs text-slate-500">
             Powered by {{ config('app.name', 'CCTV CRM') }} Secure Billing Gateway · Support: billing@precisionit.com
         </div>
     </div>
@@ -283,23 +269,32 @@
 
             if (plan === 'advance') {
                 document.getElementById('pay-amount-input').value = advanceAmount;
-                btnAdv.className = "flex flex-col text-left p-3.5 rounded-2xl border-2 border-indigo-500 bg-indigo-500/10 transition-all cursor-pointer";
-                btnFull.className = "flex flex-col text-left p-3.5 rounded-2xl border-2 border-slate-800 bg-slate-900/50 hover:border-slate-700 transition-all cursor-pointer";
-                radioFull.className = "w-3.5 h-3.5 rounded-full border-2 border-slate-600 bg-transparent";
+                btnAdv.className = "flex flex-col text-left p-3 rounded-[4px] border-2 border-blue-600 bg-blue-50/30 transition-colors cursor-pointer";
+                btnFull.className = "flex flex-col text-left p-3 rounded-[4px] border border-slate-300 bg-white hover:border-slate-400 transition-colors cursor-pointer";
+                radioFull.className = "text-xs text-slate-400 font-normal";
+                radioFull.innerText = "Select";
             } else {
                 document.getElementById('pay-amount-input').value = fullAmount;
-                btnFull.className = "flex flex-col text-left p-3.5 rounded-2xl border-2 border-emerald-500 bg-emerald-500/10 transition-all cursor-pointer";
-                btnAdv.className = "flex flex-col text-left p-3.5 rounded-2xl border-2 border-slate-800 bg-slate-900/50 hover:border-slate-700 transition-all cursor-pointer";
-                radioFull.className = "w-3.5 h-3.5 rounded-full border-2 border-emerald-400 bg-emerald-400 flex items-center justify-center text-[9px] text-slate-950 font-black";
-                radioFull.innerText = '✓';
+                btnFull.className = "flex flex-col text-left p-3 rounded-[4px] border-2 border-blue-600 bg-blue-50/30 transition-colors cursor-pointer";
+                btnAdv.className = "flex flex-col text-left p-3 rounded-[4px] border border-slate-300 bg-white hover:border-slate-400 transition-colors cursor-pointer";
+                radioFull.className = "text-xs font-bold text-blue-600";
+                radioFull.innerText = 'Active';
             }
             updatePayDisplays();
         }
 
         function switchPaymentTab(tab, btn) {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => {
+                b.classList.remove('active');
+                b.classList.remove('bg-blue-600');
+                b.classList.remove('text-white');
+                b.classList.add('text-slate-600');
+            });
             document.querySelectorAll('.payment-tab-content').forEach(c => c.classList.add('hidden'));
             btn.classList.add('active');
+            btn.classList.add('bg-blue-600');
+            btn.classList.add('text-white');
+            btn.classList.remove('text-slate-600');
             document.getElementById('tab-' + tab).classList.remove('hidden');
         }
 
@@ -342,7 +337,6 @@
             spinner.classList.remove('hidden');
 
             try {
-                // 1. Create order on server
                 const orderRes = await fetch('{{ route('payment.create-order') }}', {
                     method: 'POST',
                     headers: {
@@ -362,7 +356,6 @@
                     throw new Error(orderData.message || 'Failed to initialize payment session.');
                 }
 
-                // 2. Open Razorpay Checkout Modal
                 const options = {
                     key: orderData.key_id,
                     amount: orderData.amount_paise,
@@ -380,7 +373,7 @@
                         contact: customerPhone
                     },
                     theme: {
-                        color: '#4f46e5'
+                        color: '#2563eb'
                     },
                     modal: {
                         ondismiss: function() {
@@ -390,7 +383,6 @@
                     }
                 };
 
-                // If sandbox demo order, provide immediate mock payment callback
                 if (orderData.is_mock) {
                     const simulateSuccess = confirm(`[DEMO / TEST GATEWAY MODE]\n\nSimulate successful online payment of ₹${amount} for order ${orderData.order_id}?`);
                     if (simulateSuccess) {
@@ -525,14 +517,14 @@
 
         function showPaymentSuccess(data, method) {
             const isCash = (method === 'cash');
-            document.getElementById('success-heading').innerText = isCash ? 'Booking Confirmed (Cash on Site)!' : 'Payment Successful!';
+            document.getElementById('success-heading').innerText = isCash ? 'Booking Confirmed (Cash on Site)' : 'Payment Successful';
             document.getElementById('success-receipt-info').innerText = isCash 
-                ? 'Your site installation has been scheduled. Cash will be collected by our engineer on site.' 
-                : 'Receipt generated & dispatched via WhatsApp & Email.';
+                ? 'Your site installation has been scheduled. Cash will be collected by our technician on site.' 
+                : 'Receipt generated and dispatched via WhatsApp and Email.';
             document.getElementById('success-receipt-no').innerText = data.payment.receipt_no;
             document.getElementById('success-amount').innerText = '₹' + parseFloat(data.payment.amount).toFixed(2);
             document.getElementById('success-method').innerText = isCash ? 'Cash on Site / Installation' : (data.payment.method === 'upi' ? 'Direct UPI Transfer' : 'Online Razorpay');
-            document.getElementById('success-txn-id').innerText = data.payment.reference_no || data.payment.gateway_payment_id || (isCash ? 'Pending Site Collection' : 'Completed');
+            document.getElementById('success-txn-id').innerText = data.payment.reference_no || data.payment.gateway_payment_id || (isCash ? 'Pending Site Collection' : 'Confirmed');
             document.getElementById('download-receipt-link').href = `/payments/${data.payment.id}/receipt`;
             document.getElementById('payment-success-card').classList.remove('hidden');
         }

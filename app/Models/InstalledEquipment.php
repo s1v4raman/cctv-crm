@@ -6,6 +6,11 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property \Carbon\Carbon|null $installation_date
+ * @property \Carbon\Carbon|null $manufacturer_warranty_expiry
+ * @property \Carbon\Carbon|null $service_warranty_expiry
+ */
 class InstalledEquipment extends Model
 {
     protected $table = 'installed_equipment';
@@ -64,7 +69,7 @@ class InstalledEquipment extends Model
         }
 
         $now = Carbon::now()->startOfDay();
-        $expiry = $this->manufacturer_warranty_expiry->startOfDay();
+        $expiry = Carbon::parse($this->manufacturer_warranty_expiry)->startOfDay();
 
         if ($expiry->isPast()) {
             return 'expired';
@@ -87,7 +92,7 @@ class InstalledEquipment extends Model
         }
 
         $now = Carbon::now()->startOfDay();
-        $expiry = $this->service_warranty_expiry->startOfDay();
+        $expiry = Carbon::parse($this->service_warranty_expiry)->startOfDay();
 
         if ($expiry->isPast()) {
             return 'expired';
@@ -106,7 +111,7 @@ class InstalledEquipment extends Model
             return null;
         }
 
-        return (int) Carbon::now()->startOfDay()->diffInDays($this->manufacturer_warranty_expiry->startOfDay(), false);
+        return (int) Carbon::now()->startOfDay()->diffInDays(Carbon::parse($this->manufacturer_warranty_expiry)->startOfDay(), false);
     }
 
     public function getServiceDaysRemainingAttribute(): ?int
@@ -115,6 +120,6 @@ class InstalledEquipment extends Model
             return null;
         }
 
-        return (int) Carbon::now()->startOfDay()->diffInDays($this->service_warranty_expiry->startOfDay(), false);
+        return (int) Carbon::now()->startOfDay()->diffInDays(Carbon::parse($this->service_warranty_expiry)->startOfDay(), false);
     }
 }

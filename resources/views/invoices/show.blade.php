@@ -159,13 +159,10 @@
                 <div class="bg-gradient-to-r from-indigo-950/80 via-[#0F172A] to-sky-950/80 border border-indigo-500/30 rounded-2xl p-6 shadow-xl mb-6">
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div class="flex items-start gap-4">
-                            <div class="w-12 h-12 rounded-2xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-2xl shrink-0 text-amber-400">
-                                ⚡
-                            </div>
                             <div>
                                 <div class="flex items-center gap-2">
-                                    <h3 class="text-base font-extrabold text-white font-['Outfit']">Live Online Payment & UPI Gateway</h3>
-                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                    <h3 class="text-base font-bold text-white">Live Online Payment &amp; UPI Gateway</h3>
+                                    <span class="text-xs font-mono font-bold text-emerald-400">
                                         Razorpay + Dynamic UPI
                                     </span>
                                 </div>
@@ -174,21 +171,21 @@
                                 </p>
                             </div>
                         </div>
-                        <div class="flex flex-wrap items-center gap-2.5">
+                        <div class="flex flex-wrap items-center gap-2">
                             <a href="{{ route('payment.checkout.invoice', $invoice) }}" target="_blank"
-                               class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs inline-flex items-center gap-2 shadow-lg shadow-amber-500/20 transition">
-                                <span>💳 Customer Checkout</span>
+                               class="px-4 py-2 rounded-[4px] bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs inline-flex items-center gap-1.5 transition-colors">
+                                <span>Customer Checkout</span>
                                 <span>↗</span>
                             </a>
                             <button type="button" onclick="navigator.clipboard.writeText('{{ route('payment.checkout.invoice', $invoice) }}'); alert('Payment link copied: {{ route('payment.checkout.invoice', $invoice) }}');"
-                                    class="px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs border border-slate-700 inline-flex items-center gap-1.5 transition">
-                                📋 Copy Link
+                                    class="px-3 py-2 rounded-[4px] bg-slate-800 hover:bg-slate-700 text-white font-medium text-xs border border-slate-700 inline-flex items-center gap-1 transition-colors">
+                                Copy Link
                             </button>
                             @if($invoice->quotation->lead->phone)
-                                <a href="https://api.whatsapp.com/send?phone={{ $invoice->quotation->getWhatsAppPhone() }}&text={{ urlencode("Hello " . $invoice->quotation->lead->customer_name . ",\n\nPlease find your secure online payment link for Tax Invoice *" . $invoice->invoice_no . "* (Balance Due: ₹" . number_format($invoice->balanceDue(), 2) . "):\n\n💳 Pay Online via Razorpay / UPI:\n" . route('payment.checkout.invoice', $invoice) . "\n\nThank you!") }}"
+                                <a href="https://api.whatsapp.com/send?phone={{ $invoice->quotation->getWhatsAppPhone() }}&text={{ urlencode("Hello " . $invoice->quotation->lead->customer_name . ",\n\nPlease find your secure online payment link for Tax Invoice *" . $invoice->invoice_no . "* (Balance Due: ₹" . number_format($invoice->balanceDue(), 2) . "):\n\nPay Online via Razorpay / UPI:\n" . route('payment.checkout.invoice', $invoice) . "\n\nThank you!") }}"
                                    target="_blank"
-                                   class="px-3.5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs inline-flex items-center gap-1.5 shadow-md transition">
-                                    💬 WhatsApp
+                                   class="px-3 py-2 rounded-[4px] bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs inline-flex items-center gap-1 transition-colors">
+                                    WhatsApp
                                 </a>
                             @endif
                         </div>
@@ -236,21 +233,21 @@
                                     <td class="py-3.5 px-6 text-right">
                                         <div class="flex items-center justify-end gap-2">
                                             <a href="{{ route('payments.receipt.pdf', $payment) }}" target="_blank"
-                                               class="px-2.5 py-1 rounded-lg bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 text-xs font-bold border border-sky-500/30 inline-flex items-center gap-1 transition">
-                                                📄 Receipt PDF
+                                               class="px-2.5 py-1 rounded-[4px] bg-slate-100 hover:bg-slate-200 text-blue-600 text-xs font-bold border border-slate-300 inline-flex items-center gap-1 transition-colors">
+                                                Receipt PDF
                                             </a>
                                             <form method="POST" action="{{ route('payments.destroy', $payment) }}"
                                                   onsubmit="return confirm('Are you sure you want to remove this payment entry of ₹{{ number_format($payment->amount, 2) }}?');">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="text-rose-400 hover:text-rose-300 font-semibold text-[11px] underline">Remove</button>
+                                                <button type="submit" class="text-rose-600 hover:underline font-medium text-xs">Remove</button>
                                             </form>
                                         </div>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="text-center py-8 text-slate-500 text-xs font-mono">
+                                    <td colspan="7" class="text-center py-6 text-slate-500 text-xs font-mono">
                                         No payment transactions recorded for this invoice yet.
                                     </td>
                                 </tr>
@@ -262,33 +259,33 @@
                 {{-- Record Payment Form --}}
                 @if ($invoice->balanceDue() > 0)
                     <div class="bg-[#0B1120] border-t border-white/5 p-6">
-                        <h4 class="text-sm font-bold text-white mb-4 flex items-center gap-2 font-['Outfit'] uppercase">
-                            <span>💳</span> Record New Payment Transaction
+                        <h4 class="text-sm font-bold text-white mb-4 flex items-center gap-2 uppercase">
+                            Record New Payment Transaction
                         </h4>
                         <form method="POST" action="{{ route('payments.store', $invoice) }}">
                             @csrf
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                                 <div>
                                     <label class="block text-sm font-semibold text-slate-300 mb-1.5">Payment Amount (₹) <span class="text-amber-400">*</span></label>
-                                    <input type="number" name="amount" min="0.01" step="0.01" max="{{ $invoice->balanceDue() }}" value="{{ old('amount', $invoice->balanceDue()) }}" required class="w-full bg-[#060913] border border-slate-700 rounded-xl p-2.5 text-xs text-white font-mono font-bold focus:border-amber-400 focus:outline-none">
+                                    <input type="number" name="amount" min="0.01" step="0.01" max="{{ $invoice->balanceDue() }}" value="{{ old('amount', $invoice->balanceDue()) }}" required class="w-full bg-[#060913] border border-slate-700 rounded-[4px] p-2.5 text-xs text-white font-mono font-bold focus:border-blue-600 focus:outline-none">
                                     @error('amount') <div class="text-xs text-rose-400 mt-1 font-semibold">{{ $message }}</div> @enderror
                                 </div>
                                 <div>
                                     <label class="block text-sm font-semibold text-slate-300 mb-1.5">Date Paid <span class="text-amber-400">*</span></label>
-                                    <input type="date" name="paid_on" value="{{ old('paid_on', now()->format('Y-m-d')) }}" required class="w-full bg-[#060913] border border-slate-700 rounded-xl p-2.5 text-xs text-white font-mono focus:border-amber-400 focus:outline-none">
+                                    <input type="date" name="paid_on" value="{{ old('paid_on', now()->format('Y-m-d')) }}" required class="w-full bg-[#060913] border border-slate-700 rounded-[4px] p-2.5 text-xs text-white font-mono focus:border-blue-600 focus:outline-none">
                                     @error('paid_on') <div class="text-xs text-rose-400 mt-1 font-semibold">{{ $message }}</div> @enderror
                                 </div>
                             </div>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                                 <div>
                                     <label class="block text-sm font-semibold text-slate-300 mb-1.5">Payment Method <span class="text-amber-400">*</span></label>
-                                    <select name="method" class="w-full bg-[#060913] border border-slate-700 rounded-xl p-2.5 text-xs text-white focus:border-amber-400 focus:outline-none" required>
-                                        <option value="cash" @selected(old('method') === 'cash')>💵 Cash</option>
-                                        <option value="upi" @selected(old('method') === 'upi')>📱 UPI (GPay / PhonePe / Paytm)</option>
-                                        <option value="razorpay" @selected(old('method') === 'razorpay')>⚡ Razorpay Online</option>
-                                        <option value="bank_transfer" @selected(old('method') === 'bank_transfer')>🏦 Bank Transfer / NEFT / IMPS</option>
-                                        <option value="card" @selected(old('method') === 'card')>💳 Credit / Debit Card</option>
-                                        <option value="cheque" @selected(old('method') === 'cheque')>📝 Cheque</option>
+                                    <select name="method" class="w-full bg-[#060913] border border-slate-700 rounded-[4px] p-2.5 text-xs text-white focus:border-blue-600 focus:outline-none" required>
+                                        <option value="cash" @selected(old('method') === 'cash')>Cash</option>
+                                        <option value="upi" @selected(old('method') === 'upi')>UPI (GPay / PhonePe / Paytm)</option>
+                                        <option value="razorpay" @selected(old('method') === 'razorpay')>Razorpay Online</option>
+                                        <option value="bank_transfer" @selected(old('method') === 'bank_transfer')>Bank Transfer / NEFT / IMPS</option>
+                                        <option value="card" @selected(old('method') === 'card')>Credit / Debit Card</option>
+                                        <option value="cheque" @selected(old('method') === 'cheque')>Cheque</option>
                                         <option value="other" @selected(old('method') === 'other')>Other</option>
                                     </select>
                                     @error('method') <div class="text-xs text-rose-400 mt-1 font-semibold">{{ $message }}</div> @enderror

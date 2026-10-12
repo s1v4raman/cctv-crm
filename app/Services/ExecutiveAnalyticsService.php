@@ -117,6 +117,7 @@ class ExecutiveAnalyticsService
 
         $today = Carbon::today();
         foreach ($allInvoices as $inv) {
+            /** @var \App\Models\Invoice $inv */
             $due = $inv->balanceDue();
             $totalReceivables += $due;
 

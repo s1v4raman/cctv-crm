@@ -23,7 +23,9 @@ class DashboardController extends Controller
             ->whereDate('date', now()->toDateString())
             ->first() : null;
 
-        return view('dashboard', compact('isAdmin', 'myAttendanceToday'));
+        $totalLeads = Lead::count();
+
+        return view('dashboard', compact('isAdmin', 'myAttendanceToday', 'totalLeads'));
     }
 
     public function data(): JsonResponse
@@ -151,8 +153,17 @@ class DashboardController extends Controller
                 ->sum('total'),
             'revenue_this_month' => (float) Quotation::query()
                 ->where('status', 'accepted')
-                ->whereMonth('accepted_at', $now->month)
-                ->whereYear('accepted_at', $now->year)
+                ->where(function ($q) use ($now) {
+                    $q->where(function ($sq) use ($now) {
+                        $sq->whereNotNull('accepted_at')
+                            ->whereMonth('accepted_at', $now->month)
+                            ->whereYear('accepted_at', $now->year);
+                    })->orWhere(function ($sq) use ($now) {
+                        $sq->whereNull('accepted_at')
+                            ->whereMonth('created_at', $now->month)
+                            ->whereYear('created_at', $now->year);
+                    });
+                })
                 ->sum('total'),
             'draft_quotations' => Quotation::where('status', 'draft')->count(),
             'sent_quotations' => Quotation::where('status', 'sent')->count(),
@@ -216,8 +227,17 @@ class DashboardController extends Controller
         $revenueTrend = $months->map(function ($month) {
             return (float) Quotation::query()
                 ->where('status', 'accepted')
-                ->whereMonth('accepted_at', $month->month)
-                ->whereYear('accepted_at', $month->year)
+                ->where(function ($q) use ($month) {
+                    $q->where(function ($sq) use ($month) {
+                        $sq->whereNotNull('accepted_at')
+                            ->whereMonth('accepted_at', $month->month)
+                            ->whereYear('accepted_at', $month->year);
+                    })->orWhere(function ($sq) use ($month) {
+                        $sq->whereNull('accepted_at')
+                            ->whereMonth('created_at', $month->month)
+                            ->whereYear('created_at', $month->year);
+                    });
+                })
                 ->sum('total');
         });
 

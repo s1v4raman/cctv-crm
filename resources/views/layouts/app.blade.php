@@ -1,5 +1,10 @@
+@php
+    $cookieMode = request()->cookie('crm_mode');
+    $effectiveMode = $cookieMode ?: (auth()->check() ? auth()->user()->theme_mode : 'auto');
+    $isDarkServer = in_array($effectiveMode, ['night', 'dark']);
+@endphp
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-[#f8fafc]">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-[#f5f5f5] {{ $isDarkServer ? 'dark bg-[#060913]' : '' }}">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,15 +12,10 @@
 
         <title>{{ config('app.name', 'Precision IT Systems CRM') }} | Smart Operations</title>
 
-        <!-- Zoho CRM Theme & Realtime Dynamic Logo Engine -->
+        <!-- Dynamic Logo Engine -->
         <x-crm-theme-init :userId="auth()->id()" :userAccent="auth()->user()->theme_accent" :userMode="auth()->user()->theme_mode" :userStyle="auth()->user()->theme_style" />
 
-        <!-- Google Fonts matching SaaS Mockup -->
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-
-        <!-- Tailwind CSS & Alpine.js CDN Guard (Guarantees normal styling across all HTTP servers, LAN IPs, domains & production ports) -->
+        <!-- Tailwind CSS & Alpine.js CDN Guard -->
         <script src="https://cdn.tailwindcss.com"></script>
         <script>
             tailwind.config = {
@@ -23,14 +23,15 @@
                 theme: {
                     extend: {
                         fontFamily: {
-                            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-                            heading: ['"Outfit"', 'sans-serif'],
+                            sans: ['Arial', 'sans-serif'],
+                            heading: ['Arial', 'sans-serif'],
+                            mono: ['Arial', 'sans-serif'],
                         },
                         colors: {
                             brand: {
                                 blue: '#2563eb',
                                 blueHover: '#1d4ed8',
-                                lightBg: '#eff4fc',
+                                lightBg: '#f5f5f5',
                             }
                         }
                     }
@@ -42,6 +43,13 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
         <style>
+            html {
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            }
+            html.dark {
+                color-scheme: dark;
+            }
+
             .custom-sidebar-scroll {
                 overflow-y: auto;
                 scrollbar-width: thin;
@@ -65,52 +73,129 @@
             }
 
             :root {
-                --crm-accent: {{ auth()->user()->theme_accent ?? '#2563eb' }};
-                --crm-accent-hover: {{ auth()->user()->theme_accent ?? '#2563eb' }};
-            }
-            .accent-bg {
-                background-color: var(--crm-accent, #2563eb) !important;
-            }
-            .accent-text {
-                color: var(--crm-accent, #2563eb) !important;
-            }
-            .accent-border {
-                border-color: var(--crm-accent, #2563eb) !important;
+                --crm-accent: #2563eb;
+                --crm-accent-hover: #1d4ed8;
             }
 
-            /* Active sidebar navigation item */
+            /* Modern Stat Card Surface */
+            .stat-card {
+                background: #ffffff;
+                border: 1px solid #e2e8f0;
+                border-radius: 12px;
+                padding: 1rem 1.25rem;
+                transition: all 0.2s ease-in-out;
+            }
+            html.dark .stat-card {
+                background: #0f172a;
+                border-color: #1e293b;
+            }
+
+            /* Sidebar Module Navigation Click & Active State */
             aside nav a.crm-active-link,
-            aside nav a[class*="!bg-blue-600"],
             .crm-active-link {
-                background-color: var(--crm-accent, #2563eb) !important;
-                border-color: var(--crm-accent, #2563eb) !important;
-                color: #ffffff !important;
+                background-color: #ebebed;
+                border-radius: 8px;
+                color: #0f172a;
+                font-weight: 600;
             }
-            aside nav a.crm-active-link:hover,
-            aside nav a[class*="!bg-blue-600"]:hover {
-                background-color: var(--crm-accent-hover, #2563eb) !important;
-                border-color: var(--crm-accent-hover, #2563eb) !important;
+            html.dark aside nav a.crm-active-link,
+            html.dark .crm-active-link {
+                background-color: #1e293b;
+                color: #f8fafc;
+            }
+            aside nav a:hover {
+                background-color: #f1f2f4;
+            }
+            html.dark aside nav a:hover {
+                background-color: #1e293b80;
+            }
+            aside nav a:active {
+                background-color: #ebebed;
             }
 
-            /* Clicking / active button feedback */
+            /* User Avatars & Brand Tiles: Perfect round circle, crisp white letter */
+            .crm-user-avatar {
+                border-radius: 9999px !important;
+                color: #ffffff !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                font-weight: 700 !important;
+                user-select: none !important;
+            }
+
+            /* Active button feedback */
             button:active:not(:disabled),
             .btn-primary:active,
-            .btn-blue:active,
-            aside nav a:active {
-                background-color: var(--crm-accent-hover, #2563eb) !important;
-                border-color: var(--crm-accent-hover, #2563eb) !important;
+            .btn-blue:active {
                 transform: scale(0.98);
             }
 
-            /* Brand Logo Tile & User Avatars */
-            .crm-brand-tile,
-            .crm-user-avatar {
-                background-color: var(--crm-accent, #2563eb) !important;
-                background-image: none !important;
+            /* Clean primary buttons */
+            .btn-primary,
+            .crm-btn-primary {
+                background-color: var(--crm-accent, #2563eb);
+                border: 1px solid var(--crm-accent, #2563eb);
+                color: #ffffff !important;
+                border-radius: 8px;
+                font-weight: 600;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                text-decoration: none;
+                transition: background-color 0.15s ease, border-color 0.15s ease;
             }
-            .crm-brand-tile-inner,
-            .crm-brand-tile > div {
-                background-color: var(--crm-accent, #2563eb) !important;
+            .btn-primary:hover,
+            .crm-btn-primary:hover {
+                background-color: var(--crm-accent-hover, #1d4ed8);
+                border-color: var(--crm-accent-hover, #1d4ed8);
+                color: #ffffff !important;
+            }
+
+            .btn-secondary,
+            .crm-btn-secondary {
+                background-color: #ffffff;
+                border: 1px solid #cbd5e1;
+                color: #334155;
+                border-radius: 8px;
+                font-weight: 500;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                text-decoration: none;
+                transition: background-color 0.15s ease;
+            }
+            html.dark .btn-secondary,
+            html.dark .crm-btn-secondary {
+                background-color: #1e293b;
+                border-color: #334155;
+                color: #f1f5f9;
+            }
+            .btn-secondary:hover,
+            .crm-btn-secondary:hover {
+                background-color: #f8fafc;
+            }
+            html.dark .btn-secondary:hover,
+            html.dark .crm-btn-secondary:hover {
+                background-color: #334155;
+            }
+
+            /* TomSelect Clean Fit */
+            .ts-control {
+                min-height: 38px;
+                border-radius: 8px;
+                background-color: #ffffff;
+                border: 1px solid #cbd5e1;
+                box-sizing: border-box;
+                font-size: 14px;
+                padding: 0 0.75rem;
+                display: flex;
+                align-items: center;
+            }
+            html.dark .ts-control {
+                background-color: #0f172a;
+                border-color: #334155;
+                color: #f8fafc;
             }
         </style>
 
@@ -157,33 +242,16 @@
                 return window.crmShortcuts.toggle();
             };
 
-            window.crmToggleTheme = async function() {
-                const isCurrentlyDark = document.documentElement.classList.contains('dark');
-                const newMode = isCurrentlyDark ? 'day' : 'night';
-                const currentUserId = {{ json_encode(auth()->id()) }};
-                const modeKey = currentUserId ? ('crm_mode_user_' + currentUserId) : 'crm_mode';
-                try { localStorage.setItem(modeKey, newMode); } catch(e) {}
-                if (newMode === 'night') {
-                    document.documentElement.classList.add('dark');
-                } else {
-                    document.documentElement.classList.remove('dark');
-                }
-                window.dispatchEvent(new CustomEvent('theme-changed', { 
-                    detail: { userId: currentUserId, isDark: (newMode === 'night'), mode: newMode } 
-                }));
-                try {
-                    const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-                    await fetch('/profile/theme', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': token || '',
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify({ mode: newMode })
-                    });
-                } catch(e) {}
-            };
+            if (typeof window.crmToggleTheme !== 'function') {
+                window.crmToggleTheme = function() {
+                    if (typeof window.applyCrmMode === 'function') {
+                        const isCurrentlyDark = document.documentElement.classList.contains('dark');
+                        return window.applyCrmMode(isCurrentlyDark ? 'day' : 'night', true);
+                    }
+                    const isDark = document.documentElement.classList.toggle('dark');
+                    return isDark;
+                };
+            }
 
             // Bulletproof keyboard shortcuts listener (Active on ALL pages)
             window.addEventListener('keydown', function(e) {
@@ -269,9 +337,11 @@
               mobileNavOpen: false,
               isDark: document.documentElement.classList.contains('dark'),
               toggleTheme() {
-                  window.crmToggleTheme();
+                  this.isDark = window.crmToggleTheme();
               }
           }"
+          @theme-mode-changed.window="isDark = $event.detail.isDark"
+          @theme-changed.window="if ($event.detail && typeof $event.detail.isDark === 'boolean') isDark = $event.detail.isDark"
           @sidebar-collapsed-changed.window="sidebarCollapsed = $event.detail.collapsed"
           @shortcuts-toggle-action.window="shortcutsModalOpen = !shortcutsModalOpen"
           @shortcuts-toggle.window="shortcutsModalOpen = (typeof $event.detail?.open === 'boolean') ? $event.detail.open : !shortcutsModalOpen"
@@ -302,18 +372,19 @@
                         'translate-x-0 shadow-2xl': sidebarOpen,
                         '-translate-x-full lg:translate-x-0 shadow-none': !sidebarOpen,
                         'lg:w-20': sidebarCollapsed,
-                        'lg:w-72': !sidebarCollapsed
+                        'lg:w-64': !sidebarCollapsed
                      }"
-                     class="fixed inset-y-0 left-0 z-50 lg:sticky lg:top-0 lg:h-screen lg:z-30 w-72 shrink-0 transition-[width,transform] duration-300 ease-in-out flex flex-col bg-white dark:bg-[#0f172a] border-r border-slate-200/80 dark:border-slate-800 overflow-hidden">
+                     class="fixed inset-y-0 left-0 z-50 lg:sticky lg:top-0 lg:h-screen lg:z-30 w-64 shrink-0 transition-[width,transform] duration-300 ease-in-out flex flex-col bg-white dark:bg-[#0f172a] border-r border-slate-200/80 dark:border-slate-800 overflow-hidden">
                     @include('layouts.navigation')
                 </div>
 
                 {{-- Main Application Wrapper --}}
                 <div class="flex-1 flex flex-col min-w-0 min-h-screen bg-[#f8fafc] dark:bg-[#060913] transition-colors duration-200">
                     
-                    {{-- Modern SaaS Top Navigation Bar (Zoho CRM Standard Comfortable Scale) --}}
-                    <header class="h-16 sm:h-[70px] bg-white dark:bg-[#0f172a] border-b border-slate-200/80 dark:border-slate-800 px-4 sm:px-5 md:px-6 flex items-center justify-between sticky top-0 z-30 shadow-2xs transition-colors duration-200 relative"
-                            x-data="{
+                    {{-- Modern SaaS Top Navigation Bar matching Image 3 --}}
+                    <script>
+                        function globalHeader() {
+                            return {
                                 sidebarCollapsed: window.crmSidebar ? window.crmSidebar.collapsed : false,
                                 query: '',
                                 results: [],
@@ -321,6 +392,7 @@
                                 loading: false,
                                 selectedIndex: -1,
                                 mobileSearchOpen: false,
+                                isDarkMode: document.documentElement.classList.contains('dark'),
                                 async search() {
                                     if (this.query.trim().length < 2) {
                                         this.results = [];
@@ -330,7 +402,7 @@
                                     this.loading = true;
                                     this.open = true;
                                     try {
-                                        const res = await fetch(`/api/global-search?q=${encodeURIComponent(this.query.trim())}`);
+                                        const res = await fetch('/api/global-search?q=' + encodeURIComponent(this.query.trim()));
                                         const data = await res.json();
                                         this.results = data.results || [];
                                     } catch (err) {
@@ -349,53 +421,77 @@
                                     if (!this.results.length) return;
                                     this.selectedIndex = (this.selectedIndex + step + this.results.length) % this.results.length;
                                 },
+                                toggleThemeMode() {
+                                    this.isDarkMode = window.crmToggleTheme();
+                                },
+                                setThemeMode(mode) {
+                                    if (typeof window.applyCrmMode === 'function') {
+                                        this.isDarkMode = window.applyCrmMode(mode, true);
+                                    } else {
+                                        this.isDarkMode = window.crmToggleTheme();
+                                    }
+                                },
                                 selectActive() {
                                     if (this.selectedIndex >= 0 && this.selectedIndex < this.results.length) {
                                         window.location.href = this.results[this.selectedIndex].url;
                                     }
+                                },
+                                handleShortcut(isMobile) {
+                                    if (isMobile) {
+                                        this.mobileSearchOpen = true;
+                                        this.$nextTick(() => this.$refs.mobileSearchInput?.focus());
+                                    } else {
+                                        this.$refs.searchInput?.focus();
+                                        this.open = true;
+                                    }
                                 }
-                            }"
+                            };
+                        }
+                    </script>
+
+                    {{-- Modern SaaS Top Navigation Bar --}}
+                    <header class="h-14 sm:h-16 bg-white dark:bg-[#0f172a] border-b border-slate-200/80 dark:border-slate-800 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-40 transition-colors duration-200"
+                            x-data="globalHeader()"
+                            @theme-mode-changed.window="isDarkMode = $event.detail.isDark"
+                            @theme-changed.window="if ($event.detail && typeof $event.detail.isDark === 'boolean') isDarkMode = $event.detail.isDark"
                             @sidebar-collapsed-changed.window="sidebarCollapsed = $event.detail.collapsed"
                             @keydown.escape.window="open = false; mobileSearchOpen = false"
-                            @keydown.window.prevent.ctrl.k="if (window.innerWidth < 768) { mobileSearchOpen = true; $nextTick(() => $refs.mobileSearchInput?.focus()); } else { $refs.searchInput?.focus(); open = true; }"
-                            @keydown.window.prevent.cmd.k="if (window.innerWidth < 768) { mobileSearchOpen = true; $nextTick(() => $refs.mobileSearchInput?.focus()); } else { $refs.searchInput?.focus(); open = true; }">
+                            @keydown.window.prevent.ctrl.k="handleShortcut(window.innerWidth < 768)"
+                            @keydown.window.prevent.cmd.k="handleShortcut(window.innerWidth < 768)">
                         
-                        {{-- Left side: Mobile Drawer Toggle (Hamburger Menu for Modules), Laptop View Collapse Toggle & Sleek Context Pill --}}
+                        {{-- Left side: Mobile Drawer Toggle & Clean Breadcrumb Navigation matching Image 3 --}}
                         <div class="flex items-center gap-2 sm:gap-3 shrink-0">
                             {{-- Mobile Hamburger Toggle --}}
                             <button @click="sidebarOpen = !sidebarOpen" 
                                     type="button"
-                                    class="lg:hidden inline-flex items-center justify-center p-2 rounded-xl text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition-all shadow-2xs cursor-pointer shrink-0"
-                                    aria-label="Toggle navigation menu"
-                                    title="Open Modules Menu">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                                    class="lg:hidden inline-flex items-center justify-center p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer shrink-0"
+                                    aria-label="Toggle navigation menu">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
                             </button>
 
-                            {{-- Laptop / Desktop Sidebar Collapse Toggle Button (Laptop View) --}}
-                            <button @click="window.crmSidebar.toggle()" 
-                                    type="button"
-                                    class="hidden lg:inline-flex items-center justify-center p-2 rounded-xl text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition-all shadow-2xs cursor-pointer shrink-0"
-                                    :title="sidebarCollapsed ? 'Expand Sidebar to Full View (Ctrl+B)' : 'Collapse Sidebar to Compact Dock (Ctrl+B)'"
-                                    aria-label="Toggle sidebar dock">
-                                <svg class="w-4 h-4 transition-transform duration-200" :class="sidebarCollapsed ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
-                                </svg>
-                            </button>
-
+                            {{-- Navigation Chevrons & Title matching Image 3 --}}
                             <div class="flex items-center gap-2 min-w-0">
-                                <span class="text-sm sm:text-base font-bold text-slate-800 dark:text-slate-100 truncate flex items-center gap-2">
-                                    <span class="w-2 h-2 rounded-full animate-pulse shrink-0" style="background-color: var(--crm-accent, #2563eb);"></span>
-                                    <span class="tracking-tight">{{ auth()->user()->role === 'technician' ? 'Field Station' : (auth()->user()->isCustomer() ? 'Client Portal' : 'Command Center') }}</span>
+                                <div class="hidden sm:flex items-center gap-0.5 text-slate-400 dark:text-slate-500">
+                                    <button type="button" onclick="window.history.back()" class="p-1 hover:text-slate-700 dark:hover:text-slate-200 transition rounded" title="Back">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                                    </button>
+                                    <button type="button" onclick="window.history.forward()" class="p-1 hover:text-slate-700 dark:hover:text-slate-200 transition rounded" title="Forward">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                                    </button>
+                                </div>
+                                <span class="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate">
+                                    {{ request()->routeIs('dashboard') || request()->routeIs('portal.dashboard') ? 'Dashboard' : (request()->routeIs('projects.*') ? 'Projects' : (request()->routeIs('leads.*') ? 'Leads' : (request()->routeIs('jobs.*') ? 'Tasks & Field Jobs' : (request()->routeIs('service-tickets.*') || request()->routeIs('portal.tickets*') ? 'Support Tickets' : (request()->routeIs('quotations.*') || request()->routeIs('portal.quotations*') ? 'Quotations' : (request()->routeIs('calendar.*') ? 'Calendar' : (request()->routeIs('inventory.*') ? 'Inventory' : (request()->routeIs('invoices.*') || request()->routeIs('portal.invoices*') ? 'Invoices' : (request()->routeIs('site-surveys.*') ? 'Site Surveys' : (request()->routeIs('amc.*') ? 'AMC Contracts' : (request()->routeIs('equipment.*') ? 'Hardware' : (request()->routeIs('suppliers.*') ? 'Suppliers' : (request()->routeIs('reports.*') ? 'Reports' : 'Dashboard'))))))))))))) }}
                                 </span>
                             </div>
                         </div>
 
-                        {{-- Center Section: Global Omnisearch with Proper Normal Size & Wide Breathing Room --}}
+                        {{-- Center Section: Global Search --}}
                         <div class="hidden md:flex flex-1 items-center justify-center px-4 lg:px-8 max-w-xl mx-auto">
                             <div class="relative w-full max-w-sm lg:max-w-md" @click.away="open = false">
                                 <div class="relative flex items-center">
-                                    <svg class="w-4 h-4 text-slate-400 dark:text-slate-400 absolute left-3.5 pointer-events-none shrink-0" style="width: 16px; height: 16px; min-width: 16px; max-width: 16px; min-height: 16px; max-height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                    <svg class="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 pointer-events-none shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                                        <circle cx="11" cy="11" r="7"/>
+                                        <line stroke-linecap="round" stroke-linejoin="round" x1="21" x2="16.65" y1="21" y2="16.65"/>
                                     </svg>
                                     <input type="text" 
                                            x-ref="searchInput"
@@ -405,9 +501,9 @@
                                            @keydown.arrow-down.prevent="navigate(1)"
                                            @keydown.arrow-up.prevent="navigate(-1)"
                                            @keydown.enter.prevent="selectActive()"
-                                           placeholder="Search leads, jobs, quotes... (Ctrl+K)" 
-                                           style="padding-left: 2.85rem !important;"
-                                           class="w-full pl-11 pr-9 py-2 text-xs sm:text-sm bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl focus:bg-white dark:focus:bg-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 shadow-2xs transition-all outline-none">
+                                           placeholder="Search leads, jobs, quotes, equipment..." 
+                                           style="padding-left: 2.75rem !important;"
+                                           class="w-full pl-11 pr-10 py-1.5 text-xs sm:text-sm bg-slate-50 dark:bg-slate-800/80 border border-slate-200/90 dark:border-slate-700 rounded-lg focus:bg-white dark:focus:bg-slate-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-slate-800 dark:text-white placeholder-slate-400 transition-all outline-none">
                                     
                                     {{-- Clear button or loading spinner --}}
                                     <div class="absolute right-2.5 flex items-center">
@@ -433,7 +529,7 @@
                                      x-transition:leave="transition ease-in duration-100"
                                      x-transition:leave-start="opacity-100 translate-y-0 scale-100"
                                      x-transition:leave-end="opacity-0 translate-y-1 scale-98"
-                                     class="absolute left-0 right-0 mt-2 w-full max-h-96 overflow-y-auto bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl py-2 z-50 divide-y divide-slate-100 dark:divide-slate-800"
+                                     class="absolute left-0 right-0 mt-2 w-full max-h-96 overflow-y-auto bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xl py-2 z-50 divide-y divide-slate-100 dark:divide-slate-800"
                                      style="display: none;">
                                     
                                     {{-- Results list --}}
@@ -441,10 +537,13 @@
                                         <div class="py-1">
                                             <template x-for="(item, index) in results" :key="index">
                                                 <a :href="item.url" 
-                                                   :class="selectedIndex === index ? 'bg-blue-50 dark:bg-slate-800 text-blue-600 dark:text-amber-400' : 'hover:bg-slate-50 dark:hover:bg-slate-800/60'"
+                                                   :class="selectedIndex === index ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white' : 'hover:bg-slate-50 dark:hover:bg-slate-800/60'"
                                                    class="flex items-start gap-3 px-3.5 py-2.5 transition text-left group block">
-                                                    <div class="mt-0.5 w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 flex items-center justify-center shrink-0 group-hover:bg-blue-100 dark:group-hover:bg-blue-950 group-hover:text-blue-600 dark:group-hover:text-blue-400">
-                                                        <span class="text-xs font-bold" x-text="item.icon === 'user' ? '👤' : (item.icon === 'document' ? '📄' : (item.icon === 'wrench' ? '🔧' : (item.icon === 'ticket' ? '🎫' : (item.icon === 'camera' ? '📹' : (item.icon === 'receipt' ? '🧾' : '📦')))))"></span>
+                                                    <div class="mt-0.5 w-6 h-6 text-slate-400 dark:text-slate-500 flex items-center justify-center shrink-0">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                                            <polyline stroke-linecap="round" stroke-linejoin="round" points="14 2 14 8 20 8"/>
+                                                        </svg>
                                                     </div>
                                                     <div class="flex-1 min-w-0">
                                                         <div class="flex items-center justify-between gap-1 mb-0.5">
@@ -462,7 +561,7 @@
                                     {{-- Empty State --}}
                                     <template x-if="!loading && results.length === 0">
                                         <div class="p-6 text-center">
-                                            <p class="text-2xl mb-1">🔍</p>
+                                            
                                             <p class="text-xs font-bold text-slate-700 dark:text-slate-200">No matches found</p>
                                             <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">No leads, jobs, quotes or equipment matching "<span class="font-semibold text-slate-800 dark:text-slate-200" x-text="query"></span>"</p>
                                         </div>
@@ -471,118 +570,16 @@
                             </div>
                         </div>
 
-                        {{-- Right side: Quick Action, Theme Toggle, Notification Bell & User Dropdown --}}
-                        <div class="flex items-center gap-2 sm:gap-2.5 shrink-0">
+                        {{-- Right side: Header Actions --}}
+                        <div class="flex items-center gap-2 sm:gap-3 shrink-0">
                             
                             {{-- Mobile Omnisearch Trigger Button (Icon button on mobile) --}}
                             <button @click="mobileSearchOpen = true; $nextTick(() => { $refs.mobileSearchInput.focus(); if (query.trim().length >= 2) open = true; })" 
                                     type="button"
-                                    class="md:hidden p-2 rounded-xl text-slate-600 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition shrink-0 cursor-pointer"
-                                    title="Search (leads, jobs, quotes)">
+                                    class="md:hidden p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition shrink-0 cursor-pointer"
+                                    title="Search">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                             </button>
-
-                            @if(auth()->user()->isAdmin() || auth()->user()->isStaff())
-                                {{-- Quick Create Dropdown for Admin/Staff --}}
-                                <div x-data="{ open: false }" class="relative shrink-0">
-                                    <button @click="open = !open" 
-                                            class="crm-quick-action-btn inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-xl font-bold text-sm transition shadow-2xs cursor-pointer"
-                                            style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.12); color: var(--crm-accent, #2563eb); border: 1px solid rgba(var(--crm-accent-rgb, 37, 99, 235), 0.3);">
-                                        <svg class="w-3.5 h-3.5" style="color: var(--crm-accent, #2563eb);" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-                                        <span class="hidden sm:inline">Quick Action</span>
-                                        <svg class="w-3 h-3" style="color: var(--crm-accent, #2563eb);" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-                                    </button>
-
-                                    <div x-show="open" 
-                                         @click.away="open = false" 
-                                         x-transition:enter="transition ease-out duration-100"
-                                         x-transition:enter-start="transform opacity-0 scale-95"
-                                         x-transition:enter-end="transform opacity-100 scale-100"
-                                         class="absolute right-0 mt-2 w-60 bg-white dark:bg-[#0f172a] rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 py-2 z-50 text-sm font-semibold text-slate-700 dark:text-slate-200"
-                                         style="display: none;">
-                                        
-                                        <a href="{{ route('leads.create') }}" class="flex items-center gap-2 px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-blue-600 transition">
-                                            <span class="text-blue-600 font-bold">+</span> New Customer Lead
-                                        </a>
-                                        <a href="{{ route('quotations.create-general') }}" class="flex items-center gap-2 px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-emerald-600 transition">
-                                            <span class="text-emerald-600 font-bold">+</span> Generate Quotation
-                                        </a>
-                                        <a href="{{ route('service-tickets.create') }}" class="flex items-center gap-2 px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-rose-600 transition">
-                                            <span class="text-rose-600 font-bold">+</span> Log Service Ticket
-                                        </a>
-                                        <a href="{{ route('purchase-orders.create') }}" class="flex items-center gap-2 px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-purple-600 transition">
-                                            <span class="text-purple-600 font-bold">+</span> New Purchase Order
-                                        </a>
-                                        @if(auth()->user()->isAdmin())
-                                        <a href="{{ route('products.create') }}" class="flex items-center gap-2 px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-amber-600 transition border-t border-slate-100 dark:border-slate-800">
-                                            <span class="text-amber-500 font-bold">+</span> New Product / Pricing
-                                        </a>
-                                        @endif
-                                    </div>
-                                </div>
-                            @elseif(auth()->user()->isCustomer())
-                                {{-- Quick Report Button for Customer (Dynamic Accent) --}}
-                                <a href="{{ route('portal.tickets.create') }}" 
-                                   class="crm-customer-header-action inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-white font-bold text-sm transition shadow-sm"
-                                   style="background-color: var(--crm-accent, #2563eb); border: 1px solid var(--crm-accent, #2563eb);">
-                                    <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-                                    <span class="hidden sm:inline">Report Issue</span>
-                                </a>
-                            @endif
-
-                            {{-- Clean Dark / Light Mode Toggle Button (Matching User Design) --}}
-                            <div x-data="{ 
-                                    isDark: document.documentElement.classList.contains('dark'),
-                                    init() {
-                                        const observer = new MutationObserver(() => {
-                                            this.isDark = document.documentElement.classList.contains('dark');
-                                        });
-                                        observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-                                    },
-                                    toggle() {
-                                        this.isDark = !this.isDark;
-                                        if (this.isDark) {
-                                            document.documentElement.classList.add('dark');
-                                        } else {
-                                            document.documentElement.classList.remove('dark');
-                                        }
-                                        const mode = this.isDark ? 'dark' : 'day';
-                                        try {
-                                            const modeKey = window.crmModeStorageKey || 'crm_mode';
-                                            localStorage.setItem(modeKey, mode);
-                                        } catch(e) {}
-                                        window.dispatchEvent(new CustomEvent('crm-mode-changed', { detail: { mode } }));
-                                        fetch('{{ route('profile.theme') }}', {
-                                            method: 'POST',
-                                            headers: {
-                                                'Content-Type': 'application/json',
-                                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                            },
-                                            body: JSON.stringify({ mode: mode })
-                                        }).catch(() => {});
-                                    }
-                                }" 
-                                class="shrink-0">
-                                <button type="button" 
-                                        @click="toggle()" 
-                                        class="w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200 cursor-pointer shadow-xs bg-[#0F172A] hover:bg-[#1E293B] border border-slate-700/80 dark:bg-[#0F172A] dark:hover:bg-[#1E293B] dark:border-slate-700/80 text-amber-400 hover:scale-105 active:scale-95"
-                                        :title="isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
-                                        aria-label="Toggle Dark/Light Mode">
-                                    {{-- Sun icon in Dark Mode (Golden sun with central disc and 8 rays, matching user's image) --}}
-                                    <template x-if="isDark">
-                                        <svg class="w-4 h-4 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.6)]" viewBox="0 0 24 24" fill="currentColor">
-                                            <circle cx="12" cy="12" r="5" />
-                                            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                                        </svg>
-                                    </template>
-                                    {{-- Moon icon in Light Mode --}}
-                                    <template x-if="!isDark">
-                                        <svg class="w-4 h-4 text-slate-300 hover:text-amber-400 transition-colors" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
-                                        </svg>
-                                    </template>
-                                </button>
-                            </div>
 
                             {{-- Notification Bell (Role-Aware & Live) --}}
                             @php
@@ -661,16 +658,18 @@
                                     $recentAlerts = \App\Models\NotificationLog::latest()->limit(6)->get();
                                 }
                             @endphp
+                            {{-- Notification Bell (Role-Aware & Live) --}}
                             <div x-data="{ notifOpen: false }" class="relative">
                                 <button type="button"
                                         @click="notifOpen = !notifOpen"
-                                        class="p-2 rounded-xl text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition relative"
-                                        title="Notifications">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                                        class="relative p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer select-none"
+                                        aria-label="View notifications">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.73 21a2 2 0 0 1-3.46 0"/>
                                     </svg>
                                     @if($notifTotalBadge > 0)
-                                        <span class="absolute top-1 right-1 w-4 h-4 bg-rose-500 text-white rounded-full text-[9px] font-bold flex items-center justify-center ring-2 ring-white dark:ring-slate-900 animate-pulse">
+                                        <span class="absolute top-1.5 right-1.5 w-4 h-4 bg-rose-600 text-white rounded-full text-[9px] font-bold flex items-center justify-center ring-2 ring-white dark:ring-slate-900 shadow-xs">
                                             {{ $notifTotalBadge > 9 ? '9+' : $notifTotalBadge }}
                                         </span>
                                     @endif
@@ -689,7 +688,7 @@
                                     <div class="px-4 py-3 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
                                         <span class="text-sm font-bold text-slate-900 dark:text-white">Notifications</span>
                                         @if($notifTotalBadge > 0)
-                                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-600 dark:bg-rose-950 dark:text-rose-400">
+                                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
                                                 {{ $notifTotalBadge }} active
                                             </span>
                                         @else
@@ -699,32 +698,18 @@
 
                                     {{-- Summary Badges --}}
                                     <div class="px-4 py-3 grid grid-cols-3 gap-2 border-b border-slate-100 dark:border-slate-800">
-                                        <a href="{{ $card1Route }}" class="flex flex-col items-center p-2 rounded-xl bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-900/40 transition cursor-pointer">
-                                            <span class="text-lg font-extrabold text-amber-600 dark:text-amber-400 leading-none">{{ $card1Count }}</span>
-                                            <span class="text-[10px] font-semibold text-amber-700 dark:text-amber-300 mt-0.5 text-center leading-tight">{{ $card1Label }}</span>
+                                        <a href="{{ $card1Route }}" class="flex flex-col items-center p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer">
+                                            <span class="text-lg font-bold text-slate-900 dark:text-white leading-none">{{ $card1Count }}</span>
+                                            <span class="text-[10px] font-medium text-slate-500 dark:text-slate-400 mt-1 text-center leading-tight">{{ $card1Label }}</span>
                                         </a>
-                                        @if($card2Color === 'rose')
-                                            <a href="{{ $card2Route }}" class="flex flex-col items-center p-2 rounded-xl bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/40 transition cursor-pointer">
-                                                <span class="text-lg font-extrabold text-rose-600 dark:text-rose-400 leading-none">{{ $card2Count }}</span>
-                                                <span class="text-[10px] font-semibold text-rose-700 dark:text-rose-300 mt-0.5 text-center leading-tight">{{ $card2Label }}</span>
-                                            </a>
-                                        @else
-                                            <a href="{{ $card2Route }}" class="flex flex-col items-center p-2 rounded-xl bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/40 transition cursor-pointer">
-                                                <span class="text-lg font-extrabold text-blue-600 dark:text-blue-400 leading-none">{{ $card2Count }}</span>
-                                                <span class="text-[10px] font-semibold text-blue-700 dark:text-blue-300 mt-0.5 text-center leading-tight">{{ $card2Label }}</span>
-                                            </a>
-                                        @endif
-                                        @if($card3Color === 'emerald')
-                                            <a href="{{ $card3Route }}" class="flex flex-col items-center p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition cursor-pointer">
-                                                <span class="text-lg font-extrabold text-emerald-600 dark:text-emerald-400 leading-none">{{ $card3Count }}</span>
-                                                <span class="text-[10px] font-semibold text-emerald-700 dark:text-emerald-300 mt-0.5 text-center leading-tight">{{ $card3Label }}</span>
-                                            </a>
-                                        @else
-                                            <a href="{{ $card3Route }}" class="flex flex-col items-center p-2 rounded-xl bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/40 transition cursor-pointer">
-                                                <span class="text-lg font-extrabold text-blue-600 dark:text-blue-400 leading-none">{{ $card3Count }}</span>
-                                                <span class="text-[10px] font-semibold text-blue-700 dark:text-blue-300 mt-0.5 text-center leading-tight">{{ $card3Label }}</span>
-                                            </a>
-                                        @endif
+                                        <a href="{{ $card2Route }}" class="flex flex-col items-center p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer">
+                                            <span class="text-lg font-bold text-slate-900 dark:text-white leading-none">{{ $card2Count }}</span>
+                                            <span class="text-[10px] font-semibold text-slate-500 dark:text-slate-400 mt-1 text-center leading-tight">{{ $card2Label }}</span>
+                                        </a>
+                                        <a href="{{ $card3Route }}" class="flex flex-col items-center p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer">
+                                            <span class="text-lg font-bold text-slate-900 dark:text-white leading-none">{{ $card3Count }}</span>
+                                            <span class="text-[10px] font-semibold text-slate-500 dark:text-slate-400 mt-1 text-center leading-tight">{{ $card3Label }}</span>
+                                        </a>
                                     </div>
 
                                     {{-- Recent Notification Logs --}}
@@ -734,10 +719,7 @@
                                                 <div class="flex items-start gap-2.5">
                                                     {{-- Channel Icon --}}
                                                     <span class="mt-0.5 text-base leading-none flex-shrink-0">
-                                                        @if($alert->channel === 'whatsapp') 💬
-                                                        @elseif($alert->channel === 'email') 📧
-                                                        @elseif($alert->channel === 'sms') 📱
-                                                        @else 🔔 @endif
+                                                        <span class="font-mono font-bold text-[10px] text-blue-600 dark:text-blue-400">[{{ strtoupper($alert->channel) }}]</span>
                                                     </span>
                                                     <div class="flex-1 min-w-0">
                                                         <p class="text-xs font-semibold text-slate-800 dark:text-slate-100 truncate">{{ $alert->recipient_name }}</p>
@@ -756,7 +738,6 @@
                                             </div>
                                         @empty
                                             <div class="px-4 py-6 text-center text-slate-400 dark:text-slate-500 text-xs">
-                                                <p class="text-2xl mb-1">🔔</p>
                                                 <p class="font-semibold">No notifications yet</p>
                                             </div>
                                         @endforelse
@@ -771,17 +752,43 @@
                                 </div>
                             </div>
 
-                            {{-- User Avatar Button (Initial Badge Only - Click reveals full profile data) --}}
-                            <div x-data="{ open: false }" class="relative shrink-0 ml-1.5 mr-2">
+                            {{-- High-Clarity SaaS Theme Switcher (Dual Pill Segmented Switch) --}}
+                            <button type="button"
+                                    @click="toggleThemeMode()"
+                                    class="inline-flex items-center gap-1 p-1 rounded-xl border border-slate-200/90 dark:border-slate-700/80 bg-slate-100/90 dark:bg-slate-800/90 hover:bg-slate-200/70 dark:hover:bg-slate-700/60 transition shadow-2xs cursor-pointer select-none"
+                                    :title="isDarkMode ? 'Current: Dark Mode (Click to switch to Light Mode)' : 'Current: Light Mode (Click to switch to Dark Mode)'"
+                                    aria-label="Toggle theme mode">
+                                {{-- Light Pill Option --}}
+                                <span @click.stop="setThemeMode('day')"
+                                      class="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold transition-all duration-150 cursor-pointer"
+                                      :class="!isDarkMode ? 'bg-white text-slate-800 shadow-xs ring-1 ring-slate-200/70' : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'">
+                                    <svg class="w-3.5 h-3.5 text-amber-500" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+                                    </svg>
+                                    <span class="hidden sm:inline text-[11px] leading-none">Light</span>
+                                </span>
+                                {{-- Dark Pill Option --}}
+                                <span @click.stop="setThemeMode('night')"
+                                      class="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold transition-all duration-150 cursor-pointer"
+                                      :class="isDarkMode ? 'bg-slate-900 text-white shadow-xs ring-1 ring-slate-700' : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'">
+                                    <svg class="w-3.5 h-3.5 text-blue-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+                                    </svg>
+                                    <span class="hidden sm:inline text-[11px] leading-none">Dark</span>
+                                </span>
+                            </button>
+
+                            {{-- User Avatar Button (Initial Badge Only - Click reveals full profile popover) --}}
+                            <div x-data="{ open: false }" class="relative shrink-0 ml-0.5">
                                 <button @click="open = !open" 
                                         type="button"
-                                        class="w-10 h-10 rounded-2xl flex items-center justify-center font-black text-base text-white shadow-md transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none ring-2 ring-slate-200/90 dark:ring-slate-700/80 cursor-pointer select-none"
+                                        class="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm text-white shadow-xs transition-all duration-150 hover:opacity-95 active:scale-95 focus:outline-none cursor-pointer select-none ring-2 ring-slate-200/90 dark:ring-slate-700/80 crm-user-avatar"
                                         style="background-color: var(--crm-accent, #2563eb);"
                                         aria-label="User account menu"
                                         aria-expanded="false"
                                         :aria-expanded="open.toString()"
-                                        title="{{ Auth::user()->name }} (Click to view profile)">
-                                    <span class="drop-shadow-xs">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
+                                        title="{{ Auth::user()->name }} (Click to view profile menu)">
+                                    <span class="text-white font-bold leading-none select-none">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
                                 </button>
 
                                 <div x-show="open" 
@@ -793,50 +800,72 @@
                                      style="display: none;">
                                     
                                     {{-- User info header --}}
-                                    <div class="px-4 py-2.5 border-b border-slate-100 dark:border-slate-800">
-                                        <div class="flex items-center gap-2.5 mb-1.5">
-                                            <div class="w-8 h-8 rounded-full text-white flex items-center justify-center font-bold text-xs shrink-0 crm-user-avatar" style="background-color: var(--crm-accent, #2563eb);">
+                                    <div class="px-4 py-3 border-b border-slate-100 dark:border-slate-800">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <div class="w-10 h-10 rounded-full text-white flex items-center justify-center font-bold text-sm shrink-0 crm-user-avatar ring-2 ring-white dark:ring-slate-800 shadow-sm" style="background-color: var(--crm-accent, #2563eb);">
                                                 {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                                             </div>
                                             <div class="min-w-0 flex-1">
                                                 <p class="font-bold text-slate-900 dark:text-white truncate font-heading text-sm">{{ Auth::user()->name }}</p>
-                                                <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate">{{ Auth::user()->email }}</p>
+                                                <p class="text-xs text-slate-500 dark:text-slate-400 truncate">{{ Auth::user()->email }}</p>
                                             </div>
                                         </div>
-                                        <span class="inline-block text-[9px] uppercase font-bold px-2 py-0.5 rounded bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800">
-                                            {{ ucfirst(Auth::user()->role) }}
-                                        </span>
-                                    </div>
-
-                                    {{-- Theme & Color Palette Settings embedded in User Profile --}}
-                                    <div class="px-4 py-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60">
-                                        <x-zoho-theme-customizer :inline="true" :userId="auth()->id()" :userAccent="auth()->user()->theme_accent" :userMode="auth()->user()->theme_mode" :userStyle="auth()->user()->theme_style" />
+                                        <div class="flex items-center gap-2">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider
+                                                {{ Auth::user()->isAdmin() ? 'bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300 border border-purple-200 dark:border-purple-800' : '' }}
+                                                {{ Auth::user()->isStaff() ? 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 border border-blue-200 dark:border-blue-800' : '' }}
+                                                {{ Auth::user()->isTechnician() ? 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300 border border-amber-200 dark:border-amber-800' : '' }}
+                                                {{ Auth::user()->isCustomer() ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800' : '' }}
+                                            ">
+                                                {{ ucfirst(Auth::user()->role) }}
+                                            </span>
+                                            <span class="text-[11px] text-slate-400">• Active</span>
+                                        </div>
                                     </div>
 
                                     {{-- Quick Links --}}
                                     <div class="py-1">
-                                        <a href="{{ route('profile.edit') }}" class="flex items-center gap-2 px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-blue-600 transition">
-                                            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                                            Account &amp; Security Settings
+                                        <a href="{{ route('profile.edit') }}" class="flex items-center gap-2.5 px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition text-xs font-semibold">
+                                            <svg class="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                            </svg>
+                                            <span>My Account &amp; Profile Settings</span>
                                         </a>
-                                        <a href="{{ route('home') }}" class="flex items-center gap-2 px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-blue-600 transition">
-                                            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-                                            Storefront View
+
+                                        @if(Auth::user()->isAdmin())
+                                            <a href="{{ route('admin.users.index') }}" class="flex items-center gap-2.5 px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition text-xs font-semibold">
+                                                <svg class="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                                </svg>
+                                                <span>Manage User Accounts</span>
+                                            </a>
+                                        @endif
+
+                                        <a href="{{ route('home') }}" class="flex items-center gap-2.5 px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition text-xs font-semibold">
+                                            <svg class="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 10.5L12 3l9 7.5V20a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-9.5z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 22V12h6v10"/>
+                                            </svg>
+                                            <span>Storefront View</span>
                                         </a>
-                                        <button @click.stop="window.crmOpenShortcuts(); open = false" onclick="window.crmOpenShortcuts()" type="button" class="w-full text-left flex items-center justify-between px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-blue-600 transition cursor-pointer">
-                                            <div class="flex items-center gap-2">
-                                                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                                                <span class="font-medium text-xs text-slate-700 dark:text-slate-200">Keyboard Shortcuts</span>
-                                            </div>
-                                            <kbd class="px-2 py-0.5 text-[10px] font-mono font-bold bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-700 dark:text-slate-300 shadow-2xs">?</kbd>
+
+                                        {{-- Quick Theme Switch inside dropdown --}}
+                                        <button type="button" @click="toggleThemeMode()" class="w-full text-left flex items-center justify-between px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition text-xs font-semibold cursor-pointer">
+                                            <span class="flex items-center gap-2.5">
+                                                <svg class="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+                                                </svg>
+                                                <span>Theme Mode</span>
+                                            </span>
+                                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300" x-text="isDarkMode ? 'Night' : 'Day'"></span>
                                         </button>
                                     </div>
 
                                     {{-- Logout --}}
                                     <form method="POST" action="{{ route('logout') }}">
                                         @csrf
-                                        <button type="submit" class="w-full text-left flex items-center gap-2 px-4 py-2 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-600 font-semibold transition border-t border-slate-100 dark:border-slate-800 cursor-pointer">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                                        <button type="submit" class="w-full text-left flex items-center gap-2.5 px-4 py-2.5 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 font-semibold transition border-t border-slate-100 dark:border-slate-800 cursor-pointer text-xs">
+                                            <svg class="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
                                             Log Out
                                         </button>
                                     </form>
@@ -910,7 +939,7 @@
                                                :class="selectedIndex === index ? 'bg-blue-50 dark:bg-slate-800 text-blue-600 dark:text-amber-400' : 'hover:bg-slate-50 dark:hover:bg-slate-800/60'"
                                                class="flex items-start gap-3 px-3.5 py-2.5 transition text-left group block">
                                                 <div class="mt-0.5 w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 flex items-center justify-center shrink-0 group-hover:bg-blue-100 dark:group-hover:bg-blue-950 group-hover:text-blue-600 dark:group-hover:text-blue-400">
-                                                    <span class="text-xs font-bold" x-text="item.icon === 'user' ? '👤' : (item.icon === 'document' ? '📄' : (item.icon === 'wrench' ? '🔧' : (item.icon === 'ticket' ? '🎫' : (item.icon === 'camera' ? '📹' : (item.icon === 'receipt' ? '🧾' : '📦')))))"></span>
+                                                    <span class="text-xs font-bold" x-text="item.type ? item.type.substring(0, 3).toUpperCase() : 'REC'"></span>
                                                 </div>
                                                 <div class="flex-1 min-w-0">
                                                     <div class="flex items-center justify-between gap-1 mb-0.5">
@@ -927,7 +956,7 @@
 
                                 <template x-if="!loading && results.length === 0">
                                     <div class="p-6 text-center">
-                                        <p class="text-2xl mb-1">🔍</p>
+                                        
                                         <p class="text-xs font-bold text-slate-700 dark:text-slate-200">No matches found</p>
                                         <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">No results matching "<span class="font-semibold text-slate-800 dark:text-slate-200" x-text="query"></span>"</p>
                                     </div>
@@ -1079,7 +1108,7 @@
                                         Log Service Ticket
                                     </a>
                                     <a href="{{ route('attendance.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 hover:text-purple-600">
-                                        <span class="w-6 h-6 rounded-lg bg-purple-100 dark:bg-purple-950 text-purple-600 flex items-center justify-center font-bold text-xs">🕒</span>
+                                        <span class="w-6 h-6 rounded-lg bg-purple-100 dark:bg-purple-950 text-purple-600 flex items-center justify-center font-bold text-xs"></span>
                                         Attendance & Shift
                                     </a>
                                 </div>
@@ -1100,91 +1129,6 @@
                     @endif
                 </div>
             </nav>
-
-            {{-- ════════════════════════════════════════════════════════════════ --}}
-            {{-- LAPTOP VIEW: PRODUCTIVITY KEYBOARD SHORTCUTS MODAL (Ctrl+/ or ?)  --}}
-            {{-- ════════════════════════════════════════════════════════════════ --}}
-            <div x-show="shortcutsModalOpen" 
-                 x-cloak
-                 id="shortcuts-modal-overlay"
-                 @click.self="shortcutsModalOpen = false"
-                 x-transition:enter="transition ease-out duration-200"
-                 x-transition:enter-start="opacity-0"
-                 x-transition:enter-end="opacity-100"
-                 x-transition:leave="transition ease-in duration-150"
-                 x-transition:leave-start="opacity-100"
-                 x-transition:leave-end="opacity-0"
-                 class="fixed inset-0 z-[9999] overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4"
-                 style="display: none;">
-                
-                <div @click.stop 
-                     class="w-full max-w-lg bg-white dark:bg-[#0f172a] rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden transform transition-all">
-                    
-                    <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                        <div class="flex items-center gap-2.5">
-                            <span class="p-2 rounded-xl bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 font-bold">⌨️</span>
-                            <div>
-                                <h3 class="font-extrabold text-slate-900 dark:text-white text-sm font-heading">Laptop & Desktop Productivity Shortcuts</h3>
-                                <p class="text-[11px] text-slate-500 dark:text-slate-400">Power navigation tools for fast keyboard-first workflow</p>
-                            </div>
-                        </div>
-                        <button @click="shortcutsModalOpen = false" class="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                        </button>
-                    </div>
-
-                    <div class="p-6 space-y-4 text-xs">
-                        <div class="space-y-2.5">
-                            <h4 class="text-[10px] uppercase font-bold tracking-wider text-slate-500 dark:text-slate-400">Navigation & Views</h4>
-                            <div class="grid grid-cols-2 gap-2">
-                                <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/70">
-                                    <span class="text-slate-700 dark:text-slate-100 font-medium">Toggle Sidebar Dock</span>
-                                    <kbd class="px-2 py-0.5 font-mono text-[10px] font-bold bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded shadow-2xs">Ctrl + B</kbd>
-                                </div>
-                                <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/70">
-                                    <span class="text-slate-700 dark:text-slate-100 font-medium">Global Omnisearch</span>
-                                    <kbd class="px-2 py-0.5 font-mono text-[10px] font-bold bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded shadow-2xs">Ctrl + K</kbd>
-                                </div>
-                                <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/70">
-                                    <span class="text-slate-700 dark:text-slate-100 font-medium">Dark / Light Mode</span>
-                                    <kbd class="px-2 py-0.5 font-mono text-[10px] font-bold bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded shadow-2xs">Alt + T</kbd>
-                                </div>
-                                <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/70">
-                                    <span class="text-slate-700 dark:text-slate-100 font-medium">Shortcuts Cheatsheet</span>
-                                    <kbd class="px-2 py-0.5 font-mono text-[10px] font-bold bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded shadow-2xs">?</kbd>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="space-y-2.5">
-                            <h4 class="text-[10px] uppercase font-bold tracking-wider text-slate-500 dark:text-slate-400">Fast Access Routes</h4>
-                            <div class="grid grid-cols-2 gap-2">
-                                <a href="{{ route('dashboard') }}" class="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/70 hover:border-blue-400 dark:hover:border-blue-500 transition">
-                                    <span class="text-slate-700 dark:text-slate-100 font-medium">Overview Dashboard</span>
-                                    <kbd class="px-2 py-0.5 font-mono text-[10px] font-bold bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded shadow-2xs">Alt + D</kbd>
-                                </a>
-                                <a href="{{ route('attendance.index') }}" class="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/70 hover:border-blue-400 dark:hover:border-blue-500 transition">
-                                    <span class="text-slate-700 dark:text-slate-100 font-medium">Attendance & Shifts</span>
-                                    <kbd class="px-2 py-0.5 font-mono text-[10px] font-bold bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded shadow-2xs">Alt + A</kbd>
-                                </a>
-                                <a href="{{ route('leads.index') }}" class="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/70 hover:border-blue-400 dark:hover:border-blue-500 transition">
-                                    <span class="text-slate-700 dark:text-slate-100 font-medium">Leads Pipeline</span>
-                                    <kbd class="px-2 py-0.5 font-mono text-[10px] font-bold bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded shadow-2xs">Alt + L</kbd>
-                                </a>
-                                <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/70">
-                                    <span class="text-slate-700 dark:text-slate-100 font-medium">Close Active Window</span>
-                                    <kbd class="px-2 py-0.5 font-mono text-[10px] font-bold bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded shadow-2xs">Esc</kbd>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="px-6 py-3 bg-slate-50 dark:bg-slate-900/60 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                        <span class="text-[11px] text-slate-500 dark:text-slate-400">💡 Tip: Press <strong class="text-slate-700 dark:text-slate-300 font-semibold">Ctrl + B</strong> anytime to toggle between full sidebar and mini dock on laptops.</span>
-                        <button @click="shortcutsModalOpen = false" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition cursor-pointer">Close</button>
-                    </div>
-                </div>
-            </div>
 
     </body>
 </html>

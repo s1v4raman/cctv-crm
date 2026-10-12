@@ -330,8 +330,8 @@
                     <template x-if="selectedSite">
                         <div class="p-5 rounded-2xl bg-blue-50/60 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 flex items-start justify-between gap-4">
                             <div class="flex items-start gap-3">
-                                <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-sm shrink-0">
-                                    🏢
+                                <div class="w-8 h-8 rounded-[4px] bg-blue-600 text-white flex items-center justify-center font-bold text-xs shrink-0">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                                 </div>
                                 <div>
                                     <div class="flex items-center gap-2">
@@ -439,7 +439,7 @@
                         <div class="sm:col-span-2">
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Priority</label>
                             <div class="flex gap-4">
-                                @foreach(['low' => 'Low', 'medium' => 'Medium', 'high' => 'High', 'urgent' => 'Urgent 🔥'] as $pVal => $pLbl)
+                                @foreach(['low' => 'Low', 'medium' => 'Medium', 'high' => 'High', 'urgent' => 'Urgent'] as $pVal => $pLbl)
                                     <label class="flex items-center gap-1.5 cursor-pointer text-xs font-semibold">
                                         <input type="radio" name="priority" value="{{ $pVal }}" x-model="priority">
                                         <span>{{ $pLbl }}</span>
@@ -768,10 +768,10 @@
 
                     <div class="flex items-center gap-3">
                         <button type="submit" name="action" value="save_draft" class="btn-secondary text-sm">
-                            💾 Save as Draft
+                            Save as Draft
                         </button>
                         <button type="submit" name="action" value="submit" class="btn-primary text-sm shadow-md px-6 py-2.5">
-                            🚀 Submit for Admin Approval
+                            Submit for Admin Approval
                         </button>
                     </div>
                 </div>

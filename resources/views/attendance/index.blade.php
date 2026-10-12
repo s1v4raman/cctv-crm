@@ -2,19 +2,15 @@
     <x-slot name="header">
         <div class="flex flex-wrap items-center justify-between gap-4">
             <div>
-                <h2 class="text-2xl font-bold leading-tight text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
-                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_10px_#10b981]"></span>
+                <h1 class="text-2xl font-bold text-[#222222]">
                     Employee Attendance Management System
-                </h2>
-                <p class="mt-1 text-sm text-slate-500 dark:text-slate-400 font-medium">
-                    Comprehensive Per-Day Roster, Weekly Timesheets, Monthly Matrix &amp; Workforce Analytics
-                </p>
+                </h1>
             </div>
             <div class="flex items-center gap-2 flex-wrap">
                 <a href="{{ route('leaves.index') }}" 
-                   class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/60 dark:hover:bg-purple-900/60 text-purple-700 dark:text-purple-300 text-xs font-bold transition border border-purple-200 dark:border-purple-800 shadow-xs">
-                    <span>🌴</span>
-                    <span>Leaves &amp; Approvals</span>
+                   class="px-3.5 py-2 rounded bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold transition border border-slate-300 dark:border-slate-700"
+                   style="border-radius: 4px;">
+                    Leaves &amp; Approvals
                 </a>
                 {{-- Mark Unmarked as Present --}}
                 <form method="POST" action="{{ route('attendance.batch-store') }}" class="inline" onsubmit="return confirm('Mark all unmarked employees as Present (Full Day 8h) for {{ \Carbon\Carbon::parse($selectedDate)->format('d M Y') }}?');">
@@ -23,8 +19,7 @@
                     <input type="hidden" name="date" value="{{ $selectedDate }}">
                     <input type="hidden" name="status" value="present">
                     <input type="hidden" name="target" value="unmarked">
-                    <button type="submit" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition shadow-sm">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                    <button type="submit" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition" style="border-radius: 4px;">
                         <span>Mark Unmarked as Present</span>
                     </button>
                 </form>
@@ -36,16 +31,15 @@
                     <input type="hidden" name="date" value="{{ $selectedDate }}">
                     <input type="hidden" name="status" value="absent">
                     <input type="hidden" name="target" value="unmarked">
-                    <button type="submit" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition shadow-sm">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                    <button type="submit" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold transition" style="border-radius: 4px;">
                         <span>Mark Unmarked as Absent</span>
                     </button>
                 </form>
                 <button type="button" 
                         onclick="openCreateModal()"
-                        class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-500/20 transition">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-                    Record Manual Entry
+                        class="inline-flex items-center gap-2 px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition"
+                        style="border-radius: 4px;">
+                    + Record Manual Entry
                 </button>
             </div>
         </div>
@@ -56,8 +50,8 @@
         .dark .pg-wrap { background:#060913; }
         .pg-inner { max-width:1440px; margin:0 auto; padding:0 1.25rem; }
         .pg-card {
-            background:#ffffff; border-radius:1rem; border:1px solid #e2e8f0;
-            box-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.02);
+            background:#ffffff; border-radius:4px; border:1px solid #e2e8f0;
+            box-shadow:none !important;
         }
         .dark .pg-card { background:#0f172a; border-color:#1e293b; }
         .custom-scrollbar::-webkit-scrollbar { height: 7px; width: 7px; }
@@ -94,55 +88,56 @@
             <x-employee-subnav active="attendance" />
 
             {{-- 1-Click Live Personal Clock-In / Clock-Out Widget --}}
-            <div class="pg-card p-5 border-l-4 border-l-blue-600 bg-gradient-to-r from-blue-50/40 via-white to-white dark:from-slate-900/80 dark:via-[#0f172a] dark:to-[#0f172a]">
+            <div class="pg-card p-4 border border-slate-200 dark:border-slate-800" style="border-radius: 4px;">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-2xl bg-blue-600 text-white flex items-center justify-center font-bold text-lg shadow-md shadow-blue-500/25">
-                            ⏱️
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h3 class="text-base font-bold text-slate-900 dark:text-white">Your Shift Today</h3>
+                            @php
+                                $shiftStatus = $myAttendanceToday ? $myAttendanceToday->status : null;
+                                $shiftColor = 'text-slate-500';
+                                if ($shiftStatus === 'present') $shiftColor = 'text-emerald-600 dark:text-emerald-400';
+                                elseif ($shiftStatus === 'late') $shiftColor = 'text-amber-600 dark:text-amber-400';
+                                elseif ($shiftStatus === 'half_day') $shiftColor = 'text-sky-600 dark:text-sky-400';
+                                elseif ($shiftStatus === 'absent') $shiftColor = 'text-rose-600 dark:text-rose-400';
+                            @endphp
+                            <span class="text-sm font-bold {{ $shiftColor }}">
+                                {{ $myAttendanceToday ? $myAttendanceToday->status_label : 'Not Clocked In' }}
+                            </span>
                         </div>
-                        <div>
-                            <div class="flex items-center gap-2">
-                                <h3 class="text-base font-extrabold text-slate-900 dark:text-white">Your Shift Today</h3>
-                                <span class="text-xs px-2.5 py-0.5 rounded-full font-bold {{ $myAttendanceToday ? $myAttendanceToday->status_badge_class : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400' }}">
-                                    {{ $myAttendanceToday ? $myAttendanceToday->status_label : 'Not Clocked In' }}
-                                </span>
-                            </div>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                                Logged as <strong class="text-slate-800 dark:text-slate-200">{{ auth()->user()->name }}</strong> ({{ ucfirst(auth()->user()->role) }}) • {{ now()->format('l, d F Y') }}
-                            </p>
-                        </div>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                            Logged as <strong class="text-slate-800 dark:text-slate-200">{{ auth()->user()->name }}</strong> ({{ ucfirst(auth()->user()->role) }}) • {{ now()->format('l, d F Y') }}
+                        </p>
                     </div>
 
                     <div class="flex items-center gap-3 flex-wrap">
                         @if(!$myAttendanceToday || !$myAttendanceToday->clock_in)
                             <form method="POST" action="{{ route('attendance.clock-in') }}" class="flex items-center gap-2">
                                 @csrf
-                                <select name="location_type" class="text-sm font-medium rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3.5 py-2.5 min-h-[44px] text-slate-700 dark:text-slate-200">
-                                    <option value="office">🏢 Office</option>
-                                    <option value="on_site">🔧 On-Site Client</option>
-                                    <option value="remote">🏠 Remote / Field</option>
+                                <select name="location_type" class="text-sm font-medium rounded bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 px-3 py-1.5 text-slate-700 dark:text-slate-200" style="height: 38px; border-radius: 4px;">
+                                    <option value="office">Office</option>
+                                    <option value="on_site">On-Site Client</option>
+                                    <option value="remote">Remote / Field</option>
                                 </select>
-                                <button type="submit" class="px-6 py-2.5 min-h-[44px] rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md shadow-emerald-600/25 flex items-center gap-2 transition">
-                                    <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+                                <button type="submit" class="px-5 py-2 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm transition" style="height: 38px; border-radius: 4px;">
                                     Clock In Now
                                 </button>
                             </form>
                         @elseif(!$myAttendanceToday->clock_out)
                             <div class="text-right mr-2 hidden sm:block">
-                                <span class="text-[11px] text-slate-400 block">Clocked in at:</span>
+                                <span class="text-xs text-slate-400 block">Clocked in at:</span>
                                 <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 font-mono">{{ $myAttendanceToday->formatted_clock_in }}</span>
                             </div>
                             <form method="POST" action="{{ route('attendance.clock-out') }}">
                                 @csrf
-                                <button type="submit" class="px-6 py-2.5 min-h-[44px] rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-sm shadow-md shadow-rose-600/25 flex items-center gap-2 transition">
-                                    <span>🏁</span>
-                                    Clock Out &amp; Complete Shift
+                                <button type="submit" class="px-5 py-2 rounded bg-rose-600 hover:bg-rose-700 text-white font-semibold text-sm transition" style="height: 38px; border-radius: 4px;">
+                                    Clock Out
                                 </button>
                             </form>
                         @else
                             <div class="text-right">
-                                <span class="text-xs font-bold text-slate-700 dark:text-slate-300">Shift Completed ✓</span>
-                                <span class="block text-[11px] text-slate-400 font-mono">{{ $myAttendanceToday->formatted_clock_in }} to {{ $myAttendanceToday->formatted_clock_out }} ({{ $myAttendanceToday->total_hours }} hrs)</span>
+                                <span class="text-xs font-bold text-slate-700 dark:text-slate-300">Shift Completed</span>
+                                <span class="block text-xs text-slate-400 font-mono">{{ $myAttendanceToday->formatted_clock_in }} to {{ $myAttendanceToday->formatted_clock_out }} ({{ $myAttendanceToday->total_hours }} hrs)</span>
                             </div>
                         @endif
                     </div>
@@ -151,21 +146,18 @@
 
             {{-- 3 Dedicated Modes / Tabs Switcher --}}
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-2">
-                <div class="inline-flex p-1 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 gap-1">
+                <div class="inline-flex p-1 rounded bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 gap-1" style="border-radius: 4px;">
                     <a href="{{ route('attendance.index', ['tab' => 'daily', 'date' => $selectedDate, 'role' => $roleFilter, 'search' => $search]) }}"
-                       class="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition {{ $tab === 'daily' ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white' }}">
-                        <span>📅</span>
-                        <span>Per-Day Attendance</span>
+                       class="px-3.5 py-1.5 rounded text-xs font-semibold transition {{ $tab === 'daily' ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white' }}" style="border-radius: 4px;">
+                        Daily Attendance
                     </a>
                     <a href="{{ route('attendance.index', ['tab' => 'weekly', 'week_date' => $weekInput, 'role' => $roleFilter, 'search' => $search]) }}"
-                       class="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition {{ $tab === 'weekly' ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white' }}">
-                        <span>📊</span>
-                        <span>Weekly Timesheet &amp; Analysis</span>
+                       class="px-3.5 py-1.5 rounded text-xs font-semibold transition {{ $tab === 'weekly' ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white' }}" style="border-radius: 4px;">
+                        Weekly Timesheet &amp; Analysis
                     </a>
                     <a href="{{ route('attendance.index', ['tab' => 'monthly', 'month' => $selectedMonth, 'role' => $roleFilter, 'search' => $search]) }}"
-                       class="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition {{ $tab === 'monthly' ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white' }}">
-                        <span>📈</span>
-                        <span>Monthly Matrix &amp; Analytics</span>
+                       class="px-3.5 py-1.5 rounded text-xs font-semibold transition {{ $tab === 'monthly' ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white' }}" style="border-radius: 4px;">
+                        Monthly Matrix &amp; Analytics
                     </a>
                 </div>
 

@@ -3,191 +3,178 @@
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <div class="flex items-center gap-2">
-                    <h2 class="text-xl font-bold text-slate-900 dark:text-white tracking-tight font-heading">
+                    <h1 class="text-2xl font-bold text-[#222222]">
                         Field Expenses &amp; Travel Claims Hub
-                    </h2>
+                    </h1>
                     @if($isAdmin && $pendingCount > 0)
-                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-400 border border-amber-200 dark:border-amber-800 animate-pulse">
-                            {{ $pendingCount }} Pending (₹{{ number_format($pendingTotalAmount, 2) }})
+                        <span class="text-xs font-bold text-[#d97706]">
+                            ({{ $pendingCount }} Pending: ₹{{ number_format($pendingTotalAmount, 2) }})
                         </span>
                     @endif
                 </div>
-                <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                    Log fuel distance (KM), site hardware purchases &amp; travel claims with receipt uploads and 1-click approvals.
-                </p>
             </div>
             <div class="flex items-center gap-2 flex-wrap">
                 <a href="{{ route('finance.payroll.index') }}" 
-                   class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0f172a] text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-semibold shadow-xs transition">
-                    <svg class="w-4 h-4 text-slate-500 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
-                    </svg>
-                    <span>Payroll Master</span>
+                   class="px-3.5 py-2 rounded border border-[#cccccc] bg-white text-[#222222] hover:bg-[#f5f5f5] text-sm font-normal transition">
+                    Payroll Master
                 </a>
 
                 <button type="button" 
                         onclick="document.getElementById('submitExpenseModal').classList.remove('hidden')"
-                        class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-white text-xs font-bold shadow-md transition cursor-pointer"
-                        style="background-color: var(--crm-accent, #2563eb);">
-                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
-                    </svg>
-                    <span>File Expense Claim</span>
+                        class="px-4 py-2 rounded bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-sm font-normal transition cursor-pointer">
+                    + File Expense Claim
                 </button>
             </div>
         </div>
     </x-slot>
 
-    <div class="py-6 bg-[#f8fafc] dark:bg-[#060913] min-h-[calc(100vh-4.5rem)] text-slate-800 dark:text-slate-100">
+    <style>
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        @media (min-width: 640px) {
+            .stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        @media (min-width: 1024px) {
+            .stat-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        }
+
+        .stat-card {
+            background: #ffffff;
+            border-radius: 4px;
+            padding: 10px 14px;
+            border: 1px solid #e2e8f0;
+        }
+        html.dark .stat-card {
+            background: #0f172a;
+            border-color: #1e293b;
+        }
+        .stat-label { font-size: 14px; font-weight: 500; color: #64748b; margin-bottom: 0.25rem; }
+        html.dark .stat-label { color: #94a3b8; }
+        .stat-value { font-size: 1.5rem; font-weight: 700; color: #0f172a; line-height: 1; }
+        html.dark .stat-value { color: #ffffff; }
+
+        .pg-card {
+            background: #ffffff;
+            border-radius: 4px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+        html.dark .pg-card {
+            background: #0f172a;
+            border-color: #1e293b;
+        }
+    </style>
+
+    <div class="py-6 bg-slate-50 dark:bg-[#060913] min-h-[calc(100vh-4.5rem)] text-slate-800 dark:text-slate-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
 
             {{-- Flash Notification Status --}}
             @if(session('status'))
-                <div class="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs font-semibold flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                        <span>{{ session('status') }}</span>
-                    </div>
+                <div class="p-4 rounded bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs font-semibold flex items-center justify-between" style="border-radius: 4px;">
+                    <span>{{ session('status') }}</span>
                 </div>
             @endif
 
             @if(session('error'))
-                <div class="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 text-xs font-semibold flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <svg class="w-5 h-5 text-rose-600 dark:text-rose-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                        <span>{{ session('error') }}</span>
-                    </div>
+                <div class="p-4 rounded bg-rose-50 dark:bg-rose-950/60 border border-rose-300 dark:border-rose-800 text-rose-800 dark:text-rose-300 text-xs font-semibold flex items-center justify-between" style="border-radius: 4px;">
+                    <span>{{ session('error') }}</span>
                 </div>
             @endif
 
             {{-- 1. Macro KPIs Summary Grid --}}
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="stat-grid">
                 {{-- Total Claimed This Month --}}
-                <div class="bg-white dark:bg-[#0f172a] rounded-2xl p-4 border border-slate-200/80 dark:border-slate-800 shadow-xs">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Claims This Month</span>
-                        <span class="p-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400">
-                            📊
-                        </span>
-                    </div>
-                    <div class="mt-3 flex items-baseline gap-2">
-                        <span class="text-2xl font-black text-slate-900 dark:text-white font-heading">₹{{ number_format($totalClaimedMonth, 2) }}</span>
-                    </div>
-                    <div class="mt-2 text-[11px] text-slate-500 dark:text-slate-400 flex justify-between">
-                        <span>Period: <strong>{{ \Carbon\Carbon::parse($selectedMonth . '-01')->format('F Y') }}</strong></span>
+                <div class="stat-card">
+                    <div class="stat-label">Claims This Month</div>
+                    <div class="stat-value text-blue-600 dark:text-blue-400">₹{{ number_format($totalClaimedMonth, 2) }}</div>
+                    <div class="mt-2 text-xs text-slate-500">
+                        {{ \Carbon\Carbon::parse($selectedMonth . '-01')->format('F Y') }}
                     </div>
                 </div>
 
                 {{-- Pending Approvals --}}
-                <div class="bg-white dark:bg-[#0f172a] rounded-2xl p-4 border border-amber-200 dark:border-amber-900/60 bg-gradient-to-br from-white to-amber-50/40 dark:from-[#0f172a] dark:to-amber-950/20 shadow-xs">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400">Pending Review</span>
-                        <span class="p-2 rounded-xl bg-amber-100 dark:bg-amber-900/60 text-amber-700 dark:text-amber-300">
-                            ⏳
-                        </span>
-                    </div>
-                    <div class="mt-3 flex items-baseline gap-2">
-                        <span class="text-2xl font-black text-amber-700 dark:text-amber-400 font-heading">₹{{ number_format($pendingTotalAmount, 2) }}</span>
-                    </div>
-                    <div class="mt-2 text-[11px] text-amber-700 dark:text-amber-400 flex justify-between">
-                        <span><strong>{{ $pendingCount }} claim(s)</strong> waiting</span>
-                        @if($isAdmin && $pendingCount > 0)
-                            <a href="#pendingQueueSection" class="font-bold underline">Review Queue &rarr;</a>
-                        @endif
+                <div class="stat-card">
+                    <div class="stat-label">Pending Review</div>
+                    <div class="stat-value text-amber-600 dark:text-amber-400">₹{{ number_format($pendingTotalAmount, 2) }}</div>
+                    <div class="mt-2 text-xs text-slate-500">
+                        {{ $pendingCount }} claim(s) waiting
                     </div>
                 </div>
 
                 {{-- Disbursed / Paid Amount --}}
-                <div class="bg-white dark:bg-[#0f172a] rounded-2xl p-4 border border-slate-200/80 dark:border-slate-800 shadow-xs">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Settled / Paid</span>
-                        <span class="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
-                            💰
-                        </span>
-                    </div>
-                    <div class="mt-3 flex items-baseline gap-2">
-                        <span class="text-2xl font-black text-emerald-600 dark:text-emerald-400 font-heading">₹{{ number_format($totalPaidMonth, 2) }}</span>
-                    </div>
-                    <div class="mt-2 text-[11px] text-slate-500 dark:text-slate-400 flex justify-between">
-                        <span>Approved Queue: ₹{{ number_format($totalApprovedMonth, 2) }}</span>
+                <div class="stat-card">
+                    <div class="stat-label">Settled / Paid</div>
+                    <div class="stat-value text-emerald-600 dark:text-emerald-400">₹{{ number_format($totalPaidMonth, 2) }}</div>
+                    <div class="mt-2 text-xs text-slate-500">
+                        Approved: ₹{{ number_format($totalApprovedMonth, 2) }}
                     </div>
                 </div>
 
                 {{-- Fuel & Travel Distance Sum --}}
-                <div class="bg-white dark:bg-[#0f172a] rounded-2xl p-4 border border-slate-200/80 dark:border-slate-800 shadow-xs">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Fuel &amp; Travel Log</span>
-                        <span class="p-2 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400">
-                            🛵
-                        </span>
-                    </div>
-                    <div class="mt-3 flex items-baseline gap-2">
-                        <span class="text-2xl font-black text-purple-600 dark:text-purple-400 font-heading">{{ number_format($totalKmMonth, 1) }} KM</span>
-                    </div>
-                    <div class="mt-2 text-[11px] text-slate-500 dark:text-slate-400 flex justify-between">
-                        <span>Fuel Paid: <strong>₹{{ number_format($totalFuelMonth, 2) }}</strong></span>
+                <div class="stat-card">
+                    <div class="stat-label">Fuel &amp; Travel Log</div>
+                    <div class="stat-value text-purple-600 dark:text-purple-400">{{ number_format($totalKmMonth, 1) }} KM</div>
+                    <div class="mt-2 text-xs text-slate-500">
+                        Fuel Paid: ₹{{ number_format($totalFuelMonth, 2) }}
                     </div>
                 </div>
             </div>
 
             {{-- 2. Admin Pending Approval & Disbursal Queue --}}
             @if($isAdmin && $pendingClaims->count() > 0)
-                <div id="pendingQueueSection" class="bg-white dark:bg-[#0f172a] rounded-2xl border border-amber-200 dark:border-amber-900/60 shadow-md overflow-hidden">
-                    <div class="p-4 sm:p-5 border-b border-amber-100 dark:border-amber-900/40 bg-amber-50/50 dark:bg-amber-950/30 flex items-center justify-between">
+                <div id="pendingQueueSection" class="pg-card mb-6" style="border-radius: 4px;">
+                    <div class="p-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/60 flex items-center justify-between">
                         <div class="flex items-center gap-2">
-                            <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping"></span>
-                            <h3 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider font-heading">
-                                🔔 Pending Expense Claims Review Queue ({{ $pendingClaims->count() }})
+                            <h3 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+                                Pending Expense Claims Review ({{ $pendingClaims->count() }})
                             </h3>
                         </div>
-                        <span class="text-xs font-bold text-amber-700 dark:text-amber-400">Total: ₹{{ number_format($pendingTotalAmount, 2) }}</span>
+                        <span class="text-xs font-bold text-amber-600 dark:text-amber-400">Total: ₹{{ number_format($pendingTotalAmount, 2) }}</span>
                     </div>
 
                     <div class="divide-y divide-slate-100 dark:divide-slate-800">
                         @foreach($pendingClaims as $c)
-                            <div class="p-4 sm:p-5 hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                                <div class="space-y-1.5 max-w-2xl">
-                                    <div class="flex items-center gap-2 flex-wrap">
-                                        <span class="font-bold text-sm text-slate-900 dark:text-white">{{ $c->user?->name }}</span>
-                                        <span class="px-2 py-0.5 rounded-md text-[11px] font-semibold uppercase tracking-wider {{ $c->user?->role === 'technician' ? 'bg-blue-100 text-blue-800 dark:bg-blue-950/80 dark:text-blue-400' : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300' }}">
-                                            {{ $c->user?->role }}
+                            <div class="p-4 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                                <div class="space-y-1 max-w-2xl">
+                                    <div class="flex items-center gap-2 flex-wrap text-sm">
+                                        <span class="font-bold text-slate-900 dark:text-white">{{ $c->user?->name }}</span>
+                                        <span class="text-xs text-slate-500 uppercase">
+                                            ({{ $c->user?->role }})
                                         </span>
-                                        <span class="px-2.5 py-0.5 rounded-full text-xs font-bold border {{ $c->category_badge_class }}">
+                                        <span class="font-bold text-blue-600 dark:text-blue-400 text-xs">
                                             {{ $c->category_label }}
                                         </span>
                                         <span class="font-mono text-xs text-slate-400">#{{ $c->claim_no }}</span>
                                     </div>
 
                                     <div class="text-xs text-slate-600 dark:text-slate-400 flex items-center gap-2 flex-wrap">
-                                        <span>📅 Date: <strong>{{ $c->expense_date->format('d M Y') }}</strong></span>
-                                        <span>&bull;</span>
+                                        <span>Date: <strong>{{ $c->expense_date->format('d M Y') }}</strong></span>
                                         @if($c->travel_distance_km > 0)
-                                            <span>🛵 <strong>{{ $c->travel_distance_km }} KM</strong> ({{ $c->travel_from }} &rarr; {{ $c->travel_to }})</span>
                                             <span>&bull;</span>
+                                            <span><strong>{{ $c->travel_distance_km }} KM</strong> ({{ $c->travel_from }} &rarr; {{ $c->travel_to }})</span>
                                         @endif
                                         @if($c->installationJob)
-                                            <span>🎯 Job: <strong>{{ $c->installationJob->job_no }}</strong> ({{ $c->installationJob->quotation?->lead?->customer_name }})</span>
                                             <span>&bull;</span>
+                                            <span>Job: <strong>{{ $c->installationJob->job_no }}</strong></span>
                                         @endif
                                         @if($c->serviceTicket)
-                                            <span>🎫 Ticket: <strong>{{ $c->serviceTicket->ticket_no }}</strong></span>
                                             <span>&bull;</span>
+                                            <span>Ticket: <strong>{{ $c->serviceTicket->ticket_no }}</strong></span>
                                         @endif
-                                        <span>Claimed: {{ $c->created_at->diffForHumans() }}</span>
                                     </div>
 
-                                    <p class="text-xs text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-xl border border-slate-200/60 dark:border-slate-800 italic">
-                                        &ldquo;{{ $c->description }}&rdquo;
+                                    <p class="text-xs text-slate-700 dark:text-slate-300 p-2 bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800" style="border-radius: 4px;">
+                                        {{ $c->description }}
                                     </p>
 
                                     @if($c->receipt_path)
-                                        <div class="pt-1">
-                                            <a href="{{ asset('storage/' . $c->receipt_path) }}" target="_blank" class="inline-flex items-center gap-1 text-[11px] font-bold text-blue-600 dark:text-blue-400 hover:underline">
-                                                <span>📎 View Attached Receipt / Invoice Proof</span>
+                                        <div class="pt-0.5">
+                                            <a href="{{ asset('storage/' . $c->receipt_path) }}" target="_blank" class="text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline">
+                                                View Attached Receipt
                                             </a>
                                         </div>
                                     @endif
@@ -195,10 +182,9 @@
 
                                 <div class="flex items-center gap-3 flex-shrink-0">
                                     <div class="text-right">
-                                        <div class="text-lg font-black text-slate-900 dark:text-white font-heading">
+                                        <div class="text-base font-bold text-slate-900 dark:text-white">
                                             ₹{{ number_format((float) $c->amount, 2) }}
                                         </div>
-                                        <div class="text-[10px] text-slate-400 uppercase font-bold">Claim Value</div>
                                     </div>
 
                                     {{-- Approve Form --}}
@@ -206,22 +192,16 @@
                                         @csrf
                                         @method('PATCH')
                                         <button type="submit" 
-                                                class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition">
-                                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
-                                            </svg>
-                                            <span>Approve</span>
+                                                class="px-3 py-1.5 rounded bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition" style="border-radius: 4px;">
+                                            Approve
                                         </button>
                                     </form>
 
                                     {{-- Reject Trigger Button --}}
                                     <button type="button" 
                                             onclick="openRejectClaimModal('{{ $c->id }}', '{{ $c->claim_no }}', '{{ addslashes($c->user?->name) }}', '₹{{ number_format((float) $c->amount, 2) }}')"
-                                            class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white dark:bg-[#0f172a] hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900/50 text-xs font-bold transition">
-                                        <svg class="w-4 h-4 text-rose-600 dark:text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                        </svg>
-                                        <span>Reject</span>
+                                            class="px-3 py-1.5 rounded border border-rose-300 dark:border-rose-700 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-xs font-semibold transition" style="border-radius: 4px;">
+                                        Reject
                                     </button>
                                 </div>
                             </div>
@@ -231,31 +211,29 @@
             @endif
 
             {{-- 3. Main Tab Navigation (My Claims vs Workforce All Claims) --}}
-            <div class="bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden">
-                <div class="border-b border-slate-200 dark:border-slate-800 px-4 sm:px-6 pt-4 flex items-center justify-between flex-wrap gap-3">
-                    <div class="flex space-x-2">
+            <div class="pg-card">
+                <div class="border-b border-slate-200 dark:border-slate-800 px-4 pt-3 flex items-center justify-between flex-wrap gap-3">
+                    <div class="flex items-center gap-2">
                         <a href="{{ route('finance.expenses.index', ['tab' => 'my_claims', 'month' => $selectedMonth]) }}" 
-                           class="pb-3 px-3 text-xs font-bold border-b-2 transition {{ $tab === 'my_claims' ? 'crm-tab-active font-extrabold' : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300' }}"
-                           @if($tab === 'my_claims') style="color: var(--crm-accent, #2563eb); border-color: var(--crm-accent, #2563eb);" @endif>
-                            📝 My Claims ({{ $myClaims->total() }})
+                           class="px-3 py-1.5 text-xs font-semibold rounded transition {{ $tab === 'my_claims' ? 'bg-blue-600 text-white' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800' }}" style="border-radius: 4px;">
+                            My Claims ({{ $myClaims->total() }})
                         </a>
 
                         @if($isAdmin)
                             <a href="{{ route('finance.expenses.index', ['tab' => 'all_claims', 'month' => $selectedMonth]) }}" 
-                               class="pb-3 px-3 text-xs font-bold border-b-2 transition {{ $tab === 'all_claims' ? 'crm-tab-active font-extrabold' : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300' }}"
-                               @if($tab === 'all_claims') style="color: var(--crm-accent, #2563eb); border-color: var(--crm-accent, #2563eb);" @endif>
-                                👥 Master Workforce Claims Ledger ({{ $allClaims->total() }})
+                               class="px-3 py-1.5 text-xs font-semibold rounded transition {{ $tab === 'all_claims' ? 'bg-blue-600 text-white' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800' }}" style="border-radius: 4px;">
+                                Workforce Claims Ledger ({{ $allClaims->total() }})
                             </a>
                         @endif
                     </div>
 
                     {{-- Filters --}}
-                    <form method="GET" action="{{ route('finance.expenses.index') }}" class="flex items-center gap-2 pb-3 flex-wrap">
+                    <form method="GET" action="{{ route('finance.expenses.index') }}" class="flex items-center gap-2 pb-2 flex-wrap">
                         <input type="hidden" name="tab" value="{{ $tab }}">
 
-                        <input type="month" name="month" value="{{ $selectedMonth }}" onchange="this.form.submit()" class="text-sm min-h-[44px] rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 py-1.5 px-3">
+                        <input type="month" name="month" value="{{ $selectedMonth }}" onchange="this.form.submit()" class="text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 px-3" style="height: 38px; border-radius: 4px;">
 
-                        <select name="category" onchange="this.form.submit()" class="text-sm min-h-[44px] rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 py-1.5 pl-3 pr-8">
+                        <select name="category" onchange="this.form.submit()" class="text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 px-3" style="height: 38px; border-radius: 4px;">
                             <option value="">All Categories</option>
                             <option value="fuel_travel" {{ $categoryFilter === 'fuel_travel' ? 'selected' : '' }}>Fuel &amp; Travel</option>
                             <option value="hardware_tools" {{ $categoryFilter === 'hardware_tools' ? 'selected' : '' }}>Hardware Tools</option>
@@ -319,7 +297,7 @@
                                             <div class="font-semibold text-slate-900 dark:text-white">{{ $c->expense_date->format('d M Y') }}</div>
                                             @if($c->travel_distance_km > 0)
                                                 <div class="text-[11px] text-purple-600 dark:text-purple-400 font-bold mt-0.5">
-                                                    🛵 {{ $c->travel_distance_km }} KM ({{ $c->travel_from }} &rarr; {{ $c->travel_to }})
+                                                    {{ $c->travel_distance_km }} KM ({{ $c->travel_from }} &rarr; {{ $c->travel_to }})
                                                 </div>
                                             @endif
                                             <div class="text-[11px] text-slate-500 dark:text-slate-400 max-w-xs truncate mt-0.5" title="{{ $c->description }}">
@@ -328,10 +306,10 @@
                                         </td>
                                         <td class="py-4 px-4 whitespace-nowrap">
                                             @if($c->installationJob)
-                                                <div class="font-bold text-slate-800 dark:text-slate-200">🎯 {{ $c->installationJob->job_no }}</div>
+                                                <div class="font-bold text-slate-800 dark:text-slate-200">{{ $c->installationJob->job_no }}</div>
                                                 <div class="text-[10px] text-slate-400">{{ $c->installationJob->quotation?->lead?->customer_name }}</div>
                                             @elseif($c->serviceTicket)
-                                                <div class="font-bold text-slate-800 dark:text-slate-200">🎫 {{ $c->serviceTicket->ticket_no }}</div>
+                                                <div class="font-bold text-slate-800 dark:text-slate-200">{{ $c->serviceTicket->ticket_no }}</div>
                                                 <div class="text-[10px] text-slate-400">{{ $c->serviceTicket->title }}</div>
                                             @else
                                                 <span class="text-slate-400 text-xs">General / Fleet</span>
@@ -419,13 +397,13 @@
                                             <div class="font-semibold text-slate-900 dark:text-white">{{ $ac->expense_date->format('d M Y') }}</div>
                                             @if($ac->travel_distance_km > 0)
                                                 <div class="text-[11px] text-purple-600 dark:text-purple-400 font-bold">
-                                                    🛵 {{ $ac->travel_distance_km }} KM ({{ $ac->travel_from }} &rarr; {{ $ac->travel_to }})
+                                                    {{ $ac->travel_distance_km }} KM ({{ $ac->travel_from }} &rarr; {{ $ac->travel_to }})
                                                 </div>
                                             @endif
                                             <div class="text-[11px] text-slate-500 line-clamp-1">{{ $ac->description }}</div>
                                             @if($ac->receipt_path)
                                                 <a href="{{ asset('storage/' . $ac->receipt_path) }}" target="_blank" class="text-[10px] text-blue-600 dark:text-blue-400 font-bold hover:underline">
-                                                    📎 Receipt Proof
+                                                    Receipt Proof
                                                 </a>
                                             @endif
                                         </td>
@@ -463,7 +441,7 @@
                                                     <button type="button" 
                                                             onclick="openPayClaimModal('{{ $ac->id }}', '{{ $ac->claim_no }}', '{{ addslashes($ac->user?->name) }}', '{{ number_format((float) $ac->amount, 2) }}')"
                                                             class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition flex items-center gap-1">
-                                                        <span>💰 Disburse Pay</span>
+                                                        <span>Disburse Pay</span>
                                                     </button>
                                                 @else
                                                     <span class="text-slate-400 text-xs">—</span>
@@ -497,7 +475,7 @@
         <div class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
             <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
                 <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 font-heading">
-                    <span>🧾</span> File Travel / Field Expense Claim
+                    File Travel / Field Expense Claim
                 </h3>
                 <button type="button" onclick="document.getElementById('submitExpenseModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 text-xl font-bold">
                     &times;
@@ -533,7 +511,7 @@
                 <div id="kmCalculatorSection" class="p-3.5 rounded-xl bg-purple-50/70 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-900/50 space-y-3">
                     <div class="flex items-center justify-between">
                         <span class="font-bold text-purple-900 dark:text-purple-300 flex items-center gap-1.5">
-                            <span>🛵</span> Smart Travel KM Calculator
+                            Smart Travel KM Calculator
                         </span>
                         <span class="text-[11px] text-purple-700 dark:text-purple-400 font-semibold">Standard: ₹6.00 / KM</span>
                     </div>
@@ -624,7 +602,7 @@
         <div class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-md w-full p-6 shadow-2xl border border-rose-200 dark:border-rose-900 space-y-4">
             <div class="flex items-center justify-between border-b border-rose-100 dark:border-rose-900/40 pb-3">
                 <h3 class="text-base font-bold text-rose-600 dark:text-rose-400 flex items-center gap-2 font-heading">
-                    <span>⚠️</span> Reject Expense Claim
+                    Reject Expense Claim
                 </h3>
                 <button type="button" onclick="document.getElementById('rejectClaimModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 text-xl font-bold">
                     &times;
@@ -662,7 +640,7 @@
         <div class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-md w-full p-6 shadow-2xl border border-emerald-200 dark:border-emerald-900 space-y-4">
             <div class="flex items-center justify-between border-b border-emerald-100 dark:border-emerald-900/40 pb-3">
                 <h3 class="text-base font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-2 font-heading">
-                    <span>💰</span> Disburse Claim Reimbursement
+                    Disburse Claim Reimbursement
                 </h3>
                 <button type="button" onclick="document.getElementById('payClaimModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 text-xl font-bold">
                     &times;

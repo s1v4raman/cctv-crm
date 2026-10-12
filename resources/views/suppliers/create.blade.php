@@ -2,8 +2,7 @@
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <div>
-                <h2 class="text-xl font-semibold leading-tight text-gray-800">Register CCTV Hardware Supplier</h2>
-                <p class="mt-1 text-sm text-gray-500">Add vendor contact information, billing terms and GST details</p>
+                <h2 class="text-xl font-bold leading-tight text-gray-900">Register CCTV Hardware Supplier</h2>
             </div>
             <a href="{{ route('suppliers.index') }}" class="btn-head-secondary">
                 <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
@@ -19,68 +18,65 @@
         .btn-head-secondary {
             display: inline-flex; align-items: center;
             background-color: #ffffff; color: #334155 !important;
-            padding: 0.5rem 1rem; border-radius: 0.5rem;
-            font-size: 0.875rem; font-weight: 600; text-decoration: none;
-            border: 1px solid #cbd5e1; box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            padding: 0.5rem 1rem; border-radius: 4px;
+            font-size: 0.875rem; font-weight: 500; text-decoration: none;
+            border: 1px solid #cbd5e1; box-shadow: none;
             transition: all 0.15s ease-in-out;
         }
         .btn-head-secondary:hover { background-color: #f8fafc; color: #0f172a !important; border-color: #94a3b8; }
 
         .pg-card {
             background:#fff;
-            border-radius:1rem;
-            border:1px solid rgba(99,102,241,.08);
-            box-shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(99,102,241,.06);
+            border-radius:4px;
+            border:1px solid #e2e8f0;
+            box-shadow:none;
             padding: 2rem;
         }
 
         .form-label {
-            display: block; font-size: 0.75rem; font-weight: 700;
-            text-transform: uppercase; letter-spacing: 0.05em;
-            color: #475569; margin-bottom: 0.4rem;
+            display: block; font-size: 14px; font-weight: 500;
+            text-transform: none;
+            color: #475569; margin-bottom: 0.35rem;
         }
         .form-input, .form-textarea {
-            width: 100%; border: 1px solid #cbd5e1; border-radius: 0.6rem;
-            padding: 0.65rem 0.85rem; font-size: 0.875rem; color: #1e293b;
-            background: #fff; outline: none; transition: all 0.15s;
+            width: 100%; border: 1px solid #cbd5e1; border-radius: 4px;
+            padding: 0.5rem 0.75rem; font-size: 0.875rem; color: #1e293b;
+            background: #fff; outline: none; min-height: 38px;
         }
         .form-input:focus, .form-textarea:focus {
-            border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+            border-color: #2563eb; box-shadow: none;
         }
 
         .btn-submit-primary {
             display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
-            padding: 0.65rem 1.5rem; border-radius: 0.5rem;
-            font-size: 0.875rem; font-weight: 700;
-            background-color: #4f46e5; color: #ffffff !important;
-            border: 1px solid #4338ca; cursor: pointer;
-            box-shadow: 0 2px 4px rgba(79, 70, 229, 0.25);
-            transition: all 0.15s ease-in-out;
+            padding: 0.5rem 1.25rem; border-radius: 4px;
+            font-size: 0.875rem; font-weight: 600; min-height: 38px;
+            background-color: #2563eb; color: #ffffff !important;
+            border: 1px solid #1d4ed8; cursor: pointer;
+            box-shadow: none;
+            transition: background-color 0.15s;
         }
         .btn-submit-primary:hover {
-            background-color: #4338ca;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(79, 70, 229, 0.35);
+            background-color: #1d4ed8;
         }
 
         .btn-cancel {
             display: inline-flex; align-items: center; justify-content: center;
-            padding: 0.65rem 1.25rem; border-radius: 0.5rem;
-            font-size: 0.875rem; font-weight: 600;
+            padding: 0.5rem 1rem; border-radius: 4px;
+            font-size: 0.875rem; font-weight: 500; min-height: 38px;
             background-color: #ffffff; color: #475569 !important;
             border: 1px solid #cbd5e1; text-decoration: none;
-            transition: all 0.15s ease-in-out;
         }
-        .btn-cancel:hover { background-color: #f8fafc; color: #0f172a !important; border-color: #94a3b8; }
+        .btn-cancel:hover { background-color: #f8fafc; color: #0f172a !important; }
 
-        .error-msg { color: #dc2626; font-size: 0.78rem; margin-top: 0.35rem; font-weight: 600; }
+        .error-msg { color: #dc2626; font-size: 0.78rem; margin-top: 0.35rem; font-weight: 500; }
     </style>
 
     <div class="pg-wrap">
         <div class="pg-inner">
 
             @if ($errors->any())
-                <div class="mb-4 p-4 rounded-xl bg-red-50 border border-red-200 text-red-800 text-sm font-medium">
+                <div class="mb-4 p-4 rounded-[4px] bg-red-50 border border-red-200 text-red-800 text-sm font-medium">
                     <ul class="list-disc list-inside">
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
@@ -162,8 +158,8 @@
                     </div>
 
                     <div class="mb-6 flex items-center gap-2">
-                        <input type="checkbox" id="is_active" name="is_active" value="1" @checked(old('is_active', true)) class="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer">
-                        <label for="is_active" class="text-sm font-semibold text-slate-700 dark:text-slate-300 cursor-pointer">
+                        <input type="checkbox" id="is_active" name="is_active" value="1" @checked(old('is_active', true)) class="w-4 h-4 rounded-[4px] border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer">
+                        <label for="is_active" class="text-sm font-medium text-slate-700 cursor-pointer">
                             Active Supplier (Available for Purchase Orders)
                         </label>
                     </div>
@@ -171,7 +167,6 @@
                     <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
                         <a href="{{ route('suppliers.index') }}" class="btn-cancel">Cancel</a>
                         <button type="submit" class="btn-submit-primary">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                             Register Supplier
                         </button>
                     </div>

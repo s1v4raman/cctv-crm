@@ -135,7 +135,7 @@
                                :class="projectType === 'hardware_cctv' ? 'border-blue-500 bg-blue-50/50 dark:bg-blue-950/30 ring-2 ring-blue-500/20' : 'border-slate-200 dark:border-slate-700 hover:border-blue-300'">
                             <input type="radio" name="project_type" value="hardware_cctv" x-model="projectType" class="sr-only">
                             <span class="text-xs font-bold text-blue-700 dark:text-blue-300 flex items-center gap-1.5 mb-1">
-                                <span>📹</span> CCTV Hardware
+                                <span>CCTV Hardware</span>
                             </span>
                             <span class="text-[11px] text-slate-500 dark:text-slate-400 leading-tight">IP Cameras, NVR, PoE cabling &amp; site surveillance</span>
                         </label>
@@ -145,7 +145,7 @@
                                :class="projectType === 'networking' ? 'border-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/30 ring-2 ring-emerald-500/20' : 'border-slate-200 dark:border-slate-700 hover:border-emerald-300'">
                             <input type="radio" name="project_type" value="networking" x-model="projectType" class="sr-only">
                             <span class="text-xs font-bold text-emerald-700 dark:text-emerald-300 flex items-center gap-1.5 mb-1">
-                                <span>🌐</span> Network &amp; Wi-Fi
+                                <span>Network &amp; Wi-Fi</span>
                             </span>
                             <span class="text-[11px] text-slate-500 dark:text-slate-400 leading-tight">Structured cabling, switches, routers &amp; Wi-Fi APs</span>
                         </label>
@@ -155,7 +155,7 @@
                                :class="projectType === 'access_control' ? 'border-amber-500 bg-amber-50/50 dark:bg-amber-950/30 ring-2 ring-amber-500/20' : 'border-slate-200 dark:border-slate-700 hover:border-amber-300'">
                             <input type="radio" name="project_type" value="access_control" x-model="projectType" class="sr-only">
                             <span class="text-xs font-bold text-amber-700 dark:text-amber-300 flex items-center gap-1.5 mb-1">
-                                <span>🚪</span> Access Control
+                                <span>Access Control</span>
                             </span>
                             <span class="text-[11px] text-slate-500 dark:text-slate-400 leading-tight">Door controllers, electromagnetic locks &amp; exit sensors</span>
                         </label>
@@ -175,7 +175,7 @@
                                :class="projectType === 'software_web' ? 'border-cyan-500 bg-cyan-50/50 dark:bg-cyan-950/30 ring-2 ring-cyan-500/20' : 'border-slate-200 dark:border-slate-700 hover:border-cyan-300'">
                             <input type="radio" name="project_type" value="software_web" x-model="projectType" class="sr-only">
                             <span class="text-xs font-bold text-cyan-700 dark:text-cyan-300 flex items-center gap-1.5 mb-1">
-                                <span>💻</span> Webpage &amp; App
+                                <span>Webpage &amp; App</span>
                             </span>
                             <span class="text-[11px] text-slate-500 dark:text-slate-400 leading-tight">Web application, client portal, APIs &amp; dashboards</span>
                         </label>
@@ -185,7 +185,7 @@
                                :class="projectType === 'hybrid' ? 'border-indigo-500 bg-indigo-50/50 dark:bg-indigo-950/30 ring-2 ring-indigo-500/20' : 'border-slate-200 dark:border-slate-700 hover:border-indigo-300'">
                             <input type="radio" name="project_type" value="hybrid" x-model="projectType" class="sr-only">
                             <span class="text-xs font-bold text-indigo-700 dark:text-indigo-300 flex items-center gap-1.5 mb-1">
-                                <span>⚡</span> Hybrid (Turnkey)
+                                Hybrid (Turnkey)
                             </span>
                             <span class="text-[11px] text-slate-500 dark:text-slate-400 leading-tight">Both physical hardware and dedicated web platform</span>
                         </label>
@@ -243,7 +243,7 @@
                 <div x-show="projectType === 'software_web' || projectType === 'hybrid'"
                      x-transition class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-4">
                     <div class="flex items-center gap-2 text-xs font-bold text-cyan-700 dark:text-cyan-300 uppercase tracking-wider">
-                        <span>🌐 Software Architecture & Webpage Parameters</span>
+                        <span>Software Architecture & Webpage Parameters</span>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -346,7 +346,7 @@
                     {{-- Lead Field Technician --}}
                     <div>
                         <label for="lead_technician_id" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                            🛠️ Lead Field Technician
+                            Lead Field Technician
                         </label>
                         <select id="lead_technician_id" name="lead_technician_id" class="w-full text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500">
                             <option value="">-- No Technician Assigned --</option>
@@ -361,7 +361,7 @@
                     {{-- Assigned Project Manager / Staff --}}
                     <div>
                         <label for="assigned_to" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                            👤 Project Manager / Assignee
+                            Project Manager / Assignee
                         </label>
                         <select id="assigned_to" name="assigned_to" class="w-full text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500">
                             <option value="">-- Unassigned --</option>

@@ -177,8 +177,8 @@
             {{-- Sharing & Communication Bar --}}
             <div class="cyber-card">
                 <div class="px-5 py-4 border-b border-slate-200 dark:border-white/5 flex items-center justify-between">
-                    <h3 class="text-sm font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 font-heading flex items-center gap-2">
-                        <span class="text-blue-600 dark:text-blue-400">⚡</span> Share & Dispatch Proposal
+                    <h3 class="text-sm font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 font-heading">
+                        Share &amp; Dispatch Proposal
                     </h3>
                     <span class="text-xs font-mono text-slate-500 dark:text-slate-400">1-Click Multi-Channel Actions</span>
                 </div>
@@ -407,23 +407,25 @@
     </div>
 
     {{-- Send PDF via Email & Outlook Modal --}}
-    <div id="email-pdf-modal" style="display:none;position:fixed;inset:0;z-index:50;background:rgba(6,9,19,0.85);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:1rem;">
-        <div class="bg-[#0F172A] border border-white/10 rounded-2xl p-6 max-w-xl w-full shadow-2xl max-h-[90vh] overflow-y-auto text-slate-200">
-            <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-5">
+    <div id="email-pdf-modal" style="display:none;position:fixed;inset:0;z-index:50;background:rgba(6,9,19,0.85);align-items:center;justify-content:center;padding:1rem;">
+        <div class="bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-white/10 rounded-[4px] p-6 max-w-xl w-full max-h-[90vh] overflow-y-auto text-slate-800 dark:text-slate-200">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-white/10 mb-5">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-400 flex items-center justify-center text-lg">📧</div>
+                    <div class="w-9 h-9 rounded-[4px] bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    </div>
                     <div>
-                        <h4 class="text-lg font-bold text-white font-['Outfit'] uppercase">Email Quotation</h4>
-                        <span class="text-xs text-slate-400">Server SMTP Delivery or Outlook Compose</span>
+                        <h4 class="text-base font-bold text-slate-900 dark:text-white uppercase">Email Quotation</h4>
+                        <span class="text-xs text-slate-500 dark:text-slate-400">Server SMTP Delivery or Outlook Compose</span>
                     </div>
                 </div>
-                <button type="button" onclick="closeEmailModal()" class="text-slate-400 hover:text-white text-xl">✕</button>
+                <button type="button" onclick="closeEmailModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white text-xl">✕</button>
             </div>
 
             {{-- 1-Click Outlook & Quick Action Buttons --}}
-            <div class="bg-[#060913] border border-white/10 rounded-xl p-4 mb-5">
+            <div class="bg-slate-50 dark:bg-[#060913] border border-slate-200 dark:border-white/10 rounded-[4px] p-4 mb-5">
                 <div class="text-[10px] font-mono uppercase tracking-widest text-slate-400 mb-3 flex items-center justify-between">
-                    <span>⚡ 1-Click External Email Clients</span>
+                    <span>1-Click External Email Clients</span>
                     <span class="text-sky-400 font-bold">Includes PDF Link</span>
                 </div>
                 <div class="grid grid-cols-2 gap-3 mb-3">
@@ -437,7 +439,7 @@
                     </a>
                 </div>
                 <button type="button" onclick="copyQuotationEmailText()" id="btn-copy-email-text" class="w-full py-2 rounded-lg border border-slate-700 bg-slate-800/60 hover:bg-slate-800 text-slate-300 text-xs font-semibold transition flex items-center justify-center gap-2">
-                    📋 Copy Email Message & PDF Link
+                    Copy Email Message &amp; PDF Link
                 </button>
             </div>
 
@@ -473,7 +475,7 @@
                     <div>
                         <label class="block text-sm font-semibold text-slate-300 mb-1.5">Attachment</label>
                         <div class="bg-[#060913] p-2.5 border border-dashed border-slate-700 rounded-xl text-xs text-slate-400 font-mono">
-                            📎 Quotation-{{ $quotation->quotation_no }}.pdf
+                            Quotation-{{ $quotation->quotation_no }}.pdf
                         </div>
                     </div>
                 </div>
@@ -486,12 +488,12 @@
 
                 <div class="flex items-center justify-between pt-4 border-t border-white/10">
                     <a href="{{ route('alerts.gateways') }}" target="_blank" class="text-xs text-amber-400 hover:underline font-semibold font-mono">
-                        ⚙️ SMTP Settings
+                        SMTP Settings
                     </a>
                     <div class="flex gap-3">
                         <button type="button" onclick="closeEmailModal()" class="px-5 py-2.5 min-h-[44px] rounded-xl border border-slate-700 bg-slate-800 text-slate-300 text-sm font-semibold hover:bg-slate-700 transition">Cancel</button>
                         <button type="submit" class="px-5 py-2.5 min-h-[44px] rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-sm font-bold transition shadow-lg shadow-sky-600/20">
-                            🚀 Send Email
+                            Send Email
                         </button>
                     </div>
                 </div>
@@ -525,7 +527,7 @@
             @endphp
             <div id="wa-customer-status-banner" class="mb-4 p-3.5 rounded-xl border flex items-center justify-between gap-3 {{ $hasStoredPhone ? 'border-emerald-200 dark:border-emerald-500/30 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-900 dark:text-emerald-300' : 'border-amber-200 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-500/10 text-amber-900 dark:text-amber-300' }}">
                 <div class="flex items-center gap-2.5">
-                    <span id="wa-status-icon" class="text-base">{{ $hasStoredPhone ? '✅' : '⚠️' }}</span>
+                    <span id="wa-status-icon" class="text-xs font-bold font-mono">{{ $hasStoredPhone ? '[VERIFIED]' : '[PENDING]' }}</span>
                     <div>
                         <div id="wa-status-title" class="text-xs font-bold uppercase tracking-wider font-mono {{ $hasStoredPhone ? 'text-emerald-900 dark:text-emerald-200' : 'text-amber-900 dark:text-amber-200' }}">
                             {{ $hasStoredPhone ? 'Customer Contact Ready & Verified' : 'Customer Phone Number Not Stored' }}
@@ -538,7 +540,7 @@
                     </div>
                 </div>
                 <a href="{{ route('quotations.vcard', $quotation) }}" id="btn-header-vcard" class="px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-[11px] font-bold whitespace-nowrap hover:bg-slate-50 dark:hover:bg-slate-700 transition shadow-2xs">
-                    📲 vCard
+                    vCard
                 </a>
             </div>
 
@@ -550,28 +552,28 @@
                         Choose Quotation PDF Format & Style
                     </label>
                     <a id="btn-preview-selected-pdf" href="{{ route('quotations.public-pdf', ['quotation' => $quotation, 'format' => '1']) }}" target="_blank" class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline">
-                        👁️ Preview Live PDF
+                        Preview Live PDF
                     </a>
                 </div>
 
                 <div class="grid grid-cols-3 gap-3" id="wa-format-selector-grid">
                     <label class="wa-format-card border-2 border-blue-600 bg-blue-50/70 dark:bg-blue-950/40 rounded-xl p-3 cursor-pointer transition relative block shadow-2xs" data-format="1">
                         <input type="radio" name="wa_pdf_format" value="1" checked class="absolute top-3 right-3 accent-blue-600" onchange="onWhatsAppFormatChange('1')">
-                        <div class="text-lg mb-1">🌟</div>
+                        
                         <div class="text-xs font-bold text-slate-900 dark:text-white">Executive Modern</div>
                         <div class="text-[10px] text-blue-700 dark:text-blue-400 font-mono font-bold mt-0.5">Format 1 (Standard)</div>
                     </label>
 
                     <label class="wa-format-card border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/40 rounded-xl p-3 cursor-pointer transition relative block" data-format="2">
                         <input type="radio" name="wa_pdf_format" value="2" class="absolute top-3 right-3 accent-blue-600" onchange="onWhatsAppFormatChange('2')">
-                        <div class="text-lg mb-1">📋</div>
+                        
                         <div class="text-xs font-bold text-slate-900 dark:text-white">Technical Detailed</div>
                         <div class="text-[10px] text-slate-500 dark:text-slate-400 font-mono mt-0.5">Format 2</div>
                     </label>
 
                     <label class="wa-format-card border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/40 rounded-xl p-3 cursor-pointer transition relative block" data-format="3">
                         <input type="radio" name="wa_pdf_format" value="3" class="absolute top-3 right-3 accent-blue-600" onchange="onWhatsAppFormatChange('3')">
-                        <div class="text-lg mb-1">🏛️</div>
+                        
                         <div class="text-xs font-bold text-slate-900 dark:text-white">Classic Formal</div>
                         <div class="text-[10px] text-slate-500 dark:text-slate-400 font-mono mt-0.5">Format 3</div>
                     </label>
@@ -608,11 +610,10 @@
 
                 <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-[11px] text-slate-700 dark:text-slate-300">
                     <span class="flex items-center gap-2">
-                        <span>🎯</span>
                         <span>Target: <strong><span id="wa-phone-preview-badge" class="text-blue-600 dark:text-blue-400 font-mono font-bold">{{ $quotation->getWhatsAppPhone() ?: 'Customer Number' }}</span></strong></span>
                     </span>
-                    <button type="button" onclick="quickSaveCustomerContact()" id="btn-quick-save-contact" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] transition shadow-xs">
-                        💾 Save Contact
+                    <button type="button" onclick="quickSaveCustomerContact()" id="btn-quick-save-contact" class="px-2.5 py-1 rounded-[4px] bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] transition-colors">
+                        Save Contact
                     </button>
                 </div>
             </div>
@@ -625,7 +626,7 @@
                         WhatsApp Proposal Message Preview
                     </label>
                     <button type="button" onclick="copyWhatsAppCustomText()" id="btn-copy-wa-text" class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline">
-                        📋 Copy Message
+                        Copy Message
                     </button>
                 </div>
                 <textarea id="wa-custom-message" rows="4"
@@ -644,13 +645,13 @@
 
                 <div class="grid grid-cols-3 gap-2">
                     <button type="button" onclick="openWhatsAppDirect('web')" class="py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-xs hover:bg-slate-100 dark:hover:bg-slate-700 transition shadow-2xs">
-                        🌐 Web WhatsApp
+                        Web WhatsApp
                     </button>
                     <button type="button" onclick="openWhatsAppDirect('app')" class="py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-xs hover:bg-slate-100 dark:hover:bg-slate-700 transition shadow-2xs">
-                        💻 Desktop App
+                        Desktop App
                     </button>
                     <button type="button" onclick="downloadSelectedPdfOnly()" class="py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-xs hover:bg-slate-100 dark:hover:bg-slate-700 transition shadow-2xs">
-                        📥 Download PDF
+                        Download PDF
                     </button>
                 </div>
             </div>
@@ -770,18 +771,16 @@
             if (banner) {
                 banner.className = 'mb-4 p-3 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 flex items-center justify-between gap-3';
             }
-            if (icon) icon.innerText = '✅';
             if (title) title.innerText = 'Customer Contact Ready & Verified';
             if (desc) desc.innerText = `Target WhatsApp chat will open for ${name} (+${phone}). PDF will be downloaded & text pre-filled.`;
-            if (btnText) btnText.innerText = '🚀 Share PDF & Open WhatsApp Chat';
+            if (btnText) btnText.innerText = 'Share PDF & Open WhatsApp Chat';
         } else {
             if (banner) {
                 banner.className = 'mb-4 p-3 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-300 flex items-center justify-between gap-3';
             }
-            if (icon) icon.innerText = '⚠️';
             if (title) title.innerText = 'Customer Phone Number Not Stored';
             if (desc) desc.innerText = 'Please enter mobile number above. Clicking below will save the customer in CRM and open WhatsApp.';
-            if (btnText) btnText.innerText = '💾 Save Customer & Share WhatsApp PDF';
+            if (btnText) btnText.innerText = 'Save Customer & Share WhatsApp PDF';
         }
     }
 
@@ -811,13 +810,13 @@
             });
             const data = await res.json();
             if (data.success) {
-                if (btn) btn.innerHTML = '✅ Saved!';
+                if (btn) btn.innerHTML = 'Saved!';
                 syncCustomerStatusUI();
                 setTimeout(() => { if (btn) btn.innerHTML = originalText; }, 2000);
             }
         } catch (e) {
             console.error('Save failed', e);
-            if (btn) btn.innerHTML = '⚠️ Error';
+            if (btn) btn.innerHTML = 'Error';
             setTimeout(() => { if (btn) btn.innerHTML = originalText; }, 2000);
         }
     }
@@ -830,7 +829,7 @@
             await navigator.clipboard.writeText(text);
             if (btn) {
                 const prev = btn.innerHTML;
-                btn.innerHTML = '✅ Copied!';
+                btn.innerHTML = 'Copied!';
                 setTimeout(() => { btn.innerHTML = prev; }, 2000);
             }
         } catch (e) {
@@ -988,7 +987,7 @@
             await navigator.clipboard.writeText(emailBody);
             if (btn) {
                 const prev = btn.innerHTML;
-                btn.innerHTML = '✅ Copied to Clipboard!';
+                btn.innerHTML = 'Copied to Clipboard!';
                 setTimeout(() => { btn.innerHTML = prev; }, 2000);
             }
         } catch (e) {

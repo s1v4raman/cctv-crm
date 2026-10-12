@@ -2,8 +2,7 @@
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <div>
-                <h1 class="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight font-heading flex items-center gap-2.5">
-                    <span class="w-2.5 h-2.5 rounded-full bg-amber-500 shadow-sm shadow-amber-500"></span>
+                <h1 class="text-xl font-bold text-slate-900 dark:text-white tracking-tight font-heading">
                     Create Quotation
                 </h1>
 
@@ -13,22 +12,22 @@
             </div>
 
             <a href="{{ route('leads.show', $lead) }}"
-               class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 text-xs font-bold transition shadow-xs">
+               class="text-sm font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 transition">
                 ← Back to Lead
             </a>
         </div>
     </x-slot>
 
-    <div class="py-8">
+    <div class="py-6">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="overflow-visible bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm rounded-2xl">
+            <div class="overflow-visible bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs rounded">
                 <form method="POST"
                       action="{{ route('quotations.store', $lead) }}"
                       class="p-6">
                     @csrf
 
                     @if ($errors->any())
-                        <div class="mb-6 rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-rose-700 dark:text-rose-300">
+                        <div class="mb-6 rounded border border-rose-500/30 bg-rose-500/10 p-4 text-rose-700 dark:text-rose-300">
                             <p class="font-bold text-xs">
                                 Please correct the highlighted quotation fields.
                             </p>
@@ -41,11 +40,11 @@
                         </div>
                     @endif
 
-                    <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
                         <div>
                             <label for="quotation_date"
-                                   class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
-                                Quotation Date
+                                   class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                                Quotation Date <span class="text-red-500">*</span>
                             </label>
 
                             <input type="date"
@@ -53,7 +52,7 @@
                                    name="quotation_date"
                                    value="{{ old('quotation_date', now()->format('Y-m-d')) }}"
                                    required
-                                   class="mt-1 block w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm px-3.5 py-2.5 min-h-[44px] shadow-xs focus:bg-white dark:focus:bg-slate-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition">
+                                   class="block w-full rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b1120] text-slate-900 dark:text-slate-100 text-sm px-3 h-10 shadow-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition">
 
                             @error('quotation_date')
                                 <p class="mt-1 text-xs font-semibold text-rose-500 dark:text-rose-400">{{ $message }}</p>
@@ -62,7 +61,7 @@
 
                         <div>
                             <label for="valid_until"
-                                   class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                                   class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                                 Valid Until
                             </label>
 
@@ -70,7 +69,7 @@
                                    id="valid_until"
                                    name="valid_until"
                                    value="{{ old('valid_until', now()->addDays(15)->format('Y-m-d')) }}"
-                                   class="mt-1 block w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm px-3.5 py-2.5 min-h-[44px] shadow-xs focus:bg-white dark:focus:bg-slate-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition">
+                                   class="block w-full rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b1120] text-slate-900 dark:text-slate-100 text-sm px-3 h-10 shadow-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition">
 
                             @error('valid_until')
                                 <p class="mt-1 text-xs font-semibold text-rose-500 dark:text-rose-400">{{ $message }}</p>
@@ -79,7 +78,7 @@
 
                         <div>
                             <label for="tax_percent"
-                                   class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                                   class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                                 GST / Tax (%)
                             </label>
 
@@ -90,7 +89,7 @@
                                    max="100"
                                    step="0.01"
                                    value="{{ old('tax_percent', 18) }}"
-                                   class="mt-1 block w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm px-3.5 py-2.5 min-h-[44px] shadow-xs focus:bg-white dark:focus:bg-slate-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition font-mono">
+                                   class="block w-full rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b1120] text-slate-900 dark:text-slate-100 text-sm px-3 h-10 shadow-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition font-mono">
 
                             @error('tax_percent')
                                 <p class="mt-1 text-xs font-semibold text-rose-500 dark:text-rose-400">{{ $message }}</p>
@@ -112,9 +111,8 @@
 
                             <button type="button"
                                     id="add-row"
-                                    class="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-xl bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-                                <span>Add Custom Item</span>
+                                    class="px-4 py-2 text-xs font-semibold rounded bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition cursor-pointer">
+                                + Add Custom Item
                             </button>
                         </div>
 
@@ -217,7 +215,7 @@
 
                                             <td class="p-2 text-right align-middle">
                                                 <button type="button"
-                                                        class="remove-row inline-flex items-center justify-center px-3 py-1.5 rounded-lg text-rose-600 dark:text-rose-400 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/50 border border-rose-200/80 dark:border-rose-800/60 font-bold text-xs transition cursor-pointer">
+                                                        class="remove-row text-red-700 dark:text-red-500 hover:underline cursor-pointer bg-transparent border-0 p-0 font-medium text-xs">
                                                     Remove
                                                 </button>
                                             </td>
@@ -276,17 +274,15 @@
                         </div>
                     </div>
 
-                    <div class="sticky bottom-0 z-30 mt-8 flex items-center justify-end gap-3 border-t border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-6 py-4 rounded-b-2xl shadow-lg">
+                    <div class="sticky bottom-0 z-30 mt-8 flex items-center justify-end gap-3 border-t border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-6 py-4 rounded-b shadow-xs">
                         <a href="{{ route('leads.show', $lead) }}"
-                           class="inline-flex items-center justify-center px-6 py-2.5 bg-white hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-sm rounded-xl min-h-[44px] border border-slate-300 dark:border-slate-600 shadow-xs transition cursor-pointer">
+                           class="px-4 py-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-medium text-sm rounded border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition">
                             Cancel
                         </a>
 
                         <button type="submit"
-                                class="inline-flex items-center justify-center gap-2 px-7 py-2.5 rounded-xl text-white font-bold text-sm bg-blue-600 hover:bg-blue-700 active:scale-[0.99] shadow-md shadow-blue-500/20 transition-all min-h-[44px] min-w-44 cursor-pointer"
-                                style="background-color: var(--crm-accent, #2563eb) !important; color: #ffffff !important;">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                            <span>Save Quotation</span>
+                                class="px-5 py-2 rounded text-white font-semibold text-sm bg-blue-600 hover:bg-blue-700 transition shadow-xs">
+                            Save Quotation
                         </button>
                     </div>
                 </form>
@@ -354,7 +350,7 @@
 
             <td class="p-2 text-right align-middle">
                 <button type="button"
-                        class="remove-row inline-flex items-center justify-center px-3 py-1.5 rounded-lg text-rose-600 dark:text-rose-400 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/50 border border-rose-200/80 dark:border-rose-800/60 font-bold text-xs transition cursor-pointer">
+                        class="remove-row text-red-700 dark:text-red-500 hover:underline cursor-pointer bg-transparent border-0 p-0 font-medium text-xs">
                     Remove
                 </button>
             </td>

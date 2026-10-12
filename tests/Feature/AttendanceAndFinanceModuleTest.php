@@ -91,6 +91,7 @@ class AttendanceAndFinanceModuleTest extends TestCase
 
         $response->assertSessionHas('status');
 
+        /** @var \App\Models\EmployeeAttendance $attendance */
         $attendance = EmployeeAttendance::where('user_id', $this->technician->id)
             ->whereDate('date', $targetDate)
             ->first();
@@ -287,6 +288,7 @@ class AttendanceAndFinanceModuleTest extends TestCase
 
         $response->assertSessionHas('status');
 
+        /** @var \App\Models\EmployeeAttendance $record */
         $record = EmployeeAttendance::where('user_id', $this->technician->id)
             ->whereDate('date', $targetDate)
             ->first();
@@ -311,7 +313,7 @@ class AttendanceAndFinanceModuleTest extends TestCase
     {
         $this->actingAs($this->admin);
 
-        $weekStart = now()->startOfWeek(\Carbon\CarbonInterface::MONDAY)->toDateString();
+        $weekStart = now()->startOfWeek()->toDateString();
 
         // Create attendance for this week
         EmployeeAttendance::create([

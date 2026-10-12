@@ -66,7 +66,7 @@
             @if ($errors->any())
                 <div class="mb-5 p-4 rounded-2xl bg-rose-950/40 border border-rose-500/40 text-rose-300 text-xs shadow-lg">
                     <div class="font-bold flex items-center gap-2 mb-1">
-                        <span>⚠️</span> Please fix the following errors:
+                        Please fix the following errors:
                     </div>
                     <ul class="list-disc pl-5 space-y-0.5 text-slate-300">
                         @foreach ($errors->all() as $error)
@@ -93,21 +93,21 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4 text-xs text-slate-300">
                     <div class="flex items-start gap-2 bg-[#060913] p-3 rounded-xl border border-slate-800">
-                        <span class="text-base">📍</span>
+                        
                         <div>
                             <strong class="text-white block font-bold text-[11px]">Site Location:</strong>
                             <span class="text-slate-400 text-xs">{{ $lead?->site_address ?? $lead?->address ?? 'Not specified' }}</span>
                         </div>
                     </div>
                     <div class="flex items-start gap-2 bg-[#060913] p-3 rounded-xl border border-slate-800">
-                        <span class="text-base">📞</span>
+                        
                         <div>
                             <strong class="text-white block font-bold text-[11px]">Customer Phone:</strong>
                             <span class="text-amber-400 font-mono text-xs">{{ $lead?->phone ?? '—' }}</span>
                         </div>
                     </div>
                     <div class="flex items-start gap-2 bg-[#060913] p-3 rounded-xl border border-slate-800">
-                        <span class="text-base">📅</span>
+                        
                         <div>
                             <strong class="text-white block font-bold text-[11px]">Sign-Off Timestamp:</strong>
                             <span class="text-slate-400 font-mono text-xs">{{ now()->format('d M Y, h:i A') }}</span>
@@ -145,14 +145,14 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         @php
                             $checklistItems = [
-                                'all_cameras_positioned'     => ['📷 Camera Alignment', 'All cameras mounted securely and field of view adjusted.'],
-                                'recording_configured'       => ['💾 Recording & Storage', 'Continuous/motion recording verified on DVR/NVR hard drive.'],
-                                'remote_mobile_app_setup'    => ['📱 Mobile App Viewing', 'Customer phone app connected and live streams verified.'],
-                                'power_backup_tested'        => ['⚡ Power Supply & UPS', 'Power supplies checked, DC voltage tested, cables tagged.'],
-                                'cables_dressed_and_trunked' => ['🛡️ Cable Dressing', 'Cables neatly routed through conduits/casing without loose wires.'],
-                                'client_training_completed'  => ['🎓 User Training', 'Customer instructed on playback search, backup, and app controls.'],
-                                'work_area_cleaned'          => ['🧹 Clean Site', 'Drill dust, wire cut-offs, and packaging cleaned and removed.'],
-                                'warranty_card_handed'       => ['📜 Warranty & Documentation', 'Handover notes, login credentials, and warranty terms explained.'],
+                                'all_cameras_positioned'     => ['Camera Alignment', 'All cameras mounted securely and field of view adjusted.'],
+                                'recording_configured'       => ['Recording & Storage', 'Continuous/motion recording verified on DVR/NVR hard drive.'],
+                                'remote_mobile_app_setup'    => ['Mobile App Viewing', 'Customer phone app connected and live streams verified.'],
+                                'power_backup_tested'        => ['Power Supply & UPS', 'Power supplies checked, DC voltage tested, cables tagged.'],
+                                'cables_dressed_and_trunked' => ['Cable Dressing', 'Cables neatly routed through conduits/casing without loose wires.'],
+                                'client_training_completed'  => ['User Training', 'Customer instructed on playback search, backup, and app controls.'],
+                                'work_area_cleaned'          => ['Clean Site', 'Drill dust, wire cut-offs, and packaging cleaned and removed.'],
+                                'warranty_card_handed'       => ['Warranty & Documentation', 'Handover notes, login credentials, and warranty terms explained.'],
                             ];
                         @endphp
 
@@ -186,7 +186,7 @@
                             <h4 class="text-base font-extrabold text-white font-heading">Handover Proof Photos (Optional)</h4>
                         </div>
                         <span class="text-xs text-amber-400 font-bold flex items-center gap-1.5">
-                            <span>📷</span> Live Camera & File Upload Supported
+                            Live Camera & File Upload Supported
                         </span>
                     </div>
                     <p class="text-xs text-slate-400 mb-4">Take photos directly using laptop webcam or mobile phone camera, or select photos from your device.</p>
@@ -196,7 +196,7 @@
                         <div class="photo-slot-card p-4 rounded-xl border border-slate-700/80 transition relative flex flex-col justify-between" id="slot-0" style="background:#060913 !important;border-color:#334155;">
                             <div class="flex items-center justify-between mb-2.5">
                                 <div class="flex items-center gap-1.5">
-                                    <span class="text-sm">🗄️</span>
+                                    
                                     <span class="slot-title" style="font-size:.8rem;font-weight:800;color:#ffffff !important;">DVR / Server Rack Setup</span>
                                 </div>
                                 <span style="font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;padding:.2rem .5rem;border-radius:.4rem;background:rgba(59,130,246,0.15);color:#60a5fa !important;border:1px solid rgba(59,130,246,0.3);">Rack Setup</span>
@@ -235,15 +235,15 @@
                                     <div class="absolute bottom-2 inset-x-2 flex items-center justify-center gap-2">
                                         <button type="button" onclick="openPhotoCameraModal('slot-0', 'DVR Rack Setup')"
                                                 style="padding:.35rem .75rem;background:#0f172a !important;color:#f59e0b !important;border:1px solid #f59e0b;border-radius:.5rem;font-size:.72rem;font-weight:800;display:inline-flex;align-items:center;gap:.3rem;cursor:pointer;">
-                                            📷 Retake
+                                            Retake
                                         </button>
                                         <label style="padding:.35rem .75rem;background:#0f172a !important;color:#60a5fa !important;border:1px solid #3b82f6;border-radius:.5rem;font-size:.72rem;font-weight:800;display:inline-flex;align-items:center;gap:.3rem;cursor:pointer;">
-                                            📁 Change
+                                            Change
                                             <input type="file" accept="image/*" onchange="handlePhotoFileSelected(this, 'slot-0')" style="display:none;">
                                         </label>
                                         <button type="button" onclick="removeSlotPhoto('slot-0')"
                                                 style="padding:.35rem .75rem;background:#450a0a !important;color:#fca5a5 !important;border:1px solid #ef4444;border-radius:.5rem;font-size:.72rem;font-weight:800;display:inline-flex;align-items:center;gap:.3rem;cursor:pointer;">
-                                            🗑️ Remove
+                                            Remove
                                         </button>
                                     </div>
                                 </div>
@@ -260,7 +260,7 @@
                         <div class="photo-slot-card p-4 rounded-xl border border-slate-700/80 transition relative flex flex-col justify-between" id="slot-1" style="background:#060913 !important;border-color:#334155;">
                             <div class="flex items-center justify-between mb-2.5">
                                 <div class="flex items-center gap-1.5">
-                                    <span class="text-sm">🖥️</span>
+                                    
                                     <span class="slot-title" style="font-size:.8rem;font-weight:800;color:#ffffff !important;">Live Camera / Monitor View</span>
                                 </div>
                                 <span style="font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;padding:.2rem .5rem;border-radius:.4rem;background:rgba(245,158,11,0.15);color:#fbbf24 !important;border:1px solid rgba(245,158,11,0.3);">Camera View</span>
@@ -299,15 +299,15 @@
                                     <div class="absolute bottom-2 inset-x-2 flex items-center justify-center gap-2">
                                         <button type="button" onclick="openPhotoCameraModal('slot-1', 'Live Monitor View')"
                                                 style="padding:.35rem .75rem;background:#0f172a !important;color:#f59e0b !important;border:1px solid #f59e0b;border-radius:.5rem;font-size:.72rem;font-weight:800;display:inline-flex;align-items:center;gap:.3rem;cursor:pointer;">
-                                            📷 Retake
+                                            Retake
                                         </button>
                                         <label style="padding:.35rem .75rem;background:#0f172a !important;color:#60a5fa !important;border:1px solid #3b82f6;border-radius:.5rem;font-size:.72rem;font-weight:800;display:inline-flex;align-items:center;gap:.3rem;cursor:pointer;">
-                                            📁 Change
+                                            Change
                                             <input type="file" accept="image/*" onchange="handlePhotoFileSelected(this, 'slot-1')" style="display:none;">
                                         </label>
                                         <button type="button" onclick="removeSlotPhoto('slot-1')"
                                                 style="padding:.35rem .75rem;background:#450a0a !important;color:#fca5a5 !important;border:1px solid #ef4444;border-radius:.5rem;font-size:.72rem;font-weight:800;display:inline-flex;align-items:center;gap:.3rem;cursor:pointer;">
-                                            🗑️ Remove
+                                            Remove
                                         </button>
                                     </div>
                                 </div>
@@ -387,7 +387,7 @@
                     <div class="mb-2">
                         <div class="flex items-center justify-between mb-2">
                             <label class="text-sm font-semibold text-white flex items-center gap-1.5 font-heading">
-                                <span>✍️</span> Customer Signature (Sign on screen below) <span class="text-amber-400">*</span>
+                                Customer Signature (Sign on screen below) <span class="text-amber-400">*</span>
                             </label>
                             <button type="button" id="clearCustomerSig" class="text-xs font-bold text-rose-400 hover:text-rose-300 transition">
                                 ↺ Clear Signature
@@ -462,11 +462,11 @@
                 <div style="position:absolute;top:12px;left:12px;right:12px;display:flex;justify-content:space-between;align-items:center;pointer-events:auto;z-index:15;">
                     <button type="button" id="jcrFlipCamBtn" onclick="switchJcrCamera()"
                             style="padding:.4rem .75rem;background:rgba(15,23,42,0.85);backdrop-filter:blur(4px);color:#fff;border:1px solid rgba(255,255,255,0.2);border-radius:.6rem;font-size:.75rem;font-weight:700;display:inline-flex;align-items:center;gap:.35rem;cursor:pointer;transition:all 0.2s;">
-                        🔄 Flip Cam
+                        Flip Cam
                     </button>
                     <button type="button" id="jcrTorchBtn" onclick="toggleJcrTorch()"
                             style="padding:.4rem .75rem;background:rgba(15,23,42,0.85);backdrop-filter:blur(4px);color:#fff;border:1px solid rgba(255,255,255,0.2);border-radius:.6rem;font-size:.75rem;font-weight:700;display:inline-flex;align-items:center;gap:.35rem;cursor:pointer;transition:all 0.2s;">
-                        💡 Torch
+                        Torch
                     </button>
                 </div>
 
@@ -476,11 +476,11 @@
                     <h4 style="color:#fff;font-size:1rem;font-weight:800;margin-bottom:0.25rem;">Camera Blocked or In Use</h4>
                     <p style="color:#94a3b8;font-size:0.75rem;margin-bottom:1.25rem;max-width:280px;">Webcam cannot be opened. You can select a photo directly from your laptop or phone:</p>
                     <label style="padding:.65rem 1.25rem;background:#2563eb;color:#fff;font-weight:800;font-size:.82rem;border-radius:.75rem;cursor:pointer;display:inline-flex;align-items:center;gap:.5rem;box-shadow:0 4px 15px rgba(37,99,235,0.4);">
-                        <span>📁 Choose Photo from Files</span>
+                        <span>Choose Photo from Files</span>
                         <input type="file" accept="image/*" onchange="handleModalFallbackUpload(event)" style="display:none;">
                     </label>
                     <button type="button" onclick="startJcrCamera()" style="margin-top:1rem;background:none;border:none;color:#f59e0b;font-size:0.75rem;font-weight:700;text-decoration:underline;cursor:pointer;">
-                        🔄 Retry Camera Access
+                        Retry Camera Access
                     </button>
                 </div>
 
@@ -508,7 +508,7 @@
 
                     <button type="button" onclick="switchJcrCamera()"
                             style="padding:.5rem 1rem;background:#1e293b;color:#e2e8f0;border:1px solid #334155;border-radius:.75rem;font-size:.75rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:.35rem;">
-                        🔄 Flip
+                        Flip
                     </button>
                 </div>
 
@@ -516,7 +516,7 @@
                 <div id="jcrReviewModeControls" style="display:none;align-items:center;justify-content:space-between;gap:1rem;">
                     <button type="button" onclick="retakeJcrPhoto()"
                             style="padding:.55rem 1.25rem;background:#1e293b;color:#cbd5e1;border:1px solid #334155;border-radius:.75rem;font-size:.8rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:.4rem;">
-                        🔄 Retake Photo
+                        Retake Photo
                     </button>
 
                     <button type="button" onclick="confirmJcrPhoto()"
@@ -1041,15 +1041,15 @@
                         <div class="absolute bottom-2 inset-x-2 flex items-center justify-center gap-2">
                             <button type="button" onclick="openPhotoCameraModal('${newId}', 'Proof Photo #${slotIndex}')"
                                     style="padding:.35rem .75rem;background:#0f172a !important;color:#f59e0b !important;border:1px solid #f59e0b;border-radius:.5rem;font-size:.72rem;font-weight:800;display:inline-flex;align-items:center;gap:.3rem;cursor:pointer;">
-                                📷 Retake
+                                Retake
                             </button>
                             <label style="padding:.35rem .75rem;background:#0f172a !important;color:#60a5fa !important;border:1px solid #3b82f6;border-radius:.5rem;font-size:.72rem;font-weight:800;display:inline-flex;align-items:center;gap:.3rem;cursor:pointer;">
-                                📁 Change
+                                Change
                                 <input type="file" accept="image/*" onchange="handlePhotoFileSelected(this, '${newId}')" style="display:none;">
                             </label>
                             <button type="button" onclick="removeSlotPhoto('${newId}')"
                                     style="padding:.35rem .75rem;background:#450a0a !important;color:#fca5a5 !important;border:1px solid #ef4444;border-radius:.5rem;font-size:.72rem;font-weight:800;display:inline-flex;align-items:center;gap:.3rem;cursor:pointer;">
-                                🗑️ Remove
+                                Remove
                             </button>
                         </div>
                     </div>

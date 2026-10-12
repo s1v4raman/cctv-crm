@@ -199,9 +199,13 @@ window.zohoThemeManager = function(cfg = {}) {
         },
         setMode(newMode) {
             this.mode = newMode;
-            try { localStorage.setItem(this.modeKey, newMode); } catch(e) {}
-            this.applyTheme();
-            this.persistToDatabase();
+            if (typeof window.applyCrmMode === 'function') {
+                window.applyCrmMode(newMode, true);
+            } else {
+                try { localStorage.setItem(this.modeKey, newMode); } catch(e) {}
+                this.applyTheme();
+                this.persistToDatabase();
+            }
         },
         setThemeStyle(newStyle) {
             this.themeStyle = newStyle;

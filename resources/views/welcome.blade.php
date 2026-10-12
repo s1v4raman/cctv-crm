@@ -1058,7 +1058,7 @@
                                             </button>
                                             <button type="submit"
                                                 class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-lg shadow-blue-500/25 flex items-center space-x-2 transition-all hover:scale-102">
-                                                <span>Submit Request & Schedule Survey 🚀</span>
+                                                <span>Submit Request & Schedule Survey</span>
                                             </button>
                                         </div>
                                     </div>

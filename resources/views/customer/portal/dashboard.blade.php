@@ -10,7 +10,7 @@
                     <span class="text-xs text-slate-500 dark:text-slate-400 font-mono">Site ID: #{{ $lead ? $lead->id : 'Guest' }}</span>
                 </div>
                 <h1 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight mt-1 font-heading">
-                    Welcome back, {{ auth()->user()->name }}! 👋
+                    Welcome, {{ auth()->user()->name }}
                 </h1>
                 <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
                     {{ $lead ? $lead->customer_name . ' • ' . ($lead->site_address ?: 'Registered Customer Site') : 'Manage your CCTV installations, warranties, maintenance & support.' }}
@@ -96,7 +96,12 @@
                 @else
                     <div class="p-6 bg-white dark:bg-[#0f172a] border border-slate-200/90 dark:border-slate-800 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs">
                         <div class="flex items-start gap-4">
-                            <div class="p-3.5 text-white rounded-2xl shadow-xs text-xl font-bold" style="background-color: var(--crm-accent, #2563eb);">🚀</div>
+                            <div class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center shrink-0">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 10.5L12 3l9 7.5V20a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-9.5z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 22V12h6v10"/>
+                                </svg>
+                            </div>
                             <div>
                                 <h3 class="text-lg font-bold text-slate-900 dark:text-white font-heading">Welcome to Precision IT Systems Client Portal</h3>
                                 <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-2xl leading-relaxed">
@@ -107,9 +112,15 @@
                         <div class="flex items-center gap-2.5 shrink-0 flex-wrap">
                             <button type="button" 
                                     onclick="document.getElementById('siteSurveyBookingModal').classList.remove('hidden')"
-                                    class="crm-customer-action-btn px-4 py-2.5 text-white text-xs font-bold rounded-xl shadow-xs transition-all duration-200 cursor-pointer"
-                                    style="background-color: var(--crm-accent, #2563eb); border: 1px solid var(--crm-accent, #2563eb); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(37,99,235,0.35));">
-                                📅 Book Free Survey
+                                    class="crm-customer-action-btn inline-flex items-center gap-2 px-4 py-2.5 text-white text-xs font-bold rounded-xl shadow-xs transition-all duration-200 cursor-pointer"
+                                    style="background-color: var(--crm-accent, #2563eb);">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                                    <rect width="18" height="18" x="3" y="4" rx="3" ry="3"/>
+                                    <line stroke-linecap="round" stroke-linejoin="round" x1="16" x2="16" y1="2" y2="6"/>
+                                    <line stroke-linecap="round" stroke-linejoin="round" x1="8" x2="8" y1="2" y2="6"/>
+                                    <line stroke-linecap="round" stroke-linejoin="round" x1="3" x2="21" y1="10" y2="10"/>
+                                </svg>
+                                <span>Book Free Survey</span>
                             </button>
                             <a href="{{ route('home') }}" 
                                class="px-4 py-2.5 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-700 shadow-xs transition">
@@ -123,9 +134,15 @@
                 <div class="bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-xs overflow-hidden" x-data="{ expanded: true }">
                     <div class="px-6 py-4 bg-slate-50/70 dark:bg-slate-900/60 border-b border-slate-200/90 dark:border-slate-800 flex items-center justify-between cursor-pointer" @click="expanded = !expanded">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl crm-customer-icon-box flex items-center justify-center font-bold text-lg border"
-                                 style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.1); color: var(--crm-accent, #2563eb); border-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.25);">
-                                🛠️
+                            <div class="w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center shrink-0">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                                    <line stroke-linecap="round" stroke-linejoin="round" x1="4" x2="20" y1="6" y2="6"/>
+                                    <circle cx="8" cy="6" r="2.5"/>
+                                    <line stroke-linecap="round" stroke-linejoin="round" x1="4" x2="20" y1="12" y2="12"/>
+                                    <circle cx="16" cy="12" r="2.5"/>
+                                    <line stroke-linecap="round" stroke-linejoin="round" x1="4" x2="20" y1="18" y2="18"/>
+                                    <circle cx="10" cy="18" r="2.5"/>
+                                </svg>
                             </div>
                             <div>
                                 <h2 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 font-heading">
@@ -174,10 +191,10 @@
                                 <div>
                                     <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Primary Request Type *</label>
                                     <select name="work_type" class="w-full text-xs font-medium rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 text-slate-900 dark:text-white focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 py-2.5 px-3">
-                                        <option value="cctv_installation">📹 New CCTV Camera System Installation</option>
-                                        <option value="cctv_upgrade">🔄 Existing CCTV System Upgrade / 4K Transition</option>
-                                        <option value="amc_service">🛡️ AMC Contract / Routine Maintenance</option>
-                                        <option value="repair_breakdown">🚨 Camera Offline / NVR Breakdown Repair</option>
+                                        <option value="cctv_installation">New CCTV Camera System Installation</option>
+                                        <option value="cctv_upgrade">Existing CCTV System Upgrade / 4K Transition</option>
+                                        <option value="amc_service">AMC Contract / Routine Maintenance</option>
+                                        <option value="repair_breakdown">Camera Offline / NVR Breakdown Repair</option>
                                     </select>
                                 </div>
                             </div>
@@ -189,7 +206,7 @@
                             </div>
 
                             <div class="flex items-center justify-between pt-2">
-                                <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">⚡ Average engineer assignment response time: &lt; 30 minutes</span>
+                                <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">Average engineer assignment response time: &lt; 30 minutes</span>
                                 <button type="submit" 
                                         class="crm-customer-action-btn px-6 py-2.5 min-h-[44px] text-white font-bold text-sm rounded-xl shadow-xs transition-all duration-200 cursor-pointer"
                                         style="background-color: var(--crm-accent, #2563eb); border: 1px solid var(--crm-accent, #2563eb); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(37,99,235,0.35));">
@@ -277,29 +294,22 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     
                     {{-- 1. Installed Equipment --}}
-                    <div class="bg-white dark:bg-[#0f172a] rounded-2xl p-5 border border-slate-200/90 dark:border-slate-800 shadow-xs flex flex-col justify-between transition group">
+                    <div class="stat-card">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">CCTV Equipment</span>
-                            <div class="w-10 h-10 rounded-xl crm-customer-icon-box border flex items-center justify-center font-bold"
-                                 style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.1); color: var(--crm-accent, #2563eb); border-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.25);">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                            <span class="text-xs font-medium text-slate-500 dark:text-slate-400">CCTV Equipment</span>
+                            <svg class="w-5 h-5 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/>
+                                <circle cx="12" cy="12" r="3.2"/>
+                            </svg>
+                        </div>
+                        <div class="mt-2">
+                            <div class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">{{ $totalEquipment }} <span class="text-xs font-normal text-slate-500">Units</span></div>
+                            <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                {{ $activeWarrantyCount }} in warranty @if($expiringSoonCount > 0) &bull; {{ $expiringSoonCount }} expiring @endif
                             </div>
                         </div>
-                        <div class="mt-4">
-                            <div class="text-3xl font-black text-slate-900 dark:text-white font-heading">{{ $totalEquipment }} <span class="text-sm font-semibold text-slate-500 dark:text-slate-400">Units</span></div>
-                            <div class="flex items-center gap-2 mt-1.5 flex-wrap">
-                                <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-                                    {{ $activeWarrantyCount }} In Warranty
-                                </span>
-                                @if($expiringSoonCount > 0)
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
-                                        {{ $expiringSoonCount }} Expiring
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-                        <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
-                            <a href="{{ route('portal.equipment') }}" class="text-xs font-bold hover:underline flex items-center justify-between" style="color: var(--crm-accent, #2563eb);">
+                        <div class="mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800">
+                            <a href="{{ route('portal.equipment') }}" class="text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center justify-between">
                                 <span>View all installed units</span>
                                 <span>→</span>
                             </a>
@@ -307,28 +317,26 @@
                     </div>
 
                     {{-- 2. AMC Status --}}
-                    <div class="bg-white dark:bg-[#0f172a] rounded-2xl p-5 border border-slate-200/90 dark:border-slate-800 shadow-xs flex flex-col justify-between hover:border-emerald-300 dark:hover:border-emerald-800 transition group">
+                    <div class="stat-card">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">AMC Maintenance</span>
-                            <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 flex items-center justify-center font-bold">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-                            </div>
+                            <span class="text-xs font-medium text-slate-500 dark:text-slate-400">AMC Maintenance</span>
+                            <svg class="w-5 h-5 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.19"/>
+                            </svg>
                         </div>
-                        <div class="mt-4">
+                        <div class="mt-2">
                             @if($activeAmc)
-                                <div class="flex items-center gap-2">
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 uppercase tracking-wider">Active AMC</span>
-                                </div>
-                                <div class="text-xs text-slate-600 dark:text-slate-300 font-medium mt-1.5">
-                                    Valid until: <strong class="text-slate-900 dark:text-white">{{ \Carbon\Carbon::parse($activeAmc->end_date)->format('d M Y') }}</strong>
+                                <div class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">Active AMC</div>
+                                <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                    Valid until {{ \Carbon\Carbon::parse($activeAmc->end_date)->format('d M Y') }}
                                 </div>
                             @else
-                                <div class="text-xl font-bold text-slate-800 dark:text-slate-200 font-heading">No Active AMC</div>
-                                <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">Get 24/7 priority support & PM visits</div>
+                                <div class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">No AMC</div>
+                                <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">Support & PM visits</div>
                             @endif
                         </div>
-                        <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
-                            <a href="{{ route('portal.amc') }}" class="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center justify-between">
+                        <div class="mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800">
+                            <a href="{{ route('portal.amc') }}" class="text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center justify-between">
                                 <span>{{ $activeAmc ? 'View visits calendar' : 'Request AMC protection' }}</span>
                                 <span>→</span>
                             </a>
@@ -336,21 +344,22 @@
                     </div>
 
                     {{-- 3. Open Service Tickets --}}
-                    <div class="bg-white dark:bg-[#0f172a] rounded-2xl p-5 border border-slate-200/90 dark:border-slate-800 shadow-xs flex flex-col justify-between hover:border-rose-300 dark:hover:border-rose-800 transition group">
+                    <div class="stat-card">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Service Tickets</span>
-                            <div class="w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800 flex items-center justify-center font-bold">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                            <span class="text-xs font-medium text-slate-500 dark:text-slate-400">Service Tickets</span>
+                            <svg class="w-5 h-5 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m3 11 18-5v12L3 14v-3z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>
+                            </svg>
+                        </div>
+                        <div class="mt-2">
+                            <div class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">{{ $openTicketsCount }}</div>
+                            <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                {{ $openTicketsCount === 0 ? 'All cameras operational' : 'Active issue tickets' }}
                             </div>
                         </div>
-                        <div class="mt-4">
-                            <div class="text-3xl font-black text-slate-900 dark:text-white font-heading">{{ $openTicketsCount }}</div>
-                            <div class="text-xs font-medium text-slate-500 dark:text-slate-400 mt-1">
-                                {{ $openTicketsCount === 0 ? 'All cameras operational' : 'Active issue tickets being resolved' }}
-                            </div>
-                        </div>
-                        <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
-                            <a href="{{ route('portal.tickets') }}" class="text-xs font-bold text-rose-600 dark:text-rose-400 hover:underline flex items-center justify-between">
+                        <div class="mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800">
+                            <a href="{{ route('portal.tickets') }}" class="text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center justify-between">
                                 <span>Track helpdesk requests</span>
                                 <span>→</span>
                             </a>
@@ -358,21 +367,24 @@
                     </div>
 
                     {{-- 4. Outstanding Dues / Invoices --}}
-                    <div class="bg-white dark:bg-[#0f172a] rounded-2xl p-5 border border-slate-200/90 dark:border-slate-800 shadow-xs flex flex-col justify-between hover:border-amber-300 dark:hover:border-amber-800 transition group">
+                    <div class="stat-card">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Pending Dues</span>
-                            <div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800 flex items-center justify-center font-bold">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/></svg>
-                            </div>
+                            <span class="text-xs font-medium text-slate-500 dark:text-slate-400">Pending Dues</span>
+                            <svg class="w-5 h-5 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline stroke-linecap="round" stroke-linejoin="round" points="14 2 14 8 20 8"/>
+                                <line stroke-linecap="round" stroke-linejoin="round" x1="16" x2="8" y1="13" y2="13"/>
+                                <line stroke-linecap="round" stroke-linejoin="round" x1="16" x2="8" y1="17" y2="17"/>
+                            </svg>
                         </div>
-                        <div class="mt-4">
-                            <div class="text-2xl font-black text-slate-900 dark:text-white font-heading">₹{{ number_format($totalDue, 2) }}</div>
-                            <div class="text-xs font-medium text-slate-500 dark:text-slate-400 mt-1">
+                        <div class="mt-2">
+                            <div class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">₹{{ number_format($totalDue, 2) }}</div>
+                            <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">
                                 {{ $unpaidInvoices->count() }} invoice(s) pending payment
                             </div>
                         </div>
-                        <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
-                            <a href="{{ route('portal.invoices') }}" class="text-xs font-bold text-amber-700 dark:text-amber-400 hover:underline flex items-center justify-between">
+                        <div class="mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800">
+                            <a href="{{ route('portal.invoices') }}" class="text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center justify-between">
                                 <span>Download invoices & pay</span>
                                 <span>→</span>
                             </a>

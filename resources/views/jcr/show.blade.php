@@ -3,23 +3,23 @@
         <div class="flex flex-wrap items-center justify-between gap-3">
             <div>
                 <div class="flex items-center gap-2">
-                    <span class="text-2xl font-black tracking-wider text-white uppercase font-['Outfit']">📄 {{ $jobCompletionReport->report_no }}</span>
-                    <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                        ✓ SIGNED & CERTIFIED
+                    <span class="text-2xl font-bold tracking-wider text-white uppercase">{{ $jobCompletionReport->report_no }}</span>
+                    <span class="text-xs font-bold text-emerald-400">
+                        VERIFIED & SIGNED
                     </span>
                 </div>
                 <p class="text-xs text-slate-400 font-mono mt-1">Signed on {{ $jobCompletionReport->completion_date->format('d M Y, h:i A') }} by {{ $jobCompletionReport->signer_name }}</p>
             </div>
             <div class="flex items-center gap-2">
                 <a href="{{ route('jcr.download-pdf', $jobCompletionReport) }}"
-                   class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 text-xs font-black shadow-lg shadow-amber-500/20 transition">
+                   class="inline-flex items-center gap-1.5 px-3 py-2 rounded-[4px] bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
                     Certificate PDF
                 </a>
                 <a href="https://api.whatsapp.com/send?phone={{ preg_replace('/[^0-9]/', '', $jobCompletionReport->lead->phone ?? '') }}&text={{ urlencode('Hello ' . ($jobCompletionReport->lead->customer_name ?? 'Customer') . ', here is your signed CCTV Job Completion Certificate: ' . route('jcr.public-pdf', $jobCompletionReport)) }}"
                    target="_blank"
-                   class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md transition">
-                    💬 WhatsApp
+                   class="inline-flex items-center gap-1.5 px-3 py-2 rounded-[4px] bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition">
+                    WhatsApp
                 </a>
             </div>
         </div>
@@ -89,14 +89,14 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
                             @php
                                 $checks = [
-                                    ['📷 Camera Alignment & View Angles', $jobCompletionReport->all_cameras_positioned],
-                                    ['💾 Storage & Continuous Recording Test', $jobCompletionReport->recording_configured],
-                                    ['📱 Client Mobile App Remote View Setup', $jobCompletionReport->remote_mobile_app_setup],
-                                    ['⚡ Power Backup & Voltage Inspection', $jobCompletionReport->power_backup_tested],
-                                    ['🛡️ Cable Trunking & Neat Dressing', $jobCompletionReport->cables_dressed_and_trunked],
-                                    ['🎓 Customer Playback & Controls Training', $jobCompletionReport->client_training_completed],
-                                    ['🧹 Installation Work Area Cleaned', $jobCompletionReport->work_area_cleaned],
-                                    ['📜 Warranty Card & Login Credentials Given', $jobCompletionReport->warranty_card_handed],
+                                    ['Camera Alignment & View Angles', $jobCompletionReport->all_cameras_positioned],
+                                    ['Storage & Continuous Recording Test', $jobCompletionReport->recording_configured],
+                                    ['Client Mobile App Remote View Setup', $jobCompletionReport->remote_mobile_app_setup],
+                                    ['Power Backup & Voltage Inspection', $jobCompletionReport->power_backup_tested],
+                                    ['Cable Trunking & Neat Dressing', $jobCompletionReport->cables_dressed_and_trunked],
+                                    ['Customer Playback & Controls Training', $jobCompletionReport->client_training_completed],
+                                    ['Installation Work Area Cleaned', $jobCompletionReport->work_area_cleaned],
+                                    ['Warranty Card & Login Credentials Given', $jobCompletionReport->warranty_card_handed],
                                 ];
                             @endphp
 
@@ -166,7 +166,7 @@
                             <div>
                                 <span class="text-[10px] font-mono uppercase tracking-widest text-slate-400 block mb-2">Lead Field Engineer</span>
                                 <div class="bg-slate-900 rounded-lg p-3 border border-slate-800 flex flex-col items-center justify-center min-h-[100px] text-center">
-                                    <span class="text-2xl mb-1">🛠️</span>
+                                    
                                     <span class="text-xs font-bold text-white font-['Outfit']">{{ $jobCompletionReport->technician->name }}</span>
                                     <span class="text-[10px] text-slate-400 font-mono">Certified Field Engineer</span>
                                 </div>

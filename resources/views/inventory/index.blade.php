@@ -2,25 +2,15 @@
     <x-slot name="header">
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <div class="flex items-center gap-2">
-                    <h2 class="text-xl font-extrabold text-slate-900 dark:text-white font-heading tracking-tight">Warehouse & Inventory Management</h2>
-                    <span class="text-[10px] font-bold uppercase tracking-wider bg-orange-500/10 text-orange-600 dark:text-orange-400 px-2 py-0.5 rounded border border-orange-200 dark:border-orange-500/30">Live Stock</span>
-                </div>
-                <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Live CCTV hardware quantities, serial numbers, threshold alerts &amp; valuation</p>
+                <h1 class="text-2xl font-bold text-[#222222]">Warehouse & Inventory Management</h1>
             </div>
-            <div class="flex items-center gap-2.5 flex-wrap">
-                <a href="{{ route('inventory.movements') }}" class="btn-dark">
-                    <svg class="h-4 w-4 mr-1 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
+            <div class="flex items-center gap-2 flex-wrap">
+                <a href="{{ route('inventory.movements') }}" class="px-3.5 py-2 rounded border border-[#cccccc] bg-white text-[#222222] text-sm font-normal hover:bg-[#f5f5f5] transition">
                     Audit Log
                 </a>
                 @if(auth()->user()->isAdmin())
-                <a href="{{ route('products.create') }}" class="btn-amber">
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
-                    </svg>
-                    Add Product
+                <a href="{{ route('products.create') }}" class="px-4 py-2 rounded bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-sm font-normal transition">
+                    + Add Product
                 </a>
                 @endif
             </div>
@@ -30,108 +20,98 @@
     <style>
         .stat-grid {
             display: grid;
-            grid-template-columns: repeat(1, minmax(0, 1fr));
-            gap: 1.25rem;
-            margin-bottom: 1.75rem;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
         }
-        @media (min-width: 640px) { .stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
         @media (min-width: 1024px) { .stat-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 
-        .stat-label { font-size:0.72rem; font-weight:800; text-transform:uppercase; letter-spacing:0.06em; color:#64748b; margin-bottom:0.25rem; }
-        html.dark .stat-label { color:#94a3b8; }
-        .stat-value { font-size:1.7rem; font-weight:800; color:#0f172a; font-family:'Outfit',sans-serif; }
-        html.dark .stat-value { color:#ffffff; }
-        .stat-icon { width:48px; height:48px; border-radius:0.75rem; display:flex; align-items:center; justify-content:center; }
-
-        .p-table { width:100%; border-collapse:collapse; }
-        .p-table thead th.right { text-align:right; }
-        .p-table thead th.center { text-align:center; }
-        .p-table tbody td.right { text-align:right; }
-        .p-table tbody td.center { text-align:center; }
-
-        .cell-name { font-size:.875rem; font-weight:800; color:#0f172a; font-family:'Outfit',sans-serif; }
-        html.dark .cell-name { color:#ffffff; }
-        .cell-sub  { font-size:.75rem; color:#64748b; margin-top:.15rem; }
-        html.dark .cell-sub { color:#94a3b8; }
-        .cell-sku  { font-size:.76rem; color:#475569; font-family:ui-monospace,monospace; background:#f1f5f9; padding:.2rem .45rem; border-radius:.35rem; border:1px solid #e2e8f0; }
-        html.dark .cell-sku { color:#cbd5e1; background:#1e293b; border-color:rgba(255,255,255,.08); }
-    </style>
-    <style>
-        .stock-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.35rem;
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.72rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
+        .stat-card {
+            background: #ffffff;
+            border-radius: 4px;
+            padding: 10px 14px;
+            border: 1px solid #e2e8f0;
         }
-        .stock-ok  { background:#ecfdf5; color:#059669; border:1px solid #d1fae5; }
-        .stock-low { background:#fffbeb; color:#d97706; border:1px solid #fde68a; }
-        .stock-out { background:#fef2f2; color:#dc2626; border:1px solid #fee2e2; }
-        html.dark .stock-ok  { background:rgba(16,185,129,.15); color:#34d399; border-color:rgba(16,185,129,.3); }
-        html.dark .stock-low { background:rgba(245,158,11,.15); color:#fbbf24; border-color:rgba(245,158,11,.3); }
-        html.dark .stock-out { background:rgba(244,63,94,.15); color:#fb7185; border-color:rgba(244,63,94,.3); }
-
-        /* Action Buttons */
-        .btn-adjust {
-            display: inline-flex; align-items: center; gap: 0.4rem;
-            padding: 0.45rem 0.85rem; border-radius: 0.5rem;
-            font-size: 0.78rem; font-weight: 800;
-            background-color: var(--crm-accent, #2563eb) !important;
-            color: #ffffff !important;
-            border: none; cursor: pointer;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-            transition: all .15s ease-in-out;
+        html.dark .stat-card {
+            background: #0f172a;
+            border-color: #1e293b;
         }
-        .btn-adjust:hover { background-color: var(--crm-accent-hover, #1d4ed8) !important; }
+        .stat-label { font-size: 14px; font-weight: 500; color: #64748b; margin-bottom: 0.25rem; }
+        html.dark .stat-label { color: #94a3b8; }
+        .stat-value { font-size: 1.6rem; font-weight: 700; color: #0f172a; line-height: 1; }
+        html.dark .stat-value { color: #ffffff; }
 
-        .btn-filter {
-            display: inline-flex; align-items: center; gap: 0.35rem;
-            padding: .5rem 1.1rem; border-radius: .6rem;
-            background-color: var(--crm-accent, #2563eb) !important;
-            color: #ffffff !important;
-            font-size: .82rem; font-weight: 800;
-            border: none; cursor: pointer;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        .pg-card {
+            background: #ffffff;
+            border-radius: 4px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
         }
-        .btn-filter:hover { background-color: var(--crm-accent-hover, #1d4ed8) !important; }
-
-        .btn-clear {
-            display: inline-flex; align-items: center;
-            font-size: .82rem; color: #475569 !important; text-decoration: none; font-weight: 700;
-            padding: .5rem .85rem; border-radius: .6rem; border: 1px solid #e2e8f0; background: #f8fafc;
-            transition: all .15s;
+        html.dark .pg-card {
+            background: #0f172a;
+            border-color: #1e293b;
         }
-        .btn-clear:hover { background: #e2e8f0; color: #0f172a !important; }
-        html.dark .btn-clear { color: #94a3b8 !important; border-color: #334155; background: #1e293b; }
-        html.dark .btn-clear:hover { background: #334155; color: #ffffff !important; }
 
-        /* Modal custom tabs */
-        .type-option-in  { background: rgba(16,185,129,.15); border-color:#10b981; color:#059669; }
-        .type-option-out { background: rgba(244,63,94,.15); border-color:#f43f5e; color:#dc2626; }
-        .type-option-adj { background: rgba(245,158,11,.15); border-color:#f59e0b; color:#d97706; }
-        .type-option-inactive { background: #f8fafc; border-color: #e2e8f0; color: #64748b; }
-        html.dark .type-option-in  { color: #34d399; }
-        html.dark .type-option-out { color: #fb7185; }
-        html.dark .type-option-adj { color: #fbbf24; }
-        html.dark .type-option-inactive { background: #060913; border-color: #334155; color: #94a3b8; }
+        .filter-bar {
+            display: flex; align-items: center; gap: 0.75rem;
+            padding: 0.75rem 1rem; border-bottom: 1px solid #e2e8f0; flex-wrap: wrap;
+            background: #ffffff;
+        }
+        html.dark .filter-bar {
+            background: #0b1120;
+            border-color: #1e293b;
+        }
+        .filter-bar input, .filter-bar select {
+            border: 1px solid #cbd5e1; border-radius: 4px;
+            height: 38px; padding: 0 0.75rem; font-size: 0.85rem; color: #0f172a;
+            background: #ffffff; outline: none;
+        }
+        html.dark .filter-bar input, html.dark .filter-bar select {
+            background: #0b1120; border-color: #334155; color: #ffffff;
+        }
+        .filter-bar input:focus, .filter-bar select:focus { border-color: #2563eb; }
+
+        .p-table { width: 100%; border-collapse: collapse; }
+        .p-table thead { background: #f8fafc; border-bottom: 1px solid #e2e8f0; }
+        html.dark .p-table thead { background: #0b1120; border-color: #1e293b; }
+        .p-table thead th {
+            padding: 0.75rem 1rem;
+            font-size: 0.8rem; font-weight: 600; text-transform: none;
+            color: #475569; text-align: left; white-space: nowrap;
+        }
+        html.dark .p-table thead th { color: #94a3b8; }
+        .p-table thead th.right { text-align: right; }
+        .p-table thead th.center { text-align: center; }
+        .p-table tbody tr { border-bottom: 1px solid #e2e8f0; background: #ffffff; }
+        html.dark .p-table tbody tr { border-bottom-color: #1e293b; background: #0f172a; }
+        .p-table tbody tr:last-child { border-bottom: none; }
+        .p-table tbody tr:hover { background: #f8fafc; }
+        html.dark .p-table tbody tr:hover { background: #1e293b; }
+        .p-table tbody td { padding: 0.75rem 1rem; vertical-align: middle; font-size: 0.85rem; color: #475569; }
+        html.dark .p-table tbody td { color: #cbd5e1; }
+        .p-table tbody td.right { text-align: right; }
+        .p-table tbody td.center { text-align: center; }
+
+        .cell-name { font-size: 0.85rem; font-weight: 600; color: #0f172a; }
+        html.dark .cell-name { color: #ffffff; }
+        .cell-sub  { font-size: 0.75rem; color: #64748b; margin-top: 0.15rem; }
+        html.dark .cell-sub { color: #94a3b8; }
+        .cell-sku  { font-size: 0.8rem; font-family: ui-monospace,monospace; color: #475569; }
+        html.dark .cell-sku { color: #94a3b8; }
     </style>
 
     <div class="pg-wrap" x-data="inventoryManager()">
         <div class="pg-inner">
 
             @if (session('status'))
-                <div class="mb-4 p-4 rounded-xl bg-green-50 border border-green-200 text-green-800 text-sm font-medium flex items-center gap-2">
-                    <svg class="w-5 h-5 text-green-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                    <span>{{ session('status') }}</span>
+                <div class="mb-4 p-3 rounded bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs font-semibold">
+                    {{ session('status') }}
                 </div>
             @endif
 
             @if ($errors->any())
-                <div class="mb-4 p-4 rounded-xl bg-red-50 border border-red-200 text-red-800 text-sm font-medium">
+                <div class="mb-4 p-3 rounded bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 text-xs font-semibold">
                     <ul class="list-disc list-inside">
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
@@ -143,58 +123,33 @@
             {{-- Stat Cards --}}
             <div class="stat-grid">
                 <div class="stat-card">
-                    <div>
-                        <div class="stat-label">Total SKUs</div>
-                        <div class="stat-value">{{ $totalProducts }}</div>
-                        <span class="text-xs text-gray-500 font-medium">{{ $totalUnits }} units in warehouse</span>
-                    </div>
-                    <div class="stat-icon bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
-                    </div>
+                    <div class="stat-label">Total SKUs</div>
+                    <div class="stat-value">{{ $totalProducts }}</div>
                 </div>
 
                 <div class="stat-card">
-                    <div>
-                        <div class="stat-label">Low Stock Warnings</div>
-                        <div class="stat-value text-amber-600">{{ $lowStockCount }}</div>
-                        <span class="text-xs text-amber-600 font-medium">At or below threshold</span>
-                    </div>
-                    <div class="stat-icon bg-amber-50 dark:bg-amber-950/50 text-amber-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                    </div>
+                    <div class="stat-label">Total Stock Units</div>
+                    <div class="stat-value">{{ $totalUnits }}</div>
                 </div>
 
                 <div class="stat-card">
-                    <div>
-                        <div class="stat-label">Out of Stock</div>
-                        <div class="stat-value text-red-600">{{ $outOfStockCount }}</div>
-                        <span class="text-xs text-red-500 font-medium">Zero warehouse balance</span>
-                    </div>
-                    <div class="stat-icon bg-red-50 dark:bg-red-950/50 text-red-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
-                    </div>
+                    <div class="stat-label">Low Stock Alerts</div>
+                    <div class="stat-value" style="color: {{ $lowStockCount > 0 ? '#d97706' : '#0f172a' }};">{{ $lowStockCount }}</div>
                 </div>
 
                 <div class="stat-card">
-                    <div>
-                        <div class="stat-label">Inventory Valuation</div>
-                        <div class="stat-value text-emerald-600">₹{{ number_format($totalValuation, 2) }}</div>
-                        <span class="text-xs text-emerald-600 font-medium">Based on cost price</span>
-                    </div>
-                    <div class="stat-icon bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    </div>
+                    <div class="stat-label">Out of Stock</div>
+                    <div class="stat-value" style="color: {{ $outOfStockCount > 0 ? '#dc2626' : '#0f172a' }};">{{ $outOfStockCount }}</div>
                 </div>
             </div>
 
-            {{-- Main Inventory Card --}}
             <div class="pg-card">
-                {{-- Filters --}}
+                {{-- Filter Bar --}}
                 <form method="GET" action="{{ route('inventory.index') }}" class="filter-bar">
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search name, SKU, brand, model..." />
-                    
-                    @if($categories->count())
-                    <select name="category">
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search product name, SKU..." style="min-width: 220px;" />
+
+                    @if(count($categories) > 0)
+                    <select name="category" onchange="this.form.submit()">
                         <option value="">All Categories</option>
                         @foreach($categories as $cat)
                             <option value="{{ $cat }}" @selected(request('category') == $cat)>{{ $cat }}</option>
@@ -202,19 +157,18 @@
                     </select>
                     @endif
 
-                    <select name="status">
+                    <select name="status" onchange="this.form.submit()">
                         <option value="">All Stock Levels</option>
-                        <option value="in_stock" @selected(request('status') == 'in_stock')>🟢 Healthy Stock (> Alert Level)</option>
-                        <option value="low_stock" @selected(request('status') == 'low_stock')>🟡 Low Stock (≤ Alert Level)</option>
-                        <option value="out_of_stock" @selected(request('status') == 'out_of_stock')>🔴 Out of Stock (0)</option>
+                        <option value="in_stock" @selected(request('status') == 'in_stock')>In Stock</option>
+                        <option value="low_stock" @selected(request('status') == 'low_stock')>Low Stock</option>
+                        <option value="out_of_stock" @selected(request('status') == 'out_of_stock')>Out of Stock</option>
                     </select>
 
-                    <button type="submit" class="btn-filter">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
+                    <button type="submit" class="h-[38px] px-4 rounded bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition">
                         Filter
                     </button>
                     @if(request()->hasAny(['search', 'category', 'status']))
-                        <a href="{{ route('inventory.index') }}" class="btn-clear">Clear Filters</a>
+                        <a href="{{ route('inventory.index') }}" class="h-[38px] px-3.5 inline-flex items-center rounded border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-sm font-medium transition">Clear</a>
                     @endif
                 </form>
 
@@ -231,7 +185,7 @@
                                 <th class="right">Stock Value</th>
                                 <th class="center">Warranty</th>
                                 @if(auth()->user()->isAdmin())
-                                <th class="center">Actions</th>
+                                <th class="right">Actions</th>
                                 @endif
                             </tr>
                         </thead>
@@ -241,57 +195,55 @@
                                 <td>
                                     <div class="cell-name">{{ $prod->name }}</div>
                                     @if($prod->model_no)
-                                        <div class="cell-sub">Model: <span class="font-medium text-gray-700 dark:text-slate-300">{{ $prod->model_no }}</span></div>
+                                        <div class="cell-sub">Model: {{ $prod->model_no }}</div>
                                     @endif
                                 </td>
                                 <td>
                                     <span class="cell-sku">{{ $prod->sku ?: '—' }}</span>
                                 </td>
                                 <td>
-                                    <div class="text-sm font-semibold text-gray-800 dark:text-slate-200">{{ $prod->category ?: 'General' }}</div>
+                                    <div class="font-medium text-slate-800 dark:text-slate-200 text-xs">{{ $prod->category ?: 'General' }}</div>
                                     <div class="cell-sub">{{ $prod->brand ?: 'Unbranded' }}</div>
                                 </td>
                                 <td class="center">
                                     @if($prod->stock_quantity <= 0)
-                                        <span class="stock-badge stock-out">
-                                            <span>●</span> Out of Stock (0 {{ $prod->unit }})
+                                        <span class="text-xs font-bold text-red-600">
+                                            Out of Stock (0 {{ $prod->unit }})
                                         </span>
                                     @elseif($prod->isLowStock())
-                                        <span class="stock-badge stock-low">
-                                            <span>●</span> Low: {{ $prod->stock_quantity }} {{ $prod->unit }}
+                                        <span class="text-xs font-bold text-amber-600">
+                                            Low: {{ $prod->stock_quantity }} {{ $prod->unit }}
                                         </span>
-                                        <div class="text-[10px] text-amber-700 dark:text-amber-400 mt-0.5">Alert limit: {{ $prod->min_stock_alert }}</div>
                                     @else
-                                        <span class="stock-badge stock-ok">
-                                            <span>●</span> {{ $prod->stock_quantity }} {{ $prod->unit }}
+                                        <span class="text-xs font-bold text-emerald-600">
+                                            {{ $prod->stock_quantity }} {{ $prod->unit }}
                                         </span>
                                     @endif
                                 </td>
                                 <td class="right">
-                                    <span class="text-sm font-semibold text-gray-700 dark:text-slate-200">₹{{ number_format($prod->cost_price, 2) }}</span>
+                                    <span class="text-xs font-medium text-slate-700 dark:text-slate-200">₹{{ number_format($prod->cost_price, 2) }}</span>
                                 </td>
                                 <td class="right">
-                                    <span class="text-sm font-bold text-gray-900 dark:text-white">₹{{ number_format($prod->cost_price * $prod->stock_quantity, 2) }}</span>
+                                    <span class="text-xs font-semibold text-slate-900 dark:text-white">₹{{ number_format($prod->cost_price * $prod->stock_quantity, 2) }}</span>
                                 </td>
                                 <td class="center">
-                                    <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                                    <span class="text-xs text-slate-600 dark:text-slate-400">
                                         {{ $prod->default_warranty_months ?: 24 }} Mo
                                     </span>
                                 </td>
                                 @if(auth()->user()->isAdmin())
-                                <td class="center">
+                                <td class="whitespace-nowrap text-right text-sm" style="text-align:right;">
                                     <button type="button" 
                                             @click="openModal({{ $prod->id }}, {{ json_encode($prod->name) }}, {{ json_encode($prod->sku ?? '') }}, {{ $prod->stock_quantity }}, {{ json_encode($prod->unit ?? 'pcs') }})"
-                                            class="btn-adjust text-white">
-                                        <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
-                                        Stock In / Adjust
+                                            class="text-blue-600 hover:underline cursor-pointer bg-transparent border-0 p-0 font-medium">
+                                        Stock Adjust
                                     </button>
                                 </td>
                                 @endif
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="{{ auth()->user()->isAdmin() ? 8 : 7 }}" class="text-center py-8 text-gray-500 text-sm">
+                                <td colspan="{{ auth()->user()->isAdmin() ? 8 : 7 }}" class="text-center py-8 text-slate-500 text-sm">
                                     No products found matching the criteria.
                                 </td>
                             </tr>
@@ -301,7 +253,7 @@
                 </div>
 
                 @if($products->hasPages())
-                <div class="p-4 border-t border-gray-100">
+                <div class="p-3 border-t border-slate-200 dark:border-slate-800">
                     {{ $products->links() }}
                 </div>
                 @endif
@@ -310,9 +262,9 @@
             {{-- Recent Movements Activity Feed --}}
             @if($recentMovements->count())
             <div class="pg-card">
-                <div class="p-4 border-b border-gray-100 flex items-center justify-between">
-                    <h3 class="font-bold text-gray-800 text-sm uppercase tracking-wide">Recent Stock Activity Trail</h3>
-                    <a href="{{ route('inventory.movements') }}" class="text-xs font-bold text-indigo-600 hover:text-indigo-800">View All Logs &rarr;</a>
+                <div class="p-3.5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                    <h3 class="font-bold text-slate-800 dark:text-white text-sm">Recent Stock Movements</h3>
+                    <a href="{{ route('inventory.movements') }}" class="text-xs font-semibold text-blue-600 hover:underline">View All Logs &rarr;</a>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="p-table">
@@ -330,35 +282,35 @@
                         <tbody>
                             @foreach($recentMovements as $mov)
                             <tr>
-                                <td class="text-xs text-gray-500 dark:text-slate-400 whitespace-nowrap">
+                                <td class="text-xs text-slate-500 whitespace-nowrap">
                                     {{ $mov->created_at->format('d M Y, h:i A') }}
                                 </td>
                                 <td>
-                                    <span class="font-bold text-xs text-gray-900 dark:text-white">{{ $mov->product?->name ?? 'Unknown Product' }}</span>
+                                    <span class="font-medium text-xs text-slate-900 dark:text-white">{{ $mov->product?->name ?? 'Unknown Product' }}</span>
                                 </td>
                                 <td>
                                     @if($mov->type === 'in')
-                                        <span class="px-2.5 py-1 rounded text-[11px] font-bold bg-emerald-100 dark:bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30">Stock IN (+)</span>
+                                        <span class="text-xs font-bold text-emerald-600">Stock IN (+)</span>
                                     @elseif($mov->type === 'out')
-                                        <span class="px-2.5 py-1 rounded text-[11px] font-bold bg-rose-100 dark:bg-rose-500/20 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-500/30">Stock OUT (-)</span>
+                                        <span class="text-xs font-bold text-red-600">Stock OUT (-)</span>
                                     @elseif($mov->type === 'job_installation')
-                                        <span class="px-2.5 py-1 rounded text-[11px] font-bold bg-indigo-100 dark:bg-indigo-500/20 text-indigo-800 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30">Job Deployment</span>
+                                        <span class="text-xs font-bold text-blue-600">Job Deployment</span>
                                     @elseif($mov->type === 'return')
-                                        <span class="px-2.5 py-1 rounded text-[11px] font-bold bg-amber-100 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30">Customer Return</span>
+                                        <span class="text-xs font-bold text-amber-600">Customer Return</span>
                                     @else
-                                        <span class="px-2.5 py-1 rounded text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700">Adjustment</span>
+                                        <span class="text-xs font-bold text-slate-600">Adjustment</span>
                                     @endif
                                 </td>
-                                <td class="center font-bold text-xs {{ $mov->quantity >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400' }}">
+                                <td class="center font-semibold text-xs {{ $mov->quantity >= 0 ? 'text-emerald-700' : 'text-red-700' }}">
                                     {{ $mov->quantity > 0 ? '+' : '' }}{{ $mov->quantity }}
                                 </td>
-                                <td class="center font-semibold text-xs text-gray-700 dark:text-slate-300">
+                                <td class="center text-xs text-slate-700 dark:text-slate-300">
                                     {{ $mov->balance_after }}
                                 </td>
-                                <td class="text-xs text-gray-600 dark:text-slate-400 max-w-xs truncate">
+                                <td class="text-xs text-slate-500 max-w-xs truncate">
                                     {{ $mov->notes ?: '—' }}
                                 </td>
-                                <td class="text-xs text-gray-500 dark:text-slate-400 font-medium">
+                                <td class="text-xs text-slate-500">
                                     {{ $mov->user?->name ?? 'System' }}
                                 </td>
                             </tr>
@@ -374,68 +326,68 @@
         {{-- Stock Adjustment Modal --}}
         <div x-show="adjustModal" 
              style="display: none;"
-             class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm"
+             class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70"
              x-cloak>
-            <div class="bg-[#0f172a] rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-700 text-slate-200" @click.outside="adjustModal = false" style="background-color: #0f172a;">
-                <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
-                    <h3 class="text-base font-extrabold text-white font-heading">Update Stock Level</h3>
-                    <button @click="adjustModal = false" class="text-slate-400 hover:text-white text-2xl font-bold leading-none">&times;</button>
+            <div class="bg-white dark:bg-[#0f172a] rounded-[4px] max-w-md w-full p-5 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200" @click.outside="adjustModal = false">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 mb-4">
+                    <h3 class="text-base font-bold text-slate-900 dark:text-white">Update Stock Level</h3>
+                    <button @click="adjustModal = false" class="text-slate-400 hover:text-slate-700 text-2xl font-bold leading-none">&times;</button>
                 </div>
 
                 <template x-if="selectedProductId">
                     <form :action="`/inventory/${selectedProductId}/adjust`" method="POST">
                         @csrf
-                        <div class="mb-4 p-3.5 bg-[#060913] rounded-xl border border-slate-800">
-                            <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Product Master</div>
-                            <div class="text-sm font-extrabold text-white mt-0.5" x-text="productName"></div>
-                            <div class="text-xs text-slate-300 mt-1.5 flex items-center justify-between">
-                                <span>Current Stock: <strong class="text-amber-400 font-bold font-mono" x-text="productStock + ' ' + productUnit"></strong></span>
-                                <span x-show="productSku" class="font-mono text-slate-400" x-text="'SKU: ' + productSku"></span>
+                        <div class="mb-4 p-3 bg-slate-50 dark:bg-slate-900 rounded border border-slate-200 dark:border-slate-800">
+                            <div class="text-xs font-medium text-slate-500">Product</div>
+                            <div class="text-sm font-bold text-slate-900 dark:text-white mt-0.5" x-text="productName"></div>
+                            <div class="text-xs text-slate-600 dark:text-slate-300 mt-1 flex items-center justify-between">
+                                <span>Current Stock: <strong class="font-bold" x-text="productStock + ' ' + productUnit"></strong></span>
+                                <span x-show="productSku" class="font-mono text-slate-500" x-text="'SKU: ' + productSku"></span>
                             </div>
                         </div>
 
                         <div class="mb-4">
-                            <label class="block text-sm font-semibold text-slate-200 mb-1.5">Movement Action</label>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Movement Action</label>
                             <div class="grid grid-cols-3 gap-2">
-                                <label class="flex items-center justify-center p-2.5 rounded-xl border text-xs font-bold cursor-pointer text-center transition-all"
-                                       :class="adjustType === 'in' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 shadow-sm' : 'bg-[#060913] text-slate-400 border-slate-800 hover:border-slate-700'">
+                                <label class="flex items-center justify-center p-2 rounded border text-xs font-semibold cursor-pointer text-center"
+                                       :class="adjustType === 'in' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700'">
                                     <input type="radio" name="type" value="in" x-model="adjustType" class="hidden">
-                                    <span>➕ Stock In</span>
+                                    <span>Stock In</span>
                                 </label>
-                                <label class="flex items-center justify-center p-2.5 rounded-xl border text-xs font-bold cursor-pointer text-center transition-all"
-                                       :class="adjustType === 'out' ? 'bg-rose-500/20 text-rose-300 border-rose-500/40 shadow-sm' : 'bg-[#060913] text-slate-400 border-slate-800 hover:border-slate-700'">
+                                <label class="flex items-center justify-center p-2 rounded border text-xs font-semibold cursor-pointer text-center"
+                                       :class="adjustType === 'out' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700'">
                                     <input type="radio" name="type" value="out" x-model="adjustType" class="hidden">
-                                    <span>➖ Stock Out</span>
+                                    <span>Stock Out</span>
                                 </label>
-                                <label class="flex items-center justify-center p-2.5 rounded-xl border text-xs font-bold cursor-pointer text-center transition-all"
-                                       :class="adjustType === 'adjustment' ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 shadow-sm' : 'bg-[#060913] text-slate-400 border-slate-800 hover:border-slate-700'">
+                                <label class="flex items-center justify-center p-2 rounded border text-xs font-semibold cursor-pointer text-center"
+                                       :class="adjustType === 'adjustment' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700'">
                                     <input type="radio" name="type" value="adjustment" x-model="adjustType" class="hidden">
-                                    <span>⚙️ Set Exact</span>
+                                    <span>Set Exact</span>
                                 </label>
                             </div>
                         </div>
 
                         <div class="mb-4">
-                            <label class="block text-sm font-semibold text-slate-200 mb-1.5"
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
                                    x-text="adjustType === 'adjustment' ? 'New Exact Stock Count' : 'Quantity'"></label>
                             <input type="number" name="quantity" min="0" required x-model="adjustQty"
-                                   class="w-full border border-slate-700 bg-[#060913] rounded-xl px-3.5 py-2.5 text-sm font-semibold text-white focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400">
+                                   class="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 rounded px-3 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500">
                         </div>
 
                         <div class="mb-5">
-                            <label class="block text-sm font-semibold text-slate-200 mb-1.5">Reason / Notes</label>
-                            <input type="text" name="notes" placeholder="e.g., Vendor Invoice #4812, Physical audit, Damaged" x-model="adjustNotes"
-                                   class="w-full border border-slate-700 bg-[#060913] rounded-xl px-3.5 py-2 text-sm text-slate-200 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400">
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Reason / Notes</label>
+                            <input type="text" name="notes" placeholder="e.g., Vendor Invoice, Physical audit" x-model="adjustNotes"
+                                   class="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 rounded px-3 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500">
                         </div>
 
-                        <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
+                        <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-200 dark:border-slate-800">
                             <button type="button" @click="adjustModal = false"
-                                    class="px-4 py-2 text-xs font-bold text-slate-400 hover:text-white rounded-xl border border-slate-700 hover:bg-slate-800 transition">
+                                    class="px-3.5 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 rounded border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
                                 Cancel
                             </button>
                             <button type="submit"
-                                    class="btn-amber">
-                                Save Stock Movement
+                                    class="px-4 py-2 text-sm font-semibold rounded bg-blue-600 hover:bg-blue-700 text-white transition">
+                                Save Movement
                             </button>
                         </div>
                     </form>

@@ -110,7 +110,7 @@
 <body>
 
     <div class="no-print" style="margin-bottom: 15px;">
-        <button class="print-btn" onclick="window.print()">🖨️ Print This Payout Sheet</button>
+        <button class="print-btn" onclick="window.print()">Print This Payout Sheet</button>
         <button class="print-btn" style="background: #64748b;" onclick="window.close()">Close Window</button>
     </div>
 

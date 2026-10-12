@@ -1,261 +1,228 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div class="flex items-center gap-3">
-                <div class="p-2.5 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl shadow-lg shadow-amber-500/20 text-white">
-                    <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                    </svg>
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <div class="flex items-center gap-2">
+                    <h1 class="text-2xl font-bold text-[#222222]">
+                        GST & Tax Compliance Center
+                    </h1>
+                    <span class="text-sm font-bold text-[#d97706]">
+                        GSTR-1 & ITC Hub
+                    </span>
                 </div>
-                <div>
-                    <div class="flex items-center gap-2">
-                        <h2 class="text-xl font-black tracking-tight text-slate-900 dark:text-white sm:text-2xl">
-                            GST & Tax Compliance Center
-                        </h2>
-                        <span class="px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider bg-amber-100 text-amber-800 dark:bg-amber-950/70 dark:text-amber-300 border border-amber-300 dark:border-amber-800 rounded-full">
-                            GSTR-1 & ITC Hub
-                        </span>
-                    </div>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                        {{ $companyGst['trade_name'] }} • GSTIN: <strong class="text-slate-700 dark:text-slate-200 font-mono">{{ $companyGst['gstin'] }}</strong> • State: {{ $companyGst['state'] }} ({{ $companyGst['state_code'] }})
-                    </p>
-                </div>
+                <p class="text-xs text-[#555555] mt-0.5">
+                    {{ $companyGst['trade_name'] }} • GSTIN: <strong class="text-[#222222]">{{ $companyGst['gstin'] }}</strong> • State: {{ $companyGst['state'] }} ({{ $companyGst['state_code'] }})
+                </p>
             </div>
 
             <!-- Month Filter & Quick Action Buttons -->
-            <div class="flex flex-wrap items-center gap-2.5">
-                <form method="GET" action="{{ route('finance.gst.index') }}" class="flex items-center gap-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-1 shadow-sm">
+            <div class="flex flex-wrap items-center gap-2">
+                <form method="GET" action="{{ route('finance.gst.index') }}" class="flex items-center gap-2">
                     <input type="hidden" name="tab" value="{{ $activeTab }}">
-                    <div class="flex items-center px-2.5 gap-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400">
-                        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                        <span>Period:</span>
-                    </div>
                     <input type="month" name="month" value="{{ $selectedMonth }}" onchange="this.form.submit()"
-                           class="bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-xs font-bold rounded-lg border-0 py-1.5 px-3 focus:ring-2 focus:ring-amber-500 cursor-pointer">
+                           class="bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-xs font-semibold rounded border border-slate-300 dark:border-slate-700 py-1.5 px-3 cursor-pointer" style="height: 38px; border-radius: 4px;">
                 </form>
 
                 <!-- Export Menu Dropdown -->
                 <div class="relative" x-data="{ open: false }">
                     <button @click="open = !open" @click.outside="open = false" type="button"
-                            class="inline-flex items-center gap-2 px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-md shadow-indigo-600/20 transition">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                            class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded transition" style="height: 38px; border-radius: 4px;">
                         <span>Export Return</span>
-                        <svg class="w-3.5 h-3.5 ml-0.5 opacity-70" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                        <svg class="w-3.5 h-3.5 opacity-70" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
                     </button>
 
                     <div x-show="open" x-cloak
-                         class="absolute right-0 mt-2 w-64 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl py-2 z-50 animate-in fade-in zoom-in-95 duration-100">
-                        <div class="px-3.5 py-1.5 text-[10px] font-black tracking-wider uppercase text-slate-400 dark:text-slate-500 border-b border-slate-100 dark:border-slate-800/60 mb-1">
-                            Official GST Exports ({{ Carbon\Carbon::parse($selectedMonth.'-01')->format('M Y') }})
+                         class="absolute right-0 mt-1 w-64 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded shadow-lg py-2 z-50" style="border-radius: 4px;">
+                        <div class="px-3.5 py-1 text-xs font-semibold text-slate-400 border-b border-slate-100 dark:border-slate-800 mb-1">
+                            GST Exports ({{ Carbon\Carbon::parse($selectedMonth.'-01')->format('M Y') }})
                         </div>
-                        <a href="{{ route('finance.gst.export-json', ['month' => $selectedMonth]) }}" class="flex items-center gap-3 px-3.5 py-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-amber-50 dark:hover:bg-amber-950/40 hover:text-amber-700 transition">
-                            <span class="p-1.5 bg-amber-100 dark:bg-amber-900/60 text-amber-700 dark:text-amber-300 rounded-lg text-[10px] font-black">JSON</span>
-                            <div>
-                                <div class="font-bold">GSTR-1 Portal JSON</div>
-                                <div class="text-[10px] text-slate-400">Direct upload to gst.gov.in</div>
-                            </div>
+                        <a href="{{ route('finance.gst.export-json', ['month' => $selectedMonth]) }}" class="block px-3.5 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+                            <div class="font-bold">GSTR-1 Portal JSON</div>
+                            <div class="text-[10px] text-slate-400">Direct upload to gst.gov.in</div>
                         </a>
-                        <a href="{{ route('finance.gst.export-csv', ['month' => $selectedMonth]) }}" class="flex items-center gap-3 px-3.5 py-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-blue-950/40 hover:text-blue-700 transition">
-                            <span class="p-1.5 bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300 rounded-lg text-[10px] font-black">CSV</span>
-                            <div>
-                                <div class="font-bold">GSTR-1 Sales Report</div>
-                                <div class="text-[10px] text-slate-400">B2B, B2C & HSN Excel format</div>
-                            </div>
+                        <a href="{{ route('finance.gst.export-csv', ['month' => $selectedMonth]) }}" class="block px-3.5 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+                            <div class="font-bold">GSTR-1 Sales Report (CSV)</div>
+                            <div class="text-[10px] text-slate-400">B2B, B2C & HSN format</div>
                         </a>
-                        <a href="{{ route('finance.gst.export-itc-csv', ['month' => $selectedMonth]) }}" class="flex items-center gap-3 px-3.5 py-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 hover:text-emerald-700 transition">
-                            <span class="p-1.5 bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 rounded-lg text-[10px] font-black">ITC</span>
-                            <div>
-                                <div class="font-bold">GSTR-2B / ITC Purchases</div>
-                                <div class="text-[10px] text-slate-400">Vendor POs & Expense claims</div>
-                            </div>
+                        <a href="{{ route('finance.gst.export-itc-csv', ['month' => $selectedMonth]) }}" class="block px-3.5 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+                            <div class="font-bold">GSTR-2B / ITC Purchases (CSV)</div>
+                            <div class="text-[10px] text-slate-400">Vendor POs & Expenses</div>
                         </a>
-                        <div class="border-t border-slate-100 dark:border-slate-800/60 my-1"></div>
-                        <a href="{{ route('finance.gst.export-pdf', ['month' => $selectedMonth]) }}" class="flex items-center gap-3 px-3.5 py-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-rose-50 dark:hover:bg-rose-950/40 hover:text-rose-700 transition">
-                            <span class="p-1.5 bg-rose-100 dark:bg-rose-900/60 text-rose-700 dark:text-rose-300 rounded-lg text-[10px] font-black">PDF</span>
-                            <div>
-                                <div class="font-bold">Tax Audit Package PDF</div>
-                                <div class="text-[10px] text-slate-400">Ready for CA & management</div>
-                            </div>
+                        <div class="border-t border-slate-100 dark:border-slate-800 my-1"></div>
+                        <a href="{{ route('finance.gst.export-pdf', ['month' => $selectedMonth]) }}" class="block px-3.5 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+                            <div class="font-bold">Tax Audit Package (PDF)</div>
                         </a>
                     </div>
                 </div>
 
                 <!-- Record Filing Button -->
                 <button @click="$dispatch('open-modal', 'record-filing-modal')" type="button"
-                        class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-bold rounded-xl shadow-md shadow-emerald-600/20 transition">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    <span>Record Filing & Challan</span>
+                        class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded transition" style="height: 38px; border-radius: 4px;">
+                    Record Filing
                 </button>
 
                 <!-- Settings Button -->
                 <button @click="$dispatch('open-modal', 'company-gst-modal')" type="button" title="GST Settings"
-                        class="p-2 text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm transition">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        class="px-3 py-2 text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 rounded transition" style="height: 38px; border-radius: 4px;">
+                    Settings
                 </button>
             </div>
         </div>
     </x-slot>
 
-    <div class="py-6 space-y-6">
+    <style>
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        @media (min-width: 640px) {
+            .stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        @media (min-width: 1024px) {
+            .stat-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        }
+
+        .stat-card {
+            background: #ffffff;
+            border-radius: 4px;
+            padding: 10px 14px;
+            border: 1px solid #e2e8f0;
+        }
+        html.dark .stat-card {
+            background: #0f172a;
+            border-color: #1e293b;
+        }
+        .stat-label { font-size: 14px; font-weight: 500; color: #64748b; margin-bottom: 0.25rem; }
+        html.dark .stat-label { color: #94a3b8; }
+        .stat-value { font-size: 1.5rem; font-weight: 700; color: #0f172a; line-height: 1; }
+        html.dark .stat-value { color: #ffffff; }
+
+        .pg-card {
+            background: #ffffff;
+            border-radius: 4px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+        html.dark .pg-card {
+            background: #0f172a;
+            border-color: #1e293b;
+        }
+    </style>
+
+    <div class="py-6 bg-slate-50 dark:bg-[#060913] min-h-screen">
+        <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         {{-- Finance Category Sub-Navigation --}}
         <x-finance-subnav active="gst" />
 
         @if (session('status'))
-            <div class="p-4 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800/80 rounded-2xl flex items-center justify-between shadow-sm animate-in fade-in duration-200">
-                <div class="flex items-center gap-3">
-                    <span class="p-2 bg-emerald-100 dark:bg-emerald-900/80 text-emerald-700 dark:text-emerald-300 rounded-xl">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                    </span>
-                    <span class="text-xs md:text-sm font-bold text-emerald-900 dark:text-emerald-200">{{ session('status') }}</span>
-                </div>
+            <div class="p-4 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-sm font-medium rounded" style="border-radius: 4px;">
+                {{ session('status') }}
             </div>
         @endif
 
         <!-- Filing Status Bar -->
-        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 md:p-6 shadow-sm flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div class="space-y-1">
-                <div class="flex items-center gap-2.5">
-                    <span class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Return Period Status</span>
-                    <span class="text-xs text-slate-300 dark:text-slate-600">•</span>
-                    <span class="text-xs font-semibold text-slate-600 dark:text-slate-300">{{ Carbon\Carbon::parse($selectedMonth.'-01')->format('F Y') }}</span>
-                </div>
-                <h3 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white flex flex-wrap items-center gap-3">
-                    <span>GST Return Summary</span>
+        <div class="pg-card p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+                <div class="text-xs text-slate-500">Period: {{ Carbon\Carbon::parse($selectedMonth.'-01')->format('F Y') }}</div>
+                <div class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 mt-0.5">
+                    <span>GST Return Summary:</span>
                     @if($filing && $filing->gstr3b_status === 'filed')
-                        <span class="px-3 py-1 text-xs font-black uppercase tracking-wider bg-emerald-50 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/40 rounded-full flex items-center gap-1.5">
-                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-                            Return Filed & Discharged
-                        </span>
+                        <span class="font-bold text-emerald-600 dark:text-emerald-400">Return Filed & Discharged</span>
                     @elseif($filing && $filing->gstr3b_status === 'reconciled')
-                        <span class="px-3 py-1 text-xs font-black uppercase tracking-wider bg-blue-50 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300 border border-blue-200 dark:border-blue-500/40 rounded-full">
-                            Reconciled & Ready to File
-                        </span>
+                        <span class="font-bold text-blue-600 dark:text-blue-400">Reconciled & Ready to File</span>
                     @else
-                        <span class="px-3 py-1 text-xs font-black uppercase tracking-wider bg-amber-50 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300 border border-amber-200 dark:border-amber-500/40 rounded-full">
-                            Draft Computation Pending
-                        </span>
+                        <span class="font-bold text-amber-600 dark:text-amber-400">Draft Computation Pending</span>
                     @endif
-                </h3>
+                </div>
             </div>
 
-            <div class="flex flex-wrap items-center gap-3">
-                <div class="px-4 py-2.5 bg-slate-50 dark:bg-slate-800/80 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 text-right">
-                    <div class="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">GSTR-1 Status</div>
-                    <div class="text-xs font-black text-slate-900 dark:text-white uppercase mt-0.5">
-                        {{ $filing ? ucfirst($filing->gstr1_status) : 'Pending' }}
-                    </div>
+            <div class="flex flex-wrap items-center gap-4 text-sm">
+                <div>
+                    <span class="text-xs text-slate-400 block">GSTR-1</span>
+                    <span class="font-bold text-slate-900 dark:text-white uppercase">{{ $filing ? ucfirst($filing->gstr1_status) : 'Pending' }}</span>
                 </div>
-                <div class="px-4 py-2.5 bg-slate-50 dark:bg-slate-800/80 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 text-right">
-                    <div class="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">GSTR-3B Status</div>
-                    <div class="text-xs font-black text-slate-900 dark:text-white uppercase mt-0.5">
-                        {{ $filing ? ucfirst($filing->gstr3b_status) : 'Pending' }}
-                    </div>
+                <div>
+                    <span class="text-xs text-slate-400 block">GSTR-3B</span>
+                    <span class="font-bold text-slate-900 dark:text-white uppercase">{{ $filing ? ucfirst($filing->gstr3b_status) : 'Pending' }}</span>
                 </div>
                 @if($filing && $filing->challan_no)
-                    <div class="px-4 py-2.5 bg-emerald-50 dark:bg-emerald-950/60 rounded-2xl border border-emerald-200 dark:border-emerald-800/60 text-right">
-                        <div class="text-[10px] font-bold text-emerald-700 dark:text-emerald-300 uppercase tracking-wider">Challan Ref</div>
-                        <div class="text-xs font-mono font-black text-emerald-900 dark:text-emerald-300 mt-0.5">{{ $filing->challan_no }}</div>
+                    <div>
+                        <span class="text-xs text-slate-400 block">Challan Ref</span>
+                        <span class="font-mono font-bold text-emerald-600 dark:text-emerald-400">{{ $filing->challan_no }}</span>
                     </div>
                 @endif
             </div>
         </div>
 
         <!-- KPI Summary Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="stat-grid">
             <!-- 1. Total Turnover -->
-            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 rounded-3xl p-5 shadow-sm relative overflow-hidden group hover:border-blue-500/40 transition">
-                <div class="flex items-center justify-between">
-                    <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Gross Sales Turnover</span>
-                    <span class="p-2 bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 rounded-xl">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
-                    </span>
-                </div>
-                <div class="text-2xl font-black text-slate-900 dark:text-white mt-2">
+            <div class="stat-card">
+                <div class="stat-label">Gross Sales Turnover</div>
+                <div class="stat-value text-blue-600 dark:text-blue-400">
                     ₹{{ number_format($gstr1Data['total_gross_turnover'], 2) }}
                 </div>
-                <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 flex items-center justify-between">
-                    <span>Taxable: ₹{{ number_format($gstr1Data['total_taxable_turnover'], 2) }}</span>
-                    <span class="font-bold text-blue-600 dark:text-blue-400">{{ $gstr1Data['total_invoices_count'] }} Invoices</span>
+                <div class="text-xs text-slate-500 mt-2">
+                    Taxable: ₹{{ number_format($gstr1Data['total_taxable_turnover'], 2) }} • {{ $gstr1Data['total_invoices_count'] }} Invoices
                 </div>
-                <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
             </div>
 
             <!-- 2. Output Tax Collected -->
-            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 rounded-3xl p-5 shadow-sm relative overflow-hidden group hover:border-indigo-500/40 transition">
-                <div class="flex items-center justify-between">
-                    <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Output GST (Sales)</span>
-                    <span class="p-2 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 rounded-xl">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    </span>
-                </div>
-                <div class="text-2xl font-black text-indigo-600 dark:text-indigo-400 mt-2">
+            <div class="stat-card">
+                <div class="stat-label">Output GST (Sales)</div>
+                <div class="stat-value text-slate-900 dark:text-white">
                     ₹{{ number_format($gstr1Data['total_output_tax'], 2) }}
                 </div>
-                <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 flex items-center justify-between">
-                    <span>CGST+SGST: ₹{{ number_format($gstr1Data['total_output_cgst'] + $gstr1Data['total_output_sgst'], 2) }}</span>
-                    <span>IGST: ₹{{ number_format($gstr1Data['total_output_igst'], 2) }}</span>
+                <div class="text-xs text-slate-500 mt-2">
+                    CGST+SGST: ₹{{ number_format($gstr1Data['total_output_cgst'] + $gstr1Data['total_output_sgst'], 2) }} • IGST: ₹{{ number_format($gstr1Data['total_output_igst'], 2) }}
                 </div>
-                <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 to-purple-600"></div>
             </div>
 
             <!-- 3. Input Tax Credit (ITC Available) -->
-            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 rounded-3xl p-5 shadow-sm relative overflow-hidden group hover:border-emerald-500/40 transition">
-                <div class="flex items-center justify-between">
-                    <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Input Tax Credit (ITC)</span>
-                    <span class="p-2 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 rounded-xl">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11"/></svg>
-                    </span>
-                </div>
-                <div class="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-2">
+            <div class="stat-card">
+                <div class="stat-label">Input Tax Credit (ITC)</div>
+                <div class="stat-value text-emerald-600 dark:text-emerald-400">
                     ₹{{ number_format($itcData['grand_total_itc'], 2) }}
                 </div>
-                <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 flex items-center justify-between">
-                    <span>POs: ₹{{ number_format($itcData['total_po_itc'], 2) }}</span>
-                    <span>Expenses: ₹{{ number_format($itcData['total_expense_itc'], 2) }}</span>
+                <div class="text-xs text-slate-500 mt-2">
+                    POs: ₹{{ number_format($itcData['total_po_itc'], 2) }} • Expenses: ₹{{ number_format($itcData['total_expense_itc'], 2) }}
                 </div>
-                <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-600"></div>
             </div>
 
             <!-- 4. Net Tax Payable (Cash) -->
-            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 rounded-3xl p-5 shadow-sm relative overflow-hidden group hover:border-amber-500/40 transition">
-                <div class="flex items-center justify-between">
-                    <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Net Cash Tax Payable</span>
-                    <span class="p-2 bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 rounded-xl">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                    </span>
-                </div>
-                <div class="text-2xl font-black text-amber-600 dark:text-amber-400 mt-2">
+            <div class="stat-card">
+                <div class="stat-label">Net Cash Tax Payable</div>
+                <div class="stat-value text-amber-600 dark:text-amber-400">
                     ₹{{ number_format($gstr3bData['net_tax_payable_cash']['total'], 2) }}
                 </div>
-                <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 flex items-center justify-between">
-                    <span>After ITC Set-off</span>
+                <div class="text-xs text-slate-500 mt-2">
                     @if($gstr3bData['itc_carry_forward']['total'] > 0)
                         <span class="text-emerald-600 font-bold">ITC C/F: ₹{{ number_format($gstr3bData['itc_carry_forward']['total'], 2) }}</span>
                     @else
                         <span class="text-amber-600 font-bold">To Pay in Cash</span>
                     @endif
                 </div>
-                <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 to-orange-600"></div>
             </div>
         </div>
 
         <!-- Navigation Tabs Container -->
-        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm">
-            <div class="flex flex-wrap items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-4 mb-6">
+        <div class="pg-card p-4">
+            <div class="flex flex-wrap items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-3 mb-4">
                 @php
                     $tabs = [
-                        'overview' => ['label' => 'GSTR-3B Tax Computation & Set-Off', 'icon' => 'M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z'],
-                        'gstr1'    => ['label' => 'GSTR-1 Outward Sales (' . count($gstr1Data['b2b_invoices']) . ' B2B / ' . count($gstr1Data['b2c_small_summary']) . ' B2C)', 'icon' => 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6'],
-                        'itc'      => ['label' => 'Input Tax Credit (' . count($itcData['purchase_orders']) . ' POs)', 'icon' => 'M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11'],
-                        'hsn'      => ['label' => 'Table 12 HSN Summary (' . count($gstr1Data['hsn_summary']) . ' HSNs)', 'icon' => 'M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z'],
-                        'filings'  => ['label' => 'Filing & Challan Audit Log', 'icon' => 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'],
+                        'overview' => ['label' => 'GSTR-3B Tax Computation & Set-Off'],
+                        'gstr1'    => ['label' => 'GSTR-1 Outward Sales (' . count($gstr1Data['b2b_invoices']) . ' B2B / ' . count($gstr1Data['b2c_small_summary']) . ' B2C)'],
+                        'itc'      => ['label' => 'Input Tax Credit (' . count($itcData['purchase_orders']) . ' POs)'],
+                        'hsn'      => ['label' => 'Table 12 HSN Summary (' . count($gstr1Data['hsn_summary']) . ' HSNs)'],
+                        'filings'  => ['label' => 'Filing & Challan Audit Log'],
                     ];
                 @endphp
 
                 @foreach($tabs as $key => $tab)
                     <a href="{{ route('finance.gst.index', ['month' => $selectedMonth, 'tab' => $key]) }}"
-                       class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold transition {{ $activeTab === $key ? 'bg-amber-500 text-white shadow-md shadow-amber-500/20' : 'bg-slate-50 dark:bg-slate-800/80 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white' }}">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $tab['icon'] }}"/></svg>
+                       class="px-3.5 py-1.5 rounded text-xs font-semibold transition {{ $activeTab === $key ? 'bg-blue-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700' }}" style="border-radius: 4px;">
                         <span>{{ $tab['label'] }}</span>
                     </a>
                 @endforeach

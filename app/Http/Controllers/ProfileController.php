@@ -98,6 +98,6 @@ class ProfileController extends Controller
             'theme_accent' => $user->theme_accent,
             'theme_mode'   => $user->theme_mode,
             'theme_style'  => $user->theme_style,
-        ]);
+        ])->withCookie(cookie('crm_mode', $user->theme_mode, 525600, null, null, false, false));
     }
 }

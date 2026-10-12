@@ -2,8 +2,7 @@
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <div>
-                <h2 class="text-xl font-semibold leading-tight text-gray-800">Create Vendor Purchase Order (PO)</h2>
-                <p class="mt-1 text-sm text-gray-500">Order cameras, NVRs, HDDs, cables & accessories from hardware distributors</p>
+                <h2 class="text-xl font-bold leading-tight text-gray-900">Create Vendor Purchase Order (PO)</h2>
             </div>
             <a href="{{ route('purchase-orders.index') }}" class="btn-head-secondary">
                 <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
@@ -19,49 +18,49 @@
         .btn-head-secondary {
             display: inline-flex; align-items: center;
             background-color: #ffffff; color: #334155 !important;
-            padding: 0.5rem 1rem; border-radius: 0.5rem;
-            font-size: 0.875rem; font-weight: 600; text-decoration: none;
-            border: 1px solid #cbd5e1; box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            padding: 0.5rem 1rem; border-radius: 4px;
+            font-size: 0.875rem; font-weight: 500; text-decoration: none;
+            border: 1px solid #cbd5e1; box-shadow: none;
             transition: all 0.15s ease-in-out;
         }
         .btn-head-secondary:hover { background-color: #f8fafc; color: #0f172a !important; border-color: #94a3b8; }
 
         .pg-card {
             background:#fff;
-            border-radius:1rem;
-            border:1px solid rgba(99,102,241,.08);
-            box-shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(99,102,241,.06);
+            border-radius:4px;
+            border:1px solid #e2e8f0;
+            box-shadow:none;
             padding: 2rem;
             margin-bottom: 1.5rem;
         }
 
         .form-label {
-            display: block; font-size: 0.75rem; font-weight: 700;
-            text-transform: uppercase; letter-spacing: 0.05em;
-            color: #475569; margin-bottom: 0.4rem;
+            display: block; font-size: 14px; font-weight: 500;
+            text-transform: none;
+            color: #475569; margin-bottom: 0.35rem;
         }
         .form-input, .form-select, .form-textarea {
-            width: 100%; border: 1px solid #cbd5e1; border-radius: 0.6rem;
-            padding: 0.65rem 0.85rem; font-size: 0.875rem; color: #1e293b;
-            background: #fff; outline: none; transition: all 0.15s;
+            width: 100%; border: 1px solid #cbd5e1; border-radius: 4px;
+            padding: 0.5rem 0.75rem; font-size: 0.875rem; color: #1e293b;
+            background: #fff; outline: none; min-height: 38px;
         }
         .form-input:focus, .form-select:focus, .form-textarea:focus {
-            border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+            border-color: #2563eb; box-shadow: none;
         }
 
         .btn-add-item {
             display: inline-flex; align-items: center; gap: 0.4rem;
-            padding: 0.5rem 1rem; border-radius: 0.5rem;
-            font-size: 0.82rem; font-weight: 700;
-            background-color: #eef2ff; color: #4f46e5 !important;
-            border: 1px solid #c7d2fe; cursor: pointer;
+            padding: 0.45rem 0.85rem; border-radius: 4px;
+            font-size: 0.82rem; font-weight: 600; min-height: 36px;
+            background-color: #eff6ff; color: #2563eb !important;
+            border: 1px solid #bfdbfe; cursor: pointer;
             transition: all 0.15s;
         }
-        .btn-add-item:hover { background-color: #4f46e5; color: #ffffff !important; }
+        .btn-add-item:hover { background-color: #2563eb; color: #ffffff !important; }
 
         .btn-remove-row {
             display: inline-flex; align-items: center; justify-content: center;
-            width: 32px; height: 32px; border-radius: 0.45rem;
+            width: 32px; height: 32px; border-radius: 4px;
             background-color: #fef2f2; color: #dc2626 !important;
             border: 1px solid #fecaca; cursor: pointer; transition: all .15s;
         }
@@ -69,19 +68,19 @@
 
         .btn-submit-primary {
             display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
-            padding: 0.75rem 1.75rem; border-radius: 0.5rem;
-            font-size: 0.9rem; font-weight: 700;
-            background-color: #4f46e5; color: #ffffff !important;
-            border: 1px solid #4338ca; cursor: pointer;
-            box-shadow: 0 2px 4px rgba(79, 70, 229, 0.25);
-            transition: all 0.15s ease-in-out;
+            padding: 0.65rem 1.5rem; border-radius: 4px;
+            font-size: 0.875rem; font-weight: 600; min-height: 38px;
+            background-color: #2563eb; color: #ffffff !important;
+            border: 1px solid #1d4ed8; cursor: pointer;
+            box-shadow: none;
+            transition: background-color 0.15s;
         }
-        .btn-submit-primary:hover { background-color: #4338ca; transform: translateY(-1px); }
+        .btn-submit-primary:hover { background-color: #1d4ed8; }
 
         .btn-cancel {
             display: inline-flex; align-items: center; justify-content: center;
-            padding: 0.75rem 1.25rem; border-radius: 0.5rem;
-            font-size: 0.875rem; font-weight: 600;
+            padding: 0.65rem 1.25rem; border-radius: 4px;
+            font-size: 0.875rem; font-weight: 500; min-height: 38px;
             background-color: #ffffff; color: #475569 !important;
             border: 1px solid #cbd5e1; text-decoration: none;
             transition: all 0.15s ease-in-out;
@@ -89,7 +88,7 @@
         .btn-cancel:hover { background-color: #f8fafc; color: #0f172a !important; }
 
         .summary-box {
-            background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.75rem;
+            background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px;
             padding: 1.25rem; width: 100%; max-width: 380px; margin-left: auto;
         }
         .summary-row {
@@ -99,14 +98,14 @@
             font-size: 1.15rem; font-weight: 800; color: #0f172a; border-top: 1px solid #cbd5e1; margin-top: 0.5rem; padding-top: 0.75rem;
         }
 
-        .error-msg { color: #dc2626; font-size: 0.78rem; margin-top: 0.35rem; font-weight: 600; }
+        .error-msg { color: #dc2626; font-size: 0.78rem; margin-top: 0.35rem; font-weight: 500; }
     </style>
 
     <div class="pg-wrap" x-data="purchaseOrderBuilder(@js($products))">
         <div class="pg-inner">
 
             @if ($errors->any())
-                <div class="mb-4 p-4 rounded-xl bg-red-50 border border-red-200 text-red-800 text-sm font-medium">
+                <div class="mb-4 p-4 rounded-[4px] bg-red-50 border border-red-200 text-red-800 text-sm font-medium">
                     <ul class="list-disc list-inside">
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
@@ -121,7 +120,7 @@
                 {{-- Header & Supplier Selection --}}
                 <div class="pg-card">
                     <h3 class="text-base font-bold text-gray-900 mb-4 pb-3 border-b border-gray-100 flex items-center gap-2">
-                        <span>🏢</span> 1. Supplier & Procurement Schedule
+                        1. Supplier & Procurement Schedule
                     </h3>
 
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
@@ -170,8 +169,8 @@
                 <div class="pg-card">
                     <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
                         <div>
-                            <h3 class="text-base font-bold text-gray-900 flex items-center gap-2">
-                                <span>📦</span> 2. Ordered Line Items
+                            <h3 class="text-base font-bold text-gray-900">
+                                2. Ordered Line Items
                             </h3>
                             <p class="text-xs text-gray-500 mt-0.5">Select products from catalog to automatically pull cost price, or enter custom line items</p>
                         </div>
@@ -262,7 +261,7 @@
                                 </div>
                                 <div class="summary-row total">
                                     <span>Grand Total:</span>
-                                    <span class="text-indigo-600">₹<span x-text="formatNumber(grandTotal())"></span></span>
+                                    <span class="text-blue-600">₹<span x-text="formatNumber(grandTotal())"></span></span>
                                 </div>
                             </div>
                         </div>
@@ -272,7 +271,6 @@
                 <div class="flex items-center justify-end gap-3">
                     <a href="{{ route('purchase-orders.index') }}" class="btn-cancel">Cancel</a>
                     <button type="submit" class="btn-submit-primary">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                         Issue Purchase Order
                     </button>
                 </div>

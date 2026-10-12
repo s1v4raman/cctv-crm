@@ -6,6 +6,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property \Carbon\Carbon|null $paid_week_start
+ * @property \Carbon\Carbon|null $unlocked_at
+ */
 class ProjectWorkerAttendance extends Model
 {
     use HasFactory;

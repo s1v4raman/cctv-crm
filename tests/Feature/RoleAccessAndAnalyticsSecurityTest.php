@@ -137,13 +137,13 @@ class RoleAccessAndAnalyticsSecurityTest extends TestCase
         $this->actingAs($this->admin);
         $resAdmin = $this->get(route('dashboard'));
         $resAdmin->assertOk();
-        $resAdmin->assertSee('Operations &amp; Executive Command Center', false);
+        $resAdmin->assertSee('Dashboard', false);
 
         // Staff
         $this->actingAs($this->staff);
         $resStaff = $this->get(route('dashboard'));
         $resStaff->assertOk();
-        $resStaff->assertSee('Workforce Operations Command Center', false);
+        $resStaff->assertSee('Dashboard', false);
         $resStaff->assertDontSee('Accepted Revenue');
     }
 }

@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /**
  * @property int $id
  * @property int $user_id
- * @property \Carbon\Carbon|string|null $date
+ * @property Carbon|string|null $date
  * @property string|null $clock_in
  * @property string|null $clock_out
  * @property string $status

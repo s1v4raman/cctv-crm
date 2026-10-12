@@ -526,7 +526,7 @@
                         <div class="space-y-3 text-xs">
                             {{-- Lead Technician --}}
                             <div class="p-3 rounded-xl bg-blue-50/50 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/40">
-                                <span class="text-[10px] text-blue-600 dark:text-blue-400 uppercase tracking-wider block font-bold mb-1">🛠️ Lead Technician (In-Charge)</span>
+                                <span class="text-[10px] text-blue-600 dark:text-blue-400 uppercase tracking-wider block font-bold mb-1">Lead Technician (In-Charge)</span>
                                 @if($project->leadTechnician)
                                     <div class="flex items-center justify-between">
                                         <div>
@@ -535,7 +535,7 @@
                                         </div>
                                         @if($project->leadTechnician->phone)
                                             <a href="tel:{{ $project->leadTechnician->phone }}" class="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-[10px] shadow-xs">
-                                                📞 Call
+                                                Call
                                             </a>
                                         @endif
                                     </div>
@@ -546,7 +546,7 @@
 
                             {{-- Assigned Staff / Employee --}}
                             <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800">
-                                <span class="text-[10px] text-slate-400 uppercase tracking-wider block font-bold mb-1">👤 Assigned Staff / Employee</span>
+                                <span class="text-[10px] text-slate-400 uppercase tracking-wider block font-bold mb-1">Assigned Staff / Employee</span>
                                 <div class="flex items-center justify-between">
                                     <div>
                                         <span class="font-bold text-slate-900 dark:text-white text-xs block">{{ $project->assignedUser?->name ?? 'Unassigned' }}</span>
@@ -563,7 +563,7 @@
 
                             {{-- Executing Entity --}}
                             <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800">
-                                <span class="text-[10px] text-slate-400 uppercase tracking-wider block font-bold mb-1">🏢 Executing Entity</span>
+                                <span class="text-[10px] text-slate-400 uppercase tracking-wider block font-bold mb-1">Executing Entity</span>
                                 @if($project->company)
                                     <div class="flex items-center justify-between">
                                         <div>
@@ -834,7 +834,7 @@
                         <div class="px-5 py-3.5 bg-slate-50/80 dark:bg-slate-800/60 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
                             <div class="flex items-center gap-3">
                                 <span class="font-black text-sm font-mono text-slate-900 dark:text-white">
-                                    📅 {{ $wd->work_date->format('d M Y (l)') }}
+                                    {{ $wd->work_date->format('d M Y (l)') }}
                                 </span>
                                 @if($wd->notes)
                                     <span class="text-xs text-slate-500 italic">"{{ $wd->notes }}"</span>
@@ -890,7 +890,7 @@
                                                 @if($att->is_paid)
                                                     <div class="inline-flex items-center gap-1">
                                                         <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
-                                                            🔒 Paid &amp; Locked
+                                                            Paid &amp; Locked
                                                         </span>
                                                         @if(auth()->user()->isAdmin())
                                                             <form method="POST" action="{{ route('projects.attendances.unlock', $att) }}" class="inline-block" onsubmit="return confirm('Unlock this attendance record?')">
@@ -937,7 +937,7 @@
                         </a>
                         @if(!auth()->user()->isStaff())
                             <button type="button" @click="bulkDeviceModalOpen = true" class="btn-secondary text-xs flex items-center gap-1">
-                                ⚡ Bulk Sequential Generator
+                                Bulk Sequential Generator
                             </button>
                             <button type="button" @click="deviceModalOpen = true" class="btn-primary text-xs shadow-md">
                                 + Add Device
@@ -1005,7 +1005,7 @@
                             @empty
                                 <tr>
                                     <td colspan="7" class="px-5 py-12 text-center text-slate-400 text-xs">
-                                        No IP devices configured yet. Use "⚡ Bulk Sequential Generator" to auto-populate camera IPs.
+                                        No IP devices configured yet. Use "Bulk Sequential Generator" to auto-populate camera IPs.
                                     </td>
                                 </tr>
                             @endforelse

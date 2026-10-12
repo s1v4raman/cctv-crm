@@ -132,4 +132,15 @@ class UserManagementTest extends TestCase
         $response->assertSessionHasErrors(['delete']);
         $this->assertDatabaseHas('users', ['id' => $this->admin->id]);
     }
+
+    public function test_admin_can_view_user_profile(): void
+    {
+        $tech = User::factory()->create(['name' => 'Alex Rivera', 'role' => 'technician']);
+
+        $response = $this->actingAs($this->admin)->get(route('admin.users.show', $tech));
+        $response->assertOk();
+        $response->assertSee('Alex Rivera');
+        $response->assertSee('Technician');
+        $response->assertSee('Profile Overview');
+    }
 }

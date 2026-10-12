@@ -18,6 +18,10 @@ return Application::configure(basePath: dirname(__DIR__))
         // Security response headers (anti-clickjacking, XSS, MIME sniffing)
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
 
+        $middleware->encryptCookies(except: [
+            'crm_mode',
+        ]);
+
         $middleware->validateCsrfTokens(except: [
             'api/*',
             'webhook/*',

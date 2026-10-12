@@ -35,24 +35,35 @@ class WorkDayController extends Controller
             'attendances.*.notes' => 'nullable|string|max:255',
         ]);
 
-        $workDate = Carbon::parse($validated['work_date'])->toDateString();
+        $carbonDate = Carbon::parse($validated['work_date'])->startOfDay();
+        $workDate = $carbonDate->toDateString();
 
         DB::beginTransaction();
         try {
-            // Find or create WorkDay for this project and date
-            $workDay = WorkDay::firstOrCreate(
-                [
+            // Find existing WorkDay (including soft-deleted, matching by date or datetime)
+            $workDay = WorkDay::withTrashed()
+                ->where('project_id', $project->id)
+                ->where(function ($query) use ($carbonDate, $workDate) {
+                    $query->whereDate('work_date', $workDate)
+                        ->orWhere('work_date', $carbonDate)
+                        ->orWhere('work_date', $workDate);
+                })
+                ->first();
+
+            if ($workDay) {
+                if ($workDay->trashed()) {
+                    $workDay->restore();
+                }
+                if ($request->filled('notes')) {
+                    $workDay->update(['notes' => $validated['notes']]);
+                }
+            } else {
+                $workDay = WorkDay::create([
                     'project_id' => $project->id,
-                    'work_date' => $workDate,
-                ],
-                [
+                    'work_date' => $carbonDate,
                     'logged_by' => Auth::id(),
                     'notes' => $validated['notes'] ?? null,
-                ]
-            );
-
-            if ($request->filled('notes')) {
-                $workDay->update(['notes' => $validated['notes']]);
+                ]);
             }
 
             $perMetreRate = (float) ($project->per_metre_rate ?? 8.00);

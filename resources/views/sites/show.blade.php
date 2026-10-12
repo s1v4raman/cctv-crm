@@ -120,7 +120,7 @@
                         </div>
                     @else
                         <div class="p-8 text-center rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-dashed border-slate-200 dark:border-slate-700 text-slate-400 text-xs">
-                            <p class="text-2xl mb-1">📍</p>
+                            
                             <p class="font-bold">No GPS coordinates recorded for this site</p>
                             <a href="{{ route('sites.edit', $site) }}" class="text-blue-500 hover:underline mt-2 inline-block">
                                 Edit site to add GPS coordinates or Google Maps link

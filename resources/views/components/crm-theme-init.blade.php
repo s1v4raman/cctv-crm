@@ -170,31 +170,88 @@
                 box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
             }
 
-            /* 3. SIDEBAR & NAVIGATION ACTIVE LINKS */
+            /* 3. SIDEBAR & NAVIGATION ACTIVE LINKS (Clean light background matching Image 3) */
             aside nav a.crm-active-link,
-            aside nav a[class*="!bg-blue-600"],
-            aside nav a[class*="bg-blue-600"],
-            .crm-active-link,
-            [class*="!bg-blue-600"] {
-                background: ${hex} !important;
-                background-color: ${hex} !important;
+            .crm-active-link {
+                background: #ebebed !important;
+                background-color: #ebebed !important;
                 background-image: none !important;
-                border-color: ${hex} !important;
-                color: #ffffff !important;
-                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+                border: none !important;
+                border-left: none !important;
+                border-radius: 8px !important;
+                color: #0f172a !important;
+                font-weight: 600 !important;
+                box-shadow: none !important;
             }
 
+            html.dark aside nav a.crm-active-link,
+            html.dark .crm-active-link {
+                background: #1e293b !important;
+                background-color: #1e293b !important;
+                border: none !important;
+                border-left: none !important;
+                border-radius: 8px !important;
+                color: #f8fafc !important;
+                font-weight: 600 !important;
+                box-shadow: none !important;
+            }
+
+            aside nav a:hover {
+                background-color: #f1f2f4 !important;
+                color: #0f172a !important;
+            }
+
+            html.dark aside nav a:hover {
+                background-color: rgba(30, 41, 59, 0.7) !important;
+                color: #f8fafc !important;
+            }
+
+            aside nav a:active,
             aside nav a.crm-active-link:hover,
-            aside nav a[class*="!bg-blue-600"]:hover,
             .crm-active-link:hover {
-                background: ${hoverHex} !important;
-                background-color: ${hoverHex} !important;
-                background-image: none !important;
-                border-color: ${hoverHex} !important;
+                background: #ebebed !important;
+                background-color: #ebebed !important;
+                color: #0f172a !important;
             }
 
-            aside nav a:hover:not(.crm-active-link) svg {
-                color: ${hex} !important;
+            html.dark aside nav a:active,
+            html.dark aside nav a.crm-active-link:hover,
+            html.dark .crm-active-link:hover {
+                background: #334155 !important;
+                background-color: #334155 !important;
+                color: #f8fafc !important;
+            }
+
+            aside nav a.crm-active-link svg,
+            .crm-active-link svg {
+                color: #334155 !important;
+            }
+
+            html.dark aside nav a.crm-active-link svg,
+            html.dark .crm-active-link svg {
+                color: #cbd5e1 !important;
+            }
+
+            /* Clean Outline Icon System: Proper size, linear stroke, no color boxes or shades */
+            aside nav svg,
+            .stat-card svg {
+                stroke-width: 1.8 !important;
+            }
+            .card-icon,
+            .crm-customer-icon-box {
+                background: transparent !important;
+                background-color: transparent !important;
+                border: none !important;
+                box-shadow: none !important;
+                color: #475569 !important;
+            }
+            html.dark .card-icon,
+            html.dark .crm-customer-icon-box {
+                background: transparent !important;
+                background-color: transparent !important;
+                border: none !important;
+                box-shadow: none !important;
+                color: #94a3b8 !important;
             }
 
             /* 4. ALL MODULE PRIMARY ACTION BUTTONS (+ New, Create, Schedule, Save, Submit, Checkout) */
@@ -511,24 +568,94 @@
         }
     };
 
+    // Cross-page mode lookup: checks user-scoped key, generic key, legacy 'theme' key, and cookie
+    function getCrmCookie(name) {
+        try {
+            const v = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
+            return v ? decodeURIComponent(v[2]) : null;
+        } catch(e) { return null; }
+    }
+    const cookieMode = getCrmCookie('crm_mode');
+
     // Immediate execution on <head> parse (prevents FOUC)
     let storedMode = null;
     let storedStyle = null;
     let initialAccent = null;
     try {
-        storedMode = localStorage.getItem(modeKey);
-        storedStyle = localStorage.getItem(styleKey);
-        initialAccent = localStorage.getItem(accentKey);
+        storedMode = localStorage.getItem(modeKey) || cookieMode || localStorage.getItem('crm_mode');
+        storedStyle = localStorage.getItem(styleKey) || localStorage.getItem('crm_theme_style');
+        initialAccent = localStorage.getItem(accentKey) || localStorage.getItem('crm_accent');
     } catch(e) {}
 
-    const activeMode = storedMode || dbMode || 'auto';
-    const isDark = (activeMode === 'night' || activeMode === 'dark') || 
+    let activeMode = storedMode || dbMode || 'auto';
+    if (activeMode === 'light') activeMode = 'day';
+    if (activeMode === 'dark') activeMode = 'night';
+
+    const isDark = (activeMode === 'night') || 
                    (activeMode === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
     if (isDark) {
         document.documentElement.classList.add('dark');
     } else {
         document.documentElement.classList.remove('dark');
     }
+
+    // Definitive Universal CRM Mode Switcher & Synchronizer
+    window.applyCrmMode = function(mode, persistBackend) {
+        if (persistBackend === undefined) persistBackend = true;
+        let target = mode;
+        if (target === 'light') target = 'day';
+        if (target === 'dark') target = 'night';
+
+        const isNight = (target === 'night') || 
+                        (target === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+        if (isNight) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+
+        const standardMode = isNight ? 'night' : 'day';
+
+        // Write to ALL keys for absolute consistency across any script/page
+        try {
+            localStorage.setItem('crm_mode', standardMode);
+            localStorage.setItem('theme', isNight ? 'dark' : 'light');
+            if (modeKey) localStorage.setItem(modeKey, standardMode);
+            if (currentUserId) localStorage.setItem('crm_mode_user_' + currentUserId, standardMode);
+            document.cookie = "crm_mode=" + standardMode + "; path=/; max-age=31536000; SameSite=Lax";
+        } catch(e) {}
+
+        // Fire both custom events so all components (header, body, modals) update instantly
+        window.dispatchEvent(new CustomEvent('theme-mode-changed', { detail: { mode: standardMode, isDark: isNight } }));
+        window.dispatchEvent(new CustomEvent('theme-changed', { detail: { userId: currentUserId, mode: standardMode, isDark: isNight } }));
+
+        // Persist to backend database with keepalive so page navigation cannot abort it
+        if (persistBackend && currentUserId) {
+            const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            if (token) {
+                try {
+                    fetch('/profile/theme', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': token,
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({ mode: standardMode }),
+                        keepalive: true
+                    }).catch(function() {});
+                } catch(e) {}
+            }
+        }
+
+        return isNight;
+    };
+
+    window.crmToggleTheme = function() {
+        const isCurrentlyDark = document.documentElement.classList.contains('dark');
+        return window.applyCrmMode(isCurrentlyDark ? 'day' : 'night', true);
+    };
 
     const themeStyle = storedStyle || dbStyle || 'dark';
     document.documentElement.setAttribute('data-header-theme', themeStyle);
@@ -563,6 +690,9 @@
         if (e.key === accentKey && e.newValue) {
             window.applyGlobalCrmAccent(e.newValue);
             window.recolorCrmBrandLogo(e.newValue);
+        }
+        if ((e.key === modeKey || e.key === 'crm_mode' || e.key === 'theme') && e.newValue) {
+            window.applyCrmMode(e.newValue, false);
         }
     });
 })();

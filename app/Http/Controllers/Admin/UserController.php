@@ -66,6 +66,55 @@ class UserController extends Controller
     }
 
     /**
+     * Display the specified user profile view.
+     */
+    public function show(User $user): View
+    {
+        $user->load(['lead']);
+
+        $stats = [
+            'tickets_count'    => 0,
+            'jobs_count'       => 0,
+            'quotes_count'     => 0,
+            'invoices_count'   => 0,
+            'open_tickets'     => 0,
+            'resolved_tickets' => 0,
+        ];
+        $recentTickets  = collect();
+        $recentJobs     = collect();
+        $recentQuotes   = collect();
+        $recentInvoices = collect();
+
+        if ($user->role === 'technician') {
+            $stats['tickets_count']    = \App\Models\ServiceTicket::where('assigned_technician_id', $user->id)->count();
+            $stats['jobs_count']       = \App\Models\InstallationJob::where('assigned_technician_id', $user->id)->count();
+            $stats['open_tickets']     = \App\Models\ServiceTicket::where('assigned_technician_id', $user->id)->whereIn('status', ['open','pending','in_progress'])->count();
+            $stats['resolved_tickets'] = \App\Models\ServiceTicket::where('assigned_technician_id', $user->id)->where('status', 'resolved')->count();
+            
+            $recentTickets = \App\Models\ServiceTicket::where('assigned_technician_id', $user->id)->latest()->limit(5)->get();
+            $recentJobs    = \App\Models\InstallationJob::where('assigned_technician_id', $user->id)->latest()->limit(5)->get();
+        } elseif ($user->role === 'customer') {
+            $lead = $user->lead ?? ($user->lead_id ? \App\Models\Lead::find($user->lead_id) : null);
+            if ($lead) {
+                $stats['tickets_count']  = \App\Models\ServiceTicket::where('lead_id', $lead->id)->count();
+                $stats['quotes_count']   = \App\Models\Quotation::where('lead_id', $lead->id)->count();
+                $stats['invoices_count'] = \App\Models\Invoice::where('lead_id', $lead->id)->count();
+                
+                $recentTickets  = \App\Models\ServiceTicket::where('lead_id', $lead->id)->latest()->limit(5)->get();
+                $recentQuotes   = \App\Models\Quotation::where('lead_id', $lead->id)->latest()->limit(5)->get();
+                $recentInvoices = \App\Models\Invoice::where('lead_id', $lead->id)->latest()->limit(5)->get();
+            }
+        } elseif ($user->role === 'admin' || $user->role === 'staff') {
+            $stats['tickets_count']  = \App\Models\ServiceTicket::count();
+            $stats['jobs_count']     = \App\Models\InstallationJob::count();
+            $stats['quotes_count']   = \App\Models\Quotation::count();
+            $stats['invoices_count'] = \App\Models\Invoice::count();
+        }
+
+        return view('admin.users.show', compact('user', 'stats', 'recentTickets', 'recentJobs', 'recentQuotes', 'recentInvoices'));
+    }
+
+    /**
      * Show the form for editing the specified resource.
      */
     public function edit(User $user): View

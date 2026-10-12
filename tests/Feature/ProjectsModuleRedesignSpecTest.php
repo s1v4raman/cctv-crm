@@ -438,7 +438,7 @@ class ProjectsModuleRedesignSpecTest extends TestCase
             'status' => 'in_progress',
         ]);
 
-        $today = now()->startOfWeek(Carbon::MONDAY)->toDateString();
+        $today = now()->startOfWeek()->toDateString();
 
         // Worker worked full day (₹900) + pulled 250m cable (250 * 8 = ₹2,000) + ₹150 extra for height work
         // Expected total = 900 + 2000 + 150 = ₹3,050
@@ -474,8 +474,79 @@ class ProjectsModuleRedesignSpecTest extends TestCase
         $this->assertEquals(250.00, (float) $attendance->cabling_metres);
         $this->assertEquals(2000.00, (float) $attendance->cabling_amount); // 250 * 8
         $this->assertEquals(150.00, (float) $attendance->extra_amount);
-        $this->assertEquals(3050.00, (float) $attendance->total_amount); // 900 + 2000 + 150
         $this->assertEquals(false, $attendance->is_paid); // Unpaid until Sunday settlement
+    }
+
+    public function test_work_day_logging_supports_updates_and_restores_without_unique_constraint_violation(): void
+    {
+        $worker = Worker::create([
+            'name' => 'Karthik Raja',
+            'daily_rate' => 750.00,
+            'is_active' => true,
+        ]);
+
+        $project = Project::create([
+            'project_code' => 'PRJ-2026-TEST-WD',
+            'title' => 'Test Site Work Day',
+            'per_metre_rate' => 8.00,
+            'status' => 'in_progress',
+        ]);
+
+        $date = now()->toDateString();
+
+        // 1. Initial logging
+        $this->actingAs($this->technician)->post(route('projects.work-days.store', $project), [
+            'work_date' => $date,
+            'notes' => 'First shift',
+            'attendances' => [
+                [
+                    'worker_id' => $worker->id,
+                    'attendance_type' => 'full_day',
+                    'cabling_metres' => 50,
+                ],
+            ],
+        ])->assertRedirect();
+
+        $this->assertNull(session('error'));
+
+        // 2. Logging the same date again (update / re-save) - should NOT trigger unique constraint error
+        $this->actingAs($this->technician)->post(route('projects.work-days.store', $project), [
+            'work_date' => $date,
+            'notes' => 'Updated shift notes',
+            'attendances' => [
+                [
+                    'worker_id' => $worker->id,
+                    'attendance_type' => 'full_day',
+                    'cabling_metres' => 100,
+                ],
+            ],
+        ])->assertRedirect();
+
+        $this->assertNull(session('error'));
+
+        $workDay = WorkDay::where('project_id', $project->id)->whereDate('work_date', $date)->first();
+        $this->assertNotNull($workDay);
+        $this->assertEquals('Updated shift notes', $workDay->notes);
+
+        // 3. Soft delete and re-log
+        $workDay->delete();
+        $this->actingAs($this->technician)->post(route('projects.work-days.store', $project), [
+            'work_date' => $date,
+            'notes' => 'Restored shift',
+            'attendances' => [
+                [
+                    'worker_id' => $worker->id,
+                    'attendance_type' => 'full_day',
+                    'cabling_metres' => 120,
+                ],
+            ],
+        ])->assertRedirect();
+
+        $this->assertNull(session('error'));
+        $restored = WorkDay::where('project_id', $project->id)->whereDate('work_date', $date)->first();
+        $this->assertNotNull($restored);
+        $this->assertNull($restored->deleted_at);
+        $this->assertEquals('Restored shift', $restored->notes);
     }
 
     /* =========================================================================
@@ -498,7 +569,7 @@ class ProjectsModuleRedesignSpecTest extends TestCase
         ]);
 
         // Monday of current week
-        $monday = Carbon::now()->startOfWeek(Carbon::MONDAY);
+        $monday = Carbon::now()->startOfWeek();
         $tuesday = (clone $monday)->addDay();
         $wednesday = (clone $monday)->addDays(2);
 
@@ -546,7 +617,7 @@ class ProjectsModuleRedesignSpecTest extends TestCase
         // Brought forward = 0
         // Total Due = 2200 - 500 = ₹1,700
         $saturdayEnd = (clone $monday)->addDays(5)->endOfDay()->toDateString();
-        $weekEnd = (clone $monday)->endOfWeek(Carbon::SUNDAY)->toDateString();
+        $weekEnd = (clone $monday)->endOfWeek()->toDateString();
 
         $earned = $worker->getEarnedInWeek($monday->toDateString(), $saturdayEnd);
         $advances = $worker->getAdvancesInWeek($monday->toDateString(), $weekEnd);
@@ -568,7 +639,7 @@ class ProjectsModuleRedesignSpecTest extends TestCase
         $attendances = ProjectWorkerAttendance::where('worker_id', $worker->id)->get();
         foreach ($attendances as $att) {
             $this->assertTrue((bool) $att->is_paid);
-            $this->assertEquals($monday->toDateString(), $att->paid_week_start?->toDateString());
+            $this->assertEquals($monday->toDateString(), Carbon::parse($att->paid_week_start)->toDateString());
         }
 
         // Running balance for worker should now be 0

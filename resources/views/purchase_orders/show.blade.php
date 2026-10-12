@@ -27,7 +27,7 @@
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn-delete">
-                            🗑️ Delete PO
+                            Delete PO
                         </button>
                     </form>
                 @endif
@@ -44,19 +44,19 @@
 
         .btn-back {
             display: inline-flex; align-items: center; justify-content: center;
-            width: 36px; height: 36px; border-radius: 0.5rem;
+            width: 36px; height: 36px; border-radius: 4px;
             background-color: #ffffff; color: #475569 !important;
             border: 1px solid #cbd5e1; text-decoration: none;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            box-shadow: none;
         }
         .btn-back:hover { background-color: #f8fafc; color: #0f172a !important; }
 
         .btn-head-secondary {
             display: inline-flex; align-items: center;
             background-color: #ffffff; color: #334155 !important;
-            padding: 0.5rem 1rem; border-radius: 0.5rem;
-            font-size: 0.875rem; font-weight: 600; text-decoration: none;
-            border: 1px solid #cbd5e1; box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            padding: 0.5rem 1rem; border-radius: 4px;
+            font-size: 0.875rem; font-weight: 500; text-decoration: none;
+            border: 1px solid #cbd5e1; box-shadow: none;
             transition: all 0.15s ease-in-out;
         }
         .btn-head-secondary:hover { background-color: #f8fafc; color: #0f172a !important; }
@@ -64,17 +64,17 @@
         .btn-delete {
             display: inline-flex; align-items: center;
             background-color: #fef2f2; color: #dc2626 !important;
-            padding: 0.5rem 0.9rem; border-radius: 0.5rem;
-            font-size: 0.875rem; font-weight: 600; border: 1px solid #fecaca;
+            padding: 0.5rem 0.9rem; border-radius: 4px;
+            font-size: 0.875rem; font-weight: 500; border: 1px solid #fecaca;
             cursor: pointer; transition: all 0.15s ease-in-out;
         }
         .btn-delete:hover { background-color: #fee2e2; }
 
         .pg-card {
             background:#fff;
-            border-radius:1rem;
-            border:1px solid rgba(99,102,241,.08);
-            box-shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(99,102,241,.06);
+            border-radius:4px;
+            border:1px solid #e2e8f0;
+            box-shadow:none;
             overflow:hidden; margin-bottom:1.5rem;
         }
 
@@ -90,34 +90,34 @@
         }
         @media(min-width:640px){ .info-grid{grid-template-columns:repeat(4,1fr);} }
         .info-label {
-            font-size:.72rem; font-weight:700; text-transform:uppercase;
-            letter-spacing:.06em; color:#64748b; margin-bottom:.35rem;
+            font-size:14px; font-weight:500; text-transform:none;
+            color:#64748b; margin-bottom:.25rem;
         }
         .info-value { font-size:.95rem; font-weight:700; color:#0f172a; }
 
         .badge-status {
-            display:inline-flex; padding:.25rem .65rem; border-radius:9999px;
-            font-size:.72rem; font-weight:700; text-transform:capitalize;
+            display:inline-flex;
+            font-size:.85rem; font-weight:700; text-transform:capitalize;
         }
-        .status-draft              { background:#f1f5f9; color:#475569; border:1px solid #e2e8f0; }
-        .status-ordered            { background:#e0e7ff; color:#3730a3; border:1px solid #c7d2fe; }
-        .status-partially_received { background:#fef3c7; color:#92400e; border:1px solid #fde68a; }
-        .status-received           { background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; }
-        .status-cancelled          { background:#fef2f2; color:#991b1b; border:1px solid #fecaca; }
+        .status-draft              { color:#475569; }
+        .status-ordered            { color:#2563eb; }
+        .status-partially_received { color:#d97706; }
+        .status-received           { color:#16a34a; }
+        .status-cancelled          { color:#dc2626; }
 
         .badge-payment {
-            display:inline-flex; padding:.2rem .55rem; border-radius:9999px;
-            font-size:.7rem; font-weight:700; text-transform:capitalize;
+            display:inline-flex;
+            font-size:.85rem; font-weight:700; text-transform:capitalize;
         }
-        .pay-unpaid         { background:#fef2f2; color:#b91c1c; border:1px solid #fecaca; }
-        .pay-partially_paid { background:#fef3c7; color:#b45309; border:1px solid #fde68a; }
-        .pay-paid           { background:#ecfdf5; color:#059669; border:1px solid #a7f3d0; }
+        .pay-unpaid         { color:#dc2626; }
+        .pay-partially_paid { color:#d97706; }
+        .pay-paid           { color:#16a34a; }
 
         .p-table { width:100%; border-collapse:collapse; }
         .p-table thead { background:#f8fafc; border-bottom: 1px solid #e2e8f0; }
         .p-table thead th {
-            padding:.75rem 1.25rem; font-size:.67rem; font-weight:700;
-            text-transform:uppercase; letter-spacing:.06em; color:#64748b; text-align:left;
+            padding:.75rem 1.25rem; font-size:.75rem; font-weight:600;
+            color:#64748b; text-align:left;
         }
         .p-table thead th.right { text-align:right; }
         .p-table thead th.center { text-align:center; }
@@ -127,44 +127,45 @@
         .p-table tbody td.center { text-align:center; }
 
         .receipt-summary-container { display:flex; justify-content:flex-end; padding:1.5rem; }
-        .receipt-box { width:100%; max-width:380px; background:#f8fafc; border-radius:0.75rem; padding:1.25rem; border:1px solid #e2e8f0; }
+        .receipt-box { width:100%; max-width:380px; background:#f8fafc; border-radius:4px; padding:1.25rem; border:1px solid #e2e8f0; }
         .receipt-row { display:flex; justify-content:space-between; font-size:.875rem; padding:.35rem 0; color:#475569; }
         .receipt-row.bold { font-size:1.15rem; font-weight:800; border-top:1px solid #cbd5e1; margin-top:.5rem; padding-top:.75rem; color:#0f172a; }
-        .receipt-row.paid { color:#059669; font-weight:700; }
-        .receipt-row.due { color:#b91c1c; font-weight:800; font-size:1rem; border-top:1px dashed #cbd5e1; padding-top:.5rem; margin-top:.35rem; }
+        .receipt-row.paid { color:#16a34a; font-weight:700; }
+        .receipt-row.due { color:#dc2626; font-weight:800; font-size:1rem; border-top:1px dashed #cbd5e1; padding-top:.5rem; margin-top:.35rem; }
 
         .form-label {
-            display:block; font-size:.75rem; font-weight:700;
-            text-transform:uppercase; letter-spacing:.05em;
+            display:block; font-size:14px; font-weight:500;
+            text-transform:none;
             color:#475569; margin-bottom:.35rem;
         }
         .form-input, .form-select {
-            width:100%; border:1px solid #cbd5e1; border-radius:.5rem;
-            padding:.55rem .8rem; font-size:.85rem; color:#1e293b;
-            background:#ffffff; outline:none; transition:all .15s;
+            width:100%; border:1px solid #cbd5e1; border-radius:4px;
+            padding:.5rem .75rem; font-size:.85rem; color:#1e293b;
+            background:#ffffff; outline:none; min-height:38px;
         }
-        .form-input:focus, .form-select:focus { border-color:#4f46e5; box-shadow:0 0 0 3px rgba(79,70,229,.15); }
+        .form-input:focus, .form-select:focus { border-color:#2563eb; box-shadow:none; }
 
         .btn-inward {
             display: inline-flex; align-items: center; gap: 0.4rem;
-            padding: 0.65rem 1.4rem; border-radius: 0.5rem;
-            background-color: #16a34a; color: #ffffff !important;
-            font-size: 0.875rem; font-weight: 700;
-            border: 1px solid #15803d; cursor: pointer;
-            box-shadow: 0 1px 2px rgba(22, 163, 74, 0.2);
-            transition: all 0.15s ease-in-out;
+            padding: 0.5rem 1.25rem; border-radius: 4px;
+            background-color: #2563eb; color: #ffffff !important;
+            font-size: 0.875rem; font-weight: 600; min-height: 38px;
+            border: 1px solid #1d4ed8; cursor: pointer;
+            box-shadow: none;
+            transition: background-color 0.15s ease-in-out;
         }
-        .btn-inward:hover { background-color: #15803d; transform: translateY(-1px); }
+        .btn-inward:hover { background-color: #1d4ed8; }
 
         .btn-update-status {
             display: inline-flex; align-items: center;
-            padding: 0.55rem 1.1rem; border-radius: 0.5rem;
-            background-color: #4f46e5; color: #ffffff !important;
-            font-size: 0.85rem; font-weight: 700;
-            border: 1px solid #4338ca; cursor: pointer;
-            transition: all 0.15s ease-in-out;
+            padding: 0.5rem 1.25rem; border-radius: 4px;
+            background-color: #2563eb; color: #ffffff !important;
+            font-size: 0.85rem; font-weight: 600; min-height: 38px;
+            border: 1px solid #1d4ed8; cursor: pointer;
+            box-shadow: none;
+            transition: background-color 0.15s ease-in-out;
         }
-        .btn-update-status:hover { background-color: #4338ca; }
+        .btn-update-status:hover { background-color: #1d4ed8; }
 
         /* Dark mode overrides */
         html.dark .pg-wrap { background: #060913; }
@@ -353,7 +354,7 @@
                 <div class="section-head bg-emerald-50/50">
                     <div>
                         <h3 class="text-emerald-950 flex items-center gap-2">
-                            <span>📥</span> Inward Received Stock into Central Warehouse
+                            Inward Received Stock into Central Warehouse
                         </h3>
                         <p class="text-xs text-emerald-800 mt-0.5">
                             When vendor delivery arrives, enter quantities received to automatically increase inventory & create audit movements.
@@ -446,7 +447,7 @@
 
                         <div class="flex justify-end pt-2">
                             <button type="submit" class="btn-update-status">
-                                💾 Save Payment Record
+                                Save Payment Record
                             </button>
                         </div>
                     </form>

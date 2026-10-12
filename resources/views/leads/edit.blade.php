@@ -1,147 +1,128 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex items-center justify-between">
             <div>
-                <h2 class="text-xl font-semibold leading-tight text-gray-800">Edit Lead</h2>
-                <p class="mt-1 text-sm text-gray-500">{{ $lead->customer_name }} &middot; {{ $lead->phone }}</p>
+                <h2 class="text-xl font-bold text-slate-900 dark:text-white font-heading tracking-tight">Edit Lead</h2>
             </div>
-            <a href="{{ route('leads.show', $lead) }}"
-               style="display:inline-flex;align-items:center;gap:.4rem;font-size:.82rem;font-weight:600;color:#6366f1;text-decoration:none">
+            <a href="{{ route('leads.show', $lead) }}" class="crm-back-link text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition">
                 ← Back to Lead
             </a>
         </div>
     </x-slot>
 
-    <style>
-        .pg-wrap  { background:#f1f5f9; min-height:100vh; padding:1.75rem 0 3rem; }
-        .pg-inner { max-width:640px; margin:0 auto; padding:0 1.25rem; }
+    <div class="py-6 px-4 sm:px-6 lg:px-8 max-w-2xl mx-auto">
+        @if ($errors->any())
+            <div class="mb-4 p-3 rounded border border-rose-300 bg-rose-50 text-rose-800 text-xs">
+                @foreach ($errors->all() as $error)
+                    <div>{{ $error }}</div>
+                @endforeach
+            </div>
+        @endif
 
-        .form-card {
-            background:#fff;
-            border-radius:1rem;
-            border:1px solid rgba(99,102,241,.08);
-            box-shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(99,102,241,.06);
-            padding:1.75rem;
-        }
+        {{-- Form Card: 1px border, 4px radius, white background --}}
+        <div class="crm-card bg-white dark:bg-[#0f172a] rounded-[4px] border border-slate-200 dark:border-slate-800 p-6 shadow-xs">
+            <form method="POST" action="{{ route('leads.update', $lead) }}">
+                @csrf
+                @method('PUT')
 
-        .form-group { margin-bottom:1.25rem; }
-        .form-label {
-            display:block; font-size:.78rem; font-weight:700;
-            text-transform:uppercase; letter-spacing:.05em;
-            color:#64748b; margin-bottom:.45rem;
-        }
-        .form-input, .form-select, .form-textarea {
-            width:100%; border:1px solid #e2e8f0; border-radius:.6rem;
-            padding:.6rem .9rem; font-size:.87rem; color:#1e293b;
-            background:#f8fafc; outline:none; box-sizing:border-box;
-            transition:border-color .15s, background .15s;
-            font-family:inherit;
-        }
-        .form-input:focus, .form-select:focus, .form-textarea:focus {
-            border-color:#6366f1; background:#fff;
-            box-shadow:0 0 0 3px rgba(99,102,241,.1);
-        }
-        .form-textarea { min-height:90px; resize:vertical; }
-        .form-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
-        @media(max-width:480px){ .form-row { grid-template-columns:1fr; } }
-        .form-error { font-size:.75rem; color:#be123c; margin-top:.35rem; }
-
-        .btn-primary {
-            flex:1; padding:.75rem; border-radius:.75rem;
-            background:linear-gradient(135deg,#6366f1,#4f46e5);
-            color:#fff; font-size:.9rem; font-weight:700;
-            border:none; cursor:pointer; letter-spacing:.01em;
-            transition:opacity .15s, transform .1s; font-family:inherit;
-        }
-        .btn-primary:hover { opacity:.92; transform:translateY(-1px); }
-
-        .btn-secondary {
-            padding:.75rem 1.5rem; border-radius:.75rem;
-            background:#f8fafc; color:#64748b; font-size:.9rem; font-weight:600;
-            border:1px solid #e2e8f0; cursor:pointer;
-            transition:background .15s; font-family:inherit; text-decoration:none;
-            display:inline-flex; align-items:center;
-        }
-        .btn-secondary:hover { background:#f1f5f9; }
-    </style>
-
-    <div class="pg-wrap">
-        <div class="pg-inner">
-
-            @if ($errors->any())
-                <div style="margin-bottom:1.25rem;padding:.85rem 1.25rem;border-radius:.75rem;background:#fff1f2;border:1px solid #fecaca;color:#be123c;font-size:.85rem;">
-                    @foreach ($errors->all() as $error)
-                        <div>{{ $error }}</div>
-                    @endforeach
-                </div>
-            @endif
-
-            <div class="form-card">
-                <form method="POST" action="{{ route('leads.update', $lead) }}">
-                    @csrf
-                    @method('PUT')
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Customer Name <span style="color:#ef4444">*</span></label>
-                            <input type="text" name="customer_name"
-                                   value="{{ old('customer_name', $lead->customer_name) }}"
-                                   class="form-input" required>
+                <div class="space-y-4">
+                    {{-- Customer Name and Phone in a row --}}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="customer_name" class="crm-label text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5 block">
+                                Customer Name <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" name="customer_name" id="customer_name" value="{{ old('customer_name', $lead->customer_name) }}"
+                                   placeholder="e.g. Raman Kumar" required
+                                   style="height: 38px; min-height: 38px; max-height: 38px; border-radius: 4px; box-sizing: border-box;"
+                                   class="crm-input w-full px-3 text-sm border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b1120] text-slate-900 dark:text-white focus:outline-none focus:border-blue-500">
                             @error('customer_name')
-                                <p class="form-error">{{ $message }}</p>
+                                <p class="text-xs text-red-600 dark:text-red-400 mt-1">{{ $message }}</p>
                             @enderror
                         </div>
 
-                        <div class="form-group">
-                            <label class="form-label">Phone <span style="color:#ef4444">*</span></label>
-                            <input type="text" name="phone"
-                                   value="{{ old('phone', $lead->phone) }}"
-                                   class="form-input" required>
+                        <div>
+                            <label for="phone" class="crm-label text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5 block">
+                                Phone <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" name="phone" id="phone" value="{{ old('phone', $lead->phone) }}"
+                                   placeholder="10-digit mobile" required
+                                   style="height: 38px; min-height: 38px; max-height: 38px; border-radius: 4px; box-sizing: border-box;"
+                                   class="crm-input w-full px-3 text-sm border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b1120] text-slate-900 dark:text-white focus:outline-none focus:border-blue-500">
                             @error('phone')
-                                <p class="form-error">{{ $message }}</p>
+                                <p class="text-xs text-red-600 dark:text-red-400 mt-1">{{ $message }}</p>
                             @enderror
                         </div>
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Email</label>
-                            <input type="email" name="email"
-                                   value="{{ old('email', $lead->email) }}"
-                                   class="form-input" placeholder="Optional">
+                    {{-- Email and Source in a row --}}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="email" class="crm-label text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5 block">
+                                Email
+                            </label>
+                            <input type="email" name="email" id="email" value="{{ old('email', $lead->email) }}"
+                                   placeholder="Optional"
+                                   style="height: 38px; min-height: 38px; max-height: 38px; border-radius: 4px; box-sizing: border-box;"
+                                   class="crm-input w-full px-3 text-sm border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b1120] text-slate-900 dark:text-white focus:outline-none focus:border-blue-500">
                             @error('email')
-                                <p class="form-error">{{ $message }}</p>
+                                <p class="text-xs text-red-600 dark:text-red-400 mt-1">{{ $message }}</p>
                             @enderror
                         </div>
 
-                        <div class="form-group">
-                            <label class="form-label">Source</label>
-                            <select name="source" class="form-select">
+                        <div>
+                            <label for="source" class="crm-label text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5 block">
+                                Source
+                            </label>
+                            <select name="source" id="source"
+                                    style="height: 38px; min-height: 38px; max-height: 38px; border-radius: 4px; box-sizing: border-box;"
+                                    class="crm-select w-full px-3 text-sm border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b1120] text-slate-900 dark:text-white focus:outline-none focus:border-blue-500">
                                 <option value="">Select source…</option>
-                                <option value="referral"  @selected(old('source', $lead->source) === 'referral')>Referral</option>
-                                <option value="walk-in"   @selected(old('source', $lead->source) === 'walk-in')>Walk-in</option>
-                                <option value="call"      @selected(old('source', $lead->source) === 'call')>Phone Call</option>
-                                <option value="website"   @selected(old('source', $lead->source) === 'website')>Website</option>
+                                <option value="referral" @selected(old('source', $lead->source) === 'referral')>Referral</option>
+                                <option value="walk-in" @selected(old('source', $lead->source) === 'walk-in')>Walk-in</option>
+                                <option value="call" @selected(old('source', $lead->source) === 'call')>Phone Call</option>
+                                <option value="website" @selected(old('source', $lead->source) === 'website')>Website</option>
                             </select>
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label">Site Address</label>
-                        <textarea name="site_address" class="form-textarea">{{ old('site_address', $lead->site_address) }}</textarea>
+                    {{-- Site Address --}}
+                    <div>
+                        <label for="site_address" class="crm-label text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5 block">
+                            Site Address
+                        </label>
+                        <textarea name="site_address" id="site_address" rows="3"
+                                  placeholder="Installation site address…"
+                                  style="border-radius: 4px; box-sizing: border-box;"
+                                  class="crm-textarea w-full p-3 text-sm border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b1120] text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 resize-vertical">{{ old('site_address', $lead->site_address) }}</textarea>
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label">Notes</label>
-                        <textarea name="notes" class="form-textarea">{{ old('notes', $lead->notes) }}</textarea>
+                    {{-- Notes --}}
+                    <div>
+                        <label for="notes" class="crm-label text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5 block">
+                            Notes
+                        </label>
+                        <textarea name="notes" id="notes" rows="3"
+                                  placeholder="Any additional notes or requirements…"
+                                  style="border-radius: 4px; box-sizing: border-box;"
+                                  class="crm-textarea w-full p-3 text-sm border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b1120] text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 resize-vertical">{{ old('notes', $lead->notes) }}</textarea>
                     </div>
+                </div>
 
-                    <div style="display:flex;gap:.75rem;margin-top:.5rem">
-                        <a href="{{ route('leads.show', $lead) }}" class="btn-secondary">Cancel</a>
-                        <button type="submit" class="btn-primary">Save Changes</button>
-                    </div>
-                </form>
-            </div>
+                {{-- Action buttons: Cancel plain outlined, Save Changes flat blue --}}
+                <div class="mt-6 flex items-center justify-end gap-3">
+                    <a href="{{ route('leads.show', $lead) }}" 
+                       style="height: 38px; min-height: 38px; max-height: 38px; border-radius: 4px; box-sizing: border-box;"
+                       class="crm-btn-secondary px-4 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition inline-flex items-center">
+                        Cancel
+                    </a>
+                    <button type="submit" 
+                            style="height: 38px; min-height: 38px; max-height: 38px; border-radius: 4px; background-color: #2563eb; box-sizing: border-box;"
+                            class="crm-btn-primary px-5 text-sm font-semibold text-white hover:bg-blue-700 transition shadow-xs">
+                        Save Changes
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </x-app-layout>
