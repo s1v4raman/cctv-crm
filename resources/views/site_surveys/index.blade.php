@@ -2,8 +2,8 @@
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <h2 class="text-xl font-bold text-slate-900 dark:text-white font-heading tracking-tight">Site Surveys</h2>
-            <a href="{{ route('site-surveys.create') }}" class="px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition" id="btn-new-survey">
-                + Schedule Survey
+            <a href="{{ route('site-surveys.create') }}" class="btn-primary" id="btn-new-survey">
+                Schedule Survey
             </a>
         </div>
     </x-slot>
@@ -46,90 +46,87 @@
                 @endif
             </form>
 
-            @if($surveys->count())
                 {{-- Table container with only 1px border --}}
                 <div class="overflow-x-auto w-full border border-[#ddd] dark:border-slate-800 rounded-[4px] bg-white dark:bg-[#0f172a]">
-                    <table class="surveys-table w-full">
+                    <table class="crm-table w-full">
                         <thead>
                             <tr>
                                 <th class="min-w-[200px]" style="min-width: 200px;">Customer</th>
-                                <th>Date</th>
+                                <th class="whitespace-nowrap">Date</th>
                                 <th>Address</th>
-                                <th>Technician</th>
+                                <th class="whitespace-nowrap">Technician</th>
                                 <th class="text-center">Cameras</th>
                                 <th>Status</th>
                                 <th class="text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($surveys as $survey)
+                            @forelse($surveys as $survey)
                                 @php
                                     $fullAddress = $survey->site_address ?: ($survey->lead->site_address ?? '—');
+                                    $surveyStatusColors = [
+                                        'completed' => '#16a34a',
+                                        'scheduled' => '#d97706',
+                                        'pending'   => '#d97706',
+                                        'cancelled' => '#dc2626',
+                                    ];
+                                    $sColor = $surveyStatusColors[strtolower($survey->status)] ?? '#d97706';
                                 @endphp
                                 <tr>
-                                    <td class="min-w-[200px]" style="min-width: 200px;">
+                                    <td class="col-name min-w-[200px]" style="min-width: 200px;">
                                         <div class="font-semibold text-sm text-slate-900 dark:text-white">
-                                            <a href="{{ route('site-surveys.show', $survey) }}" class="hover:text-blue-600 hover:underline">{{ $survey->lead->customer_name }}</a>
+                                            <a href="{{ route('site-surveys.show', $survey) }}">{{ $survey->lead->customer_name }}</a>
                                         </div>
                                         @if($survey->lead->company_name)
                                             <div class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{{ $survey->lead->company_name }}</div>
                                         @endif
                                     </td>
-                                    <td class="whitespace-nowrap text-sm font-medium text-slate-900 dark:text-white">
+                                    <td class="col-date whitespace-nowrap text-sm">
                                         {{ $survey->survey_date->format('d M Y') }}
                                     </td>
-                                    <td class="text-sm text-slate-900 dark:text-white max-w-[260px] leading-relaxed" title="{{ $fullAddress }}">
+                                    <td class="text-sm text-slate-900 dark:text-white leading-relaxed">
                                         {{ $fullAddress }}
                                     </td>
-                                    <td class="whitespace-nowrap text-sm text-slate-900 dark:text-white">
+                                    <td class="col-tech whitespace-nowrap text-sm">
                                         {{ $survey->surveyedBy->name ?? '—' }}
                                     </td>
-                                    <td class="text-center text-sm text-slate-900 dark:text-white">
+                                    <td class="text-center text-sm">
                                         {{ $survey->camera_count_recommended ?? '—' }}
                                     </td>
-                                    <td class="whitespace-nowrap text-sm font-medium">
-                                        @if($survey->status === 'completed')
-                                            <span class="text-emerald-600 dark:text-emerald-400">Completed</span>
-                                        @elseif($survey->status === 'cancelled')
-                                            <span class="text-rose-600 dark:text-rose-400">Cancelled</span>
-                                        @else
-                                            <span class="text-amber-600 dark:text-amber-400">Pending</span>
-                                        @endif
+                                    <td class="whitespace-nowrap text-sm">
+                                        <span class="status-text" style="color: {{ $sColor }}; font-weight: bold;">
+                                            {{ ucfirst(strtolower($survey->status)) }}
+                                        </span>
                                     </td>
-                                    <td class="text-right whitespace-nowrap text-sm">
-                                        <div class="inline-flex items-center gap-1.5 justify-end">
-                                            <a href="{{ route('site-surveys.show', $survey) }}" class="text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:underline">View</a>
-                                            <span class="text-slate-300 dark:text-slate-600">|</span>
-                                            <a href="{{ route('site-surveys.edit', $survey) }}" class="text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:underline">Edit</a>
-                                            <span class="text-slate-300 dark:text-slate-600">|</span>
-                                            <form method="POST" action="{{ route('site-surveys.destroy', $survey) }}" class="inline"
-                                                  onsubmit="return confirm('Delete this survey and all photos?')">
-                                                @csrf @method('DELETE')
-                                                <button type="submit" class="text-red-700 dark:text-red-500 hover:underline cursor-pointer bg-transparent border-0 p-0 font-medium">Delete</button>
-                                            </form>
-                                        </div>
+                                    <td class="text-right whitespace-nowrap text-sm table-actions">
+                                        <a href="{{ route('site-surveys.show', $survey) }}" class="action-link">View</a>
+                                        <a href="{{ route('site-surveys.edit', $survey) }}" class="action-link">Edit</a>
+                                        <form method="POST" action="{{ route('site-surveys.destroy', $survey) }}" class="inline"
+                                              onsubmit="return confirm('Delete this survey and all photos?')">
+                                            @csrf @method('DELETE')
+                                            <button type="submit" class="danger-link">Delete</button>
+                                        </form>
                                     </td>
                                 </tr>
-                            @endforeach
+                            @empty
+                                <tr>
+                                    <td colspan="7" class="text-center py-6 text-slate-500">
+                                        No site surveys yet
+                                    </td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
-                </div>
-                @if($surveys->hasPages())
-                    <div class="pg-links mt-3">
-                        {{ $surveys->links() }}
+                    {{-- Total count shown below the table --}}
+                    <div class="px-4 py-2.5 border-t border-[#ddd] dark:border-slate-800 bg-[#fbfbfb] dark:bg-slate-900/60 flex items-center justify-between text-xs text-slate-500">
+                        <span class="font-medium">Total: {{ $surveys->total() }}</span>
+                        @if($surveys->hasPages())
+                            <div class="text-xs">
+                                {{ $surveys->links() }}
+                            </div>
+                        @endif
                     </div>
-                @endif
-            @else
-                <div class="text-center py-16 px-4 border border-[#ddd] dark:border-slate-800 rounded-[4px] bg-white dark:bg-[#0f172a]">
-                    <svg class="w-12 h-12 mx-auto text-slate-400 mb-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3 9.75h.008v.008H3V9.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM18 6v12M6 6v12"/>
-                    </svg>
-                    <h4 class="text-sm font-bold text-slate-800 dark:text-slate-200">No site surveys scheduled yet</h4>
-                    <p class="text-xs text-slate-500 mt-1">
-                        <a href="{{ route('site-surveys.create') }}" class="text-blue-600 font-semibold hover:underline">Schedule the first survey →</a>
-                    </p>
                 </div>
-            @endif
 
         </div>
     </div>

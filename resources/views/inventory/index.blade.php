@@ -2,15 +2,15 @@
     <x-slot name="header">
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h1 class="text-2xl font-bold text-[#222222]">Warehouse & Inventory Management</h1>
+                <h2 class="text-xl font-bold text-slate-900 dark:text-white font-heading tracking-tight">Warehouse & Inventory Management</h2>
             </div>
             <div class="flex items-center gap-2 flex-wrap">
-                <a href="{{ route('inventory.movements') }}" class="px-3.5 py-2 rounded border border-[#cccccc] bg-white text-[#222222] text-sm font-normal hover:bg-[#f5f5f5] transition">
+                <a href="{{ route('inventory.movements') }}" class="btn-secondary">
                     Audit Log
                 </a>
                 @if(auth()->user()->isAdmin())
-                <a href="{{ route('products.create') }}" class="px-4 py-2 rounded bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-sm font-normal transition">
-                    + Add Product
+                <a href="{{ route('products.create') }}" class="btn-primary">
+                    Add Product
                 </a>
                 @endif
             </div>
@@ -120,29 +120,6 @@
                 </div>
             @endif
 
-            {{-- Stat Cards --}}
-            <div class="stat-grid">
-                <div class="stat-card">
-                    <div class="stat-label">Total SKUs</div>
-                    <div class="stat-value">{{ $totalProducts }}</div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-label">Total Stock Units</div>
-                    <div class="stat-value">{{ $totalUnits }}</div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-label">Low Stock Alerts</div>
-                    <div class="stat-value" style="color: {{ $lowStockCount > 0 ? '#d97706' : '#0f172a' }};">{{ $lowStockCount }}</div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-label">Out of Stock</div>
-                    <div class="stat-value" style="color: {{ $outOfStockCount > 0 ? '#dc2626' : '#0f172a' }};">{{ $outOfStockCount }}</div>
-                </div>
-            </div>
-
             <div class="pg-card">
                 {{-- Filter Bar --}}
                 <form method="GET" action="{{ route('inventory.index') }}" class="filter-bar">
@@ -165,7 +142,7 @@
                     </select>
 
                     <button type="submit" class="h-[38px] px-4 rounded bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition">
-                        Filter
+                        Search
                     </button>
                     @if(request()->hasAny(['search', 'category', 'status']))
                         <a href="{{ route('inventory.index') }}" class="h-[38px] px-3.5 inline-flex items-center rounded border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-sm font-medium transition">Clear</a>
@@ -177,7 +154,7 @@
                     <table class="p-table">
                         <thead>
                             <tr>
-                                <th>Product / Model</th>
+                                <th class="col-name" style="min-width: 200px;">Product / Model</th>
                                 <th>SKU</th>
                                 <th>Category & Brand</th>
                                 <th class="center">Stock Level</th>
@@ -192,7 +169,7 @@
                         <tbody>
                             @forelse($products as $prod)
                             <tr>
-                                <td>
+                                <td class="col-name" style="min-width: 200px;">
                                     <div class="cell-name">{{ $prod->name }}</div>
                                     @if($prod->model_no)
                                         <div class="cell-sub">Model: {{ $prod->model_no }}</div>
@@ -207,15 +184,15 @@
                                 </td>
                                 <td class="center">
                                     @if($prod->stock_quantity <= 0)
-                                        <span class="text-xs font-bold text-red-600">
+                                        <span class="status-text" style="color: #dc2626; font-weight: bold;">
                                             Out of Stock (0 {{ $prod->unit }})
                                         </span>
                                     @elseif($prod->isLowStock())
-                                        <span class="text-xs font-bold text-amber-600">
+                                        <span class="status-text" style="color: #d97706; font-weight: bold;">
                                             Low: {{ $prod->stock_quantity }} {{ $prod->unit }}
                                         </span>
                                     @else
-                                        <span class="text-xs font-bold text-emerald-600">
+                                        <span class="status-text" style="color: #16a34a; font-weight: bold;">
                                             {{ $prod->stock_quantity }} {{ $prod->unit }}
                                         </span>
                                     @endif
@@ -232,10 +209,10 @@
                                     </span>
                                 </td>
                                 @if(auth()->user()->isAdmin())
-                                <td class="whitespace-nowrap text-right text-sm" style="text-align:right;">
+                                <td class="whitespace-nowrap text-right text-sm table-actions" style="text-align:right;">
                                     <button type="button" 
                                             @click="openModal({{ $prod->id }}, {{ json_encode($prod->name) }}, {{ json_encode($prod->sku ?? '') }}, {{ $prod->stock_quantity }}, {{ json_encode($prod->unit ?? 'pcs') }})"
-                                            class="text-blue-600 hover:underline cursor-pointer bg-transparent border-0 p-0 font-medium">
+                                            class="action-link">
                                         Stock Adjust
                                     </button>
                                 </td>
@@ -243,13 +220,17 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="{{ auth()->user()->isAdmin() ? 8 : 7 }}" class="text-center py-8 text-slate-500 text-sm">
-                                    No products found matching the criteria.
+                                <td colspan="{{ auth()->user()->isAdmin() ? 8 : 7 }}" class="text-center py-6 text-slate-500 text-sm">
+                                    No products yet
                                 </td>
                             </tr>
                             @endforelse
                         </tbody>
                     </table>
+                </div>
+
+                <div class="px-4 py-3 bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 text-sm font-medium text-slate-600 dark:text-slate-400">
+                    Total: {{ $products->total() }}
                 </div>
 
                 @if($products->hasPages())

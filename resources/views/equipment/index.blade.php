@@ -2,11 +2,11 @@
     <x-slot name="header">
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h1 class="text-2xl font-bold text-[#222222]">Installed Equipment & Serial Tracking</h1>
+                <h2 class="text-xl font-bold text-slate-900 dark:text-white font-heading tracking-tight">Installed Equipment & Serial Tracking</h2>
             </div>
             @if(auth()->user()->isAdmin() || auth()->user()->isStaff())
-            <a href="{{ route('equipment.create') }}" class="px-4 py-2 rounded bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-sm font-normal transition">
-                + Register Equipment
+            <a href="{{ route('equipment.create') }}" class="btn-primary">
+                Register Equipment
             </a>
             @endif
         </div>
@@ -90,29 +90,6 @@
                 </div>
             @endif
 
-            {{-- Stat Cards --}}
-            <div class="stat-grid">
-                <div class="stat-card">
-                    <div class="stat-label">Total Installed Units</div>
-                    <div class="stat-value">{{ $totalCount ?? $totalDevices ?? 0 }}</div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-label">Under Active Warranty</div>
-                    <div class="stat-value text-[#16a34a]">{{ $activeWarrantyCount ?? $activeDevices ?? 0 }}</div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-label">Expiring Soon (≤ 30d)</div>
-                    <div class="stat-value text-[#d97706]">{{ $expiringSoonCount ?? 0 }}</div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-label">Out of Warranty</div>
-                    <div class="stat-value text-[#dc2626]">{{ $expiredWarrantyCount ?? $expiredCount ?? 0 }}</div>
-                </div>
-            </div>
-
             <div class="pg-card">
                 {{-- Filters --}}
                 <form method="GET" action="{{ route('equipment.index') }}" class="filter-bar">
@@ -141,7 +118,7 @@
                     </select>
 
                     <button type="submit" class="h-[38px] px-4 rounded bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition">
-                        Filter
+                        Search
                     </button>
                     @if(request()->hasAny(['search', 'lead_id', 'warranty', 'status']))
                         <a href="{{ route('equipment.index') }}" class="h-[38px] px-3.5 inline-flex items-center rounded border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-sm font-medium transition">Clear</a>
@@ -225,30 +202,35 @@
                                     @endif
                                 </td>
                                 <td class="center">
-                                    <span class="status-badge status-{{ $item->status }}">
+                                    @php
+                                        $eqStatusColors = [
+                                            'active'         => '#16a34a',
+                                            'under_repair'   => '#d97706',
+                                            'replaced'       => '#2563eb',
+                                            'decommissioned' => '#555555',
+                                        ];
+                                        $sColor = $eqStatusColors[strtolower($item->status)] ?? '#555555';
+                                    @endphp
+                                    <span class="status-text" style="color: {{ $sColor }}; font-weight: bold;">
                                         {{ ucfirst(str_replace('_', ' ', $item->status)) }}
                                     </span>
                                 </td>
-                                <td class="right whitespace-nowrap text-sm" style="text-align:right;">
-                                    <div class="inline-flex items-center gap-1.5 justify-end">
-                                        <a href="{{ route('equipment.show', $item) }}" class="text-blue-600 hover:underline">View</a>
-                                        <span class="text-slate-300">|</span>
-                                        <a href="{{ route('equipment.edit', $item) }}" class="text-blue-600 hover:underline">Edit</a>
-                                        @if(auth()->user()->isAdmin())
-                                            <span class="text-slate-300">|</span>
-                                            <form method="POST" action="{{ route('equipment.destroy', $item) }}" onsubmit="return confirm('Are you sure you want to delete this equipment record?');" class="inline">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="text-red-600 hover:underline cursor-pointer bg-transparent border-0 p-0 font-medium">Delete</button>
-                                            </form>
-                                        @endif
-                                    </div>
+                                <td class="right whitespace-nowrap text-sm table-actions" style="text-align:right;">
+                                    <a href="{{ route('equipment.show', $item) }}" class="action-link">View</a>
+                                    <a href="{{ route('equipment.edit', $item) }}" class="action-link">Edit</a>
+                                    @if(auth()->user()->isAdmin())
+                                        <form method="POST" action="{{ route('equipment.destroy', $item) }}" onsubmit="return confirm('Are you sure you want to delete this equipment record?');" class="inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="danger-link">Delete</button>
+                                        </form>
+                                    @endif
                                 </td>
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="7" class="text-center py-8 text-sm text-slate-500 font-medium">
-                                    No installed equipment logged yet.
+                                <td colspan="7" class="text-center py-6 text-sm text-slate-500">
+                                    No equipment yet
                                 </td>
                             </tr>
                             @endforelse
@@ -256,11 +238,15 @@
                     </table>
                 </div>
 
-                @if($equipments->hasPages())
-                <div class="p-3 border-t border-slate-200 dark:border-slate-800">
-                    {{ $equipments->links() }}
+                {{-- Total count shown below the table --}}
+                <div class="px-4 py-2.5 border-t border-[#ddd] dark:border-slate-800 bg-[#fbfbfb] dark:bg-slate-900/60 flex items-center justify-between text-xs text-slate-500">
+                    <span class="font-medium">Total: {{ $equipments->total() }}</span>
+                    @if($equipments->hasPages())
+                        <div class="text-xs">
+                            {{ $equipments->links() }}
+                        </div>
+                    @endif
                 </div>
-                @endif
             </div>
 
         </div>

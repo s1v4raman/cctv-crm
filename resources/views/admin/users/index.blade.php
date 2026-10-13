@@ -2,10 +2,10 @@
     <x-slot name="header">
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h1 class="text-2xl font-bold text-[#222222]">User Accounts Management</h1>
+                <h2 class="text-xl font-bold text-slate-900 dark:text-white font-heading tracking-tight">User Accounts Management</h2>
             </div>
-            <a href="{{ route('admin.users.create') }}" class="px-4 py-2 rounded bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-sm font-normal transition">
-                + Add User
+            <a href="{{ route('admin.users.create') }}" class="btn-primary">
+                Add User
             </a>
         </div>
     </x-slot>
@@ -109,33 +109,28 @@
             <div class="pg-card">
                 <!-- Filters tabs -->
                 <div class="filter-tabs">
-                    <a href="{{ route('admin.users.index', ['role' => 'all']) }}" class="filter-tab {{ $roleFilter === 'all' ? 'active' : '' }}">All Accounts</a>
-                    <a href="{{ route('admin.users.index', ['role' => 'admin']) }}" class="filter-tab {{ $roleFilter === 'admin' ? 'active' : '' }}">Admins</a>
-                    <a href="{{ route('admin.users.index', ['role' => 'staff']) }}" class="filter-tab {{ $roleFilter === 'staff' ? 'active' : '' }}">Employees</a>
-                    <a href="{{ route('admin.users.index', ['role' => 'technician']) }}" class="filter-tab {{ $roleFilter === 'technician' ? 'active' : '' }}">Technicians</a>
-                    <a href="{{ route('admin.users.index', ['role' => 'customer']) }}" class="filter-tab {{ $roleFilter === 'customer' ? 'active' : '' }}">Customers</a>
+                    <a href="{{ route('admin.users.index', ['role' => 'all']) }}" class="crm-filter-tab filter-tab {{ $roleFilter === 'all' ? 'active' : '' }}">All Accounts</a>
+                    <a href="{{ route('admin.users.index', ['role' => 'admin']) }}" class="crm-filter-tab filter-tab {{ $roleFilter === 'admin' ? 'active' : '' }}">Admins</a>
+                    <a href="{{ route('admin.users.index', ['role' => 'staff']) }}" class="crm-filter-tab filter-tab {{ $roleFilter === 'staff' ? 'active' : '' }}">Employees</a>
+                    <a href="{{ route('admin.users.index', ['role' => 'technician']) }}" class="crm-filter-tab filter-tab {{ $roleFilter === 'technician' ? 'active' : '' }}">Technicians</a>
+                    <a href="{{ route('admin.users.index', ['role' => 'customer']) }}" class="crm-filter-tab filter-tab {{ $roleFilter === 'customer' ? 'active' : '' }}">Customers</a>
                 </div>
 
-                @if($users->isEmpty())
-                    <div class="p-8 text-center text-slate-500 text-sm">
-                        No accounts found matching the selected filter criteria.
-                    </div>
-                @else
                     <div class="overflow-x-auto">
                         <table class="p-table">
                             <thead>
                                 <tr>
-                                    <th>Name</th>
+                                    <th class="col-name" style="min-width: 200px;">Name</th>
                                     <th>Email</th>
                                     <th>Role</th>
-                                    <th>Registered Date</th>
+                                    <th class="col-date whitespace-nowrap">Registered Date</th>
                                     <th style="text-align:right">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($users as $user)
+                                @forelse($users as $user)
                                     <tr>
-                                        <td>
+                                        <td class="col-name" style="min-width: 200px;">
                                             <div class="flex items-center gap-2.5">
                                                 <div class="w-8 h-8 rounded-full text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs ring-2 ring-white dark:ring-slate-800 crm-user-avatar" style="background-color: var(--crm-accent, #2563eb);">
                                                     {{ strtoupper(substr($user->name, 0, 1)) }}
@@ -155,39 +150,39 @@
                                         </td>
                                         <td>
                                             @php
-                                                $roleColor = 'text-slate-700 dark:text-slate-300';
-                                                if ($user->isAdmin()) $roleColor = 'text-purple-600 dark:text-purple-400';
-                                                elseif ($user->isStaff()) $roleColor = 'text-blue-600 dark:text-blue-400';
-                                                elseif ($user->isTechnician()) $roleColor = 'text-amber-600 dark:text-amber-400';
-                                                else $roleColor = 'text-emerald-600 dark:text-emerald-400';
+                                                $roleColor = '#2563eb';
+                                                if ($user->isAdmin()) $roleColor = '#7e22ce';
+                                                elseif ($user->isStaff()) $roleColor = '#2563eb';
+                                                elseif ($user->isTechnician()) $roleColor = '#d97706';
+                                                else $roleColor = '#16a34a';
                                             @endphp
-                                            <span class="font-bold {{ $roleColor }}">
+                                            <span class="status-text" style="color: {{ $roleColor }}; font-weight: bold;">
                                                 {{ $user->role === 'staff' ? 'Employee' : ucfirst($user->role) }}
                                             </span>
                                         </td>
-                                        <td>
+                                        <td class="col-date whitespace-nowrap">
                                             <span class="cell-date">{{ $user->created_at?->format('d M Y') ?? 'N/A' }}</span>
                                         </td>
-                                        <td style="text-align:right" class="whitespace-nowrap text-sm">
-                                            <div class="inline-flex items-center gap-2 justify-end">
-                                                <a href="{{ route('admin.users.show', $user) }}" class="inline-flex items-center gap-1 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium">
-                                                    View
-                                                </a>
-                                                <span class="text-slate-300 dark:text-slate-600">|</span>
-                                                <a href="{{ route('admin.users.edit', $user) }}" class="text-blue-600 dark:text-blue-400 hover:underline font-medium">Edit</a>
-                                                @if($user->id !== auth()->id())
-                                                    <span class="text-slate-300 dark:text-slate-600">|</span>
-                                                    <form method="POST" action="{{ route('admin.users.destroy', $user) }}" class="inline"
-                                                          onsubmit="return confirm('Delete this account ({{ addslashes($user->name) }})? This action cannot be undone.')">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="text-rose-600 dark:text-rose-400 hover:underline cursor-pointer bg-transparent border-0 p-0 font-medium">Delete</button>
-                                                    </form>
-                                                @endif
-                                            </div>
+                                        <td style="text-align:right" class="whitespace-nowrap text-sm table-actions">
+                                            <a href="{{ route('admin.users.show', $user) }}" class="action-link">View</a>
+                                            <a href="{{ route('admin.users.edit', $user) }}" class="action-link">Edit</a>
+                                            @if($user->id !== auth()->id())
+                                                <form method="POST" action="{{ route('admin.users.destroy', $user) }}" class="inline"
+                                                      onsubmit="return confirm('Delete this account ({{ addslashes($user->name) }})? This action cannot be undone.')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="danger-link">Delete</button>
+                                                </form>
+                                            @endif
                                         </td>
                                     </tr>
-                                @endforeach
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="text-center py-6 text-slate-500 text-sm">
+                                            No users yet
+                                        </td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -195,7 +190,6 @@
                     @if($users->hasPages())
                         <div class="p-4 border-t border-slate-200 dark:border-slate-800">{{ $users->links() }}</div>
                     @endif
-                @endif
             </div>
         </div>
     </div>

@@ -206,7 +206,7 @@ class InstalledEquipmentController extends Controller
     {
         $equipment->delete();
 
-        return back()->with('status', 'Equipment record deleted.');
+        return redirect()->route('equipment.index')->with('status', 'Equipment record deleted.');
     }
 
     private function authorizeInternalOrTechnician(): void

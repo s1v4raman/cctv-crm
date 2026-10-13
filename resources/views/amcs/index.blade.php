@@ -5,8 +5,8 @@
                 <h2 class="text-xl font-bold text-slate-900 dark:text-white font-heading tracking-tight">AMC Contracts</h2>
             </div>
             @if(auth()->user()->isAdmin() || auth()->user()->isStaff())
-            <a href="{{ route('amcs.create') }}" class="px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition">
-                + Create AMC
+            <a href="{{ route('amcs.create') }}" class="btn-primary">
+                Create AMC
             </a>
             @endif
         </div>
@@ -91,35 +91,6 @@
                 </div>
             @endif
 
-            {{-- Stat Cards --}}
-            @php
-                $totalContracts = $amcs->total();
-                $activeCount = \App\Models\AmcContract::where('status', 'active')->count();
-                $totalAmcValue = \App\Models\AmcContract::where('status', 'active')->sum('value');
-                $pendingVisits = \App\Models\AmcVisit::where('status', 'pending')->count();
-            @endphp
-            <div class="stat-grid">
-                <div class="stat-card">
-                    <div class="stat-label">Total Contracts</div>
-                    <div class="stat-value">{{ $totalContracts }}</div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-label">Active Contracts</div>
-                    <div class="stat-value text-emerald-600">{{ $activeCount }}</div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-label">Pending Routine Visits</div>
-                    <div class="stat-value text-amber-600">{{ $pendingVisits }}</div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-label">Active AMC Revenue</div>
-                    <div class="stat-value">₹{{ number_format($totalAmcValue, 2) }}</div>
-                </div>
-            </div>
-
             <div class="pg-card">
                 {{-- Search & filter bar --}}
                 <form method="GET" action="{{ route('amcs.index') }}" class="p-3.5 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0b1120] flex items-center gap-2 flex-wrap">
@@ -143,78 +114,87 @@
                     @endif
                 </form>
 
-                @if($amcs->isEmpty())
-                    <div class="p-12 text-center">
-                        <p class="font-semibold text-slate-800 dark:text-white text-sm mb-1">No AMC Contracts Found</p>
-                        <p class="text-xs text-slate-500 dark:text-slate-400">Add maintenance agreements to schedule routine visits.</p>
-                    </div>
-                @else
-                    <div class="overflow-x-auto">
-                        <table class="p-table">
-                            <thead>
+                <div class="overflow-x-auto">
+                    <table class="p-table">
+                        <thead>
+                            <tr>
+                                <th>Contract No</th>
+                                <th class="col-name" style="min-width: 200px;">Customer</th>
+                                <th class="col-date whitespace-nowrap">Contract Period</th>
+                                <th>Frequency</th>
+                                <th class="right">Value</th>
+                                <th>Status</th>
+                                <th class="right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($amcs as $amc)
+                                @php
+                                    $amcStatusColors = [
+                                        'active'    => '#16a34a',
+                                        'pending'   => '#d97706',
+                                        'expired'   => '#dc2626',
+                                        'cancelled' => '#dc2626',
+                                    ];
+                                    $sColor = $amcStatusColors[strtolower($amc->status)] ?? '#d97706';
+                                @endphp
                                 <tr>
-                                    <th>Contract No</th>
-                                    <th>Customer</th>
-                                    <th>Contract Period</th>
-                                    <th>Frequency</th>
-                                    <th class="right">Value</th>
-                                    <th>Status</th>
-                                    <th class="right">Actions</th>
+                                    <td>
+                                        <a href="{{ route('amcs.show', $amc) }}" class="cell-no">{{ $amc->contract_no }}</a>
+                                    </td>
+                                    <td class="col-name" style="min-width: 200px;">
+                                        <div class="cell-name">{{ $amc->lead->customer_name }}</div>
+                                        @if($amc->lead->phone)
+                                            <div class="text-xs text-slate-500 mt-0.5 whitespace-nowrap">{{ $amc->lead->phone }}</div>
+                                        @endif
+                                    </td>
+                                    <td class="col-date whitespace-nowrap">
+                                        <span class="text-xs text-slate-700 dark:text-slate-300">
+                                            {{ $amc->start_date->format('d M Y') }} – {{ $amc->end_date->format('d M Y') }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="text-xs text-slate-700 dark:text-slate-300">
+                                            {{ ucfirst(str_replace('_', ' ', $amc->frequency)) }}
+                                        </span>
+                                    </td>
+                                    <td class="right font-semibold text-slate-900 dark:text-white">
+                                        ₹{{ number_format($amc->value, 0) }}
+                                    </td>
+                                    <td>
+                                        <span class="status-text" style="color: {{ $sColor }}; font-weight: bold;">
+                                            {{ ucfirst($amc->status) }}
+                                        </span>
+                                    </td>
+                                    <td class="right whitespace-nowrap text-sm table-actions" style="text-align:right;">
+                                        <a href="{{ route('amcs.show', $amc) }}" class="action-link">View</a>
+                                        @if(auth()->user()->isAdmin())
+                                            <form method="POST" action="{{ route('amcs.destroy', $amc) }}" class="inline"
+                                                  onsubmit="return confirm('Delete AMC contract {{ addslashes($amc->contract_no) }}?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="danger-link">Delete</button>
+                                            </form>
+                                        @endif
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($amcs as $amc)
-                                    <tr>
-                                        <td>
-                                            <a href="{{ route('amcs.show', $amc) }}" class="cell-no">{{ $amc->contract_no }}</a>
-                                        </td>
-                                        <td>
-                                            <div class="cell-name">{{ $amc->lead->customer_name }}</div>
-                                            @if($amc->lead->phone)
-                                                <div class="text-xs text-slate-500 mt-0.5">{{ $amc->lead->phone }}</div>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <span class="text-xs text-slate-700 dark:text-slate-300">
-                                                {{ $amc->start_date->format('d M Y') }} – {{ $amc->end_date->format('d M Y') }}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span class="text-xs text-slate-700 dark:text-slate-300">
-                                                {{ ucfirst(str_replace('_', ' ', $amc->frequency)) }}
-                                            </span>
-                                        </td>
-                                        <td class="right font-semibold text-slate-900 dark:text-white">
-                                            ₹{{ number_format($amc->value, 2) }}
-                                        </td>
-                                        <td>
-                                            <span class="badge badge-{{ $amc->status }}">
-                                                {{ ucfirst($amc->status) }}
-                                            </span>
-                                        </td>
-                                        <td class="right whitespace-nowrap text-sm" style="text-align:right;">
-                                            <div class="inline-flex items-center gap-1.5 justify-end">
-                                                <a href="{{ route('amcs.show', $amc) }}" class="text-blue-600 hover:underline">View</a>
-                                                @if(auth()->user()->isAdmin())
-                                                    <span class="text-slate-300">|</span>
-                                                    <form method="POST" action="{{ route('amcs.destroy', $amc) }}" class="inline"
-                                                          onsubmit="return confirm('Delete AMC contract {{ addslashes($amc->contract_no) }}?')">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="text-red-600 hover:underline cursor-pointer bg-transparent border-0 p-0 font-medium">Delete</button>
-                                                    </form>
-                                                @endif
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+                            @empty
+                                <tr>
+                                    <td colspan="7" class="text-center py-6 text-slate-500">
+                                        No AMC contracts yet
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="px-4 py-3 bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 text-sm font-medium text-slate-600 dark:text-slate-400">
+                    Total: {{ $amcs->total() }}
+                </div>
                     
-                    @if($amcs->hasPages())
-                        <div class="pg-links">{{ $amcs->links() }}</div>
-                    @endif
+                @if($amcs->hasPages())
+                    <div class="pg-links">{{ $amcs->links() }}</div>
                 @endif
             </div>
         </div>

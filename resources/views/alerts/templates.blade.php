@@ -47,10 +47,11 @@
                         <span class="text-xs font-mono font-bold uppercase tracking-wider text-slate-400">Filter Module:</span>
                         <span class="text-xs font-bold text-amber-400 px-2 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/20 font-mono">{{ $templates->count() }} Templates</span>
                     </div>
-                    <div class="relative w-full sm:w-72">
+                    <div class="relative w-full sm:w-72 flex items-center">
+                        <span class="absolute left-2.5 pointer-events-none text-slate-500 text-xs shrink-0">🔍</span>
                         <input type="text" x-model="searchTerm" placeholder="Search template title or event key..." 
-                               class="w-full text-xs font-mono rounded-xl border border-slate-700 bg-[#060913] text-white placeholder-slate-500 focus:border-amber-400 focus:outline-none p-2.5 pl-8">
-                        <span class="absolute left-2.5 top-2.5 text-slate-500 text-xs">🔍</span>
+                               style="padding-left: 2.25rem !important;"
+                               class="w-full text-xs font-mono rounded-xl border border-slate-700 bg-[#060913] text-white placeholder-slate-500 focus:border-amber-400 focus:outline-none p-2.5">
                         <button type="button" x-show="searchTerm" @click="searchTerm = ''" class="absolute right-2.5 top-2 text-slate-400 hover:text-white text-xs">&times;</button>
                     </div>
                 </div>

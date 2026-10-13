@@ -5,10 +5,10 @@
                 <h2 class="text-xl font-bold text-slate-900 dark:text-white font-heading tracking-tight">Weekly Wages</h2>
             </div>
             <div class="flex items-center gap-2 flex-wrap">
-                <a href="{{ route('wages.signature-sheet', ['week' => $weekStart->toDateString()]) }}" target="_blank" class="px-3 py-2 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 text-sm font-medium rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition" style="border-radius: 4px;">
-                    Print Cash Signature Sheet
+                <a href="{{ route('wages.signature-sheet', ['week' => $weekStart->toDateString()]) }}" target="_blank" class="btn-secondary">
+                    Signature Sheet
                 </a>
-                <a href="{{ route('wages.export-csv', ['week' => $weekStart->toDateString()]) }}" class="px-3 py-2 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 text-sm font-medium rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition" style="border-radius: 4px;">
+                <a href="{{ route('wages.export-csv', ['week' => $weekStart->toDateString()]) }}" class="btn-secondary">
                     Export CSV
                 </a>
             </div>

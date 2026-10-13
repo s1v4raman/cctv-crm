@@ -1,46 +1,42 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-                <div class="flex items-center gap-2.5 flex-wrap">
-                    <a href="{{ route('projects.index') }}" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                    </a>
-                    <h2 class="text-xl font-extrabold text-slate-900 dark:text-white font-heading tracking-tight">{{ $project->title }}</h2>
-                    <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800">
-                        {{ $project->project_code }}
+        <div>
+            <a href="{{ route('projects.index') }}" class="back-link">&larr; Back</a>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-1">
+                <div class="flex items-center gap-3">
+                    <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ $project->title }}</h2>
+                    @php
+                        $projStatusColor = '#2563eb';
+                        if ($project->status === 'completed') $projStatusColor = '#16a34a';
+                        elseif (in_array($project->status, ['cancelled', 'on_hold'])) $projStatusColor = '#dc2626';
+                    @endphp
+                    <span class="text-sm font-bold" style="color: {{ $projStatusColor }};">
+                        {{ $project->status_label ?? ucfirst(str_replace('_', ' ', $project->status)) }}
                     </span>
-                    {!! $project->company_badge !!}
-                    {!! $project->status_badge !!}
                 </div>
-                <div class="flex items-center gap-3 text-xs text-slate-400 mt-1 flex-wrap">
-                    @if($project->site)
-                        <span>Site: <a href="{{ route('sites.show', $project->site) }}" class="font-semibold text-slate-700 dark:text-slate-300 hover:underline">{{ $project->site->name }}</a></span>
-                        <span>&bull;</span>
+
+                <div class="flex items-center gap-2 flex-wrap">
+                    @if(auth()->user()->isAdmin() || ($project->created_by === auth()->id() && in_array($project->status, ['draft', 'pending_approval'])))
+                        <a href="{{ route('projects.edit', $project) }}" class="btn-secondary">Edit Details</a>
                     @endif
-                    <span>Lead Tech: <strong class="text-slate-700 dark:text-slate-300">{{ $project->leadTechnician?->name ?? 'Unassigned' }}</strong></span>
-                    <span>&bull;</span>
-                    <span>Type: <strong class="text-slate-700 dark:text-slate-300">{{ $project->project_type_label }}</strong></span>
+
+                    @if(auth()->user()->isAdmin())
+                        <form method="POST" action="{{ route('projects.updateStatus', $project) }}" class="inline-block">
+                            @csrf
+                            @method('PATCH')
+                            <select name="status" onchange="this.form.submit()" class="crm-select text-xs py-1" style="height: 38px;">
+                                @foreach(['draft' => 'Draft', 'pending_approval' => 'Pending Approval', 'approved' => 'Approved', 'in_progress' => 'In Progress', 'completed' => 'Completed', 'on_hold' => 'On Hold', 'cancelled' => 'Cancelled'] as $sVal => $sLbl)
+                                    <option value="{{ $sVal }}" {{ $project->status === $sVal ? 'selected' : '' }}>{{ $sLbl }}</option>
+                                @endforeach
+                            </select>
+                        </form>
+                        <form method="POST" action="{{ route('projects.destroy', $project) }}" onsubmit="return confirm('Are you sure you want to delete this project? All associated records will be removed.');" class="inline">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="danger-link p-0 bg-transparent border-0 cursor-pointer text-xs ml-2">Delete</button>
+                        </form>
+                    @endif
                 </div>
-            </div>
-
-            <div class="flex items-center gap-2 flex-wrap">
-                @if(auth()->user()->isAdmin() || ($project->created_by === auth()->id() && in_array($project->status, ['draft', 'pending_approval'])))
-                    <a href="{{ route('projects.edit', $project) }}" class="btn-secondary text-xs">Edit Info</a>
-                @endif
-
-                @if(auth()->user()->isAdmin())
-                    {{-- Status transition dropdown (Admin only per matrix) --}}
-                    <form method="POST" action="{{ route('projects.updateStatus', $project) }}" class="inline-block">
-                        @csrf
-                        @method('PATCH')
-                        <select name="status" onchange="this.form.submit()" class="px-2.5 py-1.5 text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white outline-none focus:ring-2 focus:ring-blue-500">
-                            @foreach(['draft' => 'Draft', 'pending_approval' => 'Pending Approval', 'approved' => 'Approved', 'in_progress' => 'In Progress', 'completed' => 'Completed', 'on_hold' => 'On Hold', 'cancelled' => 'Cancelled'] as $sVal => $sLbl)
-                                <option value="{{ $sVal }}" {{ $project->status === $sVal ? 'selected' : '' }}>{{ $sLbl }}</option>
-                            @endforeach
-                        </select>
-                    </form>
-                @endif
             </div>
         </div>
     </x-slot>
@@ -131,24 +127,24 @@
         @endif
 
         {{-- 5-Tab Navigation Bar --}}
-        <div class="border-b border-slate-200 dark:border-slate-800">
-            <nav class="flex space-x-6 text-sm font-bold">
-                <button type="button" @click="currentTab = 'overview'" :class="currentTab === 'overview' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3' : 'text-slate-400 pb-3 hover:text-slate-600'">
+        <div class="bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200/80 dark:border-slate-800 px-6 pt-3.5 shadow-xs">
+            <nav class="flex space-x-6 text-sm font-bold overflow-x-auto">
+                <button type="button" @click="currentTab = 'overview'" :class="currentTab === 'overview' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'">
                     1. Overview
                 </button>
-                <button type="button" @click="currentTab = 'materials'" :class="currentTab === 'materials' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3' : 'text-slate-400 pb-3 hover:text-slate-600'">
+                <button type="button" @click="currentTab = 'materials'" :class="currentTab === 'materials' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'">
                     2. Materials ({{ $project->materials->count() }})
                 </button>
-                <button type="button" @click="currentTab = 'documents'" :class="currentTab === 'documents' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3' : 'text-slate-400 pb-3 hover:text-slate-600'">
+                <button type="button" @click="currentTab = 'documents'" :class="currentTab === 'documents' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'">
                     3. Documents &bull; DCs ({{ $project->documents->count() }})
                     @if($uninvoicedDcCount > 0)
                         <span class="ml-1 px-1.5 py-0.5 text-[10px] rounded-full bg-amber-100 text-amber-700 font-bold">{{ $uninvoicedDcCount }} unbilled</span>
                     @endif
                 </button>
-                <button type="button" @click="currentTab = 'work_days'" :class="currentTab === 'work_days' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3' : 'text-slate-400 pb-3 hover:text-slate-600'">
+                <button type="button" @click="currentTab = 'work_days'" :class="currentTab === 'work_days' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'">
                     4. Work Days &bull; Wages ({{ $project->workDays->count() }})
                 </button>
-                <button type="button" @click="currentTab = 'ip_devices'" :class="currentTab === 'ip_devices' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3' : 'text-slate-400 pb-3 hover:text-slate-600'">
+                <button type="button" @click="currentTab = 'ip_devices'" :class="currentTab === 'ip_devices' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'">
                     5. IP Devices ({{ $project->ipDevices->count() }})
                 </button>
             </nav>
@@ -493,8 +489,8 @@
                                 </div>
                             </div>
                             <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
-                                <button type="button" @click="deviceModalOpen = true" class="btn-primary text-xs py-1 px-3 shadow-xs">
-                                    + Add Terminal / Camera to IP Register
+                                <button type="button" @click="deviceModalOpen = true" class="btn-secondary">
+                                    Add Terminal
                                 </button>
                                 <a href="{{ route('attendance.index') }}" class="text-xs text-blue-600 dark:text-blue-400 font-semibold hover:underline flex items-center gap-1">
                                     <span>View Attendance &amp; Shift Hub</span>
@@ -516,32 +512,107 @@
                                 <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
                                 Project Team &amp; Assignment
                             </h3>
-                            @if(auth()->user()->isAdmin() || ($project->created_by === auth()->id() && in_array($project->status, ['draft', 'pending_approval'])))
-                                <a href="{{ route('projects.edit', $project) }}" class="text-xs text-blue-600 dark:text-blue-400 font-semibold hover:underline">
-                                    Edit &rarr;
+                            <div class="flex items-center gap-2">
+                                <a href="{{ route('admin.users.create', ['role' => 'technician', 'return_to' => route('projects.show', [$project->id, 'tab' => 'overview'])]) }}" 
+                                   class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/40 border border-blue-200 dark:border-blue-800 transition shadow-xs"
+                                   title="Add and register a new technician for this project">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                                    <span>+ Add New Technician</span>
                                 </a>
-                            @endif
+                                @if(auth()->user()->isAdmin() || ($project->created_by === auth()->id() && in_array($project->status, ['draft', 'pending_approval'])))
+                                    <a href="{{ route('projects.edit', $project) }}" class="text-xs text-blue-600 dark:text-blue-400 font-semibold hover:underline">
+                                        Edit &rarr;
+                                    </a>
+                                @endif
+                            </div>
                         </div>
+
+                        {{-- Newly Added Technician Alert --}}
+                        @if(session('new_technician_id'))
+                            @php
+                                $newTech = \App\Models\User::find(session('new_technician_id'));
+                            @endphp
+                            @if($newTech && $project->lead_technician_id != $newTech->id)
+                                <div class="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-xs text-emerald-800 dark:text-emerald-300 flex items-center justify-between gap-3">
+                                    <div class="flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                        <span>New Technician <strong>{{ $newTech->name }}</strong> registered!</span>
+                                    </div>
+                                    <form action="{{ route('projects.assign-technician', $project) }}" method="POST" class="shrink-0">
+                                        @csrf
+                                        <input type="hidden" name="lead_technician_id" value="{{ $newTech->id }}">
+                                        <button type="submit" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] shadow-xs">
+                                            Assign as Lead
+                                        </button>
+                                    </form>
+                                </div>
+                            @endif
+                        @endif
 
                         <div class="space-y-3 text-xs">
                             {{-- Lead Technician --}}
-                            <div class="p-3 rounded-xl bg-blue-50/50 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/40">
-                                <span class="text-[10px] text-blue-600 dark:text-blue-400 uppercase tracking-wider block font-bold mb-1">Lead Technician (In-Charge)</span>
-                                @if($project->leadTechnician)
-                                    <div class="flex items-center justify-between">
-                                        <div>
-                                            <span class="font-bold text-slate-900 dark:text-white text-sm block">{{ $project->leadTechnician->name }}</span>
-                                            <span class="text-slate-500 text-[11px]">{{ $project->leadTechnician->email }}</span>
+                            <div x-data="{ showAssignForm: false }" class="p-3 rounded-xl bg-blue-50/50 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/40">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-[10px] text-blue-600 dark:text-blue-400 uppercase tracking-wider block font-bold">Lead Technician (In-Charge)</span>
+                                    <button type="button" @click="showAssignForm = !showAssignForm" class="text-[11px] text-blue-600 dark:text-blue-400 font-semibold hover:underline">
+                                        <span x-text="showAssignForm ? 'Cancel' : '{{ $project->leadTechnician ? 'Change' : '+ Assign' }}'"></span>
+                                    </button>
+                                </div>
+
+                                <div x-show="!showAssignForm">
+                                    @if($project->leadTechnician)
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <span class="font-bold text-slate-900 dark:text-white text-sm block">{{ $project->leadTechnician->name }}</span>
+                                                <span class="text-slate-500 text-[11px]">{{ $project->leadTechnician->email }}</span>
+                                            </div>
+                                            @if($project->leadTechnician->phone)
+                                                <a href="tel:{{ $project->leadTechnician->phone }}" class="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-[10px] shadow-xs">
+                                                    Call
+                                                </a>
+                                            @endif
                                         </div>
-                                        @if($project->leadTechnician->phone)
-                                            <a href="tel:{{ $project->leadTechnician->phone }}" class="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-[10px] shadow-xs">
-                                                Call
+                                    @else
+                                        <div class="flex items-center justify-between pt-1">
+                                            <span class="text-slate-400 italic">No Lead Technician Assigned</span>
+                                            <a href="{{ route('admin.users.create', ['role' => 'technician', 'return_to' => route('projects.show', [$project->id, 'tab' => 'overview'])]) }}" 
+                                               class="text-xs font-bold text-blue-600 hover:underline">
+                                                + Add New Technician
                                             </a>
-                                        @endif
-                                    </div>
-                                @else
-                                    <span class="text-slate-400 italic">No Lead Technician Assigned</span>
-                                @endif
+                                        </div>
+                                    @endif
+                                </div>
+
+                                {{-- Inline Quick Assign Form --}}
+                                <div x-show="showAssignForm" x-cloak class="mt-2 pt-2 border-t border-blue-200/50 dark:border-blue-800/50 space-y-2">
+                                    <form action="{{ route('projects.assign-technician', $project) }}" method="POST" class="space-y-2">
+                                        @csrf
+                                        <div>
+                                            <select name="lead_technician_id" class="w-full text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 p-2 focus:ring-1 focus:ring-blue-500" required>
+                                                <option value="">-- Choose Lead Technician --</option>
+                                                @foreach($technicians as $tech)
+                                                    <option value="{{ $tech->id }}" @selected($project->lead_technician_id == $tech->id)>
+                                                        {{ $tech->name }} ({{ ucfirst($tech->role) }})
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="flex items-center justify-between pt-1">
+                                            <a href="{{ route('admin.users.create', ['role' => 'technician', 'return_to' => route('projects.show', [$project->id, 'tab' => 'overview'])]) }}" 
+                                               class="text-[11px] text-blue-600 dark:text-blue-400 font-semibold hover:underline flex items-center gap-1">
+                                                <span>+ Create New Technician</span>
+                                            </a>
+                                            <div class="flex gap-2">
+                                                <button type="button" @click="showAssignForm = false" class="px-2.5 py-1 text-xs text-slate-500 hover:text-slate-700">
+                                                    Cancel
+                                                </button>
+                                                <button type="submit" class="px-3 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-xs">
+                                                    Save
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
                             </div>
 
                             {{-- Assigned Staff / Employee --}}
@@ -638,8 +709,8 @@
                         <p class="text-xs text-slate-500">Hardware, cabling and consumables allocated for this deployment</p>
                     </div>
 
-                    <button type="button" @click="materialModalOpen = true" class="btn-primary text-xs shadow-md">
-                        + Add Material Item
+                    <button type="button" @click="materialModalOpen = true" class="btn-secondary">
+                        Add Material
                     </button>
                 </div>
 
@@ -939,8 +1010,8 @@
                             <button type="button" @click="bulkDeviceModalOpen = true" class="btn-secondary text-xs flex items-center gap-1">
                                 Bulk Sequential Generator
                             </button>
-                            <button type="button" @click="deviceModalOpen = true" class="btn-primary text-xs shadow-md">
-                                + Add Device
+                            <button type="button" @click="deviceModalOpen = true" class="btn-secondary">
+                                Add Device
                             </button>
                         @endif
                     </div>
@@ -1248,7 +1319,7 @@
                     <div class="space-y-3 pt-2">
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-bold uppercase text-slate-400">Worker Attendance Rows</span>
-                            <button type="button" @click="addRow()" class="btn-secondary text-xs">+ Add Worker</button>
+                            <button type="button" @click="addRow()" class="btn-secondary text-xs">Add Worker</button>
                         </div>
 
                         <template x-for="(r, idx) in rows" :key="idx">

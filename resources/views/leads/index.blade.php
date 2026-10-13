@@ -1,13 +1,10 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-                <h2 class="text-xl font-bold text-slate-900 dark:text-white font-heading tracking-tight">Leads</h2>
-            </div>
+        <div class="flex items-center justify-between">
+            <h2 class="text-xl font-bold text-slate-900 dark:text-white">Leads</h2>
             @if(auth()->user()->isAdmin() || auth()->user()->isStaff())
-            <a href="{{ route('leads.create') }}" 
-               class="inline-flex items-center px-3.5 py-1.5 rounded text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white transition shadow-2xs">
-                + New Lead
+            <a href="{{ route('leads.create') }}" class="btn-primary">
+                New Lead
             </a>
             @endif
         </div>
@@ -140,32 +137,31 @@
                         <tbody>
                             @forelse ($leads as $lead)
                                 @php
-                                    $statusMap = [
-                                        'won' => 'text-emerald-600 dark:text-emerald-400',
-                                        'quoted' => 'text-amber-600 dark:text-amber-400',
-                                        'new' => 'text-blue-600 dark:text-blue-400',
-                                        'contacted' => 'text-purple-600 dark:text-purple-400',
-                                        'lost' => 'text-rose-600 dark:text-rose-400',
+                                    $statusColors = [
+                                        'won' => '#16a34a',
+                                        'quoted' => '#d97706',
+                                        'new' => '#2563eb',
+                                        'contacted' => '#2563eb',
+                                        'lost' => '#dc2626',
                                     ];
-                                    $statusColor = $statusMap[strtolower($lead->status)] ?? 'text-slate-700 dark:text-slate-300';
+                                    $sColor = $statusColors[strtolower($lead->status)] ?? '#2563eb';
                                 @endphp
                                 <tr>
-                                    {{-- Customer name (dark text) with address in smaller gray text below --}}
+                                    {{-- Customer name --}}
                                     <td>
                                         <div>
-                                            <a href="{{ route('leads.show', $lead) }}" 
-                                               class="font-bold text-slate-900 dark:text-white hover:underline text-xs">
+                                            <a href="{{ route('leads.show', $lead) }}" class="font-bold text-slate-900 dark:text-white hover:underline">
                                                 {{ $lead->customer_name }}
                                             </a>
                                         </div>
                                         @if($lead->site_address)
-                                            <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                                            <div class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                                                 {{ $lead->site_address }}
                                             </div>
                                         @endif
                                     </td>
 
-                                    {{-- Phone with whitespace-nowrap to prevent line breaks in numbers --}}
+                                    {{-- Phone with whitespace-nowrap --}}
                                     <td class="col-phone text-slate-700 dark:text-slate-300">
                                         {{ $lead->phone }}
                                     </td>
@@ -174,36 +170,33 @@
                                         {{ $lead->email ?? '—' }}
                                     </td>
 
-                                    {{-- Source: Plain text with min-width 130px and no wrapping --}}
-                                    <td style="min-width: 130px; white-space: nowrap;" class="text-slate-700 dark:text-slate-300 capitalize text-xs">
+                                    <td class="text-slate-700 dark:text-slate-300 capitalize">
                                         {{ $lead->source ?: '—' }}
                                     </td>
 
-                                    {{-- Status: Plain colored normal-case text, no pills --}}
+                                    {{-- Status: Plain bold colored text, never a pill/badge --}}
                                     <td>
-                                        <span class="font-bold text-xs {{ $statusColor }}">
+                                        <span class="font-bold" style="color: {{ $sColor }};">
                                             {{ ucfirst(strtolower($lead->status)) }}
                                         </span>
                                     </td>
 
-                                    <td class="text-slate-500 dark:text-slate-400 whitespace-nowrap text-xs">
+                                    <td class="text-slate-500 dark:text-slate-400 whitespace-nowrap">
                                         {{ $lead->created_at->format('d M Y') }}
                                     </td>
 
-                                    {{-- Actions: View | Edit | Delete --}}
-                                    <td class="text-right whitespace-nowrap text-sm">
-                                        <div class="inline-flex items-center gap-1.5 justify-end">
-                                            <a href="{{ route('leads.show', $lead) }}" class="text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:underline">View</a>
+                                    {{-- Actions: View, Edit, Delete separated by a space --}}
+                                    <td class="text-right whitespace-nowrap">
+                                        <div class="inline-flex items-center gap-2 justify-end">
+                                            <a href="{{ route('leads.show', $lead) }}" class="action-link">View</a>
                                             @if(auth()->user()->isAdmin())
-                                                <span class="text-slate-300 dark:text-slate-600">|</span>
-                                                <a href="{{ route('leads.edit', $lead) }}" class="text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:underline">Edit</a>
-                                                <span class="text-slate-300 dark:text-slate-600">|</span>
+                                                <a href="{{ route('leads.edit', $lead) }}" class="action-link">Edit</a>
                                                 <form method="POST" action="{{ route('leads.destroy', $lead) }}"
                                                       class="inline"
-                                                      onsubmit="return confirm('Delete lead {{ addslashes($lead->customer_name) }}? This will also delete all quotations and jobs linked to this lead.')">
+                                                      onsubmit="return confirm('Delete lead {{ addslashes($lead->customer_name) }}?')">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="text-red-700 dark:text-red-500 hover:underline cursor-pointer bg-transparent border-0 p-0 font-medium">Delete</button>
+                                                    <button type="submit" class="danger-link">Delete</button>
                                                 </form>
                                             @endif
                                         </div>
@@ -211,11 +204,8 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="text-center py-8 text-xs text-slate-400">
-                                        No leads found.
-                                        @if(auth()->user()->isAdmin())
-                                            <a href="{{ route('leads.create') }}" class="text-blue-600 font-semibold hover:underline ml-1">Create the first lead &rarr;</a>
-                                        @endif
+                                    <td colspan="7" class="text-center py-6 text-slate-500">
+                                        No leads yet
                                     </td>
                                 </tr>
                             @endforelse

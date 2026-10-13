@@ -20,10 +20,14 @@
             <div class="p-6 sm:p-8 bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800/80 shadow-xs rounded-2xl">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                     <div class="flex items-center gap-5">
-                        <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center font-bold text-2xl sm:text-3xl text-white shadow-md ring-4 ring-slate-100 dark:ring-slate-800 crm-user-avatar shrink-0"
-                             style="background-color: var(--crm-accent, #2563eb);">
-                            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                        </div>
+                        @if(auth()->user()->avatar_url)
+                            <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}" class="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover shadow-md ring-4 ring-slate-100 dark:ring-slate-800 shrink-0">
+                        @else
+                            <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center font-bold text-2xl sm:text-3xl text-white shadow-md ring-4 ring-slate-100 dark:ring-slate-800 crm-user-avatar shrink-0"
+                                 style="background-color: var(--crm-accent, #2563eb);">
+                                {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                            </div>
+                        @endif
                         <div class="space-y-1 min-w-0">
                             <div class="flex flex-wrap items-center gap-2.5">
                                 <h2 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white font-heading truncate">

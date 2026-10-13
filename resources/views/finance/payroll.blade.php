@@ -2,17 +2,15 @@
     <x-slot name="header">
         <div class="flex flex-wrap items-center justify-between gap-4">
             <div>
-                <h1 class="text-xl font-bold text-slate-900 dark:text-white">
+                <h2 class="text-xl font-bold text-slate-900 dark:text-white">
                     Payroll
-                </h1>
+                </h2>
             </div>
             <div class="flex items-center gap-2">
-                <a href="{{ route('finance.analytics') }}"
-                   class="inline-flex items-center px-3 py-1.5 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-medium transition">
-                    Salary Analytics
+                <a href="{{ route('finance.analytics') }}" class="btn-secondary">
+                    Analytics
                 </a>
-                <button type="button" onclick="openGenerateModal()"
-                        class="inline-flex items-center px-3 py-1.5 rounded bg-[#2563eb] hover:bg-blue-700 text-white text-xs font-medium transition">
+                <button type="button" onclick="openGenerateModal()" class="btn-primary">
                     Generate Payroll
                 </button>
             </div>

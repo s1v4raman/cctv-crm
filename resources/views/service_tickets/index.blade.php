@@ -5,14 +5,14 @@
                 <h2 class="text-xl font-bold text-slate-900 dark:text-white font-heading tracking-tight">Service Tickets</h2>
             </div>
             <div class="flex items-center gap-2 flex-wrap">
-                <button type="button" @click="$dispatch('open-email-modal')" class="px-3 py-1.5 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition">
+                <button type="button" @click="$dispatch('open-email-modal')" class="btn-secondary">
                     Email Gateway
                 </button>
-                <a href="{{ route('service-tickets.export-pdf', request()->query()) }}" class="px-3 py-1.5 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition">
+                <a href="{{ route('service-tickets.export-pdf', request()->query()) }}" class="btn-secondary">
                     PDF Export
                 </a>
-                <a href="{{ route('service-tickets.create') }}" class="px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition">
-                    + Log Ticket
+                <a href="{{ route('service-tickets.create') }}" class="btn-primary">
+                    Log Ticket
                 </a>
             </div>
         </div>
@@ -96,62 +96,9 @@
                 </div>
             @endif
 
-            <!-- Metric Summary Cards -->
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5 mb-5">
-                <div class="stat-card">
-                    <p class="text-xs font-medium text-slate-500 dark:text-slate-400">Total Tickets</p>
-                    <h3 class="text-2xl font-bold text-slate-900 dark:text-white mt-1">{{ $metrics['total'] }}</h3>
-                </div>
-
-                <div class="stat-card">
-                    <p class="text-xs font-medium text-slate-500 dark:text-slate-400">Active / Open</p>
-                    <h3 class="text-2xl font-bold text-slate-900 dark:text-white mt-1">{{ $metrics['open'] }}</h3>
-                </div>
-
-                <div class="stat-card">
-                    <p class="text-xs font-medium text-slate-500 dark:text-slate-400">Critical / Urgent</p>
-                    <h3 class="text-2xl font-bold text-slate-900 dark:text-white mt-1">{{ $metrics['critical'] }}</h3>
-                </div>
-
-                <div class="stat-card">
-                    <p class="text-xs font-medium text-slate-500 dark:text-slate-400">SLA Overdue (>48h)</p>
-                    <h3 class="text-2xl font-bold text-slate-900 dark:text-white mt-1">{{ $metrics['overdue'] }}</h3>
-                </div>
-            </div>
-
-            <!-- Status Tabs -->
-            <div class="flex flex-wrap items-center gap-2 mb-4">
-                <a href="{{ route('service-tickets.index', array_merge(request()->except('tab', 'page'), ['tab' => 'all'])) }}" 
-                    class="status-tab {{ $activeTab === 'all' ? 'active' : '' }}">
-                    All Tickets <span class="count-badge">{{ $tabCounts['all'] }}</span>
-                </a>
-                <a href="{{ route('service-tickets.index', array_merge(request()->except('tab', 'page'), ['tab' => 'critical'])) }}" 
-                    class="status-tab {{ $activeTab === 'critical' ? 'active' : '' }}">
-                    Critical <span class="count-badge">{{ $tabCounts['critical'] }}</span>
-                </a>
-                <a href="{{ route('service-tickets.index', array_merge(request()->except('tab', 'page'), ['tab' => 'open'])) }}" 
-                    class="status-tab {{ $activeTab === 'open' ? 'active' : '' }}">
-                    Open & Assigned <span class="count-badge">{{ $tabCounts['open'] }}</span>
-                </a>
-                <a href="{{ route('service-tickets.index', array_merge(request()->except('tab', 'page'), ['tab' => 'in_progress'])) }}" 
-                    class="status-tab {{ $activeTab === 'in_progress' ? 'active' : '' }}">
-                    In Progress <span class="count-badge">{{ $tabCounts['in_progress'] }}</span>
-                </a>
-                <a href="{{ route('service-tickets.index', array_merge(request()->except('tab', 'page'), ['tab' => 'resolved'])) }}" 
-                    class="status-tab {{ $activeTab === 'resolved' ? 'active' : '' }}">
-                    Resolved <span class="count-badge">{{ $tabCounts['resolved'] }}</span>
-                </a>
-                <a href="{{ route('service-tickets.index', array_merge(request()->except('tab', 'page'), ['tab' => 'closed'])) }}" 
-                    class="status-tab {{ $activeTab === 'closed' ? 'active' : '' }}">
-                    Closed <span class="count-badge">{{ $tabCounts['closed'] }}</span>
-                </a>
-            </div>
-
-            <!-- Filters Bar -->
+            <!-- Filters Bar (Single Filter Row) -->
             <div class="mb-4">
                 <form method="GET" action="{{ route('service-tickets.index') }}" class="flex flex-wrap items-center gap-2">
-                    <input type="hidden" name="tab" value="{{ $activeTab }}">
-                    
                     <div class="flex-1 min-w-[200px]">
                         <input type="text" name="search" value="{{ request('search') }}" 
                             placeholder="Search ticket #, issue, customer, phone..."
@@ -159,35 +106,19 @@
                     </div>
 
                     <div>
-                        <select name="issue_type" class="text-sm h-[38px] px-3 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">
-                            <option value="">All Categories</option>
-                            @foreach(\App\Models\ServiceTicket::issueTypeOptions() as $k => $label)
-                                <option value="{{ $k }}" {{ request('issue_type') === $k ? 'selected' : '' }}>{{ $label }}</option>
-                            @endforeach
+                        <select name="status" class="text-sm h-[38px] px-3 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">
+                            <option value="">All Statuses</option>
+                            <option value="open" @selected(request('status') === 'open')>Open</option>
+                            <option value="assigned" @selected(request('status') === 'assigned')>Assigned</option>
+                            <option value="in_progress" @selected(request('status') === 'in_progress')>In Progress</option>
+                            <option value="resolved" @selected(request('status') === 'resolved')>Resolved</option>
+                            <option value="closed" @selected(request('status') === 'closed')>Closed</option>
                         </select>
                     </div>
-
-                    <div>
-                        <select name="priority" class="text-sm h-[38px] px-3 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">
-                            <option value="">All Priorities</option>
-                            @foreach(\App\Models\ServiceTicket::priorityOptions() as $k => $label)
-                                <option value="{{ $k }}" {{ request('priority') === $k ? 'selected' : '' }}>{{ $label }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div>
-                        <select name="technician_id" class="text-sm h-[38px] px-3 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">
-                            <option value="">All Technicians</option>
-                            @foreach($technicians as $tech)
-                                <option value="{{ $tech->id }}" {{ request('technician_id') == $tech->id ? 'selected' : '' }}>{{ $tech->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
+                    
                     <button type="submit"
                             class="h-[38px] px-4 rounded bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition">
-                        Filter
+                        Search
                     </button>
 
                     @if(request()->hasAny(['search', 'status', 'priority', 'technician_id', 'issue_type']))
@@ -315,21 +246,17 @@
                                                 {{ $ticket->status_label }}
                                             </span>
                                         </td>
-                                        <td class="whitespace-nowrap text-right text-sm" style="text-align:right;">
-                                            <div class="inline-flex items-center gap-1.5 justify-end">
-                                                <a href="{{ route('service-tickets.show', $ticket) }}" class="text-blue-600 hover:underline">View</a>
-                                                <span class="text-slate-300">|</span>
-                                                <a href="{{ route('service-tickets.edit', $ticket) }}" class="text-blue-600 hover:underline">Edit</a>
-                                                @if(auth()->user()->isAdmin())
-                                                    <span class="text-slate-300">|</span>
-                                                    <form method="POST" action="{{ route('service-tickets.destroy', $ticket) }}" class="inline"
-                                                          onsubmit="return confirm('Delete service ticket {{ addslashes($ticket->ticket_no) }}?')">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="text-red-600 hover:underline cursor-pointer bg-transparent border-0 p-0 font-medium">Delete</button>
-                                                    </form>
-                                                @endif
-                                            </div>
+                                        <td class="whitespace-nowrap text-right text-sm table-actions" style="text-align:right;">
+                                            <a href="{{ route('service-tickets.show', $ticket) }}" class="action-link">View</a>
+                                            <a href="{{ route('service-tickets.edit', $ticket) }}" class="action-link">Edit</a>
+                                            @if(auth()->user()->isAdmin())
+                                                <form method="POST" action="{{ route('service-tickets.destroy', $ticket) }}" class="inline"
+                                                      onsubmit="return confirm('Delete service ticket {{ addslashes($ticket->ticket_no) }}?')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="danger-link">Delete</button>
+                                                </form>
+                                            @endif
                                         </td>
                                     </tr>
                                 @endforeach
@@ -337,11 +264,15 @@
                         </table>
                     </div>
                     
-                    @if($tickets->hasPages())
-                        <div class="p-4 border-t border-slate-100">
-                            {{ $tickets->links() }}
-                        </div>
-                    @endif
+                    {{-- Total count shown below the table --}}
+                    <div class="px-4 py-2.5 border-t border-[#ddd] dark:border-slate-800 bg-[#fbfbfb] dark:bg-slate-900/60 flex items-center justify-between text-xs text-slate-500">
+                        <span class="font-medium">Total: {{ $tickets->total() }}</span>
+                        @if($tickets->hasPages())
+                            <div class="text-xs">
+                                {{ $tickets->links() }}
+                            </div>
+                        @endif
+                    </div>
                 @endif
             </div>
         </div>

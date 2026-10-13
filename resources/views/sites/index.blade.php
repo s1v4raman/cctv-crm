@@ -3,10 +3,8 @@
         <div class="flex items-center justify-between">
             <h2 class="text-xl font-bold text-slate-900 dark:text-white font-heading tracking-tight">Client Installation Sites</h2>
             <div class="flex items-center gap-3">
-                <a href="{{ route('sites.create') }}" 
-                   style="height: 38px; min-height: 38px; max-height: 38px; border-radius: 4px; box-sizing: border-box;"
-                   class="crm-btn-primary px-4 text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white transition">
-                    + New Site
+                <a href="{{ route('sites.create') }}" class="btn-primary">
+                    New Site
                 </a>
             </div>
         </div>
@@ -20,23 +18,7 @@
             </div>
         @endif
 
-        {{-- Plain Stat Cards (Matching Dashboard: Gray label on top, dark number below) --}}
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div class="stat-card">
-                <div class="text-xs font-medium text-slate-500 uppercase tracking-wide">Registered Sites</div>
-                <div class="text-2xl font-bold text-slate-900 dark:text-white mt-0.5">{{ $totalSitesCount }}</div>
-            </div>
 
-            <div class="stat-card">
-                <div class="text-xs font-medium text-slate-500 uppercase tracking-wide">Linked Projects</div>
-                <div class="text-2xl font-bold text-slate-900 dark:text-white mt-0.5">{{ $totalProjectsOnSites }}</div>
-            </div>
-
-            <div class="stat-card">
-                <div class="text-xs font-medium text-slate-500 uppercase tracking-wide">Active Cities</div>
-                <div class="text-2xl font-bold text-slate-900 dark:text-white mt-0.5">{{ $cities->count() }}</div>
-            </div>
-        </div>
 
         {{-- Filters Bar: One Simple Row, 38px Height, 4px Radius --}}
         <form method="GET" action="{{ route('sites.index') }}" class="flex items-center gap-2 flex-wrap">
@@ -123,41 +105,37 @@
                             <td class="text-center text-xs font-bold text-slate-900 dark:text-white">
                                 {{ $site->projects_count }}
                             </td>
-                            <td class="text-right whitespace-nowrap text-sm">
-                                <div class="inline-flex items-center gap-1.5 justify-end">
-                                    <a href="{{ route('sites.show', $site) }}" class="text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:underline">View</a>
-                                    <span class="text-slate-300 dark:text-slate-600">|</span>
-                                    <a href="{{ route('sites.edit', $site) }}" class="text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:underline">Edit</a>
-                                    @if(auth()->user()->isAdmin())
-                                        <span class="text-slate-300 dark:text-slate-600">|</span>
-                                        <form method="POST" action="{{ route('sites.destroy', $site) }}" class="inline" onsubmit="return confirm('Delete site {{ addslashes($site->site_name) }}? This cannot be undone.')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="text-red-700 dark:text-red-500 hover:underline cursor-pointer bg-transparent border-0 p-0 font-medium">Delete</button>
-                                        </form>
-                                    @endif
-                                </div>
+                            <td class="text-right whitespace-nowrap text-sm table-actions">
+                                <a href="{{ route('sites.show', $site) }}" class="action-link">View</a>
+                                <a href="{{ route('sites.edit', $site) }}" class="action-link">Edit</a>
+                                @if(auth()->user()->isAdmin())
+                                    <form method="POST" action="{{ route('sites.destroy', $site) }}" class="inline" onsubmit="return confirm('Delete site {{ addslashes($site->site_name) }}? This cannot be undone.')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="danger-link">Delete</button>
+                                    </form>
+                                @endif
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-5 py-10 text-center text-slate-400 text-xs">
-                                No installation sites found.
-                                <a href="{{ route('sites.create') }}" class="text-blue-600 font-semibold hover:underline ml-1">
-                                    Add New Site &rarr;
-                                </a>
+                            <td colspan="6" class="px-5 py-6 text-center text-slate-500 text-sm">
+                                No installation sites yet
                             </td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
-        </div>
-
-        @if($sites->hasPages())
-            <div class="pt-2 text-xs">
-                {{ $sites->links() }}
+            {{-- Total count shown below the table --}}
+            <div class="px-4 py-2.5 border-t border-[#ddd] dark:border-slate-800 bg-[#fbfbfb] dark:bg-slate-900/60 flex items-center justify-between text-xs text-slate-500">
+                <span class="font-medium">Total: {{ $sites->total() }}</span>
+                @if($sites->hasPages())
+                    <div class="text-xs">
+                        {{ $sites->links() }}
+                    </div>
+                @endif
             </div>
-        @endif
+        </div>
 
     </div>
 </x-app-layout>

@@ -180,22 +180,64 @@
                 background-color: #334155;
             }
 
-            /* TomSelect Clean Fit */
+            /* TomSelect Clean Single Border Specification */
+            .ts-wrapper,
+            .select-wrap,
+            .input-box,
+            .form-group:has(> .ts-wrapper),
+            .form-group:has(> select) {
+                border: none !important;
+                padding: 0 !important;
+                border-radius: 0 !important;
+                background: transparent !important;
+                box-shadow: none !important;
+            }
             .ts-control {
-                min-height: 38px;
-                border-radius: 8px;
-                background-color: #ffffff;
-                border: 1px solid #cbd5e1;
-                box-sizing: border-box;
-                font-size: 14px;
-                padding: 0 0.75rem;
-                display: flex;
-                align-items: center;
+                height: 38px !important;
+                min-height: 38px !important;
+                max-height: 38px !important;
+                border-radius: 4px !important;
+                background-color: #ffffff !important;
+                border: 1px solid #cccccc !important;
+                box-sizing: border-box !important;
+                font-size: 14px !important;
+                padding: 0 10px !important;
+                display: flex !important;
+                align-items: center !important;
+                box-shadow: none !important;
+            }
+            .ts-control input,
+            .ts-wrapper .ts-control input,
+            .ts-wrapper.single .ts-control input {
+                border: none !important;
+                border-width: 0 !important;
+                outline: none !important;
+                box-shadow: none !important;
+                background: transparent !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                height: 100% !important;
+                font-size: 14px !important;
+                color: #222222 !important;
+            }
+            .ts-wrapper .ts-control .item,
+            .ts-wrapper.single .ts-control .item {
+                border: none !important;
+                background: transparent !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                font-size: 14px !important;
+                color: #222222 !important;
             }
             html.dark .ts-control {
-                background-color: #0f172a;
-                border-color: #334155;
-                color: #f8fafc;
+                background-color: #0f172a !important;
+                border-color: #475569 !important;
+                color: #f8fafc !important;
+            }
+            html.dark .ts-control input,
+            html.dark .ts-wrapper .ts-control input,
+            html.dark .ts-wrapper .ts-control .item {
+                color: #f8fafc !important;
             }
         </style>
 
@@ -367,14 +409,14 @@
                      class="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-sm lg:hidden" 
                      style="display: none;"></div>
 
-                {{-- Sidebar Container: Fixed on mobile, sticky on desktop with complete offscreen translation & collapse support --}}
+                {{-- Sidebar Container: Fixed on mobile, sticky on desktop, 220px wide, white, 1px solid #ddd right border --}}
                 <div :class="{
-                        'translate-x-0 shadow-2xl': sidebarOpen,
-                        '-translate-x-full lg:translate-x-0 shadow-none': !sidebarOpen,
+                        'translate-x-0': sidebarOpen,
+                        '-translate-x-full lg:translate-x-0': !sidebarOpen,
                         'lg:w-20': sidebarCollapsed,
-                        'lg:w-64': !sidebarCollapsed
+                        'lg:w-[220px]': !sidebarCollapsed
                      }"
-                     class="fixed inset-y-0 left-0 z-50 lg:sticky lg:top-0 lg:h-screen lg:z-30 w-64 shrink-0 transition-[width,transform] duration-300 ease-in-out flex flex-col bg-white dark:bg-[#0f172a] border-r border-slate-200/80 dark:border-slate-800 overflow-hidden">
+                     class="fixed inset-y-0 left-0 z-50 lg:sticky lg:top-0 lg:h-screen lg:z-30 w-[220px] shrink-0 transition-[width,transform] duration-200 ease-in-out flex flex-col bg-white dark:bg-[#0f172a] border-r border-[#ddd] dark:border-slate-800 overflow-hidden">
                     @include('layouts.navigation')
                 </div>
 
@@ -449,8 +491,8 @@
                         }
                     </script>
 
-                    {{-- Modern SaaS Top Navigation Bar --}}
-                    <header class="h-14 sm:h-16 bg-white dark:bg-[#0f172a] border-b border-slate-200/80 dark:border-slate-800 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-40 transition-colors duration-200"
+                    {{-- Fixed Top Bar: 56px high, white, bottom border 1px solid #ddd, sticky top: 0, z-index: 10 --}}
+                    <header class="h-[56px] min-h-[56px] max-h-[56px] bg-white dark:bg-[#0f172a] border-b border-[#ddd] dark:border-slate-800 px-5 flex items-center justify-between sticky top-0 z-10"
                             x-data="globalHeader()"
                             @theme-mode-changed.window="isDarkMode = $event.detail.isDark"
                             @theme-changed.window="if ($event.detail && typeof $event.detail.isDark === 'boolean') isDarkMode = $event.detail.isDark"
@@ -459,37 +501,26 @@
                             @keydown.window.prevent.ctrl.k="handleShortcut(window.innerWidth < 768)"
                             @keydown.window.prevent.cmd.k="handleShortcut(window.innerWidth < 768)">
                         
-                        {{-- Left side: Mobile Drawer Toggle & Clean Breadcrumb Navigation matching Image 3 --}}
-                        <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+                        {{-- 1. Page Name (Left) --}}
+                        <div class="flex items-center gap-2 shrink-0">
                             {{-- Mobile Hamburger Toggle --}}
                             <button @click="sidebarOpen = !sidebarOpen" 
                                     type="button"
-                                    class="lg:hidden inline-flex items-center justify-center p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer shrink-0"
+                                    class="lg:hidden inline-flex items-center justify-center p-1.5 rounded text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer shrink-0"
                                     aria-label="Toggle navigation menu">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
                             </button>
 
-                            {{-- Navigation Chevrons & Title matching Image 3 --}}
-                            <div class="flex items-center gap-2 min-w-0">
-                                <div class="hidden sm:flex items-center gap-0.5 text-slate-400 dark:text-slate-500">
-                                    <button type="button" onclick="window.history.back()" class="p-1 hover:text-slate-700 dark:hover:text-slate-200 transition rounded" title="Back">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
-                                    </button>
-                                    <button type="button" onclick="window.history.forward()" class="p-1 hover:text-slate-700 dark:hover:text-slate-200 transition rounded" title="Forward">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-                                    </button>
-                                </div>
-                                <span class="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate">
-                                    {{ request()->routeIs('dashboard') || request()->routeIs('portal.dashboard') ? 'Dashboard' : (request()->routeIs('projects.*') ? 'Projects' : (request()->routeIs('leads.*') ? 'Leads' : (request()->routeIs('jobs.*') ? 'Tasks & Field Jobs' : (request()->routeIs('service-tickets.*') || request()->routeIs('portal.tickets*') ? 'Support Tickets' : (request()->routeIs('quotations.*') || request()->routeIs('portal.quotations*') ? 'Quotations' : (request()->routeIs('calendar.*') ? 'Calendar' : (request()->routeIs('inventory.*') ? 'Inventory' : (request()->routeIs('invoices.*') || request()->routeIs('portal.invoices*') ? 'Invoices' : (request()->routeIs('site-surveys.*') ? 'Site Surveys' : (request()->routeIs('amc.*') ? 'AMC Contracts' : (request()->routeIs('equipment.*') ? 'Hardware' : (request()->routeIs('suppliers.*') ? 'Suppliers' : (request()->routeIs('reports.*') ? 'Reports' : 'Dashboard'))))))))))))) }}
-                                </span>
-                            </div>
+                            <span class="text-sm font-bold text-slate-900 dark:text-white truncate">
+                                {{ request()->routeIs('dashboard') || request()->routeIs('portal.dashboard') ? 'Dashboard' : (request()->routeIs('projects.*') ? 'Projects' : (request()->routeIs('leads.*') ? 'Leads' : (request()->routeIs('jobs.*') ? 'Tasks & Field Jobs' : (request()->routeIs('service-tickets.*') || request()->routeIs('portal.tickets*') ? 'Support Tickets' : (request()->routeIs('quotations.*') || request()->routeIs('portal.quotations*') ? 'Quotations' : (request()->routeIs('calendar.*') ? 'Calendar' : (request()->routeIs('inventory.*') ? 'Inventory' : (request()->routeIs('invoices.*') || request()->routeIs('portal.invoices*') ? 'Invoices' : (request()->routeIs('site-surveys.*') ? 'Site Surveys' : (request()->routeIs('amc.*') ? 'AMC Contracts' : (request()->routeIs('equipment.*') ? 'Hardware' : (request()->routeIs('suppliers.*') ? 'Suppliers' : (request()->routeIs('reports.*') ? 'Reports' : 'Dashboard'))))))))))))) }}
+                            </span>
                         </div>
 
-                        {{-- Center Section: Global Search --}}
-                        <div class="hidden md:flex flex-1 items-center justify-center px-4 lg:px-8 max-w-xl mx-auto">
-                            <div class="relative w-full max-w-sm lg:max-w-md" @click.away="open = false">
+                        {{-- 2. One Search Box (Center) --}}
+                        <div class="hidden md:flex flex-1 items-center justify-center px-4 max-w-md mx-auto">
+                            <div class="relative w-full" @click.away="open = false">
                                 <div class="relative flex items-center">
-                                    <svg class="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 pointer-events-none shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                                    <svg class="w-4 h-4 text-[#666] dark:text-slate-400 absolute left-3.5 pointer-events-none shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                                         <circle cx="11" cy="11" r="7"/>
                                         <line stroke-linecap="round" stroke-linejoin="round" x1="21" x2="16.65" y1="21" y2="16.65"/>
                                     </svg>
@@ -502,8 +533,8 @@
                                            @keydown.arrow-up.prevent="navigate(-1)"
                                            @keydown.enter.prevent="selectActive()"
                                            placeholder="Search leads, jobs, quotes, equipment..." 
-                                           style="padding-left: 2.75rem !important;"
-                                           class="w-full pl-11 pr-10 py-1.5 text-xs sm:text-sm bg-slate-50 dark:bg-slate-800/80 border border-slate-200/90 dark:border-slate-700 rounded-lg focus:bg-white dark:focus:bg-slate-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-slate-800 dark:text-white placeholder-slate-400 transition-all outline-none">
+                                           style="padding-left: 2.5rem !important; height: 38px !important; border: 1px solid #ccc !important; border-radius: 4px !important; box-shadow: none !important;"
+                                           class="w-full text-xs bg-white dark:bg-slate-900 border border-[#ccc] dark:border-slate-700 rounded text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none">
                                     
                                     {{-- Clear button or loading spinner --}}
                                     <div class="absolute right-2.5 flex items-center">
@@ -521,375 +552,277 @@
                                     </div>
                                 </div>
 
-                                {{-- Desktop Dropdown Results --}}
+                                {{-- Search Dropdown Results --}}
                                 <div x-show="open && query.trim().length >= 2 && !mobileSearchOpen"
-                                     x-transition:enter="transition ease-out duration-150"
-                                     x-transition:enter-start="opacity-0 translate-y-1 scale-98"
-                                     x-transition:enter-end="opacity-100 translate-y-0 scale-100"
-                                     x-transition:leave="transition ease-in duration-100"
-                                     x-transition:leave-start="opacity-100 translate-y-0 scale-100"
-                                     x-transition:leave-end="opacity-0 translate-y-1 scale-98"
-                                     class="absolute left-0 right-0 mt-2 w-full max-h-96 overflow-y-auto bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xl py-2 z-50 divide-y divide-slate-100 dark:divide-slate-800"
+                                     class="absolute left-0 right-0 mt-1 w-full max-h-96 overflow-y-auto bg-white dark:bg-[#0f172a] border border-[#ddd] dark:border-slate-700 rounded py-1 z-50 divide-y divide-slate-100 dark:divide-slate-800"
                                      style="display: none;">
-                                    
-                                    {{-- Results list --}}
                                     <template x-if="results.length > 0">
                                         <div class="py-1">
                                             <template x-for="(item, index) in results" :key="index">
                                                 <a :href="item.url" 
                                                    :class="selectedIndex === index ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white' : 'hover:bg-slate-50 dark:hover:bg-slate-800/60'"
-                                                   class="flex items-start gap-3 px-3.5 py-2.5 transition text-left group block">
-                                                    <div class="mt-0.5 w-6 h-6 text-slate-400 dark:text-slate-500 flex items-center justify-center shrink-0">
-                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                                                            <polyline stroke-linecap="round" stroke-linejoin="round" points="14 2 14 8 20 8"/>
-                                                        </svg>
-                                                    </div>
+                                                   class="flex items-start gap-3 px-3 py-2 transition text-left group block">
                                                     <div class="flex-1 min-w-0">
-                                                        <div class="flex items-center justify-between gap-1 mb-0.5">
+                                                        <div class="flex items-center justify-between gap-1">
                                                             <p class="text-xs font-bold text-slate-900 dark:text-white truncate" x-text="item.title"></p>
-                                                            <span class="text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 shrink-0" x-text="item.badge"></span>
+                                                            <span class="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 shrink-0" x-text="item.badge"></span>
                                                         </div>
                                                         <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate" x-text="item.subtitle"></p>
-                                                        <span class="text-[9px] font-semibold text-blue-600 dark:text-sky-400" x-text="item.type"></span>
                                                     </div>
                                                 </a>
                                             </template>
                                         </div>
                                     </template>
-
-                                    {{-- Empty State --}}
                                     <template x-if="!loading && results.length === 0">
-                                        <div class="p-6 text-center">
-                                            
-                                            <p class="text-xs font-bold text-slate-700 dark:text-slate-200">No matches found</p>
-                                            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">No leads, jobs, quotes or equipment matching "<span class="font-semibold text-slate-800 dark:text-slate-200" x-text="query"></span>"</p>
+                                        <div class="p-4 text-center text-xs text-slate-500">
+                                            No matches found
                                         </div>
                                     </template>
                                 </div>
                             </div>
                         </div>
 
-                        {{-- Right side: Header Actions --}}
-                        <div class="flex items-center gap-2 sm:gap-3 shrink-0">
-                            
-                            {{-- Mobile Omnisearch Trigger Button (Icon button on mobile) --}}
+                        @php
+                            $headerNotifs = \App\Services\HeaderNotificationService::getNotificationsForUser(Auth::user());
+                        @endphp
+
+                        {{-- 3. Topbar Controls: Search, Theme Toggle, Notification Bell & Pill Profile (Right) --}}
+                        <div class="flex items-center gap-2.5 shrink-0">
+                            {{-- Mobile search trigger icon --}}
                             <button @click="mobileSearchOpen = true; $nextTick(() => { $refs.mobileSearchInput.focus(); if (query.trim().length >= 2) open = true; })" 
                                     type="button"
-                                    class="md:hidden p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition shrink-0 cursor-pointer"
+                                    class="md:hidden p-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-white transition shrink-0 cursor-pointer"
                                     title="Search">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                             </button>
 
-                            {{-- Notification Bell (Role-Aware & Live) --}}
-                            @php
-                                $currentUser = auth()->user();
-                                if ($currentUser->isCustomer()) {
-                                    $custLead = $currentUser->getCustomerLead();
-                                    $leadId = $custLead?->id;
-                                    $card1Count = $leadId ? \App\Models\ServiceTicket::where('lead_id', $leadId)->whereIn('status', ['open','pending','in_progress'])->count() : 0;
-                                    $card1Label = 'Active Tickets';
-                                    $card1Route = route('portal.tickets');
-                                    $card1Color = 'amber';
+                            {{-- Universal 1-Click Dark/Light Mode Button on Every Page for All Users --}}
+                            <button @click="toggleThemeMode()" 
+                                    type="button" 
+                                    id="header-theme-toggle-btn"
+                                    class="inline-flex items-center justify-center w-8 h-8 rounded border border-[#ddd] dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 transition cursor-pointer shrink-0" 
+                                    :title="isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'" 
+                                    aria-label="Toggle dark/light mode">
+                                {{-- Sun Icon (shown when dark mode is active) --}}
+                                <svg x-show="isDarkMode" x-cloak class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="5" fill="currentColor"/>
+                                    <line x1="12" y1="1" x2="12" y2="3"/>
+                                    <line x1="12" y1="21" x2="12" y2="23"/>
+                                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                                    <line x1="1" y1="12" x2="3" y2="12"/>
+                                    <line x1="21" y1="12" x2="23" y2="12"/>
+                                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                                </svg>
+                                {{-- Moon Icon (shown when light mode is active) --}}
+                                <svg x-show="!isDarkMode" class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                                </svg>
+                            </button>
 
-                                    $card2Count = $leadId ? \App\Models\Quotation::where('lead_id', $leadId)->where('status', 'sent')->count() : 0;
-                                    $card2Label = 'Quotations';
-                                    $card2Route = route('portal.quotations');
-                                    $card2Color = 'blue';
-
-                                    $card3Count = $leadId ? \App\Models\Invoice::where('lead_id', $leadId)->whereIn('status', ['pending','unpaid','overdue'])->count() : 0;
-                                    $card3Label = 'Due Invoices';
-                                    $card3Route = route('portal.invoices');
-                                    $card3Color = 'emerald';
-
-                                    $notifTotalBadge = $card1Count + $card2Count + $card3Count;
-                                    $footerUrl = route('portal.tickets');
-                                    $footerText = 'Go to Support Tickets →';
-
-                                    $recentAlerts = \App\Models\NotificationLog::where(function($q) use ($currentUser, $custLead) {
-                                        $q->where('recipient_email', $currentUser->email);
-                                        if ($custLead && $custLead->phone && $custLead->phone !== 'Pending update') {
-                                            $q->orWhere('recipient_phone', $custLead->phone);
-                                        }
-                                    })->latest()->limit(6)->get();
-                                } elseif ($currentUser->role === 'technician') {
-                                    $techId = $currentUser->id;
-                                    $card1Count = \App\Models\ServiceTicket::where('assigned_technician_id', $techId)->whereIn('status', ['open','pending','in_progress'])->count();
-                                    $card1Label = 'My Tickets';
-                                    $card1Route = route('technician.dashboard');
-                                    $card1Color = 'amber';
-
-                                    $card2Count = \App\Models\InstallationJob::where('assigned_technician_id', $techId)->whereIn('status', ['scheduled','in_progress','assigned'])->count();
-                                    $card2Label = 'Field Jobs';
-                                    $card2Route = route('technician.dashboard');
-                                    $card2Color = 'blue';
-
-                                    $card3Count = \App\Models\AmcVisit::where('assigned_technician_id', $techId)->where('status', 'scheduled')->count();
-                                    $card3Label = 'AMC Visits';
-                                    $card3Route = route('technician.dashboard');
-                                    $card3Color = 'emerald';
-
-                                    $notifTotalBadge = $card1Count + $card2Count + $card3Count;
-                                    $footerUrl = route('technician.dashboard');
-                                    $footerText = 'Technician Workstation →';
-
-                                    $recentAlerts = \App\Models\NotificationLog::where('recipient_email', $currentUser->email)->latest()->limit(6)->get();
-                                } else {
-                                    // Admin & Internal Staff
-                                    $card1Count = \App\Models\ServiceTicket::whereIn('status', ['open','pending'])->count();
-                                    $card1Label = 'Open Tickets';
-                                    $card1Route = route('service-tickets.index');
-                                    $card1Color = 'amber';
-
-                                    $card2Count = \App\Models\NotificationLog::where('status','failed')->whereDate('created_at','>=',now()->subDays(7))->count();
-                                    $card2Label = 'Failed Alerts';
-                                    $card2Route = route('alerts.index');
-                                    $card2Color = 'rose';
-
-                                    $card3Count = \App\Models\PurchaseOrder::where('status','pending')->count();
-                                    $card3Label = 'Pending POs';
-                                    $card3Route = route('purchase-orders.index');
-                                    $card3Color = 'blue';
-
-                                    $notifTotalBadge = $card1Count + $card2Count + $card3Count;
-                                    $footerUrl = route('alerts.index');
-                                    $footerText = 'View All Alert Logs →';
-
-                                    $recentAlerts = \App\Models\NotificationLog::latest()->limit(6)->get();
+                            {{-- Modern Notification Bell & Popover Module --}}
+                            <div x-data="{
+                                notifOpen: false,
+                                unreadCount: {{ $headerNotifs['unread_count'] }},
+                                markAllRead() {
+                                    this.unreadCount = 0;
+                                    try { localStorage.setItem('crm_notif_read_timestamp', Date.now()); } catch(e){}
                                 }
-                            @endphp
-                            {{-- Notification Bell (Role-Aware & Live) --}}
-                            <div x-data="{ notifOpen: false }" class="relative">
-                                <button type="button"
-                                        @click="notifOpen = !notifOpen"
-                                        class="relative p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer select-none"
+                            }" class="relative">
+                                <button @click="notifOpen = !notifOpen" 
+                                        type="button" 
+                                        id="header-notification-btn"
+                                        class="relative inline-flex items-center justify-center w-8 h-8 rounded border border-[#ddd] dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 transition cursor-pointer shrink-0" 
+                                        title="Notifications & System Alerts" 
                                         aria-label="View notifications">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                                    <svg class="w-4 h-4 text-slate-600 dark:text-slate-200" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                                     </svg>
-                                    @if($notifTotalBadge > 0)
-                                        <span class="absolute top-1.5 right-1.5 w-4 h-4 bg-rose-600 text-white rounded-full text-[9px] font-bold flex items-center justify-center ring-2 ring-white dark:ring-slate-900 shadow-xs">
-                                            {{ $notifTotalBadge > 9 ? '9+' : $notifTotalBadge }}
-                                        </span>
-                                    @endif
+                                    <span x-show="unreadCount > 0" 
+                                          x-text="unreadCount" 
+                                          class="absolute -top-1 -right-1 flex items-center justify-center min-w-[17px] h-[17px] px-1 text-[9px] font-black text-white bg-rose-500 rounded-full ring-2 ring-white dark:ring-slate-900 leading-none">
+                                    </span>
                                 </button>
 
-                                {{-- Notification Dropdown Panel --}}
-                                <div x-show="notifOpen"
-                                     @click.away="notifOpen = false"
-                                     x-transition:enter="transition ease-out duration-150"
-                                     x-transition:enter-start="transform opacity-0 scale-95 translate-y-1"
-                                     x-transition:enter-end="transform opacity-100 scale-100 translate-y-0"
-                                     class="absolute right-0 mt-2 w-80 bg-white dark:bg-[#0f172a] rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 z-50 overflow-hidden"
-                                     style="display:none;">
-
-                                    {{-- Header --}}
-                                    <div class="px-4 py-3 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                                        <span class="text-sm font-bold text-slate-900 dark:text-white">Notifications</span>
-                                        @if($notifTotalBadge > 0)
-                                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                                                {{ $notifTotalBadge }} active
-                                            </span>
-                                        @else
-                                            <span class="text-[10px] text-slate-400">All clear ✓</span>
-                                        @endif
+                                {{-- Notification Popover Dropdown --}}
+                                <div x-show="notifOpen" 
+                                     @click.away="notifOpen = false" 
+                                     x-transition:enter="transition ease-out duration-100"
+                                     x-transition:enter-start="transform opacity-0 scale-95"
+                                     x-transition:enter-end="transform opacity-100 scale-100"
+                                     x-transition:leave="transition ease-in duration-75"
+                                     x-transition:leave-start="transform opacity-100 scale-100"
+                                     x-transition:leave-end="transform opacity-0 scale-95"
+                                     class="absolute right-0 mt-2 w-80 sm:w-96 bg-white dark:bg-[#0f172a] rounded-xl border border-[#ddd] dark:border-slate-700 shadow-xl py-0 z-50 overflow-hidden text-xs text-slate-700 dark:text-slate-200"
+                                     style="display: none;">
+                                    
+                                    {{-- Popover Header --}}
+                                    <div class="px-4 py-3 border-b border-[#ddd] dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/80 flex items-center justify-between">
+                                        <div class="flex items-center gap-2">
+                                            <span class="font-bold text-slate-900 dark:text-white">Notifications</span>
+                                            <span x-show="unreadCount > 0" class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400" x-text="unreadCount + ' new'"></span>
+                                        </div>
+                                        <button type="button" @click="markAllRead()" class="text-[11px] font-medium text-blue-600 dark:text-blue-400 hover:underline cursor-pointer">
+                                            Mark all as read
+                                        </button>
                                     </div>
 
-                                    {{-- Summary Badges --}}
-                                    <div class="px-4 py-3 grid grid-cols-3 gap-2 border-b border-slate-100 dark:border-slate-800">
-                                        <a href="{{ $card1Route }}" class="flex flex-col items-center p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer">
-                                            <span class="text-lg font-bold text-slate-900 dark:text-white leading-none">{{ $card1Count }}</span>
-                                            <span class="text-[10px] font-medium text-slate-500 dark:text-slate-400 mt-1 text-center leading-tight">{{ $card1Label }}</span>
-                                        </a>
-                                        <a href="{{ $card2Route }}" class="flex flex-col items-center p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer">
-                                            <span class="text-lg font-bold text-slate-900 dark:text-white leading-none">{{ $card2Count }}</span>
-                                            <span class="text-[10px] font-semibold text-slate-500 dark:text-slate-400 mt-1 text-center leading-tight">{{ $card2Label }}</span>
-                                        </a>
-                                        <a href="{{ $card3Route }}" class="flex flex-col items-center p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer">
-                                            <span class="text-lg font-bold text-slate-900 dark:text-white leading-none">{{ $card3Count }}</span>
-                                            <span class="text-[10px] font-semibold text-slate-500 dark:text-slate-400 mt-1 text-center leading-tight">{{ $card3Label }}</span>
-                                        </a>
-                                    </div>
-
-                                    {{-- Recent Notification Logs --}}
-                                    <div class="max-h-60 overflow-y-auto">
-                                        @forelse($recentAlerts as $alert)
-                                            <div class="px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition border-b border-slate-50 dark:border-slate-800/50 last:border-0">
-                                                <div class="flex items-start gap-2.5">
-                                                    {{-- Channel Icon --}}
-                                                    <span class="mt-0.5 text-base leading-none flex-shrink-0">
-                                                        <span class="font-mono font-bold text-[10px] text-blue-600 dark:text-blue-400">[{{ strtoupper($alert->channel) }}]</span>
-                                                    </span>
-                                                    <div class="flex-1 min-w-0">
-                                                        <p class="text-xs font-semibold text-slate-800 dark:text-slate-100 truncate">{{ $alert->recipient_name }}</p>
-                                                        <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate">{{ Str::limit($alert->message_body ?? $alert->subject, 55) }}</p>
-                                                        <div class="flex items-center gap-2 mt-0.5">
-                                                            <span class="text-[10px] text-slate-400">{{ $alert->created_at->diffForHumans() }}</span>
-                                                            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full
-                                                                {{ $alert->status === 'sent' || $alert->status === 'delivered' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400' : '' }}
-                                                                {{ $alert->status === 'failed' ? 'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-400' : '' }}
-                                                                {{ $alert->status === 'queued' ? 'bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-400' : '' }}
-                                                                {{ !in_array($alert->status, ['sent','delivered','failed','queued']) ? 'bg-slate-100 text-slate-600' : '' }}
-                                                            ">{{ ucfirst($alert->status) }}</span>
-                                                        </div>
-                                                    </div>
+                                    {{-- Items List --}}
+                                    <div class="max-h-80 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800/80">
+                                        @forelse($headerNotifs['items'] as $item)
+                                            <a href="{{ $item['url'] }}" 
+                                               @click="notifOpen = false"
+                                               class="flex items-start gap-3 px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition group block">
+                                                
+                                                {{-- Icon badge --}}
+                                                <div class="w-8 h-8 rounded-lg shrink-0 flex items-center justify-center 
+                                                    @if($item['icon'] === 'ticket') bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900
+                                                    @elseif($item['icon'] === 'inventory') bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-900
+                                                    @elseif($item['icon'] === 'job') bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-900
+                                                    @elseif($item['icon'] === 'log') bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900
+                                                    @else bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700
+                                                    @endif">
+                                                    @if($item['icon'] === 'ticket')
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/></svg>
+                                                    @elseif($item['icon'] === 'inventory')
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                                                    @elseif($item['icon'] === 'job')
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                                                    @elseif($item['icon'] === 'log')
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                                                    @else
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                                    @endif
                                                 </div>
-                                            </div>
+
+                                                {{-- Details --}}
+                                                <div class="flex-1 min-w-0">
+                                                    <div class="flex items-center justify-between gap-1">
+                                                        <p class="font-bold text-slate-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition">{{ $item['title'] }}</p>
+                                                        <span class="text-[10px] text-slate-400 dark:text-slate-500 shrink-0">{{ $item['time'] }}</span>
+                                                    </div>
+                                                    <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">{{ $item['description'] }}</p>
+                                                </div>
+                                            </a>
                                         @empty
-                                            <div class="px-4 py-6 text-center text-slate-400 dark:text-slate-500 text-xs">
-                                                <p class="font-semibold">No notifications yet</p>
+                                            <div class="p-6 text-center text-slate-400">
+                                                <p class="text-xs">No pending notifications</p>
                                             </div>
                                         @endforelse
                                     </div>
 
-                                    {{-- Footer --}}
-                                    <div class="px-4 py-2.5 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60">
-                                        <a href="{{ $footerUrl }}" class="block text-center text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline">
-                                            {{ $footerText }}
-                                        </a>
+                                    {{-- Footer Action Link --}}
+                                    <div class="px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border-t border-[#ddd] dark:border-slate-800 text-center">
+                                        @if(Auth::user()->isAdmin() || Auth::user()->isStaff())
+                                            <a href="{{ route('alerts.index') }}" class="text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:underline">
+                                                View Automated Alerts Engine →
+                                            </a>
+                                        @elseif(Auth::user()->isTechnician())
+                                            <a href="{{ route('technician.dashboard') }}" class="text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:underline">
+                                                View All Assigned Work Orders →
+                                            </a>
+                                        @else
+                                            <a href="{{ route('portal.tickets') }}" class="text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:underline">
+                                                View Support Tickets →
+                                            </a>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
 
-                            {{-- High-Clarity SaaS Theme Switcher (Dual Pill Segmented Switch) --}}
-                            <button type="button"
-                                    @click="toggleThemeMode()"
-                                    class="inline-flex items-center gap-1 p-1 rounded-xl border border-slate-200/90 dark:border-slate-700/80 bg-slate-100/90 dark:bg-slate-800/90 hover:bg-slate-200/70 dark:hover:bg-slate-700/60 transition shadow-2xs cursor-pointer select-none"
-                                    :title="isDarkMode ? 'Current: Dark Mode (Click to switch to Light Mode)' : 'Current: Light Mode (Click to switch to Dark Mode)'"
-                                    aria-label="Toggle theme mode">
-                                {{-- Light Pill Option --}}
-                                <span @click.stop="setThemeMode('day')"
-                                      class="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold transition-all duration-150 cursor-pointer"
-                                      :class="!isDarkMode ? 'bg-white text-slate-800 shadow-xs ring-1 ring-slate-200/70' : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'">
-                                    <svg class="w-3.5 h-3.5 text-amber-500" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
-                                    </svg>
-                                    <span class="hidden sm:inline text-[11px] leading-none">Light</span>
-                                </span>
-                                {{-- Dark Pill Option --}}
-                                <span @click.stop="setThemeMode('night')"
-                                      class="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold transition-all duration-150 cursor-pointer"
-                                      :class="isDarkMode ? 'bg-slate-900 text-white shadow-xs ring-1 ring-slate-700' : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'">
-                                    <svg class="w-3.5 h-3.5 text-blue-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
-                                    </svg>
-                                    <span class="hidden sm:inline text-[11px] leading-none">Dark</span>
-                                </span>
-                            </button>
-
-                            {{-- User Avatar Button (Initial Badge Only - Click reveals full profile popover) --}}
-                            <div x-data="{ open: false }" class="relative shrink-0 ml-0.5">
-                                <button @click="open = !open" 
+                            {{-- Pill-Shaped User Profile Capsule & Dropdown Menu --}}
+                            <div x-data="{ userMenuOpen: false }" class="relative">
+                                <button @click="userMenuOpen = !userMenuOpen" 
                                         type="button"
-                                        class="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm text-white shadow-xs transition-all duration-150 hover:opacity-95 active:scale-95 focus:outline-none cursor-pointer select-none ring-2 ring-slate-200/90 dark:ring-slate-700/80 crm-user-avatar"
-                                        style="background-color: var(--crm-accent, #2563eb);"
-                                        aria-label="User account menu"
-                                        aria-expanded="false"
-                                        :aria-expanded="open.toString()"
-                                        title="{{ Auth::user()->name }} (Click to view profile menu)">
-                                    <span class="text-white font-bold leading-none select-none">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
+                                        id="header-user-profile-pill"
+                                        class="flex items-center gap-2 pl-1 pr-2.5 py-1 rounded-full border border-[#ddd] dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/60 transition cursor-pointer select-none shadow-2xs">
+                                    @if(Auth::user()->avatar_url)
+                                        <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->name }}" class="w-7 h-7 rounded-full object-cover shrink-0 ring-1 ring-slate-200 dark:ring-slate-700">
+                                    @else
+                                        <div class="w-7 h-7 rounded-full text-white flex items-center justify-center font-bold text-xs shrink-0" style="background-color: var(--crm-accent, #2563eb);">
+                                            {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                                        </div>
+                                    @endif
+                                    <div class="text-left hidden sm:block min-w-0 pr-0.5">
+                                        <span class="block text-xs font-bold text-slate-800 dark:text-slate-100 leading-tight truncate max-w-[120px]">{{ Auth::user()->name }}</span>
+                                        <span class="block text-[10px] text-slate-500 dark:text-slate-400 font-medium leading-tight truncate">{{ Auth::user()->role_title }}</span>
+                                    </div>
+                                    <svg class="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 shrink-0 transition-transform duration-150" :class="{ 'rotate-180': userMenuOpen }" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                                    </svg>
                                 </button>
 
-                                <div x-show="open" 
-                                     @click.away="open = false" 
+                                {{-- User dropdown menu (contains settings, theme switcher, logout) --}}
+                                <div x-show="userMenuOpen" 
+                                     @click.away="userMenuOpen = false" 
                                      x-transition:enter="transition ease-out duration-100"
                                      x-transition:enter-start="transform opacity-0 scale-95"
                                      x-transition:enter-end="transform opacity-100 scale-100"
-                                     class="absolute right-0 mt-2 w-80 max-w-[calc(100vw-1.5rem)] bg-white dark:bg-[#0f172a] rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 py-2.5 z-50 text-sm font-semibold text-slate-700 dark:text-slate-200"
+                                     x-transition:leave="transition ease-in duration-75"
+                                     x-transition:leave-start="transform opacity-100 scale-100"
+                                     x-transition:leave-end="transform opacity-0 scale-95"
+                                     class="absolute right-0 mt-2 w-60 bg-white dark:bg-[#0f172a] rounded-xl border border-[#ddd] dark:border-slate-700 shadow-xl py-1 z-50 text-xs font-medium text-slate-700 dark:text-slate-200 overflow-hidden"
                                      style="display: none;">
                                     
-                                    {{-- User info header --}}
-                                    <div class="px-4 py-3 border-b border-slate-100 dark:border-slate-800">
-                                        <div class="flex items-center gap-3 mb-2">
-                                            <div class="w-10 h-10 rounded-full text-white flex items-center justify-center font-bold text-sm shrink-0 crm-user-avatar ring-2 ring-white dark:ring-slate-800 shadow-sm" style="background-color: var(--crm-accent, #2563eb);">
+                                    {{-- User identity card in menu --}}
+                                    <div class="px-3.5 py-2.5 border-b border-[#ddd] dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/60 flex items-center gap-3">
+                                        @if(Auth::user()->avatar_url)
+                                            <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->name }}" class="w-9 h-9 rounded-full object-cover shrink-0 ring-1 ring-slate-200 dark:ring-slate-700">
+                                        @else
+                                            <div class="w-9 h-9 rounded-full text-white flex items-center justify-center font-bold text-xs shrink-0" style="background-color: var(--crm-accent, #2563eb);">
                                                 {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                                             </div>
-                                            <div class="min-w-0 flex-1">
-                                                <p class="font-bold text-slate-900 dark:text-white truncate font-heading text-sm">{{ Auth::user()->name }}</p>
-                                                <p class="text-xs text-slate-500 dark:text-slate-400 truncate">{{ Auth::user()->email }}</p>
-                                            </div>
-                                        </div>
-                                        <div class="flex items-center gap-2">
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider
-                                                {{ Auth::user()->isAdmin() ? 'bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300 border border-purple-200 dark:border-purple-800' : '' }}
-                                                {{ Auth::user()->isStaff() ? 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 border border-blue-200 dark:border-blue-800' : '' }}
-                                                {{ Auth::user()->isTechnician() ? 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300 border border-amber-200 dark:border-amber-800' : '' }}
-                                                {{ Auth::user()->isCustomer() ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800' : '' }}
-                                            ">
-                                                {{ ucfirst(Auth::user()->role) }}
+                                        @endif
+                                        <div class="min-w-0 flex-1">
+                                            <p class="font-bold text-slate-900 dark:text-white truncate leading-tight">{{ Auth::user()->name }}</p>
+                                            <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate leading-tight">{{ Auth::user()->email }}</p>
+                                            <span class="inline-block mt-1 text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-slate-200/70 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                                                {{ Auth::user()->role_title }}
                                             </span>
-                                            <span class="text-[11px] text-slate-400">• Active</span>
                                         </div>
                                     </div>
 
-                                    {{-- Quick Links --}}
                                     <div class="py-1">
-                                        <a href="{{ route('profile.edit') }}" class="flex items-center gap-2.5 px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition text-xs font-semibold">
-                                            <svg class="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                                            </svg>
-                                            <span>My Account &amp; Profile Settings</span>
+                                        <a href="{{ route('profile.edit') }}" class="flex items-center gap-2.5 px-3.5 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+                                            <svg class="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                            <span>Profile Settings &amp; Photo</span>
                                         </a>
 
                                         @if(Auth::user()->isAdmin())
-                                            <a href="{{ route('admin.users.index') }}" class="flex items-center gap-2.5 px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition text-xs font-semibold">
-                                                <svg class="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                                                </svg>
+                                            <a href="{{ route('admin.users.index') }}" class="flex items-center gap-2.5 px-3.5 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+                                                <svg class="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line stroke-linecap="round" stroke-linejoin="round" x1="4" x2="20" y1="6" y2="6"/><circle cx="8" cy="6" r="2.5"/><line stroke-linecap="round" stroke-linejoin="round" x1="4" x2="20" y1="12" y2="12"/><circle cx="16" cy="12" r="2.5"/><line stroke-linecap="round" stroke-linejoin="round" x1="4" x2="20" y1="18" y2="18"/><circle cx="10" cy="18" r="2.5"/></svg>
                                                 <span>Manage User Accounts</span>
                                             </a>
                                         @endif
 
-                                        <a href="{{ route('home') }}" class="flex items-center gap-2.5 px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition text-xs font-semibold">
-                                            <svg class="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 10.5L12 3l9 7.5V20a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-9.5z"/>
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 22V12h6v10"/>
-                                            </svg>
-                                            <span>Storefront View</span>
-                                        </a>
-
-                                        {{-- Quick Theme Switch inside dropdown --}}
-                                        <button type="button" @click="toggleThemeMode()" class="w-full text-left flex items-center justify-between px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition text-xs font-semibold cursor-pointer">
+                                        <button type="button" @click="toggleThemeMode()" class="w-full text-left flex items-center justify-between px-3.5 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer">
                                             <span class="flex items-center gap-2.5">
-                                                <svg class="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
-                                                </svg>
-                                                <span>Theme Mode</span>
+                                                <svg class="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                                                <span>Toggle Theme</span>
                                             </span>
-                                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300" x-text="isDarkMode ? 'Night' : 'Day'"></span>
+                                            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300" x-text="isDarkMode ? 'Night' : 'Day'"></span>
                                         </button>
                                     </div>
 
-                                    {{-- Logout --}}
-                                    <form method="POST" action="{{ route('logout') }}">
+                                    <form method="POST" action="{{ route('logout') }}" class="border-t border-[#ddd] dark:border-slate-800">
                                         @csrf
-                                        <button type="submit" class="w-full text-left flex items-center gap-2.5 px-4 py-2.5 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 font-semibold transition border-t border-slate-100 dark:border-slate-800 cursor-pointer text-xs">
+                                        <button type="submit" class="w-full text-left flex items-center gap-2.5 px-3.5 py-2 text-rose-600 dark:text-rose-400 font-semibold hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer">
                                             <svg class="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-                                            Log Out
+                                            <span>Log Out</span>
                                         </button>
                                     </form>
                                 </div>
                             </div>
-
                         </div>
 
-                        {{-- Mobile Omnisearch Full-Width Overlay (Takes over header smoothly when active on mobile) --}}
+                        {{-- Mobile Omnisearch Full-Width Overlay --}}
                         <div x-show="mobileSearchOpen"
                              x-cloak
-                             x-transition:enter="transition ease-out duration-150"
-                             x-transition:enter-start="opacity-0 -translate-y-2"
-                             x-transition:enter-end="opacity-100 translate-y-0"
-                             x-transition:leave="transition ease-in duration-100"
-                             x-transition:leave-start="opacity-100 translate-y-0"
-                             x-transition:leave-end="opacity-0 -translate-y-2"
-                             class="absolute inset-0 bg-white dark:bg-[#0f172a] z-50 px-3 flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 md:hidden"
+                             class="absolute inset-0 bg-white dark:bg-[#0f172a] z-50 px-3 flex items-center gap-2 border-b border-[#ddd] dark:border-slate-800 md:hidden"
                              style="display: none;">
                             
                             <div class="relative flex-1 flex items-center">
-                                <svg class="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                                </svg>
                                 <input type="text" 
                                        x-ref="mobileSearchInput"
                                        x-model="query"
@@ -898,83 +831,31 @@
                                        @keydown.arrow-down.prevent="navigate(1)"
                                        @keydown.arrow-up.prevent="navigate(-1)"
                                        @keydown.enter.prevent="selectActive()"
-                                       placeholder="Search leads, jobs, quotes, serials..." 
-                                       style="padding-left: 2.75rem !important;"
-                                       class="w-full pl-11 pr-8 py-2 text-xs bg-slate-50 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl focus:bg-white dark:focus:bg-slate-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 shadow-2xs">
-                                
-                                {{-- Clear button or loading spinner --}}
-                                <div class="absolute right-2.5 flex items-center">
-                                    <template x-if="loading">
-                                        <svg class="animate-spin h-3.5 w-3.5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                        </svg>
-                                    </template>
-                                    <template x-if="!loading && query.length > 0">
-                                        <button @click="clear()" type="button" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs font-bold leading-none p-0.5">
-                                            &times;
-                                        </button>
-                                    </template>
-                                </div>
+                                       placeholder="Search..." 
+                                       style="height: 38px !important; border: 1px solid #ccc !important; border-radius: 4px !important;"
+                                       class="w-full px-3 text-xs bg-white dark:bg-slate-900 border border-[#ccc] dark:border-slate-700 rounded text-slate-800 dark:text-white placeholder-slate-400">
                             </div>
 
                             <button @click="mobileSearchOpen = false; open = false;" 
                                     type="button" 
-                                    class="px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 shrink-0">
+                                    class="px-2 py-1 rounded text-xs font-semibold text-slate-600 dark:text-slate-300 shrink-0">
                                 Cancel
                             </button>
-
-                            {{-- Mobile Dropdown Results --}}
-                            <div x-show="open && query.trim().length >= 2 && mobileSearchOpen"
-                                 x-transition:enter="transition ease-out duration-150"
-                                 x-transition:enter-start="opacity-0 translate-y-1"
-                                 x-transition:enter-end="opacity-100 translate-y-0"
-                                 class="absolute left-2 right-2 top-16 max-h-80 overflow-y-auto bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl py-2 z-50 divide-y divide-slate-100 dark:divide-slate-800"
-                                 style="display: none;">
-                                
-                                <template x-if="results.length > 0">
-                                    <div class="py-1">
-                                        <template x-for="(item, index) in results" :key="index">
-                                            <a :href="item.url" 
-                                               :class="selectedIndex === index ? 'bg-blue-50 dark:bg-slate-800 text-blue-600 dark:text-amber-400' : 'hover:bg-slate-50 dark:hover:bg-slate-800/60'"
-                                               class="flex items-start gap-3 px-3.5 py-2.5 transition text-left group block">
-                                                <div class="mt-0.5 w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 flex items-center justify-center shrink-0 group-hover:bg-blue-100 dark:group-hover:bg-blue-950 group-hover:text-blue-600 dark:group-hover:text-blue-400">
-                                                    <span class="text-xs font-bold" x-text="item.type ? item.type.substring(0, 3).toUpperCase() : 'REC'"></span>
-                                                </div>
-                                                <div class="flex-1 min-w-0">
-                                                    <div class="flex items-center justify-between gap-1 mb-0.5">
-                                                        <p class="text-xs font-bold text-slate-900 dark:text-white truncate" x-text="item.title"></p>
-                                                        <span class="text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 shrink-0" x-text="item.badge"></span>
-                                                    </div>
-                                                    <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate" x-text="item.subtitle"></p>
-                                                    <span class="text-[9px] font-semibold text-blue-600 dark:text-sky-400" x-text="item.type"></span>
-                                                </div>
-                                            </a>
-                                        </template>
-                                    </div>
-                                </template>
-
-                                <template x-if="!loading && results.length === 0">
-                                    <div class="p-6 text-center">
-                                        
-                                        <p class="text-xs font-bold text-slate-700 dark:text-slate-200">No matches found</p>
-                                        <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">No results matching "<span class="font-semibold text-slate-800 dark:text-slate-200" x-text="query"></span>"</p>
-                                    </div>
-                                </template>
-                            </div>
                         </div>
                     </header>
 
-                    {{-- Page Header (if defined) --}}
-                    @isset($header)
-                        <div class="header-slot-container bg-white dark:bg-[#0f172a] border-b border-slate-200/80 dark:border-slate-800 px-4 py-4 sm:px-6 lg:px-8 shadow-xs transition-colors duration-200">
-                            {{ $header }}
-                        </div>
-                    @endisset
+                    {{-- Main Content Area: Background #f5f5f5, padding 20px, maximum width 1200px --}}
+                    <main class="flex-1 overflow-y-auto bg-[#f5f5f5] dark:bg-[#060913] p-[20px] transition-colors duration-200 pb-24 lg:pb-8">
+                        <div class="max-w-[1200px] mx-auto w-full">
+                            {{-- Page Heading (One h2 at top of content area, with main action button on right) --}}
+                            @isset($header)
+                                <div class="mb-[20px]">
+                                    {{ $header }}
+                                </div>
+                            @endisset
 
-                    {{-- Main Content View --}}
-                    <main class="flex-1 overflow-y-auto bg-[#f8fafc] dark:bg-[#060913] transition-colors duration-200 pb-24 lg:pb-8">
-                        {{ $slot }}
+                            {{ $slot }}
+                        </div>
                     </main>
                 </div>
 

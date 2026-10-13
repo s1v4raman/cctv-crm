@@ -7,9 +7,7 @@
                 </h1>
             </div>
             <div class="flex items-center gap-2 flex-wrap">
-                <a href="{{ route('leaves.index') }}" 
-                   class="px-3.5 py-2 rounded bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold transition border border-slate-300 dark:border-slate-700"
-                   style="border-radius: 4px;">
+                <a href="{{ route('leaves.index') }}" class="btn-secondary">
                     Leaves &amp; Approvals
                 </a>
                 {{-- Mark Unmarked as Present --}}
@@ -19,8 +17,8 @@
                     <input type="hidden" name="date" value="{{ $selectedDate }}">
                     <input type="hidden" name="status" value="present">
                     <input type="hidden" name="target" value="unmarked">
-                    <button type="submit" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition" style="border-radius: 4px;">
-                        <span>Mark Unmarked as Present</span>
+                    <button type="submit" class="btn-secondary">
+                        Mark Present
                     </button>
                 </form>
 
@@ -31,15 +29,14 @@
                     <input type="hidden" name="date" value="{{ $selectedDate }}">
                     <input type="hidden" name="status" value="absent">
                     <input type="hidden" name="target" value="unmarked">
-                    <button type="submit" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold transition" style="border-radius: 4px;">
-                        <span>Mark Unmarked as Absent</span>
+                    <button type="submit" class="btn-secondary">
+                        Mark Absent
                     </button>
                 </form>
                 <button type="button" 
                         onclick="openCreateModal()"
-                        class="inline-flex items-center gap-2 px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition"
-                        style="border-radius: 4px;">
-                    + Record Manual Entry
+                        class="btn-primary">
+                    Record Entry
                 </button>
             </div>
         </div>
@@ -179,10 +176,11 @@
                         <option value="admin" @selected($roleFilter === 'admin')>Admins</option>
                     </select>
 
-                    <div class="relative">
+                    <div class="relative flex items-center">
+                        <svg class="w-3.5 h-3.5 absolute left-2.5 pointer-events-none text-slate-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
                         <input type="text" name="search" value="{{ $search }}" placeholder="Search employee..."
-                               class="text-xs rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 pl-8 pr-3 py-1.5 text-slate-800 dark:text-slate-200 w-44 focus:w-56 transition-all">
-                        <svg class="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
+                               style="padding-left: 2.25rem !important;"
+                               class="text-xs rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 pr-3 py-1.5 text-slate-800 dark:text-slate-200 w-44 focus:w-56 transition-all">
                     </div>
 
                     @if($roleFilter || $search)

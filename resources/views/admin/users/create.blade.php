@@ -5,9 +5,9 @@
                 <h2 class="text-2xl font-black tracking-wider text-white uppercase font-['Outfit']">Add New User Account</h2>
                 <p class="mt-1 text-xs text-slate-400 font-mono">Register a new access account for an administrator, employee, technician or customer.</p>
             </div>
-            <a href="{{ route('admin.users.index') }}"
+            <a href="{{ request('return_to', route('admin.users.index')) }}"
                class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-700/60 bg-slate-800/40 text-slate-400 hover:text-white text-xs font-semibold transition">
-                &larr; Back to Accounts
+                &larr; {{ request('return_to') ? (str_contains(request('return_to'), 'wizard') ? 'Back to Project Wizard' : 'Back to Project') : 'Back to Accounts' }}
             </a>
         </div>
     </x-slot>
@@ -17,6 +17,9 @@
             <div class="bg-[#0F172A] border border-white/10 rounded-2xl shadow-xl overflow-hidden p-6 sm:p-8">
                 <form method="POST" action="{{ route('admin.users.store') }}" class="space-y-5">
                     @csrf
+                    @if(request('return_to', old('return_to')))
+                        <input type="hidden" name="return_to" value="{{ request('return_to', old('return_to')) }}">
+                    @endif
 
                     <div>
                         <label class="block text-sm font-semibold text-slate-300 mb-1.5">Full Name</label>
@@ -35,11 +38,11 @@
                     <div>
                         <label class="block text-sm font-semibold text-slate-300 mb-1.5">Account Role</label>
                         <select name="role" id="roleSelect" class="w-full text-sm rounded-xl border border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:outline-none p-3" required onchange="toggleLeadField(this.value)">
-                            <option value="" disabled selected class="bg-[#0F172A] text-slate-500">Select Role...</option>
-                            <option value="admin" @selected(old('role') === 'admin') class="bg-[#0F172A]">Admin</option>
-                            <option value="staff" @selected(old('role') === 'staff') class="bg-[#0F172A]">Employee (Staff)</option>
-                            <option value="technician" @selected(old('role') === 'technician') class="bg-[#0F172A]">Technician</option>
-                            <option value="customer" @selected(old('role') === 'customer') class="bg-[#0F172A]">Customer</option>
+                            <option value="" disabled {{ !request('role') && !old('role') ? 'selected' : '' }} class="bg-[#0F172A] text-slate-500">Select Role...</option>
+                            <option value="admin" @selected(request('role', old('role')) === 'admin') class="bg-[#0F172A]">Admin</option>
+                            <option value="staff" @selected(request('role', old('role')) === 'staff') class="bg-[#0F172A]">Employee (Staff)</option>
+                            <option value="technician" @selected(request('role', old('role')) === 'technician') class="bg-[#0F172A]">Technician</option>
+                            <option value="customer" @selected(request('role', old('role')) === 'customer') class="bg-[#0F172A]">Customer</option>
                         </select>
                         @error('role') <div class="text-xs text-rose-400 mt-1 font-mono">{{ $message }}</div> @enderror
                     </div>

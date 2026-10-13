@@ -1,20 +1,11 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <div>
-                <h1 class="text-xl font-bold text-slate-900 dark:text-white tracking-tight font-heading">
-                    Create Quotation
-                </h1>
-
-                <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                    Customer: <strong class="text-slate-900 dark:text-white font-semibold">{{ $lead->customer_name }}</strong> · <span class="text-slate-600 dark:text-slate-300 font-mono">{{ $lead->phone }}</span>
-                </p>
+        <div>
+            <a href="{{ route('leads.show', $lead) }}" class="back-link">&larr; Back</a>
+            <h2 class="text-xl font-bold text-slate-900 dark:text-white mt-1">Create Quotation</h2>
+            <div class="text-xs text-slate-500 mt-0.5">
+                Customer: <strong class="text-slate-900 dark:text-white">{{ $lead->customer_name }}</strong> ({{ $lead->phone }})
             </div>
-
-            <a href="{{ route('leads.show', $lead) }}"
-               class="text-sm font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 transition">
-                ← Back to Lead
-            </a>
         </div>
     </x-slot>
 
@@ -111,8 +102,8 @@
 
                             <button type="button"
                                     id="add-row"
-                                    class="px-4 py-2 text-xs font-semibold rounded bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition cursor-pointer">
-                                + Add Custom Item
+                                    class="btn-secondary">
+                                Add Item
                             </button>
                         </div>
 
@@ -274,15 +265,13 @@
                         </div>
                     </div>
 
-                    <div class="sticky bottom-0 z-30 mt-8 flex items-center justify-end gap-3 border-t border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-6 py-4 rounded-b shadow-xs">
-                        <a href="{{ route('leads.show', $lead) }}"
-                           class="px-4 py-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-medium text-sm rounded border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition">
+                    <div class="form-actions mt-8">
+                        <a href="{{ route('leads.show', $lead) }}" class="btn-secondary">
                             Cancel
                         </a>
 
-                        <button type="submit"
-                                class="px-5 py-2 rounded text-white font-semibold text-sm bg-blue-600 hover:bg-blue-700 transition shadow-xs">
-                            Save Quotation
+                        <button type="submit" class="btn-primary">
+                            Save
                         </button>
                     </div>
                 </form>
@@ -350,8 +339,8 @@
 
             <td class="p-2 text-right align-middle">
                 <button type="button"
-                        class="remove-row text-red-700 dark:text-red-500 hover:underline cursor-pointer bg-transparent border-0 p-0 font-medium text-xs">
-                    Remove
+                        class="remove-row danger-link" style="background: none; border: none; cursor: pointer;">
+                    Delete
                 </button>
             </td>
         </tr>

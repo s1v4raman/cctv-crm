@@ -2,172 +2,180 @@
     <x-slot name="header">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
-                <div class="flex items-center gap-2">
-                    <a href="{{ route('sites.index') }}" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                    </a>
-                    <h2 class="text-xl font-extrabold text-slate-900 dark:text-white font-heading tracking-tight">{{ $site->name }}</h2>
-                    <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800">
+                <a href="{{ route('sites.index') }}" class="back-link">
+                    &larr; Back
+                </a>
+                <div class="flex items-center gap-3 mt-1">
+                    <h2 class="text-xl font-bold text-slate-900 dark:text-white">
+                        {{ $site->name }}
+                    </h2>
+                    <span class="text-sm font-bold text-blue-600">
                         {{ $site->site_code }}
                     </span>
                 </div>
-                <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">{{ $site->address }}, {{ $site->city }}</p>
             </div>
             <div class="flex items-center gap-2 flex-wrap">
                 <a href="{{ route('sites.edit', $site) }}" class="btn-secondary text-xs">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
-                    Edit Site
+                    Edit Details
                 </a>
-                <a href="{{ route('projects.create', ['site_id' => $site->id]) }}" class="btn-primary text-xs shadow-md">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-                    New Project on this Site
+                <a href="{{ route('projects.create', ['site_id' => $site->id]) }}" class="btn-primary text-xs">
+                    New Project
                 </a>
+                @if(auth()->user()->isAdmin())
+                    <form method="POST" action="{{ route('sites.destroy', $site) }}" onsubmit="return confirm('Are you sure you want to delete this installation site?');" class="inline">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="danger-link p-0 bg-transparent border-0 cursor-pointer text-xs ml-2">Delete</button>
+                    </form>
+                @endif
             </div>
         </div>
     </x-slot>
 
-    <div class="py-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-6">
+    <div class="pg-wrap py-6">
+        <div class="pg-inner space-y-6">
 
-        @if (session('status'))
-            <div class="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-sm flex items-center justify-between">
-                <span>{{ session('status') }}</span>
-                <button type="button" onclick="this.parentElement.remove()" class="text-emerald-600 hover:text-emerald-900">&times;</button>
-            </div>
-        @endif
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-            {{-- Left 2 Cols: Site Info & Map --}}
-            <div class="lg:col-span-2 space-y-6">
-                
-                {{-- Details Card --}}
-                <div class="p-6 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
-                    <h3 class="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Site Information</h3>
-                    
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                        <div>
-                            <span class="text-xs text-slate-400 block">Client / Organization</span>
-                            <span class="font-bold text-slate-900 dark:text-white">{{ $site->client_name ?? '—' }}</span>
-                        </div>
-                        <div>
-                            <span class="text-xs text-slate-400 block">Contact Phone</span>
-                            @if($site->client_phone)
-                                <a href="tel:{{ $site->client_phone }}" class="font-bold text-blue-600 dark:text-blue-400 hover:underline">
-                                    {{ $site->client_phone }}
-                                </a>
-                            @else
-                                <span class="text-slate-400">—</span>
-                            @endif
-                        </div>
-                        <div>
-                            <span class="text-xs text-slate-400 block">Contact Person</span>
-                            <span class="font-semibold text-slate-800 dark:text-slate-200">{{ $site->contact_person ?? '—' }}</span>
-                        </div>
-                        <div>
-                            <span class="text-xs text-slate-400 block">Email Address</span>
-                            @if($site->client_email)
-                                <a href="mailto:{{ $site->client_email }}" class="text-blue-600 dark:text-blue-400 hover:underline">
-                                    {{ $site->client_email }}
-                                </a>
-                            @else
-                                <span class="text-slate-400">—</span>
-                            @endif
-                        </div>
-                        <div class="sm:col-span-2">
-                            <span class="text-xs text-slate-400 block">Complete Physical Address</span>
-                            <span class="text-slate-800 dark:text-slate-200">{{ $site->address }}, {{ $site->city }} {{ $site->state }} {{ $site->pincode }}</span>
-                        </div>
-                        @if($site->notes)
-                            <div class="sm:col-span-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-                                <span class="text-xs text-slate-400 block">Special Access Notes</span>
-                                <p class="text-xs text-slate-600 dark:text-slate-300 mt-1 whitespace-pre-line">{{ $site->notes }}</p>
-                            </div>
-                        @endif
-                    </div>
+            @if (session('status'))
+                <div class="p-3 rounded border border-emerald-300 bg-emerald-50 text-emerald-800 text-xs">
+                    {{ session('status') }}
                 </div>
+            @endif
 
-                {{-- Map & Navigation Card --}}
-                <div class="p-6 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
-                    <div class="flex items-center justify-between">
-                        <h3 class="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-2">
-                            <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                            GPS Geolocation &amp; Directions
-                        </h3>
+            {{-- 1. Site Information: Two-column table inside standard section --}}
+            <div class="crm-section">
+                <h3>Site Information</h3>
+                
+                <table class="crm-table w-full">
+                    <tbody>
+                        <tr>
+                            <td style="width: 25%; color: #555; font-weight: 500;">Client / Organization</td>
+                            <td style="color: #222; font-weight: 500;">{{ $site->client_name ?? '—' }}</td>
+                        </tr>
+                        <tr>
+                            <td style="color: #555; font-weight: 500;">Contact Phone</td>
+                            <td style="color: #222; font-weight: 500;">
+                                @if($site->client_phone)
+                                    <a href="tel:{{ $site->client_phone }}" class="action-link">
+                                        {{ $site->client_phone }}
+                                    </a>
+                                @else
+                                    —
+                                @endif
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="color: #555; font-weight: 500;">Contact Person</td>
+                            <td style="color: #222; font-weight: 500;">{{ $site->contact_person ?? '—' }}</td>
+                        </tr>
+                        <tr>
+                            <td style="color: #555; font-weight: 500;">Email Address</td>
+                            <td style="color: #222; font-weight: 500;">
+                                @if($site->client_email)
+                                    <a href="mailto:{{ $site->client_email }}" class="action-link">
+                                        {{ $site->client_email }}
+                                    </a>
+                                @else
+                                    —
+                                @endif
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="color: #555; font-weight: 500;">Physical Address</td>
+                            <td style="color: #222; font-weight: 500;">{{ $site->address }}, {{ $site->city }} {{ $site->state }} {{ $site->pincode }}</td>
+                        </tr>
+                        @if($site->notes)
+                        <tr>
+                            <td style="color: #555; font-weight: 500;">Access Notes</td>
+                            <td style="color: #222; font-weight: 500;">{{ $site->notes }}</td>
+                        </tr>
+                        @endif
+                    </tbody>
+                </table>
+            </div>
 
-                        <a href="{{ $site->navigate_url }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition active:scale-95">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
-                            Open in Google Maps
+            {{-- 2. Map & Coordinates --}}
+            <div class="crm-section">
+                <div class="flex items-center justify-between mb-4 pb-2 border-b border-[#ddd]">
+                    <h3 class="border-b-0 pb-0 mb-0">GPS Geolocation</h3>
+                    @if($site->navigate_url)
+                        <a href="{{ $site->navigate_url }}" target="_blank" rel="noopener noreferrer" class="btn-secondary text-xs">
+                            Open in Maps
                         </a>
-                    </div>
-
-                    @if($site->has_coordinates)
-                        <div class="text-xs font-mono text-slate-500 flex items-center gap-3">
-                            <span>Lat: <strong class="text-slate-800 dark:text-slate-200">{{ $site->latitude }}</strong></span>
-                            <span>Lng: <strong class="text-slate-800 dark:text-slate-200">{{ $site->longitude }}</strong></span>
-                        </div>
-
-                        {{-- Leaflet OpenStreetMap Interactive Embed --}}
-                        <div class="h-64 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 relative z-0" id="site-map">
-                            <iframe 
-                                width="100%" 
-                                height="100%" 
-                                frameborder="0" 
-                                scrolling="no" 
-                                marginheight="0" 
-                                marginwidth="0" 
-                                src="https://www.openstreetmap.org/export/embed.html?bbox={{ $site->longitude - 0.005 }}%2C{{ $site->latitude - 0.005 }}%2C{{ $site->longitude + 0.005 }}%2C{{ $site->latitude + 0.005 }}&amp;layer=mapnik&amp;marker={{ $site->latitude }}%2C{{ $site->longitude }}">
-                            </iframe>
-                        </div>
-                    @else
-                        <div class="p-8 text-center rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-dashed border-slate-200 dark:border-slate-700 text-slate-400 text-xs">
-                            
-                            <p class="font-bold">No GPS coordinates recorded for this site</p>
-                            <a href="{{ route('sites.edit', $site) }}" class="text-blue-500 hover:underline mt-2 inline-block">
-                                Edit site to add GPS coordinates or Google Maps link
-                            </a>
-                        </div>
                     @endif
                 </div>
 
+                @if($site->has_coordinates)
+                    <div class="text-xs text-slate-500 mb-3">
+                        Latitude: <strong class="text-slate-800">{{ $site->latitude }}</strong> &bull;
+                        Longitude: <strong class="text-slate-800">{{ $site->longitude }}</strong>
+                    </div>
+
+                    <div class="h-64 rounded overflow-hidden border border-[#ddd] relative z-0">
+                        <iframe 
+                            width="100%" 
+                            height="100%" 
+                            frameborder="0" 
+                            scrolling="no" 
+                            marginheight="0" 
+                            marginwidth="0" 
+                            src="https://www.openstreetmap.org/export/embed.html?bbox={{ $site->longitude - 0.005 }}%2C{{ $site->latitude - 0.005 }}%2C{{ $site->longitude + 0.005 }}%2C{{ $site->latitude + 0.005 }}&amp;layer=mapnik&amp;marker={{ $site->latitude }}%2C{{ $site->longitude }}">
+                        </iframe>
+                    </div>
+                @else
+                    <p class="text-xs text-slate-500">
+                        No GPS coordinates recorded for this site.
+                    </p>
+                @endif
             </div>
 
-            {{-- Right 1 Col: Linked Projects on this Site --}}
-            <div class="space-y-6">
-                <div class="p-6 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
-                    <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
-                        <h3 class="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                            Site Projects ({{ $site->projects->count() }})
-                        </h3>
-                    </div>
-
-                    <div class="space-y-3">
-                        @forelse($site->projects as $prj)
-                            <a href="{{ route('projects.show', $prj) }}" class="block p-3.5 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 hover:border-blue-400 transition group">
-                                <div class="flex items-center justify-between mb-1">
-                                    <span class="text-xs font-mono font-bold text-slate-400">{{ $prj->project_code }}</span>
-                                    {!! $prj->status_badge !!}
-                                </div>
-                                <h4 class="font-bold text-sm text-slate-900 dark:text-white group-hover:text-blue-600 transition truncate">
-                                    {{ $prj->title }}
-                                </h4>
-                                <div class="flex items-center justify-between text-xs text-slate-400 mt-2">
-                                    <span>{{ $prj->company?->name ?? 'Unassigned Co.' }}</span>
-                                    <span>₹{{ number_format($prj->budget, 0) }}</span>
-                                </div>
-                            </a>
-                        @empty
-                            <div class="text-center py-6 text-slate-400 text-xs">
-                                <p>No projects linked to this site yet.</p>
-                                <a href="{{ route('projects.create', ['site_id' => $site->id]) }}" class="text-blue-500 hover:underline mt-2 inline-block font-semibold">
-                                    + Start first project
-                                </a>
-                            </div>
-                        @endforelse
-                    </div>
+            {{-- 3. Projects on this Site --}}
+            <div class="crm-section">
+                <h3>Site Projects ({{ $site->projects->count() }})</h3>
+                
+                <div class="overflow-x-auto">
+                    <table class="crm-table w-full">
+                        <thead>
+                            <tr>
+                                <th>Project Code</th>
+                                <th>Title</th>
+                                <th>Budget</th>
+                                <th>Status</th>
+                                <th class="text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($site->projects as $prj)
+                                <tr>
+                                    <td class="font-mono font-semibold" style="white-space: nowrap;">
+                                        <a href="{{ route('projects.show', $prj) }}" class="action-link">
+                                            {{ $prj->project_code }}
+                                        </a>
+                                    </td>
+                                    <td class="font-semibold text-slate-900">{{ $prj->title }}</td>
+                                    <td style="white-space: nowrap;">₹{{ number_format($prj->budget, 2) }}</td>
+                                    <td>
+                                        <span class="status-{{ strtolower($prj->status) }}">
+                                            {{ ucfirst(str_replace('_', ' ', $prj->status)) }}
+                                        </span>
+                                    </td>
+                                    <td class="text-right" style="white-space: nowrap;">
+                                        <a href="{{ route('projects.show', $prj) }}" class="action-link">
+                                            View
+                                        </a>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="text-center py-6 text-slate-500 text-sm">
+                                        No projects linked to this site yet
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
         </div>
-
     </div>
 </x-app-layout>

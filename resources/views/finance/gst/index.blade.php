@@ -3,15 +3,15 @@
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <div class="flex items-center gap-2">
-                    <h1 class="text-2xl font-bold text-[#222222]">
+                    <h2 class="text-xl font-bold text-slate-900 dark:text-white">
                         GST & Tax Compliance Center
-                    </h1>
-                    <span class="text-sm font-bold text-[#d97706]">
+                    </h2>
+                    <span class="text-xs font-bold text-[#d97706]">
                         GSTR-1 & ITC Hub
                     </span>
                 </div>
                 <p class="text-xs text-[#555555] mt-0.5">
-                    {{ $companyGst['trade_name'] }} • GSTIN: <strong class="text-[#222222]">{{ $companyGst['gstin'] }}</strong> • State: {{ $companyGst['state'] }} ({{ $companyGst['state_code'] }})
+                    {{ $companyGst['trade_name'] }} • GSTIN: <strong class="text-[#222222]">{{ $companyGst['gstin'] }}</strong>
                 </p>
             </div>
 
@@ -20,19 +20,22 @@
                 <form method="GET" action="{{ route('finance.gst.index') }}" class="flex items-center gap-2">
                     <input type="hidden" name="tab" value="{{ $activeTab }}">
                     <input type="month" name="month" value="{{ $selectedMonth }}" onchange="this.form.submit()"
-                           class="bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-xs font-semibold rounded border border-slate-300 dark:border-slate-700 py-1.5 px-3 cursor-pointer" style="height: 38px; border-radius: 4px;">
+                           class="crm-input text-xs py-1" style="height: 38px; width: 140px;">
                 </form>
+
+                <!-- Record Filing Button -->
+                <button @click="$dispatch('open-modal', 'record-filing-modal')" type="button" class="btn-secondary">
+                    Record Filing
+                </button>
 
                 <!-- Export Menu Dropdown -->
                 <div class="relative" x-data="{ open: false }">
-                    <button @click="open = !open" @click.outside="open = false" type="button"
-                            class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded transition" style="height: 38px; border-radius: 4px;">
-                        <span>Export Return</span>
-                        <svg class="w-3.5 h-3.5 opacity-70" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                    <button @click="open = !open" @click.outside="open = false" type="button" class="btn-primary">
+                        Export Return
                     </button>
 
                     <div x-show="open" x-cloak
-                         class="absolute right-0 mt-1 w-64 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded shadow-lg py-2 z-50" style="border-radius: 4px;">
+                         class="absolute right-0 mt-1 w-64 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded shadow-lg py-2 z-50">
                         <div class="px-3.5 py-1 text-xs font-semibold text-slate-400 border-b border-slate-100 dark:border-slate-800 mb-1">
                             GST Exports ({{ Carbon\Carbon::parse($selectedMonth.'-01')->format('M Y') }})
                         </div>
@@ -55,17 +58,10 @@
                     </div>
                 </div>
 
-                <!-- Record Filing Button -->
-                <button @click="$dispatch('open-modal', 'record-filing-modal')" type="button"
-                        class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded transition" style="height: 38px; border-radius: 4px;">
-                    Record Filing
-                </button>
-
                 <!-- Settings Button -->
                 <button @click="$dispatch('open-modal', 'company-gst-modal')" type="button" title="GST Settings"
-                        class="px-3 py-2 text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 rounded transition" style="height: 38px; border-radius: 4px;">
+                        class="btn-secondary">
                     Settings
-                </button>
             </div>
         </div>
     </x-slot>

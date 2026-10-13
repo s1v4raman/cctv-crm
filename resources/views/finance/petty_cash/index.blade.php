@@ -2,13 +2,13 @@
     <x-slot name="header">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-                <h1 class="text-2xl font-bold text-[#222222]">Petty Cash & Field Float Reconciliation</h1>
+                <h2 class="text-xl font-bold text-slate-900 dark:text-white">Petty Cash &amp; Field Float Reconciliation</h2>
             </div>
             <div class="flex items-center gap-2">
-                <a href="{{ route('finance.petty_cash.export-csv') }}" class="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded border border-[#cccccc] bg-white text-[#222222] hover:bg-[#f5f5f5] transition">
+                <a href="{{ route('finance.petty_cash.export-csv') }}" class="btn-secondary">
                     Export CSV
                 </a>
-                <a href="{{ route('finance.petty_cash.export-pdf') }}" class="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded bg-[#2563eb] text-white hover:bg-[#1d4ed8] transition">
+                <a href="{{ route('finance.petty_cash.export-pdf') }}" class="btn-secondary">
                     Cashbook PDF
                 </a>
             </div>

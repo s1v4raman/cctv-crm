@@ -295,6 +295,35 @@ select {
     padding-right: 0.95rem;
 }
 
+/* Ensure search inputs and inputs with leading icons maintain adequate left padding */
+input.pl-8,
+input[class*="pl-8"],
+.has-icon-sm > input {
+    padding-left: 2.125rem !important;
+}
+
+input.pl-9,
+input[class*="pl-9"] {
+    padding-left: 2.375rem !important;
+}
+
+input.pl-10,
+input[class*="pl-10"],
+.search-icon-input,
+.has-leading-icon > input {
+    padding-left: 2.625rem !important;
+}
+
+input.pl-11,
+input[class*="pl-11"] {
+    padding-left: 2.875rem !important;
+}
+
+input.pl-12,
+input[class*="pl-12"] {
+    padding-left: 3.125rem !important;
+}
+
 textarea {
     background-color: #ffffff;
     border-color: #cbd5e1;
@@ -303,6 +332,8 @@ textarea {
     font-size: 0.9375rem;
     line-height: 1.5;
     padding: 0.75rem 0.95rem;
+    min-height: 105px;
+    width: 100%;
 }
 
 html.dark input[type="text"],
@@ -1279,7 +1310,7 @@ html:not(.dark) .crm-app-container h2.text-white,
 html:not(.dark) .crm-app-container h3.text-white,
 html:not(.dark) .crm-app-container h4.text-white,
 html:not(.dark) .crm-app-container strong.text-white,
-html:not(.dark) .crm-app-container .text-white {
+html:not(.dark) .crm-app-container .text-white:not(.btn):not(.btn-primary):not([class*="btn-primary"]):not(.crm-tab-active):not(.crm-pill-active):not(.active):not([class*="active"]):not([class*="bg-blue"]):not([class*="bg-indigo"]):not([class*="bg-emerald"]):not([class*="bg-green"]):not([class*="bg-red"]):not(.crm-user-avatar):not(.badge) {
     color: #0f172a !important;
 }
 
@@ -1604,7 +1635,7 @@ html:not(.dark) .pg-card .text-gray-500 {
 }
 html:not(.dark) .pg-card .text-slate-900,
 html:not(.dark) .pg-card .text-gray-900,
-html:not(.dark) .pg-card .text-white {
+html:not(.dark) .pg-card .text-white:not(.btn):not(.btn-primary):not([class*="btn-primary"]):not(.crm-tab-active):not(.crm-pill-active):not(.active):not([class*="active"]):not([class*="bg-blue"]):not([class*="bg-indigo"]):not([class*="bg-emerald"]):not([class*="bg-green"]):not([class*="bg-red"]):not(.crm-user-avatar):not(.badge) {
     color: #0f172a !important;
 }
 
@@ -1715,24 +1746,57 @@ html:not(.dark) .tech-stat {
 }
 
 /* ── TOMSELECT SEARCHABLE DROPDOWNS ── */
-.ts-wrapper {
+.ts-wrapper,
+.select-wrap,
+.select-wrapper,
+.input-box:has(> .ts-wrapper),
+.form-group:has(> .ts-wrapper) {
     width: 100% !important;
+    border: none !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
 }
 .ts-control {
     background-color: #ffffff !important;
-    border: 1px solid #cbd5e1 !important;
-    border-radius: 0.75rem !important;
-    padding: 0.55rem 0.85rem !important;
-    font-size: 0.8125rem !important;
+    border: 1px solid #cccccc !important;
+    border-radius: 4px !important;
+    padding: 0 10px !important;
+    font-size: 13px !important;
     color: #0f172a !important;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    min-height: 42px;
-    display: flex;
-    align-items: center;
+    box-shadow: none !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    max-height: 38px !important;
+    display: flex !important;
+    align-items: center !important;
+    box-sizing: border-box !important;
 }
-.ts-control input {
+.ts-control input,
+.ts-wrapper .ts-control input,
+.ts-wrapper.single .ts-control input {
     color: #0f172a !important;
-    font-size: 0.8125rem !important;
+    font-size: 13px !important;
+    border: none !important;
+    border-width: 0 !important;
+    outline: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    max-height: none !important;
+}
+.ts-wrapper .ts-control .item,
+.ts-wrapper.single .ts-control .item {
+    border: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    color: #0f172a !important;
+    font-size: 13px !important;
 }
 .ts-dropdown {
     background-color: #ffffff !important;
@@ -2147,12 +2211,13 @@ html.dark .crm-label {
     height: 38px !important;
     border-radius: 4px !important;
     background-color: #ffffff !important;
-    border: 1px solid #d1d5db !important;
+    border: 1px solid #cccccc !important;
     box-sizing: border-box !important;
     font-size: 0.875rem !important;
     padding: 0 0.75rem !important;
     display: flex !important;
     align-items: center !important;
+    box-shadow: none !important;
 }
 
 html.dark .ts-control {
@@ -2160,3 +2225,892 @@ html.dark .ts-control {
     border-color: #334155 !important;
     color: #f8fafc !important;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   4. STRICT SYSTEM RULES: LAYOUT AND SPACING ENFORCEMENT
+   Fixed values, zero box-shadow, 4px radius, 1px solid #ddd borders
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* 1. Box shadow: None on EVERY element */
+*, *::before, *::after {
+    box-shadow: none !important;
+    text-shadow: none !important;
+}
+
+/* 2. Border radius: 4px on EVERY element (only circle avatars retain full radius) */
+button,
+.btn,
+.btn-primary,
+.btn-secondary,
+.btn-blue,
+.btn-danger,
+input,
+select,
+textarea,
+.ts-control,
+.stat-card,
+.pip-card,
+.pg-card,
+.card,
+.crm-card,
+.saas-card,
+table,
+thead,
+tbody,
+tr,
+th,
+td,
+section,
+div.border,
+div.rounded,
+div.rounded-lg,
+div.rounded-xl,
+div.rounded-2xl,
+span.rounded,
+span.rounded-md,
+span.rounded-lg,
+span.rounded-full:not(.crm-user-avatar):not(.avatar-circle) {
+    border-radius: 4px !important;
+}
+
+/* Circle avatar exception */
+.crm-user-avatar, .avatar-circle {
+    border-radius: 9999px !important;
+}
+
+/* 3. Borders: 1px solid #ddd (dark: #334155) */
+.stat-card,
+.pip-card,
+.pg-card,
+.crm-card,
+.card,
+.saas-card,
+.crm-section-box,
+table,
+.border-card,
+div.border-slate-200,
+div.border-slate-300,
+div.border-gray-200,
+div.border-gray-300 {
+    border: 1px solid #dddddd !important;
+}
+
+html.dark .stat-card,
+html.dark .pip-card,
+html.dark .pg-card,
+html.dark .crm-card,
+html.dark .card,
+html.dark .saas-card,
+html.dark .crm-section-box,
+html.dark div.border-slate-200,
+html.dark div.border-slate-300,
+html.dark div.border-gray-200,
+html.dark div.border-gray-300 {
+    border-color: #334155 !important;
+}
+
+/* 4. Input, select and button height: 38px (inputs border: #ccc) */
+input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="color"]):not([type="range"]):not(.ts-control input):not(.ts-wrapper input),
+select:not(.tomselected) {
+    height: 38px !important;
+    min-height: 38px !important;
+    max-height: 38px !important;
+    border: 1px solid #cccccc !important;
+    border-radius: 4px !important;
+    font-size: 13px !important;
+    box-sizing: border-box !important;
+    background-color: #ffffff !important;
+}
+
+/* Default input padding without breaking search inputs with left icons */
+input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="color"]):not([type="range"]):not(.ts-control input):not(.ts-wrapper input):not([type="search"]):not([name="search"]):not(.search-icon-input):not(.pl-9):not(.pl-10):not(.pl-11):not(.pl-12):not(.pl-14) {
+    padding: 0 10px !important;
+}
+
+/* Native Select Dropdowns: ensure right padding so text never overlaps the chevron arrow */
+select:not(.tomselected) {
+    padding-left: 10px !important;
+    padding-right: 32px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+/* Textareas & Description boxes: normal comfortable size, standard padding across all modules */
+textarea,
+.crm-textarea,
+textarea.crm-input,
+textarea.form-textarea {
+    border: 1px solid #cccccc !important;
+    border-radius: 6px !important;
+    padding: 10px 12px !important;
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+    min-height: 105px !important;
+    width: 100% !important;
+    background-color: #ffffff !important;
+    box-sizing: border-box !important;
+    outline: none !important;
+    box-shadow: none !important;
+    resize: vertical !important;
+}
+
+html.dark input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="color"]):not([type="range"]):not(.ts-control input):not(.ts-wrapper input),
+html.dark select:not(.tomselected),
+html.dark textarea,
+html.dark .crm-textarea,
+html.dark textarea.crm-input,
+html.dark textarea.form-textarea {
+    border-color: #475569 !important;
+    background-color: #0f172a !important;
+    color: #f8fafc !important;
+}
+
+/* Table inputs: 32px height, #ccc border */
+table input:not([type="checkbox"]):not([type="radio"]),
+table select {
+    height: 32px !important;
+    min-height: 32px !important;
+    max-height: 32px !important;
+    padding: 0 6px !important;
+    font-size: 12px !important;
+}
+
+/* Button height: 38px */
+button:not(.btn-icon):not([class*="p-0"]):not([class*="p-1"]):not([class*="h-"]):not([class*="w-"]),
+.btn,
+.btn-primary,
+.btn-secondary,
+.btn-blue,
+.crm-btn-primary,
+.crm-btn-secondary,
+a.btn {
+    height: 38px !important;
+    min-height: 38px !important;
+    border-radius: 4px !important;
+    font-size: 13px !important;
+    box-sizing: border-box !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* 5. Table cell padding: 10px */
+table th,
+table td {
+    padding: 10px !important;
+    box-sizing: border-box !important;
+}
+
+/* Wide tables container with overflow-x: auto */
+.table-responsive,
+.overflow-x-auto,
+.overflow-x-scroll {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    width: 100% !important;
+}
+
+/* 6. Spacing Scale Helpers: 4px, 8px, 12px, 16px, 20px, 24px */
+.gap-fields,
+form .grid,
+form .form-grid {
+    gap: 12px !important;
+}
+
+.gap-sections,
+.section-gap {
+    margin-bottom: 20px !important;
+}
+
+/* 7. Sidebar Frame Rules */
+aside {
+    width: 220px !important;
+    min-width: 220px !important;
+    background-color: #ffffff !important;
+    border-right: 1px solid #dddddd !important;
+}
+html.dark aside {
+    background-color: #0f172a !important;
+    border-right-color: #334155 !important;
+}
+
+/* Sidebar Icons: one gray color #666 or no icons */
+aside nav a svg {
+    color: #666666 !important;
+    stroke: #666666 !important;
+}
+html.dark aside nav a svg {
+    color: #94a3b8 !important;
+    stroke: #94a3b8 !important;
+}
+
+/* Active menu item: Light blue #e8f0fe with 3px solid #2563eb left border */
+aside nav a.crm-active-link,
+aside nav a[class*="crm-active-link"] {
+    background-color: #e8f0fe !important;
+    border-left: 3px solid #2563eb !important;
+    border-radius: 0 4px 4px 0 !important;
+    color: #2563eb !important;
+    font-weight: 600 !important;
+}
+aside nav a.crm-active-link svg,
+aside nav a[class*="crm-active-link"] svg {
+    color: #2563eb !important;
+    stroke: #2563eb !important;
+}
+
+html.dark aside nav a.crm-active-link,
+html.dark aside nav a[class*="crm-active-link"] {
+    background-color: rgba(37, 99, 235, 0.2) !important;
+    border-left: 3px solid #2563eb !important;
+    color: #60a5fa !important;
+}
+html.dark aside nav a.crm-active-link svg,
+html.dark aside nav a[class*="crm-active-link"] svg {
+    color: #60a5fa !important;
+    stroke: #60a5fa !important;
+}
+
+/* Section: One white box with a border (no card inside a card) */
+.section-box,
+.crm-box {
+    background: #ffffff;
+    border: 1px solid #dddddd;
+    border-radius: 4px;
+    padding: 16px;
+    margin-bottom: 20px;
+}
+html.dark .section-box,
+html.dark .crm-box {
+    background: #0f172a;
+    border-color: #334155;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   5. COMPONENT STANDARDS ENFORCEMENT
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* 5.1 BUTTONS */
+/* Primary: Background #2563eb, white text, no border */
+.btn-primary,
+.crm-btn-primary,
+.btn-blue,
+button.btn-primary,
+a.btn-primary {
+    background-color: #2563eb !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 4px !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    padding: 0 16px !important;
+    font-size: 14px !important;
+    font-family: Arial, sans-serif !important;
+    font-weight: 500 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-decoration: none !important;
+    box-shadow: none !important;
+    transform: none !important;
+    transition: background-color 0.15s ease !important;
+    cursor: pointer !important;
+}
+
+.btn-primary:hover,
+.crm-btn-primary:hover,
+.btn-blue:hover,
+button.btn-primary:hover,
+a.btn-primary:hover {
+    background-color: #1d4ed8 !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Secondary: White background, 1px solid #ccc, dark text */
+.btn-secondary,
+.crm-btn-secondary,
+.btn-white,
+button.btn-secondary,
+a.btn-secondary {
+    background-color: #ffffff !important;
+    color: #222222 !important;
+    border: 1px solid #cccccc !important;
+    border-radius: 4px !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    padding: 0 16px !important;
+    font-size: 14px !important;
+    font-family: Arial, sans-serif !important;
+    font-weight: 500 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-decoration: none !important;
+    box-shadow: none !important;
+    transform: none !important;
+    transition: background-color 0.15s ease !important;
+    cursor: pointer !important;
+}
+
+.btn-secondary:hover,
+.crm-btn-secondary:hover,
+.btn-white:hover,
+button.btn-secondary:hover,
+a.btn-secondary:hover {
+    background-color: #f5f5f5 !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+html.dark .btn-secondary,
+html.dark .crm-btn-secondary,
+html.dark button.btn-secondary,
+html.dark a.btn-secondary {
+    background-color: #0f172a !important;
+    color: #f8fafc !important;
+    border-color: #475569 !important;
+}
+html.dark .btn-secondary:hover,
+html.dark .crm-btn-secondary:hover {
+    background-color: #1e293b !important;
+}
+
+/* Text link: Blue text, no border */
+.action-link,
+.table-action-link,
+.row-action-link {
+    background: transparent !important;
+    border: none !important;
+    color: #2563eb !important;
+    padding: 0 !important;
+    font-size: 14px !important;
+    font-weight: normal !important;
+    text-decoration: none !important;
+    cursor: pointer !important;
+    display: inline-block !important;
+    margin-right: 8px !important;
+}
+.action-link:hover,
+.table-action-link:hover,
+.row-action-link:hover {
+    text-decoration: underline !important;
+}
+
+/* Danger link: Red text #dc2626, no border */
+.danger-link,
+.table-danger-link,
+.row-danger-link,
+button.danger-link {
+    background: transparent !important;
+    border: none !important;
+    color: #dc2626 !important;
+    padding: 0 !important;
+    font-size: 14px !important;
+    font-weight: normal !important;
+    text-decoration: none !important;
+    cursor: pointer !important;
+    display: inline-block !important;
+    margin-right: 8px !important;
+}
+.danger-link:hover,
+.table-danger-link:hover,
+.row-danger-link:hover,
+button.danger-link:hover {
+    text-decoration: underline !important;
+}
+
+form.inline {
+    display: inline-block !important;
+    margin: 0 !important;
+    margin-right: 8px !important;
+}
+
+td .action-link:last-child,
+td .danger-link:last-child,
+td form.inline:last-child {
+    margin-right: 0 !important;
+}
+
+/* In forms, buttons are right-aligned: Cancel on left, primary on right */
+.form-actions {
+    display: flex !important;
+    justify-content: flex-end !important;
+    align-items: center !important;
+    gap: 12px !important;
+    margin-top: 20px !important;
+}
+
+/* 5.2 FORMS */
+/* Label above the input, normal case, 14px, color #555 */
+label,
+.crm-label,
+.form-label {
+    display: block !important;
+    font-family: Arial, sans-serif !important;
+    font-size: 14px !important;
+    font-weight: normal !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+    color: #555555 !important;
+    margin-bottom: 4px !important;
+}
+html.dark label,
+html.dark .crm-label,
+html.dark .form-label {
+    color: #94a3b8 !important;
+}
+
+/* Required fields have a red * after the label. Optional fields have no marker. */
+label .required-marker,
+label .text-red-500,
+label .text-rose-500,
+label span[class*="text-red"],
+label span[class*="text-rose"] {
+    color: #dc2626 !important;
+    font-weight: bold !important;
+}
+
+/* Inputs, selects, and date fields: 38px height, 14px Arial, white background (selects never gray) */
+input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="color"]):not([type="range"]),
+select,
+.ts-control {
+    height: 38px !important;
+    min-height: 38px !important;
+    max-height: 38px !important;
+    font-family: Arial, sans-serif !important;
+    font-size: 14px !important;
+    color: #222222 !important;
+    background-color: #ffffff !important;
+    border: 1px solid #cccccc !important;
+    border-radius: 4px !important;
+    padding: 0 10px !important;
+    box-sizing: border-box !important;
+}
+select option {
+    background-color: #ffffff !important;
+    color: #222222 !important;
+}
+
+html.dark input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="color"]):not([type="range"]),
+html.dark select,
+html.dark .ts-control {
+    background-color: #0f172a !important;
+    border-color: #475569 !important;
+    color: #f8fafc !important;
+}
+html.dark select option {
+    background-color: #0f172a !important;
+    color: #f8fafc !important;
+}
+
+/* Validation errors in red text under the field, in one short sentence */
+.error-text,
+p[class*="text-red-"],
+p[class*="text-rose-"],
+span[class*="text-red-"],
+span[class*="text-rose-"] {
+    color: #dc2626 !important;
+    font-family: Arial, sans-serif !important;
+    font-size: 13px !important;
+    margin-top: 4px !important;
+}
+
+/* 5.3 TABLES */
+/* Plain HTML table with header row (#f0f0f0), 1px solid #ddd borders and 10px padding */
+table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    border: 1px solid #dddddd !important;
+    font-family: Arial, sans-serif !important;
+    font-size: 14px !important;
+    background: #ffffff;
+}
+html.dark table {
+    background: #0f172a;
+    border-color: #334155 !important;
+}
+
+/* Header text is normal case, bold, 14px */
+table thead tr,
+table thead th,
+table th {
+    background-color: #f0f0f0 !important;
+    color: #222222 !important;
+    font-family: Arial, sans-serif !important;
+    font-size: 14px !important;
+    font-weight: bold !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+    border-bottom: 1px solid #dddddd !important;
+    border-top: none !important;
+    padding: 10px !important;
+    text-align: left;
+}
+html.dark table thead tr,
+html.dark table thead th,
+html.dark table th {
+    background-color: #1e293b !important;
+    color: #f8fafc !important;
+    border-bottom-color: #334155 !important;
+}
+
+table tbody tr {
+    background-color: #ffffff !important;
+    border-bottom: 1px solid #dddddd !important;
+}
+html.dark table tbody tr {
+    background-color: #0f172a !important;
+    border-bottom-color: #334155 !important;
+}
+
+table td {
+    padding: 10px !important;
+    border-bottom: 1px solid #dddddd !important;
+    color: #222222 !important;
+    font-family: Arial, sans-serif !important;
+    font-size: 14px !important;
+}
+html.dark table td {
+    border-bottom-color: #334155 !important;
+    color: #f8fafc !important;
+}
+
+/* Phone numbers, dates and technician names use white-space: nowrap */
+table td.col-phone,
+table td.col-date,
+table td.col-tech,
+.nowrap,
+table td[class*="whitespace-nowrap"],
+table th[class*="whitespace-nowrap"] {
+    white-space: nowrap !important;
+}
+
+/* The name column has min-width: 200px */
+table th:first-child,
+table td:first-child,
+table th.col-name,
+table td.col-name {
+    min-width: 200px;
+}
+
+/* Row actions use text links separated by a space */
+table td.table-actions a,
+table td .table-action-link,
+table td a:not(.btn):not(.btn-primary) {
+    color: #2563eb !important;
+    text-decoration: none !important;
+    font-size: 14px !important;
+    font-weight: normal !important;
+}
+table td.table-actions a:hover,
+table td a:not(.btn):not(.btn-primary):hover {
+    text-decoration: underline !important;
+}
+
+/* 5.4 STATUS TEXT */
+/* Status is plain bold text with a color. It is never a pill, a badge or a background. */
+.status-text,
+table td .status-badge,
+table td .status-pill,
+table td span[class*="rounded-full"][class*="text-"],
+table td span[class*="bg-"][class*="text-"] {
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    font-family: Arial, sans-serif !important;
+    font-size: 14px !important;
+    font-weight: bold !important;
+    display: inline !important;
+    box-shadow: none !important;
+    text-transform: capitalize !important;
+    letter-spacing: normal !important;
+}
+
+/* Completed, Won, Accepted, Paid -> Green #16a34a */
+.status-completed,
+.status-won,
+.status-accepted,
+.status-paid,
+table td [class*="emerald"],
+table td [class*="green"] {
+    color: #16a34a !important;
+    font-weight: bold !important;
+}
+
+/* Pending, Quoted, Scheduled, In progress -> Orange #d97706 */
+.status-pending,
+.status-quoted,
+.status-scheduled,
+.status-in-progress,
+.status-in_progress,
+table td [class*="amber"],
+table td [class*="orange"],
+table td [class*="yellow"] {
+    color: #d97706 !important;
+    font-weight: bold !important;
+}
+
+/* New, Contacted -> Blue #2563eb */
+.status-new,
+.status-contacted,
+table td [class*="blue"],
+table td [class*="sky"] {
+    color: #2563eb !important;
+    font-weight: bold !important;
+}
+
+/* Lost, Declined, Cancelled, Overdue -> Red #dc2626 */
+.status-lost,
+.status-declined,
+.status-cancelled,
+.status-canceled,
+.status-overdue,
+.status-failed,
+table td [class*="rose"],
+table td [class*="red"] {
+    color: #dc2626 !important;
+    font-weight: bold !important;
+}
+
+/* 5.5 SECTIONS AND CARDS */
+/* A section is one white box: background: #fff; border: 1px solid #ddd; border-radius: 4px; padding: 16px. */
+.crm-section,
+section.crm-section,
+.section-box {
+    background-color: #ffffff !important;
+    border: 1px solid #dddddd !important;
+    border-radius: 4px !important;
+    padding: 16px !important;
+    margin-bottom: 20px !important;
+}
+html.dark .crm-section,
+html.dark section.crm-section,
+html.dark .section-box {
+    background-color: #0f172a !important;
+    border-color: #334155 !important;
+}
+
+/* Section heading is an h3 with a 1px solid #ddd line under it. No icon box and no gray header strip. */
+section h3,
+.crm-section h3,
+.section-heading {
+    font-family: Arial, sans-serif !important;
+    font-size: 16px !important;
+    font-weight: bold !important;
+    color: #222222 !important;
+    border-bottom: 1px solid #dddddd !important;
+    padding-bottom: 8px !important;
+    margin-bottom: 16px !important;
+    background: transparent !important;
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
+}
+html.dark section h3,
+html.dark .crm-section h3,
+html.dark .section-heading {
+    color: #f8fafc !important;
+    border-bottom-color: #334155 !important;
+}
+
+/* Dashboard stat cards show only a gray label and a bold number. No icons, no colored borders, no badges. */
+.stat-card {
+    background-color: #ffffff !important;
+    border: 1px solid #dddddd !important;
+    border-radius: 4px !important;
+    padding: 16px !important;
+}
+html.dark .stat-card {
+    background-color: #0f172a !important;
+    border-color: #334155 !important;
+}
+
+.stat-card .stat-label,
+.stat-card > div:first-child {
+    font-family: Arial, sans-serif !important;
+    font-size: 13px !important;
+    font-weight: normal !important;
+    text-transform: normal !important;
+    letter-spacing: normal !important;
+    color: #666666 !important;
+}
+
+.stat-card .stat-value,
+.stat-card > div:nth-child(2) {
+    font-family: Arial, sans-serif !important;
+    font-size: 24px !important;
+    font-weight: bold !important;
+    color: #222222 !important;
+    margin-top: 4px !important;
+}
+html.dark .stat-card .stat-value,
+html.dark .stat-card > div:nth-child(2) {
+    color: #f8fafc !important;
+}
+
+/* Detail page shows record information as a two-column table (label on the left, value on the right). Values are always dark text, never colored. */
+.detail-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+}
+.detail-table tr {
+    border-bottom: 1px solid #dddddd !important;
+}
+.detail-table td:first-child {
+    width: 30% !important;
+    color: #555555 !important;
+    font-weight: normal !important;
+    padding: 10px !important;
+}
+.detail-table td:last-child {
+    width: 70% !important;
+    color: #222222 !important;
+    font-weight: bold !important;
+    padding: 10px !important;
+}
+html.dark .detail-table td:first-child {
+    color: #94a3b8 !important;
+}
+html.dark .detail-table td:last-child {
+    color: #f8fafc !important;
+}
+
+/* 5.6 LINKS AND NAVIGATION */
+/* Links are blue #2563eb, no underline, underline on hover */
+a:not(.btn):not(.btn-primary):not(.btn-secondary):not(aside a):not(.crm-active-link):not(.crm-brand-logo):not(.text-white):not([class*="text-white"]):not(.crm-filter-tab):not(.filter-tab):not(.active):not([class*="active"]):not(.filter-tabs a) {
+    color: #2563eb !important;
+    text-decoration: none !important;
+}
+a:not(.btn):not(.btn-primary):not(.btn-secondary):not(aside a):not(.text-white):not([class*="text-white"]):not(.crm-filter-tab):not(.filter-tab):not(.active):not([class*="active"]):not(.filter-tabs a):hover {
+    text-decoration: underline !important;
+}
+
+/* Category & Module Filter Tabs Across All Pages */
+.filter-tab,
+.crm-filter-tab {
+    display: inline-block !important;
+    padding: 6px 14px !important;
+    border-radius: 4px !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    text-decoration: none !important;
+    cursor: pointer !important;
+    transition: background-color 0.15s ease, color 0.15s ease !important;
+}
+.filter-tab.active,
+.crm-filter-tab.active,
+a.filter-tab.active,
+a.crm-filter-tab.active,
+.filter-tabs a.active {
+    background-color: #2563eb !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+}
+.filter-tab.active *,
+.crm-filter-tab.active *,
+a.filter-tab.active *,
+a.crm-filter-tab.active *,
+.filter-tabs a.active * {
+    color: #ffffff !important;
+}
+.filter-tab:not(.active),
+.crm-filter-tab:not(.active),
+a.filter-tab:not(.active),
+a.crm-filter-tab:not(.active),
+.filter-tabs a:not(.active) {
+    background-color: #f1f5f9 !important;
+    color: #475569 !important;
+    font-weight: 500 !important;
+}
+.filter-tab:not(.active):hover,
+.crm-filter-tab:not(.active):hover,
+a.filter-tab:not(.active):hover,
+a.crm-filter-tab:not(.active):hover,
+.filter-tabs a:not(.active):hover {
+    background-color: #e2e8f0 !important;
+    color: #1e293b !important;
+    text-decoration: none !important;
+}
+html.dark .filter-tab.active,
+html.dark .crm-filter-tab.active,
+html.dark a.filter-tab.active,
+html.dark a.crm-filter-tab.active,
+html.dark .filter-tabs a.active {
+    background-color: #2563eb !important;
+    color: #ffffff !important;
+}
+html.dark .filter-tab:not(.active),
+html.dark .crm-filter-tab:not(.active),
+html.dark a.filter-tab:not(.active),
+html.dark a.crm-filter-tab:not(.active),
+html.dark .filter-tabs a:not(.active) {
+    background-color: #1e293b !important;
+    color: #cbd5e1 !important;
+}
+html.dark .filter-tab:not(.active):hover,
+html.dark .crm-filter-tab:not(.active):hover,
+html.dark a.filter-tab:not(.active):hover,
+html.dark a.crm-filter-tab:not(.active):hover,
+html.dark .filter-tabs a:not(.active):hover {
+    background-color: #334155 !important;
+    color: #f8fafc !important;
+}
+
+/* A page has one "← Back" text link above the title */
+.back-link,
+a.crm-back-link {
+    display: inline-block !important;
+    font-family: Arial, sans-serif !important;
+    font-size: 14px !important;
+    color: #2563eb !important;
+    text-decoration: none !important;
+    margin-bottom: 8px !important;
+}
+.back-link:hover,
+a.crm-back-link:hover {
+    text-decoration: underline !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ANALYTICS ACTIVE TABS & TIMEFRAME PILLS (Crisp White Text on Blue)
+   ═══════════════════════════════════════════════════════════════════════ */
+.crm-tab-active,
+.crm-tab-active *,
+.crm-pill-active,
+.crm-pill-active *,
+a.crm-tab-active,
+a.crm-tab-active *,
+a.crm-pill-active,
+a.crm-pill-active * {
+    background-color: #2563eb !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   CUSTOMER SIGNATURE PAD CONTAINER (Clean White Pad in Light Mode)
+   ═══════════════════════════════════════════════════════════════════════ */
+.jcr-canvas-container {
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 8px !important;
+    background: #ffffff !important;
+    touch-action: none !important;
+    position: relative !important;
+    box-shadow: none !important;
+    transition: border-color 0.2s ease !important;
+}
+
+html.dark .jcr-canvas-container {
+    border-color: #334155 !important;
+    background: #0f172a !important;
+}
+
+.jcr-canvas-container:hover,
+.jcr-canvas-container:focus-within {
+    border-color: #2563eb !important;
+}
+
+

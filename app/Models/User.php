@@ -102,6 +102,34 @@ class User extends Authenticatable
         return in_array($this->role, ['admin', 'staff', 'technician']);
     }
 
+    /**
+     * Get avatar URL or null if none uploaded.
+     */
+    public function getAvatarUrlAttribute(): ?string
+    {
+        if (!empty($this->avatar)) {
+            if (filter_var($this->avatar, FILTER_VALIDATE_URL)) {
+                return $this->avatar;
+            }
+            return asset('storage/' . $this->avatar);
+        }
+        return null;
+    }
+
+    /**
+     * Get clean human-readable role title for profile displays.
+     */
+    public function getRoleTitleAttribute(): string
+    {
+        return match ($this->role) {
+            'admin'      => 'Administrator',
+            'staff'      => 'Sales Manager',
+            'technician' => 'Field Engineer',
+            'customer'   => 'Client Account',
+            default      => ucfirst($this->role ?? 'User'),
+        };
+    }
+
     public function attendances(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(EmployeeAttendance::class);

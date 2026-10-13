@@ -9,29 +9,21 @@
 
             <!-- Action Buttons: Record Payment, CSVs, PDF -->
             <div class="flex flex-wrap items-center gap-2">
-                <button type="button" @click="$dispatch('open-pay-modal', { supplierId: '', poId: '', amount: '', supplierName: '' })"
-                        class="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded transition"
-                        style="border-radius: 4px;">
-                    + Record Disbursement
+                <a href="{{ route('finance.payables.export-csv') }}" class="btn-secondary">
+                    Aging CSV
+                </a>
+
+                <a href="{{ route('finance.payables.export-three-way-csv') }}" class="btn-secondary">
+                    Match CSV
+                </a>
+
+                <a href="{{ route('finance.payables.export-pdf') }}" class="btn-secondary">
+                    Export PDF
+                </a>
+
+                <button type="button" @click="$dispatch('open-pay-modal', { supplierId: '', poId: '', amount: '', supplierName: '' })" class="btn-primary">
+                    Record Disbursement
                 </button>
-
-                <a href="{{ route('finance.payables.export-csv') }}"
-                   class="px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-medium rounded transition"
-                   style="border-radius: 4px;">
-                    AP Aging CSV
-                </a>
-
-                <a href="{{ route('finance.payables.export-three-way-csv') }}"
-                   class="px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-medium rounded transition"
-                   style="border-radius: 4px;">
-                    3-Way Match CSV
-                </a>
-
-                <a href="{{ route('finance.payables.export-pdf') }}"
-                   class="px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-medium rounded transition"
-                   style="border-radius: 4px;">
-                    Download AP PDF
-                </a>
             </div>
         </div>
     </x-slot>

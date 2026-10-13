@@ -20,22 +20,12 @@
     @endphp
 
     <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <div>
-                <h1 class="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight font-heading flex items-center gap-2.5">
-                    <span class="w-2.5 h-2.5 rounded-full bg-amber-500 shadow-sm shadow-amber-500"></span>
-                    Edit Quotation <span class="text-blue-600 dark:text-amber-400 font-mono">{{ $quotation->quotation_no }}</span>
-                </h1>
-
-                <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                    Customer: <strong class="text-slate-900 dark:text-white font-semibold">{{ $quotation->lead->customer_name }}</strong> · <span class="text-slate-600 dark:text-slate-300 font-mono">{{ $quotation->lead->phone }}</span>
-                </p>
+        <div>
+            <a href="{{ route('quotations.show', $quotation) }}" class="back-link">&larr; Back</a>
+            <h2 class="text-xl font-bold text-slate-900 dark:text-white mt-1">Edit Quotation {{ $quotation->quotation_no }}</h2>
+            <div class="text-xs text-slate-500 mt-0.5">
+                Customer: <strong class="text-slate-900 dark:text-white">{{ $quotation->lead->customer_name }}</strong> ({{ $quotation->lead->phone }})
             </div>
-
-            <a href="{{ route('quotations.show', $quotation) }}"
-               class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 text-xs font-bold transition shadow-xs">
-                ← Back to Quotation
-            </a>
         </div>
     </x-slot>
 
@@ -153,9 +143,8 @@
 
                             <button type="button"
                                     id="add-row"
-                                    class="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-xl bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-                                <span>Add Custom Item</span>
+                                    class="btn-secondary">
+                                Add Item
                             </button>
                         </div>
 
@@ -261,8 +250,8 @@
 
                                             <td class="p-2 text-right align-middle">
                                                 <button type="button"
-                                                        class="remove-row inline-flex items-center justify-center px-3 py-1.5 rounded-lg text-rose-600 dark:text-rose-400 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/50 border border-rose-200/80 dark:border-rose-800/60 font-bold text-xs transition cursor-pointer">
-                                                    Remove
+                                                        class="remove-row danger-link" style="background: none; border: none; cursor: pointer;">
+                                                    Delete
                                                 </button>
                                             </td>
                                         </tr>
@@ -307,17 +296,13 @@
                         </div>
                     </div>
 
-                    <div class="sticky bottom-0 z-30 mt-8 flex items-center justify-end gap-3 border-t border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-6 py-4 rounded-b-2xl shadow-lg">
-                        <a href="{{ route('quotations.show', $quotation) }}"
-                           class="inline-flex items-center justify-center px-6 py-2.5 bg-white hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-sm rounded-xl min-h-[44px] border border-slate-300 dark:border-slate-600 shadow-xs transition cursor-pointer">
+                    <div class="form-actions mt-8">
+                        <a href="{{ route('quotations.show', $quotation) }}" class="btn-secondary">
                             Cancel
                         </a>
 
-                        <button type="submit"
-                                class="inline-flex items-center justify-center gap-2 px-7 py-2.5 rounded-xl text-white font-bold text-sm bg-blue-600 hover:bg-blue-700 active:scale-[0.99] shadow-md shadow-blue-500/20 transition-all min-h-[44px] min-w-44 cursor-pointer"
-                                style="background-color: var(--crm-accent, #2563eb) !important; color: #ffffff !important;">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                            <span>Save Changes</span>
+                        <button type="submit" class="btn-primary">
+                            Save
                         </button>
                     </div>
                 </form>
@@ -385,8 +370,8 @@
 
             <td class="p-2 text-right align-middle">
                 <button type="button"
-                        class="remove-row inline-flex items-center justify-center px-3 py-1.5 rounded-lg text-rose-600 dark:text-rose-400 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/50 border border-rose-200/80 dark:border-rose-800/60 font-bold text-xs transition cursor-pointer">
-                    Remove
+                        class="remove-row danger-link" style="background: none; border: none; cursor: pointer;">
+                    Delete
                 </button>
             </td>
         </tr>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Site;
+use App\Models\Lead;
 use App\Models\ProjectAuditLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -62,7 +63,8 @@ class SiteController extends Controller
     public function create()
     {
         $nextCode = Site::generateSiteCode();
-        return view('sites.create', compact('nextCode'));
+        $leads = Lead::orderBy('customer_name')->get();
+        return view('sites.create', compact('nextCode', 'leads'));
     }
 
     /**
@@ -145,7 +147,8 @@ class SiteController extends Controller
      */
     public function edit(Site $site)
     {
-        return view('sites.edit', compact('site'));
+        $leads = Lead::orderBy('customer_name')->get();
+        return view('sites.edit', compact('site', 'leads'));
     }
 
     /**

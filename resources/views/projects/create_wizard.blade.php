@@ -16,7 +16,7 @@
 
     <div class="py-6 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto"
          x-data="{
-             step: 1,
+             step: {{ request('step', session('new_technician_id') ? 2 : 1) }},
              selectedSite: null,
              siteSearch: '',
              siteResults: [],
@@ -26,7 +26,7 @@
              // Step 2 Info
              title: '{{ old('title') }}',
              project_type: '{{ old('project_type', 'hardware_cctv') }}',
-             lead_technician_id: '{{ old('lead_technician_id') }}',
+             lead_technician_id: '{{ session('new_technician_id', old('lead_technician_id', '')) }}',
              budget: '{{ old('budget') }}',
              po_number: '{{ old('po_number') }}',
              start_date: '{{ old('start_date', now()->toDateString()) }}',
@@ -258,52 +258,25 @@
                  } catch (e) {
                      alert('Error creating site');
                  }
+             },
+             draftSaved: false,
+             saveDraft() {
+                 this.draftSaved = true;
+                 setTimeout(() => { this.draftSaved = false; }, 3000);
              }
          }">
 
-        {{-- Wizard Progress Bar --}}
-        <div class="mb-8">
-            <div class="flex items-center justify-between max-w-3xl mx-auto relative">
-                <div class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-slate-200 dark:bg-slate-700 w-full z-0"></div>
-                <div class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-blue-600 transition-all duration-300 z-0"
-                     :style="`width: ${(step - 1) * 33.33}%`"></div>
+        {{-- Draft Saved Alert (stays on page) --}}
+        <div x-show="draftSaved" x-cloak class="p-3 mb-4 rounded border border-emerald-300 bg-emerald-50 text-emerald-800 text-xs font-semibold">
+            Draft saved successfully.
+        </div>
 
-                {{-- Step 1 --}}
-                <div class="relative z-10 flex flex-col items-center">
-                    <button type="button" @click="step = 1" class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all"
-                            :class="step >= 1 ? 'bg-blue-600 text-white ring-4 ring-blue-100 dark:ring-blue-950' : 'bg-slate-200 dark:bg-slate-700 text-slate-500'">
-                        1
-                    </button>
-                    <span class="text-xs font-bold mt-2" :class="step >= 1 ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400'">Site Selection</span>
-                </div>
-
-                {{-- Step 2 --}}
-                <div class="relative z-10 flex flex-col items-center">
-                    <button type="button" @click="if(selectedSite) step = 2" class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all"
-                            :class="step >= 2 ? 'bg-blue-600 text-white ring-4 ring-blue-100 dark:ring-blue-950' : 'bg-slate-200 dark:bg-slate-700 text-slate-500'">
-                        2
-                    </button>
-                    <span class="text-xs font-bold mt-2" :class="step >= 2 ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400'">Project Info</span>
-                </div>
-
-                {{-- Step 3 --}}
-                <div class="relative z-10 flex flex-col items-center">
-                    <button type="button" @click="if(selectedSite && title) step = 3" class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all"
-                            :class="step >= 3 ? 'bg-blue-600 text-white ring-4 ring-blue-100 dark:ring-blue-950' : 'bg-slate-200 dark:bg-slate-700 text-slate-500'">
-                        3
-                    </button>
-                    <span class="text-xs font-bold mt-2" :class="step >= 3 ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400'">Scope &amp; Req</span>
-                </div>
-
-                {{-- Step 4 --}}
-                <div class="relative z-10 flex flex-col items-center">
-                    <button type="button" @click="if(selectedSite && title) step = 4" class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all"
-                            :class="step >= 4 ? 'bg-blue-600 text-white ring-4 ring-blue-100 dark:ring-blue-950' : 'bg-slate-200 dark:bg-slate-700 text-slate-500'">
-                        4
-                    </button>
-                    <span class="text-xs font-bold mt-2" :class="step >= 4 ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400'">Materials BOM</span>
-                </div>
-            </div>
+        {{-- Plain text step line ("Step 2 of 4: Project Info") --}}
+        <div class="mb-5 text-sm font-semibold text-slate-700 dark:text-slate-300">
+            <span x-show="step === 1">Step 1 of 4: Site Selection</span>
+            <span x-show="step === 2">Step 2 of 4: Project Info</span>
+            <span x-show="step === 3">Step 3 of 4: Scope &amp; Requirements</span>
+            <span x-show="step === 4">Step 4 of 4: Materials BOM</span>
         </div>
 
         <form method="POST" action="{{ route('projects.store') }}">
@@ -354,9 +327,9 @@
 
                     {{-- Search Sites Bar --}}
                     <div x-show="!selectedSite" class="space-y-4">
-                        <div class="relative">
-                            <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                            <input type="text" x-model="siteSearch" @input.debounce.300ms="searchSites()" placeholder="Search existing sites by name, code, phone, address..." class="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
+                        <div class="relative flex items-center">
+                            <svg class="w-4 h-4 text-slate-400 absolute left-3.5 pointer-events-none shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                            <input type="text" x-model="siteSearch" @input.debounce.300ms="searchSites()" placeholder="Search existing sites by name, code, phone, address..." style="padding-left: 2.75rem !important;" class="w-full pl-11 pr-4 py-2.5 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
 
                         {{-- Search Results --}}
@@ -374,11 +347,12 @@
                     </div>
                 </div>
 
-                <div class="flex justify-end">
-                    <button type="button" @click="if(!selectedSite){ alert('Please pick a site first.'); } else { step = 2; }" class="btn-primary text-sm px-6 py-2.5 shadow-md flex items-center gap-2">
-                        <span>Continue to Project Info</span>
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-                    </button>
+                <div class="flex items-center justify-between">
+                    <a href="{{ route('projects.index') }}" class="btn-secondary text-sm">Back</a>
+                    <div class="flex items-center gap-2">
+                        <button type="button" @click="saveDraft()" class="btn-secondary text-sm">Save Draft</button>
+                        <button type="button" @click="if(!selectedSite){ alert('Please pick a site first.'); } else { step = 2; }" class="btn-primary text-sm px-6 py-2.5">Next</button>
+                    </div>
                 </div>
             </div>
 
@@ -407,11 +381,18 @@
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Lead Technician In-Charge</label>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-500">Lead Technician In-Charge</label>
+                                <a href="{{ route('admin.users.create', ['role' => 'technician', 'return_to' => route('projects.create', ['step' => 2])]) }}" 
+                                   class="text-xs font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 inline-flex items-center gap-1 hover:underline cursor-pointer">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                                    + Add New Technician
+                                </a>
+                            </div>
                             <select name="lead_technician_id" x-model="lead_technician_id" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
                                 <option value="">Select Technician...</option>
                                 @foreach($technicians as $tech)
-                                    <option value="{{ $tech->id }}">{{ $tech->name }} ({{ ucfirst($tech->role) }})</option>
+                                    <option value="{{ $tech->id }}" @selected(session('new_technician_id') == $tech->id)>{{ $tech->name }} ({{ ucfirst($tech->role) }})</option>
                                 @endforeach
                             </select>
                         </div>
@@ -457,10 +438,10 @@
 
                 <div class="flex items-center justify-between">
                     <button type="button" @click="step = 1" class="btn-secondary text-sm">Back</button>
-                    <button type="button" @click="if(!title){ alert('Project title is required'); } else { step = 3; }" class="btn-primary text-sm px-6 py-2.5 shadow-md flex items-center gap-2">
-                        <span>Continue to Requirements</span>
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-                    </button>
+                    <div class="flex items-center gap-2">
+                        <button type="button" @click="saveDraft()" class="btn-secondary text-sm">Save Draft</button>
+                        <button type="button" @click="if(!title){ alert('Project title is required'); } else { step = 3; }" class="btn-primary text-sm px-6 py-2.5">Next</button>
+                    </div>
                 </div>
             </div>
 
@@ -690,10 +671,10 @@
 
                 <div class="flex items-center justify-between">
                     <button type="button" @click="step = 2" class="btn-secondary text-sm">Back</button>
-                    <button type="button" @click="step = 4" class="btn-primary text-sm px-6 py-2.5 shadow-md flex items-center gap-2">
-                        <span>Continue to Materials BOM</span>
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-                    </button>
+                    <div class="flex items-center gap-2">
+                        <button type="button" @click="saveDraft()" class="btn-secondary text-sm">Save Draft</button>
+                        <button type="button" @click="step = 4" class="btn-primary text-sm px-6 py-2.5">Next</button>
+                    </div>
                 </div>
             </div>
 
@@ -707,8 +688,8 @@
                             <h3 class="font-extrabold text-slate-900 dark:text-white text-base">Step 4: Bill of Materials (BOM)</h3>
                             <p class="text-xs text-slate-500 mt-0.5">Specify hardware line items and whether sourced from warehouse or local purchase</p>
                         </div>
-                        <button type="button" @click="addMaterialRow()" class="btn-secondary text-xs flex items-center gap-1">
-                            + Add Line Item
+                        <button type="button" @click="addMaterialRow()" class="btn-secondary text-xs">
+                            Add Item
                         </button>
                     </div>
 
@@ -766,12 +747,12 @@
                 <div class="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-slate-800">
                     <button type="button" @click="step = 3" class="btn-secondary text-sm">Back</button>
 
-                    <div class="flex items-center gap-3">
-                        <button type="submit" name="action" value="save_draft" class="btn-secondary text-sm">
-                            Save as Draft
+                    <div class="flex items-center gap-2">
+                        <button type="button" @click="saveDraft()" class="btn-secondary text-sm">
+                            Save Draft
                         </button>
-                        <button type="submit" name="action" value="submit" class="btn-primary text-sm shadow-md px-6 py-2.5">
-                            Submit for Admin Approval
+                        <button type="submit" name="action" value="submit" class="btn-primary text-sm px-6 py-2.5">
+                            Submit
                         </button>
                     </div>
                 </div>

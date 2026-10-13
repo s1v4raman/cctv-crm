@@ -5,12 +5,12 @@
                 <h2 class="text-xl font-bold text-slate-900 dark:text-white font-heading tracking-tight">Project Handling &amp; Tracking</h2>
             </div>
             <div class="flex items-center gap-2 flex-wrap">
-                <a href="{{ route('projects.export-csv', request()->all()) }}" class="px-3.5 py-2 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition">
+                <a href="{{ route('projects.export-csv', request()->all()) }}" class="btn-secondary">
                     Export CSV
                 </a>
                 @if(auth()->user()->isAdmin() || auth()->user()->isStaff())
-                <a href="{{ route('projects.create') }}" class="px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition">
-                    + New Project
+                <a href="{{ route('projects.create') }}" class="btn-primary">
+                    New Project
                 </a>
                 @endif
             </div>
@@ -33,94 +33,16 @@
             </div>
         @endif
 
-        {{-- 1. KPI Metrics Grid --}}
-        <div class="grid grid-cols-2 lg:grid-cols-5 gap-3">
-            {{-- Total Projects --}}
-            <a href="{{ route('projects.index') }}" class="p-3 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-blue-500 transition">
-                <span class="text-xs font-medium text-slate-500 dark:text-slate-400 block">Total Projects</span>
-                <div class="mt-1 flex items-baseline gap-2">
-                    <span class="text-2xl font-bold text-slate-900 dark:text-white">{{ $totalProjectsCount }}</span>
-                </div>
-            </a>
-
-            {{-- In Progress --}}
-            <a href="{{ route('projects.index', array_merge(request()->query(), ['status' => 'in_progress'])) }}" class="p-3 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-blue-500 transition {{ $statusFilter === 'in_progress' ? 'border-blue-500' : '' }}">
-                <span class="text-xs font-medium text-slate-500 dark:text-slate-400 block">In Progress</span>
-                <div class="mt-1 flex items-baseline gap-2">
-                    <span class="text-2xl font-bold text-slate-900 dark:text-white">{{ $inProgressCount }}</span>
-                </div>
-            </a>
-
-            {{-- Done / Completed --}}
-            <a href="{{ route('projects.index', array_merge(request()->query(), ['status' => 'completed'])) }}" class="p-3 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-blue-500 transition {{ $statusFilter === 'completed' ? 'border-blue-500' : '' }}">
-                <span class="text-xs font-medium text-slate-500 dark:text-slate-400 block">Completed</span>
-                <div class="mt-1 flex items-baseline gap-2">
-                    <span class="text-2xl font-bold text-slate-900 dark:text-white">{{ $completedCount }}</span>
-                </div>
-            </a>
-
-            {{-- Incomplete / Pending --}}
-            <a href="{{ route('projects.index', array_merge(request()->query(), ['status' => 'incompleted'])) }}" class="p-3 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-blue-500 transition {{ $statusFilter === 'incompleted' ? 'border-blue-500' : '' }}">
-                <span class="text-xs font-medium text-slate-500 dark:text-slate-400 block">Incomplete</span>
-                <div class="mt-1 flex items-baseline gap-2">
-                    <span class="text-2xl font-bold text-slate-900 dark:text-white">{{ $incompletedCount }}</span>
-                </div>
-            </a>
-
-            {{-- Pending Approval --}}
-            <a href="{{ route('projects.index', array_merge(request()->query(), ['status' => 'pending_approval'])) }}" class="p-3 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-blue-500 transition {{ $pendingApprovalCount > 0 ? 'border-amber-400' : '' }}">
-                <span class="text-xs font-medium text-slate-500 dark:text-slate-400 block">Pending Approval</span>
-                <div class="mt-1 flex items-baseline gap-2">
-                    <span class="text-2xl font-bold text-slate-900 dark:text-white">{{ $pendingApprovalCount }}</span>
-                </div>
-            </a>
-        </div>
-
-        {{-- Filter & Search Bar --}}
-        <div class="bg-white dark:bg-slate-900 rounded border border-slate-200 dark:border-slate-800 p-4 space-y-3">
-            
-            {{-- Category Filter Links --}}
-            <div class="flex items-center gap-1.5 flex-wrap pb-3 border-b border-slate-100 dark:border-slate-800 text-xs">
-                @php $isAllActive = ($typeFilter === 'all' || !$typeFilter); @endphp
-                <a href="{{ route('projects.index', array_merge(request()->query(), ['type' => 'all'])) }}"
-                   class="px-2.5 py-1.5 rounded font-medium transition {{ $isAllActive ? 'bg-blue-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200' }}">
-                    All ({{ $totalProjectsCount }})
-                </a>
-
-                @php $isAttendanceActive = ($typeFilter === 'hardware_attendance'); @endphp
-                <a href="{{ route('projects.index', array_merge(request()->query(), ['type' => 'hardware_attendance'])) }}"
-                   class="px-2.5 py-1.5 rounded font-medium transition {{ $isAttendanceActive ? 'bg-blue-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200' }}">
-                    Terminal Attendance ({{ $hardwareAttendanceCount }})
-                </a>
-
-                @php $isCctvActive = ($typeFilter === 'hardware_cctv'); @endphp
-                <a href="{{ route('projects.index', array_merge(request()->query(), ['type' => 'hardware_cctv'])) }}"
-                   class="px-2.5 py-1.5 rounded font-medium transition {{ $isCctvActive ? 'bg-blue-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200' }}">
-                    CCTV Surveillance ({{ $hardwareCctvCount }})
-                </a>
-
-                @php $isWebActive = ($typeFilter === 'software_web'); @endphp
-                <a href="{{ route('projects.index', array_merge(request()->query(), ['type' => 'software_web'])) }}"
-                   class="px-2.5 py-1.5 rounded font-medium transition {{ $isWebActive ? 'bg-blue-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200' }}">
-                    Web &amp; Apps ({{ $softwareWebCount }})
-                </a>
-
-                @php $isHybridActive = ($typeFilter === 'hybrid'); @endphp
-                <a href="{{ route('projects.index', array_merge(request()->query(), ['type' => 'hybrid'])) }}"
-                   class="px-2.5 py-1.5 rounded font-medium transition {{ $isHybridActive ? 'bg-blue-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200' }}">
-                    Hybrid Turnkey ({{ $hybridCount }})
-                </a>
-            </div>
-
-            {{-- Search & Refinement Form --}}
+        {{-- Single Filter Row --}}
+        <div class="bg-white dark:bg-slate-900 rounded border border-slate-200 dark:border-slate-800 p-3">
             <form method="GET" action="{{ route('projects.index') }}" class="flex flex-col lg:flex-row items-stretch lg:items-center gap-2">
-                <input type="hidden" name="type" value="{{ $typeFilter }}">
-                
                 {{-- Search Box --}}
-                <div class="relative flex-1">
+                <div class="relative flex-1 min-w-[240px] flex items-center">
+                    <svg class="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                     <input type="search" name="search" value="{{ $search }}"
                            placeholder="Search company, project title, or code..." 
-                           class="w-full px-3 h-[38px] text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-blue-500">
+                           style="padding-left: 2.375rem !important;"
+                           class="w-full pl-9 pr-3 h-[38px] text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-blue-500">
                 </div>
 
                 {{-- Company Filter --}}
@@ -171,11 +93,22 @@
                     </select>
                 </div>
 
+                {{-- Type Filter --}}
+                <div class="w-full sm:w-44">
+                    <select name="type" class="w-full h-[38px] px-2.5 text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white focus:outline-none focus:border-blue-500">
+                        <option value="all">All Types</option>
+                        <option value="hardware_attendance" {{ $typeFilter === 'hardware_attendance' ? 'selected' : '' }}>Terminal Attendance</option>
+                        <option value="hardware_cctv" {{ $typeFilter === 'hardware_cctv' ? 'selected' : '' }}>CCTV Surveillance</option>
+                        <option value="software_web" {{ $typeFilter === 'software_web' ? 'selected' : '' }}>Web &amp; Apps</option>
+                        <option value="hybrid" {{ $typeFilter === 'hybrid' ? 'selected' : '' }}>Hybrid Turnkey</option>
+                    </select>
+                </div>
+
                 {{-- Submit and Reset Buttons --}}
                 <div class="flex items-center gap-1.5 shrink-0">
                     <button type="submit" 
                             class="h-[38px] px-4 rounded bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition">
-                        Filter
+                        Search
                     </button>
                     @if($search || $statusFilter !== 'all' || $priorityFilter !== 'all' || ($typeFilter && $typeFilter !== 'all') || $assignedFilter || $companyFilter !== 'all')
                     <a href="{{ route('projects.index') }}" 
@@ -317,18 +250,16 @@
                                 </span>
                             @endif
 
-                            <div class="inline-flex items-center gap-1.5 justify-end text-sm">
-                                <a href="{{ route('projects.show', $project) }}" class="text-blue-600 hover:underline">View</a>
+                            <div class="table-actions inline-flex items-center gap-2 justify-end text-sm">
+                                <a href="{{ route('projects.show', $project) }}" class="action-link">View</a>
                                 @if(auth()->user()->isAdmin() || ($project->created_by === auth()->id() && in_array($project->status, ['draft', 'pending_approval'])))
-                                    <span class="text-slate-300">|</span>
-                                    <a href="{{ route('projects.edit', $project) }}" class="text-blue-600 hover:underline">Edit</a>
+                                    <a href="{{ route('projects.edit', $project) }}" class="action-link">Edit</a>
                                 @endif
                                 @if(auth()->user()->isAdmin())
-                                    <span class="text-slate-300">|</span>
                                     <form method="POST" action="{{ route('projects.destroy', $project) }}" class="inline" onsubmit="return confirm('Delete project {{ addslashes($project->project_code) }}? This cannot be undone.')">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="text-red-600 hover:underline cursor-pointer bg-transparent border-0 p-0 font-medium">Delete</button>
+                                        <button type="submit" class="danger-link">Delete</button>
                                     </form>
                                 @endif
                             </div>
@@ -337,9 +268,14 @@
                 @endforeach
             </div>
 
-            {{-- Pagination --}}
-            <div class="mt-5">
-                {{ $projects->links() }}
+            {{-- Total count shown below the table/grid --}}
+            <div class="mt-4 px-4 py-2.5 rounded border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-between text-xs text-slate-500">
+                <span class="font-medium">Total: {{ $projects->total() }}</span>
+                @if($projects->hasPages())
+                    <div>
+                        {{ $projects->links() }}
+                    </div>
+                @endif
             </div>
         @endif
 

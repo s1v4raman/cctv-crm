@@ -287,6 +287,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // SecureVision Projects Module Redesign
         Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
         Route::get('/projects/create', [ProjectController::class, 'create'])->name('projects.create');
+        Route::get('/projects/create/wizard', [ProjectController::class, 'create'])->name('projects.create.wizard');
         Route::post('/projects', [ProjectController::class, 'store'])->name('projects.store');
         Route::get('/projects/export-csv', [ProjectController::class, 'exportCsv'])->name('projects.export-csv');
         Route::get('/projects/{project}', [ProjectController::class, 'show'])->name('projects.show');
@@ -294,6 +295,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('/projects/{project}', [ProjectController::class, 'update'])->name('projects.update');
         Route::delete('/projects/{project}', [ProjectController::class, 'destroy'])->name('projects.destroy');
         Route::patch('/projects/{project}/status', [ProjectController::class, 'updateStatus'])->name('projects.updateStatus');
+        Route::post('/projects/{project}/assign-technician', [ProjectController::class, 'assignTechnician'])->name('projects.assign-technician');
         Route::post('/projects/{project}/approve', [ProjectController::class, 'approve'])->name('projects.approve');
         Route::post('/projects/{project}/reject', [ProjectController::class, 'reject'])->name('projects.reject');
         Route::post('/projects/{project}/materials', [ProjectController::class, 'addMaterial'])->name('projects.materials.store');

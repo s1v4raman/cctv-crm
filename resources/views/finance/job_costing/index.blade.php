@@ -2,15 +2,14 @@
     <x-slot name="header">
         <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
-                <h1 class="text-2xl font-bold text-[#222222]">
+                <h2 class="text-xl font-bold text-slate-900 dark:text-white">
                     Job Costing & Per-Project Profit & Loss
-                </h1>
+                </h2>
             </div>
 
             <!-- Export Portfolio CSV Button -->
             <div class="flex items-center gap-2">
-                <a href="{{ route('finance.job-costing.export-csv', request()->query()) }}"
-                   class="inline-flex items-center px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-medium rounded transition">
+                <a href="{{ route('finance.job-costing.export-csv', request()->query()) }}" class="btn-secondary">
                     Export Portfolio CSV
                 </a>
             </div>

@@ -1,8 +1,8 @@
 {{-- SecureVision Modern SaaS Sidebar Navigation Component --}}
 <aside class="w-full h-full flex flex-col justify-between shrink-0 bg-white dark:bg-[#0f172a] text-slate-700 dark:text-slate-200 select-none overflow-hidden transition-all duration-300">
     
-    {{-- Sidebar Top: Brand Logo matching Image 3 (Clean, Minimalist & Crisp Proportions) --}}
-    <div class="h-14 sm:h-16 shrink-0 flex items-center justify-between px-4 border-b border-slate-200/80 dark:border-slate-800 bg-white dark:bg-[#0f172a] transition-colors duration-200">
+    {{-- Sidebar Top: Brand Logo matching 56px fixed frame --}}
+    <div class="h-[56px] min-h-[56px] max-h-[56px] shrink-0 flex items-center justify-between px-4 border-b border-[#ddd] dark:border-slate-800 bg-white dark:bg-[#0f172a] transition-colors duration-200">
         <a href="{{ auth()->user()->role === 'technician' ? route('technician.dashboard') : (auth()->user()->isCustomer() ? route('portal.dashboard') : route('dashboard')) }}" class="flex items-center gap-2.5 group overflow-hidden">
             <img src="{{ asset('logos/logo_' . ltrim(auth()->user()->theme_accent ?? '2563eb', '#') . '.png') }}" alt="Precision IT Systems" class="crm-brand-logo h-8 w-8 object-contain group-hover:scale-105 transition-transform shrink-0" onerror="this.src='{{ asset('logo.png') }}'">
             <div :class="sidebarCollapsed ? 'lg:hidden' : ''" class="min-w-0">
@@ -509,12 +509,16 @@
     <div class="shrink-0 p-3.5 border-t border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/60 transition-colors">
         <div class="flex items-center justify-between gap-2.5" :class="sidebarCollapsed ? 'lg:justify-center' : ''">
             <div class="flex items-center gap-3 min-w-0">
-                <div class="w-9 h-9 rounded-full text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs ring-2 ring-white dark:ring-slate-800 crm-user-avatar" style="background-color: var(--crm-accent, #2563eb);">
-                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                </div>
+                @if(Auth::user()->avatar_url)
+                    <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->name }}" class="w-9 h-9 rounded-full object-cover shrink-0 shadow-xs ring-2 ring-white dark:ring-slate-800">
+                @else
+                    <div class="w-9 h-9 rounded-full text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs ring-2 ring-white dark:ring-slate-800 crm-user-avatar" style="background-color: var(--crm-accent, #2563eb);">
+                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                    </div>
+                @endif
                 <div class="min-w-0 truncate" :class="sidebarCollapsed ? 'lg:hidden' : ''">
                     <span class="block text-sm font-semibold text-slate-800 dark:text-slate-200 truncate">{{ Auth::user()->name }}</span>
-                    <span class="block text-xs text-slate-400 capitalize font-medium">{{ Auth::user()->role }}</span>
+                    <span class="block text-xs text-slate-400 font-medium truncate">{{ Auth::user()->role_title }}</span>
                 </div>
             </div>
 

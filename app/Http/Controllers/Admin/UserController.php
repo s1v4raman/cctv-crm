@@ -53,13 +53,19 @@ class UserController extends Controller
             'lead_id' => ['nullable', 'exists:leads,id'],
         ]);
 
-        User::create([
+        $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => $request->role,
             'lead_id' => $request->role === 'customer' ? $request->lead_id : null,
         ]);
+
+        if ($request->filled('return_to')) {
+            return redirect($request->return_to)
+                ->with('status', 'Technician account registered successfully.')
+                ->with('new_technician_id', $user->id);
+        }
 
         return redirect()->route('admin.users.index')
             ->with('status', 'Account registered successfully.');

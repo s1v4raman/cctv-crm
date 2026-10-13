@@ -229,4 +229,107 @@ class ProjectHardwareAndSoftwareModulesTest extends TestCase
         $this->assertStringContainsString('Terminal Camera & Attendance', $content);
         $this->assertStringContainsString('2 Terminals, 4 Cams (Hikvision)', $content);
     }
+
+    public function test_project_show_overview_displays_add_technician_button(): void
+    {
+        $project = Project::create([
+            'project_code' => 'PRJ-TECH-001',
+            'title' => 'Test Tech Integration',
+            'project_type' => 'hardware_cctv',
+            'status' => 'in_progress',
+            'priority' => 'high',
+            'budget' => 50000,
+        ]);
+
+        $response = $this->actingAs($this->admin)->get(route('projects.show', ['project' => $project, 'tab' => 'overview']));
+
+        $response->assertStatus(200);
+        $response->assertSee('+ Add New Technician');
+        $response->assertSee(route('admin.users.create', ['role' => 'technician', 'return_to' => route('projects.show', [$project->id, 'tab' => 'overview'])]));
+    }
+
+    public function test_can_assign_lead_technician_to_project(): void
+    {
+        $project = Project::create([
+            'project_code' => 'PRJ-TECH-002',
+            'title' => 'Test Tech Assignment',
+            'project_type' => 'hardware_cctv',
+            'status' => 'in_progress',
+            'priority' => 'medium',
+            'budget' => 50000,
+        ]);
+
+        $technician = \App\Models\User::factory()->create([
+            'role' => 'technician',
+            'name' => 'Ravi Kumar',
+            'email' => 'ravi.technician@example.com',
+        ]);
+
+        $response = $this->actingAs($this->admin)->post(route('projects.assign-technician', $project), [
+            'lead_technician_id' => $technician->id,
+        ]);
+
+        $response->assertRedirect(route('projects.show', ['project' => $project, 'tab' => 'overview']));
+        $this->assertDatabaseHas('projects', [
+            'id' => $project->id,
+            'lead_technician_id' => $technician->id,
+        ]);
+    }
+
+    public function test_admin_user_creation_with_return_to_redirects_back_to_project(): void
+    {
+        $project = Project::create([
+            'project_code' => 'PRJ-TECH-003',
+            'title' => 'Test Return To Project',
+            'project_type' => 'hardware_cctv',
+            'status' => 'in_progress',
+            'priority' => 'low',
+            'budget' => 40000,
+        ]);
+
+        $returnToUrl = route('projects.show', ['project' => $project, 'tab' => 'overview']);
+
+        $response = $this->actingAs($this->admin)->post(route('admin.users.store'), [
+            'name' => 'Suresh Field Tech',
+            'email' => 'suresh.field@example.com',
+            'password' => 'SecurePass123!',
+            'password_confirmation' => 'SecurePass123!',
+            'role' => 'technician',
+            'return_to' => $returnToUrl,
+        ]);
+
+        $response->assertRedirect($returnToUrl);
+        $response->assertSessionHas('status', 'Technician account registered successfully.');
+        $response->assertSessionHas('new_technician_id');
+
+        $this->assertDatabaseHas('users', [
+            'email' => 'suresh.field@example.com',
+            'role' => 'technician',
+        ]);
+    }
+
+    public function test_admin_user_creation_without_return_to_stays_in_user_accounts(): void
+    {
+        $response = $this->actingAs($this->admin)->post(route('admin.users.store'), [
+            'name' => 'Manoj Account User',
+            'email' => 'manoj.accounts@example.com',
+            'password' => 'SecurePass123!',
+            'password_confirmation' => 'SecurePass123!',
+            'role' => 'staff',
+        ]);
+
+        $response->assertRedirect(route('admin.users.index'));
+        $response->assertSessionHas('status', 'Account registered successfully.');
+    }
+
+    public function test_can_access_project_create_wizard_and_it_renders_add_technician(): void
+    {
+        $response = $this->actingAs($this->admin)->get(route('projects.create'));
+        $response->assertStatus(200);
+        $response->assertSee('+ Add New Technician');
+
+        $wizardResponse = $this->actingAs($this->admin)->get(route('projects.create.wizard'));
+        $wizardResponse->assertStatus(200);
+    }
 }
+

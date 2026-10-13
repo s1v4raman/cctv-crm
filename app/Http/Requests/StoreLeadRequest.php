@@ -30,6 +30,8 @@ class StoreLeadRequest extends FormRequest
             'site_address' => ['nullable', 'string', 'max:1000'],
             'source' => ['nullable', 'string', 'max:100'],
             'notes' => ['nullable', 'string', 'max:2000'],
+            'for_quote' => ['nullable'],
+            'return_to' => ['nullable', 'string', 'max:255'],
     
         ];
     }

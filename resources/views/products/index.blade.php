@@ -5,8 +5,8 @@
                 <h2 class="text-xl font-bold text-slate-900 dark:text-white font-heading tracking-tight">Products</h2>
             </div>
             @if(auth()->user()->isAdmin())
-            <a href="{{ route('products.create') }}" class="px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition">
-                + Add Product
+            <a href="{{ route('products.create') }}" class="btn-primary">
+                Add Product
             </a>
             @endif
         </div>
@@ -175,24 +175,21 @@
 
                                     <td class="center">
                                         @if($product->is_active)
-                                            <span class="text-xs font-bold text-emerald-600">Active</span>
+                                            <span class="status-text" style="color: #16a34a; font-weight: bold;">Active</span>
                                         @else
-                                            <span class="text-xs font-bold text-slate-400">Inactive</span>
+                                            <span class="status-text" style="color: #555555; font-weight: bold;">Inactive</span>
                                         @endif
                                     </td>
 
-                                    <td class="right whitespace-nowrap text-sm" style="text-align:right;">
+                                    <td class="right whitespace-nowrap text-sm table-actions" style="text-align:right;">
                                         @if(auth()->user()->isAdmin())
-                                            <div class="inline-flex items-center gap-1.5 justify-end">
-                                                <a href="{{ route('products.edit', $product) }}" class="text-blue-600 hover:underline">Edit</a>
-                                                <span class="text-slate-300">|</span>
-                                                <form method="POST" action="{{ route('products.destroy', $product) }}" class="inline"
-                                                      onsubmit="return confirm('Delete {{ addslashes($product->name) }}? This cannot be undone.')">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="text-red-600 hover:underline cursor-pointer bg-transparent border-0 p-0 font-medium">Delete</button>
-                                                </form>
-                                            </div>
+                                            <a href="{{ route('products.edit', $product) }}" class="action-link">Edit</a>
+                                            <form method="POST" action="{{ route('products.destroy', $product) }}" class="inline"
+                                                  onsubmit="return confirm('Delete {{ addslashes($product->name) }}? This cannot be undone.')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="danger-link">Delete</button>
+                                            </form>
                                         @else
                                             <span class="text-slate-400 text-xs">—</span>
                                         @endif
@@ -202,13 +199,17 @@
                                 <tr>
                                     <td colspan="8">
                                         <div class="empty-state">
-                                            No products yet.
+                                            No products yet
                                         </div>
                                     </td>
                                 </tr>
                             @endforelse
                         </tbody>
                     </table>
+                </div>
+
+                <div class="px-4 py-3 bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 text-sm font-medium text-slate-600 dark:text-slate-400">
+                    Total: {{ $products->total() }}
                 </div>
 
                 @if($products->hasPages())

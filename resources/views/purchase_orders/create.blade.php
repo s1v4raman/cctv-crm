@@ -1,111 +1,18 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <div>
-                <h2 class="text-xl font-bold leading-tight text-gray-900">Create Vendor Purchase Order (PO)</h2>
-            </div>
-            <a href="{{ route('purchase-orders.index') }}" class="btn-head-secondary">
-                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                Back to Purchase Orders
-            </a>
-        </div>
+        <h2 class="text-xl font-semibold leading-tight text-gray-800">Create Purchase Order</h2>
     </x-slot>
 
-    <style>
-        .pg-wrap  { background:#f1f5f9; min-height:100vh; padding:1.75rem 0 3rem; }
-        .pg-inner { max-width:1080px; margin:0 auto; padding:0 1.25rem; }
+    <div class="py-5" x-data="purchaseOrderBuilder(@js($products))">
+        <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+            <a href="{{ route('purchase-orders.index') }}" class="back-link">&larr; Back</a>
 
-        .btn-head-secondary {
-            display: inline-flex; align-items: center;
-            background-color: #ffffff; color: #334155 !important;
-            padding: 0.5rem 1rem; border-radius: 4px;
-            font-size: 0.875rem; font-weight: 500; text-decoration: none;
-            border: 1px solid #cbd5e1; box-shadow: none;
-            transition: all 0.15s ease-in-out;
-        }
-        .btn-head-secondary:hover { background-color: #f8fafc; color: #0f172a !important; border-color: #94a3b8; }
-
-        .pg-card {
-            background:#fff;
-            border-radius:4px;
-            border:1px solid #e2e8f0;
-            box-shadow:none;
-            padding: 2rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .form-label {
-            display: block; font-size: 14px; font-weight: 500;
-            text-transform: none;
-            color: #475569; margin-bottom: 0.35rem;
-        }
-        .form-input, .form-select, .form-textarea {
-            width: 100%; border: 1px solid #cbd5e1; border-radius: 4px;
-            padding: 0.5rem 0.75rem; font-size: 0.875rem; color: #1e293b;
-            background: #fff; outline: none; min-height: 38px;
-        }
-        .form-input:focus, .form-select:focus, .form-textarea:focus {
-            border-color: #2563eb; box-shadow: none;
-        }
-
-        .btn-add-item {
-            display: inline-flex; align-items: center; gap: 0.4rem;
-            padding: 0.45rem 0.85rem; border-radius: 4px;
-            font-size: 0.82rem; font-weight: 600; min-height: 36px;
-            background-color: #eff6ff; color: #2563eb !important;
-            border: 1px solid #bfdbfe; cursor: pointer;
-            transition: all 0.15s;
-        }
-        .btn-add-item:hover { background-color: #2563eb; color: #ffffff !important; }
-
-        .btn-remove-row {
-            display: inline-flex; align-items: center; justify-content: center;
-            width: 32px; height: 32px; border-radius: 4px;
-            background-color: #fef2f2; color: #dc2626 !important;
-            border: 1px solid #fecaca; cursor: pointer; transition: all .15s;
-        }
-        .btn-remove-row:hover { background-color: #dc2626; color: #ffffff !important; }
-
-        .btn-submit-primary {
-            display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
-            padding: 0.65rem 1.5rem; border-radius: 4px;
-            font-size: 0.875rem; font-weight: 600; min-height: 38px;
-            background-color: #2563eb; color: #ffffff !important;
-            border: 1px solid #1d4ed8; cursor: pointer;
-            box-shadow: none;
-            transition: background-color 0.15s;
-        }
-        .btn-submit-primary:hover { background-color: #1d4ed8; }
-
-        .btn-cancel {
-            display: inline-flex; align-items: center; justify-content: center;
-            padding: 0.65rem 1.25rem; border-radius: 4px;
-            font-size: 0.875rem; font-weight: 500; min-height: 38px;
-            background-color: #ffffff; color: #475569 !important;
-            border: 1px solid #cbd5e1; text-decoration: none;
-            transition: all 0.15s ease-in-out;
-        }
-        .btn-cancel:hover { background-color: #f8fafc; color: #0f172a !important; }
-
-        .summary-box {
-            background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px;
-            padding: 1.25rem; width: 100%; max-width: 380px; margin-left: auto;
-        }
-        .summary-row {
-            display: flex; justify-content: space-between; font-size: 0.875rem; color: #475569; padding: 0.35rem 0;
-        }
-        .summary-row.total {
-            font-size: 1.15rem; font-weight: 800; color: #0f172a; border-top: 1px solid #cbd5e1; margin-top: 0.5rem; padding-top: 0.75rem;
-        }
-
-        .error-msg { color: #dc2626; font-size: 0.78rem; margin-top: 0.35rem; font-weight: 500; }
-    </style>
-
-    <div class="pg-wrap" x-data="purchaseOrderBuilder(@js($products))">
-        <div class="pg-inner">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-bold text-gray-900">Create Purchase Order</h2>
+            </div>
 
             @if ($errors->any())
-                <div class="mb-4 p-4 rounded-[4px] bg-red-50 border border-red-200 text-red-800 text-sm font-medium">
+                <div class="mb-4 p-4 rounded-[4px] bg-red-50 border border-red-200 text-[#dc2626] text-sm">
                     <ul class="list-disc list-inside">
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
@@ -117,16 +24,14 @@
             <form method="POST" action="{{ route('purchase-orders.store') }}">
                 @csrf
 
-                {{-- Header & Supplier Selection --}}
-                <div class="pg-card">
-                    <h3 class="text-base font-bold text-gray-900 mb-4 pb-3 border-b border-gray-100 flex items-center gap-2">
-                        1. Supplier & Procurement Schedule
-                    </h3>
+                {{-- Supplier & Procurement Schedule --}}
+                <div class="crm-section mb-4">
+                    <h3>Supplier & Order Details</h3>
 
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
                         <div>
-                            <label class="form-label">Select Supplier <span class="text-red-500">*</span></label>
-                            <select name="supplier_id" required class="form-select font-bold">
+                            <label class="crm-label">Select Supplier <span class="required-marker">*</span></label>
+                            <select name="supplier_id" required class="crm-select">
                                 <option value="">-- Choose Hardware Supplier --</option>
                                 @foreach($suppliers as $supplier)
                                     <option value="{{ $supplier->id }}" @selected(old('supplier_id', $selectedSupplierId) == $supplier->id)>
@@ -134,95 +39,85 @@
                                     </option>
                                 @endforeach
                             </select>
-                            @error('supplier_id') <div class="error-msg">{{ $message }}</div> @enderror
+                            @error('supplier_id') <p class="error-text">{{ $message }}</p> @enderror
                         </div>
 
                         <div>
-                            <label class="form-label">Order Date <span class="text-red-500">*</span></label>
-                            <input type="date" name="order_date" value="{{ old('order_date', now()->format('Y-m-d')) }}" required class="form-input font-medium">
-                            @error('order_date') <div class="error-msg">{{ $message }}</div> @enderror
+                            <label class="crm-label">Order Date <span class="required-marker">*</span></label>
+                            <input type="date" name="order_date" value="{{ old('order_date', now()->format('Y-m-d')) }}" required class="crm-input">
+                            @error('order_date') <p class="error-text">{{ $message }}</p> @enderror
                         </div>
 
                         <div>
-                            <label class="form-label">Expected Delivery Date</label>
-                            <input type="date" name="expected_delivery_date" value="{{ old('expected_delivery_date', now()->addDays(5)->format('Y-m-d')) }}" class="form-input font-medium">
-                            @error('expected_delivery_date') <div class="error-msg">{{ $message }}</div> @enderror
+                            <label class="crm-label">Expected Delivery Date</label>
+                            <input type="date" name="expected_delivery_date" value="{{ old('expected_delivery_date', now()->addDays(5)->format('Y-m-d')) }}" class="crm-input">
+                            @error('expected_delivery_date') <p class="error-text">{{ $message }}</p> @enderror
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label class="form-label">Initial PO Status</label>
-                            <select name="status" class="form-select">
-                                <option value="ordered" @selected(old('status', 'ordered') === 'ordered')>Ordered (Issued to Vendor)</option>
-                                <option value="draft" @selected(old('status') === 'draft')>Draft (Under Review)</option>
+                            <label class="crm-label">Initial PO Status</label>
+                            <select name="status" class="crm-select">
+                                <option value="ordered" @selected(old('status', 'ordered') === 'ordered')>Ordered</option>
+                                <option value="draft" @selected(old('status') === 'draft')>Draft</option>
                             </select>
                         </div>
                         <div>
-                            <label class="form-label">Procurement / Delivery Notes</label>
-                            <input type="text" name="notes" value="{{ old('notes') }}" placeholder="e.g. Delivery to Central Warehouse, Attention: Warehouse Manager" class="form-input">
+                            <label class="crm-label">Procurement / Delivery Notes</label>
+                            <input type="text" name="notes" value="{{ old('notes') }}" placeholder="e.g. Delivery to Central Warehouse" class="crm-input">
                         </div>
                     </div>
                 </div>
 
                 {{-- Line Items --}}
-                <div class="pg-card">
-                    <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
-                        <div>
-                            <h3 class="text-base font-bold text-gray-900">
-                                2. Ordered Line Items
-                            </h3>
-                            <p class="text-xs text-gray-500 mt-0.5">Select products from catalog to automatically pull cost price, or enter custom line items</p>
-                        </div>
-                        <button type="button" @click="addItem()" class="btn-add-item">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-                            + Add Item
-                        </button>
+                <div class="crm-section mb-4">
+                    <div class="flex items-center justify-between pb-3 border-b border-[#ddd] mb-4">
+                        <h3 style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">Ordered Line Items</h3>
+                        <button type="button" @click="addItem()" class="btn-secondary">Add Item</button>
                     </div>
 
                     <div class="overflow-x-auto mb-4">
-                        <table class="w-full text-left border-collapse">
+                        <table class="crm-table">
                             <thead>
-                                <tr class="bg-gray-50 border-b border-gray-200 text-[11px] font-bold text-gray-600 uppercase tracking-wider">
-                                    <th class="py-2.5 px-3">Catalog Product</th>
-                                    <th class="py-2.5 px-3 min-w-[180px]">Item Description <span class="text-red-500">*</span></th>
-                                    <th class="py-2.5 px-3 min-w-[110px]">SKU / Model</th>
-                                    <th class="py-2.5 px-3 text-right min-w-[120px]">Unit Cost (₹) <span class="text-red-500">*</span></th>
-                                    <th class="py-2.5 px-3 text-right min-w-[100px]">Qty <span class="text-red-500">*</span></th>
-                                    <th class="py-2.5 px-3 text-right min-w-[120px]">Total (₹)</th>
-                                    <th class="py-2.5 px-2 text-center w-12"></th>
+                                <tr>
+                                    <th>Catalog Product</th>
+                                    <th style="min-width: 180px;">Item Description</th>
+                                    <th style="min-width: 110px;">SKU / Model</th>
+                                    <th class="text-right" style="min-width: 120px;">Unit Cost (₹)</th>
+                                    <th class="text-right" style="min-width: 100px;">Qty</th>
+                                    <th class="text-right" style="min-width: 120px;">Total (₹)</th>
+                                    <th class="text-center" style="width: 60px;">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <template x-for="(item, index) in items" :key="index">
-                                    <tr class="border-b border-gray-100">
-                                        <td class="py-2 px-2">
-                                            <select :name="`items[${index}][product_id]`" x-model="item.product_id" @change="onProductSelect(index)" class="form-select text-xs">
+                                    <tr>
+                                        <td>
+                                            <select :name="`items[${index}][product_id]`" x-model="item.product_id" @change="onProductSelect(index)" class="crm-select">
                                                 <option value="">-- Custom / Non-Catalog --</option>
                                                 <template x-for="prod in catalogProducts" :key="prod.id">
                                                     <option :value="prod.id" x-text="`${prod.name} (${prod.sku})`"></option>
                                                 </template>
                                             </select>
                                         </td>
-                                        <td class="py-2 px-2">
-                                            <input type="text" :name="`items[${index}][item_name]`" x-model="item.item_name" required placeholder="Item description" class="form-input text-xs font-semibold">
+                                        <td>
+                                            <input type="text" :name="`items[${index}][item_name]`" x-model="item.item_name" required placeholder="e.g. 4MP Dome Camera" class="crm-input">
                                         </td>
-                                        <td class="py-2 px-2">
-                                            <input type="text" :name="`items[${index}][sku]`" x-model="item.sku" placeholder="SKU/Model" class="form-input text-xs font-mono">
+                                        <td>
+                                            <input type="text" :name="`items[${index}][sku]`" x-model="item.sku" placeholder="e.g. DS-2CD2143G2" class="crm-input">
                                         </td>
-                                        <td class="py-2 px-2 text-right">
-                                            <input type="number" step="0.01" min="0" :name="`items[${index}][unit_cost]`" x-model.number="item.unit_cost" required class="form-input text-xs text-right font-bold">
+                                        <td class="text-right">
+                                            <input type="number" step="0.01" min="0" :name="`items[${index}][unit_cost]`" x-model.number="item.unit_cost" required class="crm-input text-right">
                                         </td>
-                                        <td class="py-2 px-2 text-right">
-                                            <input type="number" min="1" :name="`items[${index}][quantity_ordered]`" x-model.number="item.quantity_ordered" required class="form-input text-xs text-right font-bold">
+                                        <td class="text-right">
+                                            <input type="number" min="1" :name="`items[${index}][quantity_ordered]`" x-model.number="item.quantity_ordered" required class="crm-input text-right">
                                         </td>
-                                        <td class="py-2 px-2 text-right font-extrabold text-xs text-gray-900">
+                                        <td class="text-right font-bold text-gray-900">
                                             ₹<span x-text="formatNumber(item.unit_cost * item.quantity_ordered)"></span>
                                         </td>
-                                        <td class="py-2 px-2 text-center">
-                                            <button type="button" @click="removeItem(index)" class="btn-remove-row" title="Remove row">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                            </button>
+                                        <td class="text-center">
+                                            <button type="button" @click="removeItem(index)" class="danger-link" style="background: none; border: none; cursor: pointer;">Delete</button>
                                         </td>
                                     </tr>
                                 </template>
@@ -231,48 +126,46 @@
                     </div>
 
                     {{-- Financials Summary Box --}}
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-gray-100 items-end">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-[#ddd] items-end">
                         <div class="space-y-4">
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label class="form-label">GST Tax (%)</label>
-                                    <input type="number" step="0.01" min="0" max="100" name="tax_percent" x-model.number="taxPercent" class="form-input font-bold">
+                                    <label class="crm-label">GST Tax (%)</label>
+                                    <input type="number" step="0.01" min="0" max="100" name="tax_percent" x-model.number="taxPercent" class="crm-input" placeholder="e.g. 18">
                                 </div>
                                 <div>
-                                    <label class="form-label">Shipping / Freight (₹)</label>
-                                    <input type="number" step="0.01" min="0" name="shipping_cost" x-model.number="shippingCost" class="form-input font-bold">
+                                    <label class="crm-label">Shipping / Freight (₹)</label>
+                                    <input type="number" step="0.01" min="0" name="shipping_cost" x-model.number="shippingCost" class="crm-input" placeholder="e.g. 250">
                                 </div>
                             </div>
                         </div>
 
                         <div>
-                            <div class="summary-box">
-                                <div class="summary-row">
+                            <div class="crm-section" style="background: #f8fafc; margin-bottom: 0;">
+                                <div class="flex justify-between py-1 text-sm text-gray-700">
                                     <span>Subtotal:</span>
                                     <span class="font-bold text-gray-900">₹<span x-text="formatNumber(subtotal())"></span></span>
                                 </div>
-                                <div class="summary-row">
+                                <div class="flex justify-between py-1 text-sm text-gray-700">
                                     <span>GST Tax (<span x-text="taxPercent"></span>%):</span>
                                     <span class="font-bold text-gray-900">₹<span x-text="formatNumber(taxAmount())"></span></span>
                                 </div>
-                                <div class="summary-row">
+                                <div class="flex justify-between py-1 text-sm text-gray-700">
                                     <span>Shipping Cost:</span>
                                     <span class="font-bold text-gray-900">₹<span x-text="formatNumber(shippingCost)"></span></span>
                                 </div>
-                                <div class="summary-row total">
+                                <div class="flex justify-between py-2 text-base font-bold text-gray-900 border-t border-[#ddd] mt-2">
                                     <span>Grand Total:</span>
-                                    <span class="text-blue-600">₹<span x-text="formatNumber(grandTotal())"></span></span>
+                                    <span>₹<span x-text="formatNumber(grandTotal())"></span></span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="flex items-center justify-end gap-3">
-                    <a href="{{ route('purchase-orders.index') }}" class="btn-cancel">Cancel</a>
-                    <button type="submit" class="btn-submit-primary">
-                        Issue Purchase Order
-                    </button>
+                <div class="form-actions">
+                    <a href="{{ route('purchase-orders.index') }}" class="btn-secondary">Cancel</a>
+                    <button type="submit" class="btn-primary">Save</button>
                 </div>
             </form>
 

@@ -1,131 +1,39 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-                <h2 class="text-xl font-extrabold leading-tight text-slate-900 dark:text-white font-heading tracking-tight">Add Product</h2>
-                <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">CCTV cameras, accessories, and installation services catalogue</p>
-            </div>
-            <a href="{{ route('products.index') }}"
-               class="inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline">
-                &larr; Back to Products
-            </a>
+        <div>
+            <a href="{{ route('products.index') }}" class="back-link">&larr; Back</a>
+            <h2 class="text-xl font-bold text-slate-900 dark:text-white mt-1">Add Product</h2>
         </div>
     </x-slot>
 
-    <style>
-        .pg-wrap  { min-height:100vh; padding:1.75rem 0 3rem; }
-        .pg-inner { max-width:680px; margin:0 auto; padding:0 1.25rem; }
-
-        .form-card {
-            background:#fff; border-radius:1rem;
-            border:1px solid #e2e8f0;
-            box-shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.04);
-            padding:1.75rem;
-        }
-        html.dark .form-card {
-            background:#0f172a;
-            border-color:#334155;
-            box-shadow:0 10px 25px -5px rgba(0,0,0,0.5);
-        }
-        .form-group { margin-bottom:1.25rem; }
-        .form-label {
-            display:block; font-size:.78rem; font-weight:700;
-            text-transform:uppercase; letter-spacing:.05em; color:#64748b; margin-bottom:.45rem;
-        }
-        html.dark .form-label { color:#94a3b8; }
-        .form-input, .form-select, .form-textarea {
-            width:100%; border:1px solid #cbd5e1; border-radius:.6rem;
-            padding:.6rem .9rem; font-size:.87rem; color:#0f172a;
-            background:#f8fafc; outline:none; box-sizing:border-box;
-            transition:border-color .15s, background .15s; font-family:inherit;
-        }
-        html.dark .form-input, html.dark .form-select, html.dark .form-textarea {
-            background:#060913; border-color:#334155; color:#f8fafc;
-        }
-        .form-input:focus, .form-select:focus, .form-textarea:focus {
-            border-color:#2563eb; background:#fff; box-shadow:0 0 0 3px rgba(37,99,235,.15);
-        }
-        html.dark .form-input:focus, html.dark .form-select:focus, html.dark .form-textarea:focus {
-            background:#0b1120; border-color:#3b82f6;
-        }
-        .form-textarea { min-height:100px; resize:vertical; }
-        .form-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
-        @media(max-width:480px){ .form-row { grid-template-columns:1fr; } }
-        .form-error { font-size:.75rem; color:#be123c; margin-top:.35rem; }
-
-        .toggle-wrap {
-            display:flex; align-items:center; gap:.75rem; padding:.75rem 1rem;
-            border-radius:.6rem; border:1px solid #e2e8f0; background:#f8fafc; cursor:pointer;
-        }
-        html.dark .toggle-wrap { border-color:#334155; background:#060913; }
-        .toggle-wrap input[type=checkbox] { width:1.1rem; height:1.1rem; accent-color:#2563eb; cursor:pointer; }
-        .toggle-text { font-size:.85rem; font-weight:600; color:#1e293b; }
-        html.dark .toggle-text { color:#f8fafc; }
-        .toggle-sub  { font-size:.72rem; color:#94a3b8; margin-top:.1rem; }
-
-        .price-hint {
-            margin-top:.4rem; padding:.55rem .85rem;
-            background:#f0fdf4; border-radius:.5rem;
-            font-size:.75rem; color:#15803d; font-weight:600;
-        }
-        html.dark .price-hint {
-            background:rgba(16,185,129,0.15); color:#34d399; border:1px solid rgba(16,185,129,0.25);
-        }
-
-        .btn-primary {
-            flex:1; padding:.75rem; border-radius:.75rem;
-            background:#2563eb;
-            color:#fff; font-size:.9rem; font-weight:700;
-            border:none; cursor:pointer; font-family:inherit;
-            transition:opacity .15s, transform .1s;
-        }
-        .btn-primary:hover { background:#1d4ed8; transform:translateY(-1px); }
-        .btn-secondary {
-            padding:.75rem 1.5rem; border-radius:.75rem;
-            background:#f8fafc; color:#64748b; font-size:.9rem; font-weight:600;
-            border:1px solid #e2e8f0; cursor:pointer; font-family:inherit;
-            text-decoration:none; display:inline-flex; align-items:center;
-            transition:background .15s;
-        }
-        html.dark .btn-secondary { background:#1e293b; color:#cbd5e1; border-color:#334155; }
-        .btn-secondary:hover { background:#f1f5f9; }
-        html.dark .btn-secondary:hover { background:#334155; color:#fff; }
-
-        .section-divider {
-            border:none; border-top:1px solid #e2e8f0; margin:1.25rem 0;
-        }
-        html.dark .section-divider { border-color:#1e293b; }
-    </style>
-
-    <div class="pg-wrap">
-        <div class="pg-inner">
+    <div class="py-6 px-4 sm:px-6 max-w-[800px] mx-auto">
 
             @if ($errors->any())
-                <div style="margin-bottom:1.25rem;padding:.85rem 1.25rem;border-radius:.75rem;background:#fff1f2;border:1px solid #fecaca;color:#be123c;font-size:.85rem;">
-                    @foreach ($errors->all() as $error)
-                        <div>{{ $error }}</div>
-                    @endforeach
+                <div class="mb-4 p-4 rounded-[4px] bg-red-50 border border-red-200 text-[#dc2626] text-sm">
+                    <ul class="list-disc list-inside">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
                 </div>
             @endif
 
-            <div class="form-card">
+            <div class="crm-section">
                 <form method="POST" action="{{ route('products.store') }}">
                     @csrf
 
-                    <div class="form-row">
-                        <div class="form-group" style="grid-column:1/-1">
-                            <label class="form-label">Product / Service Name <span style="color:#ef4444">*</span></label>
-                            <input type="text" name="name" value="{{ old('name') }}"
-                                   class="form-input" placeholder="e.g. Hikvision 4MP Bullet Camera" required>
-                            @error('name') <p class="form-error">{{ $message }}</p> @enderror
-                        </div>
+                    <h3 class="mb-4 pb-2 border-b border-[#ddd] font-bold text-base text-gray-900">Product Information</h3>
+
+                    <div class="mb-4">
+                        <label class="crm-label">Product / Service Name <span class="required-marker">*</span></label>
+                        <input type="text" name="name" value="{{ old('name') }}" class="crm-input" placeholder="e.g. Hikvision 4MP Bullet Camera" required>
+                        @error('name') <p class="error-text">{{ $message }}</p> @enderror
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Category</label>
-                            <input type="text" name="category" list="category-list" value="{{ old('category') }}"
-                                   class="form-input" placeholder="e.g. Camera, NVR/DVR, Storage HDD">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="crm-label">Category</label>
+                            <input type="text" name="category" list="category-list" value="{{ old('category') }}" class="crm-input" placeholder="e.g. Camera">
                             <datalist id="category-list">
                                 <option value="Camera">
                                 <option value="NVR/DVR">
@@ -136,12 +44,11 @@
                                 <option value="Connectors & Accessories">
                                 <option value="Installation Service">
                             </datalist>
-                            @error('category') <p class="form-error">{{ $message }}</p> @enderror
+                            @error('category') <p class="error-text">{{ $message }}</p> @enderror
                         </div>
-                        <div class="form-group">
-                            <label class="form-label">Brand / Manufacturer</label>
-                            <input type="text" name="brand" list="brand-list" value="{{ old('brand') }}"
-                                   class="form-input" placeholder="e.g. Hikvision, Dahua, CP Plus, Western Digital">
+                        <div>
+                            <label class="crm-label">Brand / Manufacturer</label>
+                            <input type="text" name="brand" list="brand-list" value="{{ old('brand') }}" class="crm-input" placeholder="e.g. Hikvision">
                             <datalist id="brand-list">
                                 <option value="Hikvision">
                                 <option value="Dahua">
@@ -152,106 +59,88 @@
                                 <option value="TP-Link">
                                 <option value="D-Link">
                             </datalist>
-                            @error('brand') <p class="form-error">{{ $message }}</p> @enderror
+                            @error('brand') <p class="error-text">{{ $message }}</p> @enderror
                         </div>
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Model Number</label>
-                            <input type="text" name="model_no" value="{{ old('model_no') }}"
-                                   class="form-input" placeholder="e.g. DS-2CD2043G2-I, WD40PURZ">
-                            @error('model_no') <p class="form-error">{{ $message }}</p> @enderror
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="crm-label">Model Number</label>
+                            <input type="text" name="model_no" value="{{ old('model_no') }}" class="crm-input" placeholder="e.g. DS-2CD2043G2-I">
+                            @error('model_no') <p class="error-text">{{ $message }}</p> @enderror
                         </div>
-                        <div class="form-group">
-                            <label class="form-label">SKU / Product Code</label>
-                            <input type="text" name="sku" value="{{ old('sku') }}"
-                                   class="form-input" placeholder="HK-4MP-BULLET">
-                            @error('sku') <p class="form-error">{{ $message }}</p> @enderror
+                        <div>
+                            <label class="crm-label">SKU / Product Code</label>
+                            <input type="text" name="sku" value="{{ old('sku') }}" class="crm-input" placeholder="e.g. HK-4MP-BULLET">
+                            @error('sku') <p class="error-text">{{ $message }}</p> @enderror
                         </div>
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Unit <span style="color:#ef4444">*</span></label>
-                            <select name="unit" class="form-select" required>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="crm-label">Unit <span class="required-marker">*</span></label>
+                            <select name="unit" class="crm-select" required>
                                 @foreach (['Nos', 'Mtr', 'Box', 'Set', 'Job', 'Pkt', 'Roll'] as $unit)
                                     <option value="{{ $unit }}" @selected(old('unit', 'Nos') === $unit)>{{ $unit }}</option>
                                 @endforeach
                             </select>
-                            @error('unit') <p class="form-error">{{ $message }}</p> @enderror
+                            @error('unit') <p class="error-text">{{ $message }}</p> @enderror
                         </div>
-                        <div class="form-group">
-                            <label class="form-label">Default Warranty (Months)</label>
-                            <input type="number" name="default_warranty_months" value="{{ old('default_warranty_months', 24) }}" min="0" class="form-input" placeholder="24">
-                        </div>
-                    </div>
-
-                    <hr class="section-divider">
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Opening Stock Quantity</label>
-                            <input type="number" name="stock_quantity" value="{{ old('stock_quantity', 0) }}" min="0" class="form-input" placeholder="0">
-                            @error('stock_quantity') <p class="form-error">{{ $message }}</p> @enderror
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Low Stock Alert Level</label>
-                            <input type="number" name="min_stock_alert" value="{{ old('min_stock_alert', 5) }}" min="0" class="form-input" placeholder="5">
-                            @error('min_stock_alert') <p class="form-error">{{ $message }}</p> @enderror
+                        <div>
+                            <label class="crm-label">Default Warranty (Months)</label>
+                            <input type="number" name="default_warranty_months" value="{{ old('default_warranty_months', 24) }}" min="0" class="crm-input" placeholder="e.g. 24">
                         </div>
                     </div>
 
-                    <hr class="section-divider">
+                    <h3 class="mb-4 pb-2 border-b border-[#ddd] font-bold text-base text-gray-900 mt-6">Inventory & Pricing</h3>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Cost Price (₹) <span style="color:#ef4444">*</span></label>
-                            <input type="number" name="cost_price" id="cost_price"
-                                   value="{{ old('cost_price', 0) }}"
-                                   min="0" step="0.01" class="form-input"
-                                   placeholder="2900.00" required oninput="calcMargin()">
-                            @error('cost_price') <p class="form-error">{{ $message }}</p> @enderror
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="crm-label">Opening Stock Quantity</label>
+                            <input type="number" name="stock_quantity" value="{{ old('stock_quantity', 0) }}" min="0" class="crm-input" placeholder="e.g. 10">
+                            @error('stock_quantity') <p class="error-text">{{ $message }}</p> @enderror
                         </div>
-                        <div class="form-group">
-                            <label class="form-label">Sale Price (₹) <span style="color:#ef4444">*</span></label>
-                            <input type="number" name="unit_price" id="unit_price"
-                                   value="{{ old('unit_price', 0) }}"
-                                   min="0" step="0.01" class="form-input"
-                                   placeholder="3500.00" required oninput="calcMargin()">
-                            @error('unit_price') <p class="form-error">{{ $message }}</p> @enderror
+                        <div>
+                            <label class="crm-label">Low Stock Alert Level</label>
+                            <input type="number" name="min_stock_alert" value="{{ old('min_stock_alert', 5) }}" min="0" class="crm-input" placeholder="e.g. 5">
+                            @error('min_stock_alert') <p class="error-text">{{ $message }}</p> @enderror
                         </div>
                     </div>
-                    <div id="margin-hint" class="price-hint" style="display:none"></div>
 
-                    <hr class="section-divider">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="crm-label">Cost Price (₹) <span class="required-marker">*</span></label>
+                            <input type="number" name="cost_price" id="cost_price" value="{{ old('cost_price', 0) }}" min="0" step="0.01" class="crm-input" placeholder="e.g. 2900" required oninput="calcMargin()">
+                            @error('cost_price') <p class="error-text">{{ $message }}</p> @enderror
+                        </div>
+                        <div>
+                            <label class="crm-label">Sale Price (₹) <span class="required-marker">*</span></label>
+                            <input type="number" name="unit_price" id="unit_price" value="{{ old('unit_price', 0) }}" min="0" step="0.01" class="crm-input" placeholder="e.g. 3500" required oninput="calcMargin()">
+                            @error('unit_price') <p class="error-text">{{ $message }}</p> @enderror
+                        </div>
+                    </div>
+                    <div id="margin-hint" class="text-sm font-bold text-[#16a34a] mb-4" style="display: none;"></div>
 
-                    <div class="form-group">
-                        <label class="form-label">Description / Specification</label>
-                        <textarea name="description" class="form-textarea"
-                                  placeholder="4MP outdoor IR bullet camera, 30m night vision…">{{ old('description') }}</textarea>
+                    <div class="mb-4">
+                        <label class="crm-label">Description / Specification</label>
+                        <textarea name="description" rows="3" class="crm-input" style="height: auto;" placeholder="e.g. 4MP outdoor IR bullet camera, 30m night vision">{{ old('description') }}</textarea>
                     </div>
 
-                    <div class="form-group">
+                    <div class="mb-4">
                         <input type="hidden" name="is_active" value="0">
-                        <label class="toggle-wrap">
-                            <input type="checkbox" name="is_active" value="1"
-                                   @checked((int)old('is_active', 1) === 1)>
-                            <div>
-                                <div class="toggle-text">Available for new quotations</div>
-                                <div class="toggle-sub">Uncheck to hide this product from the quotation builder</div>
-                            </div>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" name="is_active" value="1" @checked((int)old('is_active', 1) === 1) class="w-4 h-4 rounded-[4px] border-[#ccc] text-[#2563eb]">
+                            <span class="text-sm text-gray-700">Available for new quotations</span>
                         </label>
                     </div>
 
-                    <div style="display:flex;gap:.75rem;margin-top:1.5rem">
+                    <div class="form-actions">
                         <a href="{{ route('products.index') }}" class="btn-secondary">Cancel</a>
-                        <button type="submit" class="btn-primary">Save Product</button>
+                        <button type="submit" class="btn-primary">Save</button>
                     </div>
                 </form>
             </div>
         </div>
-    </div>
 
     <script>
     function calcMargin() {
@@ -263,8 +152,7 @@
             const pct    = ((profit / sale) * 100).toFixed(1);
             hint.style.display = 'block';
             hint.textContent   = `Margin: ₹${profit.toLocaleString('en-IN')} (${pct}%)`;
-            hint.style.background = profit >= 0 ? '#f0fdf4' : '#fff1f2';
-            hint.style.color      = profit >= 0 ? '#15803d' : '#be123c';
+            hint.className = profit >= 0 ? 'text-sm font-bold text-[#16a34a] mb-4' : 'text-sm font-bold text-[#dc2626] mb-4';
         } else {
             hint.style.display = 'none';
         }

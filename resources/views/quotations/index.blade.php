@@ -5,8 +5,8 @@
                 <h2 class="text-xl font-bold text-slate-900 dark:text-white font-heading tracking-tight">Quotations</h2>
             </div>
             @if(auth()->user()->isAdmin() || auth()->user()->isStaff())
-            <a href="{{ route('quotations.create-general') }}" class="px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition">
-                + New Quotation
+            <a href="{{ route('quotations.create-general') }}" class="btn-primary">
+                Create Quotation
             </a>
             @endif
         </div>
@@ -133,40 +133,6 @@
                 </div>
             @endif
 
-            {{-- Pipeline Summary Strip --}}
-            @php
-                $statusCounts = $quotations->getCollection()
-                    ->groupBy('status')
-                    ->map->count();
-                $allCounts = $quotations->total() > 0
-                    ? \App\Models\Quotation::selectRaw('status, count(*) as total')
-                        ->groupBy('status')->pluck('total','status')
-                    : collect();
-            @endphp
-
-            <div class="pip-grid">
-                <div class="pip-card">
-                    <div class="pip-label">Draft</div>
-                    <div class="pip-count">{{ $allCounts['draft'] ?? 0 }}</div>
-                </div>
-                <div class="pip-card">
-                    <div class="pip-label">Sent</div>
-                    <div class="pip-count">{{ $allCounts['sent'] ?? 0 }}</div>
-                </div>
-                <div class="pip-card">
-                    <div class="pip-label">Accepted</div>
-                    <div class="pip-count">{{ $allCounts['accepted'] ?? 0 }}</div>
-                </div>
-                <div class="pip-card">
-                    <div class="pip-label">Rejected</div>
-                    <div class="pip-count">{{ $allCounts['rejected'] ?? 0 }}</div>
-                </div>
-                <div class="pip-card">
-                    <div class="pip-label">Expired</div>
-                    <div class="pip-count">{{ $allCounts['expired'] ?? 0 }}</div>
-                </div>
-            </div>
-
             {{-- Table Card --}}
             <div class="pg-card">
 
@@ -249,32 +215,39 @@
                                     </td>
 
                                     <td>
-                                        <span class="badge badge-{{ $quotation->status }}">
+                                        @php
+                                            $qStatusColors = [
+                                                'accepted' => '#16a34a',
+                                                'sent'     => '#d97706',
+                                                'draft'    => '#555555',
+                                                'rejected' => '#dc2626',
+                                                'declined' => '#dc2626',
+                                                'expired'  => '#dc2626',
+                                            ];
+                                            $sColor = $qStatusColors[strtolower($quotation->status)] ?? '#555555';
+                                        @endphp
+                                        <span class="status-text" style="color: {{ $sColor }}; font-weight: bold;">
                                             {{ ucfirst($quotation->status) }}
                                         </span>
                                     </td>
-                                    <td class="right whitespace-nowrap text-sm" style="text-align:right;">
-                                        <div class="inline-flex items-center gap-1.5 justify-end">
-                                            <a href="{{ route('quotations.show', $quotation) }}" class="text-blue-600 hover:underline">View</a>
-                                            <span class="text-slate-300">|</span>
-                                            <a href="{{ route('quotations.edit', $quotation) }}" class="text-blue-600 hover:underline">Edit</a>
-                                            @if($quotation->status === 'draft')
-                                                <span class="text-slate-300">|</span>
-                                                <form method="POST" action="{{ route('quotations.destroy', $quotation) }}" class="inline"
-                                                      onsubmit="return confirm('Delete {{ addslashes($quotation->quotation_no) }}? This cannot be undone.')">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="text-red-600 hover:underline cursor-pointer bg-transparent border-0 p-0 font-medium">Delete</button>
-                                                </form>
-                                            @endif
-                                        </div>
+                                    <td class="right whitespace-nowrap text-sm table-actions" style="text-align:right;">
+                                        <a href="{{ route('quotations.show', $quotation) }}" class="action-link">View</a>
+                                        <a href="{{ route('quotations.edit', $quotation) }}" class="action-link">Edit</a>
+                                        @if($quotation->status === 'draft')
+                                            <form method="POST" action="{{ route('quotations.destroy', $quotation) }}" class="inline"
+                                                  onsubmit="return confirm('Delete {{ addslashes($quotation->quotation_no) }}? This cannot be undone.')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="danger-link">Delete</button>
+                                            </form>
+                                        @endif
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
                                     <td colspan="7">
                                         <div class="empty-state">
-                                            No quotations yet.
+                                            No quotations yet
                                         </div>
                                     </td>
                                 </tr>
@@ -283,9 +256,15 @@
                     </table>
                 </div>
 
-                @if($quotations->hasPages())
-                    <div class="pg-links">{{ $quotations->links() }}</div>
-                @endif
+                {{-- Total count shown below the table --}}
+                <div class="px-4 py-2.5 border-t border-[#ddd] dark:border-slate-800 bg-[#fbfbfb] dark:bg-slate-900/60 flex items-center justify-between text-xs text-slate-500">
+                    <span class="font-medium">Total: {{ $quotations->total() }}</span>
+                    @if($quotations->hasPages())
+                        <div class="text-xs">
+                            {{ $quotations->links() }}
+                        </div>
+                    @endif
+                </div>
             </div>
 
         </div>

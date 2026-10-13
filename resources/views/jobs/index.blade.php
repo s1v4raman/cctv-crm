@@ -5,8 +5,8 @@
                 <h2 class="text-xl font-bold text-slate-900 dark:text-white font-heading tracking-tight">Installation Jobs</h2>
             </div>
             @if(auth()->user()->isAdmin() || auth()->user()->isStaff())
-            <a href="{{ route('jobs.create-general') }}" class="px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition">
-                + New Job
+            <a href="{{ route('jobs.create-general') }}" class="btn-primary">
+                New Job
             </a>
             @endif
         </div>
@@ -195,16 +195,16 @@
                                         </div>
                                     </td>
 
-                                    <td>
+                                    <td class="col-name" style="min-width: 200px;">
                                         <div class="cell-name">
                                             {{ $job->quotation->lead->customer_name }}
                                         </div>
                                         @if($job->quotation->lead->site_address)
-                                            <div class="cell-sub">{{ Str::limit($job->quotation->lead->site_address, 40) }}</div>
+                                            <div class="cell-sub">{{ $job->quotation->lead->site_address }}</div>
                                         @endif
                                     </td>
 
-                                    <td>
+                                    <td class="col-date whitespace-nowrap">
                                         @if($job->scheduled_date)
                                             <span class="date-chip">
                                                 {{ $job->scheduled_date->format('d M Y') }}
@@ -214,7 +214,7 @@
                                         @endif
                                     </td>
 
-                                    <td>
+                                    <td class="col-tech whitespace-nowrap">
                                         @if($job->assignedTechnician)
                                             <span class="tech-tag">{{ $job->assignedTechnician->name }}</span>
                                         @else
@@ -223,20 +223,31 @@
                                     </td>
 
                                     <td>
-                                        <span class="badge badge-{{ $job->status }}">
+                                        @php
+                                            $jobStatusColors = [
+                                                'completed'   => '#16a34a',
+                                                'in_progress' => '#d97706',
+                                                'scheduled'   => '#d97706',
+                                                'assigned'    => '#d97706',
+                                                'pending'     => '#d97706',
+                                                'cancelled'   => '#dc2626',
+                                            ];
+                                            $sColor = $jobStatusColors[strtolower($job->status)] ?? '#d97706';
+                                        @endphp
+                                        <span class="status-text" style="color: {{ $sColor }}; font-weight: bold;">
                                             {{ ucfirst(str_replace('_', ' ', $job->status)) }}
                                         </span>
                                     </td>
 
-                                    <td class="whitespace-nowrap text-right text-sm" style="text-align:right;">
-                                        <a href="{{ route('jobs.show', $job) }}" class="text-blue-600 hover:underline">View</a>
+                                    <td class="whitespace-nowrap text-right text-sm table-actions" style="text-align:right;">
+                                        <a href="{{ route('jobs.show', $job) }}" class="action-link">View</a>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
                                     <td colspan="6">
                                         <div class="empty-state">
-                                            No installation jobs yet.
+                                            No jobs yet
                                         </div>
                                     </td>
                                 </tr>
@@ -245,9 +256,15 @@
                     </table>
                 </div>
 
-                @if($jobs->hasPages())
-                    <div class="pg-links">{{ $jobs->links() }}</div>
-                @endif
+                {{-- Total count shown below the table --}}
+                <div class="px-4 py-2.5 border-t border-[#ddd] dark:border-slate-800 bg-[#fbfbfb] dark:bg-slate-900/60 flex items-center justify-between text-xs text-slate-500">
+                    <span class="font-medium">Total: {{ $jobs->total() }}</span>
+                    @if($jobs->hasPages())
+                        <div class="text-xs">
+                            {{ $jobs->links() }}
+                        </div>
+                    @endif
+                </div>
             </div>
         </div>
     </div>

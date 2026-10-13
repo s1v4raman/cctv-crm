@@ -27,24 +27,24 @@
             {{-- Navigation Sub-Tabs --}}
             <div class="flex items-center gap-2 border-b border-white/10 pb-4 overflow-x-auto">
                 <a href="{{ route('analytics.index', ['range' => $selectedRange]) }}"
-                   class="px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap {{ request()->routeIs('analytics.index') ? 'crm-tab-active text-white font-black shadow-xs' : 'text-slate-400 hover:text-white bg-[#0F172A] border border-white/10' }}"
-                   @if(request()->routeIs('analytics.index')) style="background-color: var(--crm-accent, #2563eb); color: #fff;" @endif>
+                   class="crm-filter-tab filter-tab px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap {{ request()->routeIs('analytics.index') ? 'active crm-tab-active text-white font-black shadow-xs' : 'text-slate-400 hover:text-white bg-[#0F172A] border border-white/10' }}"
+                   @if(request()->routeIs('analytics.index')) style="background-color: #2563eb !important; color: #ffffff !important;" @endif>
                     📊 Executive Overview
                 </a>
                 <a href="{{ route('analytics.technicians', ['range' => $selectedRange]) }}"
-                   class="px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap {{ request()->routeIs('analytics.technicians') ? 'crm-tab-active text-white font-black shadow-xs' : 'text-slate-400 hover:text-white bg-[#0F172A] border border-white/10' }}"
-                   @if(request()->routeIs('analytics.technicians')) style="background-color: var(--crm-accent, #2563eb); color: #fff;" @endif>
-                    🛠️ Technician Performance (FTFR & MTTR)
+                   class="crm-filter-tab filter-tab px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap {{ request()->routeIs('analytics.technicians') ? 'active crm-tab-active text-white font-black shadow-xs' : 'text-slate-400 hover:text-white bg-[#0F172A] border border-white/10' }}"
+                   @if(request()->routeIs('analytics.technicians')) style="background-color: #2563eb !important; color: #ffffff !important;" @endif>
+                    🛠️ Technician Performance (FTFR &amp; MTTR)
                 </a>
                 <a href="{{ route('analytics.mrr-retention', ['range' => $selectedRange]) }}"
-                   class="px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap {{ request()->routeIs('analytics.mrr-retention') ? 'crm-tab-active text-white font-black shadow-xs' : 'text-slate-400 hover:text-white bg-[#0F172A] border border-white/10' }}"
-                   @if(request()->routeIs('analytics.mrr-retention')) style="background-color: var(--crm-accent, #2563eb); color: #fff;" @endif>
-                    📈 Monthly Revenue & AMC Retention
+                   class="crm-filter-tab filter-tab px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap {{ request()->routeIs('analytics.mrr-retention') ? 'active crm-tab-active text-white font-black shadow-xs' : 'text-slate-400 hover:text-white bg-[#0F172A] border border-white/10' }}"
+                   @if(request()->routeIs('analytics.mrr-retention')) style="background-color: #2563eb !important; color: #ffffff !important;" @endif>
+                    📈 Monthly Revenue &amp; AMC Retention
                 </a>
                 <a href="{{ route('analytics.cost-profit', ['range' => $selectedRange]) }}"
-                   class="px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap {{ request()->routeIs('analytics.cost-profit') ? 'crm-tab-active text-white font-black shadow-xs' : 'text-slate-400 hover:text-white bg-[#0F172A] border border-white/10' }}"
-                   @if(request()->routeIs('analytics.cost-profit')) style="background-color: var(--crm-accent, #2563eb); color: #fff;" @endif>
-                    💰 Cost & Profit Analysis
+                   class="crm-filter-tab filter-tab px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap {{ request()->routeIs('analytics.cost-profit') ? 'active crm-tab-active text-white font-black shadow-xs' : 'text-slate-400 hover:text-white bg-[#0F172A] border border-white/10' }}"
+                   @if(request()->routeIs('analytics.cost-profit')) style="background-color: #2563eb !important; color: #ffffff !important;" @endif>
+                    💰 Cost &amp; Profit Analysis
                 </a>
             </div>
 

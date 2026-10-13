@@ -1,266 +1,167 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div class="flex items-center gap-3">
-                <a href="{{ route('suppliers.index') }}" class="btn-back">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                </a>
+        <div>
+            <a href="{{ route('suppliers.index') }}" class="back-link">&larr; Back</a>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-1">
                 <div>
-                    <div class="flex items-center gap-2">
-                        <h2 class="text-xl font-bold leading-tight text-gray-900">{{ $supplier->name }}</h2>
+                    <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ $supplier->name }}</h2>
+                    <div class="flex items-center gap-2 text-xs mt-1">
                         @if($supplier->is_active)
-                            <span class="text-xs font-bold text-emerald-600">Active</span>
+                            <span class="status-won">Active</span>
                         @else
-                            <span class="text-xs font-bold text-slate-500">Inactive</span>
+                            <span class="status-lost">Inactive</span>
+                        @endif
+                        @if($supplier->company_name)
+                            <span class="text-slate-400">&bull;</span>
+                            <span class="text-slate-600 dark:text-slate-300">{{ $supplier->company_name }}</span>
                         @endif
                     </div>
-                    @if($supplier->company_name)
-                        <p class="text-xs text-gray-500 mt-0.5">{{ $supplier->company_name }}</p>
+                </div>
+
+                <div class="flex items-center gap-2 flex-wrap">
+                    <a href="{{ route('suppliers.edit', $supplier) }}" class="btn-secondary">
+                        Edit
+                    </a>
+                    <a href="{{ route('purchase-orders.create', ['supplier_id' => $supplier->id]) }}" class="btn-primary">
+                        New Purchase Order
+                    </a>
+                    @if(auth()->user()->isAdmin())
+                        <form method="POST" action="{{ route('suppliers.destroy', $supplier) }}" onsubmit="return confirm('Are you sure you want to delete supplier {{ addslashes($supplier->name) }}?');" class="inline">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="danger-link p-0 bg-transparent border-0 cursor-pointer text-xs ml-2">Delete</button>
+                        </form>
                     @endif
                 </div>
-            </div>
-            <div class="flex items-center gap-2">
-                <a href="{{ route('purchase-orders.create', ['supplier_id' => $supplier->id]) }}" class="btn-create-po">
-                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-                    New Purchase Order
-                </a>
-                <a href="{{ route('suppliers.edit', $supplier) }}" class="btn-head-secondary">
-                    Edit
-                </a>
             </div>
         </div>
     </x-slot>
 
-    <style>
-        .pg-wrap  { background:#f1f5f9; min-height:100vh; padding:1.75rem 0 3rem; }
-        .pg-inner { max-width:1180px; margin:0 auto; padding:0 1.25rem; }
+    <div class="max-w-[1200px] mx-auto space-y-6">
+        @if (session('status'))
+            <div class="p-3 bg-white dark:bg-slate-900 border border-emerald-500 text-emerald-700 dark:text-emerald-300 rounded text-xs">
+                {{ session('status') }}
+            </div>
+        @endif
 
-        .btn-back {
-            display: inline-flex; align-items: center; justify-content: center;
-            width: 36px; height: 36px; border-radius: 0.5rem;
-            background-color: #ffffff; color: #475569 !important;
-            border: 1px solid #cbd5e1; text-decoration: none;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-        }
-        .btn-back:hover { background-color: #f8fafc; color: #0f172a !important; }
-
-        .btn-create-po {
-            display: inline-flex; align-items: center;
-            background-color: #4f46e5; color: #ffffff !important;
-            padding: 0.5rem 1rem; border-radius: 0.5rem;
-            font-size: 0.875rem; font-weight: 700; text-decoration: none;
-            box-shadow: 0 1px 2px rgba(79, 70, 229, 0.2);
-            transition: all 0.15s ease-in-out; border: 1px solid #4338ca;
-        }
-        .btn-create-po:hover { background-color: #4338ca; transform: translateY(-1px); }
-
-        .btn-head-secondary {
-            display: inline-flex; align-items: center;
-            background-color: #ffffff; color: #334155 !important;
-            padding: 0.5rem 1rem; border-radius: 0.5rem;
-            font-size: 0.875rem; font-weight: 600; text-decoration: none;
-            border: 1px solid #cbd5e1; box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-            transition: all 0.15s ease-in-out;
-        }
-        .btn-head-secondary:hover { background-color: #f8fafc; color: #0f172a !important; }
-
-        .pg-card {
-            background:#fff;
-            border-radius:1rem;
-            border:1px solid rgba(99,102,241,.08);
-            box-shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(99,102,241,.06);
-            overflow:hidden; margin-bottom:1.5rem;
-        }
-
-        .section-head {
-            display:flex; align-items:center; justify-content:space-between;
-            padding:1.1rem 1.5rem; border-bottom:1px solid #f1f5f9;
-        }
-        .section-head h3 { font-size:1rem; font-weight:700; color:#0f172a; }
-
-        .info-grid {
-            display:grid; grid-template-columns:repeat(2,1fr);
-            gap:1.5rem; padding:1.5rem;
-        }
-        @media(min-width:640px){ .info-grid{grid-template-columns:repeat(4,1fr);} }
-        .info-label {
-            font-size:.72rem; font-weight:700; text-transform:uppercase;
-            letter-spacing:.06em; color:#64748b; margin-bottom:.35rem;
-        }
-        .info-value { font-size:.95rem; font-weight:700; color:#0f172a; }
-
-        .p-table { width:100%; border-collapse:collapse; }
-        .p-table thead { background:#f8fafc; border-bottom: 1px solid #e2e8f0; }
-        .p-table thead th {
-            padding:.75rem 1.25rem; font-size:.67rem; font-weight:700;
-            text-transform:uppercase; letter-spacing:.06em; color:#64748b; text-align:left;
-        }
-        .p-table thead th.right { text-align:right; }
-        .p-table tbody tr { border-bottom:1px solid #f1f5f9; }
-        .p-table tbody td { padding:.85rem 1.25rem; font-size:.85rem; color:#374151; vertical-align:middle; }
-        .p-table tbody td.right { text-align:right; }
-
-        .badge-status {
-            display:inline-flex; padding:.25rem .65rem; border-radius:9999px;
-            font-size:.72rem; font-weight:700; text-transform:capitalize;
-        }
-        .status-draft              { background:#f1f5f9; color:#475569; border:1px solid #e2e8f0; }
-        .status-ordered            { background:#e0e7ff; color:#3730a3; border:1px solid #c7d2fe; }
-        .status-partially_received { background:#fef3c7; color:#92400e; border:1px solid #fde68a; }
-        .status-received           { background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; }
-        .status-cancelled          { background:#fef2f2; color:#991b1b; border:1px solid #fecaca; }
-
-        /* Dark mode overrides */
-        html.dark .pg-wrap { background: #060913; }
-        html.dark .pg-card { background: #0f172a; border-color: #1e293b; color: #f8fafc; }
-        html.dark .section-head { border-bottom-color: #1e293b; }
-        html.dark .section-head h3 { color: #f8fafc; }
-        html.dark .info-value { color: #f8fafc !important; }
-        html.dark .info-label { color: #94a3b8 !important; }
-        html.dark .po-table thead { background: #0b1120; border-bottom-color: #1e293b; }
-        html.dark .po-table thead th { color: #94a3b8; }
-        html.dark .po-table tbody tr { border-bottom-color: #1e293b; }
-        html.dark .po-table tbody tr:hover { background: #1e293b; }
-        html.dark .po-table tbody td { color: #cbd5e1; }
-    </style>
-
-    <div class="pg-wrap">
-        <div class="pg-inner">
-
-            @if (session('status'))
-                <div class="mb-4 p-4 rounded-xl bg-green-50 border border-green-200 text-green-800 text-sm font-medium flex items-center gap-2">
-                    <svg class="w-5 h-5 text-green-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                    <span>{{ session('status') }}</span>
-                </div>
-            @endif
-
-            {{-- Vendor Details Overview --}}
-            <div class="pg-card">
-                <div class="section-head">
-                    <h3>Vendor Profile & Contact Information</h3>
-                </div>
-                <div class="info-grid">
-                    <div>
-                        <div class="info-label">Contact Person</div>
-                        <div class="info-value">{{ $supplier->contact_person ?: '—' }}</div>
-                    </div>
-                    <div>
-                        <div class="info-label">Phone / WhatsApp</div>
-                        <div class="info-value">
-                            @if($supplier->phone)
-                                <a href="tel:{{ $supplier->phone }}" class="text-indigo-600 hover:underline">{{ $supplier->phone }}</a>
-                            @else — @endif
-                        </div>
-                    </div>
-                    <div>
-                        <div class="info-label">Email</div>
-                        <div class="info-value text-xs font-semibold">
-                            @if($supplier->email)
-                                <a href="mailto:{{ $supplier->email }}" class="text-indigo-600 hover:underline">{{ $supplier->email }}</a>
-                            @else — @endif
-                        </div>
-                    </div>
-                    <div>
-                        <div class="info-label">GSTIN / Tax ID</div>
-                        <div class="info-value font-mono text-xs">{{ $supplier->gst_number ?: 'Unregistered' }}</div>
-                    </div>
-                    <div>
-                        <div class="info-label">Payment Terms</div>
-                        <div class="info-value text-sm">{{ $supplier->payment_terms ?: 'Standard' }}</div>
-                    </div>
-                    <div>
-                        <div class="info-label">Total PO Spend</div>
-                        <div class="info-value text-emerald-600 font-extrabold">₹{{ number_format($supplier->totalPurchaseVolume(), 2) }}</div>
-                    </div>
-                    <div class="col-span-2">
-                        <div class="info-label">Warehouse Address</div>
-                        <div class="info-value text-xs font-normal text-gray-700">
-                            {{ $supplier->address ?: '—' }}{{ $supplier->city ? ", {$supplier->city}" : '' }}{{ $supplier->state ? ", {$supplier->state}" : '' }}
-                        </div>
-                    </div>
-                    @if($supplier->notes)
-                    <div class="col-span-4">
-                        <div class="info-label">Vendor Notes & Bank Details</div>
-                        <div class="info-value font-normal text-xs text-gray-700 whitespace-pre-line">{{ $supplier->notes }}</div>
-                    </div>
+        {{-- Section 1: Two-column table profile (5.5) --}}
+        <div class="crm-section">
+            <h3>Supplier Information</h3>
+            <table class="crm-table">
+                <tbody>
+                    <tr>
+                        <td class="w-1/3 text-slate-500 font-bold">Supplier Name</td>
+                        <td class="w-2/3 text-slate-900 dark:text-white">{{ $supplier->name }}</td>
+                    </tr>
+                    @if($supplier->company_name)
+                        <tr>
+                            <td class="text-slate-500 font-bold">Company Name</td>
+                            <td class="text-slate-900 dark:text-white">{{ $supplier->company_name }}</td>
+                        </tr>
                     @endif
-                </div>
-            </div>
+                    <tr>
+                        <td class="text-slate-500 font-bold">Contact Person</td>
+                        <td class="text-slate-900 dark:text-white">{{ $supplier->contact_person ?: 'Not specified' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-slate-500 font-bold">Phone Number</td>
+                        <td class="text-slate-900 dark:text-white">
+                            @if($supplier->phone)
+                                <a href="tel:{{ $supplier->phone }}" class="action-link">{{ $supplier->phone }}</a>
+                            @else
+                                Not specified
+                            @endif
+                        </td>
+                    </tr>
+                    @if($supplier->email)
+                        <tr>
+                            <td class="text-slate-500 font-bold">Email Address</td>
+                            <td class="text-slate-900 dark:text-white">{{ $supplier->email }}</td>
+                        </tr>
+                    @endif
+                    <tr>
+                        <td class="text-slate-500 font-bold">GSTIN / Tax ID</td>
+                        <td class="text-slate-900 dark:text-white font-mono">{{ $supplier->gst_number ?: 'Unregistered' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-slate-500 font-bold">Payment Terms</td>
+                        <td class="text-slate-900 dark:text-white">{{ $supplier->payment_terms ?: 'Standard' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-slate-500 font-bold">Total Procurement Volume</td>
+                        <td class="text-slate-900 dark:text-white font-bold">&#8377;{{ number_format($supplier->totalPurchaseVolume(), 2) }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-slate-500 font-bold">Warehouse Address</td>
+                        <td class="text-slate-900 dark:text-white">
+                            {{ $supplier->address ?: 'Not specified' }}{{ $supplier->city ? ", {$supplier->city}" : '' }}{{ $supplier->state ? ", {$supplier->state}" : '' }}
+                        </td>
+                    </tr>
+                    @if($supplier->notes)
+                        <tr>
+                            <td class="text-slate-500 font-bold">Notes & Bank Details</td>
+                            <td class="text-slate-900 dark:text-white whitespace-pre-line">{{ $supplier->notes }}</td>
+                        </tr>
+                    @endif
+                </tbody>
+            </table>
+        </div>
 
-            {{-- Purchase Orders History --}}
-            <div class="pg-card">
-                <div class="section-head">
-                    <div>
-                        <h3>Procurement History</h3>
-                        <p class="text-xs text-gray-500 mt-0.5">All purchase orders issued to {{ $supplier->name }}</p>
-                    </div>
-                    <a href="{{ route('purchase-orders.create', ['supplier_id' => $supplier->id]) }}" class="text-xs font-bold text-indigo-600 hover:underline">
-                        + New Order &rarr;
-                    </a>
-                </div>
-                
-                <div class="overflow-x-auto">
-                    <table class="p-table">
-                        <thead>
-                            <tr>
-                                <th>PO Number</th>
-                                <th>Order Date</th>
-                                <th>Items</th>
-                                <th class="right">Total Amount</th>
-                                <th class="right">Paid</th>
-                                <th>PO Status</th>
-                                <th class="right">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($supplier->purchaseOrders as $po)
-                            <tr>
-                                <td>
-                                    <a href="{{ route('purchase-orders.show', $po) }}" class="font-mono font-bold text-indigo-600 hover:underline">
-                                        {{ $po->po_number }}
-                                    </a>
-                                </td>
-                                <td>
-                                    <div class="text-xs font-semibold text-gray-800">{{ $po->order_date->format('d M Y') }}</div>
-                                    @if($po->expected_delivery_date)
-                                        <div class="text-[11px] text-gray-400">Exp: {{ $po->expected_delivery_date->format('d M Y') }}</div>
-                                    @endif
-                                </td>
-                                <td class="text-xs">
-                                    <span class="font-bold text-gray-800">{{ $po->items->count() }} line items</span>
-                                    <div class="text-[11px] text-gray-500 truncate max-w-xs">
-                                        {{ $po->items->pluck('item_name')->join(', ') }}
-                                    </div>
-                                </td>
-                                <td class="right font-bold text-gray-900">
-                                    ₹{{ number_format($po->total, 2) }}
-                                </td>
-                                <td class="right font-semibold text-emerald-600">
-                                    ₹{{ number_format($po->amount_paid, 2) }}
-                                </td>
-                                <td>
-                                    <span class="badge-status status-{{ $po->status }}">
-                                        {{ str_replace('_', ' ', $po->status) }}
-                                    </span>
-                                </td>
-                                <td class="right">
-                                    <a href="{{ route('purchase-orders.show', $po) }}" class="text-xs font-bold text-indigo-600 hover:underline">
-                                        View & Inward &rarr;
-                                    </a>
-                                </td>
-                            </tr>
-                            @empty
-                            <tr>
-                                <td colspan="7" class="text-center py-8 text-sm text-gray-400">
-                                    No purchase orders created for this supplier yet.
-                                </td>
-                            </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
+        {{-- Section 2: Procurement History Table (5.3) --}}
+        <div class="crm-section">
+            <h3>Procurement History</h3>
+            <div class="overflow-x-auto">
+                <table class="crm-table">
+                    <thead>
+                        <tr>
+                            <th class="nowrap">PO Number</th>
+                            <th class="nowrap">Order Date</th>
+                            <th>Line Items</th>
+                            <th>Total Amount</th>
+                            <th>Paid Amount</th>
+                            <th class="nowrap">Status</th>
+                            <th class="nowrap">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($supplier->purchaseOrders as $po)
+                        <tr>
+                            <td class="nowrap">
+                                <a href="{{ route('purchase-orders.show', $po) }}" class="action-link font-mono">
+                                    {{ $po->po_number }}
+                                </a>
+                            </td>
+                            <td class="nowrap">
+                                {{ $po->order_date->format('d M Y') }}
+                            </td>
+                            <td>
+                                {{ $po->items->count() }} items ({{ $po->items->pluck('item_name')->take(2)->join(', ') }})
+                            </td>
+                            <td class="font-bold text-slate-900 dark:text-white">
+                                &#8377;{{ number_format($po->total, 2) }}
+                            </td>
+                            <td class="text-slate-900 dark:text-white">
+                                &#8377;{{ number_format($po->amount_paid, 2) }}
+                            </td>
+                            <td class="nowrap">
+                                <span class="status-{{ $po->status === 'received' ? 'completed' : ($po->status === 'cancelled' ? 'cancelled' : 'progress') }}">
+                                    {{ ucfirst(str_replace('_', ' ', $po->status)) }}
+                                </span>
+                            </td>
+                            <td class="nowrap">
+                                <a href="{{ route('purchase-orders.show', $po) }}" class="action-link">View</a>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="7" class="text-center py-6 text-slate-500 text-sm">
+                                No purchase orders yet
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
-
         </div>
     </div>
 </x-app-layout>

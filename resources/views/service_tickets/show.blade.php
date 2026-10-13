@@ -1,341 +1,180 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div class="flex items-center gap-3">
-                <a href="{{ route('service-tickets.index') }}" class="px-2.5 py-1.5 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded text-xs font-medium transition">
-                    &larr; Back
-                </a>
-                <div>
-                    <div class="flex items-center gap-2.5 flex-wrap">
-                        <h1 class="text-xl font-bold text-slate-900 dark:text-white">
-                            Ticket #{{ $ticket->ticket_no }}
-                        </h1>
-                        <span class="font-bold text-xs capitalize
-                            @if($ticket->status === 'resolved' || $ticket->status === 'closed') text-emerald-600 dark:text-emerald-400
-                            @elseif($ticket->status === 'in_progress') text-amber-600 dark:text-amber-400
-                            @elseif($ticket->status === 'assigned') text-blue-600 dark:text-blue-400
-                            @elseif($ticket->status === 'cancelled') text-rose-600 dark:text-rose-400
-                            @else text-slate-600 dark:text-slate-400 @endif">
-                            {{ $ticket->status_label }}
-                        </span>
-                        <span class="text-slate-300 dark:text-slate-600">&bull;</span>
-                        <span class="font-bold text-xs uppercase
-                            @if($ticket->priority === 'critical') text-rose-600 dark:text-rose-400
-                            @elseif($ticket->priority === 'high') text-amber-600 dark:text-amber-400
-                            @elseif($ticket->priority === 'medium') text-blue-600 dark:text-blue-400
-                            @else text-slate-600 dark:text-slate-400 @endif">
-                            {{ $ticket->priority_label }} Priority
-                        </span>
-                    </div>
-                    <div class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                        Logged on {{ $ticket->created_at->format('d M Y, h:i A') }} by {{ $ticket->createdBy?->name ?? 'System' }}
-                    </div>
+        <div>
+            <a href="{{ route('service-tickets.index') }}" class="back-link">&larr; Back</a>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-1">
+                <div class="flex items-center gap-3">
+                    <h2 class="text-xl font-bold text-slate-900 dark:text-white">Ticket #{{ $ticket->ticket_no }}</h2>
+                    @php
+                        $ticketStatusColor = '#2563eb';
+                        if (in_array($ticket->status, ['resolved', 'closed'])) $ticketStatusColor = '#16a34a';
+                        elseif ($ticket->status === 'cancelled') $ticketStatusColor = '#dc2626';
+                    @endphp
+                    <span class="text-sm font-bold" style="color: {{ $ticketStatusColor }};">
+                        {{ $ticket->status_label }}
+                    </span>
                 </div>
-            </div>
 
-            <div class="flex items-center gap-2 flex-wrap">
-                <a href="{{ route('service-tickets.edit', $ticket) }}"
-                   class="px-3 py-1.5 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-medium transition">
-                    Edit
-                </a>
-                @if(auth()->user()->isAdmin())
-                    <form method="POST" action="{{ route('service-tickets.destroy', $ticket) }}" onsubmit="return confirm('Are you sure you want to delete this service ticket?');">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit"
-                                class="px-3 py-1.5 rounded border border-rose-300 dark:border-rose-800 bg-white dark:bg-slate-800 hover:bg-rose-50 dark:hover:bg-rose-950 text-rose-600 dark:text-rose-400 text-xs font-medium transition">
-                            Delete
-                        </button>
-                    </form>
-                @endif
+                <div class="flex items-center gap-2 flex-wrap">
+                    @if($ticket->lead)
+                        <a href="{{ route('leads.show', $ticket->lead) }}" class="btn-secondary">
+                            Customer Profile
+                        </a>
+                    @endif
+                    @if($ticket->amcContract)
+                        <a href="{{ route('amcs.show', $ticket->amcContract) }}" class="btn-secondary">
+                            AMC Contract
+                        </a>
+                    @endif
+                    <a href="{{ route('service-tickets.edit', $ticket) }}" class="btn-secondary">
+                        Edit Details
+                    </a>
+                    @if(auth()->user()->isAdmin())
+                        <form method="POST" action="{{ route('service-tickets.destroy', $ticket) }}" onsubmit="return confirm('Are you sure you want to delete this service ticket?');" class="inline">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="danger-link p-0 bg-transparent border-0 cursor-pointer text-xs ml-2">
+                                Delete
+                            </button>
+                        </form>
+                    @endif
+                </div>
             </div>
         </div>
     </x-slot>
 
-    <div class="py-6 space-y-6">
+    <div class="max-w-[1200px] mx-auto space-y-6">
         @if (session('success'))
-            <div class="p-3 rounded border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-900 dark:text-emerald-200 text-xs font-medium">
+            <div class="p-3 bg-white dark:bg-slate-900 border border-emerald-500 text-emerald-700 dark:text-emerald-300 rounded text-xs">
                 {{ session('success') }}
             </div>
         @endif
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6" x-data="{ showAcceptModal: false, showRejectModal: false }">
-            
-            <!-- Left 2 Cols: Complaint & Troubleshooting / Resolution Details -->
-            <div class="lg:col-span-2 space-y-6">
-
-                {{-- Admin Accept / Reject Decision Banner --}}
-                @if($ticket->status === 'open')
-                    <div class="bg-white dark:bg-slate-900 border border-amber-300 dark:border-amber-700 rounded p-4">
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                            <div>
-                                <h2 class="text-sm font-bold text-slate-900 dark:text-white">Service Request Awaiting Decision</h2>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Review premises issue and assign certified technician or decline request.</p>
-                            </div>
-                            <div class="flex items-center gap-2 shrink-0">
-                                <button type="button" @click="showAcceptModal = true" class="px-3.5 py-1.5 bg-[#2563eb] hover:bg-blue-700 text-white font-medium text-xs rounded transition">
-                                    Accept &amp; Dispatch
-                                </button>
-                                <button type="button" @click="showRejectModal = true" class="px-3.5 py-1.5 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-medium text-xs rounded transition">
-                                    Decline
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                @elseif($ticket->status === 'cancelled')
-                    <div class="bg-white dark:bg-slate-900 border border-rose-300 dark:border-rose-700 rounded p-4">
-                        <h2 class="text-sm font-bold text-rose-700 dark:text-rose-400">Request Declined / Cancelled</h2>
-                        <p class="text-xs text-slate-600 dark:text-slate-400 mt-1 whitespace-pre-line">{{ $ticket->resolution_notes ?: 'This request was cancelled or declined.' }}</p>
-                    </div>
-                @elseif($ticket->status === 'assigned' || $ticket->status === 'in_progress')
-                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div>
-                            <h2 class="text-sm font-bold text-slate-900 dark:text-white">Work Order Dispatched</h2>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                                Assigned to <strong class="text-slate-900 dark:text-white">{{ $ticket->assignedTechnician?->name ?? 'Technician' }}</strong> 
-                                @if($ticket->scheduled_date) &bull; Visit: {{ $ticket->scheduled_date->format('d M Y') }} @endif
-                            </p>
-                        </div>
-                        <button type="button" @click="showRejectModal = true" class="px-3 py-1.5 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-medium rounded transition">
-                            Cancel / Decline
-                        </button>
-                    </div>
-                @endif
-                
-                <!-- Breakdown Complaint Overview Card -->
-                <div class="bg-white dark:bg-slate-900 rounded border border-slate-200 dark:border-slate-800 p-4 space-y-3">
-                    <div class="flex items-start justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-                        <div>
-                            <span class="text-xs font-medium text-slate-500 dark:text-slate-400 block">
-                                {{ $ticket->issue_type_label }}
+        {{-- Section 1: Ticket & Complaint Overview (Two-column detail table) --}}
+        <div class="crm-section">
+            <h3>Ticket Details</h3>
+            <table class="crm-table">
+                <tbody>
+                    <tr>
+                        <td class="w-1/3 text-slate-500 font-bold">Ticket Number</td>
+                        <td class="w-2/3 text-slate-900 dark:text-white font-mono">{{ $ticket->ticket_no }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-slate-500 font-bold">Subject / Title</td>
+                        <td class="text-slate-900 dark:text-white">{{ $ticket->title }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-slate-500 font-bold">Issue Category</td>
+                        <td class="text-slate-900 dark:text-white">{{ $ticket->issue_type_label }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-slate-500 font-bold">Status</td>
+                        <td class="text-slate-900 dark:text-white">
+                            <span class="status-{{ in_array($ticket->status, ['resolved', 'closed']) ? 'completed' : ($ticket->status === 'cancelled' ? 'cancelled' : ($ticket->status === 'in_progress' ? 'progress' : 'quoted')) }}">
+                                {{ $ticket->status_label }}
                             </span>
-                            <h2 class="text-base font-bold text-slate-900 dark:text-white mt-0.5">{{ $ticket->title }}</h2>
-                        </div>
-                        <div class="text-right">
-                            <span class="text-[11px] text-slate-500 dark:text-slate-400 block">Billing Category</span>
-                            <span class="text-xs font-bold text-slate-900 dark:text-white">
-                                @if($ticket->billing_type === 'warranty_amc') Warranty / AMC
-                                @elseif($ticket->billing_type === 'billable') Billable (&#8377;{{ number_format($ticket->cost, 2) }})
-                                @else Free @endif
-                            </span>
-                        </div>
-                    </div>
-
-                    <div>
-                        <h3 class="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Reported Symptoms &amp; Notes</h3>
-                        <div class="text-xs text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/60 p-3 rounded border border-slate-200 dark:border-slate-700 whitespace-pre-line">
-                            {{ $ticket->description }}
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Repair & Troubleshooting Logs Card -->
-                <div class="bg-white dark:bg-slate-900 rounded border border-slate-200 dark:border-slate-800 p-4 space-y-3">
-                    <h2 class="text-sm font-bold text-slate-900 dark:text-white">Technician Troubleshooting &amp; Fix Summary</h2>
-
-                    <div class="space-y-3 text-xs">
-                        <div>
-                            <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">
-                                Troubleshooting Notes / Root Cause
-                            </label>
-                            <div class="text-xs text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/60 p-3 rounded border border-slate-200 dark:border-slate-700 min-h-[40px] whitespace-pre-line">
-                                {{ $ticket->troubleshooting_notes ?: 'No troubleshooting notes recorded yet.' }}
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">
-                                Replacement Parts Used
-                            </label>
-                            <div class="text-xs text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/60 p-3 rounded border border-slate-200 dark:border-slate-700 min-h-[35px] whitespace-pre-line">
-                                {{ $ticket->parts_replaced ?: 'No replacement parts logged.' }}
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">
-                                Final Resolution
-                            </label>
-                            <div class="text-xs text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/60 p-3 rounded border border-slate-200 dark:border-slate-700 min-h-[40px] whitespace-pre-line">
-                                {{ $ticket->resolution_notes ?: 'Pending technician resolution.' }}
-                            </div>
-                        </div>
-
-                        @if($ticket->resolved_at)
-                            <div class="text-xs text-emerald-600 dark:text-emerald-400 font-bold pt-1">
-                                Resolved on {{ $ticket->resolved_at->format('d M Y, h:i A') }}
-                            </div>
-                        @endif
-                    </div>
-                </div>
-
-                <!-- Quick Status / Resolution Update Form -->
-                <div class="bg-white dark:bg-slate-900 rounded border border-slate-200 dark:border-slate-800 p-4 space-y-3">
-                    <h2 class="text-sm font-bold text-slate-900 dark:text-white">
-                        Update Resolution / Status
-                    </h2>
-                    <form method="POST" action="{{ route('service-tickets.updateStatus', $ticket) }}" class="space-y-3 text-xs">
-                        @csrf
-                        @method('PATCH')
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div>
-                                <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">Status</label>
-                                <select name="status" class="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded px-3 py-2 text-xs focus:outline-none" style="height: 38px;">
-                                    @foreach(\App\Models\ServiceTicket::statusOptions() as $k => $label)
-                                        <option value="{{ $k }}" {{ $ticket->status === $k ? 'selected' : '' }}>{{ $label }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">Parts Replaced (Optional)</label>
-                                <input type="text" name="parts_replaced" value="{{ $ticket->parts_replaced }}" placeholder="e.g. 1x SMPS Adapter"
-                                    class="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded px-3 py-2 text-xs focus:outline-none" style="height: 38px;">
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">Troubleshooting Notes</label>
-                            <textarea name="troubleshooting_notes" rows="2" placeholder="Diagnosis notes..."
-                                class="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded px-3 py-2 text-xs focus:outline-none">{{ $ticket->troubleshooting_notes }}</textarea>
-                        </div>
-
-                        <div>
-                            <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">Resolution Summary</label>
-                            <textarea name="resolution_notes" rows="2" placeholder="Action taken..."
-                                class="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded px-3 py-2 text-xs focus:outline-none">{{ $ticket->resolution_notes }}</textarea>
-                        </div>
-
-                        <div class="flex justify-end">
-                            <button type="submit"
-                                    class="px-4 py-2 bg-[#2563eb] hover:bg-blue-700 text-white font-medium text-xs rounded transition">
-                                Save Update
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Right Column: Customer Info, Technician & Schedule, AMC -->
-            <div class="space-y-4">
-                
-                <!-- Customer Information Card -->
-                <div class="bg-white dark:bg-slate-900 rounded border border-slate-200 dark:border-slate-800 p-4 space-y-2">
-                    <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
-                        <h2 class="text-xs font-bold text-slate-700 dark:text-slate-300">Customer &amp; Site</h2>
-                        <a href="{{ route('leads.show', $ticket->lead) }}" class="text-xs text-blue-600 hover:underline">
-                            Profile &rarr;
-                        </a>
-                    </div>
-                    <div class="space-y-2 text-xs text-slate-600 dark:text-slate-400">
-                        <div>
-                            <span class="text-slate-500 block text-[11px]">Customer Name</span>
-                            <span class="font-bold text-slate-900 dark:text-white">{{ $ticket->lead->customer_name }}</span>
-                        </div>
-                        <div>
-                            <span class="text-slate-500 block text-[11px]">Phone</span>
-                            <a href="tel:{{ $ticket->lead->phone }}" class="text-blue-600 hover:underline">
-                                {{ $ticket->lead->phone }}
-                            </a>
-                        </div>
-                        @if($ticket->lead->email)
-                            <div>
-                                <span class="text-slate-500 block text-[11px]">Email</span>
-                                <span class="text-slate-900 dark:text-white">{{ $ticket->lead->email }}</span>
-                            </div>
-                        @endif
-                        <div>
-                            <span class="text-slate-500 block text-[11px]">Site Address</span>
-                            <span class="text-slate-900 dark:text-white">{{ $ticket->lead->site_address ?: 'Not specified' }}</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Assigned Technician & Dispatch Card -->
-                <div class="bg-white dark:bg-slate-900 rounded border border-slate-200 dark:border-slate-800 p-4 space-y-3">
-                    <h2 class="text-xs font-bold text-slate-700 dark:text-slate-300 border-b border-slate-100 dark:border-slate-800 pb-2">
-                        Technician Dispatch
-                    </h2>
-
-                    @if($ticket->assignedTechnician)
-                        <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded border border-slate-200 dark:border-slate-700 text-xs">
-                            <p class="font-bold text-slate-900 dark:text-white">{{ $ticket->assignedTechnician->name }}</p>
-                            <p class="text-[11px] text-slate-400">{{ $ticket->assignedTechnician->email }}</p>
-                        </div>
-                    @else
-                        <div class="p-3 bg-amber-50 dark:bg-amber-950/40 rounded border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-200 text-xs font-medium">
-                            No technician currently assigned.
-                        </div>
-                    @endif
-
-                    <form method="POST" action="{{ route('service-tickets.assign', $ticket) }}" class="space-y-3 text-xs">
-                        @csrf
-                        <div>
-                            <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">Technician</label>
-                            <select name="assigned_technician_id" required class="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded px-3 py-2 text-xs focus:outline-none" style="height: 38px;">
-                                <option value="">-- Choose Technician --</option>
-                                @foreach($technicians as $tech)
-                                    <option value="{{ $tech->id }}" {{ $ticket->assigned_technician_id == $tech->id ? 'selected' : '' }}>
-                                        {{ $tech->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">Scheduled Date</label>
-                            <input type="date" name="scheduled_date" value="{{ $ticket->scheduled_date?->format('Y-m-d') }}"
-                                class="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded px-3 py-2 text-xs focus:outline-none" style="height: 38px;">
-                        </div>
-                        <button type="submit"
-                                class="w-full px-4 py-2 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-medium text-xs rounded transition">
-                            Update Dispatch
-                        </button>
-                    </form>
-                </div>
-
-                <!-- AMC Contract Details (if covered) -->
-                @if($ticket->amcContract)
-                    <div class="bg-white dark:bg-slate-900 rounded border border-slate-200 dark:border-slate-800 p-4 space-y-2">
-                        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
-                            <h2 class="text-xs font-bold text-slate-700 dark:text-slate-300">AMC Contract</h2>
-                            <a href="{{ route('amcs.show', $ticket->amcContract) }}" class="text-xs text-blue-600 hover:underline">
-                                View &rarr;
-                            </a>
-                        </div>
-                        <div class="text-xs text-slate-600 dark:text-slate-400 space-y-1">
-                            <p class="font-bold text-slate-900 dark:text-white">{{ $ticket->amcContract->contract_no }}</p>
-                            <p class="text-[11px] text-slate-500">
-                                Valid until: {{ $ticket->amcContract->end_date->format('d M Y') }}
-                            </p>
-                        </div>
-                    </div>
-                @endif
-            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-slate-500 font-bold">Priority</td>
+                        <td class="text-slate-900 dark:text-white">{{ $ticket->priority_label }} Priority</td>
+                    </tr>
+                    <tr>
+                        <td class="text-slate-500 font-bold">Billing Category</td>
+                        <td class="text-slate-900 dark:text-white">
+                            @if($ticket->billing_type === 'warranty_amc') Warranty / AMC
+                            @elseif($ticket->billing_type === 'billable') Billable (&#8377;{{ number_format($ticket->cost, 2) }})
+                            @else Free @endif
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-slate-500 font-bold">Reported Symptoms & Notes</td>
+                        <td class="text-slate-900 dark:text-white whitespace-pre-line">{{ $ticket->description ?: 'None specified' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-slate-500 font-bold">Logged On</td>
+                        <td class="text-slate-900 dark:text-white">{{ $ticket->created_at->format('d M Y, h:i A') }} (by {{ $ticket->createdBy?->name ?? 'System' }})</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
 
-        <!-- Accept & Approve Modal -->
-        <div x-show="showAcceptModal" 
-             style="display: none;"
-             class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60"
-             @keydown.escape.window="showAcceptModal = false">
-            
-            <div class="bg-white dark:bg-slate-900 rounded border border-slate-200 dark:border-slate-800 max-w-lg w-full p-6 space-y-4" @click.stop>
-                <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
-                    <div>
-                        <h3 class="text-sm font-bold text-slate-900 dark:text-white">Approve Work Request</h3>
-                        <p class="text-xs text-slate-500">Ticket #{{ $ticket->ticket_no }} &bull; {{ $ticket->lead->customer_name }}</p>
-                    </div>
-                    <button type="button" @click="showAcceptModal = false" class="text-slate-400 hover:text-slate-600">
-                        ✕
-                    </button>
-                </div>
+        {{-- Section 2: Customer & Premises Info (Two-column detail table) --}}
+        <div class="crm-section">
+            <h3>Customer & Premises</h3>
+            <table class="crm-table">
+                <tbody>
+                    <tr>
+                        <td class="w-1/3 text-slate-500 font-bold">Customer Name</td>
+                        <td class="w-2/3 text-slate-900 dark:text-white">
+                            <a href="{{ route('leads.show', $ticket->lead) }}" class="action-link">
+                                {{ $ticket->lead->customer_name }}
+                            </a>
+                            @if($ticket->lead->company_name)
+                                <span class="text-slate-500 text-xs">({{ $ticket->lead->company_name }})</span>
+                            @endif
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-slate-500 font-bold">Contact Phone</td>
+                        <td class="text-slate-900 dark:text-white">
+                            <a href="tel:{{ $ticket->lead->phone }}" class="action-link">
+                                {{ $ticket->lead->phone }}
+                            </a>
+                        </td>
+                    </tr>
+                    @if($ticket->lead->email)
+                        <tr>
+                            <td class="text-slate-500 font-bold">Email Address</td>
+                            <td class="text-slate-900 dark:text-white">{{ $ticket->lead->email }}</td>
+                        </tr>
+                    @endif
+                    <tr>
+                        <td class="text-slate-500 font-bold">Premises Address</td>
+                        <td class="text-slate-900 dark:text-white">{{ $ticket->lead->site_address ?: 'Not specified' }}</td>
+                    </tr>
+                    @if($ticket->amcContract)
+                        <tr>
+                            <td class="text-slate-500 font-bold">AMC Agreement</td>
+                            <td class="text-slate-900 dark:text-white">
+                                <a href="{{ route('amcs.show', $ticket->amcContract) }}" class="action-link">
+                                    {{ $ticket->amcContract->contract_no }}
+                                </a>
+                                (Valid until {{ $ticket->amcContract->end_date->format('d M Y') }})
+                            </td>
+                        </tr>
+                    @endif
+                </tbody>
+            </table>
+        </div>
 
-                <form method="POST" action="{{ route('service-tickets.accept', $ticket) }}" class="space-y-3 text-xs">
-                    @csrf
+        {{-- Section 3: Field Technician Dispatch (Two-column detail table & assignment form) --}}
+        <div class="crm-section">
+            <h3>Technician Dispatch</h3>
+            <table class="crm-table mb-4">
+                <tbody>
+                    <tr>
+                        <td class="w-1/3 text-slate-500 font-bold">Assigned Technician</td>
+                        <td class="w-2/3 text-slate-900 dark:text-white">
+                            {{ $ticket->assignedTechnician?->name ?? 'None Assigned' }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-slate-500 font-bold">Scheduled Visit Date</td>
+                        <td class="text-slate-900 dark:text-white">
+                            {{ $ticket->scheduled_date ? $ticket->scheduled_date->format('d M Y') : 'Not scheduled' }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <form method="POST" action="{{ route('service-tickets.assign', $ticket) }}">
+                @csrf
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">Assign Technician (Optional)</label>
-                        <select name="assigned_technician_id" class="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded px-3 py-2 text-xs focus:outline-none" style="height: 38px;">
-                            <option value="">-- Assign Later --</option>
+                        <label class="crm-label">Technician <span class="required-marker">*</span></label>
+                        <select name="assigned_technician_id" required class="crm-select">
+                            <option value="">Select technician</option>
                             @foreach($technicians as $tech)
                                 <option value="{{ $tech->id }}" {{ $ticket->assigned_technician_id == $tech->id ? 'selected' : '' }}>
                                     {{ $tech->name }}
@@ -343,67 +182,84 @@
                             @endforeach
                         </select>
                     </div>
-
                     <div>
-                        <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">Scheduled Visit Date</label>
-                        <input type="date" name="scheduled_date" value="{{ $ticket->scheduled_date?->format('Y-m-d') ?: now()->addDay()->format('Y-m-d') }}"
-                            class="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded px-3 py-2 text-xs focus:outline-none" style="height: 38px;">
+                        <label class="crm-label">Scheduled Date</label>
+                        <input type="date" name="scheduled_date" value="{{ $ticket->scheduled_date?->format('Y-m-d') }}" class="crm-input">
                     </div>
-
-                    <div>
-                        <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">Approval Note (Optional)</label>
-                        <textarea name="admin_notes" rows="2" placeholder="Approval message..."
-                            class="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded px-3 py-2 text-xs focus:outline-none"></textarea>
-                    </div>
-
-                    <div class="pt-3 flex items-center justify-end gap-2 border-t border-slate-100 dark:border-slate-800">
-                        <button type="button" @click="showAcceptModal = false" class="px-4 py-2 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium text-xs transition">
-                            Cancel
-                        </button>
-                        <button type="submit" class="px-4 py-2 rounded bg-[#2563eb] hover:bg-blue-700 text-white font-medium text-xs transition">
-                            Confirm Approval
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- Decline & Reject Modal -->
-        <div x-show="showRejectModal" 
-             style="display: none;"
-             class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60"
-             @keydown.escape.window="showRejectModal = false">
-            
-            <div class="bg-white dark:bg-slate-900 rounded border border-slate-200 dark:border-slate-800 max-w-lg w-full p-6 space-y-4" @click.stop>
-                <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
-                    <div>
-                        <h3 class="text-sm font-bold text-slate-900 dark:text-white">Decline Work Request</h3>
-                        <p class="text-xs text-slate-500">Ticket #{{ $ticket->ticket_no }} &bull; {{ $ticket->lead->customer_name }}</p>
-                    </div>
-                    <button type="button" @click="showRejectModal = false" class="text-slate-400 hover:text-slate-600">
-                        ✕
+                </div>
+                <div class="form-actions mt-4">
+                    <button type="submit" class="btn-secondary">
+                        Save
                     </button>
                 </div>
-
-                <form method="POST" action="{{ route('service-tickets.reject', $ticket) }}" class="space-y-3 text-xs">
-                    @csrf
-                    <div>
-                        <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">Reason for Declining *</label>
-                        <textarea name="rejection_reason" required rows="3" placeholder="Specify reason..."
-                            class="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded px-3 py-2 text-xs focus:outline-none"></textarea>
-                    </div>
-
-                    <div class="pt-3 flex items-center justify-end gap-2 border-t border-slate-100 dark:border-slate-800">
-                        <button type="button" @click="showRejectModal = false" class="px-4 py-2 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium text-xs transition">
-                            Cancel
-                        </button>
-                        <button type="submit" class="px-4 py-2 rounded bg-rose-600 hover:bg-rose-700 text-white font-medium text-xs transition">
-                            Decline Request
-                        </button>
-                    </div>
-                </form>
-            </div>
+            </form>
         </div>
 
+        {{-- Section 4: Diagnostics, Spares & Resolution Summary --}}
+        <div class="crm-section">
+            <h3>Technician Resolution Log</h3>
+            <table class="crm-table mb-4">
+                <tbody>
+                    <tr>
+                        <td class="w-1/3 text-slate-500 font-bold">Troubleshooting Findings</td>
+                        <td class="w-2/3 text-slate-900 dark:text-white whitespace-pre-line">{{ $ticket->troubleshooting_notes ?: 'No troubleshooting notes recorded yet.' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-slate-500 font-bold">Replacement Spares / Parts</td>
+                        <td class="text-slate-900 dark:text-white whitespace-pre-line">{{ $ticket->parts_replaced ?: 'No replacement parts logged.' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-slate-500 font-bold">Final Resolution Notes</td>
+                        <td class="text-slate-900 dark:text-white whitespace-pre-line">{{ $ticket->resolution_notes ?: 'Pending resolution.' }}</td>
+                    </tr>
+                    @if($ticket->resolved_at)
+                        <tr>
+                            <td class="text-slate-500 font-bold">Resolved Timestamp</td>
+                            <td class="text-slate-900 dark:text-white">{{ $ticket->resolved_at->format('d M Y, h:i A') }}</td>
+                        </tr>
+                    @endif
+                </tbody>
+            </table>
+
+            {{-- Form to update status and resolution notes --}}
+            <form method="POST" action="{{ route('service-tickets.updateStatus', $ticket) }}">
+                @csrf
+                @method('PATCH')
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="crm-label">Status <span class="required-marker">*</span></label>
+                        <select name="status" class="crm-select">
+                            @foreach(\App\Models\ServiceTicket::statusOptions() as $k => $label)
+                                <option value="{{ $k }}" {{ $ticket->status === $k ? 'selected' : '' }}>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="crm-label">Parts Replaced</label>
+                        <input type="text" name="parts_replaced" value="{{ $ticket->parts_replaced }}" placeholder="e.g. 1x 12V 2A SMPS Adapter" class="crm-input">
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="crm-label">Troubleshooting Notes</label>
+                    <textarea name="troubleshooting_notes" rows="2" placeholder="e.g. BNC connector loose, crimped new pin" class="crm-input h-auto py-2">{{ $ticket->troubleshooting_notes }}</textarea>
+                </div>
+
+                <div class="mb-4">
+                    <label class="crm-label">Resolution Summary</label>
+                    <textarea name="resolution_notes" rows="2" placeholder="e.g. System tested and cameras restored to live feed" class="crm-input h-auto py-2">{{ $ticket->resolution_notes }}</textarea>
+                </div>
+
+                <div class="form-actions">
+                    <a href="{{ route('service-tickets.index') }}" class="btn-secondary">
+                        Cancel
+                    </a>
+                    <button type="submit" class="btn-primary">
+                        Save
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 </x-app-layout>

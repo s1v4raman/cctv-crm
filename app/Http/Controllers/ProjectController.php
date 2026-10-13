@@ -368,6 +368,34 @@ class ProjectController extends Controller
     }
 
     /**
+     * Assign or reassign lead technician to project directly.
+     */
+    public function assignTechnician(Request $request, Project $project)
+    {
+        $validated = $request->validate([
+            'lead_technician_id' => 'required|exists:users,id',
+        ]);
+
+        $project->update([
+            'lead_technician_id' => $validated['lead_technician_id'],
+            'assigned_to' => $validated['lead_technician_id'],
+        ]);
+
+        $tech = User::find($validated['lead_technician_id']);
+
+        ProjectAuditLog::logChange(
+            $project,
+            'technician_assigned',
+            null,
+            null,
+            "Lead technician assigned: {$tech->name}"
+        );
+
+        return redirect()->route('projects.show', ['project' => $project, 'tab' => 'overview'])
+            ->with('status', "Lead Technician updated to {$tech->name} successfully.");
+    }
+
+    /**
      * Admin Rejection Workflow: Records rejection reason.
      */
     public function reject(Request $request, Project $project)

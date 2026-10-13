@@ -125,4 +125,42 @@ class ProfileTest extends TestCase
         $this->assertSame('Updated Customer Name', $lead->customer_name);
         $this->assertSame('updated@client.com', $lead->email);
     }
+
+    public function test_user_can_upload_and_remove_avatar_photo(): void
+    {
+        \Illuminate\Support\Facades\Storage::fake('public');
+
+        $user = User::factory()->create([
+            'role' => 'admin',
+        ]);
+
+        $jpegContent = base64_decode('/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=');
+        $file = \Illuminate\Http\UploadedFile::fake()->createWithContent('avatar.jpg', $jpegContent);
+
+        $response = $this->actingAs($user)->patch('/profile', [
+            'name'   => $user->name,
+            'email'  => $user->email,
+            'avatar' => $file,
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $response->assertRedirect('/profile');
+
+        $user->refresh();
+        $this->assertNotNull($user->avatar);
+        $this->assertNotNull($user->avatar_url);
+        \Illuminate\Support\Facades\Storage::disk('public')->assertExists($user->avatar);
+
+        // Test removing avatar
+        $removeResponse = $this->actingAs($user)->patch('/profile', [
+            'name'          => $user->name,
+            'email'         => $user->email,
+            'remove_avatar' => 1,
+        ]);
+
+        $removeResponse->assertSessionHasNoErrors();
+        $user->refresh();
+        $this->assertNull($user->avatar);
+        $this->assertNull($user->avatar_url);
+    }
 }

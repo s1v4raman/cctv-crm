@@ -468,11 +468,11 @@
                                 This user has <strong class="text-slate-900 dark:text-white font-semibold">{{ ucfirst($user->role) }}</strong> status with full privileges to collaborate within the Precision IT Systems platform.
                             </p>
                             <div class="flex flex-wrap gap-2">
-                                <a href="{{ route('admin.users.edit', $user) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 text-xs font-semibold hover:bg-blue-100 transition">
-                                    Edit Account Details
+                                <a href="{{ route('admin.users.edit', $user) }}" class="btn-secondary text-xs">
+                                    Edit
                                 </a>
-                                <a href="{{ route('admin.users.create') }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold hover:bg-slate-200 transition">
-                                    + Add Another User
+                                <a href="{{ route('admin.users.create') }}" class="btn-secondary text-xs">
+                                    New User
                                 </a>
                             </div>
                         </div>

@@ -3,9 +3,9 @@
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <div class="flex items-center gap-2">
-                    <h1 class="text-2xl font-bold text-[#222222]">
+                    <h2 class="text-xl font-bold text-slate-900 dark:text-white">
                         Field Expenses &amp; Travel Claims Hub
-                    </h1>
+                    </h2>
                     @if($isAdmin && $pendingCount > 0)
                         <span class="text-xs font-bold text-[#d97706]">
                             ({{ $pendingCount }} Pending: ₹{{ number_format($pendingTotalAmount, 2) }})
@@ -14,15 +14,14 @@
                 </div>
             </div>
             <div class="flex items-center gap-2 flex-wrap">
-                <a href="{{ route('finance.payroll.index') }}" 
-                   class="px-3.5 py-2 rounded border border-[#cccccc] bg-white text-[#222222] hover:bg-[#f5f5f5] text-sm font-normal transition">
-                    Payroll Master
+                <a href="{{ route('finance.payroll.index') }}" class="btn-secondary">
+                    Payroll
                 </a>
 
                 <button type="button" 
                         onclick="document.getElementById('submitExpenseModal').classList.remove('hidden')"
-                        class="px-4 py-2 rounded bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-sm font-normal transition cursor-pointer">
-                    + File Expense Claim
+                        class="btn-primary cursor-pointer">
+                    New Claim
                 </button>
             </div>
         </div>

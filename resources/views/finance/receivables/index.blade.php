@@ -2,32 +2,27 @@
     <x-slot name="header">
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h1 class="text-2xl font-bold text-[#222222]">
-                    Accounts Receivable & Debtors Aging
-                </h1>
+                <h2 class="text-xl font-bold text-slate-900 dark:text-white">
+                    Accounts Receivable &amp; Debtors Aging
+                </h2>
             </div>
 
             <!-- Action Buttons: Bulk Sweep, Export CSV, Export PDF -->
             <div class="flex flex-wrap items-center gap-2">
-                <form action="{{ route('finance.receivables.sweep') }}" method="POST" onsubmit="return confirm('Trigger payment reminder sweep for all overdue invoices? (Invoices notified within last 3 days will be skipped)');">
-                    @csrf
-                    <button type="submit"
-                            class="px-3.5 py-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-sm font-normal rounded transition">
-                        Run Dunning Sweep
-                    </button>
-                </form>
-
-                <a href="{{ route('finance.receivables.export-csv') }}"
-                   class="px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-medium rounded transition"
-                   style="border-radius: 4px;">
+                <a href="{{ route('finance.receivables.export-csv') }}" class="btn-secondary">
                     Export CSV
                 </a>
 
-                <a href="{{ route('finance.receivables.export-pdf') }}"
-                   class="px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-medium rounded transition"
-                   style="border-radius: 4px;">
-                    Download Aging PDF
+                <a href="{{ route('finance.receivables.export-pdf') }}" class="btn-secondary">
+                    Aging PDF
                 </a>
+
+                <form action="{{ route('finance.receivables.sweep') }}" method="POST" onsubmit="return confirm('Trigger payment reminder sweep for all overdue invoices? (Invoices notified within last 3 days will be skipped)');" class="inline">
+                    @csrf
+                    <button type="submit" class="btn-primary">
+                        Dunning Sweep
+                    </button>
+                </form>
             </div>
         </div>
     </x-slot>

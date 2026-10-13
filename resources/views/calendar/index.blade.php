@@ -71,12 +71,12 @@
                     {{-- Search box --}}
                     <div class="relative w-full sm:w-56">
                         <input type="text" x-model="searchQuery" placeholder="Search..." 
-                               class="w-full h-[36px] px-3 text-xs rounded-[4px] border border-[#ddd] dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-slate-400">
+                               class="w-full h-[38px] px-3 text-xs rounded-[4px] border border-[#ddd] dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-slate-400">
                     </div>
 
                     {{-- Category Dropdown --}}
                     <select x-model="filterCategory" style="padding-right: 25px;"
-                            class="h-[36px] pl-2.5 text-xs rounded-[4px] border border-[#ddd] dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:outline-none focus:border-slate-400">
+                            class="h-[38px] pl-2.5 text-xs rounded-[4px] border border-[#ddd] dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:outline-none focus:border-slate-400">
                         <option value="all">All Categories</option>
                         <option value="survey">Surveys</option>
                         <option value="job">Installations</option>
@@ -86,7 +86,7 @@
 
                     {{-- Technician Dropdown --}}
                     <select x-model="filterTech" style="padding-right: 25px;"
-                            class="h-[36px] pl-2.5 text-xs rounded-[4px] border border-[#ddd] dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:outline-none focus:border-slate-400">
+                            class="h-[38px] pl-2.5 text-xs rounded-[4px] border border-[#ddd] dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:outline-none focus:border-slate-400">
                         <option value="all">All Technicians</option>
                         @foreach($technicians as $tech)
                             <option value="{{ $tech->id }}">{{ $tech->name }}</option>
@@ -95,7 +95,7 @@
 
                     {{-- Status Dropdown --}}
                     <select x-model="filterStatus" style="padding-right: 25px;"
-                            class="h-[36px] pl-2.5 text-xs rounded-[4px] border border-[#ddd] dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:outline-none focus:border-slate-400">
+                            class="h-[38px] pl-2.5 text-xs rounded-[4px] border border-[#ddd] dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:outline-none focus:border-slate-400">
                         <option value="all">All Statuses</option>
                         <option value="pending">Pending</option>
                         <option value="in_progress">In Progress</option>
@@ -107,17 +107,17 @@
                 <div class="flex items-center gap-1.5 self-start lg:self-auto">
                     <button type="button" @click="currentView = 'month'"
                             :class="currentView === 'month' ? 'bg-[#ebebed] text-slate-900 font-semibold border-slate-300' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border-[#ddd] dark:border-slate-700 hover:bg-slate-50'"
-                            class="h-[36px] px-3 text-xs rounded-[4px] border transition">
+                            class="h-[38px] px-3 text-xs rounded-[4px] border transition">
                         Month
                     </button>
                     <button type="button" @click="currentView = 'week'"
                             :class="currentView === 'week' ? 'bg-[#ebebed] text-slate-900 font-semibold border-slate-300' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border-[#ddd] dark:border-slate-700 hover:bg-slate-50'"
-                            class="h-[36px] px-3 text-xs rounded-[4px] border transition">
+                            class="h-[38px] px-3 text-xs rounded-[4px] border transition">
                         Week
                     </button>
                     <button type="button" @click="currentView = 'agenda'"
                             :class="currentView === 'agenda' ? 'bg-[#ebebed] text-slate-900 font-semibold border-slate-300' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border-[#ddd] dark:border-slate-700 hover:bg-slate-50'"
-                            class="h-[36px] px-3 text-xs rounded-[4px] border transition">
+                            class="h-[38px] px-3 text-xs rounded-[4px] border transition">
                         Agenda
                     </button>
                 </div>
@@ -168,7 +168,7 @@
                                 <div class="border-b border-[#ddd] dark:border-slate-800 min-h-[105px] transition-colors"
                                      :class="{
                                          'border-r border-[#ddd] dark:border-slate-800': (dIndex + 1) % 7 !== 0,
-                                         'bg-[#fefce8] dark:bg-yellow-950/20': day.isCurrentMonth && day.isToday,
+                                         'bg-[#fff8dc] dark:bg-yellow-950/30': day.isCurrentMonth && day.isToday,
                                          'bg-white dark:bg-[#0f172a]': day.isCurrentMonth && !day.isToday,
                                          'bg-[#fafafa] dark:bg-slate-900/30': !day.isCurrentMonth
                                      }">
@@ -199,7 +199,8 @@
                                                 <template x-for="event in getDayEvents(day.date).slice(0, 3)" :key="event.id">
                                                     <div @click="openDrawer(event)"
                                                          :title="`${event.time} - ${event.title}\nCustomer: ${event.customer}\nAddress: ${event.address}\nTechnician: ${event.tech}`"
-                                                         class="cursor-pointer text-[11px] leading-tight px-1.5 py-0.5 rounded-[3px] border border-[#ddd] dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 truncate hover:bg-[#ebebed] dark:hover:bg-slate-700 transition"
+                                                         class="cursor-pointer text-[11px] leading-tight px-1.5 py-0.5 rounded-[3px] border border-[#ddd] dark:border-slate-700 bg-white dark:bg-slate-800 truncate hover:bg-[#ebebed] dark:hover:bg-slate-700 transition"
+                                                         :class="getEventTextColor(event)"
                                                          x-text="getShortEventTitle(event)">
                                                     </div>
                                                 </template>
@@ -247,7 +248,7 @@
                                                 <div class="min-w-0 flex-1">
                                                     <div class="flex items-center gap-2">
                                                         <span class="font-bold text-slate-500 whitespace-nowrap" x-text="event.time"></span>
-                                                        <span class="font-semibold text-slate-800 dark:text-slate-100 truncate" x-text="event.title"></span>
+                                                        <span class="font-semibold truncate" :class="getEventTextColor(event)" x-text="event.title"></span>
                                                     </div>
                                                     <div class="text-[11px] text-slate-500 truncate" x-text="event.address"></div>
                                                 </div>
@@ -311,7 +312,7 @@
                                         {{-- Time on its own line with white-space: nowrap --}}
                                         <div class="text-[11px] font-bold text-slate-500 whitespace-nowrap" x-text="event.time"></div>
                                         {{-- Job title wrapping fully --}}
-                                        <div class="font-semibold text-slate-800 dark:text-slate-100 mt-0.5 break-words" x-text="event.title"></div>
+                                        <div class="font-semibold mt-0.5 break-words" :class="getEventTextColor(event)" x-text="event.title"></div>
                                         <div class="text-slate-500 text-[11px] mt-0.5 break-words" x-text="event.address"></div>
                                         <div class="text-slate-400 text-[11px] mt-0.5">
                                             Technician: <span class="text-slate-700 dark:text-slate-300 font-medium" x-text="event.tech"></span>
@@ -569,6 +570,14 @@
                     if (event.type === 'amc') return 'AMC';
                     if (event.type === 'ticket') return 'Ticket';
                     return 'Job';
+                },
+
+                getEventTextColor(event) {
+                    if (event.type === 'survey') return 'text-emerald-600 dark:text-emerald-400 font-bold';
+                    if (event.type === 'job') return 'text-blue-600 dark:text-blue-400 font-bold';
+                    if (event.type === 'ticket') return 'text-amber-600 dark:text-amber-400 font-bold';
+                    if (event.type === 'amc') return 'text-purple-600 dark:text-purple-400 font-bold';
+                    return 'text-slate-800 dark:text-slate-200 font-semibold';
                 },
 
                 prevMonth() {

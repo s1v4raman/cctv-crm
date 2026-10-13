@@ -1,24 +1,19 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <div>
-                <h2 class="text-xl font-bold leading-tight text-slate-900 dark:text-white">
-                    Edit RMA Claim: <span class="font-mono text-blue-600">{{ $rma->rma_no }}</span>
-                </h2>
-            </div>
-            <a href="{{ route('rma.show', $rma) }}"
-               class="crm-back-link text-xs font-semibold text-blue-600 hover:underline">
-                &larr; Back to Details
-            </a>
-        </div>
+        <h2 class="text-xl font-semibold leading-tight text-gray-800">Edit RMA Claim</h2>
     </x-slot>
 
-    <div class="py-6 bg-[#f8fafc] dark:bg-[#060913] min-h-screen text-slate-800 dark:text-slate-100">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-5">
+    <div class="py-5">
+        <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+            <a href="{{ route('rma.show', $rma) }}" class="back-link">&larr; Back</a>
+
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-bold text-gray-900">Edit RMA Claim &mdash; {{ $rma->rma_no }}</h2>
+            </div>
 
             @if ($errors->any())
-                <div class="mb-5 p-3 rounded-[4px] bg-rose-50 border border-rose-200 text-rose-800 text-xs">
-                    <ul class="list-disc pl-5 space-y-0.5">
+                <div class="mb-4 p-4 rounded-[4px] bg-red-50 border border-red-200 text-[#dc2626] text-sm">
+                    <ul class="list-disc list-inside">
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
                         @endforeach
@@ -26,15 +21,17 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('rma.update', $rma) }}" class="space-y-5">
-                @csrf
-                @method('PUT')
+            <div class="crm-section">
+                <form method="POST" action="{{ route('rma.update', $rma) }}">
+                    @csrf
+                    @method('PUT')
 
-                <div class="bg-white dark:bg-[#0f172a] rounded-[4px] p-5 border border-slate-300 dark:border-slate-800 space-y-4">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <h3 class="mb-4 pb-2 border-b border-[#ddd] font-bold text-base text-gray-900">Claim Details</h3>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                         <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Target Supplier / Vendor <span class="text-rose-500">*</span></label>
-                            <select name="supplier_id" required class="w-full text-sm rounded-[4px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#060913] text-slate-900 dark:text-white h-[38px] px-3 focus:outline-none focus:border-blue-600">
+                            <label class="crm-label">Target Supplier / Vendor <span class="required-marker">*</span></label>
+                            <select name="supplier_id" required class="crm-select">
                                 @foreach($suppliers as $supplier)
                                     <option value="{{ $supplier->id }}" @selected(old('supplier_id', $rma->supplier_id) == $supplier->id)>
                                         {{ $supplier->name }} ({{ $supplier->company_name ?: $supplier->city }})
@@ -43,8 +40,8 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Product Model</label>
-                            <select name="product_id" class="w-full text-sm rounded-[4px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#060913] text-slate-900 dark:text-white h-[38px] px-3 focus:outline-none focus:border-blue-600">
+                            <label class="crm-label">Product Model</label>
+                            <select name="product_id" class="crm-select">
                                 <option value="">Select Product (Optional)</option>
                                 @foreach($products as $prod)
                                     <option value="{{ $prod->id }}" @selected(old('product_id', $rma->product_id) == $prod->id)>
@@ -55,31 +52,29 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                         <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Faulty Serial Number (S/N) <span class="text-rose-500">*</span></label>
-                            <input type="text" name="faulty_serial_number" value="{{ old('faulty_serial_number', $rma->faulty_serial_number) }}" required 
-                                class="w-full text-xs font-mono font-bold rounded-[4px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#060913] text-slate-900 dark:text-white h-[38px] px-3 focus:outline-none focus:border-blue-600">
+                            <label class="crm-label">Faulty Serial Number (S/N) <span class="required-marker">*</span></label>
+                            <input type="text" name="faulty_serial_number" value="{{ old('faulty_serial_number', $rma->faulty_serial_number) }}" required class="crm-input font-mono">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">MAC Address (Optional)</label>
-                            <input type="text" name="faulty_mac_address" value="{{ old('faulty_mac_address', $rma->faulty_mac_address) }}" 
-                                class="w-full text-xs font-mono rounded-[4px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#060913] text-slate-900 dark:text-white h-[38px] px-3 focus:outline-none focus:border-blue-600">
+                            <label class="crm-label">MAC Address (Optional)</label>
+                            <input type="text" name="faulty_mac_address" value="{{ old('faulty_mac_address', $rma->faulty_mac_address) }}" class="crm-input font-mono">
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                         <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Fault Category <span class="text-rose-500">*</span></label>
-                            <select name="fault_category" required class="w-full text-sm rounded-[4px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#060913] text-slate-900 dark:text-white h-[38px] px-3 focus:outline-none focus:border-blue-600">
+                            <label class="crm-label">Fault Category <span class="required-marker">*</span></label>
+                            <select name="fault_category" required class="crm-select">
                                 @foreach(\App\Models\RmaClaim::faultCategories() as $key => $label)
                                     <option value="{{ $key }}" @selected(old('fault_category', $rma->fault_category) === $key)>{{ $label }}</option>
                                 @endforeach
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Warranty Status at Claim <span class="text-rose-500">*</span></label>
-                            <select name="warranty_status_at_claim" required class="w-full text-sm rounded-[4px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#060913] text-slate-900 dark:text-white h-[38px] px-3 focus:outline-none focus:border-blue-600 font-medium">
+                            <label class="crm-label">Warranty Status at Claim <span class="required-marker">*</span></label>
+                            <select name="warranty_status_at_claim" required class="crm-select">
                                 <option value="under_warranty" @selected(old('warranty_status_at_claim', $rma->warranty_status_at_claim) === 'under_warranty')>Under Manufacturer Warranty</option>
                                 <option value="out_of_warranty" @selected(old('warranty_status_at_claim', $rma->warranty_status_at_claim) === 'out_of_warranty')>Out of Warranty</option>
                                 <option value="extended_warranty" @selected(old('warranty_status_at_claim', $rma->warranty_status_at_claim) === 'extended_warranty')>Extended Warranty</option>
@@ -87,36 +82,28 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                         <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Vendor's RMA Ref #</label>
-                            <input type="text" name="vendor_rma_ref" value="{{ old('vendor_rma_ref', $rma->vendor_rma_ref) }}" 
-                                class="w-full text-xs font-mono rounded-[4px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#060913] text-slate-900 dark:text-white h-[38px] px-3 focus:outline-none focus:border-blue-600">
+                            <label class="crm-label">Vendor RMA Ref #</label>
+                            <input type="text" name="vendor_rma_ref" value="{{ old('vendor_rma_ref', $rma->vendor_rma_ref) }}" class="crm-input font-mono">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Expected Return Date</label>
-                            <input type="date" name="expected_return_date" value="{{ old('expected_return_date', $rma->expected_return_date?->format('Y-m-d')) }}" 
-                                class="w-full text-sm rounded-[4px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#060913] text-slate-900 dark:text-white h-[38px] px-3 focus:outline-none focus:border-blue-600">
+                            <label class="crm-label">Expected Return Date</label>
+                            <input type="date" name="expected_return_date" value="{{ old('expected_return_date', $rma->expected_return_date?->format('Y-m-d')) }}" class="crm-input">
                         </div>
                     </div>
 
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Defect Description <span class="text-rose-500">*</span></label>
-                        <textarea name="issue_description" rows="3" required 
-                            class="w-full text-sm rounded-[4px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#060913] text-slate-900 dark:text-white p-3 focus:outline-none focus:border-blue-600">{{ old('issue_description', $rma->issue_description) }}</textarea>
+                    <div class="mb-4">
+                        <label class="crm-label">Defect Description <span class="required-marker">*</span></label>
+                        <textarea name="issue_description" rows="3" required class="crm-input" style="height: auto;">{{ old('issue_description', $rma->issue_description) }}</textarea>
                     </div>
-                </div>
 
-                <div class="flex items-center justify-end gap-3">
-                    <a href="{{ route('rma.show', $rma) }}" class="px-4 py-2 text-sm font-medium rounded-[4px] border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors">
-                        Cancel
-                    </a>
-                    <button type="submit" class="px-5 py-2 text-sm font-bold rounded-[4px] bg-blue-600 hover:bg-blue-700 text-white transition-colors cursor-pointer">
-                        Save Changes
-                    </button>
-                </div>
-            </form>
-
+                    <div class="form-actions">
+                        <a href="{{ route('rma.show', $rma) }}" class="btn-secondary">Cancel</a>
+                        <button type="submit" class="btn-primary">Save</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </x-app-layout>

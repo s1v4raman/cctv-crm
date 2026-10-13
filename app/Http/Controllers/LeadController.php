@@ -40,7 +40,8 @@ class LeadController extends Controller
 
     public function store(StoreLeadRequest $request, AlertNotificationService $alertService)
     {
-        $lead = Lead::create($request->validated());
+        $data = $request->safe()->except(['for_quote', 'return_to']);
+        $lead = Lead::create($data);
 
         try {
             $alertService->sendAlert('lead_created', $lead, [
@@ -53,6 +54,11 @@ class LeadController extends Controller
             ], $lead);
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::warning("Lead creation alert failed: " . $e->getMessage());
+        }
+
+        if ($request->boolean('for_quote') || $request->input('return_to') === 'quotation') {
+            return redirect()->route('quotations.create', $lead)
+                ->with('status', "Customer '{$lead->customer_name}' added. You can now create their quotation.");
         }
 
         return redirect()->route('leads.show', $lead)->with('status', 'Lead created.');

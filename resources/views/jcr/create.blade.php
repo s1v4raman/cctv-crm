@@ -59,16 +59,16 @@
         }
     </style>
 
-    <div class="py-6 bg-[#060913] min-h-screen text-slate-200" style="background-color: #060913;">
+    <div class="py-6 bg-slate-50 dark:bg-[#060913] min-h-screen text-slate-800 dark:text-slate-200">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
 
             {{-- Error alerts --}}
             @if ($errors->any())
-                <div class="mb-5 p-4 rounded-2xl bg-rose-950/40 border border-rose-500/40 text-rose-300 text-xs shadow-lg">
+                <div class="mb-5 p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-300 dark:border-rose-500/40 text-rose-700 dark:text-rose-300 text-xs shadow-sm">
                     <div class="font-bold flex items-center gap-2 mb-1">
                         Please fix the following errors:
                     </div>
-                    <ul class="list-disc pl-5 space-y-0.5 text-slate-300">
+                    <ul class="list-disc pl-5 space-y-0.5 text-slate-600 dark:text-slate-300">
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
                         @endforeach
@@ -77,40 +77,37 @@
             @endif
 
             {{-- Site / Job Overview Card --}}
-            <div class="bg-[#0f172a] rounded-2xl p-6 shadow-2xl border border-slate-800" style="background-color: #0f172a;">
-                <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-800">
+            <div class="bg-white dark:bg-[#0f172a] rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-800">
+                <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-200 dark:border-slate-800">
                     <div>
-                        <span class="inline-block text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30 mb-1.5">
+                        <span class="inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 mb-1.5">
                             {{ $title }}
                         </span>
-                        <h3 class="text-xl font-extrabold text-white font-heading">{{ $lead?->customer_name ?? 'Customer Handover' }}</h3>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white font-heading">{{ $lead?->customer_name ?? 'Customer Handover' }}</h3>
                     </div>
                     <div class="text-right">
-                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Field Engineer</span>
-                        <p class="text-sm font-extrabold text-amber-400">{{ auth()->user()->name }}</p>
+                        <span class="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Field Engineer</span>
+                        <p class="text-sm font-bold text-slate-900 dark:text-white">{{ auth()->user()->name }}</p>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4 text-xs text-slate-300">
-                    <div class="flex items-start gap-2 bg-[#060913] p-3 rounded-xl border border-slate-800">
-                        
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4 text-xs text-slate-600 dark:text-slate-300">
+                    <div class="flex items-start gap-2 bg-slate-50 dark:bg-slate-900 p-3 rounded-xl border border-slate-200 dark:border-slate-800">
                         <div>
-                            <strong class="text-white block font-bold text-[11px]">Site Location:</strong>
-                            <span class="text-slate-400 text-xs">{{ $lead?->site_address ?? $lead?->address ?? 'Not specified' }}</span>
+                            <strong class="text-slate-900 dark:text-white block font-bold text-[11px]">Site Location:</strong>
+                            <span class="text-slate-500 dark:text-slate-400 text-xs">{{ $lead?->site_address ?? $lead?->address ?? 'Not specified' }}</span>
                         </div>
                     </div>
-                    <div class="flex items-start gap-2 bg-[#060913] p-3 rounded-xl border border-slate-800">
-                        
+                    <div class="flex items-start gap-2 bg-slate-50 dark:bg-slate-900 p-3 rounded-xl border border-slate-200 dark:border-slate-800">
                         <div>
-                            <strong class="text-white block font-bold text-[11px]">Customer Phone:</strong>
-                            <span class="text-amber-400 font-mono text-xs">{{ $lead?->phone ?? '—' }}</span>
+                            <strong class="text-slate-900 dark:text-white block font-bold text-[11px]">Customer Phone:</strong>
+                            <span class="text-blue-600 dark:text-blue-400 font-mono text-xs">{{ $lead?->phone ?? '—' }}</span>
                         </div>
                     </div>
-                    <div class="flex items-start gap-2 bg-[#060913] p-3 rounded-xl border border-slate-800">
-                        
+                    <div class="flex items-start gap-2 bg-slate-50 dark:bg-slate-900 p-3 rounded-xl border border-slate-200 dark:border-slate-800">
                         <div>
-                            <strong class="text-white block font-bold text-[11px]">Sign-Off Timestamp:</strong>
-                            <span class="text-slate-400 font-mono text-xs">{{ now()->format('d M Y, h:i A') }}</span>
+                            <strong class="text-slate-900 dark:text-white block font-bold text-[11px]">Sign-Off Timestamp:</strong>
+                            <span class="text-slate-500 dark:text-slate-400 font-mono text-xs">{{ now()->format('d M Y, h:i A') }}</span>
                         </div>
                     </div>
                 </div>
@@ -135,12 +132,12 @@
                 <input type="hidden" id="technicianSignatureInput" name="technician_signature" value="">
 
                 {{-- SECTION 1: Quality Inspection Handover Checklist --}}
-                <div class="bg-[#0f172a] rounded-2xl p-6 shadow-2xl border border-slate-800" style="background-color: #0f172a;">
+                <div class="bg-white dark:bg-[#0f172a] rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-800">
                     <div class="flex items-center gap-2.5 mb-2">
-                        <span class="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold text-xs">1</span>
-                        <h4 class="text-base font-extrabold text-white font-heading">Quality Assurance & Handover Checklist</h4>
+                        <span class="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400 font-bold text-xs">1</span>
+                        <h4 class="text-base font-bold text-slate-900 dark:text-white font-heading">Quality Assurance &amp; Handover Checklist</h4>
                     </div>
-                    <p class="text-xs text-slate-400 mb-4">Please verify each item below before asking the customer to sign.</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">Please verify each item below before asking the customer to sign.</p>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         @php
@@ -159,66 +156,65 @@
                         @foreach($checklistItems as $key => $details)
                             <label class="chk-card relative block">
                                 <input type="checkbox" name="{{ $key }}" value="1" checked class="sr-only">
-                                <div class="flex items-start gap-3 p-3.5 rounded-xl border border-slate-800 bg-[#060913] transition">
-                                    <span class="chk-icon flex-shrink-0 w-5 h-5 rounded-md bg-slate-800 text-slate-500 flex items-center justify-center text-xs font-bold transition">
+                                <div class="flex items-start gap-3 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 transition">
+                                    <span class="chk-icon flex-shrink-0 w-5 h-5 rounded-md bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 flex items-center justify-center text-xs font-bold transition">
                                         ✓
                                     </span>
                                     <div>
-                                        <div class="text-xs font-bold text-white">{{ $details[0] }}</div>
-                                        <div class="text-[11px] text-slate-400 mt-0.5">{{ $details[1] }}</div>
+                                        <div class="text-xs font-bold text-slate-900 dark:text-white">{{ $details[0] }}</div>
+                                        <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{{ $details[1] }}</div>
                                     </div>
                                 </div>
                             </label>
                         @endforeach
                     </div>
 
-                    <div class="mt-4 pt-4 border-t border-slate-800">
-                        <label class="block text-sm font-semibold text-slate-200 mb-1.5">Work Summary / Observations</label>
-                        <textarea name="work_summary" rows="2" class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5" placeholder="e.g. Installed 4x 5MP Dome Cameras, configured 1TB HDD recording, setup Hik-Connect on 2 mobile devices..."></textarea>
+                    <div class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-800">
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Work Summary / Observations</label>
+                        <textarea name="work_summary" rows="2" class="crm-textarea w-full text-xs" placeholder="e.g. Installed 4x 5MP Dome Cameras, configured 1TB HDD recording, setup Hik-Connect on 2 mobile devices..."></textarea>
                     </div>
                 </div>
 
                 {{-- SECTION 2: Handover Proof Photos --}}
-                <div class="bg-[#0f172a] rounded-2xl p-6 shadow-2xl border border-slate-800" style="background-color: #0f172a;">
+                <div class="bg-white dark:bg-[#0f172a] rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-800">
                     <div class="flex items-center justify-between mb-2 flex-wrap gap-2">
                         <div class="flex items-center gap-2.5">
-                            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30 font-bold text-xs">2</span>
-                            <h4 class="text-base font-extrabold text-white font-heading">Handover Proof Photos (Optional)</h4>
+                            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400 font-bold text-xs">2</span>
+                            <h4 class="text-base font-bold text-slate-900 dark:text-white font-heading">Handover Proof Photos (Optional)</h4>
                         </div>
-                        <span class="text-xs text-amber-400 font-bold flex items-center gap-1.5">
-                            Live Camera & File Upload Supported
+                        <span class="text-xs text-slate-500 dark:text-slate-400 font-medium flex items-center gap-1.5">
+                            Live Camera &amp; File Upload Supported
                         </span>
                     </div>
-                    <p class="text-xs text-slate-400 mb-4">Take photos directly using laptop webcam or mobile phone camera, or select photos from your device.</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">Take photos directly using laptop webcam or mobile phone camera, or select photos from your device.</p>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="photoUploadContainer">
                         {{-- Slot 0: DVR Rack Setup --}}
-                        <div class="photo-slot-card p-4 rounded-xl border border-slate-700/80 transition relative flex flex-col justify-between" id="slot-0" style="background:#060913 !important;border-color:#334155;">
+                        <div class="photo-slot-card p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 transition relative flex flex-col justify-between" id="slot-0">
                             <div class="flex items-center justify-between mb-2.5">
                                 <div class="flex items-center gap-1.5">
-                                    
-                                    <span class="slot-title" style="font-size:.8rem;font-weight:800;color:#ffffff !important;">DVR / Server Rack Setup</span>
+                                    <span class="slot-title font-bold text-xs text-slate-900 dark:text-white">DVR / Server Rack Setup</span>
                                 </div>
-                                <span style="font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;padding:.2rem .5rem;border-radius:.4rem;background:rgba(59,130,246,0.15);color:#60a5fa !important;border:1px solid rgba(59,130,246,0.3);">Rack Setup</span>
+                                <span class="text-[11px] font-semibold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">Rack Setup</span>
                             </div>
 
                             {{-- Empty State --}}
-                            <div class="slot-empty-state rounded-xl p-4 text-center flex flex-col items-center justify-center" style="border:2px dashed #475569;background:#0b1120;">
-                                <div style="width:2.75rem;height:2.75rem;border-radius:.75rem;background:#1e293b;color:#f59e0b;display:flex;align-items:center;justify-content:center;font-size:1.25rem;margin:0 auto .5rem auto;border:1px solid #334155;">
+                            <div class="slot-empty-state rounded-xl p-4 text-center flex flex-col items-center justify-center border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/40">
+                                <div class="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 flex items-center justify-center mx-auto mb-2 text-base border border-slate-200 dark:border-slate-700">
                                     📷
                                 </div>
-                                <div style="font-size:.85rem;font-weight:800;color:#ffffff !important;margin-bottom:.25rem;">DVR Rack / Setup Photo</div>
-                                <p style="font-size:.75rem;color:#cbd5e1 !important;margin-bottom:.85rem;">Snap live with webcam/phone camera or choose file.</p>
+                                <div class="text-xs font-bold text-slate-900 dark:text-white mb-0.5">DVR Rack / Setup Photo</div>
+                                <p class="text-[11px] text-slate-500 dark:text-slate-400 mb-3">Snap live with webcam/phone camera or choose file.</p>
                                 
-                                <div class="flex items-center justify-center gap-2.5 flex-wrap w-full">
+                                <div class="flex items-center justify-center gap-2 flex-wrap w-full">
                                     <button type="button" onclick="openPhotoCameraModal('slot-0', 'DVR Rack Setup')"
-                                            style="padding:.55rem 1rem;background:linear-gradient(135deg,#f59e0b,#d97706);color:#020617 !important;font-weight:800;font-size:.78rem;border-radius:.65rem;border:none;display:inline-flex;align-items:center;gap:.45rem;cursor:pointer;box-shadow:0 4px 12px rgba(245,158,11,0.3);text-decoration:none;">
-                                        <span style="font-size:.95rem;">📷</span>
-                                        <span style="color:#020617 !important;font-weight:800;display:inline-block;">Take Photo (Camera)</span>
+                                            class="btn-secondary text-xs px-3 py-1.5 inline-flex items-center gap-1.5 cursor-pointer">
+                                        <span>📷</span>
+                                        <span>Take Photo (Camera)</span>
                                     </button>
-                                    <label style="padding:.55rem 1rem;background:#2563eb !important;color:#ffffff !important;font-weight:800;font-size:.78rem;border-radius:.65rem;border:1px solid #1d4ed8;display:inline-flex;align-items:center;gap:.45rem;cursor:pointer;box-shadow:0 4px 12px rgba(37,99,235,0.3);text-decoration:none;">
-                                        <span style="font-size:.95rem;">📁</span>
-                                        <span style="color:#ffffff !important;font-weight:800;display:inline-block;">Choose File</span>
+                                    <label class="btn-primary text-xs px-3 py-1.5 inline-flex items-center gap-1.5 cursor-pointer" style="background-color: #2563eb; color: #ffffff;">
+                                        <span>📁</span>
+                                        <span>Choose File</span>
                                         <input type="file" name="photos[]" accept="image/*" onchange="handlePhotoFileSelected(this, 'slot-0')" style="display:none;" class="photo-file-input">
                                     </label>
                                 </div>
@@ -226,23 +222,23 @@
 
                             {{-- Filled State (Preview) --}}
                             <div class="slot-filled-state hidden flex-col">
-                                <div class="w-full h-44 rounded-xl overflow-hidden relative border border-slate-700 bg-black group">
+                                <div class="w-full h-44 rounded-xl overflow-hidden relative border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-black group">
                                     <img src="" class="slot-preview-img w-full h-full object-cover">
                                     <div class="absolute top-2 left-2 flex items-center gap-1.5">
-                                        <span class="px-2 py-0.5 rounded-full bg-emerald-500/90 text-white font-bold text-[10px] shadow">✓ Photo Attached</span>
+                                        <span class="px-2 py-0.5 rounded-full bg-emerald-600 text-white font-bold text-[10px] shadow">✓ Photo Attached</span>
                                         <span class="slot-file-size px-2 py-0.5 rounded-full bg-slate-900/80 text-slate-300 font-mono text-[10px] border border-slate-700"></span>
                                     </div>
                                     <div class="absolute bottom-2 inset-x-2 flex items-center justify-center gap-2">
                                         <button type="button" onclick="openPhotoCameraModal('slot-0', 'DVR Rack Setup')"
-                                                style="padding:.35rem .75rem;background:#0f172a !important;color:#f59e0b !important;border:1px solid #f59e0b;border-radius:.5rem;font-size:.72rem;font-weight:800;display:inline-flex;align-items:center;gap:.3rem;cursor:pointer;">
+                                                class="btn-secondary text-xs px-2.5 py-1 inline-flex items-center gap-1 cursor-pointer">
                                             Retake
                                         </button>
-                                        <label style="padding:.35rem .75rem;background:#0f172a !important;color:#60a5fa !important;border:1px solid #3b82f6;border-radius:.5rem;font-size:.72rem;font-weight:800;display:inline-flex;align-items:center;gap:.3rem;cursor:pointer;">
+                                        <label class="btn-secondary text-xs px-2.5 py-1 inline-flex items-center gap-1 cursor-pointer">
                                             Change
                                             <input type="file" accept="image/*" onchange="handlePhotoFileSelected(this, 'slot-0')" style="display:none;">
                                         </label>
                                         <button type="button" onclick="removeSlotPhoto('slot-0')"
-                                                style="padding:.35rem .75rem;background:#450a0a !important;color:#fca5a5 !important;border:1px solid #ef4444;border-radius:.5rem;font-size:.72rem;font-weight:800;display:inline-flex;align-items:center;gap:.3rem;cursor:pointer;">
+                                                class="px-2.5 py-1 rounded border border-rose-300 dark:border-rose-700 bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 text-xs font-semibold cursor-pointer">
                                             Remove
                                         </button>
                                     </div>
@@ -251,38 +247,37 @@
 
                             <div class="mt-2.5">
                                 <input type="text" name="photo_captions[]" value="DVR Rack Setup" placeholder="Photo caption (e.g. DVR Rack Setup)"
-                                       style="font-size:.78rem;width:100%;border-radius:.75rem;border:1px solid #334155;background:#0b1120 !important;color:#ffffff !important;padding:.6rem .75rem;margin-top:.4rem;" class="slot-caption">
+                                       class="crm-input slot-caption w-full text-xs" style="height: 36px;">
                                 <input type="hidden" name="photo_types[]" value="rack_setup" class="slot-type">
                             </div>
                         </div>
 
                         {{-- Slot 1: Live Monitor View --}}
-                        <div class="photo-slot-card p-4 rounded-xl border border-slate-700/80 transition relative flex flex-col justify-between" id="slot-1" style="background:#060913 !important;border-color:#334155;">
+                        <div class="photo-slot-card p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 transition relative flex flex-col justify-between" id="slot-1">
                             <div class="flex items-center justify-between mb-2.5">
                                 <div class="flex items-center gap-1.5">
-                                    
-                                    <span class="slot-title" style="font-size:.8rem;font-weight:800;color:#ffffff !important;">Live Camera / Monitor View</span>
+                                    <span class="slot-title font-bold text-xs text-slate-900 dark:text-white">Live Camera / Monitor View</span>
                                 </div>
-                                <span style="font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;padding:.2rem .5rem;border-radius:.4rem;background:rgba(245,158,11,0.15);color:#fbbf24 !important;border:1px solid rgba(245,158,11,0.3);">Camera View</span>
+                                <span class="text-[11px] font-semibold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">Camera View</span>
                             </div>
 
                             {{-- Empty State --}}
-                            <div class="slot-empty-state rounded-xl p-4 text-center flex flex-col items-center justify-center" style="border:2px dashed #475569;background:#0b1120;">
-                                <div style="width:2.75rem;height:2.75rem;border-radius:.75rem;background:#1e293b;color:#f59e0b;display:flex;align-items:center;justify-content:center;font-size:1.25rem;margin:0 auto .5rem auto;border:1px solid #334155;">
+                            <div class="slot-empty-state rounded-xl p-4 text-center flex flex-col items-center justify-center border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/40">
+                                <div class="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 flex items-center justify-center mx-auto mb-2 text-base border border-slate-200 dark:border-slate-700">
                                     📷
                                 </div>
-                                <div style="font-size:.85rem;font-weight:800;color:#ffffff !important;margin-bottom:.25rem;">Monitor / Camera Angle View</div>
-                                <p style="font-size:.75rem;color:#cbd5e1 !important;margin-bottom:.85rem;">Snap live with webcam/phone camera or choose file.</p>
+                                <div class="text-xs font-bold text-slate-900 dark:text-white mb-0.5">Monitor / Camera Angle View</div>
+                                <p class="text-[11px] text-slate-500 dark:text-slate-400 mb-3">Snap live with webcam/phone camera or choose file.</p>
                                 
-                                <div class="flex items-center justify-center gap-2.5 flex-wrap w-full">
+                                <div class="flex items-center justify-center gap-2 flex-wrap w-full">
                                     <button type="button" onclick="openPhotoCameraModal('slot-1', 'Live Monitor View')"
-                                            style="padding:.55rem 1rem;background:linear-gradient(135deg,#f59e0b,#d97706);color:#020617 !important;font-weight:800;font-size:.78rem;border-radius:.65rem;border:none;display:inline-flex;align-items:center;gap:.45rem;cursor:pointer;box-shadow:0 4px 12px rgba(245,158,11,0.3);text-decoration:none;">
-                                        <span style="font-size:.95rem;">📷</span>
-                                        <span style="color:#020617 !important;font-weight:800;display:inline-block;">Take Photo (Camera)</span>
+                                            class="btn-secondary text-xs px-3 py-1.5 inline-flex items-center gap-1.5 cursor-pointer">
+                                        <span>📷</span>
+                                        <span>Take Photo (Camera)</span>
                                     </button>
-                                    <label style="padding:.55rem 1rem;background:#2563eb !important;color:#ffffff !important;font-weight:800;font-size:.78rem;border-radius:.65rem;border:1px solid #1d4ed8;display:inline-flex;align-items:center;gap:.45rem;cursor:pointer;box-shadow:0 4px 12px rgba(37,99,235,0.3);text-decoration:none;">
-                                        <span style="font-size:.95rem;">📁</span>
-                                        <span style="color:#ffffff !important;font-weight:800;display:inline-block;">Choose File</span>
+                                    <label class="btn-primary text-xs px-3 py-1.5 inline-flex items-center gap-1.5 cursor-pointer" style="background-color: #2563eb; color: #ffffff;">
+                                        <span>📁</span>
+                                        <span>Choose File</span>
                                         <input type="file" name="photos[]" accept="image/*" onchange="handlePhotoFileSelected(this, 'slot-1')" style="display:none;" class="photo-file-input">
                                     </label>
                                 </div>
@@ -290,23 +285,23 @@
 
                             {{-- Filled State (Preview) --}}
                             <div class="slot-filled-state hidden flex-col">
-                                <div class="w-full h-44 rounded-xl overflow-hidden relative border border-slate-700 bg-black group">
+                                <div class="w-full h-44 rounded-xl overflow-hidden relative border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-black group">
                                     <img src="" class="slot-preview-img w-full h-full object-cover">
                                     <div class="absolute top-2 left-2 flex items-center gap-1.5">
-                                        <span class="px-2 py-0.5 rounded-full bg-emerald-500/90 text-white font-bold text-[10px] shadow">✓ Photo Attached</span>
+                                        <span class="px-2 py-0.5 rounded-full bg-emerald-600 text-white font-bold text-[10px] shadow">✓ Photo Attached</span>
                                         <span class="slot-file-size px-2 py-0.5 rounded-full bg-slate-900/80 text-slate-300 font-mono text-[10px] border border-slate-700"></span>
                                     </div>
                                     <div class="absolute bottom-2 inset-x-2 flex items-center justify-center gap-2">
                                         <button type="button" onclick="openPhotoCameraModal('slot-1', 'Live Monitor View')"
-                                                style="padding:.35rem .75rem;background:#0f172a !important;color:#f59e0b !important;border:1px solid #f59e0b;border-radius:.5rem;font-size:.72rem;font-weight:800;display:inline-flex;align-items:center;gap:.3rem;cursor:pointer;">
+                                                class="btn-secondary text-xs px-2.5 py-1 inline-flex items-center gap-1 cursor-pointer">
                                             Retake
                                         </button>
-                                        <label style="padding:.35rem .75rem;background:#0f172a !important;color:#60a5fa !important;border:1px solid #3b82f6;border-radius:.5rem;font-size:.72rem;font-weight:800;display:inline-flex;align-items:center;gap:.3rem;cursor:pointer;">
+                                        <label class="btn-secondary text-xs px-2.5 py-1 inline-flex items-center gap-1 cursor-pointer">
                                             Change
                                             <input type="file" accept="image/*" onchange="handlePhotoFileSelected(this, 'slot-1')" style="display:none;">
                                         </label>
                                         <button type="button" onclick="removeSlotPhoto('slot-1')"
-                                                style="padding:.35rem .75rem;background:#450a0a !important;color:#fca5a5 !important;border:1px solid #ef4444;border-radius:.5rem;font-size:.72rem;font-weight:800;display:inline-flex;align-items:center;gap:.3rem;cursor:pointer;">
+                                                class="px-2.5 py-1 rounded border border-rose-300 dark:border-rose-700 bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 text-xs font-semibold cursor-pointer">
                                             Remove
                                         </button>
                                     </div>
@@ -315,34 +310,34 @@
 
                             <div class="mt-2.5">
                                 <input type="text" name="photo_captions[]" value="Live Monitor View" placeholder="Photo caption (e.g. Live Monitor View)"
-                                       style="font-size:.78rem;width:100%;border-radius:.75rem;border:1px solid #334155;background:#0b1120 !important;color:#ffffff !important;padding:.6rem .75rem;margin-top:.4rem;" class="slot-caption">
+                                       class="crm-input slot-caption w-full text-xs" style="height: 36px;">
                                 <input type="hidden" name="photo_types[]" value="camera_view" class="slot-type">
                             </div>
                         </div>
                     </div>
 
                     {{-- Add More Photos Action Bar --}}
-                    <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between flex-wrap gap-2">
+                    <div class="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between flex-wrap gap-2">
                         <button type="button" onclick="addNewPhotoSlot()"
-                                style="padding:.5rem 1rem;background:#1e293b !important;color:#f59e0b !important;border:1px solid #475569;border-radius:.75rem;font-weight:800;font-size:.75rem;display:inline-flex;align-items:center;gap:.4rem;cursor:pointer;">
-                            <span style="font-size:.9rem;font-weight:900;">+</span>
+                                class="btn-secondary text-xs px-3 py-1.5 inline-flex items-center gap-1.5 cursor-pointer">
+                            <span class="font-bold">+</span>
                             <span>Add Another Proof Photo</span>
                         </button>
-                        <span style="font-size:.72rem;color:#94a3b8 !important;">Up to 10 photos • Supported on Laptop Webcam and Mobile Phone Cameras</span>
+                        <span class="text-[11px] text-slate-500 dark:text-slate-400">Up to 10 photos • Supported on Laptop Webcam and Mobile Phone Cameras</span>
                     </div>
                 </div>
 
                 {{-- SECTION 3: Customer Feedback & 5-Star Rating --}}
-                <div class="bg-[#0f172a] rounded-2xl p-6 shadow-2xl border border-slate-800" style="background-color: #0f172a;">
+                <div class="bg-white dark:bg-[#0f172a] rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-800">
                     <div class="flex items-center gap-2.5 mb-2">
-                        <span class="flex items-center justify-center w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30 font-bold text-xs">3</span>
-                        <h4 class="text-base font-extrabold text-white font-heading">Customer Feedback & Satisfaction Rating</h4>
+                        <span class="flex items-center justify-center w-6 h-6 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-400 font-bold text-xs">3</span>
+                        <h4 class="text-base font-bold text-slate-900 dark:text-white font-heading">Customer Feedback &amp; Satisfaction Rating</h4>
                     </div>
 
-                    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-xl bg-[#060913] border border-amber-500/30 mb-4">
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 mb-4">
                         <div>
-                            <span class="text-xs font-bold text-white block">How satisfied are you with today's installation/service?</span>
-                            <span class="text-[11px] text-slate-400">Tap stars to rate (1 = Poor, 5 = Excellent)</span>
+                            <span class="text-xs font-bold text-slate-900 dark:text-white block">How satisfied are you with today's installation/service?</span>
+                            <span class="text-[11px] text-slate-500 dark:text-slate-400">Tap stars to rate (1 = Poor, 5 = Excellent)</span>
                         </div>
                         <div class="star-rating flex items-center gap-2 text-2xl select-none" id="starContainer">
                             <span class="star cursor-pointer text-amber-400 hover:scale-125 transition-transform" data-value="1">★</span>
@@ -355,47 +350,47 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-semibold text-slate-200 mb-1.5">Customer Comments / Feedback (Optional)</label>
-                        <textarea name="customer_feedback" rows="2" class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5" placeholder="e.g. Excellent work, neat wiring, camera angles are very clear!"></textarea>
+                        <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Customer Comments / Feedback (Optional)</label>
+                        <textarea name="customer_feedback" rows="2" class="crm-textarea w-full text-xs" placeholder="e.g. Excellent work, neat wiring, camera angles are very clear!"></textarea>
                     </div>
                 </div>
 
                 {{-- SECTION 4: Customer Details & Touch Signature Pad --}}
-                <div class="bg-[#0f172a] rounded-2xl p-6 shadow-2xl border border-slate-800" style="background-color: #0f172a;">
+                <div class="bg-white dark:bg-[#0f172a] rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-800">
                     <div class="flex items-center gap-2.5 mb-2">
-                        <span class="flex items-center justify-center w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 border border-purple-500/30 font-bold text-xs">4</span>
-                        <h4 class="text-base font-extrabold text-white font-heading">Customer Digital Sign-Off</h4>
+                        <span class="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400 font-bold text-xs">4</span>
+                        <h4 class="text-base font-bold text-slate-900 dark:text-white font-heading">Customer Digital Sign-Off</h4>
                     </div>
-                    <p class="text-xs text-slate-400 mb-4">I hereby confirm that the CCTV installation/service has been completed to my full satisfaction.</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">I hereby confirm that the CCTV installation/service has been completed to my full satisfaction.</p>
 
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
                         <div>
-                            <label class="block text-sm font-semibold text-slate-200 mb-1.5">Signer Name <span class="text-amber-400">*</span></label>
-                            <input type="text" name="signer_name" value="{{ old('signer_name', $lead?->customer_name) }}" required class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
+                            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Signer Name <span class="text-amber-500">*</span></label>
+                            <input type="text" name="signer_name" value="{{ old('signer_name', $lead?->customer_name) }}" required class="crm-input w-full text-xs" style="height: 38px;">
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold text-slate-200 mb-1.5">Designation / Role</label>
-                            <input type="text" name="signer_designation" value="{{ old('signer_designation') }}" placeholder="e.g. Owner, Store Manager" class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
+                            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Designation / Role</label>
+                            <input type="text" name="signer_designation" value="{{ old('signer_designation') }}" placeholder="e.g. Owner, Store Manager" class="crm-input w-full text-xs" style="height: 38px;">
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold text-slate-200 mb-1.5">Phone Number</label>
-                            <input type="text" name="signer_phone" value="{{ old('signer_phone', $lead?->phone) }}" class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
+                            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Phone Number</label>
+                            <input type="text" name="signer_phone" value="{{ old('signer_phone', $lead?->phone) }}" class="crm-input w-full text-xs" style="height: 38px;">
                         </div>
                     </div>
 
                     {{-- Signature Canvas Box --}}
                     <div class="mb-2">
                         <div class="flex items-center justify-between mb-2">
-                            <label class="text-sm font-semibold text-white flex items-center gap-1.5 font-heading">
-                                Customer Signature (Sign on screen below) <span class="text-amber-400">*</span>
+                            <label class="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5 font-heading">
+                                Customer Signature (Sign on screen below) <span class="text-amber-500">*</span>
                             </label>
-                            <button type="button" id="clearCustomerSig" class="text-xs font-bold text-rose-400 hover:text-rose-300 transition">
+                            <button type="button" id="clearCustomerSig" class="text-xs font-semibold text-rose-500 hover:text-rose-600 transition cursor-pointer">
                                 ↺ Clear Signature
                             </button>
                         </div>
-                        <div class="jcr-canvas-container">
-                            <canvas id="customerCanvas" width="700" height="180" class="w-full h-44 rounded-2xl cursor-crosshair"></canvas>
-                            <div id="sigPlaceholder" class="absolute inset-0 pointer-events-none flex items-center justify-center text-slate-500 text-xs font-mono">
+                        <div class="jcr-canvas-container border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900">
+                            <canvas id="customerCanvas" width="700" height="180" class="w-full h-44 rounded-lg cursor-crosshair bg-white dark:bg-slate-900"></canvas>
+                            <div id="sigPlaceholder" class="absolute inset-0 pointer-events-none flex items-center justify-center text-slate-400 dark:text-slate-500 text-xs">
                                 Sign with finger, stylus, or mouse here
                             </div>
                         </div>
@@ -405,13 +400,13 @@
                 {{-- Action Bar --}}
                 <div class="flex items-center justify-end gap-3 pt-2">
                     <a href="{{ auth()->user()->isTechnician() ? route('technician.dashboard') : url()->previous() }}"
-                       class="px-5 py-2.5 rounded-xl border border-slate-700 text-xs font-bold text-slate-400 hover:text-white hover:bg-slate-800 transition">
+                       class="btn-secondary text-xs px-4 py-2">
                         Cancel
                     </a>
                     <button type="submit" id="submitJcrBtn"
-                            class="btn-amber">
+                            class="btn-primary text-xs px-5 py-2 inline-flex items-center gap-1.5">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                        <span>Confirm & Generate Signed JCR Certificate</span>
+                        <span>Confirm &amp; Generate Signed JCR Certificate</span>
                     </button>
                 </div>
             </form>
@@ -993,62 +988,60 @@
             slotCounter++;
 
             const slotDiv = document.createElement('div');
-            slotDiv.className = 'photo-slot-card p-4 rounded-xl border border-slate-700/80 transition relative flex flex-col justify-between';
+            slotDiv.className = 'photo-slot-card p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 transition relative flex flex-col justify-between';
             slotDiv.id = newId;
-            slotDiv.style.background = '#060913 !important';
-            slotDiv.style.borderColor = '#334155';
 
             slotDiv.innerHTML = `
                 <div class="flex items-center justify-between mb-2.5">
                     <div class="flex items-center gap-1.5">
-                        <span class="text-sm">📸</span>
-                        <span class="slot-title" style="font-size:.8rem;font-weight:800;color:#ffffff !important;">Proof Photo #${slotIndex}</span>
+                        <span class="text-xs">📸</span>
+                        <span class="slot-title font-bold text-xs text-slate-900 dark:text-white">Proof Photo #${slotIndex}</span>
                     </div>
                     <div class="flex items-center gap-2">
-                        <span style="font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;padding:.2rem .5rem;border-radius:.4rem;background:rgba(139,92,246,0.15);color:#a78bfa !important;border:1px solid rgba(139,92,246,0.3);">Extra Proof</span>
-                        <button type="button" onclick="deleteSlot('${newId}')" style="color:#94a3b8;font-size:.85rem;font-weight:bold;cursor:pointer;background:none;border:none;">✕</button>
+                        <span class="text-[11px] font-semibold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">Extra Proof</span>
+                        <button type="button" onclick="deleteSlot('${newId}')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs font-bold cursor-pointer bg-transparent border-0">✕</button>
                     </div>
                 </div>
 
-                <div class="slot-empty-state rounded-xl p-4 text-center flex flex-col items-center justify-center" style="border:2px dashed #475569;background:#0b1120;">
-                    <div style="width:2.75rem;height:2.75rem;border-radius:.75rem;background:#1e293b;color:#f59e0b;display:flex;align-items:center;justify-content:center;font-size:1.25rem;margin:0 auto .5rem auto;border:1px solid #334155;">
+                <div class="slot-empty-state rounded-xl p-4 text-center flex flex-col items-center justify-center border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/40">
+                    <div class="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 flex items-center justify-center mx-auto mb-2 text-base border border-slate-200 dark:border-slate-700">
                         📷
                     </div>
-                    <div style="font-size:.85rem;font-weight:800;color:#ffffff !important;margin-bottom:.25rem;">Capture or Upload Photo</div>
-                    <p style="font-size:.75rem;color:#cbd5e1 !important;margin-bottom:.85rem;">Snap live with webcam/phone camera or choose file.</p>
+                    <div class="text-xs font-bold text-slate-900 dark:text-white mb-0.5">Capture or Upload Photo</div>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 mb-3">Snap live with webcam/phone camera or choose file.</p>
                     
-                    <div class="flex items-center justify-center gap-2.5 flex-wrap w-full">
+                    <div class="flex items-center justify-center gap-2 flex-wrap w-full">
                         <button type="button" onclick="openPhotoCameraModal('${newId}', 'Proof Photo #${slotIndex}')"
-                                style="padding:.55rem 1rem;background:linear-gradient(135deg,#f59e0b,#d97706);color:#020617 !important;font-weight:800;font-size:.78rem;border-radius:.65rem;border:none;display:inline-flex;align-items:center;gap:.45rem;cursor:pointer;box-shadow:0 4px 12px rgba(245,158,11,0.3);text-decoration:none;">
-                            <span style="font-size:.95rem;">📷</span>
-                            <span style="color:#020617 !important;font-weight:800;display:inline-block;">Take Photo (Camera)</span>
+                                class="btn-secondary text-xs px-3 py-1.5 inline-flex items-center gap-1.5 cursor-pointer">
+                            <span>📷</span>
+                            <span>Take Photo (Camera)</span>
                         </button>
-                        <label style="padding:.55rem 1rem;background:#2563eb !important;color:#ffffff !important;font-weight:800;font-size:.78rem;border-radius:.65rem;border:1px solid #1d4ed8;display:inline-flex;align-items:center;gap:.45rem;cursor:pointer;box-shadow:0 4px 12px rgba(37,99,235,0.3);text-decoration:none;">
-                            <span style="font-size:.95rem;">📁</span>
-                            <span style="color:#ffffff !important;font-weight:800;display:inline-block;">Choose File</span>
+                        <label class="btn-primary text-xs px-3 py-1.5 inline-flex items-center gap-1.5 cursor-pointer" style="background-color: #2563eb; color: #ffffff;">
+                            <span>📁</span>
+                            <span>Choose File</span>
                             <input type="file" name="photos[]" accept="image/*" onchange="handlePhotoFileSelected(this, '${newId}')" style="display:none;" class="photo-file-input">
                         </label>
                     </div>
                 </div>
 
                 <div class="slot-filled-state hidden flex-col">
-                    <div class="w-full h-44 rounded-xl overflow-hidden relative border border-slate-700 bg-black group">
+                    <div class="w-full h-44 rounded-xl overflow-hidden relative border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-black group">
                         <img src="" class="slot-preview-img w-full h-full object-cover">
                         <div class="absolute top-2 left-2 flex items-center gap-1.5">
-                            <span class="px-2 py-0.5 rounded-full bg-emerald-500/90 text-white font-bold text-[10px] shadow">✓ Photo Attached</span>
+                            <span class="px-2 py-0.5 rounded-full bg-emerald-600 text-white font-bold text-[10px] shadow">✓ Photo Attached</span>
                             <span class="slot-file-size px-2 py-0.5 rounded-full bg-slate-900/80 text-slate-300 font-mono text-[10px] border border-slate-700"></span>
                         </div>
                         <div class="absolute bottom-2 inset-x-2 flex items-center justify-center gap-2">
                             <button type="button" onclick="openPhotoCameraModal('${newId}', 'Proof Photo #${slotIndex}')"
-                                    style="padding:.35rem .75rem;background:#0f172a !important;color:#f59e0b !important;border:1px solid #f59e0b;border-radius:.5rem;font-size:.72rem;font-weight:800;display:inline-flex;align-items:center;gap:.3rem;cursor:pointer;">
+                                    class="btn-secondary text-xs px-2.5 py-1 inline-flex items-center gap-1 cursor-pointer">
                                 Retake
                             </button>
-                            <label style="padding:.35rem .75rem;background:#0f172a !important;color:#60a5fa !important;border:1px solid #3b82f6;border-radius:.5rem;font-size:.72rem;font-weight:800;display:inline-flex;align-items:center;gap:.3rem;cursor:pointer;">
+                            <label class="btn-secondary text-xs px-2.5 py-1 inline-flex items-center gap-1 cursor-pointer">
                                 Change
                                 <input type="file" accept="image/*" onchange="handlePhotoFileSelected(this, '${newId}')" style="display:none;">
                             </label>
                             <button type="button" onclick="removeSlotPhoto('${newId}')"
-                                    style="padding:.35rem .75rem;background:#450a0a !important;color:#fca5a5 !important;border:1px solid #ef4444;border-radius:.5rem;font-size:.72rem;font-weight:800;display:inline-flex;align-items:center;gap:.3rem;cursor:pointer;">
+                                    class="px-2.5 py-1 rounded border border-rose-300 dark:border-rose-700 bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 text-xs font-semibold cursor-pointer">
                                 Remove
                             </button>
                         </div>
@@ -1057,7 +1050,7 @@
 
                 <div class="mt-2.5">
                     <input type="text" name="photo_captions[]" value="" placeholder="Photo caption (e.g. Cable Pathway / Outdoor View)"
-                           style="font-size:.78rem;width:100%;border-radius:.75rem;border:1px solid #334155;background:#0b1120 !important;color:#ffffff !important;padding:.6rem .75rem;margin-top:.4rem;" class="slot-caption">
+                           class="crm-input slot-caption w-full text-xs" style="height: 36px;">
                     <input type="hidden" name="photo_types[]" value="general" class="slot-type">
                 </div>
             `;
@@ -1096,8 +1089,8 @@
             let isDrawing = false;
             let hasDrawn = false;
 
-            // Set canvas stroke style - cyber electric cyan for dark mode signature
-            ctx.strokeStyle = '#38bdf8';
+            // Set canvas stroke style - dark crisp ink in light mode, electric cyan in dark mode
+            ctx.strokeStyle = document.documentElement.classList.contains('dark') ? '#38bdf8' : '#0f172a';
             ctx.lineWidth = 3.0;
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';

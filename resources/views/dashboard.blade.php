@@ -1,142 +1,115 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div class="min-w-0">
+        <div class="flex items-center justify-between">
+            <div>
                 <span id="last-updated" class="hidden"></span>
-                <h1 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Dashboard</h1>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Welcome, {{ Auth::user()->name }}</p>
+                <h2 class="text-xl font-bold text-slate-900 dark:text-white">Dashboard</h2>
             </div>
-            
-            <div class="flex items-center gap-2.5 shrink-0">
-                @if(!$isAdmin)
-                    <a href="{{ route('attendance.index') }}" class="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 rounded transition-colors">
-                        <span>My Attendance</span>
+            @if(!$isAdmin)
+                <div>
+                    <a href="{{ route('attendance.index') }}" class="btn btn-secondary">
+                        My Attendance
                     </a>
-                @endif
-            </div>
+                </div>
+            @endif
         </div>
     </x-slot>
 
-    {{-- High-End SaaS Dashboard Styles --}}
-    <style>
-        .db-wrap {
-            padding: 1.5rem 0 3rem;
-            min-height: calc(100vh - 4.5rem);
-        }
+    {{-- Dashboard Error Banner --}}
+    <div id="dashboard-error" class="hidden mb-[20px] p-[12px] bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded"></div>
 
-        .db-inner {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 1.5rem;
-        }
+    <div class="space-y-[20px]">
+        @if($isAdmin)
+            {{-- ========================================================================= --}}
+            {{-- ADMIN EXECUTIVE DASHBOARD --}}
+            {{-- ========================================================================= --}}
 
-        #dashboard-error {
-            display: none;
-            margin-bottom: 1.25rem;
-            border-radius: 0.75rem;
-            border: 1px solid #fecdd3;
-            background: #fff1f2;
-            padding: 0.9rem 1.25rem;
-            font-size: 0.85rem;
-            color: #e11d48;
-        }
-        html.dark #dashboard-error {
-            background: rgba(244, 63, 94, 0.1);
-            border-color: rgba(244, 63, 94, 0.3);
-            color: #fb7185;
-        }
-        #dashboard-error.visible { display: block; }
-    </style>
+            {{-- ── 1. Top Stat Cards: one row, equal width, flexbox with gap: 12px. Maximum 4 cards. ── --}}
+            <div class="flex flex-col sm:flex-row gap-[12px] mb-[20px] w-full">
 
-    <div class="db-wrap bg-[#f8fafc] dark:bg-[#060913]">
-        <div class="db-inner">
-
-            {{-- Error Banner --}}
-            <div id="dashboard-error"></div>
-
-            @if($isAdmin)
-                {{-- ========================================================================= --}}
-                {{-- ADMIN EXECUTIVE DASHBOARD --}}
-                {{-- ========================================================================= --}}
-
-                {{-- ── 1. Top 5 Metric Cards ── --}}
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
-
-                    {{-- Total Leads Card --}}
-                    <div class="stat-card">
-                        <div class="text-xs font-medium text-slate-500 uppercase tracking-wide">Total Leads</div>
-                        <div class="text-2xl font-bold text-slate-900 dark:text-white mt-0.5" id="stat-total-leads">{{ $totalLeads ?? 16 }}</div>
-                        <span id="stat-leads-month" class="hidden">0</span>
-                    </div>
-
-                    {{-- Conversion Rate Card --}}
-                    <div class="stat-card">
-                        <div class="text-xs font-medium text-slate-500 uppercase tracking-wide">Conversion Rate</div>
-                        <div class="text-2xl font-bold text-slate-900 dark:text-white mt-0.5"><span id="stat-conversion">0</span>%</div>
-                        <span id="stat-won" class="hidden">0</span>
-                        <span id="stat-lost" class="hidden">0</span>
-                    </div>
-
-                    {{-- Accepted Revenue Card --}}
-                    <div class="stat-card">
-                        <div class="text-xs font-medium text-slate-500 uppercase tracking-wide">Accepted Revenue</div>
-                        <div class="text-2xl font-bold text-slate-900 dark:text-white mt-0.5" id="stat-revenue">₹0</div>
-                        <span id="stat-revenue-month" class="hidden">0</span>
-                    </div>
-
-                    {{-- Open Jobs Card --}}
-                    <div class="stat-card">
-                        <div class="text-xs font-medium text-slate-500 uppercase tracking-wide">Open Jobs</div>
-                        <div class="text-2xl font-bold text-slate-900 dark:text-white mt-0.5" id="stat-open-jobs">0</div>
-                        <span id="stat-inprogress-jobs" class="hidden">0</span>
-                    </div>
-
-                    {{-- Projects Card --}}
-                    <a href="{{ route('projects.index') }}" class="stat-card block no-underline text-inherit">
-                        <div class="text-xs font-medium text-slate-500 uppercase tracking-wide">Projects</div>
-                        <div class="text-2xl font-bold text-slate-900 dark:text-white mt-0.5" id="stat-total-projects">0</div>
-                        <span id="stat-projects-in-progress" class="hidden">0</span>
-                        <span id="stat-project-val" class="hidden">₹0</span>
-                    </a>
-
+                {{-- Total Leads Card --}}
+                <div class="stat-card flex-1 p-[16px] bg-white dark:bg-[#0f172a] border border-[#ddd] dark:border-slate-800 rounded">
+                    <div class="text-xs font-medium text-slate-500 uppercase tracking-wide">Total Leads</div>
+                    <div class="text-2xl font-bold text-slate-900 dark:text-white mt-1" id="stat-total-leads">{{ $totalLeads ?? 16 }}</div>
+                    <span id="stat-leads-month" class="hidden">0</span>
                 </div>
 
-                {{-- ── 2. Middle Row: Sales & Deals Pipeline Funnel ── --}}
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-6">
+                {{-- Conversion Rate Card --}}
+                <div class="stat-card flex-1 p-[16px] bg-white dark:bg-[#0f172a] border border-[#ddd] dark:border-slate-800 rounded">
+                    <div class="text-xs font-medium text-slate-500 uppercase tracking-wide">Conversion Rate</div>
+                    <div class="text-2xl font-bold text-slate-900 dark:text-white mt-1"><span id="stat-conversion">0</span>%</div>
+                    <span id="stat-won" class="hidden">0</span>
+                    <span id="stat-lost" class="hidden">0</span>
+                </div>
 
-                    {{-- Sales (Bar Chart) --}}
-                    <div class="lg:col-span-7 bg-white dark:bg-[#0f172a] border border-[#ddd] dark:border-slate-800 rounded-[4px] p-5">
-                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-3 border-b border-[#ddd] dark:border-slate-800 mb-4">
-                            <h3 class="text-sm font-bold text-slate-900 dark:text-white">Revenue Overview</h3>
-                            <div class="flex items-center gap-3">
-                                <select class="h-[32px] px-2.5 text-xs rounded-[4px] border border-[#ddd] dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:outline-none">
-                                    <option value="6">Past 6 Months</option>
-                                    <option value="12">Past 12 Months</option>
-                                    <option value="3">Past 3 Months</option>
-                                </select>
-                            </div>
-                        </div>
+                {{-- Accepted Revenue Card --}}
+                <div class="stat-card flex-1 p-[16px] bg-white dark:bg-[#0f172a] border border-[#ddd] dark:border-slate-800 rounded">
+                    <div class="text-xs font-medium text-slate-500 uppercase tracking-wide">Accepted Revenue</div>
+                    <div class="text-2xl font-bold text-slate-900 dark:text-white mt-1" id="stat-revenue">₹0</div>
+                    <span id="stat-revenue-month" class="hidden">0</span>
+                </div>
 
-                        <div class="relative" style="height: 270px;">
-                            <canvas id="revenueChart"></canvas>
-                        </div>
+                {{-- Open Jobs Card --}}
+                <div class="stat-card flex-1 p-[16px] bg-white dark:bg-[#0f172a] border border-[#ddd] dark:border-slate-800 rounded">
+                    <div class="text-xs font-medium text-slate-500 uppercase tracking-wide">Open Jobs</div>
+                    <div class="text-2xl font-bold text-slate-900 dark:text-white mt-1" id="stat-open-jobs">0</div>
+                    <span id="stat-inprogress-jobs" class="hidden">0</span>
+                    {{-- Hidden spans for DOM script compatibility --}}
+                    <span id="stat-total-projects" class="hidden">0</span>
+                    <span id="stat-projects-in-progress" class="hidden">0</span>
+                    <span id="stat-project-val" class="hidden">₹0</span>
+                </div>
 
-                        {{-- Sales Mini Metrics Footer --}}
-                        <div class="grid grid-cols-3 gap-3 pt-4 mt-4 border-t border-[#ddd] dark:border-slate-800 text-center sm:text-left">
-                            <div class="p-3 rounded-[4px] bg-slate-50 dark:bg-slate-900/40 border border-[#eee] dark:border-slate-800">
-                                <div class="text-[11px] font-medium uppercase tracking-wider text-slate-500">Total Invoiced</div>
-                                <div class="text-base font-bold text-slate-900 dark:text-white mt-0.5" id="stat-footer-rev">₹0</div>
-                            </div>
-                            <div class="p-3 rounded-[4px] bg-slate-50 dark:bg-slate-900/40 border border-[#eee] dark:border-slate-800">
-                                <div class="text-[11px] font-medium uppercase tracking-wider text-slate-500">Won Ratio</div>
-                                <div class="text-base font-bold text-slate-900 dark:text-white mt-0.5"><span id="stat-footer-ratio">0</span>%</div>
-                            </div>
-                            <div class="p-3 rounded-[4px] bg-slate-50 dark:bg-slate-900/40 border border-[#eee] dark:border-slate-800">
-                                <div class="text-[11px] font-medium uppercase tracking-wider text-slate-500">Active Pipeline</div>
-                                <div class="text-base font-bold text-slate-900 dark:text-white mt-0.5"><span id="stat-footer-active">0</span> Quotes</div>
-                            </div>
+            </div>
+
+            {{-- ── 2. Middle Row: Sales & Deals Pipeline Funnel ── --}}
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-[20px] mb-[20px]">
+
+                {{-- Sales (Bar Chart): Single white box with a border, no nested cards --}}
+                <div class="lg:col-span-7 bg-white dark:bg-[#0f172a] border border-[#ddd] dark:border-slate-800 rounded p-[20px]">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-3 border-b border-[#ddd] dark:border-slate-800 mb-4">
+                        <h3 class="text-sm font-bold text-slate-900 dark:text-white">Revenue Overview</h3>
+                        <div class="flex items-center gap-3">
+                            <select class="h-[32px] px-2.5 text-xs rounded border border-[#ddd] dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:outline-none">
+                                <option value="6">Past 6 Months</option>
+                                <option value="12">Past 12 Months</option>
+                                <option value="3">Past 3 Months</option>
+                            </select>
                         </div>
                     </div>
+
+                    <div id="revenue-chart-container" class="relative" style="height: 270px;">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                    <div id="revenue-table-container" class="hidden overflow-x-auto my-2">
+                        <table class="w-full text-xs border-collapse">
+                            <thead>
+                                <tr class="border-b border-[#ddd] dark:border-slate-800 bg-[#f8f9fa] dark:bg-slate-900/60 text-slate-600 dark:text-slate-400">
+                                    <th class="text-left py-2 px-3 font-semibold">Period</th>
+                                    <th class="text-right py-2 px-3 font-semibold">Accepted Revenue</th>
+                                </tr>
+                            </thead>
+                            <tbody id="revenue-table-body" class="divide-y divide-[#eee] dark:divide-slate-800 text-slate-800 dark:text-slate-200">
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {{-- Sales Mini Metrics Footer: clean columns, no card inside card --}}
+                    <div class="grid grid-cols-3 gap-[12px] pt-[16px] mt-[16px] border-t border-[#ddd] dark:border-slate-800 text-center sm:text-left">
+                        <div>
+                            <div class="text-[11px] font-medium uppercase tracking-wider text-slate-500">Total Invoiced</div>
+                            <div class="text-base font-bold text-slate-900 dark:text-white mt-0.5" id="stat-footer-rev">₹0</div>
+                        </div>
+                        <div>
+                            <div class="text-[11px] font-medium uppercase tracking-wider text-slate-500">Won Ratio</div>
+                            <div class="text-base font-bold text-slate-900 dark:text-white mt-0.5"><span id="stat-footer-ratio">0</span>%</div>
+                        </div>
+                        <div>
+                            <div class="text-[11px] font-medium uppercase tracking-wider text-slate-500">Active Pipeline</div>
+                            <div class="text-base font-bold text-slate-900 dark:text-white mt-0.5"><span id="stat-footer-active">0</span> Quotes</div>
+                        </div>
+                    </div>
+                </div>
 
                     {{-- Deals Pipeline: Simple Plain Table --}}
                     <div class="lg:col-span-5 bg-white dark:bg-[#0f172a] border border-[#ddd] dark:border-slate-800 rounded-[4px] p-5 flex flex-col justify-between">
@@ -271,33 +244,33 @@
                 {{-- STAFF WORK-BASED DASHBOARD --}}
                 {{-- ========================================================================= --}}
 
-                {{-- ── 1. Top 4 Metric Cards ── --}}
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                {{-- ── 1. Top 4 Metric Cards: one row, equal width, flexbox with gap: 12px ── --}}
+                <div class="flex flex-col sm:flex-row gap-[12px] mb-[20px] w-full">
 
                     {{-- Open Jobs Card --}}
-                    <div class="stat-card">
+                    <div class="stat-card flex-1 p-[16px] bg-white dark:bg-[#0f172a] border border-[#ddd] dark:border-slate-800 rounded">
                         <div class="text-xs font-medium text-slate-500 uppercase tracking-wide">Open Jobs</div>
-                        <div class="text-2xl font-bold text-slate-900 dark:text-white mt-0.5" id="staff-open-jobs">0</div>
+                        <div class="text-2xl font-bold text-slate-900 dark:text-white mt-1" id="staff-open-jobs">0</div>
                         <span id="staff-inprogress-jobs" class="hidden">0</span>
                     </div>
 
                     {{-- Support Tickets Card --}}
-                    <div class="stat-card">
+                    <div class="stat-card flex-1 p-[16px] bg-white dark:bg-[#0f172a] border border-[#ddd] dark:border-slate-800 rounded">
                         <div class="text-xs font-medium text-slate-500 uppercase tracking-wide">Support Tickets</div>
-                        <div class="text-2xl font-bold text-slate-900 dark:text-white mt-0.5" id="staff-open-tickets">0</div>
+                        <div class="text-2xl font-bold text-slate-900 dark:text-white mt-1" id="staff-open-tickets">0</div>
                         <span id="staff-critical-tickets" class="hidden">0</span>
                     </div>
 
                     {{-- Completed Jobs Card --}}
-                    <div class="stat-card">
+                    <div class="stat-card flex-1 p-[16px] bg-white dark:bg-[#0f172a] border border-[#ddd] dark:border-slate-800 rounded">
                         <div class="text-xs font-medium text-slate-500 uppercase tracking-wide">Completed Jobs</div>
-                        <div class="text-2xl font-bold text-slate-900 dark:text-white mt-0.5" id="staff-completed-jobs">0</div>
+                        <div class="text-2xl font-bold text-slate-900 dark:text-white mt-1" id="staff-completed-jobs">0</div>
                     </div>
 
                     {{-- Attendance Card --}}
-                    <div class="stat-card">
+                    <div class="stat-card flex-1 p-[16px] bg-white dark:bg-[#0f172a] border border-[#ddd] dark:border-slate-800 rounded">
                         <div class="text-xs font-medium text-slate-500 uppercase tracking-wide">Attendance</div>
-                        <div class="text-2xl font-bold text-slate-900 dark:text-white mt-0.5 capitalize" id="staff-att-status">
+                        <div class="text-2xl font-bold text-slate-900 dark:text-white mt-1 capitalize" id="staff-att-status">
                             {{ $myAttendanceToday ? ucfirst($myAttendanceToday->status) : 'Not Clocked In' }}
                         </div>
                         <span id="staff-att-badge" class="hidden"></span>
@@ -418,7 +391,6 @@
             @endif
 
         </div>
-    </div>
 
     {{-- Chart.js --}}
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.9/dist/chart.umd.min.js"></script>
@@ -674,46 +646,68 @@
         @if($isAdmin)
         /* 1. Revenue Simple Bar Chart */
         const ctxRev = document.getElementById('revenueChart');
-        if (ctxRev && data.revenueChart) {
-            revenueChart = new Chart(ctxRev, {
-                type: 'bar',
-                data: {
-                    labels: data.revenueChart.labels,
-                    datasets: [{
-                        label: 'Accepted Revenue',
-                        data: data.revenueChart.data,
-                        backgroundColor: '#2563eb',
-                        borderRadius: 4,
-                        maxBarThickness: 44,
-                    }]
-                },
-                options: baseOptions({
-                    scales: {
-                        x: {
-                            grid: { display: false },
-                            ticks: { font: baseFont, color: getTickColor() },
-                            border: { display: false }
-                        },
-                        y: {
-                            beginAtZero: true,
-                            grid: { color: getGridColor() },
-                            ticks: {
-                                font: baseFont,
-                                color: getTickColor(),
-                                callback: (v) => money(v)
-                            },
-                            border: { display: false }
-                        }
-                    },
-                    plugins: {
-                        ...baseOptions().plugins,
-                        tooltip: {
-                            ...baseOptions().plugins.tooltip,
-                            callbacks: { label: (ctx) => ' ' + money(ctx.parsed.y) }
-                        }
+        const revChartBox = document.getElementById('revenue-chart-container');
+        const revTableBox = document.getElementById('revenue-table-container');
+        const revTableBody = document.getElementById('revenue-table-body');
+
+        if (data.revenueChart && data.revenueChart.data) {
+            if (data.revenueChart.data.length < 3) {
+                // Charts with fewer than 3 values are shown as a table
+                if (revChartBox) revChartBox.classList.add('hidden');
+                if (revTableBox) {
+                    revTableBox.classList.remove('hidden');
+                    if (revTableBody) {
+                        revTableBody.innerHTML = data.revenueChart.labels.map((lbl, idx) => `
+                            <tr>
+                                <td class="py-2.5 px-3 font-medium">${escapeHtml(lbl)}</td>
+                                <td class="py-2.5 px-3 text-right font-bold text-slate-900 dark:text-white">${money(data.revenueChart.data[idx] || 0)}</td>
+                            </tr>
+                        `).join('');
                     }
-                })
-            });
+                }
+            } else if (ctxRev) {
+                if (revTableBox) revTableBox.classList.add('hidden');
+                if (revChartBox) revChartBox.classList.remove('hidden');
+                revenueChart = new Chart(ctxRev, {
+                    type: 'bar',
+                    data: {
+                        labels: data.revenueChart.labels,
+                        datasets: [{
+                            label: 'Accepted Revenue',
+                            data: data.revenueChart.data,
+                            backgroundColor: '#2563eb',
+                            borderRadius: 4,
+                            maxBarThickness: 44,
+                        }]
+                    },
+                    options: baseOptions({
+                        scales: {
+                            x: {
+                                grid: { display: false },
+                                ticks: { font: baseFont, color: getTickColor() },
+                                border: { display: false }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                grid: { color: getGridColor() },
+                                ticks: {
+                                    font: baseFont,
+                                    color: getTickColor(),
+                                    callback: (v) => money(v)
+                                },
+                                border: { display: false }
+                            }
+                        },
+                        plugins: {
+                            ...baseOptions().plugins,
+                            tooltip: {
+                                ...baseOptions().plugins.tooltip,
+                                callbacks: { label: (ctx) => ' ' + money(ctx.parsed.y) }
+                            }
+                        }
+                    })
+                });
+            }
         }
 
         /* 2. Quotation Pipeline Doughnut */
@@ -788,7 +782,7 @@
                     datasets: [{
                         label: 'Jobs',
                         data: data.jobChart.data,
-                        backgroundColor: jColors,
+                        backgroundColor: '#2563eb',
                         borderRadius: 6,
                         borderSkipped: false,
                         maxBarThickness: 32,

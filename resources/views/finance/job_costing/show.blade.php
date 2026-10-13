@@ -1,36 +1,31 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div class="flex items-center gap-3">
-                <a href="{{ route('finance.job-costing.index') }}" class="px-2.5 py-1.5 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded text-xs font-medium transition">
-                    &larr; Back
-                </a>
+        <div>
+            <a href="{{ route('finance.job-costing.index') }}" class="back-link">&larr; Back</a>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-1">
                 <div>
-                    <div class="flex items-center gap-2">
-                        <h1 class="text-xl font-bold text-slate-900 dark:text-white">
-                            Job Costing: {{ $costing['job_no'] }}
-                        </h1>
-                        <span class="font-bold text-xs {{ $costing['gross_margin_percent'] >= 20 ? 'text-emerald-600 dark:text-emerald-400' : ($costing['gross_margin_percent'] >= 5 ? 'text-amber-600 dark:text-amber-400' : 'text-rose-600 dark:text-rose-400') }}">
-                            ({{ $costing['gross_margin_percent'] }}% Margin)
+                    <h2 class="text-xl font-bold text-slate-900 dark:text-white">
+                        Job Costing: {{ $costing['job_no'] }}
+                    </h2>
+                    <div class="flex items-center gap-2 text-xs mt-1">
+                        <span class="font-bold {{ $costing['gross_margin_percent'] >= 20 ? 'text-emerald-600' : ($costing['gross_margin_percent'] >= 5 ? 'text-amber-600' : 'text-red-600') }}">
+                            {{ $costing['gross_margin_percent'] }}% Margin
                         </span>
-                    </div>
-                    <div class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                        Client: {{ $costing['customer_name'] }} &bull; Site: {{ $costing['site_address'] }}
+                        <span class="text-slate-400">&bull;</span>
+                        <span class="text-slate-600 dark:text-slate-300">Client: {{ $costing['customer_name'] }}</span>
                     </div>
                 </div>
-            </div>
 
-            <!-- Action Buttons -->
-            <div class="flex flex-wrap items-center gap-2">
-                <a href="{{ route('finance.job-costing.pdf', $job->id) }}"
-                   class="inline-flex items-center px-3 py-1.5 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-medium rounded transition">
-                    Download P&amp;L PDF
-                </a>
+                <!-- Action Buttons -->
+                <div class="flex items-center gap-2 flex-wrap">
+                    <a href="{{ route('finance.job-costing.pdf', $job->id) }}" class="btn-secondary">
+                        P&amp;L PDF
+                    </a>
 
-                <button @click="$dispatch('open-modal', 'edit-costing-modal')" type="button"
-                        class="inline-flex items-center px-3 py-1.5 bg-[#2563eb] hover:bg-blue-700 text-white text-xs font-medium rounded transition">
-                    Edit Labor &amp; Overheads
-                </button>
+                    <button @click="$dispatch('open-modal', 'edit-costing-modal')" type="button" class="btn-primary">
+                        Edit Costing
+                    </button>
+                </div>
             </div>
         </div>
     </x-slot>
