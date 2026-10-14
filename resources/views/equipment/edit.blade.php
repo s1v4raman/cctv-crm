@@ -29,7 +29,8 @@
                         {{-- Customer / Site --}}
                         <div class="sm:col-span-2">
                             <label class="crm-label text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2 block">Customer Site / Lead <span class="required-marker text-rose-500">*</span></label>
-                            <select name="lead_id" class="crm-select w-full h-[44px] text-sm rounded-lg" required>
+                            <select name="lead_id" data-no-tom="true" class="crm-select w-full h-[44px] text-sm rounded-lg" required>
+                                <option value="">-- Select Customer / Lead (or General Estimate) --</option>
                                 @foreach($leads as $l)
                                     <option value="{{ $l->id }}" @selected(old('lead_id', $equipment->lead_id) == $l->id)>
                                         {{ $l->customer_name }} ({{ $l->phone }})
@@ -41,8 +42,8 @@
                         {{-- Installation Job --}}
                         <div>
                             <label class="crm-label text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2 block">Associated Installation Job</label>
-                            <select name="installation_job_id" class="crm-select w-full h-[44px] text-sm rounded-lg">
-                                <option value="">None (Standalone)</option>
+                            <select name="installation_job_id" data-no-tom="true" class="crm-select w-full h-[44px] text-sm rounded-lg">
+                                <option value="">-- None (Direct Entry / Existing Site) --</option>
                                 @foreach($jobs as $j)
                                     <option value="{{ $j->id }}" @selected(old('installation_job_id', $equipment->installation_job_id) == $j->id)>
                                         {{ $j->job_no }} &mdash; {{ $j->quotation?->lead?->customer_name }}
@@ -54,8 +55,8 @@
                         {{-- Product Catalog Reference --}}
                         <div>
                             <label class="crm-label text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2 block">Product Model (Catalog)</label>
-                            <select name="product_id" class="crm-select w-full h-[44px] text-sm rounded-lg">
-                                <option value="">Select Catalog Item...</option>
+                            <select name="product_id" data-no-tom="true" class="crm-select w-full h-[44px] text-sm rounded-lg">
+                                <option value="">-- Select Product Model (Catalog) --</option>
                                 @foreach($products as $p)
                                     <option value="{{ $p->id }}" @selected(old('product_id', $equipment->product_id) == $p->id)>
                                         {{ $p->name }} {{ $p->model_no ? "({$p->model_no})" : '' }}
