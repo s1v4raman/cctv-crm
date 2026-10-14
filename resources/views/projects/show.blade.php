@@ -51,6 +51,10 @@
              workDayModalOpen: false,
              deviceModalOpen: false,
              bulkDeviceModalOpen: false,
+             templateModalOpen: false,
+             taskModalOpen: false,
+             selectedTemplateKey: '{{ array_key_first($workflowTemplates) ?? 'cctv_commercial' }}',
+             activePhaseFilter: 'all',
 
              // Device password reveal state
              revealedPasswords: {},
@@ -73,6 +77,60 @@
                      }
                  } catch (e) {
                      alert('Error revealing password');
+                 }
+             },
+
+             // Checklist item AJAX toggle
+             async toggleChecklist(checklistId, checkboxEl) {
+                 try {
+                     const res = await fetch(`/tasks/checklists/${checklistId}/toggle`, {
+                         method: 'POST',
+                         headers: {
+                             'Content-Type': 'application/json',
+                             'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                         }
+                     });
+                     const data = await res.json();
+                     if (data.success) {
+                         const label = document.getElementById(`checklist-label-${checklistId}`);
+                         if (label) {
+                             if (data.is_completed) {
+                                 label.classList.add('line-through', 'text-slate-400');
+                                 label.classList.remove('text-slate-700', 'dark:text-slate-300');
+                             } else {
+                                 label.classList.remove('line-through', 'text-slate-400');
+                                 label.classList.add('text-slate-700', 'dark:text-slate-300');
+                             }
+                         }
+                         const progressEl = document.getElementById(`task-progress-${data.task_id}`);
+                         if (progressEl) {
+                             progressEl.innerText = `${data.progress.completed}/${data.progress.total} (${data.progress.percentage}%)`;
+                         }
+                     }
+                 } catch (e) {
+                     console.error('Error toggling checklist:', e);
+                 }
+             },
+
+             // Quick task status change
+             async updateTaskStatus(taskId, selectEl) {
+                 const newStatus = selectEl.value;
+                 try {
+                     const res = await fetch(`/projects/{{ $project->id }}/tasks/${taskId}/status`, {
+                         method: 'PATCH',
+                         headers: {
+                             'Content-Type': 'application/json',
+                             'Accept': 'application/json',
+                             'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                         },
+                         body: JSON.stringify({ status: newStatus })
+                     });
+                     const data = await res.json();
+                     if (data.success) {
+                         window.location.reload();
+                     }
+                 } catch (e) {
+                     console.error('Error updating status:', e);
                  }
              }
          }">
@@ -126,7 +184,7 @@
             </div>
         @endif
 
-        {{-- 5-Tab Navigation Bar --}}
+        {{-- 6-Tab Navigation Bar --}}
         <div class="bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200/80 dark:border-slate-800 px-6 pt-3.5 shadow-xs">
             <nav class="flex space-x-6 text-sm font-bold overflow-x-auto">
                 <button type="button" @click="currentTab = 'overview'" :class="currentTab === 'overview' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'">
@@ -146,6 +204,14 @@
                 </button>
                 <button type="button" @click="currentTab = 'ip_devices'" :class="currentTab === 'ip_devices' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'">
                     5. IP Devices ({{ $project->ipDevices->count() }})
+                </button>
+                <button type="button" @click="currentTab = 'tasks'" :class="currentTab === 'tasks' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'">
+                    6. Tasks &bull; Workflow ({{ $tasksCount }})
+                    @if($tasksCount > 0)
+                        <span class="ml-1 px-1.5 py-0.5 text-[10px] rounded-full {{ $taskCompletionPercentage === 100 ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300' }} font-bold">{{ $taskCompletionPercentage }}%</span>
+                    @else
+                        <span class="ml-1 px-1.5 py-0.5 text-[10px] rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300 font-bold">Templates</span>
+                    @endif
                 </button>
             </nav>
         </div>
@@ -1087,6 +1153,310 @@
         </div>
 
         {{-- ════════════════════════════════════════════════════════════════ --}}
+        {{-- TAB 6: TASKS & WORKFLOW ENGINE                                   --}}
+        {{-- ════════════════════════════════════════════════════════════════ --}}
+        <div x-show="currentTab === 'tasks'" class="space-y-6">
+
+            {{-- Workflow KPI & Action Header --}}
+            <div class="p-6 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-5">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h3 class="font-extrabold text-slate-900 dark:text-white text-base flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+                            Tasks &bull; Milestones &bull; SOP Workflows
+                        </h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                            Standard operating procedures, quality assurance checklists, and phase progress tracking.
+                        </p>
+                    </div>
+
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <button type="button" @click="templateModalOpen = true" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-sm hover:from-blue-700 hover:to-indigo-700 transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                            <span>Apply Workflow Template</span>
+                        </button>
+
+                        <button type="button" @click="taskModalOpen = true" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                            <span>Add Custom Task</span>
+                        </button>
+                    </div>
+                </div>
+
+                {{-- Progress Metric Bar --}}
+                <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-2 border-t border-slate-100 dark:border-slate-800/80 text-center">
+                    <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">Total Tasks</span>
+                        <span class="text-xl font-extrabold text-slate-900 dark:text-white">{{ $tasksCount }}</span>
+                    </div>
+                    <div class="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-900/50">
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 block">Completed</span>
+                        <span class="text-xl font-extrabold text-emerald-700 dark:text-emerald-300">{{ $completedTasksCount }}</span>
+                    </div>
+                    <div class="p-3 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-900/50">
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 block">In Progress</span>
+                        <span class="text-xl font-extrabold text-blue-700 dark:text-blue-300">{{ $inProgressTasksCount }}</span>
+                    </div>
+                    <div class="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-100 dark:border-amber-900/50">
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 block">Pending</span>
+                        <span class="text-xl font-extrabold text-amber-700 dark:text-amber-300">{{ $pendingTasksCount }}</span>
+                    </div>
+                    <div class="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-100 dark:border-rose-900/50 col-span-2 sm:col-span-1">
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400 block">Blocked</span>
+                        <span class="text-xl font-extrabold text-rose-700 dark:text-rose-300">{{ $blockedTasksCount }}</span>
+                    </div>
+                </div>
+
+                {{-- Overall Progress Bar --}}
+                @if($tasksCount > 0)
+                <div class="space-y-1.5 pt-1">
+                    <div class="flex items-center justify-between text-xs font-bold text-slate-600 dark:text-slate-400">
+                        <span>Workflow Completion Rate</span>
+                        <span class="text-blue-600 dark:text-blue-400 font-extrabold">{{ $taskCompletionPercentage }}%</span>
+                    </div>
+                    <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2.5 overflow-hidden">
+                        <div class="bg-gradient-to-r from-blue-600 to-emerald-500 h-2.5 rounded-full transition-all duration-500" style="width: {{ $taskCompletionPercentage }}%"></div>
+                    </div>
+                </div>
+                @endif
+            </div>
+
+            {{-- EMPTY STATE: 1-Click Template Launchpad --}}
+            @if($tasksCount === 0)
+            <div class="p-8 rounded-2xl bg-gradient-to-br from-blue-50/60 via-white to-indigo-50/40 dark:from-slate-900 dark:via-[#0f172a] dark:to-indigo-950/20 border-2 border-dashed border-blue-200 dark:border-blue-900/50 space-y-6 text-center">
+                <div class="max-w-xl mx-auto space-y-2">
+                    <div class="w-14 h-14 mx-auto rounded-2xl bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center text-2xl font-bold shadow-xs">
+                        ⚡
+                    </div>
+                    <h4 class="text-lg font-extrabold text-slate-900 dark:text-white">
+                        Fast-Track Execution with Pre-Built Industry Workflows
+                    </h4>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">
+                        Select a specialized standard operating procedure below to instantly generate phase-wise milestones, technical tasks, quality assurance checklists, and SOP guidelines.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-left max-w-5xl mx-auto">
+                    @foreach($workflowTemplates as $tKey => $tpl)
+                    <div class="p-5 rounded-2xl bg-white dark:bg-[#0b1329] border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-4">
+                        <div class="space-y-2.5">
+                            <div class="flex items-center justify-between">
+                                <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wide bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                                    {{ count($tpl['phases']) }} Phases &bull; ~{{ $tpl['estimated_days'] }} Days
+                                </span>
+                            </div>
+                            <h5 class="font-extrabold text-sm text-slate-900 dark:text-white leading-snug">
+                                {{ $tpl['name'] }}
+                            </h5>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                                {{ $tpl['description'] }}
+                            </p>
+
+                            <div class="pt-2 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-600 dark:text-slate-400 space-y-1">
+                                <div class="font-bold text-slate-700 dark:text-slate-300">Included Phases:</div>
+                                @foreach(array_slice($tpl['phases'], 0, 3) as $ph)
+                                    <div class="flex items-center gap-1.5 text-xs">
+                                        <span class="text-blue-500 font-bold">&bull;</span>
+                                        <span>{{ $ph['phase_name'] }}</span>
+                                    </div>
+                                @endforeach
+                                @if(count($tpl['phases']) > 3)
+                                    <div class="text-[10px] text-slate-400 italic">+ {{ count($tpl['phases']) - 3 }} more phases</div>
+                                @endif
+                            </div>
+                        </div>
+
+                        <form method="POST" action="{{ route('projects.tasks.apply-template', $project) }}" class="pt-2">
+                            @csrf
+                            <input type="hidden" name="template_key" value="{{ $tKey }}">
+                            <button type="submit" class="w-full py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs shadow-xs transition flex items-center justify-center gap-2">
+                                <span>Apply {{ explode(' ', $tpl['name'])[0] }} Workflow</span>
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                            </button>
+                        </form>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+
+            {{-- ACTIVE TASKS BY PHASE --}}
+            @else
+            <div class="space-y-6">
+
+                {{-- Phase Filter Pills --}}
+                <div class="flex items-center gap-2 overflow-x-auto pb-1 text-xs font-bold">
+                    <button type="button" @click="activePhaseFilter = 'all'" :class="activePhaseFilter === 'all' ? 'bg-blue-600 text-white shadow-xs' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'" class="px-3.5 py-1.5 rounded-xl transition shrink-0">
+                        All Phases ({{ $tasksCount }})
+                    </button>
+                    @foreach($tasksByPhase as $phaseName => $phaseTasks)
+                    <button type="button" @click="activePhaseFilter = '{{ md5($phaseName) }}'" :class="activePhaseFilter === '{{ md5($phaseName) }}' ? 'bg-blue-600 text-white shadow-xs' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'" class="px-3.5 py-1.5 rounded-xl transition shrink-0 flex items-center gap-1.5">
+                        <span>{{ $phaseName }}</span>
+                        <span class="px-1.5 py-0.2 rounded-full text-[10px] {{ $phaseTasks->where('status', 'completed')->count() === $phaseTasks->count() ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-200' }}">
+                            {{ $phaseTasks->where('status', 'completed')->count() }}/{{ $phaseTasks->count() }}
+                        </span>
+                    </button>
+                    @endforeach
+                </div>
+
+                {{-- Phase Group Accordions / Sections --}}
+                @foreach($tasksByPhase as $phaseName => $phaseTasks)
+                @php
+                    $phaseTotal = $phaseTasks->count();
+                    $phaseCompleted = $phaseTasks->where('status', 'completed')->count();
+                    $phasePct = $phaseTotal > 0 ? (int) round(($phaseCompleted / $phaseTotal) * 100) : 0;
+                    $phaseEstHours = (float) $phaseTasks->sum('estimated_hours');
+                @endphp
+                <div x-show="activePhaseFilter === 'all' || activePhaseFilter === '{{ md5($phaseName) }}'" class="space-y-4" x-data="{ expanded: true }">
+                    {{-- Phase Header Bar --}}
+                    <div class="flex items-center justify-between p-4 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs cursor-pointer select-none" @click="expanded = !expanded">
+                        <div class="flex items-center gap-3">
+                            <span class="w-8 h-8 rounded-xl flex items-center justify-center font-extrabold text-xs {{ $phaseCompleted === $phaseTotal ? 'bg-emerald-500 text-white' : 'bg-blue-500 text-white' }}">
+                                @if($phaseCompleted === $phaseTotal)
+                                    ✓
+                                @else
+                                    {{ $loop->iteration }}
+                                @endif
+                            </span>
+                            <div>
+                                <h4 class="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+                                    <span>{{ $phaseName }}</span>
+                                    <span class="text-xs font-semibold text-slate-400">({{ $phaseCompleted }}/{{ $phaseTotal }} done)</span>
+                                </h4>
+                                @if($phaseEstHours > 0)
+                                <span class="text-[11px] text-slate-400">Est. {{ $phaseEstHours }} hrs total</span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-3">
+                            <div class="hidden sm:block w-28 bg-slate-100 dark:bg-slate-800 rounded-full h-2 overflow-hidden">
+                                <div class="bg-emerald-500 h-2 rounded-full" style="width: {{ $phasePct }}%"></div>
+                            </div>
+                            <span class="text-xs font-extrabold {{ $phasePct === 100 ? 'text-emerald-600' : 'text-slate-600 dark:text-slate-300' }}">
+                                {{ $phasePct }}%
+                            </span>
+                            <svg class="w-4 h-4 text-slate-400 transition-transform duration-200" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                        </div>
+                    </div>
+
+                    {{-- Tasks Cards Grid --}}
+                    <div x-show="expanded" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        @foreach($phaseTasks as $task)
+                        @php
+                            $chkProg = $task->checklist_progress;
+                        @endphp
+                        <div class="p-5 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs flex flex-col justify-between space-y-4 transition hover:border-slate-300 dark:hover:border-slate-700">
+                            {{-- Top Bar: Priority & Status Dropdown --}}
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between gap-2">
+                                    <span class="px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide rounded-md border {{ $task->priority_badge_classes }}">
+                                        {{ ucfirst($task->priority) }} Priority
+                                    </span>
+
+                                    {{-- Live Status Dropdown --}}
+                                    <div class="flex items-center gap-1.5">
+                                        <select @change="updateTaskStatus({{ $task->id }}, $el)" class="text-xs font-bold py-1 px-2.5 rounded-lg border outline-none cursor-pointer {{ $task->status_badge_classes }}">
+                                            @foreach(\App\Models\ProjectTask::statusOptions() as $stVal => $stLbl)
+                                                <option value="{{ $stVal }}" {{ $task->status === $stVal ? 'selected' : '' }}>{{ $stLbl }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+
+                                {{-- Task Title & Description --}}
+                                <div>
+                                    <h5 class="font-extrabold text-sm text-slate-900 dark:text-white flex items-start gap-2">
+                                        @if($task->status === 'completed')
+                                            <span class="text-emerald-500 font-bold shrink-0">✓</span>
+                                        @endif
+                                        <span class="{{ $task->status === 'completed' ? 'line-through text-slate-400' : '' }}">{{ $task->title }}</span>
+                                    </h5>
+                                    @if($task->description)
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                                        {{ $task->description }}
+                                    </p>
+                                    @endif
+                                </div>
+
+                                {{-- Metadata Row --}}
+                                <div class="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400 flex-wrap pt-1">
+                                    {{-- Assignee --}}
+                                    <div class="flex items-center gap-1.5 font-semibold text-slate-700 dark:text-slate-300">
+                                        <span class="w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-[10px] font-bold flex items-center justify-center">
+                                            {{ strtoupper(substr($task->assignedUser?->name ?? 'U', 0, 1)) }}
+                                        </span>
+                                        <span>{{ $task->assignedUser?->name ?? 'Unassigned' }}</span>
+                                    </div>
+
+                                    @if($task->estimated_hours)
+                                    <div class="flex items-center gap-1 text-[11px]">
+                                        <span class="text-slate-400">Est:</span>
+                                        <span class="font-bold text-slate-700 dark:text-slate-300">{{ $task->estimated_hours }}h</span>
+                                    </div>
+                                    @endif
+
+                                    @if($task->due_date)
+                                    <div class="flex items-center gap-1 text-[11px] {{ $task->due_date->isPast() && $task->status !== 'completed' ? 'text-rose-600 font-bold' : '' }}">
+                                        <span class="text-slate-400">Due:</span>
+                                        <span>{{ $task->due_date->format('d M') }}</span>
+                                    </div>
+                                    @endif
+                                </div>
+
+                                {{-- Quality Assurance Checklist Section --}}
+                                @if($task->checklists->isNotEmpty())
+                                <div class="pt-3 border-t border-slate-100 dark:border-slate-800/80 space-y-2">
+                                    <div class="flex items-center justify-between text-[11px] font-bold text-slate-500 dark:text-slate-400">
+                                        <span>SOP Quality Checklist</span>
+                                        <span id="task-progress-{{ $task->id }}" class="text-blue-600 dark:text-blue-400">
+                                            {{ $chkProg['completed'] }}/{{ $chkProg['total'] }} ({{ $chkProg['percentage'] }}%)
+                                        </span>
+                                    </div>
+
+                                    <div class="space-y-1.5 max-h-48 overflow-y-auto pr-1">
+                                        @foreach($task->checklists as $chk)
+                                        <label class="flex items-start gap-2.5 p-1.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer text-xs">
+                                            <input type="checkbox" {{ $chk->is_completed ? 'checked' : '' }} @change="toggleChecklist({{ $chk->id }}, $el)" class="mt-0.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                                            <span id="checklist-label-{{ $chk->id }}" class="flex-1 leading-snug {{ $chk->is_completed ? 'line-through text-slate-400' : 'text-slate-700 dark:text-slate-300' }}">
+                                                {{ $chk->item_text }}
+                                            </span>
+                                        </label>
+                                        @endforeach
+                                    </div>
+                                </div>
+                                @endif
+                            </div>
+
+                            {{-- Card Footer --}}
+                            <div class="pt-2 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs">
+                                {{-- Quick Add Checklist Item Form --}}
+                                <form method="POST" action="{{ route('tasks.checklists.store', $task) }}" class="flex items-center gap-1.5 flex-1 mr-2">
+                                    @csrf
+                                    <input type="text" name="item_text" placeholder="+ Add check item..." required class="w-full text-xs py-1 px-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none">
+                                    <button type="submit" class="px-2 py-1 text-xs font-bold rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200">+</button>
+                                </form>
+
+                                {{-- Delete Task --}}
+                                @if(auth()->user()->isAdmin())
+                                <form method="POST" action="{{ route('projects.tasks.destroy', ['project' => $project, 'task' => $task]) }}" onsubmit="return confirm('Delete this task?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-rose-500 hover:text-rose-700 text-xs font-bold p-1" title="Delete Task">
+                                        &times;
+                                    </button>
+                                </form>
+                                @endif
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+                @endforeach
+            </div>
+            @endif
+        </div>
+
+        {{-- ════════════════════════════════════════════════════════════════ --}}
         {{-- MODALS SECTION                                                   --}}
         {{-- ════════════════════════════════════════════════════════════════ --}}
 
@@ -1485,6 +1855,149 @@
                     <div class="flex items-center justify-end gap-2 pt-2">
                         <button type="button" @click="bulkDeviceModalOpen = false" class="btn-secondary text-xs">Cancel</button>
                         <button type="submit" class="btn-primary text-xs shadow-md">Generate All Rows</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {{-- Workflow Template Selection Modal --}}
+        <div x-show="templateModalOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+            <div @click.away="templateModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                    <div class="flex items-center gap-2">
+                        <span class="w-7 h-7 rounded-lg bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-sm">⚡</span>
+                        <h3 class="font-bold text-slate-900 dark:text-white text-base">Apply Pre-Built Workflow Template</h3>
+                    </div>
+                    <button type="button" @click="templateModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+                </div>
+
+                <form method="POST" action="{{ route('projects.tasks.apply-template', $project) }}" class="space-y-4">
+                    @csrf
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Select Industry Template *</label>
+                        <select name="template_key" required x-model="selectedTemplateKey" class="w-full px-3.5 py-2.5 text-sm font-semibold bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
+                            @foreach($allWorkflowTemplates as $k => $t)
+                                <option value="{{ $k }}" {{ $k === array_key_first($workflowTemplates) ? 'selected' : '' }}>
+                                    {{ $t['name'] }} ({{ count($t['phases']) }} Phases &bull; ~{{ $t['estimated_days'] }} Days)
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Assign All Tasks By Default To</label>
+                        <select name="assigned_to" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                            <option value="">Lead Technician ({{ $project->leadTechnician?->name ?? 'Project Assignee' }})</option>
+                            @foreach($technicians as $tech)
+                                <option value="{{ $tech->id }}">{{ $tech->name }} ({{ ucfirst($tech->role) }})</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="p-3.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 text-xs text-blue-800 dark:text-blue-300 space-y-1">
+                        <div class="font-bold">What will happen?</div>
+                        <p class="text-[11px] leading-relaxed text-blue-700 dark:text-blue-400">
+                            The system will automatically generate phase-wise milestones, technical requirements, estimated hours, and SOP quality assurance checklists without deleting any of your existing tasks.
+                        </p>
+                    </div>
+
+                    <div class="flex items-center justify-end gap-2 pt-2">
+                        <button type="button" @click="templateModalOpen = false" class="btn-secondary text-xs">Cancel</button>
+                        <button type="submit" class="btn-primary text-xs shadow-md">Generate Workflow</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {{-- Add Custom Task Modal --}}
+        <div x-show="taskModalOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+            <div @click.away="taskModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 max-h-[90vh] overflow-y-auto">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                    <h3 class="font-bold text-slate-900 dark:text-white text-base">Add Custom Project Task</h3>
+                    <button type="button" @click="taskModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+                </div>
+
+                <form method="POST" action="{{ route('projects.tasks.store', $project) }}" class="space-y-3.5">
+                    @csrf
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Phase / Milestone Name *</label>
+                        <input type="text" name="phase_name" list="existing_phases" required placeholder="e.g. Phase 2: Cabling &amp; Tagging" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-semibold">
+                        <datalist id="existing_phases">
+                            @foreach($tasksByPhase->keys() as $pName)
+                                <option value="{{ $pName }}">
+                            @endforeach
+                            <option value="Phase 1: Civil &amp; Site Preparation">
+                            <option value="Phase 2: Cabling &amp; Tagging">
+                            <option value="Phase 3: Hardware Mounting">
+                            <option value="Phase 4: IP Allocation &amp; Commissioning">
+                            <option value="Phase 5: Client Sign-off &amp; JCR">
+                        </datalist>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Task Title *</label>
+                        <input type="text" name="title" required placeholder="e.g. Pull Cat6 drop to Admin Block Entrance" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Description</label>
+                        <textarea name="description" rows="2" placeholder="Technical instructions or notes for technician..." class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none"></textarea>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Priority *</label>
+                            <select name="priority" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-semibold">
+                                <option value="low">Low</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="high">High</option>
+                                <option value="urgent">Urgent</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Status *</label>
+                            <select name="status" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-semibold">
+                                <option value="pending" selected>Pending</option>
+                                <option value="in_progress">In Progress</option>
+                                <option value="completed">Completed</option>
+                                <option value="blocked">Blocked</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Assigned Technician</label>
+                            <select name="assigned_to" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                                <option value="">Select Technician</option>
+                                @foreach($technicians as $tech)
+                                    <option value="{{ $tech->id }}" {{ $project->lead_technician_id == $tech->id ? 'selected' : '' }}>
+                                        {{ $tech->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Estimated Hours</label>
+                            <input type="number" step="0.5" min="0" name="estimated_hours" placeholder="4.0" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono outline-none">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Due Date</label>
+                        <input type="date" name="due_date" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                    </div>
+
+                    <div class="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                        <label class="block text-xs font-bold uppercase text-slate-500">Initial SOP Quality Checkpoints</label>
+                        <input type="text" name="checklist_items[]" placeholder="Checkpoint 1 (e.g. Conduit properly clamped)" class="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none">
+                        <input type="text" name="checklist_items[]" placeholder="Checkpoint 2 (e.g. Waterproof junction box installed)" class="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none">
+                        <input type="text" name="checklist_items[]" placeholder="Checkpoint 3 (e.g. Cable ferrule marked at both ends)" class="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none">
+                    </div>
+
+                    <div class="flex items-center justify-end gap-2 pt-2">
+                        <button type="button" @click="taskModalOpen = false" class="btn-secondary text-xs">Cancel</button>
+                        <button type="submit" class="btn-primary text-xs shadow-md">Create Task</button>
                     </div>
                 </form>
             </div>

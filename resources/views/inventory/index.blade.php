@@ -63,8 +63,9 @@
             border-color: #1e293b;
         }
         .filter-bar input, .filter-bar select {
-            border: 1px solid #cbd5e1; border-radius: 4px;
-            height: 38px; padding: 0 0.75rem; font-size: 0.85rem; color: #0f172a;
+            border: 1px solid #cbd5e1; border-radius: 6px;
+            height: 36px !important; min-height: 36px !important; max-height: 36px !important;
+            padding: 0 0.75rem; font-size: 12px !important; color: #0f172a;
             background: #ffffff; outline: none;
         }
         html.dark .filter-bar input, html.dark .filter-bar select {
@@ -141,11 +142,12 @@
                         <option value="out_of_stock" @selected(request('status') == 'out_of_stock')>Out of Stock</option>
                     </select>
 
-                    <button type="submit" class="h-[38px] px-4 rounded bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition">
-                        Search
+                    <button type="submit" style="height:36px !important; min-height:36px !important; max-height:36px !important;" class="h-[36px] px-3.5 rounded-md bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition shadow-xs inline-flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        <span>Search</span>
                     </button>
                     @if(request()->hasAny(['search', 'category', 'status']))
-                        <a href="{{ route('inventory.index') }}" class="h-[38px] px-3.5 inline-flex items-center rounded border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-sm font-medium transition">Clear</a>
+                        <a href="{{ route('inventory.index') }}" style="height:36px !important; min-height:36px !important; max-height:36px !important;" class="h-[36px] px-3.5 inline-flex items-center rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 text-slate-700 dark:text-slate-200 text-xs font-medium transition">Clear</a>
                     @endif
                 </form>
 

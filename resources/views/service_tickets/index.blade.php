@@ -96,34 +96,36 @@
                 </div>
             @endif
 
-            <!-- Filters Bar (Single Filter Row) -->
-            <div class="mb-4">
-                <form method="GET" action="{{ route('service-tickets.index') }}" class="flex flex-wrap items-center gap-2">
-                    <div class="flex-1 min-w-[200px]">
+            <!-- Filters Bar (Uniform 36px Height Level) -->
+            <div class="mb-3 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-2 shadow-xs">
+                <form method="GET" action="{{ route('service-tickets.index') }}" class="flex flex-wrap items-center gap-2 text-xs">
+                    <div class="relative w-60 min-w-[180px] shrink-0">
                         <input type="text" name="search" value="{{ request('search') }}" 
                             placeholder="Search ticket #, issue, customer, phone..."
-                            class="w-full text-sm h-[38px] px-3 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-blue-600">
+                            style="height: 36px !important; min-height: 36px !important; max-height: 36px !important; border-radius: 6px !important;"
+                            class="w-full text-xs h-[36px] px-3 rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-blue-600">
                     </div>
 
-                    <div>
-                        <select name="status" class="text-sm h-[38px] px-3 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">
-                            <option value="">All Statuses</option>
-                            <option value="open" @selected(request('status') === 'open')>Open</option>
-                            <option value="assigned" @selected(request('status') === 'assigned')>Assigned</option>
-                            <option value="in_progress" @selected(request('status') === 'in_progress')>In Progress</option>
-                            <option value="resolved" @selected(request('status') === 'resolved')>Resolved</option>
-                            <option value="closed" @selected(request('status') === 'closed')>Closed</option>
-                        </select>
-                    </div>
+                    <select name="status" style="height: 36px !important; min-height: 36px !important; max-height: 36px !important; border-radius: 6px !important;" class="text-xs h-[36px] px-3 rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 shrink-0">
+                        <option value="">All Statuses</option>
+                        <option value="open" @selected(request('status') === 'open')>Open</option>
+                        <option value="assigned" @selected(request('status') === 'assigned')>Assigned</option>
+                        <option value="in_progress" @selected(request('status') === 'in_progress')>In Progress</option>
+                        <option value="resolved" @selected(request('status') === 'resolved')>Resolved</option>
+                        <option value="closed" @selected(request('status') === 'closed')>Closed</option>
+                    </select>
                     
                     <button type="submit"
-                            class="h-[38px] px-4 rounded bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition">
-                        Search
+                            style="height: 36px !important; min-height: 36px !important; max-height: 36px !important; border-radius: 6px !important;"
+                            class="px-3 rounded-md bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition inline-flex items-center gap-1.5 shrink-0 shadow-xs">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        <span>Search</span>
                     </button>
 
                     @if(request()->hasAny(['search', 'status', 'priority', 'technician_id', 'issue_type']))
                         <a href="{{ route('service-tickets.index', ['tab' => $activeTab]) }}"
-                           class="h-[38px] px-3 inline-flex items-center rounded border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-sm font-medium transition">
+                           style="height: 36px !important; min-height: 36px !important; max-height: 36px !important; border-radius: 6px !important;"
+                           class="px-3 inline-flex items-center rounded-md border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition shrink-0">
                             Reset
                         </a>
                     @endif

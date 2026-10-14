@@ -28,18 +28,18 @@
 
                     <h3 class="mb-4 pb-2 border-b border-[#ddd] font-bold text-base text-gray-900">Hardware & Site Details</h3>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
                         {{-- Customer / Site --}}
                         <div class="sm:col-span-2">
-                            <div class="flex items-center justify-between mb-1.5">
-                                <label class="crm-label mb-0">Customer Site / Lead <span class="required-marker">*</span></label>
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="crm-label mb-0 text-sm font-semibold text-slate-800 dark:text-slate-200">Customer Site / Lead <span class="required-marker text-rose-500">*</span></label>
                                 <a href="{{ route('leads.create', ['return_to' => 'equipment']) }}" 
-                                   class="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200/80 px-2.5 py-1 rounded-md transition shadow-sm">
+                                   class="inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-white dark:text-blue-400 dark:hover:text-white bg-blue-50 hover:bg-blue-600 dark:bg-blue-950/60 dark:hover:bg-blue-600 border border-blue-200 dark:border-blue-800/80 px-3.5 py-1.5 rounded-lg transition shadow-xs cursor-pointer">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-                                    <span>Add New Customer</span>
+                                    <span>+ Add New Customer</span>
                                 </a>
                             </div>
-                            <select name="lead_id" class="crm-select" required>
+                            <select name="lead_id" class="crm-select w-full h-[44px] text-sm rounded-lg" required>
                                 <option value="">Select Customer / Lead...</option>
                                 @foreach($leads as $l)
                                     <option value="{{ $l->id }}" @selected(old('lead_id', $selectedLeadId) == $l->id)>
@@ -51,8 +51,8 @@
 
                         {{-- Installation Job (Optional) --}}
                         <div>
-                            <label class="crm-label">Associated Installation Job</label>
-                            <select name="installation_job_id" class="crm-select">
+                            <label class="crm-label text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2 block">Associated Installation Job</label>
+                            <select name="installation_job_id" class="crm-select w-full h-[44px] text-sm rounded-lg">
                                 <option value="">None (Direct Entry / Existing Site)</option>
                                 @foreach($jobs as $j)
                                     <option value="{{ $j->id }}" @selected(old('installation_job_id', $selectedJobId) == $j->id)>
@@ -64,8 +64,8 @@
 
                         {{-- Product Catalog Reference --}}
                         <div>
-                            <label class="crm-label">Product Model (Catalog)</label>
-                            <select name="product_id" class="crm-select" @change="onProductChange($event.target.value)">
+                            <label class="crm-label text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2 block">Product Model (Catalog)</label>
+                            <select name="product_id" class="crm-select w-full h-[44px] text-sm rounded-lg" @change="onProductChange($event.target.value)">
                                 <option value="">Select Catalog Item...</option>
                                 @foreach($products as $p)
                                     <option value="{{ $p->id }}" @selected(old('product_id') == $p->id)>
@@ -77,60 +77,64 @@
                     </div>
 
                     {{-- Equipment Name --}}
-                    <div class="mb-4">
-                        <label class="crm-label">Equipment Name / Description <span class="required-marker">*</span></label>
-                        <input type="text" name="equipment_name" x-model="equipmentName" placeholder="e.g. 4MP ColorVu Bullet Camera" required class="crm-input">
+                    <div class="mb-5">
+                        <label class="crm-label text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2 block">Equipment Name / Description <span class="required-marker text-rose-500">*</span></label>
+                        <input type="text" name="equipment_name" x-model="equipmentName" placeholder="e.g. 4MP ColorVu Bullet Camera" required class="crm-input w-full h-[44px] text-sm rounded-lg">
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
                         {{-- Serial Number --}}
                         <div>
-                            <div class="flex items-center justify-between mb-1">
-                                <label class="crm-label mb-0">Hardware Serial Number (S/N) <span class="required-marker">*</span></label>
-                                <div class="flex items-center gap-2">
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="crm-label mb-0 text-sm font-semibold text-slate-800 dark:text-slate-200">Hardware Serial Number (S/N) <span class="required-marker text-rose-500">*</span></label>
+                                <div class="flex items-center gap-1.5">
                                     <button type="button" onclick="openBarcodeScanner('equipment-barcode-modal', 'serial_number_input', null, 'laptop')"
-                                            class="action-link text-xs" style="background: none; border: none; cursor: pointer;">
-                                        Laptop Cam
+                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 transition cursor-pointer shadow-xs">
+                                        <svg class="w-3.5 h-3.5 text-slate-700 dark:text-slate-300" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0H3"/></svg>
+                                        <span>Laptop Cam</span>
                                     </button>
                                     <button type="button" onclick="openBarcodeScanner('equipment-barcode-modal', 'serial_number_input', null, 'mobile')"
-                                            class="action-link text-xs" style="background: none; border: none; cursor: pointer;">
-                                        Mobile Cam
+                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 transition cursor-pointer shadow-xs">
+                                        <svg class="w-3.5 h-3.5 text-slate-700 dark:text-slate-300" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"/></svg>
+                                        <span>Mobile Cam</span>
                                     </button>
                                 </div>
                             </div>
-                            <input type="text" id="serial_number_input" name="serial_number" value="{{ old('serial_number', request('serial')) }}" placeholder="e.g. SN-HK2026-981247" required class="crm-input font-mono">
+                            <input type="text" id="serial_number_input" name="serial_number" value="{{ old('serial_number', request('serial')) }}" placeholder="e.g. SN-HK2026-981247" required class="crm-input font-mono w-full h-[44px] text-sm rounded-lg">
                         </div>
 
                         {{-- MAC Address --}}
                         <div>
-                            <div class="flex items-center justify-between mb-1">
-                                <label class="crm-label mb-0">MAC / IP Address (Optional)</label>
-                                <div class="flex items-center gap-2">
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="crm-label mb-0 text-sm font-semibold text-slate-800 dark:text-slate-200">MAC / IP Address (Optional)</label>
+                                <div class="flex items-center gap-1.5">
                                     <button type="button" onclick="openBarcodeScanner('equipment-barcode-modal', 'mac_address_input', null, 'laptop')"
-                                            class="action-link text-xs" style="background: none; border: none; cursor: pointer;">
-                                        Laptop Cam
+                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 transition cursor-pointer shadow-xs">
+                                        <svg class="w-3.5 h-3.5 text-slate-700 dark:text-slate-300" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0H3"/></svg>
+                                        <span>Laptop Cam</span>
                                     </button>
                                     <button type="button" onclick="openBarcodeScanner('equipment-barcode-modal', 'mac_address_input', null, 'mobile')"
-                                            class="action-link text-xs" style="background: none; border: none; cursor: pointer;">
-                                        Mobile Cam
+                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 transition cursor-pointer shadow-xs">
+                                        <svg class="w-3.5 h-3.5 text-slate-700 dark:text-slate-300" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"/></svg>
+                                        <span>Mobile Cam</span>
                                     </button>
                                 </div>
                             </div>
-                            <input type="text" id="mac_address_input" name="mac_address" value="{{ old('mac_address') }}" placeholder="e.g. BC:A8:A6:11:22:33" class="crm-input font-mono">
+                            <input type="text" id="mac_address_input" name="mac_address" value="{{ old('mac_address') }}" placeholder="e.g. BC:A8:A6:11:22:33" class="crm-input font-mono w-full h-[44px] text-sm rounded-lg">
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
                         {{-- Location Tag --}}
                         <div>
-                            <label class="crm-label">Location / Channel Placement</label>
-                            <input type="text" name="location_tag" value="{{ old('location_tag') }}" placeholder="e.g. Main Gate, Server Rack" class="crm-input">
+                            <label class="crm-label text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2 block">Location / Channel Placement</label>
+                            <input type="text" name="location_tag" value="{{ old('location_tag') }}" placeholder="e.g. Main Gate, Server Rack" class="crm-input w-full h-[44px] text-sm rounded-lg">
                         </div>
 
                         {{-- Status --}}
                         <div>
-                            <label class="crm-label">Operational Status</label>
-                            <select name="status" class="crm-select">
+                            <label class="crm-label text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2 block">Operational Status</label>
+                            <select name="status" class="crm-select w-full h-[44px] text-sm rounded-lg">
                                 <option value="active" @selected(old('status') == 'active')>Active</option>
                                 <option value="under_repair" @selected(old('status') == 'under_repair')>Under Repair</option>
                                 <option value="replaced" @selected(old('status') == 'replaced')>Replaced</option>
@@ -141,38 +145,43 @@
 
                     <h3 class="mb-4 pb-2 border-b border-[#ddd] font-bold text-base text-gray-900 mt-6">Warranty Timeline</h3>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-5">
                         <div>
-                            <label class="crm-label">Installation Date</label>
-                            <input type="date" name="installation_date" x-model="installDate" @change="calculateWarranties()" class="crm-input">
+                            <label class="crm-label text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2 block">Installation Date</label>
+                            <input type="date" name="installation_date" x-model="installDate" @change="calculateWarranties()" class="crm-input w-full h-[44px] text-sm rounded-lg">
                         </div>
                         <div>
-                            <label class="crm-label">Mfg Warranty Expiry</label>
-                            <input type="date" name="manufacturer_warranty_expiry" x-model="mfgExpiry" class="crm-input">
+                            <label class="crm-label text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2 block">Mfg Warranty Expiry</label>
+                            <input type="date" name="manufacturer_warranty_expiry" x-model="mfgExpiry" class="crm-input w-full h-[44px] text-sm rounded-lg">
                         </div>
                         <div>
-                            <label class="crm-label">Service Warranty Expiry</label>
-                            <input type="date" name="service_warranty_expiry" x-model="serviceExpiry" class="crm-input">
+                            <label class="crm-label text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2 block">Service Warranty Expiry</label>
+                            <input type="date" name="service_warranty_expiry" x-model="serviceExpiry" class="crm-input w-full h-[44px] text-sm rounded-lg">
                         </div>
                     </div>
 
                     {{-- Stock Deduction Option --}}
-                    <div class="mb-4 flex items-center gap-2 p-3 bg-[#f8fafc] border border-[#ddd] rounded-[4px]" x-show="selectedProduct">
-                        <input type="checkbox" id="deduct_stock" name="deduct_stock" value="1" class="w-4 h-4 rounded-[4px] border-[#ccc] text-[#2563eb]">
-                        <label for="deduct_stock" class="text-sm text-gray-700 cursor-pointer select-none">
-                            Auto-deduct 1 unit from warehouse inventory for <span class="font-bold text-gray-900" x-text="selectedProduct ? selectedProduct.name : ''"></span>
+                    <div class="mb-5 flex items-center gap-2.5 p-3.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-lg" x-show="selectedProduct">
+                        <input type="checkbox" id="deduct_stock" name="deduct_stock" value="1" class="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                        <label for="deduct_stock" class="text-sm font-medium text-slate-700 dark:text-slate-300 cursor-pointer select-none">
+                            Auto-deduct 1 unit from warehouse inventory for <span class="font-bold text-slate-900 dark:text-white" x-text="selectedProduct ? selectedProduct.name : ''"></span>
                         </label>
                     </div>
 
                     {{-- Notes --}}
-                    <div class="mb-4">
-                        <label class="crm-label">Technical Notes / Config Details</label>
-                        <textarea name="notes" rows="2" class="crm-input" style="height: auto;" placeholder="e.g. IP 192.168.1.104, default admin credentials, Lens 2.8mm">{{ old('notes') }}</textarea>
+                    <div class="mb-6">
+                        <label class="crm-label text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2 block">Technical Notes / Config Details</label>
+                        <textarea name="notes" rows="3" class="crm-input w-full p-3 text-sm rounded-lg" style="height: auto;" placeholder="e.g. IP 192.168.1.104, default admin credentials, Lens 2.8mm">{{ old('notes') }}</textarea>
                     </div>
 
-                    <div class="form-actions">
-                        <a href="{{ route('equipment.index') }}" class="btn-secondary">Cancel</a>
-                        <button type="submit" class="btn-primary">Save</button>
+                    <div class="flex items-center gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">
+                        <button type="submit" class="h-[44px] px-6 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md transition cursor-pointer inline-flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                            <span>Save &amp; Register Equipment</span>
+                        </button>
+                        <a href="{{ route('equipment.index') }}" class="h-[44px] px-5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white hover:bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-semibold text-sm transition inline-flex items-center">
+                            Cancel
+                        </a>
                     </div>
                 </form>
             </div>

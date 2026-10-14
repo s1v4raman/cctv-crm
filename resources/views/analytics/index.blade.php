@@ -25,22 +25,22 @@
     <div class="pg-wrap">
         <div class="pg-inner space-y-6">
 
-            {{-- Navigation Sub-Tabs --}}
-            <div class="flex items-center gap-2 border-b border-slate-200 dark:border-white/5 pb-3 overflow-x-auto">
+            {{-- Navigation Sub-Tabs Centered --}}
+            <div class="flex items-center justify-center gap-2.5 py-1 overflow-x-auto">
                 <a href="{{ route('analytics.index', ['range' => $selectedRange]) }}"
-                   class="crm-filter-tab filter-tab px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap {{ request()->routeIs('analytics.index') ? 'active crm-tab-active text-white shadow-xs' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60' }}"
-                   @if(request()->routeIs('analytics.index')) style="background-color: #2563eb !important; color: #ffffff !important;" @endif>
-                    📊 Executive Overview
+                   class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition whitespace-nowrap {{ request()->routeIs('analytics.index') ? 'bg-blue-600 text-white font-bold shadow-xs' : 'bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/60 shadow-xs' }}">
+                    <svg class="w-4 h-4 {{ request()->routeIs('analytics.index') ? 'text-white' : 'text-slate-700 dark:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/></svg>
+                    <span>Executive Overview</span>
                 </a>
                 <a href="{{ route('analytics.technicians', ['range' => $selectedRange]) }}"
-                   class="crm-filter-tab filter-tab px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap {{ request()->routeIs('analytics.technicians') ? 'active crm-tab-active text-white shadow-xs' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60' }}"
-                   @if(request()->routeIs('analytics.technicians')) style="background-color: #2563eb !important; color: #ffffff !important;" @endif>
-                    🛠️ Field Engineering &amp; Operations
+                   class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition whitespace-nowrap {{ request()->routeIs('analytics.technicians') ? 'bg-blue-600 text-white font-bold shadow-xs' : 'bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/60 shadow-xs' }}">
+                    <svg class="w-4 h-4 {{ request()->routeIs('analytics.technicians') ? 'text-white' : 'text-slate-700 dark:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.07a4.5 4.5 0 004.486-6.32l-3.276 3.277a3.004 3.004 0 01-2.25 2.25l-3.276-3.276a4.5 4.5 0 00-6.32 4.486c.118.58.094 1.193-.07 1.743"/></svg>
+                    <span>Technician Performance (FTFR &amp; MTTR)</span>
                 </a>
                 <a href="{{ route('analytics.cost-profit', ['range' => $selectedRange]) }}"
-                   class="crm-filter-tab filter-tab px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap {{ request()->routeIs('analytics.cost-profit') ? 'active crm-tab-active text-white shadow-xs' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60' }}"
-                   @if(request()->routeIs('analytics.cost-profit')) style="background-color: #2563eb !important; color: #ffffff !important;" @endif>
-                    💰 Cost &amp; Profit Analysis
+                   class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition whitespace-nowrap {{ request()->routeIs('analytics.cost-profit') ? 'bg-blue-600 text-white font-bold shadow-xs' : 'bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/60 shadow-xs' }}">
+                    <svg class="w-4 h-4 {{ request()->routeIs('analytics.cost-profit') ? 'text-white' : 'text-slate-700 dark:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span>Cost &amp; Profit Analysis</span>
                 </a>
             </div>
 
@@ -89,103 +89,122 @@
             <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 xl:grid-cols-8 gap-3">
 
                 {{-- 1. Total Revenue (with tax) --}}
-                <div class="bg-[#0f172a] p-4 rounded-2xl border border-white/5 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.5)] flex flex-col justify-between" style="min-height:110px">
+                <div class="bg-white dark:bg-[#0f172a] p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col justify-between" style="min-height:110px">
                     <div class="flex items-start justify-between gap-1">
-                        <span class="text-[9px] font-bold uppercase tracking-wider text-slate-400 block leading-tight">Total Revenue</span>
-                        <div class="w-7 h-7 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center text-xs font-bold shrink-0 border border-blue-500/20">₹</div>
+                        <span class="text-[9px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block leading-tight">Total Revenue</span>
+                        <div class="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 flex items-center justify-center shrink-0 shadow-xs">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6H2.25m0 0v10.5m0-10.5h16.5m-16.5 0a2.25 2.25 0 00-2.25 2.25v7.5a2.25 2.25 0 002.25 2.25m16.5-12a2.25 2.25 0 012.25 2.25v7.5a2.25 2.25 0 01-2.25 2.25m-16.5-12h16.5M12 9.75a2.25 2.25 0 100 4.5 2.25 2.25 0 000-4.5z"/></svg>
+                        </div>
                     </div>
                     <div>
-                        <div class="text-base font-extrabold text-white mt-1 leading-tight font-['Outfit']">₹{{ number_format($overview['financials']['invoiced_revenue'], 0) }}</div>
-                        <span class="text-[10px] text-slate-400 block mt-0.5">Incl. GST billed</span>
+                        <div class="text-base font-extrabold text-slate-900 dark:text-white mt-1 leading-tight font-['Outfit']">₹{{ number_format($overview['financials']['invoiced_revenue'], 0) }}</div>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 block mt-0.5">Incl. GST billed</span>
                     </div>
                 </div>
 
                 {{-- 2. Revenue Without Tax (Subtotal) --}}
-                <div class="bg-[#0f172a] p-4 rounded-2xl border border-sky-500/30 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.5)] flex flex-col justify-between" style="min-height:110px">
+                <div class="bg-white dark:bg-[#0f172a] p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col justify-between" style="min-height:110px">
                     <div class="flex items-start justify-between gap-1">
-                        <span class="text-[9px] font-bold uppercase tracking-wider text-sky-400 block leading-tight">Revenue (No Tax)</span>
-                        <div class="w-7 h-7 rounded-lg bg-sky-500/10 text-sky-400 flex items-center justify-center text-xs font-bold shrink-0 border border-sky-500/20">💹</div>
+                        <span class="text-[9px] font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400 block leading-tight">Revenue (No Tax)</span>
+                        <div class="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 flex items-center justify-center shrink-0 shadow-xs">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941"/></svg>
+                        </div>
                     </div>
                     <div>
-                        <div class="text-base font-extrabold text-sky-300 mt-1 leading-tight font-['Outfit']">₹{{ number_format($overview['financials']['revenue_without_tax'] ?? round($overview['financials']['invoiced_revenue']/1.18, 0), 0) }}</div>
-                        <span class="text-[10px] text-slate-400 block mt-0.5">Pre-tax subtotal</span>
+                        <div class="text-base font-extrabold text-sky-600 dark:text-sky-300 mt-1 leading-tight font-['Outfit']">₹{{ number_format($overview['financials']['revenue_without_tax'] ?? round($overview['financials']['invoiced_revenue']/1.18, 0), 0) }}</div>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 block mt-0.5">Pre-tax subtotal</span>
                     </div>
                 </div>
 
                 {{-- 3. Product Buy Cost (COGS) --}}
-                <div class="bg-[#0f172a] p-4 rounded-2xl border border-orange-500/20 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.5)] flex flex-col justify-between" style="min-height:110px">
+                <div class="bg-white dark:bg-[#0f172a] p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col justify-between" style="min-height:110px">
                     <div class="flex items-start justify-between gap-1">
-                        <span class="text-[9px] font-bold uppercase tracking-wider text-orange-400 block leading-tight">Product Buy Cost</span>
-                        <div class="w-7 h-7 rounded-lg bg-orange-500/10 text-orange-400 flex items-center justify-center text-xs font-bold shrink-0 border border-orange-500/20">📦</div>
+                        <span class="text-[9px] font-bold uppercase tracking-wider text-orange-600 dark:text-orange-400 block leading-tight">Product Buy Cost</span>
+                        <div class="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 flex items-center justify-center shrink-0 shadow-xs">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"/></svg>
+                        </div>
                     </div>
                     <div>
-                        <div class="text-base font-extrabold text-orange-300 mt-1 leading-tight font-['Outfit']">₹{{ number_format($overview['financials']['product_buy_cost'] ?? $overview['financials']['cogs'], 0) }}</div>
-                        <span class="text-[10px] text-slate-400 block mt-0.5">Hardware COGS</span>
+                        <div class="text-base font-extrabold text-orange-600 dark:text-orange-300 mt-1 leading-tight font-['Outfit']">₹{{ number_format($overview['financials']['product_buy_cost'] ?? $overview['financials']['cogs'], 0) }}</div>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 block mt-0.5">Hardware COGS</span>
                     </div>
                 </div>
 
                 {{-- 4. Tax Paid Cost (Input GST on POs) --}}
-                <div class="bg-[#0f172a] p-4 rounded-2xl border border-red-500/20 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.5)] flex flex-col justify-between" style="min-height:110px">
+                <div class="bg-white dark:bg-[#0f172a] p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col justify-between" style="min-height:110px">
                     <div class="flex items-start justify-between gap-1">
-                        <span class="text-[9px] font-bold uppercase tracking-wider text-red-400 block leading-tight">Tax Paid Cost</span>
-                        <div class="w-7 h-7 rounded-lg bg-red-500/10 text-red-400 flex items-center justify-center text-xs font-bold shrink-0 border border-red-500/20">🧾</div>
+                        <span class="text-[9px] font-bold uppercase tracking-wider text-rose-600 dark:text-red-400 block leading-tight">Tax Paid Cost</span>
+                        <div class="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 flex items-center justify-center shrink-0 shadow-xs">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+                        </div>
                     </div>
                     <div>
-                        <div class="text-base font-extrabold text-red-300 mt-1 leading-tight font-['Outfit']">₹{{ number_format($overview['financials']['tax_paid_cost'] ?? 0, 0) }}</div>
-                        <span class="text-[10px] text-slate-400 block mt-0.5">Input GST on POs</span>
+                        <div class="text-base font-extrabold text-rose-600 dark:text-red-300 mt-1 leading-tight font-['Outfit']">₹{{ number_format($overview['financials']['tax_paid_cost'] ?? 0, 0) }}</div>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 block mt-0.5">Input GST on POs</span>
                     </div>
                 </div>
 
                 {{-- 5. Salary Credited Cost --}}
-                <div class="bg-[#0f172a] p-4 rounded-2xl border border-violet-500/30 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.5)] flex flex-col justify-between" style="min-height:110px">
+                <div class="bg-white dark:bg-[#0f172a] p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col justify-between" style="min-height:110px">
                     <div class="flex items-start justify-between gap-1">
-                        <span class="text-[9px] font-bold uppercase tracking-wider text-violet-400 block leading-tight">Salary Credited</span>
-                        <div class="w-7 h-7 rounded-lg bg-violet-500/10 text-violet-400 flex items-center justify-center text-xs font-bold shrink-0 border border-violet-500/20">👥</div>
+                        <span class="text-[9px] font-bold uppercase tracking-wider text-purple-600 dark:text-violet-400 block leading-tight">Salary Credited</span>
+                        <div class="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 flex items-center justify-center shrink-0 shadow-xs">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
+                        </div>
                     </div>
                     <div>
-                        <div class="text-base font-extrabold text-violet-300 mt-1 leading-tight font-['Outfit']">₹{{ number_format($overview['financials']['salary_credited_cost'] ?? $overview['financials']['employee_salary_cost'] ?? 0, 0) }}</div>
-                        <span class="text-[10px] text-slate-400 block mt-0.5">Staff payroll cost</span>
+                        <div class="text-base font-extrabold text-purple-600 dark:text-violet-300 mt-1 leading-tight font-['Outfit']">₹{{ number_format($overview['financials']['salary_credited_cost'] ?? $overview['financials']['employee_salary_cost'] ?? 0, 0) }}</div>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 block mt-0.5">Staff payroll cost</span>
                     </div>
                 </div>
 
                 {{-- 6. Gross Profit (No Tax) --}}
-                <div class="bg-[#0f172a] p-4 rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-[#0f172a] to-emerald-950/20 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.5)] flex flex-col justify-between" style="min-height:110px">
+                <div class="bg-white dark:bg-[#0f172a] p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col justify-between" style="min-height:110px">
                     <div class="flex items-start justify-between gap-1">
-                        <span class="text-[9px] font-bold uppercase tracking-wider text-emerald-400 block leading-tight">Gross Profit</span>
-                        <div class="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xs font-bold shrink-0 border border-emerald-500/30">💎</div>
+                        <span class="text-[9px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 block leading-tight">Gross Profit</span>
+                        <div class="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 flex items-center justify-center shrink-0 shadow-xs">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
                     </div>
                     <div>
-                        <div class="text-base font-extrabold text-emerald-400 mt-1 leading-tight font-['Outfit']">₹{{ number_format($overview['financials']['gross_profit_without_tax'] ?? $overview['financials']['gross_profit'], 0) }}</div>
-                        <span class="text-[10px] font-bold text-emerald-400 block mt-0.5">{{ $overview['financials']['gross_margin_without_tax_percent'] ?? $overview['financials']['gross_margin_percent'] }}% margin</span>
+                        <div class="text-base font-extrabold text-emerald-600 dark:text-emerald-400 mt-1 leading-tight font-['Outfit']">₹{{ number_format($overview['financials']['gross_profit_without_tax'] ?? $overview['financials']['gross_profit'], 0) }}</div>
+                        <span class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 block mt-0.5">{{ $overview['financials']['gross_margin_without_tax_percent'] ?? $overview['financials']['gross_margin_percent'] }}% margin</span>
                     </div>
                 </div>
 
                 {{-- 7. Net Profit WITHOUT Tax & Salary --}}
                 @php
                     $netProfit = $overview['financials']['net_profit_without_tax'] ?? ($overview['financials']['gross_profit_without_tax'] ?? $overview['financials']['gross_profit']) - ($overview['financials']['employee_salary_cost'] ?? 0);
-                    $netColor = $netProfit >= 0 ? 'text-teal-300' : 'text-rose-400';
-                    $netBorder = $netProfit >= 0 ? 'border-teal-500/30' : 'border-rose-500/30';
+                    $netColor = $netProfit >= 0 ? 'text-teal-600 dark:text-teal-300' : 'text-rose-600 dark:text-rose-400';
                 @endphp
-                <div class="bg-[#0f172a] p-4 rounded-2xl border {{ $netBorder }} shadow-[0_10px_25px_-5px_rgba(0,0,0,0.5)] flex flex-col justify-between" style="min-height:110px">
+                <div class="bg-white dark:bg-[#0f172a] p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col justify-between" style="min-height:110px">
                     <div class="flex items-start justify-between gap-1">
-                        <span class="text-[9px] font-bold uppercase tracking-wider {{ $netProfit >= 0 ? 'text-teal-400' : 'text-rose-400' }} block leading-tight">Net Op. Profit</span>
-                        <div class="w-7 h-7 rounded-lg {{ $netProfit >= 0 ? 'bg-teal-500/10 text-teal-400 border-teal-500/20' : 'bg-rose-500/10 text-rose-400 border-rose-500/20' }} flex items-center justify-center text-xs font-bold shrink-0 border">{{ $netProfit >= 0 ? '📈' : '📉' }}</div>
+                        <span class="text-[9px] font-bold uppercase tracking-wider {{ $netProfit >= 0 ? 'text-teal-600 dark:text-teal-400' : 'text-rose-600 dark:text-rose-400' }} block leading-tight">Net Op. Profit</span>
+                        <div class="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 flex items-center justify-center shrink-0 shadow-xs">
+                            @if($netProfit >= 0)
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941"/></svg>
+                            @else
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6L9 12.75l4.306-4.307a11.95 11.95 0 015.814 5.519l2.74 1.22m0 0l-5.94 2.28m5.94-2.28l-2.28-5.941"/></svg>
+                            @endif
+                        </div>
                     </div>
                     <div>
                         <div class="text-base font-extrabold {{ $netColor }} mt-1 leading-tight font-['Outfit']">₹{{ number_format($netProfit, 0) }}</div>
-                        <span class="text-[10px] text-slate-400 block mt-0.5">No tax · No salary</span>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 block mt-0.5">No tax · No salary</span>
                     </div>
                 </div>
 
                 {{-- 8. Cash Collected --}}
-                <div class="bg-[#0f172a] p-4 rounded-2xl border border-white/5 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.5)] flex flex-col justify-between" style="min-height:110px">
+                <div class="bg-white dark:bg-[#0f172a] p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col justify-between" style="min-height:110px">
                     <div class="flex items-start justify-between gap-1">
-                        <span class="text-[9px] font-bold uppercase tracking-wider text-slate-400 block leading-tight">Cash Collected</span>
-                        <div class="w-7 h-7 rounded-lg bg-indigo-500/10 text-indigo-400 flex items-center justify-center text-xs font-bold shrink-0 border border-indigo-500/20">💳</div>
+                        <span class="text-[9px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block leading-tight">Cash Collected</span>
+                        <div class="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 flex items-center justify-center shrink-0 shadow-xs">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-6-10.5h16.5a2.25 2.25 0 012.25 2.25v10.5a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6.75A2.25 2.25 0 013.75 4.5z"/></svg>
+                        </div>
                     </div>
                     <div>
-                        <div class="text-base font-extrabold text-sky-400 mt-1 leading-tight font-['Outfit']">₹{{ number_format($overview['financials']['cash_collected'], 0) }}</div>
-                        <span class="text-[10px] text-slate-400 block mt-0.5">Realized inflow</span>
+                        <div class="text-base font-extrabold text-sky-600 dark:text-sky-400 mt-1 leading-tight font-['Outfit']">₹{{ number_format($overview['financials']['cash_collected'], 0) }}</div>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 block mt-0.5">Realized inflow</span>
                     </div>
                 </div>
 

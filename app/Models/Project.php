@@ -179,6 +179,11 @@ class Project extends Model
         return $this->hasMany(IpDevice::class);
     }
 
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(ProjectTask::class)->orderBy('order_column')->orderBy('id');
+    }
+
     public function auditLogs(): MorphMany
     {
         return $this->morphMany(ProjectAuditLog::class, 'auditable');

@@ -287,6 +287,9 @@ class ProjectController extends Controller
             'workDays.attendances.worker',
             'ipDevices',
             'auditLogs.user',
+            'tasks.checklists.completedByUser',
+            'tasks.assignedUser',
+            'tasks.completedByUser',
         ]);
 
         $activeTab = $request->input('tab', 'overview');
@@ -313,6 +316,17 @@ class ProjectController extends Controller
             ->where('is_invoiced', false)
             ->count();
 
+        // Tasks & Workflow Templates for Tab 6
+        $tasksCount = $project->tasks->count();
+        $completedTasksCount = $project->tasks->where('status', 'completed')->count();
+        $inProgressTasksCount = $project->tasks->where('status', 'in_progress')->count();
+        $pendingTasksCount = $project->tasks->where('status', 'pending')->count();
+        $blockedTasksCount = $project->tasks->where('status', 'blocked')->count();
+        $taskCompletionPercentage = $tasksCount > 0 ? (int) round(($completedTasksCount / $tasksCount) * 100) : 0;
+        $tasksByPhase = $project->tasks->groupBy('phase_name');
+        $workflowTemplates = \App\Services\ProjectWorkflowTemplateService::getTemplatesForType($project->project_type ?? 'hardware_cctv');
+        $allWorkflowTemplates = \App\Services\ProjectWorkflowTemplateService::getAllTemplates();
+
         return view('projects.show', compact(
             'project',
             'activeTab',
@@ -322,7 +336,16 @@ class ProjectController extends Controller
             'totalManDays',
             'totalCablingMetres',
             'totalLaborCost',
-            'uninvoicedDcCount'
+            'uninvoicedDcCount',
+            'tasksCount',
+            'completedTasksCount',
+            'inProgressTasksCount',
+            'pendingTasksCount',
+            'blockedTasksCount',
+            'taskCompletionPercentage',
+            'tasksByPhase',
+            'workflowTemplates',
+            'allWorkflowTemplates'
         ));
     }
 

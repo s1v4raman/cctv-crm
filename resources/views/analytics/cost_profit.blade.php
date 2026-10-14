@@ -22,22 +22,22 @@
     <div class="pg-wrap">
         <div class="pg-inner space-y-6">
 
-            {{-- Navigation Sub-Tabs --}}
-            <div class="flex items-center gap-2 border-b border-slate-200 dark:border-white/5 pb-3 overflow-x-auto">
+            {{-- Navigation Sub-Tabs Centered --}}
+            <div class="flex items-center justify-center gap-2.5 py-1 overflow-x-auto">
                 <a href="{{ route('analytics.index', ['range' => $selectedRange]) }}"
-                   class="crm-filter-tab filter-tab px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap {{ request()->routeIs('analytics.index') ? 'active crm-tab-active text-white font-black shadow-md' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60' }}"
-                   @if(request()->routeIs('analytics.index')) style="background-color: #2563eb !important; color: #ffffff !important;" @endif>
-                    📊 Executive Overview
+                   class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition whitespace-nowrap {{ request()->routeIs('analytics.index') ? 'bg-blue-600 text-white font-bold shadow-xs' : 'bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/60 shadow-xs' }}">
+                    <svg class="w-4 h-4 {{ request()->routeIs('analytics.index') ? 'text-white' : 'text-slate-700 dark:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/></svg>
+                    <span>Executive Overview</span>
                 </a>
                 <a href="{{ route('analytics.technicians', ['range' => $selectedRange]) }}"
-                   class="crm-filter-tab filter-tab px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap {{ request()->routeIs('analytics.technicians') ? 'active crm-tab-active text-white font-black shadow-md' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60' }}"
-                   @if(request()->routeIs('analytics.technicians')) style="background-color: #2563eb !important; color: #ffffff !important;" @endif>
-                    🛠️ Technician Performance (FTFR &amp; MTTR)
+                   class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition whitespace-nowrap {{ request()->routeIs('analytics.technicians') ? 'bg-blue-600 text-white font-bold shadow-xs' : 'bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/60 shadow-xs' }}">
+                    <svg class="w-4 h-4 {{ request()->routeIs('analytics.technicians') ? 'text-white' : 'text-slate-700 dark:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.07a4.5 4.5 0 004.486-6.32l-3.276 3.277a3.004 3.004 0 01-2.25 2.25l-3.276-3.276a4.5 4.5 0 00-6.32 4.486c.118.58.094 1.193-.07 1.743"/></svg>
+                    <span>Technician Performance (FTFR &amp; MTTR)</span>
                 </a>
                 <a href="{{ route('analytics.cost-profit', ['range' => $selectedRange]) }}"
-                   class="crm-filter-tab filter-tab px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap {{ request()->routeIs('analytics.cost-profit') ? 'active crm-tab-active text-white font-black shadow-md' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60' }}"
-                   @if(request()->routeIs('analytics.cost-profit')) style="background-color: #2563eb !important; color: #ffffff !important;" @endif>
-                    💰 Cost &amp; Profit Analysis
+                   class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition whitespace-nowrap {{ request()->routeIs('analytics.cost-profit') ? 'bg-blue-600 text-white font-bold shadow-xs' : 'bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/60 shadow-xs' }}">
+                    <svg class="w-4 h-4 {{ request()->routeIs('analytics.cost-profit') ? 'text-white' : 'text-slate-700 dark:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span>Cost &amp; Profit Analysis</span>
                 </a>
             </div>
 
@@ -92,7 +92,9 @@
                             <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Revenue (Without Tax)</span>
                             <span class="text-[11px] text-blue-600 dark:text-sky-400 font-semibold">Subtotal Billings</span>
                         </div>
-                        <div class="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center text-sm font-bold shrink-0 border border-blue-200 dark:border-blue-800">₹</div>
+                        <div class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 flex items-center justify-center shrink-0 shadow-xs">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6H2.25m0 0v10.5m0-10.5h16.5m-16.5 0a2.25 2.25 0 00-2.25 2.25v7.5a2.25 2.25 0 002.25 2.25m16.5-12a2.25 2.25 0 012.25 2.25v7.5a2.25 2.25 0 01-2.25 2.25m-16.5-12h16.5M12 9.75a2.25 2.25 0 100 4.5 2.25 2.25 0 000-4.5z"/></svg>
+                        </div>
                     </div>
                     <div class="mt-3">
                         <div class="text-2xl font-extrabold text-slate-900 dark:text-white leading-tight font-['Outfit']">₹{{ number_format($data['financials']['revenue_without_tax'], 2) }}</div>
@@ -109,7 +111,9 @@
                             <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Product Buy Cost</span>
                             <span class="text-[11px] text-rose-500 font-semibold">Hardware COGS</span>
                         </div>
-                        <div class="w-8 h-8 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center text-sm font-bold shrink-0 border border-rose-200 dark:border-rose-800">📦</div>
+                        <div class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 flex items-center justify-center shrink-0 shadow-xs">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"/></svg>
+                        </div>
                     </div>
                     <div class="mt-3">
                         <div class="text-2xl font-extrabold text-slate-900 dark:text-slate-200 leading-tight font-['Outfit']">₹{{ number_format($data['financials']['product_buy_cost'], 2) }}</div>
@@ -126,7 +130,9 @@
                             <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Gross Profit</span>
                             <span class="text-[11px] text-amber-500 font-semibold">Pre-Tax Margin</span>
                         </div>
-                        <div class="w-8 h-8 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center text-sm font-bold shrink-0 border border-amber-200 dark:border-amber-800">⚡</div>
+                        <div class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 flex items-center justify-center shrink-0 shadow-xs">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
                     </div>
                     <div class="mt-3">
                         <div class="text-2xl font-extrabold text-amber-600 dark:text-amber-400 leading-tight font-['Outfit']">₹{{ number_format($data['financials']['gross_profit_without_tax'], 2) }}</div>
@@ -143,7 +149,9 @@
                             <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Salary Credited Cost</span>
                             <span class="text-[11px] text-purple-600 dark:text-purple-400 font-semibold">Auto-Deducted</span>
                         </div>
-                        <div class="w-8 h-8 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center text-sm font-bold shrink-0 border border-purple-200 dark:border-purple-800">👥</div>
+                        <div class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 flex items-center justify-center shrink-0 shadow-xs">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
+                        </div>
                     </div>
                     <div class="mt-3">
                         <div class="text-2xl font-extrabold text-purple-600 dark:text-purple-400 leading-tight font-['Outfit']">₹{{ number_format($data['financials']['employee_salary_cost'], 2) }}</div>
@@ -160,7 +168,9 @@
                             <span class="text-[10px] font-extrabold uppercase tracking-wider {{ $data['financials']['net_profit_without_tax'] >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400' }} block">NET PROFIT (Without Tax)</span>
                             <span class="text-[11px] font-semibold text-slate-500 dark:text-slate-400">After Salary &amp; COGS</span>
                         </div>
-                        <div class="w-8 h-8 rounded-xl {{ $data['financials']['net_profit_without_tax'] >= 0 ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/30' : 'bg-rose-500/10 text-rose-500 border border-rose-500/30' }} flex items-center justify-center text-sm font-bold shrink-0">💎</div>
+                        <div class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 flex items-center justify-center shrink-0 shadow-xs">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v17.25m0 0c-1.472 0-2.882.265-4.185.75M12 20.25c1.472 0 2.882.265 4.185.75M18.75 4.97A48.416 48.416 0 0012 4.5c-2.291 0-4.545.16-6.75.47m13.5 0c1.01.143 2.01.317 3 .52m-3-.52l2.62 10.726c.122.499-.106 1.028-.589 1.202a5.988 5.988 0 01-2.031.352 5.988 5.988 0 01-2.031-.352c-.483-.174-.711-.703-.59-1.202L18.75 4.971zm-16.5.52c.99-.203 1.99-.377 3-.52m0 0l2.62 10.726c.122.499-.106 1.028-.589 1.202a5.989 5.989 0 01-2.031.352 5.989 5.989 0 01-2.031-.352c-.483-.174-.711-.703-.59-1.202L5.25 4.971z"/></svg>
+                        </div>
                     </div>
                     <div class="mt-3">
                         <div class="text-2xl font-black leading-tight font-['Outfit'] {{ $data['financials']['net_profit_without_tax'] >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400' }}">
@@ -179,7 +189,8 @@
                 <div class="p-4 bg-slate-50 dark:bg-[#0b1120] border-b border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2">
                     <div>
                         <h3 class="text-sm font-extrabold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
-                            <span>📋</span> Full Cost &amp; Profit Statement (Income Ledger)
+                            <svg class="w-4 h-4 text-slate-700 dark:text-slate-300" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+                            <span>Full Cost &amp; Profit Statement (Income Ledger)</span>
                         </h3>
                         <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Line-by-line operating statement separating sales turnover, material buy cost, and auto-computed employee payroll</p>
                     </div>
@@ -285,7 +296,8 @@
                     <div class="p-4 bg-slate-50 dark:bg-[#0b1120] border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
                         <div>
                             <h3 class="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-1.5">
-                                <span>👥</span> Employee Salary Deduction Ledger ({{ $data['salary']['employee_count'] }} Staff)
+                                <svg class="w-4 h-4 text-slate-700 dark:text-slate-300" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
+                                <span>Employee Salary Deduction Ledger ({{ $data['salary']['employee_count'] }} Staff)</span>
                             </h3>
                             <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Automatically computed wages deducted from the operating profit</p>
                         </div>
@@ -347,7 +359,8 @@
                     <div class="p-4 bg-slate-50 dark:bg-[#0b1120] border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
                         <div>
                             <h3 class="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-1.5">
-                                <span>📹</span> Client Invoiced Jobs (Pre-Tax Profit Breakdown)
+                                <svg class="w-4 h-4 text-slate-700 dark:text-slate-300" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z"/></svg>
+                                <span>Client Invoiced Jobs (Pre-Tax Profit Breakdown)</span>
                             </h3>
                             <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Shows subtotal vs hardware buy cost per job</p>
                         </div>

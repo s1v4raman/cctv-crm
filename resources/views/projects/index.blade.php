@@ -33,86 +33,79 @@
             </div>
         @endif
 
-        {{-- Single Filter Row --}}
-        <div class="bg-white dark:bg-slate-900 rounded border border-slate-200 dark:border-slate-800 p-3">
-            <form method="GET" action="{{ route('projects.index') }}" class="flex flex-col lg:flex-row items-stretch lg:items-center gap-2">
+        {{-- Horizontal Filter Row - Uniform 36px Height Level --}}
+        <div class="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-2 shadow-xs">
+            <form method="GET" action="{{ route('projects.index') }}" class="flex flex-wrap items-center gap-2 text-xs">
                 {{-- Search Box --}}
-                <div class="relative flex-1 min-w-[240px] flex items-center">
+                <div class="relative w-48 min-w-[160px] flex items-center shrink-0">
                     <svg class="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                     <input type="search" name="search" value="{{ $search }}"
-                           placeholder="Search company, project title, or code..." 
-                           style="padding-left: 2.375rem !important;"
-                           class="w-full pl-9 pr-3 h-[38px] text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-blue-500">
+                           placeholder="Search projects..." 
+                           style="padding-left: 32px !important; height: 36px !important; min-height: 36px !important; max-height: 36px !important; border-radius: 6px !important;"
+                           class="w-full text-xs rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-blue-500">
                 </div>
 
                 {{-- Company Filter --}}
-                <div class="w-full sm:w-44">
-                    <select name="company" class="w-full h-[38px] px-2.5 text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white focus:outline-none focus:border-blue-500">
-                        <option value="all">All Companies</option>
-                        @foreach($companies as $comp)
-                            <option value="{{ $comp->id }}" {{ $companyFilter == $comp->id ? 'selected' : '' }}>{{ $comp->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
+                <select name="company" class="crm-select text-xs shrink-0" style="height: 36px !important; min-height: 36px !important; max-height: 36px !important; border-radius: 6px !important;">
+                    <option value="all">All Companies</option>
+                    @foreach($companies as $comp)
+                        <option value="{{ $comp->id }}" {{ $companyFilter == $comp->id ? 'selected' : '' }}>{{ $comp->name }}</option>
+                    @endforeach
+                </select>
 
                 {{-- Assignee Filter --}}
-                <div class="w-full sm:w-48">
-                    <select name="assigned" class="w-full h-[38px] px-2.5 text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white focus:outline-none focus:border-blue-500">
-                        <option value="">All Assignees</option>
-                        @foreach($teamMembers as $tm)
-                            <option value="{{ $tm->id }}" {{ $assignedFilter == $tm->id ? 'selected' : '' }}>
-                                {{ $tm->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
+                <select name="assigned" class="crm-select text-xs shrink-0" style="height: 36px !important; min-height: 36px !important; max-height: 36px !important; border-radius: 6px !important;">
+                    <option value="">All Assignees</option>
+                    @foreach($teamMembers as $tm)
+                        <option value="{{ $tm->id }}" {{ $assignedFilter == $tm->id ? 'selected' : '' }}>
+                            {{ $tm->name }}
+                        </option>
+                    @endforeach
+                </select>
 
                 {{-- Status Filter --}}
-                <div class="w-full sm:w-36">
-                    <select name="status" class="w-full h-[38px] px-2.5 text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white focus:outline-none focus:border-blue-500">
-                        <option value="all" {{ $statusFilter === 'all' ? 'selected' : '' }}>All Statuses</option>
-                        <option value="pending_approval" {{ $statusFilter === 'pending_approval' ? 'selected' : '' }}>Pending Approval</option>
-                        <option value="approved" {{ $statusFilter === 'approved' ? 'selected' : '' }}>Approved</option>
-                        <option value="in_progress" {{ $statusFilter === 'in_progress' ? 'selected' : '' }}>In Progress</option>
-                        <option value="completed" {{ $statusFilter === 'completed' ? 'selected' : '' }}>Completed</option>
-                        <option value="draft" {{ $statusFilter === 'draft' ? 'selected' : '' }}>Draft</option>
-                        <option value="on_hold" {{ $statusFilter === 'on_hold' ? 'selected' : '' }}>On Hold</option>
-                        <option value="rejected" {{ $statusFilter === 'rejected' ? 'selected' : '' }}>Rejected</option>
-                        <option value="cancelled" {{ $statusFilter === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
-                    </select>
-                </div>
+                <select name="status" class="crm-select text-xs shrink-0" style="height: 36px !important; min-height: 36px !important; max-height: 36px !important; border-radius: 6px !important;">
+                    <option value="all" {{ $statusFilter === 'all' ? 'selected' : '' }}>All Statuses</option>
+                    <option value="pending_approval" {{ $statusFilter === 'pending_approval' ? 'selected' : '' }}>Pending</option>
+                    <option value="approved" {{ $statusFilter === 'approved' ? 'selected' : '' }}>Approved</option>
+                    <option value="in_progress" {{ $statusFilter === 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                    <option value="completed" {{ $statusFilter === 'completed' ? 'selected' : '' }}>Completed</option>
+                    <option value="draft" {{ $statusFilter === 'draft' ? 'selected' : '' }}>Draft</option>
+                    <option value="on_hold" {{ $statusFilter === 'on_hold' ? 'selected' : '' }}>On Hold</option>
+                    <option value="rejected" {{ $statusFilter === 'rejected' ? 'selected' : '' }}>Rejected</option>
+                    <option value="cancelled" {{ $statusFilter === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                </select>
 
                 {{-- Priority Filter --}}
-                <div class="w-full sm:w-32">
-                    <select name="priority" class="w-full h-[38px] px-2.5 text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white focus:outline-none focus:border-blue-500">
-                        <option value="all" {{ $priorityFilter === 'all' ? 'selected' : '' }}>All Priorities</option>
-                        <option value="urgent" {{ $priorityFilter === 'urgent' ? 'selected' : '' }}>Urgent</option>
-                        <option value="high" {{ $priorityFilter === 'high' ? 'selected' : '' }}>High</option>
-                        <option value="medium" {{ $priorityFilter === 'medium' ? 'selected' : '' }}>Medium</option>
-                        <option value="low" {{ $priorityFilter === 'low' ? 'selected' : '' }}>Low</option>
-                    </select>
-                </div>
+                <select name="priority" class="crm-select text-xs shrink-0" style="height: 36px !important; min-height: 36px !important; max-height: 36px !important; border-radius: 6px !important;">
+                    <option value="all" {{ $priorityFilter === 'all' ? 'selected' : '' }}>All Priorities</option>
+                    <option value="urgent" {{ $priorityFilter === 'urgent' ? 'selected' : '' }}>Urgent</option>
+                    <option value="high" {{ $priorityFilter === 'high' ? 'selected' : '' }}>High</option>
+                    <option value="medium" {{ $priorityFilter === 'medium' ? 'selected' : '' }}>Medium</option>
+                    <option value="low" {{ $priorityFilter === 'low' ? 'selected' : '' }}>Low</option>
+                </select>
 
                 {{-- Type Filter --}}
-                <div class="w-full sm:w-44">
-                    <select name="type" class="w-full h-[38px] px-2.5 text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white focus:outline-none focus:border-blue-500">
-                        <option value="all">All Types</option>
-                        <option value="hardware_attendance" {{ $typeFilter === 'hardware_attendance' ? 'selected' : '' }}>Terminal Attendance</option>
-                        <option value="hardware_cctv" {{ $typeFilter === 'hardware_cctv' ? 'selected' : '' }}>CCTV Surveillance</option>
-                        <option value="software_web" {{ $typeFilter === 'software_web' ? 'selected' : '' }}>Web &amp; Apps</option>
-                        <option value="hybrid" {{ $typeFilter === 'hybrid' ? 'selected' : '' }}>Hybrid Turnkey</option>
-                    </select>
-                </div>
+                <select name="type" class="crm-select text-xs shrink-0" style="height: 36px !important; min-height: 36px !important; max-height: 36px !important; border-radius: 6px !important;">
+                    <option value="all">All Types</option>
+                    <option value="hardware_attendance" {{ $typeFilter === 'hardware_attendance' ? 'selected' : '' }}>Attendance</option>
+                    <option value="hardware_cctv" {{ $typeFilter === 'hardware_cctv' ? 'selected' : '' }}>CCTV</option>
+                    <option value="software_web" {{ $typeFilter === 'software_web' ? 'selected' : '' }}>Web Apps</option>
+                    <option value="hybrid" {{ $typeFilter === 'hybrid' ? 'selected' : '' }}>Hybrid</option>
+                </select>
 
                 {{-- Submit and Reset Buttons --}}
                 <div class="flex items-center gap-1.5 shrink-0">
                     <button type="submit" 
-                            class="h-[38px] px-4 rounded bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition">
-                        Search
+                            style="height: 36px !important; min-height: 36px !important; max-height: 36px !important; border-radius: 6px !important;"
+                            class="px-3 rounded-md bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs transition inline-flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        <span>Filter</span>
                     </button>
                     @if($search || $statusFilter !== 'all' || $priorityFilter !== 'all' || ($typeFilter && $typeFilter !== 'all') || $assignedFilter || $companyFilter !== 'all')
                     <a href="{{ route('projects.index') }}" 
-                       class="h-[38px] px-3 inline-flex items-center rounded border border-slate-300 dark:border-slate-700 bg-white hover:bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-medium transition" 
+                       style="height: 36px !important; min-height: 36px !important; max-height: 36px !important; border-radius: 6px !important;"
+                       class="px-3 inline-flex items-center rounded-md border border-slate-300 dark:border-slate-700 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold transition" 
                        title="Clear all filters">
                         Clear
                     </a>

@@ -196,12 +196,16 @@ html.dark .crm-active-link:hover {
     color: #f8fafc !important;
 }
 aside nav a.crm-active-link svg,
-.crm-active-link svg {
-    color: #334155 !important;
+.crm-active-link svg,
+aside nav a:active svg {
+    color: #ffffff !important;
+    stroke: #ffffff !important;
 }
 html.dark aside nav a.crm-active-link svg,
-html.dark .crm-active-link svg {
-    color: #cbd5e1 !important;
+html.dark .crm-active-link svg,
+html.dark aside nav a:active svg {
+    color: #ffffff !important;
+    stroke: #ffffff !important;
 }
 
 /* Brand Logo Tile & User Avatars */
@@ -2059,15 +2063,10 @@ html.dark .crm-customer-icon-box {
    CLEAN CRM STANDARD FORM CONTROLS & TABLES (4px radius, 38px height)
    Shared across Leads, Surveys, and Form pages
    ═══════════════════════════════════════════════════════════════════ */
-.crm-control,
-.crm-input,
-.crm-select,
-.crm-btn-primary,
-.crm-btn-secondary {
-    height: 38px !important;
-    min-height: 38px !important;
-    max-height: 38px !important;
-    border-radius: 4px !important;
+.crm-control {
+    height: 42px !important;
+    min-height: 42px !important;
+    border-radius: 8px !important;
     box-sizing: border-box !important;
     font-size: 0.875rem !important;
     line-height: 1.25rem !important;
@@ -2075,12 +2074,54 @@ html.dark .crm-customer-icon-box {
 
 .crm-input,
 .crm-select {
+    display: block !important;
+    width: 100% !important;
+    height: 42px !important;
+    min-height: 42px !important;
+    border-radius: 8px !important;
+    box-sizing: border-box !important;
+    font-size: 0.875rem !important;
+    line-height: 1.25rem !important;
     background-color: #ffffff !important;
-    border: 1px solid #d1d5db !important;
+    border: 1px solid #cbd5e1 !important;
     color: #0f172a !important;
-    padding: 0 0.75rem !important;
+    padding: 0 0.875rem !important;
     outline: none !important;
-    box-shadow: none !important;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+.crm-select {
+    padding-right: 2.5rem !important;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e") !important;
+    background-position: right 0.75rem center !important;
+    background-repeat: no-repeat !important;
+    background-size: 1.25em 1.25em !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    cursor: pointer !important;
+}
+
+.crm-btn-primary,
+.crm-btn-secondary {
+    height: 42px !important;
+    min-height: 42px !important;
+    border-radius: 8px !important;
+    box-sizing: border-box !important;
+    font-size: 0.875rem !important;
+    font-weight: 600 !important;
+    line-height: 1.25rem !important;
+    padding: 0 1.25rem !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.5rem !important;
+}
+
+.crm-input.pl-9,
+.crm-search-input,
+.relative > .crm-input.pl-9 {
+    padding-left: 2.5rem !important;
 }
 
 html.dark .crm-input,
@@ -2088,12 +2129,13 @@ html.dark .crm-select {
     background-color: #0b1120 !important;
     border-color: #334155 !important;
     color: #f8fafc !important;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e") !important;
 }
 
 .crm-input:focus,
 .crm-select:focus {
     border-color: #2563eb !important;
-    box-shadow: 0 0 0 1px #2563eb !important;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2) !important;
 }
 
 .crm-textarea {
@@ -2454,21 +2496,23 @@ aside nav a[class*="crm-active-link"] {
     font-weight: 600 !important;
 }
 aside nav a.crm-active-link svg,
-aside nav a[class*="crm-active-link"] svg {
-    color: #2563eb !important;
-    stroke: #2563eb !important;
+aside nav a[class*="crm-active-link"] svg,
+aside nav a:active svg {
+    color: #ffffff !important;
+    stroke: #ffffff !important;
 }
 
 html.dark aside nav a.crm-active-link,
 html.dark aside nav a[class*="crm-active-link"] {
-    background-color: rgba(37, 99, 235, 0.2) !important;
-    border-left: 3px solid #2563eb !important;
-    color: #60a5fa !important;
+    background-color: #2563eb !important;
+    border-left: none !important;
+    color: #ffffff !important;
 }
 html.dark aside nav a.crm-active-link svg,
-html.dark aside nav a[class*="crm-active-link"] svg {
-    color: #60a5fa !important;
-    stroke: #60a5fa !important;
+html.dark aside nav a[class*="crm-active-link"] svg,
+html.dark aside nav a:active svg {
+    color: #ffffff !important;
+    stroke: #ffffff !important;
 }
 
 /* Section: One white box with a border (no card inside a card) */

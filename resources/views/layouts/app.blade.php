@@ -186,7 +186,8 @@
 
             /* Sidebar Module Navigation Click & Active State: Cohesive #2563eb */
             aside nav a.crm-active-link,
-            .crm-active-link {
+            .crm-active-link,
+            aside nav a:active {
                 background-color: #2563eb !important;
                 border-radius: 8px !important;
                 color: #ffffff !important;
@@ -194,21 +195,33 @@
                 box-shadow: 0 1px 3px rgba(37, 99, 235, 0.25) !important;
             }
             aside nav a.crm-active-link svg,
-            .crm-active-link svg {
+            .crm-active-link svg,
+            aside nav a.crm-active-link svg *,
+            .crm-active-link svg *,
+            aside nav a:active svg,
+            aside nav a:active svg * {
                 color: #ffffff !important;
+                stroke: #ffffff !important;
+                display: inline-block !important;
+                opacity: 1 !important;
+                visibility: visible !important;
             }
             aside nav a:hover:not(.crm-active-link) {
                 background-color: #cee0f4 !important;
                 color: #1d4ed8 !important;
             }
-            aside nav a:hover:not(.crm-active-link) svg {
+            aside nav a:hover:not(.crm-active-link) svg,
+            aside nav a:hover:not(.crm-active-link) svg * {
                 color: #2563eb !important;
+                stroke: #2563eb !important;
             }
-            aside nav a:not(.crm-active-link) {
+            aside nav a:not(.crm-active-link):not(:hover) {
                 color: #334155 !important;
             }
-            aside nav a:not(.crm-active-link) svg {
+            aside nav a:not(.crm-active-link):not(:hover) svg,
+            aside nav a:not(.crm-active-link):not(:hover) svg * {
                 color: #475569 !important;
+                stroke: #475569 !important;
             }
             aside div.uppercase {
                 color: #475569 !important;
@@ -311,29 +324,120 @@
                - Search list data ALWAYS opens DOWN (below the search bar), NEVER UP
                ═══════════════════════════════════════════════════════════════════════ */
 
-            /* Native Select Elements */
+            /* Native Select Elements - Uniform Proper Height Level (36px, matching Image 2 & 3) */
             select,
             .crm-select,
             select.crm-select {
-                height: 38px !important;
-                min-height: 38px !important;
-                max-height: 38px !important;
+                height: 36px !important;
+                min-height: 36px !important;
+                max-height: 36px !important;
                 border: 1px solid #cbd5e1 !important;
-                border-bottom: 2px solid #2563eb !important;
-                border-radius: 4px !important;
-                font-size: 13px !important;
+                border-radius: 6px !important;
+                font-size: 12px !important;
+                font-weight: 500 !important;
                 background-color: #ffffff !important;
                 color: #0f172a !important;
-                padding-left: 12px !important;
-                padding-right: 44px !important;
-                background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='36' height='24' viewBox='0 0 36 24'%3e%3cline x1='8' y1='3' x2='8' y2='21' stroke='%23cbd5e1' stroke-width='1.2'/%3e%3cpolygon points='23,15 28,9 18,9' fill='%2364748b'/%3e%3c/svg%3e") !important;
-                background-position: right 0.4rem center !important;
+                padding-left: 10px !important;
+                padding-right: 24px !important;
+                background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 20 20' fill='%2364748b'%3e%3cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3e%3c/svg%3e") !important;
+                background-position: right 8px center !important;
                 background-repeat: no-repeat !important;
-                background-size: 36px 24px !important;
+                background-size: 12px 12px !important;
                 appearance: none !important;
                 -webkit-appearance: none !important;
+                max-width: fit-content;
+                width: auto;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02) !important;
+            }
+
+            /* Select elements inside flex horizontal toolbars and filter bars */
+            .flex select,
+            .inline-flex select,
+            form.flex select,
+            .crm-filter-bar select,
+            .crm-filter-select,
+            .crm-cal-select,
+            select.crm-filter-select,
+            select:not(.w-full) {
+                width: auto !important;
+                min-width: 0 !important;
+                max-width: fit-content !important;
+            }
+
+            /* Full-width selects inside standard vertical forms */
+            select.w-full,
+            .form-group select,
+            .grid > div > select.w-full {
                 width: 100% !important;
-                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03) !important;
+            }
+
+            /* Universal Minimized Horizontal Filter Bar (Left-to-Right, 36px height level, clean 6px gap) */
+            .crm-filter-bar {
+                display: flex !important;
+                flex-direction: row !important;
+                flex-wrap: wrap !important;
+                align-items: center !important;
+                gap: 6px !important;
+                padding: 6px 10px !important;
+                background-color: #ffffff;
+                border-radius: 8px;
+            }
+            html.dark .crm-filter-bar {
+                background-color: #0f172a;
+            }
+
+            .crm-search-box {
+                position: relative !important;
+                width: auto !important;
+                max-width: 220px !important;
+                min-width: 150px !important;
+            }
+
+            .crm-search-input,
+            .crm-filter-bar input[type="text"],
+            .crm-filter-bar input[type="search"],
+            .relative > input.crm-cal-input {
+                height: 32px !important;
+                min-height: 32px !important;
+                max-height: 32px !important;
+                font-size: 11px !important;
+                padding-left: 28px !important; /* ensures search icon never collides */
+                padding-right: 8px !important;
+                border: 1px solid #cbd5e1 !important;
+                border-radius: 6px !important;
+                background-color: #ffffff !important;
+                color: #0f172a !important;
+                outline: none !important;
+            }
+            html.dark .crm-search-input,
+            html.dark .crm-filter-bar input[type="text"],
+            html.dark .crm-filter-bar input[type="search"],
+            html.dark .relative > input.crm-cal-input {
+                background-color: #0b132b !important;
+                border-color: #334155 !important;
+                color: #f8fafc !important;
+            }
+
+            /* Standardized Minimized Button Size (32px compact height) */
+            .crm-filter-btn,
+            .crm-btn-primary,
+            .crm-btn-secondary,
+            .btn-primary,
+            .btn-secondary {
+                height: 32px !important;
+                min-height: 32px !important;
+                max-height: 32px !important;
+                padding: 0 10px !important;
+                font-size: 11px !important;
+                font-weight: 600 !important;
+                border-radius: 6px !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                gap: 4px !important;
+                white-space: nowrap !important;
+                line-height: 1 !important;
+                cursor: pointer;
             }
 
             select.crm-select:invalid,
@@ -348,7 +452,7 @@
                 border-color: #334155 !important;
                 border-bottom: 2px solid #3b82f6 !important;
                 color: #f8fafc !important;
-                background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='36' height='24' viewBox='0 0 36 24'%3e%3cline x1='8' y1='3' x2='8' y2='21' stroke='%23334155' stroke-width='1.2'/%3e%3cpolygon points='23,15 28,9 18,9' fill='%2394a3b8'/%3e%3c/svg%3e") !important;
+                background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 20 20' fill='%2394a3b8'%3e%3cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3e%3c/svg%3e") !important;
             }
 
             select:focus,

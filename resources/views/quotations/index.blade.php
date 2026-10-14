@@ -60,15 +60,16 @@
             background:#0b1120; border-color:#1e293b;
         }
         .filter-bar input, .filter-bar select {
-            border:1px solid #cbd5e1; border-radius:4px;
-            height:38px; padding:0 .75rem; font-size:.85rem; color:#1e293b;
+            border:1px solid #cbd5e1; border-radius:6px;
+            height:36px !important; min-height:36px !important; max-height:36px !important;
+            padding:0 .75rem; font-size:12px !important; color:#1e293b;
             background:#ffffff; outline:none;
         }
         html.dark .filter-bar input, html.dark .filter-bar select {
             background:#0b1120; border-color:#334155; color:#ffffff;
         }
         .filter-bar input:focus, .filter-bar select:focus { border-color:#2563eb; }
-        .filter-bar input { min-width:220px; }
+        .filter-bar input { min-width:180px; }
 
         /* Table */
         .q-table { width:100%; border-collapse:collapse; }
@@ -136,11 +137,11 @@
             {{-- Table Card --}}
             <div class="pg-card">
 
-                <form method="GET" action="{{ route('quotations.index') }}" class="filter-bar flex items-center gap-2 flex-wrap">
-                    <div class="relative flex-1 min-w-[220px]">
-                        <input type="text" name="search" id="q-search" value="{{ request('search') }}" placeholder="Search quotation no, customer, phone…" oninput="filterQuotes()" class="w-full">
+                <form method="GET" action="{{ route('quotations.index') }}" class="filter-bar flex items-center gap-2 flex-wrap p-2 text-xs">
+                    <div class="relative w-60 min-w-[180px] shrink-0">
+                        <input type="text" name="search" id="q-search" value="{{ request('search') }}" placeholder="Search quotation no, customer, phone…" oninput="filterQuotes()" class="w-full text-xs">
                     </div>
-                    <select name="status" id="q-status" onchange="this.form.submit()">
+                    <select name="status" id="q-status" onchange="this.form.submit()" class="text-xs shrink-0">
                         <option value="">All Statuses</option>
                         <option value="draft" @selected(request('status') === 'draft')>Draft</option>
                         <option value="sent" @selected(request('status') === 'sent')>Sent</option>
@@ -148,11 +149,12 @@
                         <option value="rejected" @selected(request('status') === 'rejected')>Rejected</option>
                         <option value="expired" @selected(request('status') === 'expired')>Expired</option>
                     </select>
-                    <button type="submit" class="h-[38px] px-4 text-sm font-semibold rounded bg-blue-600 hover:bg-blue-700 text-white transition shadow-xs">
-                        Search
+                    <button type="submit" style="height:36px !important; min-height:36px !important; max-height:36px !important;" class="px-3 text-xs font-semibold rounded-md bg-blue-600 hover:bg-blue-700 text-white transition shadow-xs inline-flex items-center gap-1.5 shrink-0">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        <span>Search</span>
                     </button>
                     @if(request('search') || request('status'))
-                        <a href="{{ route('quotations.index') }}" class="h-[38px] px-3 text-sm font-medium rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 inline-flex items-center">
+                        <a href="{{ route('quotations.index') }}" style="height:36px !important; min-height:36px !important; max-height:36px !important;" class="px-3 text-xs font-medium rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 inline-flex items-center shrink-0">
                             Clear
                         </a>
                     @endif

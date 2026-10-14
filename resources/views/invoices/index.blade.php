@@ -89,23 +89,24 @@
             <x-finance-subnav active="invoices" />
 
             <div class="pg-card mt-4">
-                {{-- Search & filter bar --}}
-                <form method="GET" action="{{ route('invoices.index') }}" class="p-3.5 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0b1120] flex items-center gap-2 flex-wrap">
-                    <div class="relative flex-1 min-w-[220px]">
-                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Search invoice #, customer, phone…" class="w-full text-sm h-[38px] rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0f172a] text-slate-800 dark:text-white px-3 focus:outline-none focus:border-blue-500">
+                {{-- Search & filter bar - Uniform 36px Height Level --}}
+                <form method="GET" action="{{ route('invoices.index') }}" class="p-2 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0b1120] flex items-center gap-2 flex-wrap text-xs">
+                    <div class="relative w-60 min-w-[180px] shrink-0">
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Search invoice #, customer, phone…" class="w-full text-xs h-[36px] rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0f172a] text-slate-800 dark:text-white px-3 focus:outline-none focus:border-blue-500">
                     </div>
-                    <select name="status" onchange="this.form.submit()" class="text-sm h-[38px] rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0f172a] text-slate-800 dark:text-white px-3 focus:outline-none focus:border-blue-500">
+                    <select name="status" onchange="this.form.submit()" class="text-xs h-[36px] rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0f172a] text-slate-800 dark:text-white px-3 focus:outline-none focus:border-blue-500 shrink-0">
                         <option value="">All Statuses</option>
                         <option value="unpaid" @selected(request('status') === 'unpaid')>Unpaid</option>
                         <option value="partially_paid" @selected(request('status') === 'partially_paid')>Partially Paid</option>
                         <option value="paid" @selected(request('status') === 'paid')>Paid</option>
                         <option value="overdue" @selected(request('status') === 'overdue')>Overdue</option>
                     </select>
-                    <button type="submit" class="h-[38px] px-4 rounded bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition">
-                        Search
+                    <button type="submit" style="height: 36px !important; min-height: 36px !important; max-height: 36px !important;" class="px-3 rounded-md bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition inline-flex items-center gap-1.5 shrink-0 shadow-xs">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        <span>Search</span>
                     </button>
                     @if(request('search') || request('status'))
-                        <a href="{{ route('invoices.index') }}" class="h-[38px] px-3.5 inline-flex items-center rounded border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-sm font-medium transition">
+                        <a href="{{ route('invoices.index') }}" style="height: 36px !important; min-height: 36px !important; max-height: 36px !important;" class="px-3 inline-flex items-center rounded-md border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition shrink-0">
                             Clear
                         </a>
                     @endif

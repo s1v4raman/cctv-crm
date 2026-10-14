@@ -45,6 +45,7 @@ use App\Http\Controllers\WorkDayController;
 use App\Http\Controllers\IpDeviceController;
 use App\Http\Controllers\WageController;
 use App\Http\Controllers\ProjectDocumentController;
+use App\Http\Controllers\ProjectTaskController;
 
 // Mobile Phone Remote Barcode Scanner Companion & Live Sync
 Route::get('/mobile-scanner/{token?}', [MobileScannerSyncController::class, 'show'])->name('mobile.scanner');
@@ -299,6 +300,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/projects/{project}/reject', [ProjectController::class, 'reject'])->name('projects.reject');
         Route::post('/projects/{project}/materials', [ProjectController::class, 'addMaterial'])->name('projects.materials.store');
         Route::delete('/projects/{project}/materials/{material}', [ProjectController::class, 'deleteMaterial'])->name('projects.materials.destroy');
+
+        // Project Tasks, Workflows & Checklists
+        Route::post('/projects/{project}/tasks/apply-template', [ProjectTaskController::class, 'applyTemplate'])->name('projects.tasks.apply-template');
+        Route::post('/projects/{project}/tasks', [ProjectTaskController::class, 'store'])->name('projects.tasks.store');
+        Route::put('/projects/{project}/tasks/{task}', [ProjectTaskController::class, 'update'])->name('projects.tasks.update');
+        Route::patch('/projects/{project}/tasks/{task}/status', [ProjectTaskController::class, 'updateStatus'])->name('projects.tasks.status');
+        Route::delete('/projects/{project}/tasks/{task}', [ProjectTaskController::class, 'destroy'])->name('projects.tasks.destroy');
+        Route::post('/tasks/checklists/{checklist}/toggle', [ProjectTaskController::class, 'toggleChecklist'])->name('tasks.checklists.toggle');
+        Route::post('/tasks/{task}/checklists', [ProjectTaskController::class, 'addChecklistItem'])->name('tasks.checklists.store');
+        Route::delete('/tasks/checklists/{checklist}', [ProjectTaskController::class, 'deleteChecklistItem'])->name('tasks.checklists.destroy');
 
         // Project Documents & Delivery Challans
         Route::post('/projects/{project}/documents', [ProjectDocumentController::class, 'store'])->name('projects.documents.store');

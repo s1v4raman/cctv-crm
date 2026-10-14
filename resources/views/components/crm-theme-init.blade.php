@@ -233,13 +233,17 @@
             }
 
             aside nav a.crm-active-link svg,
-            .crm-active-link svg {
-                color: #334155 !important;
+            .crm-active-link svg,
+            aside nav a:active svg {
+                color: #ffffff !important;
+                stroke: #ffffff !important;
             }
 
             html.dark aside nav a.crm-active-link svg,
-            html.dark .crm-active-link svg {
-                color: #cbd5e1 !important;
+            html.dark .crm-active-link svg,
+            html.dark aside nav a:active svg {
+                color: #ffffff !important;
+                stroke: #ffffff !important;
             }
 
             /* Clean Outline Icon System: Proper size, linear stroke, no color boxes or shades */

@@ -336,8 +336,8 @@
 
                         {{-- Executive Analytics (Sliders/Controls icon) --}}
                         <a :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('analytics.index') }}" 
-                           class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('analytics.index') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
-                            <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('analytics.index') ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                           class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('analytics.*') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
+                            <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('analytics.*') ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                                 <line stroke-linecap="round" stroke-linejoin="round" x1="4" x2="20" y1="6" y2="6"/>
                                 <circle cx="8" cy="6" r="2.5"/>
                                 <line stroke-linecap="round" stroke-linejoin="round" x1="4" x2="20" y1="12" y2="12"/>
@@ -346,15 +346,6 @@
                                 <circle cx="10" cy="18" r="2.5"/>
                             </svg>
                             <span :class="sidebarCollapsed ? 'lg:hidden' : ''">Executive Analytics</span>
-                        </a>
-
-                        {{-- Technician Performance (Heart icon) --}}
-                        <a :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('analytics.technicians') }}" 
-                           class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('analytics.technicians*') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
-                            <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('analytics.technicians*') ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
-                            </svg>
-                            <span :class="sidebarCollapsed ? 'lg:hidden' : ''">Technician Performance</span>
                         </a>
 
                         {{-- User Accounts & Settings (Sliders/Controls icon) --}}

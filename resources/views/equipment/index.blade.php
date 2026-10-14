@@ -45,11 +45,26 @@
             background: #ffffff;
         }
         .filter-bar input, .filter-bar select {
-            border: 1px solid #cccccc; border-radius: 4px;
-            height: 38px; padding: 0 0.75rem; font-size: 14px; color: #222222;
-            background: #ffffff; outline: none; font-family: Arial, sans-serif;
+            border: 1px solid #cbd5e1; border-radius: 8px;
+            height: 42px; min-height: 42px; padding: 0 0.875rem; font-size: 14px; color: #0f172a;
+            background: #ffffff; outline: none; font-family: inherit;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
         }
-        .filter-bar input:focus, .filter-bar select:focus { border-color: #2563eb; }
+        .filter-bar select {
+            padding-right: 2.25rem;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.75rem center;
+            background-repeat: no-repeat;
+            background-size: 1.25em 1.25em;
+            appearance: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+        .filter-bar input:focus, .filter-bar select:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+        }
 
         .p-table { width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; }
         .p-table thead { background: #f0f0f0; border-bottom: 1px solid #dddddd; }
@@ -117,11 +132,12 @@
                         <option value="decommissioned" @selected(request('status') == 'decommissioned')>Decommissioned</option>
                     </select>
 
-                    <button type="submit" class="h-[38px] px-4 rounded bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition">
-                        Search
+                    <button type="submit" class="h-[42px] px-5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold shadow-xs transition inline-flex items-center gap-1.5 cursor-pointer">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
+                        <span>Search</span>
                     </button>
                     @if(request()->hasAny(['search', 'lead_id', 'warranty', 'status']))
-                        <a href="{{ route('equipment.index') }}" class="h-[38px] px-3.5 inline-flex items-center rounded border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-sm font-medium transition">Clear</a>
+                        <a href="{{ route('equipment.index') }}" class="h-[42px] px-4 inline-flex items-center rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-sm font-semibold transition shadow-xs">Clear</a>
                     @endif
                 </form>
 

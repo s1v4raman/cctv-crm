@@ -85,18 +85,18 @@
 
             <div class="bg-white dark:bg-[#0f172a] border border-[#ddd] dark:border-slate-800 rounded-[4px] overflow-hidden">
 
-                {{-- Filter bar in one simple row: Search box, Status dropdown, Search button --}}
-                <form method="GET" action="{{ route('leads.index') }}" class="p-3 border-b border-[#ddd] dark:border-slate-800 bg-white dark:bg-[#0f172a] flex items-center gap-2 flex-wrap">
-                    <div class="relative flex-1 min-w-[220px] sm:max-w-xs">
+                {{-- Horizontal Filter bar - Uniform 36px Height Level --}}
+                <form method="GET" action="{{ route('leads.index') }}" class="p-2 border-b border-[#ddd] dark:border-slate-800 bg-white dark:bg-[#0f172a] flex items-center gap-2 flex-wrap text-xs">
+                    <div class="relative w-60 min-w-[180px] shrink-0">
                         <input type="text" name="search" id="lead-search" value="{{ request('search') }}" 
-                               placeholder="Search customer, phone, address…" 
-                               style="height: 38px; min-height: 38px; max-height: 38px; border-radius: 4px; box-sizing: border-box;"
-                               class="crm-input w-full px-3 text-xs border border-[#ddd] dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-slate-400">
+                                placeholder="Search customer, phone, address…" 
+                                style="height: 36px !important; min-height: 36px !important; max-height: 36px !important; border-radius: 6px !important; box-sizing: border-box; padding-left: 10px;"
+                                class="crm-input w-full text-xs border border-[#cbd5e1] dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-blue-500">
                     </div>
 
                     <select name="status" id="lead-status-filter" 
-                            style="height: 38px; min-height: 38px; max-height: 38px; border-radius: 4px; box-sizing: border-box;"
-                            class="crm-select px-2.5 text-xs border border-[#ddd] dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:outline-none focus:border-slate-400">
+                            style="height: 36px !important; min-height: 36px !important; max-height: 36px !important; border-radius: 6px !important; box-sizing: border-box;"
+                            class="crm-select text-xs border border-[#cbd5e1] dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:outline-none focus:border-blue-500 shrink-0">
                         <option value="">All Statuses</option>
                         <option value="new" @selected(request('status') === 'new')>New</option>
                         <option value="contacted" @selected(request('status') === 'contacted')>Contacted</option>
@@ -106,15 +106,16 @@
                     </select>
 
                     <button type="submit" 
-                            style="height: 38px; min-height: 38px; max-height: 38px; border-radius: 4px; box-sizing: border-box;"
-                            class="crm-btn-primary px-3.5 text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white transition">
-                        Search
+                            style="height: 36px !important; min-height: 36px !important; max-height: 36px !important; border-radius: 6px !important; box-sizing: border-box;"
+                            class="crm-btn-primary px-3 text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white transition shrink-0 inline-flex items-center gap-1.5 shadow-xs">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        <span>Search</span>
                     </button>
 
                     @if(request('search') || request('status'))
                         <a href="{{ route('leads.index') }}" 
-                           style="height: 38px; min-height: 38px; max-height: 38px; border-radius: 4px; box-sizing: border-box;"
-                           class="crm-btn-secondary px-2.5 text-xs font-medium border border-[#ddd] dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition inline-flex items-center">
+                           style="height: 36px !important; min-height: 36px !important; max-height: 36px !important; border-radius: 6px !important; box-sizing: border-box;"
+                           class="crm-btn-secondary px-3 text-xs font-medium border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition inline-flex items-center shrink-0">
                             Reset
                         </a>
                     @endif

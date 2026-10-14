@@ -34,12 +34,25 @@
     </script>
 
     <style>
-        /* Responsive cohesive theming on Operations Calendar */
-        .crm-cal-input,
+        /* Responsive cohesive horizontal theming on Operations Calendar */
+        .crm-cal-input {
+            background-color: #ffffff;
+            color: #0f172a;
+            border-color: #cbd5e1;
+            padding-left: 36px !important;
+            height: 36px !important;
+            font-size: 12px !important;
+        }
         .crm-cal-select {
             background-color: #ffffff;
             color: #0f172a;
             border-color: #cbd5e1;
+            width: auto !important;
+            min-width: 135px !important;
+            max-width: 180px !important;
+            height: 36px !important;
+            font-size: 12px !important;
+            display: inline-block !important;
         }
         .crm-cal-input::placeholder {
             color: #94a3b8;
@@ -48,7 +61,11 @@
             background-color: #ffffff;
             color: #0f172a;
         }
-        html.dark .crm-cal-input,
+        html.dark .crm-cal-input {
+            background-color: #0b132b !important;
+            color: #f8fafc !important;
+            border-color: #334155 !important;
+        }
         html.dark .crm-cal-select {
             background-color: #0b132b !important;
             color: #f8fafc !important;
@@ -124,24 +141,26 @@
             </div>
         </div>
 
-        {{-- 2. Integrated Filter & View Toolbar --}}
-        <div class="bg-white dark:bg-[#0f172a] rounded-xl border border-slate-200/80 dark:border-slate-800 p-3 shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col md:flex-row md:items-center justify-between gap-3">
+        {{-- 2. Integrated Horizontal Filter & View Toolbar --}}
+        <div class="bg-white dark:bg-[#0f172a] rounded-xl border border-slate-200/80 dark:border-slate-800 p-2.5 shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-wrap items-center justify-between gap-2.5">
             
-            {{-- Left Filters: Search, Category, Technician, Status --}}
-            <div class="flex flex-wrap items-center gap-2 flex-1">
+            {{-- Left Horizontal Filters: Search, Category, Technician, Status --}}
+            <div class="flex items-center gap-2 flex-wrap flex-1 min-w-0">
                 {{-- Search box --}}
-                <div class="relative w-full sm:w-60">
+                <div class="relative w-64 min-w-[180px] shrink-0">
                     <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                         <circle cx="11" cy="11" r="7"/>
                         <line x1="21" x2="16.65" y1="21" y2="16.65"/>
                     </svg>
                     <input type="text" x-model="searchQuery" placeholder="Filter by customer, job, site..." 
-                           class="crm-cal-input w-full h-9 pl-9 pr-3 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-500 transition">
+                           class="crm-cal-input w-full h-9 pl-9 pr-3 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-500 transition"
+                           style="padding-left: 36px !important;">
                 </div>
 
                 {{-- Category Dropdown --}}
                 <select x-model="filterCategory"
-                        class="crm-cal-select h-9 px-3 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500 transition cursor-pointer">
+                        class="crm-cal-select h-9 px-3 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500 transition cursor-pointer shrink-0"
+                        style="width: auto !important; min-width: 135px !important;">
                     <option value="all">All Operations</option>
                     <option value="survey">Surveys</option>
                     <option value="job">Installations</option>
@@ -149,7 +168,8 @@
 
                 {{-- Technician Dropdown --}}
                 <select x-model="filterTech"
-                        class="crm-cal-select h-9 px-3 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500 transition cursor-pointer">
+                        class="crm-cal-select h-9 px-3 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500 transition cursor-pointer shrink-0"
+                        style="width: auto !important; min-width: 140px !important;">
                     <option value="all">All Technicians</option>
                     @foreach($technicians as $tech)
                         <option value="{{ $tech->id }}">{{ $tech->name }}</option>
@@ -158,16 +178,26 @@
 
                 {{-- Status Dropdown --}}
                 <select x-model="filterStatus"
-                        class="crm-cal-select h-9 px-3 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500 transition cursor-pointer">
+                        class="crm-cal-select h-9 px-3 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500 transition cursor-pointer shrink-0"
+                        style="width: auto !important; min-width: 135px !important;">
                     <option value="all">All Statuses</option>
                     <option value="pending">Pending / Assigned</option>
                     <option value="in_progress">In Progress</option>
                     <option value="completed">Completed</option>
                 </select>
+
+                {{-- Quick Clear Button --}}
+                <button type="button" 
+                        x-show="searchQuery !== '' || filterCategory !== 'all' || filterTech !== 'all' || filterStatus !== 'all'"
+                        @click="searchQuery = ''; filterCategory = 'all'; filterTech = 'all'; filterStatus = 'all'"
+                        class="h-9 px-3 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 transition shrink-0 inline-flex items-center gap-1 font-semibold">
+                    <span>Clear</span>
+                    <span>&times;</span>
+                </button>
             </div>
 
             {{-- Right View Mode: Segmented Pill Switcher (Month, Week, Agenda) --}}
-            <div class="inline-flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800/80 rounded-lg border border-slate-200/60 dark:border-slate-700 self-start md:self-auto shrink-0">
+            <div class="inline-flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800/80 rounded-lg border border-slate-200/60 dark:border-slate-700 shrink-0">
                 <button type="button" @click="currentView = 'month'"
                         :class="currentView === 'month' ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-semibold shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium'"
                         class="h-7 px-3 text-xs rounded-md transition cursor-pointer">
