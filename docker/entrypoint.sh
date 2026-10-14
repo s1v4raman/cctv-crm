@@ -101,15 +101,6 @@ try {
             'email_verified_at' => now(),
         ]
     );
-    \App\Models\User::updateOrCreate(
-        ['email' => 'customer@cctvcrm.com'],
-        [
-            'name' => 'John Customer',
-            'password' => bcrypt('password'),
-            'role' => 'customer',
-            'email_verified_at' => now(),
-        ]
-    );
     echo '=> Admin, Reviewer, and Demo accounts verified successfully.' . PHP_EOL;
 } catch (\Throwable \$e) {
     echo '=> Account creation note: ' . \$e->getMessage() . PHP_EOL;

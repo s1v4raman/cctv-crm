@@ -108,8 +108,8 @@
 
                 {{-- Action Button --}}
                 <div class="cta-center">
-                    <a href="{{ route('portal.quotations') }}" class="btn-portal" target="_blank">
-                        ✓ Review & Approve Online in Portal
+                    <a href="{{ route('quotations.public-pdf', ['quotation' => $quotation, 'format' => '1']) }}" class="btn-portal" target="_blank">
+                        ✓ View &amp; Download Proposal PDF
                     </a>
                 </div>
 

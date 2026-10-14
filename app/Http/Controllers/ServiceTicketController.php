@@ -430,7 +430,7 @@ class ServiceTicketController extends Controller
                         'customer_name'    => $serviceTicket->lead->customer_name,
                         'ticket_no'        => $serviceTicket->ticket_no,
                         'resolution_notes' => $serviceTicket->resolution_notes ?: 'Service completed successfully.',
-                        'jcr_link'         => route('portal.tickets'),
+                        'jcr_link'         => route('home'),
                     ], $serviceTicket);
                 } else {
                     $alertService->sendAlert('ticket_status_updated', $serviceTicket->lead, [
@@ -439,7 +439,7 @@ class ServiceTicketController extends Controller
                         'status'          => $serviceTicket->status_label,
                         'technician_name' => $serviceTicket->assignedTechnician?->name ?? 'Assigned Engineer',
                         'notes'           => $serviceTicket->resolution_notes ?: ($serviceTicket->troubleshooting_notes ?: 'Status updated.'),
-                        'ticket_link'     => route('portal.tickets'),
+                        'ticket_link'     => route('home'),
                     ], $serviceTicket);
                 }
             } catch (\Throwable $e) {
@@ -476,7 +476,7 @@ class ServiceTicketController extends Controller
                     'status'          => 'Assigned to Technician',
                     'technician_name' => $serviceTicket->assignedTechnician?->name ?? 'Service Engineer',
                     'notes'           => 'Technician assigned for scheduled service visit.',
-                    'ticket_link'     => route('portal.tickets'),
+                    'ticket_link'     => route('home'),
                 ], $serviceTicket);
             } catch (\Throwable $e) {
                 \Illuminate\Support\Facades\Log::warning("Technician assign alert failed: " . $e->getMessage());

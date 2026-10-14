@@ -232,11 +232,9 @@
                     <a id="download-receipt-link" href="#" target="_blank" class="flex-1 py-2 px-4 rounded-[4px] bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs text-center">
                         View Receipt
                     </a>
-                    @if(auth()->check() && auth()->user()->isCustomer())
-                    <a href="{{ route('portal.dashboard') }}" class="py-2 px-4 rounded-[4px] bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 font-bold text-xs text-center">
-                        Back to Portal
+                    <a href="{{ route('home') }}" class="py-2 px-4 rounded-[4px] bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 font-bold text-xs text-center">
+                        Back to Store
                     </a>
-                    @endif
                 </div>
             </div>
 

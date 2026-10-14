@@ -70,7 +70,7 @@ class StorefrontAndCustomerAuthTest extends TestCase
         ]);
     }
 
-    public function test_new_customer_registration_creates_account_and_redirects_to_portal_dashboard(): void
+    public function test_public_registration_is_disabled_and_redirects_to_login(): void
     {
         $response = $this->post('/register', [
             'name' => 'Meera Nair',
@@ -80,28 +80,22 @@ class StorefrontAndCustomerAuthTest extends TestCase
             'password_confirmation' => 'SecurePass123!',
         ]);
 
-        $this->assertAuthenticated();
-
-        $user = User::where('email', 'meera@example.com')->first();
-        $this->assertNotNull($user);
-        $this->assertEquals('customer', $user->role);
-        $this->assertNotNull($user->lead_id);
-
-        $response->assertRedirect(route('portal.dashboard', absolute: false));
+        $this->assertGuest();
+        $response->assertRedirect(route('login'));
     }
 
-    public function test_logged_in_customer_sees_portal_navigation_on_homepage(): void
+    public function test_logged_in_staff_sees_erp_navigation_on_homepage(): void
     {
-        $customer = User::factory()->create([
+        $staff = User::factory()->create([
             'name' => 'Aarav Gupta',
             'email' => 'aarav@example.com',
-            'role' => 'customer',
+            'role' => 'staff',
         ]);
 
-        $response = $this->actingAs($customer)->get('/');
+        $response = $this->actingAs($staff)->get('/');
 
         $response->assertStatus(200);
-        $response->assertSee('Customer Portal');
+        $response->assertSee('ERP Dashboard');
         $response->assertSee('Hello, Aarav');
     }
 }

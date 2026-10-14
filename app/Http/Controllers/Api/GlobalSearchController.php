@@ -3,14 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\AmcContract;
 use App\Models\InstalledEquipment;
 use App\Models\InstallationJob;
 use App\Models\Invoice;
 use App\Models\Lead;
 use App\Models\Product;
+use App\Models\Project;
 use App\Models\Quotation;
-use App\Models\ServiceTicket;
 use App\Models\SiteSurvey;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -35,11 +34,10 @@ class GlobalSearchController extends Controller
             $this->searchLeads($query),
             $this->searchQuotations($query),
             $this->searchJobs($query),
-            $this->searchTickets($query),
+            $this->searchProjects($query),
             $this->searchEquipment($query),
             $this->searchInvoices($query),
             $this->searchSurveys($query),
-            $this->searchAmcs($query),
             $this->searchProducts($query)
         );
 
@@ -119,25 +117,22 @@ class GlobalSearchController extends Controller
         return $items;
     }
 
-    private function searchTickets(string $query): array
+    private function searchProjects(string $query): array
     {
-        $tickets = ServiceTicket::with('lead')
-            ->where(function ($q) use ($query) {
-                $q->where('ticket_no', 'like', "%{$query}%")
-                  ->orWhere('title', 'like', "%{$query}%")
-                  ->orWhereHas('lead', fn($l) => $l->where('customer_name', 'like', "%{$query}%"));
-            })
-            ->take(4)->get();
+        $projects = Project::where(function ($q) use ($query) {
+            $q->where('project_code', 'like', "%{$query}%")
+              ->orWhere('title', 'like', "%{$query}%");
+        })->take(4)->get();
 
         $items = [];
-        foreach ($tickets as $ticket) {
+        foreach ($projects as $project) {
             $items[] = [
-                'type'     => 'Support Tickets',
-                'title'    => $ticket->ticket_no . ' — ' . $ticket->title,
-                'subtitle' => ($ticket->lead?->customer_name ?? 'N/A') . ' • ' . ucfirst($ticket->priority) . ' priority',
-                'url'      => route('service-tickets.show', $ticket),
-                'badge'    => ucfirst($ticket->status),
-                'icon'     => 'ticket',
+                'type'     => 'Infrastructure Projects',
+                'title'    => $project->project_code . ' — ' . $project->title,
+                'subtitle' => 'Status: ' . ucfirst(str_replace('_', ' ', $project->status)),
+                'url'      => route('projects.show', $project),
+                'badge'    => 'Project',
+                'icon'     => 'briefcase',
             ];
         }
         return $items;
@@ -216,29 +211,6 @@ class GlobalSearchController extends Controller
         return $items;
     }
 
-    private function searchAmcs(string $query): array
-    {
-        $amcs = AmcContract::with('lead')
-            ->where(function ($q) use ($query) {
-                $q->where('contract_no', 'like', "%{$query}%")
-                  ->orWhereHas('lead', fn($l) => $l->where('customer_name', 'like', "%{$query}%"));
-            })
-            ->take(3)->get();
-
-        $items = [];
-        foreach ($amcs as $amc) {
-            $items[] = [
-                'type'     => 'AMC Contracts',
-                'title'    => $amc->contract_no,
-                'subtitle' => ($amc->lead?->customer_name ?? 'N/A') . ' • ' . ucfirst($amc->status),
-                'url'      => route('amcs.show', $amc),
-                'badge'    => 'AMC',
-                'icon'     => 'shield',
-            ];
-        }
-        return $items;
-    }
-
     private function searchProducts(string $query): array
     {
         $products = Product::where(function ($q) use ($query) {
@@ -250,11 +222,11 @@ class GlobalSearchController extends Controller
         $items = [];
         foreach ($products as $prod) {
             $items[] = [
-                'type'     => 'Inventory Items',
+                'type'     => 'Product Catalog',
                 'title'    => $prod->name,
-                'subtitle' => "Model: " . ($prod->model_no ?: 'N/A') . " • Stock: {$prod->stock_quantity}",
-                'url'      => route('inventory.index', ['search' => $prod->name]),
-                'badge'    => 'Inventory',
+                'subtitle' => "Model: " . ($prod->model_no ?: 'N/A') . " • Price: ₹" . number_format((float) $prod->unit_price, 2),
+                'url'      => route('products.index', ['search' => $prod->name]),
+                'badge'    => 'Product',
                 'icon'     => 'cube',
             ];
         }

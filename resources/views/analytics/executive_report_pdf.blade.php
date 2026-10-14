@@ -178,9 +178,9 @@
         <tr><td style="height: 6px;" colspan="5"></td></tr>
         <tr>
             <td class="kpi-box">
-                <span class="kpi-label">AMC Portfolio (ARR)</span>
-                <div class="kpi-val" style="color: #d97706;">₹{{ number_format($overview['amc']['arr'], 2) }}</div>
-                <div style="font-size: 8px; color: #64748b; margin-top: 2px;">{{ $overview['amc']['active_contracts'] }} active recurring contracts</div>
+                <span class="kpi-label">Won Projects Revenue</span>
+                <div class="kpi-val" style="color: #059669;">₹{{ number_format($overview['revenue_streams']['projects'] ?? 0, 2) }}</div>
+                <div style="font-size: 8px; color: #64748b; margin-top: 2px;">{{ $overview['lead_funnel']['won_projects'] ?? 0 }} won installation projects</div>
             </td>
             <td style="width: 2%;"></td>
             <td class="kpi-box" style="background-color: #fef9c3; border-color: #fde047;">
@@ -249,17 +249,17 @@
                         <tr>
                             <td><strong>Installation Projects</strong></td>
                             <td style="text-align: right;">₹{{ number_format($overview['revenue_streams']['projects'], 2) }}</td>
-                            <td style="text-align: right; font-weight: bold;">{{ $overview['revenue_streams']['percentages']['projects'] }}%</td>
+                            <td style="text-align: right; font-weight: bold;">{{ $overview['revenue_streams']['percentages']['projects'] ?? 0 }}%</td>
                         </tr>
                         <tr>
-                            <td><strong>AMC Contracts</strong></td>
-                            <td style="text-align: right;">₹{{ number_format($overview['revenue_streams']['amc'], 2) }}</td>
-                            <td style="text-align: right; font-weight: bold;">{{ $overview['revenue_streams']['percentages']['amc'] }}%</td>
+                            <td><strong>Hardware Catalog Sales</strong></td>
+                            <td style="text-align: right;">₹{{ number_format($overview['revenue_streams']['hardware'] ?? 0, 2) }}</td>
+                            <td style="text-align: right; font-weight: bold;">{{ $overview['revenue_streams']['percentages']['hardware'] ?? 0 }}%</td>
                         </tr>
                         <tr>
-                            <td><strong>Service Ticket Repairs</strong></td>
-                            <td style="text-align: right;">₹{{ number_format($overview['revenue_streams']['service'], 2) }}</td>
-                            <td style="text-align: right; font-weight: bold;">{{ $overview['revenue_streams']['percentages']['service'] }}%</td>
+                            <td><strong>Field Engineering & Surveys</strong></td>
+                            <td style="text-align: right;">₹{{ number_format($overview['revenue_streams']['surveys'] ?? 0, 2) }}</td>
+                            <td style="text-align: right; font-weight: bold;">{{ $overview['revenue_streams']['percentages']['surveys'] ?? 0 }}%</td>
                         </tr>
                     </tbody>
                 </table>
@@ -310,8 +310,8 @@
                 <th style="width: 30%;">Technician Name</th>
                 <th style="width: 20%;">Role</th>
                 <th style="width: 15%; text-align: center;">Jobs Completed</th>
-                <th style="width: 15%; text-align: center;">Tickets Resolved</th>
-                <th style="width: 10%; text-align: center;">JCR Signed</th>
+                <th style="width: 15%; text-align: center;">Surveys Completed</th>
+                <th style="width: 10%; text-align: center;">Active Projects</th>
                 <th style="width: 10%; text-align: right;">CSAT ⭐</th>
             </tr>
         </thead>
@@ -321,8 +321,8 @@
                     <td><strong>{{ $tech['name'] }}</strong></td>
                     <td style="text-transform: capitalize; color: #64748b;">{{ $tech['role'] }}</td>
                     <td style="text-align: center;">{{ $tech['jobs_completed'] }}</td>
-                    <td style="text-align: center;">{{ $tech['tickets_resolved'] }}</td>
-                    <td style="text-align: center; font-weight: bold; color: #4f46e5;">{{ $tech['jcr_signoffs'] }}</td>
+                    <td style="text-align: center;">{{ $tech['surveys_completed'] }}</td>
+                    <td style="text-align: center; font-weight: bold; color: #4f46e5;">{{ $tech['projects_count'] }}</td>
                     <td style="text-align: right; font-weight: bold; color: #d97706;">⭐ {{ $tech['average_rating'] }}</td>
                 </tr>
             @empty

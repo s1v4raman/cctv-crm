@@ -405,9 +405,6 @@ class KesavanEmployeeModuleRealtimeTest extends TestCase
         $this->get(route('analytics.cost-profit'))->assertStatus(403);
         $this->get(route('analytics.technicians'))->assertStatus(403);
         $this->get(route('analytics.mrr-retention'))->assertStatus(403);
-
-        // 5. Blocked from Customer Client Portal
-        $this->get(route('portal.dashboard'))->assertStatus(403);
     }
 
     /**

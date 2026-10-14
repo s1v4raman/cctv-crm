@@ -35,27 +35,12 @@
 
                     <div>
                         <label class="block text-sm font-semibold text-slate-300 mb-1.5">Account Role</label>
-                        <select name="role" id="roleSelect" class="w-full text-sm rounded-xl border border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:outline-none p-3" required onchange="toggleLeadField(this.value)">
+                        <select name="role" id="roleSelect" class="w-full text-sm rounded-xl border border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:outline-none p-3" required>
                             <option value="admin" @selected(old('role', $user->role) === 'admin') class="bg-[#0F172A]">Admin</option>
                             <option value="staff" @selected(old('role', $user->role) === 'staff') class="bg-[#0F172A]">Employee (Staff)</option>
                             <option value="technician" @selected(old('role', $user->role) === 'technician') class="bg-[#0F172A]">Technician</option>
-                            <option value="customer" @selected(old('role', $user->role) === 'customer') class="bg-[#0F172A]">Customer</option>
                         </select>
                         @error('role') <div class="text-xs text-rose-400 mt-1 font-mono">{{ $message }}</div> @enderror
-                    </div>
-
-                    <div id="leadField" style="{{ old('role', $user->role) === 'customer' ? '' : 'display:none;' }}">
-                        <label class="block text-sm font-semibold text-slate-300 mb-1.5">Associated Customer (Lead / Client Site)</label>
-                        <select name="lead_id" class="w-full text-sm rounded-xl border border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:outline-none p-3">
-                            <option value="" class="bg-[#0F172A]">-- No Direct Link (Match by Email automatically) --</option>
-                            @foreach($leads as $lead)
-                                <option value="{{ $lead->id }}" @selected(old('lead_id', $user->lead_id) == $lead->id) class="bg-[#0F172A]">
-                                    {{ $lead->customer_name }} ({{ $lead->email ?: $lead->phone }})
-                                </option>
-                            @endforeach
-                        </select>
-                        <div class="text-[10px] text-slate-500 font-mono mt-1">Links this login account directly to all cameras, AMC, and invoices of this customer.</div>
-                        @error('lead_id') <div class="text-xs text-rose-400 mt-1 font-mono">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="pt-5 border-t border-white/5">
@@ -84,12 +69,4 @@
         </div>
     </div>
 
-    <script>
-        function toggleLeadField(role) {
-            const field = document.getElementById('leadField');
-            if (field) {
-                field.style.display = (role === 'customer') ? 'block' : 'none';
-            }
-        }
-    </script>
 </x-app-layout>

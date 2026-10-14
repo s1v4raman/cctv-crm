@@ -1,9 +1,9 @@
 {{-- SecureVision Modern SaaS Sidebar Navigation Component --}}
-<aside class="w-full h-full flex flex-col justify-between shrink-0 bg-white dark:bg-[#0f172a] text-slate-700 dark:text-slate-200 select-none overflow-hidden transition-all duration-300">
+<aside class="w-full h-full flex flex-col justify-between shrink-0 bg-[#dbe6f6] dark:bg-[#0f172a] text-slate-700 dark:text-slate-200 select-none overflow-hidden transition-all duration-300">
     
     {{-- Sidebar Top: Brand Logo matching 56px fixed frame --}}
-    <div class="h-[56px] min-h-[56px] max-h-[56px] shrink-0 flex items-center justify-between px-4 border-b border-[#ddd] dark:border-slate-800 bg-white dark:bg-[#0f172a] transition-colors duration-200">
-        <a href="{{ auth()->user()->role === 'technician' ? route('technician.dashboard') : (auth()->user()->isCustomer() ? route('portal.dashboard') : route('dashboard')) }}" class="flex items-center gap-2.5 group overflow-hidden">
+    <div class="crm-sidebar-header h-[56px] min-h-[56px] max-h-[56px] shrink-0 flex items-center justify-between px-4 border-b border-[#b9d1ef] dark:border-slate-800 bg-[#cee0f4] dark:bg-[#0f172a] transition-colors duration-200">
+        <a href="{{ auth()->user()->role === 'technician' ? route('technician.dashboard') : route('dashboard') }}" class="flex items-center gap-2.5 group overflow-hidden">
             <img src="{{ asset('logos/logo_' . ltrim(auth()->user()->theme_accent ?? '2563eb', '#') . '.png') }}" alt="Precision IT Systems" class="crm-brand-logo h-8 w-8 object-contain group-hover:scale-105 transition-transform shrink-0" onerror="this.src='{{ asset('logo.png') }}'">
             <div :class="sidebarCollapsed ? 'lg:hidden' : ''" class="min-w-0">
                 <span class="block text-sm font-bold tracking-tight text-slate-900 dark:text-slate-100 truncate">Precision IT</span>
@@ -68,85 +68,6 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="M16 3.13a4 4 0 0 1 0 7.75"/>
                         </svg>
                         <span :class="sidebarCollapsed ? 'lg:hidden' : ''">Daily Wage Workers</span>
-                    </a>
-                </div>
-            </div>
-
-        {{-- Customer Navigation --}}
-        @elseif(auth()->user()->isCustomer())
-            <div>
-                <div :class="sidebarCollapsed ? 'lg:hidden' : ''" class="px-3 mb-1.5 text-[11px] font-bold tracking-wider uppercase text-slate-400 dark:text-slate-500">Client Portal</div>
-                <div :class="sidebarCollapsed ? 'hidden lg:block' : 'hidden'" class="my-2 border-t border-slate-100 dark:border-slate-800"></div>
-                <div class="space-y-1">
-                    {{-- Overview Dashboard (Home icon) --}}
-                    <a :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('portal.dashboard') }}" 
-                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('portal.dashboard') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
-                        <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('portal.dashboard') ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 10.5L12 3l9 7.5V20a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-9.5z"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 22V12h6v10"/>
-                        </svg>
-                        <span :class="sidebarCollapsed ? 'lg:hidden' : ''">Overview Dashboard</span>
-                    </a>
-
-                    {{-- My Cameras & Assets (Eye icon) --}}
-                    <a :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('portal.equipment') }}" 
-                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('portal.equipment') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
-                        <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('portal.equipment') ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/>
-                            <circle cx="12" cy="12" r="3.2"/>
-                        </svg>
-                        <span :class="sidebarCollapsed ? 'lg:hidden' : ''">My Cameras & Assets</span>
-                    </a>
-
-                    {{-- AMC & Maintenance (Sync circular arrows icon) --}}
-                    <a :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('portal.amc') }}" 
-                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('portal.amc') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
-                        <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('portal.amc') ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.19"/>
-                        </svg>
-                        <span :class="sidebarCollapsed ? 'lg:hidden' : ''">AMC & Maintenance</span>
-                    </a>
-
-                    {{-- Service & Tickets (Megaphone/Alert icon) --}}
-                    <a :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('portal.tickets') }}" 
-                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('portal.tickets*') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
-                        <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('portal.tickets*') ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="m3 11 18-5v12L3 14v-3z"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>
-                        </svg>
-                        <span :class="sidebarCollapsed ? 'lg:hidden' : ''">Service & Tickets</span>
-                    </a>
-
-                    {{-- Invoices & Payments (Document icon) --}}
-                    <a :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('portal.invoices') }}" 
-                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('portal.invoices*') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
-                        <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('portal.invoices*') ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                            <polyline stroke-linecap="round" stroke-linejoin="round" points="14 2 14 8 20 8"/>
-                            <line stroke-linecap="round" stroke-linejoin="round" x1="16" x2="8" y1="13" y2="13"/>
-                            <line stroke-linecap="round" stroke-linejoin="round" x1="16" x2="8" y1="17" y2="17"/>
-                        </svg>
-                        <span :class="sidebarCollapsed ? 'lg:hidden' : ''">Invoices & Payments</span>
-                    </a>
-
-                    {{-- Quotations & Proposals (Edit/Pencil note icon) --}}
-                    <a :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('portal.quotations') }}" 
-                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('portal.quotations*') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
-                        <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('portal.quotations*') ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M11 4H5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h13a2 2 0 0 0 2-2v-6"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                        </svg>
-                        <span :class="sidebarCollapsed ? 'lg:hidden' : ''">Quotations & Proposals</span>
-                    </a>
-
-                    {{-- Site Surveys (Location pin icon) --}}
-                    <a :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('portal.surveys') }}" 
-                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('portal.surveys*') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
-                        <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('portal.surveys*') ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 21c-4.5-5.5-7-9.5-7-13a7 7 0 0 1 14 0c0 3.5-2.5 7.5-7 13z"/>
-                            <circle cx="12" cy="8" r="2.5"/>
-                        </svg>
-                        <span :class="sidebarCollapsed ? 'lg:hidden' : ''">Site Surveys</span>
                     </a>
                 </div>
             </div>
@@ -304,36 +225,6 @@
                         <span :class="sidebarCollapsed ? 'lg:hidden' : ''">Tasks & Field Jobs</span>
                     </a>
 
-                    {{-- Support Tickets (SLA) (Megaphone/Alert icon) --}}
-                    <a :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('service-tickets.index') }}" 
-                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('service-tickets.*') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
-                        <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('service-tickets.*') ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="m3 11 18-5v12L3 14v-3z"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>
-                        </svg>
-                        <span :class="sidebarCollapsed ? 'lg:hidden' : ''">Support Tickets (SLA)</span>
-                    </a>
-
-                    {{-- Digital Reports (JCR) (Photo/Report icon) --}}
-                    <a :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('jcr.index') }}" 
-                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('jcr.*') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
-                        <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('jcr.*') ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                            <rect width="18" height="18" x="3" y="3" rx="3" ry="3"/>
-                            <circle cx="8.5" cy="8.5" r="1.5"/>
-                            <polyline stroke-linecap="round" stroke-linejoin="round" points="21 15 16 10 5 21"/>
-                        </svg>
-                        <span :class="sidebarCollapsed ? 'lg:hidden' : ''">Digital Reports (JCR)</span>
-                    </a>
-
-                    {{-- AMC Contracts (Sync circular arrows icon) --}}
-                    <a :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('amcs.index') }}" 
-                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('amcs.*') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
-                        <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('amcs.*') ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.19"/>
-                        </svg>
-                        <span :class="sidebarCollapsed ? 'lg:hidden' : ''">AMC Contracts</span>
-                    </a>
-
                     {{-- Cameras & Assets (Eye icon) --}}
                     <a :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('equipment.index') }}" 
                        class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('equipment.*') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
@@ -366,16 +257,6 @@
                     </a>
                     @endif
 
-                    {{-- Warehouse Inventory (Box outline icon) --}}
-                    <a :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('inventory.index') }}" 
-                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('inventory.*') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
-                        <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('inventory.*') ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" d="m3.3 7 8.7 5 8.7-5M12 22V12"/>
-                        </svg>
-                        <span :class="sidebarCollapsed ? 'lg:hidden' : ''">Warehouse Inventory</span>
-                    </a>
-
                     {{-- Purchase Orders (PO) (Download icon) --}}
                     <a :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('purchase-orders.index') }}" 
                        class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('purchase-orders.*') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
@@ -396,15 +277,6 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
                         </svg>
                         <span :class="sidebarCollapsed ? 'lg:hidden' : ''">Suppliers & Vendors</span>
-                    </a>
-
-                    {{-- RMA & Warranty Claims (Sync circular arrows icon) --}}
-                    <a :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('rma.index') }}" 
-                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('rma.*') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
-                        <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('rma.*') ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.19"/>
-                        </svg>
-                        <span :class="sidebarCollapsed ? 'lg:hidden' : ''">RMA & Warranty Claims</span>
                     </a>
                 </div>
             </div>
@@ -506,7 +378,7 @@
     </nav>
 
     {{-- Sidebar Bottom: Comfortable User Profile & Quick Logout --}}
-    <div class="shrink-0 p-3.5 border-t border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/60 transition-colors">
+    <div class="crm-sidebar-footer shrink-0 p-3.5 border-t border-[#b9d1ef] dark:border-slate-800 bg-[#cee0f4] dark:bg-slate-900/80 transition-colors">
         <div class="flex items-center justify-between gap-2.5" :class="sidebarCollapsed ? 'lg:justify-center' : ''">
             <div class="flex items-center gap-3 min-w-0">
                 @if(Auth::user()->avatar_url)

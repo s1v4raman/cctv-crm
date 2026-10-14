@@ -113,7 +113,6 @@
                     <a href="{{ route('admin.users.index', ['role' => 'admin']) }}" class="crm-filter-tab filter-tab {{ $roleFilter === 'admin' ? 'active' : '' }}">Admins</a>
                     <a href="{{ route('admin.users.index', ['role' => 'staff']) }}" class="crm-filter-tab filter-tab {{ $roleFilter === 'staff' ? 'active' : '' }}">Employees</a>
                     <a href="{{ route('admin.users.index', ['role' => 'technician']) }}" class="crm-filter-tab filter-tab {{ $roleFilter === 'technician' ? 'active' : '' }}">Technicians</a>
-                    <a href="{{ route('admin.users.index', ['role' => 'customer']) }}" class="crm-filter-tab filter-tab {{ $roleFilter === 'customer' ? 'active' : '' }}">Customers</a>
                 </div>
 
                     <div class="overflow-x-auto">

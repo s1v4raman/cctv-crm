@@ -86,7 +86,7 @@ class SendAutomatedRemindersCommand extends Command
                     'customer_name' => $lead->customer_name,
                     'contract_no'   => $contract->contract_no,
                     'expiry_date'   => $contract->end_date->format('d M Y'),
-                    'renewal_link'  => route('portal.amc'),
+                    'renewal_link'  => route('home'),
                 ], $contract);
                 $stats['amc_expiries']++;
             }

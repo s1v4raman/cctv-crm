@@ -1,12 +1,3 @@
-@php
-    if (request()->routeIs('customer.login') || request()->is('customer*') || request()->input('type') === 'customer' || request()->input('portal') === 'customer') {
-        $isStaffPortal = false;
-    } elseif (request()->routeIs('staff.login', 'admin.login') || request()->is('staff*', 'admin*') || request()->input('type') === 'staff' || request()->input('portal') === 'staff' || request()->getPort() == 8001) {
-        $isStaffPortal = true;
-    } else {
-        $isStaffPortal = (request()->getPort() == 8001);
-    }
-@endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-white">
 <head>
@@ -14,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>Sign In - {{ $isStaffPortal ? 'Precision IT Systems ERP Operations' : 'Precision IT Systems Customer Portal' }}</title>
+    <title>Sign In - Precision IT Systems ERP Operations</title>
 
     <style>
         :root {
@@ -36,17 +27,16 @@
 
 <body class="h-full antialiased font-sans text-slate-800 bg-white"
       x-data="{ 
-          isStaff: {{ $isStaffPortal ? 'true' : 'false' }},
-          portal: '{{ $isStaffPortal ? 'admin' : 'customer' }}',
+          portal: 'admin',
           showPassword: false,
-          setStaff(val) {
-              this.isStaff = val;
-              if (val) {
-                  this.portal = 'admin';
+          setRole(role) {
+              this.portal = role;
+              if (role === 'admin') {
                   this.setEmailAndPass('test@example.com', 'password');
+              } else if (role === 'technician') {
+                  this.setEmailAndPass('bob@example.com', 'password');
               } else {
-                  this.portal = 'customer';
-                  this.setEmailAndPass('customer@example.com', 'password');
+                  this.setEmailAndPass('alex@example.com', 'password');
               }
           },
           setEmailAndPass(email, pass) {
@@ -57,7 +47,6 @@
           },
           quickSubmitRole(email, pass, role) {
               this.portal = role;
-              this.isStaff = (role !== 'customer');
               this.setEmailAndPass(email, pass);
               document.getElementById('loginForm').submit();
           }
@@ -70,20 +59,17 @@
             
             {{-- Brand Logo Header --}}
             <div class="flex items-center justify-between mb-4 lg:mb-6">
-                <a href="{{ $isStaffPortal ? route('login') : route('home') }}" class="flex items-center gap-3">
+                <a href="{{ route('home') }}" class="flex items-center gap-3">
                     <img src="{{ asset('logo.png') }}" alt="Precision IT Systems" class="crm-brand-logo h-12 w-12 object-contain shrink-0">
                     <div>
                         <span class="text-xl font-bold text-slate-900 tracking-tight leading-tight">Precision IT <span class="text-blue-600">Systems</span></span>
-                        <span class="block text-xs font-medium text-slate-500 mt-0.5" x-text="isStaff ? 'Operations ERP' : 'Customer Surveillance Portal'">
-                            {{ $isStaffPortal ? 'Operations ERP' : 'Customer Surveillance Portal' }}
-                        </span>
+                        <span class="block text-xs font-medium text-slate-500 mt-0.5">Operations ERP</span>
                     </div>
                 </a>
 
                 <div class="flex items-center gap-2">
-                    <span class="text-xs font-bold"
-                          :class="isStaff ? 'text-blue-700' : 'text-slate-700'"
-                          x-text="isStaff ? 'Staff & Admin ERP' : 'Customer Portal'">
+                    <span class="text-xs font-bold text-blue-700">
+                        Staff &amp; Admin ERP
                     </span>
                 </div>
             </div>
@@ -91,65 +77,38 @@
             {{-- Main Form Container --}}
             <div class="max-w-md w-full mx-auto my-auto py-2">
                 
-                {{-- Portal Selector Bar --}}
-                <div class="flex p-1 bg-slate-100 rounded-[4px] mb-5 text-xs font-medium border border-slate-200">
-                    <button type="button" 
-                            @click="setStaff(false)"
-                            class="flex-1 py-2 rounded-[4px] transition-colors text-center flex items-center justify-center gap-1.5"
-                            :class="!isStaff ? 'bg-white text-blue-600 font-bold border border-slate-300' : 'text-slate-600 hover:text-slate-900'">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                        <span>Customer Portal</span>
-                    </button>
-                    <button type="button" 
-                            @click="setStaff(true)"
-                            class="flex-1 py-2 rounded-[4px] transition-colors text-center flex items-center justify-center gap-1.5"
-                            :class="isStaff ? 'bg-white text-blue-600 font-bold border border-slate-300' : 'text-slate-600 hover:text-slate-900'">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-                        <span>Staff & Admin ERP</span>
-                    </button>
-                </div>
-
                 <!-- Main Title -->
                 <h1 class="text-2xl font-bold text-slate-900 tracking-tight mb-1">
-                    @if($isStaffPortal)
-                        <span x-text="isStaff ? 'Operations Sign In' : 'Customer Portal'">Operations Sign In</span>
-                    @else
-                        <span x-text="isStaff ? 'Operations Access' : 'Customer Sign In'">Customer Sign In</span>
-                    @endif
+                    Operations Sign In
                 </h1>
-                <p class="text-xs text-slate-500 mb-5"
-                   x-text="isStaff ? 'Sign in to access administration, technician dispatch and field operations' : 'Sign in to view your camera surveillance status, service tickets and invoices'">
-                    @if($isStaffPortal)
-                        Sign in to access administration, technician dispatch and field operations
-                    @else
-                        Sign in to view your camera surveillance status, service tickets and invoices
-                    @endif
+                <p class="text-xs text-slate-500 mb-5">
+                    Sign in to access administration, technician dispatch and field operations
                 </p>
 
-                <!-- Role Selector Tabs (When Staff Mode Active) -->
-                <div x-show="isStaff" x-cloak class="flex p-1 bg-slate-100 rounded-[4px] mb-5 text-xs border border-slate-200">
+                <!-- Role Selector Tabs -->
+                <div class="flex p-1 bg-slate-100 rounded-[4px] mb-5 text-xs border border-slate-200">
                     <button type="button" 
                             class="flex-1 py-1.5 rounded-[4px] transition-colors text-center font-medium"
                             :class="portal === 'admin' ? 'bg-white text-blue-600 font-bold border border-slate-300' : 'text-slate-600 hover:text-slate-900'"
-                            @click="portal = 'admin'; setEmailAndPass('test@example.com', 'password')">
+                            @click="setRole('admin')">
                         Admin
                     </button>
                     <button type="button" 
                             class="flex-1 py-1.5 rounded-[4px] transition-colors text-center font-medium"
                             :class="portal === 'technician' ? 'bg-white text-blue-600 font-bold border border-slate-300' : 'text-slate-600 hover:text-slate-900'"
-                            @click="portal = 'technician'; setEmailAndPass('bob@example.com', 'password')">
+                            @click="setRole('technician')">
                         Technician
                     </button>
                     <button type="button" 
                             class="flex-1 py-1.5 rounded-[4px] transition-colors text-center font-medium"
                             :class="portal === 'staff' ? 'bg-white text-blue-600 font-bold border border-slate-300' : 'text-slate-600 hover:text-slate-900'"
-                            @click="portal = 'staff'; setEmailAndPass('alex@example.com', 'password')">
+                            @click="setRole('staff')">
                         Employee
                     </button>
                 </div>
 
                 <!-- Google OAuth Login Link -->
-                <a href="{{ route('auth.google', ['portal' => $isStaffPortal ? 'staff' : 'customer', 'mode' => 'login']) }}" 
+                <a href="{{ route('auth.google', ['portal' => 'staff', 'mode' => 'login']) }}" 
                    class="w-full flex items-center justify-center space-x-2 py-2.5 px-4 rounded-[4px] border border-slate-300 hover:bg-slate-50 text-xs font-medium text-slate-700 transition-colors">
                     <svg class="w-4 h-4" viewBox="0 0 24 24">
                         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -157,7 +116,7 @@
                         <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
                         <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
                     </svg>
-                    <span>{{ $isStaffPortal ? 'Log in with Staff Workspace' : 'Log in with Google' }}</span>
+                    <span>Log in with Staff Workspace</span>
                 </a>
 
                 <!-- Divider: OR LOGIN WITH EMAIL -->
@@ -185,16 +144,16 @@
                 @endif
 
                 <!-- Email & Password Form -->
-                <form id="loginForm" method="POST" action="{{ request()->is('staff/login', 'staff') ? route('staff.login.post') : route('login') }}" class="space-y-4">
+                <form id="loginForm" method="POST" action="{{ route('login') }}" class="space-y-4">
                     @csrf
 
                     <!-- Email Address Field -->
                     <div>
                         <label for="email" class="block text-sm font-medium text-slate-700 mb-1">Email Address</label>
                         <input id="email" type="email" name="email" 
-                               value="{{ old('email', $isStaffPortal ? 'test@example.com' : 'customer@example.com') }}" 
+                               value="{{ old('email', 'test@example.com') }}" 
                                required autofocus autocomplete="username" 
-                               placeholder="{{ $isStaffPortal ? 'test@example.com' : 'customer@example.com' }}" 
+                               placeholder="test@example.com" 
                                class="w-full px-3 py-2 text-sm rounded-[4px] border border-slate-300 focus:outline-none focus:border-blue-600 text-slate-900 placeholder-slate-400 bg-white">
                     </div>
 
@@ -232,27 +191,20 @@
                     <div class="pt-2 flex justify-end">
                         <button type="submit" 
                                 class="w-full sm:w-auto px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-[4px] transition-colors cursor-pointer">
-                            <span x-text="isStaff ? 'Log in to Operations ERP' : 'Log in to Customer Portal'">{{ $isStaffPortal ? 'Log in to Operations ERP' : 'Log in to Customer Portal' }}</span>
+                            <span>Log in to Operations ERP</span>
                         </button>
                     </div>
                 </form>
 
-                <div x-show="!isStaff" class="text-center mt-4 text-xs text-slate-500">
-                    <span>New customer? </span>
-                    <a href="{{ route('register') }}" class="text-blue-600 hover:underline font-bold">
-                        Create an account / Sign up
-                    </a>
-                </div>
-
                 <!-- Demo Credentials Helper -->
                 <div class="mt-5 p-3 bg-slate-50 border border-slate-200 rounded-[4px]">
                     <div class="text-xs font-semibold text-slate-500 mb-2 flex items-center justify-between">
-                        <span x-text="isStaff ? 'Staff Demo Logins' : 'Customer Demo Logins'">{{ $isStaffPortal ? 'Staff Demo Logins' : 'Customer Demo Logins' }}</span>
+                        <span>Staff Demo Logins</span>
                         <span class="text-slate-400 font-normal">click to autofill</span>
                     </div>
 
                     <!-- Staff Logins -->
-                    <div x-show="isStaff" x-cloak class="grid grid-cols-3 gap-1.5 text-xs">
+                    <div class="grid grid-cols-3 gap-1.5 text-xs">
                         <div class="p-2 bg-white rounded-[4px] border border-slate-200 cursor-pointer hover:border-blue-600 transition-colors text-center" @click="portal = 'admin'; setEmailAndPass('test@example.com', 'password')">
                             <span class="font-bold text-slate-800 block text-xs">Admin</span>
                             <span class="text-slate-500 font-mono text-[10px] block truncate">test@example.com</span>
@@ -267,34 +219,7 @@
                         </div>
                     </div>
 
-                    <!-- Customer Logins -->
-                    <div x-show="!isStaff" class="grid grid-cols-2 gap-2 text-xs">
-                        <div class="p-2 bg-white rounded-[4px] border border-slate-200 cursor-pointer hover:border-blue-600 transition-colors" @click="portal = 'customer'; setEmailAndPass('customer@example.com', 'password')">
-                            <span class="font-bold text-slate-800 block text-xs">Demo Customer</span>
-                            <span class="text-slate-500 font-mono text-[10px]">customer@example.com</span>
-                        </div>
-                        <div class="p-2 bg-white rounded-[4px] border border-slate-200 cursor-pointer hover:border-blue-600 transition-colors" @click="portal = 'customer'; setEmailAndPass('srinithish.p@example.com', 'password')">
-                            <span class="font-bold text-slate-800 block text-xs">Srinithish P</span>
-                            <span class="text-slate-500 font-mono text-[10px]">srinithish.p@example.com</span>
-                        </div>
-                    </div>
-
                     <div class="text-[11px] text-center text-slate-500 mt-2">Password for all accounts: <strong class="text-slate-700 font-mono">password</strong></div>
-                </div>
-
-                <!-- Portal Switcher Links -->
-                <div class="text-center mt-5 text-xs text-slate-500 pt-3 border-t border-slate-200">
-                    @if($isStaffPortal)
-                        <span>Looking for Customer Portal? </span>
-                        <a href="{{ route('customer.login') }}" class="text-blue-600 hover:underline font-bold">
-                            Switch to Customer Login
-                        </a>
-                    @else
-                        <span>Looking for Staff & Admin ERP? </span>
-                        <a href="{{ route('staff.login') }}" class="text-blue-600 hover:underline font-bold">
-                            Switch to Staff / Technician Login
-                        </a>
-                    @endif
                 </div>
 
             </div>
@@ -311,14 +236,10 @@
             {{-- Top Right Academy Card --}}
             <div class="self-end max-w-sm text-right space-y-1.5">
                 <div class="text-slate-900 font-bold text-sm">
-                    {{ $isStaffPortal ? 'Operations Academy' : 'Customer Academy' }}
+                    Operations Academy
                 </div>
                 <p class="text-xs text-slate-500 leading-relaxed">
-                    @if($isStaffPortal)
-                        Telemetry and diagnostic resources for field technicians and dispatch operators.
-                    @else
-                        Guides and tools to manage your surveillance system and service requests.
-                    @endif
+                    Telemetry and diagnostic resources for field technicians and dispatch operators.
                 </p>
                 <div>
                     <a href="https://wa.me/919677257774" target="_blank"
@@ -331,25 +252,19 @@
             {{-- Center Illustration Container --}}
             <div class="my-auto py-3 flex flex-col items-center justify-center w-full">
                 <div class="w-full max-w-xl xl:max-w-2xl rounded-[4px] border border-slate-300 bg-white p-2">
-                    @if($isStaffPortal)
-                        <img src="{{ asset('images/staff_erp_illustration.jpg') }}" 
-                             alt="Precision IT CCTV Enterprise ERP Operations"
-                             class="w-full h-auto object-contain rounded-[4px] block select-none">
-                    @else
-                        <img src="{{ asset('images/customer_login_illustration.jpg') }}" 
-                             alt="Precision IT 24/7 Customer Support & Help Desk"
-                             class="w-full h-auto max-h-[380px] xl:max-h-[420px] object-contain mx-auto rounded-[4px] block select-none">
-                    @endif
+                    <img src="{{ asset('images/staff_erp_illustration.jpg') }}" 
+                         alt="Precision IT CCTV Enterprise ERP Operations"
+                         class="w-full h-auto object-contain rounded-[4px] block select-none">
                 </div>
 
                 <!-- Status Ribbon Below -->
                 <div class="w-full max-w-xl xl:max-w-2xl flex items-center justify-between mt-3 px-1 text-xs text-slate-600">
                     <div class="font-medium">
-                        {{ $isStaffPortal ? '2,480+ Cameras Active • 99.9% Uptime' : '24/7 Customer Care • Instant Support' }}
+                        2,480+ Cameras Active • 99.9% Uptime
                     </div>
 
                     <div class="font-bold text-blue-600">
-                        {{ $isStaffPortal ? 'ERP v2.6 Enterprise' : 'Secure Client Portal' }}
+                        ERP v2.6 Enterprise
                     </div>
                 </div>
 

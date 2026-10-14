@@ -70,10 +70,9 @@ class AdminAcceptRejectRequestTest extends TestCase
         $this->assertEquals('2026-09-10', $this->ticket->scheduled_date->format('Y-m-d'));
         $this->assertStringContainsString('Admin Approval Note: Approved.', $this->ticket->resolution_notes);
 
-        // Customer sees accepted notification on portal ticket view
-        $portalResponse = $this->actingAs($this->customer)->get(route('portal.tickets.show', $this->ticket));
-        $portalResponse->assertSee('Work Request Accepted & Confirmed!', false);
-        $portalResponse->assertSee('Bob Miller');
+        // Admin sees accepted notification on ticket view
+        $adminTicketView = $this->actingAs($this->admin)->get(route('service-tickets.show', $this->ticket));
+        $adminTicketView->assertSee('Bob Miller');
     }
 
     public function test_admin_can_reject_work_request_with_reason(): void
@@ -90,10 +89,9 @@ class AdminAcceptRejectRequestTest extends TestCase
         $this->assertStringContainsString('DECLINED BY ADMIN', $this->ticket->resolution_notes);
         $this->assertStringContainsString('out of our service region', $this->ticket->resolution_notes);
 
-        // Customer sees declined notification and reason on portal ticket view
-        $portalResponse = $this->actingAs($this->customer)->get(route('portal.tickets.show', $this->ticket));
-        $portalResponse->assertStatus(200);
-        $portalResponse->assertSee('Work Request Declined');
-        $portalResponse->assertSee('out of our service region');
+        // Admin sees declined notification and reason on ticket view
+        $adminTicketView = $this->actingAs($this->admin)->get(route('service-tickets.show', $this->ticket));
+        $adminTicketView->assertStatus(200);
+        $adminTicketView->assertSee('out of our service region');
     }
 }

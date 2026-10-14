@@ -62,7 +62,6 @@ class EquipmentLookupController extends Controller
                 'mfg_warranty_expiry' => $mfgWarranty ? $mfgWarranty->format('d M Y') : 'N/A',
                 'svc_warranty_expiry' => $svcWarranty ? $svcWarranty->format('d M Y') : 'N/A',
                 'is_under_warranty'   => $isUnderWarranty,
-                'rma_url'             => route('rma.create', ['equipment_id' => $equipment->id]),
                 'show_url'            => route('equipment.show', $equipment),
             ]);
         }

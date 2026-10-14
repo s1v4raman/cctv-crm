@@ -4,8 +4,6 @@ namespace App\Services;
 
 use App\Models\InstallationJob;
 use App\Models\NotificationLog;
-use App\Models\Product;
-use App\Models\ServiceTicket;
 use App\Models\SiteSurvey;
 use App\Models\User;
 use Carbon\Carbon;
@@ -55,42 +53,40 @@ class HeaderNotificationService
 
         // 2. Role-specific operational actionable items
         if ($user->isAdmin() || $user->isStaff()) {
-            // Urgent / Critical Service Tickets
-            $tickets = ServiceTicket::whereIn('status', ['open', 'in_progress'])
-                ->whereIn('priority', ['critical', 'high'])
+            // Pending Field Installation Jobs
+            $pendingJobs = InstallationJob::whereIn('status', ['pending', 'scheduled'])
                 ->latest()
                 ->take(3)
                 ->get();
 
-            foreach ($tickets as $ticket) {
+            foreach ($pendingJobs as $job) {
                 $items->push([
-                    'id'          => 'ticket-' . $ticket->id,
-                    'title'       => "High Priority Service Alert",
-                    'description' => ($ticket->subject ?: 'Service ticket') . " (" . ucfirst($ticket->priority) . ")",
-                    'time'        => $ticket->created_at ? $ticket->created_at->diffForHumans(null, true) . ' ago' : 'Recently',
-                    'timestamp'   => $ticket->created_at ? $ticket->created_at->timestamp : time(),
-                    'icon'        => 'ticket',
-                    'url'         => route('service-tickets.show', $ticket->id),
+                    'id'          => 'job-' . $job->id,
+                    'title'       => "Field Job Scheduled: {$job->job_no}",
+                    'description' => "Scheduled: " . ($job->scheduled_date ? $job->scheduled_date->format('M d, Y') : 'Pending date'),
+                    'time'        => $job->created_at ? $job->created_at->diffForHumans(null, true) . ' ago' : 'Recently',
+                    'timestamp'   => $job->created_at ? $job->created_at->timestamp : time(),
+                    'icon'        => 'job',
+                    'url'         => route('jobs.show', $job->id),
                     'is_unread'   => true,
                 ]);
             }
 
-            // Low Stock Inventory Warnings
-            $lowStock = Product::where('is_active', true)
-                ->whereColumn('stock_quantity', '<=', 'min_stock_alert')
+            // Pending Site Surveys
+            $pendingSurveys = SiteSurvey::where('status', 'pending')
                 ->latest()
                 ->take(3)
                 ->get();
 
-            foreach ($lowStock as $prod) {
+            foreach ($pendingSurveys as $survey) {
                 $items->push([
-                    'id'          => 'product-' . $prod->id,
-                    'title'       => "Low Stock: {$prod->name}",
-                    'description' => "Current: {$prod->stock_quantity} {$prod->unit} (Min: {$prod->min_stock_alert})",
-                    'time'        => 'Alert',
+                    'id'          => 'survey-' . $survey->id,
+                    'title'       => "Pending Site Survey",
+                    'description' => "Date: " . ($survey->survey_date ? $survey->survey_date->format('M d, Y') : 'Pending'),
+                    'time'        => 'Survey Alert',
                     'timestamp'   => time(),
-                    'icon'        => 'inventory',
-                    'url'         => route('inventory.index', ['status' => 'low_stock']),
+                    'icon'        => 'survey',
+                    'url'         => route('site-surveys.show', $survey->id),
                     'is_unread'   => true,
                 ]);
             }
@@ -112,26 +108,6 @@ class HeaderNotificationService
                     'icon'        => 'job',
                     'url'         => route('technician.dashboard'),
                     'is_unread'   => true,
-                ]);
-            }
-        } elseif ($user->isCustomer() && $user->lead_id) {
-            // Customer open service tickets
-            $custTickets = ServiceTicket::where('lead_id', $user->lead_id)
-                ->whereIn('status', ['open', 'in_progress'])
-                ->latest()
-                ->take(3)
-                ->get();
-
-            foreach ($custTickets as $ticket) {
-                $items->push([
-                    'id'          => 'cust-ticket-' . $ticket->id,
-                    'title'       => "Customer Support Request",
-                    'description' => "Status: " . ucfirst(str_replace('_', ' ', $ticket->status)),
-                    'time'        => $ticket->created_at ? $ticket->created_at->diffForHumans(null, true) . ' ago' : 'Recently',
-                    'timestamp'   => $ticket->created_at ? $ticket->created_at->timestamp : time(),
-                    'icon'        => 'ticket',
-                    'url'         => route('portal.tickets.show', $ticket->id),
-                    'is_unread'   => false,
                 ]);
             }
         }

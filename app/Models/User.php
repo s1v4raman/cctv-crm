@@ -60,20 +60,6 @@ class User extends Authenticatable
             return $lead;
         }
 
-        if ($this->isCustomer()) {
-            $lead = Lead::create([
-                'customer_name' => $this->name,
-                'email'         => $this->email,
-                'phone'         => 'Pending update',
-                'source'        => 'customer_portal',
-                'status'        => 'contacted',
-                'notes'         => 'Registered customer account via Customer Client Portal.',
-            ]);
-
-            $this->update(['lead_id' => $lead->id]);
-            return $lead;
-        }
-
         return null;
     }
 

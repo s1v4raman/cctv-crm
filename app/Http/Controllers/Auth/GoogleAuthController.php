@@ -84,46 +84,28 @@ class GoogleAuthController extends Controller
             }
         }
 
-        // 3. User does not exist
+        // 3. User does not exist — self-registration is disabled for ERP security
         if (!$user) {
-            // In LOGIN mode: Only allow existing registered accounts to log in
-            if ($mode === 'login') {
-                $loginRoute = ($portalIntent === 'staff') ? 'staff.login' : 'login';
-                return redirect()->route($loginRoute)->withErrors([
-                    'email' => 'No registered account found with Google email (' . $googleUser->getEmail() . '). Please sign up first to create your customer account.',
-                ]);
-            }
-
-            // In REGISTER mode: Create new customer account
-            $user = User::create([
-                'name'              => $googleUser->getName() ?? $googleUser->getNickname() ?? 'Customer',
-                'email'             => $googleUser->getEmail(),
-                'google_id'         => $googleUser->getId(),
-                'avatar'            => $googleUser->getAvatar(),
-                'role'              => 'customer',
-                'password'          => Hash::make(Str::random(32)),
-                'email_verified_at' => now(),
+            return redirect()->route('login')->withErrors([
+                'email' => 'No internal staff account found with Google email (' . $googleUser->getEmail() . '). Please contact your system administrator to provision your ERP account.',
             ]);
+        }
 
-            // Auto-provision Customer Lead profile
-            $user->getCustomerLead();
-        } else {
-            // Update avatar if available
-            if ($googleUser->getAvatar() && $user->avatar !== $googleUser->getAvatar()) {
-                $user->update(['avatar' => $googleUser->getAvatar()]);
-            }
+        // Customer accounts are not allowed to access the internal ERP
+        if ($user->isCustomer()) {
+            return redirect()->route('login')->withErrors([
+                'email' => 'Customer self-service portal login has been retired. Please contact support for assistance.',
+            ]);
+        }
+
+        // Update avatar if available
+        if ($googleUser->getAvatar() && $user->avatar !== $googleUser->getAvatar()) {
+            $user->update(['avatar' => $googleUser->getAvatar()]);
         }
 
         // Log the user in
         Auth::login($user, remember: true);
         $request->session()->regenerate();
-
-        // Routing based on user role
-        if ($user->isCustomer()) {
-            $request->session()->put('portal_type', 'customer');
-            return redirect()->intended(route('portal.dashboard'));
-        }
-
         $request->session()->put('portal_type', 'staff');
 
         if ($user->role === 'technician') {

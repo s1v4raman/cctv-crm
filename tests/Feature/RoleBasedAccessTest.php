@@ -45,12 +45,13 @@ class RoleBasedAccessTest extends TestCase
 
         $this->post(route('logout'));
 
-        // Customer redirect
+        // Customer login is rejected
         $response = $this->post(route('login'), [
             'email' => $this->customer->email,
             'password' => 'password',
         ]);
-        $response->assertRedirect(route('portal.dashboard'));
+        $response->assertRedirect(route('login'));
+        $this->assertGuest();
     }
 
     public function test_admin_can_access_everything(): void
@@ -101,9 +102,6 @@ class RoleBasedAccessTest extends TestCase
     public function test_customer_is_restricted_from_all_crm_internal_screens(): void
     {
         $this->actingAs($this->customer);
-
-        // Can access customer self-service portal
-        $this->get(route('portal.dashboard'))->assertOk();
 
         // CANNOT access internal CRM dashboard
         $this->get(route('dashboard'))->assertStatus(403);

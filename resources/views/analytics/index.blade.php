@@ -35,12 +35,7 @@
                 <a href="{{ route('analytics.technicians', ['range' => $selectedRange]) }}"
                    class="crm-filter-tab filter-tab px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap {{ request()->routeIs('analytics.technicians') ? 'active crm-tab-active text-white shadow-xs' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60' }}"
                    @if(request()->routeIs('analytics.technicians')) style="background-color: #2563eb !important; color: #ffffff !important;" @endif>
-                    🛠️ Technician Performance (FTFR &amp; MTTR)
-                </a>
-                <a href="{{ route('analytics.mrr-retention', ['range' => $selectedRange]) }}"
-                   class="crm-filter-tab filter-tab px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap {{ request()->routeIs('analytics.mrr-retention') ? 'active crm-tab-active text-white shadow-xs' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60' }}"
-                   @if(request()->routeIs('analytics.mrr-retention')) style="background-color: #2563eb !important; color: #ffffff !important;" @endif>
-                    📈 Monthly Revenue &amp; AMC Retention
+                    🛠️ Field Engineering &amp; Operations
                 </a>
                 <a href="{{ route('analytics.cost-profit', ['range' => $selectedRange]) }}"
                    class="crm-filter-tab filter-tab px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap {{ request()->routeIs('analytics.cost-profit') ? 'active crm-tab-active text-white shadow-xs' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60' }}"
@@ -90,8 +85,8 @@
                 </div>
             </div>
 
-            {{-- 9 Master Financial KPI Cards --}}
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-9 gap-3">
+            {{-- 8 Master Financial KPI Cards --}}
+            <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 xl:grid-cols-8 gap-3">
 
                 {{-- 1. Total Revenue (with tax) --}}
                 <div class="bg-[#0f172a] p-4 rounded-2xl border border-white/5 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.5)] flex flex-col justify-between" style="min-height:110px">
@@ -194,18 +189,6 @@
                     </div>
                 </div>
 
-                {{-- 9. AMC Recurring ARR --}}
-                <div class="bg-[#0f172a] p-4 rounded-2xl border border-white/5 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.5)] flex flex-col justify-between" style="min-height:110px">
-                    <div class="flex items-start justify-between gap-1">
-                        <span class="text-[9px] font-bold uppercase tracking-wider text-slate-400 block leading-tight">AMC Portfolio</span>
-                        <div class="w-7 h-7 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center text-xs font-bold shrink-0 border border-amber-500/20">🔄</div>
-                    </div>
-                    <div>
-                        <div class="text-base font-extrabold text-amber-400 mt-1 leading-tight font-['Outfit']">₹{{ number_format($overview['amc']['arr'], 0) }}</div>
-                        <span class="text-[10px] text-slate-400 block mt-0.5">{{ $overview['amc']['active_contracts'] }} contracts</span>
-                    </div>
-                </div>
-
             </div>
 
             {{-- Cost Breakdown Highlight Bar --}}
@@ -257,7 +240,7 @@
                     <div class="flex items-center justify-between mb-4">
                         <div>
                             <h3 class="text-xs font-bold uppercase tracking-wider text-white">Revenue Streams Contribution</h3>
-                            <p class="text-[11px] text-slate-400">Installation Projects vs AMC Subscriptions vs Service Repairs</p>
+                            <p class="text-[11px] text-slate-400">Installation Projects vs Hardware Sales vs Field Engineering Surveys</p>
                         </div>
                     </div>
                     <div class="h-64 flex items-center justify-center">
@@ -312,8 +295,8 @@
                             <tr>
                                 <th class="px-4 py-2.5 text-left font-bold text-slate-400">Technician</th>
                                 <th class="px-4 py-2.5 text-center font-bold text-slate-400">Jobs</th>
-                                <th class="px-4 py-2.5 text-center font-bold text-slate-400">Tickets</th>
-                                <th class="px-4 py-2.5 text-center font-bold text-slate-400">JCR Signed</th>
+                                <th class="px-4 py-2.5 text-center font-bold text-slate-400">Surveys</th>
+                                <th class="px-4 py-2.5 text-center font-bold text-slate-400">Projects</th>
                                 <th class="px-4 py-2.5 text-right font-bold text-slate-400">CSAT ⭐</th>
                             </tr>
                         </thead>
@@ -325,8 +308,8 @@
                                         <span class="text-[10px] text-slate-500 block font-normal capitalize">{{ $tech['role'] }}</span>
                                     </td>
                                     <td class="px-4 py-3 text-center font-semibold text-slate-300">{{ $tech['jobs_completed'] }}</td>
-                                    <td class="px-4 py-3 text-center font-semibold text-slate-300">{{ $tech['tickets_resolved'] }}</td>
-                                    <td class="px-4 py-3 text-center font-semibold text-sky-400">{{ $tech['jcr_signoffs'] }}</td>
+                                    <td class="px-4 py-3 text-center font-semibold text-slate-300">{{ $tech['surveys_completed'] }}</td>
+                                    <td class="px-4 py-3 text-center font-semibold text-sky-400">{{ $tech['projects_count'] }}</td>
                                     <td class="px-4 py-3 text-right">
                                         <span class="inline-block px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30 font-bold text-[11px]">
                                             ⭐ {{ $tech['average_rating'] }} / 5.0
@@ -458,14 +441,14 @@
             new Chart(streamsCtx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Project Installations', 'AMC Contracts', 'Service Ticket Repairs'],
+                    labels: ['Project Installations', 'Hardware Sales', 'Engineering & Surveys'],
                     datasets: [{
                         data: [
                             {{ $overview['revenue_streams']['projects'] }},
-                            {{ $overview['revenue_streams']['amc'] }},
-                            {{ $overview['revenue_streams']['service'] }}
+                            {{ $overview['revenue_streams']['hardware'] ?? 0 }},
+                            {{ $overview['revenue_streams']['surveys'] ?? 0 }}
                         ],
-                        backgroundColor: ['#3b82f6', '#f59e0b', '#06b6d4'],
+                        backgroundColor: ['#3b82f6', '#10b981', '#8b5cf6'],
                         borderWidth: 2,
                         borderColor: '#0f172a',
                     }]

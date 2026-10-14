@@ -17,7 +17,6 @@ use App\Http\Controllers\InstalledEquipmentController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\CctvEstimatorController;
-use App\Http\Controllers\Customer\CustomerPortalController;
 use App\Http\Controllers\JobCompletionReportController;
 use App\Http\Controllers\RmaClaimController;
 use App\Http\Controllers\AlertNotificationController;
@@ -511,33 +510,11 @@ Route::middleware(['auth', 'technician'])->prefix('technician')->name('technicia
     Route::post('/surveys/{siteSurvey}/complete', [TechnicianPortalController::class, 'completeSurvey'])->name('surveys.complete');
 });
 
-// Customer Self-Service Client Portal
-Route::middleware(['auth', 'customer'])->group(function () {
-    Route::get('/portal', [CustomerPortalController::class, 'dashboard'])->name('customer.portal');
-    Route::prefix('portal')->name('portal.')->group(function () {
-        Route::get('/dashboard', [CustomerPortalController::class, 'dashboard'])->name('dashboard');
-        Route::get('/equipment', [CustomerPortalController::class, 'equipment'])->name('equipment');
-        Route::get('/amc', [CustomerPortalController::class, 'amc'])->name('amc');
-        Route::post('/amc/renew', [CustomerPortalController::class, 'requestAmcRenewal'])->name('amc.renew');
-        Route::get('/tickets', [CustomerPortalController::class, 'tickets'])->name('tickets');
-        Route::get('/tickets/create', [CustomerPortalController::class, 'createTicket'])->name('tickets.create');
-        Route::post('/tickets', [CustomerPortalController::class, 'storeTicket'])->name('tickets.store');
-        Route::get('/tickets/{ticket}', [CustomerPortalController::class, 'showTicket'])->name('tickets.show');
-        Route::get('/surveys', [CustomerPortalController::class, 'surveys'])->name('surveys');
-        Route::get('/surveys/{siteSurvey}', [CustomerPortalController::class, 'showSurvey'])->name('surveys.show');
-        Route::get('/invoices', [CustomerPortalController::class, 'invoices'])->name('invoices');
-        Route::get('/quotations', [CustomerPortalController::class, 'quotations'])->name('quotations');
-        Route::post('/quotations/{quotation}/accept', [CustomerPortalController::class, 'acceptQuotation'])->name('quotations.accept');
-        Route::post('/quotations/{quotation}/reject', [CustomerPortalController::class, 'rejectQuotation'])->name('quotations.reject');
-        Route::post('/site-work-request', [CustomerPortalController::class, 'submitSiteWorkRequest'])->name('site-work-request');
-    });
-});
-
 // Staff & Admin ERP Login Aliases
 Route::get('/staff/login', [\App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'create'])->name('staff.login');
 Route::post('/staff/login', [\App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'store'])->name('staff.login.post');
 Route::get('/admin/login', [\App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'create'])->name('admin.login');
-Route::get('/customer/login', [\App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'create'])->name('customer.login');
+Route::get('/customer/login', fn() => redirect()->route('login'))->name('customer.login');
 Route::get('/staff', fn() => redirect('/staff/login'));
 
 require __DIR__ . '/auth.php';

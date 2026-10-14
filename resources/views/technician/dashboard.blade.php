@@ -249,37 +249,31 @@
                 <div class="alert-success">{{ session('status') }}</div>
             @endif
 
-            {{-- Stats Bar (5 Clean Metric Cards) --}}
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+            {{-- Stats Bar (4 Clean Metric Cards) --}}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 
-                {{-- Active Repairs --}}
-                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-4">
-                    <span class="text-xs font-medium text-slate-500 dark:text-slate-400 block">Active Repairs</span>
-                    <div class="text-2xl font-bold text-slate-900 dark:text-white mt-1">{{ $activeTickets->count() }}</div>
+                {{-- Infrastructure Projects & ACS Sites --}}
+                <div onclick="switchTab('projects', document.querySelector('.tab-bar .tab-btn:first-child'))" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-4 cursor-pointer">
+                    <span class="text-xs font-medium text-slate-500 dark:text-slate-400 block">Assigned Projects</span>
+                    <div class="text-2xl font-bold text-slate-900 dark:text-white mt-1">{{ $assignedProjects->count() }}</div>
                 </div>
 
                 {{-- Active Jobs --}}
                 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-4">
-                    <span class="text-xs font-medium text-slate-500 dark:text-slate-400 block">Active Jobs</span>
+                    <span class="text-xs font-medium text-slate-500 dark:text-slate-400 block">Active Installation Jobs</span>
                     <div class="text-2xl font-bold text-slate-900 dark:text-white mt-1">{{ $activeJobs->count() }}</div>
                 </div>
 
-                {{-- AMC Visits Due --}}
+                {{-- Site Surveys --}}
                 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-4">
-                    <span class="text-xs font-medium text-slate-500 dark:text-slate-400 block">AMC Visits Due</span>
-                    <div class="text-2xl font-bold text-slate-900 dark:text-white mt-1">{{ $activeVisits->count() }}</div>
+                    <span class="text-xs font-medium text-slate-500 dark:text-slate-400 block">Pending Surveys</span>
+                    <div class="text-2xl font-bold text-slate-900 dark:text-white mt-1">{{ $activeSurveys->count() }}</div>
                 </div>
 
                 {{-- Resolved / Done --}}
                 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-4">
-                    <span class="text-xs font-medium text-slate-500 dark:text-slate-400 block">Resolved Tasks</span>
-                    <div class="text-2xl font-bold text-slate-900 dark:text-white mt-1">{{ $completedJobs->count() + $completedVisits->count() + $completedTickets->count() }}</div>
-                </div>
-
-                {{-- Infrastructure Projects & ACS Sites --}}
-                <div onclick="switchTab('projects', document.querySelector('.tab-bar .tab-btn:nth-child(4)'))" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-4 cursor-pointer">
-                    <span class="text-xs font-medium text-slate-500 dark:text-slate-400 block">Assigned Projects</span>
-                    <div class="text-2xl font-bold text-slate-900 dark:text-white mt-1">{{ $assignedProjects->count() }}</div>
+                    <span class="text-xs font-medium text-slate-500 dark:text-slate-400 block">Completed Work</span>
+                    <div class="text-2xl font-bold text-slate-900 dark:text-white mt-1">{{ $completedJobs->count() + $completedSurveys->count() }}</div>
                 </div>
 
             </div>
@@ -289,7 +283,7 @@
                 <div class="flex items-center justify-between flex-wrap gap-4">
                     <div>
                         <h3 class="text-lg font-bold text-[#222222]">On-Site Hardware Barcode Scanner</h3>
-                        <p class="text-xs text-[#555555] mt-0.5">Scan serial barcode to check warranty or raise RMA</p>
+                        <p class="text-xs text-[#555555] mt-0.5">Scan serial barcode to check warranty and asset details</p>
                     </div>
                     <div class="flex items-center gap-2 flex-wrap">
                         <button type="button" onclick="openBarcodeScanner('tech-barcode-modal', null, handleTechScannedCode)"
@@ -311,16 +305,10 @@
 
             {{-- Tab Bar --}}
             <div class="tab-bar">
-                <button class="tab-btn active" onclick="switchTab('tickets', this)">
-                    Repair Tickets
-                    @if($activeTickets->count() > 0)
-                        <span class="font-bold text-rose-600 dark:text-rose-400 ml-1">({{ $activeTickets->count() }})</span>
-                    @endif
-                </button>
-                <button class="tab-btn" onclick="switchTab('surveys', this)">
-                    Site Surveys
-                    @if($activeSurveys->count() > 0)
-                        <span class="font-bold text-blue-600 dark:text-blue-400 ml-1">({{ $activeSurveys->count() }})</span>
+                <button class="tab-btn active" onclick="switchTab('projects', this)">
+                    Projects &amp; Sites
+                    @if($assignedProjects->count() > 0)
+                        <span class="font-bold text-blue-600 dark:text-blue-400 ml-1">({{ $assignedProjects->count() }})</span>
                     @endif
                 </button>
                 <button class="tab-btn" onclick="switchTab('jobs', this)">
@@ -329,16 +317,10 @@
                         <span class="font-bold text-indigo-600 dark:text-indigo-400 ml-1">({{ $activeJobs->count() }})</span>
                     @endif
                 </button>
-                <button class="tab-btn" onclick="switchTab('projects', this)">
-                    Projects &amp; Sites
-                    @if($assignedProjects->count() > 0)
-                        <span class="font-bold text-blue-600 dark:text-blue-400 ml-1">({{ $assignedProjects->count() }})</span>
-                    @endif
-                </button>
-                <button class="tab-btn" onclick="switchTab('visits', this)">
-                    AMC Visits
-                    @if($activeVisits->count() > 0)
-                        <span class="font-bold text-amber-600 dark:text-amber-400 ml-1">({{ $activeVisits->count() }})</span>
+                <button class="tab-btn" onclick="switchTab('surveys', this)">
+                    Site Surveys
+                    @if($activeSurveys->count() > 0)
+                        <span class="font-bold text-blue-600 dark:text-blue-400 ml-1">({{ $activeSurveys->count() }})</span>
                     @endif
                 </button>
                 <button class="tab-btn" onclick="switchTab('history', this)">
@@ -347,7 +329,7 @@
             </div>
 
             {{-- Tab: Assigned Projects & Sites --}}
-            <div id="tab-projects" class="tab-content">
+            <div id="tab-projects" class="tab-content active">
                 @forelse($assignedProjects as $prj)
                     <div class="tech-card">
                         <div class="card-head">
@@ -536,97 +518,7 @@
                 @endforelse
             </div>
 
-            {{-- Tab: Service & Repair Tickets --}}
-            <div id="tab-tickets" class="tab-content active">
-                @forelse($activeTickets as $ticket)
-                    @php $lead = $ticket->lead; @endphp
-                    <div class="tech-card">
-                        <div class="card-head">
-                            <div class="card-head-left">
-                                <div>
-                                    <div class="card-title">{{ $ticket->ticket_no }} — {{ $ticket->title }}</div>
-                                    <div class="card-sub">{{ $lead->customer_name }} &middot; {{ $ticket->issue_type_label }}</div>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span class="font-bold text-xs uppercase {{ $ticket->priority === 'critical' || $ticket->priority === 'high' ? 'text-rose-600' : 'text-slate-600' }}">{{ $ticket->priority }}</span>
-                                <span class="font-bold text-xs capitalize text-blue-600">{{ $ticket->status_label }}</span>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="info-row">
-                                <span class="info-label">Site Address:</span>
-                                <span>
-                                    {{ $lead->site_address }}
-                                    @if($lead->site_address)
-                                        <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode($lead->site_address) }}" target="_blank" class="ml-2 text-xs text-[#2563eb] hover:underline">
-                                            Directions &rarr;
-                                        </a>
-                                    @endif
-                                </span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">Customer:</span>
-                                <a href="tel:{{ $lead->phone }}" class="text-blue-600 hover:underline">{{ $lead->phone }}</a>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">Schedule:</span>
-                                <span>{{ $ticket->scheduled_date?->format('d M Y') ?? 'Not scheduled' }}</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">Complaint:</span>
-                                <span class="text-slate-700 dark:text-slate-300 font-medium">{{ $ticket->description }}</span>
-                            </div>
 
-                            <form method="POST" action="{{ route('technician.service-tickets.update', $ticket) }}">
-                                @csrf
-                                <div class="update-form">
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-                                        <div>
-                                            <label class="form-label">Ticket Status</label>
-                                            <select name="status" class="form-select font-medium" style="height: 38px;">
-                                                <option value="in_progress" @selected($ticket->status === 'in_progress')>In Progress</option>
-                                                <option value="resolved" @selected($ticket->status === 'resolved')>Resolved</option>
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label class="form-label">Replacement Parts Used (Optional)</label>
-                                            <input type="text" name="parts_replaced" value="{{ $ticket->parts_replaced }}" class="form-input" placeholder="e.g. 1x Power Supply" style="height: 38px;">
-                                        </div>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label class="form-label">Troubleshooting Observations</label>
-                                        <textarea name="troubleshooting_notes" class="form-textarea" placeholder="Diagnosis, voltage tests, cable check...">{{ $ticket->troubleshooting_notes }}</textarea>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label class="form-label">Resolution / Action Taken</label>
-                                        <textarea name="resolution_notes" class="form-textarea" placeholder="Actions taken to restore system...">{{ $ticket->resolution_notes }}</textarea>
-                                    </div>
-
-                                    <div class="flex items-center justify-between mt-3 flex-wrap gap-2">
-                                        <button type="submit" class="btn-submit">
-                                            Save Status Update
-                                        </button>
-                                        <a href="{{ route('jcr.create-ticket', $ticket) }}" class="px-3 py-1.5 rounded bg-[#2563eb] text-white text-xs font-medium hover:bg-blue-700 transition">
-                                            Customer Sign-off (JCR) &rarr;
-                                        </a>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                @empty
-                    <div class="tech-card">
-                        <div class="empty-state">
-                            <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                            <h4>No Active Repair Tickets</h4>
-                            <p class="text-xs text-slate-400">You have no pending breakdown repair tickets assigned.</p>
-                        </div>
-                    </div>
-                @endforelse
-            </div>
 
             {{-- Tab: Installation Jobs --}}
             <div id="tab-jobs" class="tab-content">
@@ -680,14 +572,10 @@
                                     </select>
                                     <label class="form-label">Completion Notes (optional)</label>
                                     <textarea name="notes" class="form-textarea mb-3" placeholder="Describe what was installed, tested, or any issues…">{{ $job->installation_notes }}</textarea>
-                                    
-                                    <div class="flex items-center justify-between mt-3 flex-wrap gap-2">
+                                                                     <div class="flex items-center justify-between mt-3 flex-wrap gap-2">
                                         <button type="submit" class="btn-submit">
                                             Save Status
                                         </button>
-                                        <a href="{{ route('jcr.create-job', $job) }}" class="px-3 py-1.5 rounded bg-[#2563eb] text-white text-xs font-medium hover:bg-blue-700 transition">
-                                            Complete &amp; Sign-off (JCR) &rarr;
-                                        </a>
                                     </div>
                                 </div>
                             </form>
@@ -704,112 +592,8 @@
                 @endforelse
             </div>
 
-            {{-- Tab: AMC Visits --}}
-            <div id="tab-visits" class="tab-content">
-                @forelse($activeVisits as $visit)
-                    @php $lead = $visit->amcContract?->lead; @endphp
-                    <div class="tech-card">
-                        <div class="card-head">
-                            <div class="card-head-left">
-                                <div>
-                                    <div class="card-title">{{ $visit->amcContract?->contract_no ?? 'AMC-' . $visit->id }}</div>
-                                    <div class="card-sub">{{ $lead?->customer_name ?? 'N/A' }}</div>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                @php $due = \Carbon\Carbon::parse($visit->scheduled_date); @endphp
-                                @if($due->isPast())
-                                    <span class="font-bold text-xs text-rose-600">Overdue</span>
-                                @elseif($due->isToday())
-                                    <span class="font-bold text-xs text-amber-600">Today</span>
-                                @else
-                                    <span class="font-bold text-xs text-slate-600">{{ $due->format('d M') }}</span>
-                                @endif
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="info-row">
-                                <span class="info-label">Scheduled:</span>
-                                <span>{{ $due->format('d M Y') }} ({{ $due->diffForHumans() }})</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">Site:</span>
-                                <span>{{ $lead?->site_address ?? $lead?->address ?? 'Address not specified' }}</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">Contact:</span>
-                                @if($lead?->phone)
-                                    <a href="tel:{{ $lead->phone }}" class="text-blue-600 hover:underline">{{ $lead->phone }}</a>
-                                @else
-                                    <span>—</span>
-                                @endif
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">Contract:</span>
-                                <span>{{ ucfirst($visit->amcContract?->frequency ?? '—') }} maintenance &middot; Valid until {{ $visit->amcContract?->end_date?->format('d M Y') ?? '—' }}</span>
-                            </div>
-
-                            <form method="POST" action="{{ route('technician.amc-visits.complete', $visit) }}">
-                                @csrf
-                                <div class="update-form">
-                                    <label class="form-label">Service Report / Completion Notes *</label>
-                                    <textarea name="completion_notes" class="form-textarea mb-3" placeholder="Describe what was serviced, checked, cleaned, or replaced…" required></textarea>
-                                    
-                                    <div class="flex items-center justify-between mt-3 flex-wrap gap-2">
-                                        <button type="submit" class="btn-submit">
-                                            Quick Complete
-                                        </button>
-                                        <a href="{{ route('jcr.create-visit', $visit) }}" class="px-3 py-1.5 rounded bg-[#2563eb] text-white text-xs font-medium hover:bg-blue-700 transition">
-                                            Customer Sign-off (JCR) &rarr;
-                                        </a>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                @empty
-                    <div class="tech-card">
-                        <div class="empty-state">
-                            <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                            <h4>No Pending AMC Visits</h4>
-                            <p class="text-xs text-slate-400">You have no pending maintenance visits scheduled.</p>
-                        </div>
-                    </div>
-                @endforelse
-            </div>
-
             {{-- Tab: History --}}
             <div id="tab-history" class="tab-content">
-
-                {{-- Resolved Repair Tickets --}}
-                <div class="tech-card">
-                    <div class="card-head">
-                        <div class="card-head-left">
-                            <div>
-                                <div class="card-title">Resolved Repair Tickets</div>
-                                <div class="card-sub">{{ $completedTickets->count() }} repairs resolved</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="divide-y divide-slate-100 dark:divide-slate-800">
-                        @forelse($completedTickets as $ticket)
-                            <div class="p-3 flex items-start justify-between gap-3 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition">
-                                <div class="flex-1">
-                                    <div class="text-xs font-semibold text-slate-800 dark:text-slate-200">{{ $ticket->ticket_no }} — {{ $ticket->title }}</div>
-                                    <div class="text-[11px] text-slate-500 mt-0.5">{{ $ticket->lead->customer_name }} &middot; Resolved {{ $ticket->resolved_at?->format('d M Y') ?? '—' }}</div>
-                                    @if($ticket->resolution_notes)
-                                        <div class="text-xs text-emerald-700 dark:text-emerald-400 mt-1">{{ Str::limit($ticket->resolution_notes, 90) }}</div>
-                                    @endif
-                                </div>
-                                <span class="font-bold text-xs text-emerald-600 dark:text-emerald-400">Resolved</span>
-                            </div>
-                        @empty
-                            <div class="p-4 text-center text-xs text-slate-400">
-                                No resolved repair tickets yet.
-                            </div>
-                        @endforelse
-                    </div>
-                </div>
 
                 {{-- Completed Jobs --}}
                 <div class="tech-card">
@@ -839,32 +623,28 @@
                     </div>
                 </div>
 
-                {{-- Completed Visits --}}
+                {{-- Completed Site Surveys --}}
                 <div class="tech-card">
                     <div class="card-head">
                         <div class="card-head-left">
                             <div>
-                                <div class="card-title">Completed AMC Visits</div>
-                                <div class="card-sub">{{ $completedVisits->count() }} visits serviced</div>
+                                <div class="card-title">Completed Site Surveys</div>
+                                <div class="card-sub">{{ $completedSurveys->count() }} surveys completed</div>
                             </div>
                         </div>
                     </div>
                     <div class="divide-y divide-slate-100 dark:divide-slate-800">
-                        @forelse($completedVisits as $visit)
-                            @php $lead = $visit->amcContract?->lead; @endphp
-                            <div class="p-3 flex items-start justify-between gap-3 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition">
-                                <div class="flex-1">
-                                    <div class="text-xs font-semibold text-slate-800 dark:text-slate-200">{{ $visit->amcContract?->contract_no ?? 'AMC-' . $visit->id }}</div>
-                                    <div class="text-[11px] text-slate-500 mt-0.5">{{ $lead?->customer_name ?? 'N/A' }} &middot; Serviced {{ $visit->completed_at?->format('d M Y') ?? '—' }}</div>
-                                    @if($visit->completion_notes)
-                                        <div class="text-xs text-slate-500 mt-1 italic">{{ Str::limit($visit->completion_notes, 80) }}</div>
-                                    @endif
+                        @forelse($completedSurveys as $survey)
+                            <div class="p-3 flex items-center justify-between gap-3 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition">
+                                <div>
+                                    <div class="text-xs font-semibold text-slate-800 dark:text-slate-200">{{ $survey->lead?->customer_name ?? 'Lead #' . $survey->lead_id }}</div>
+                                    <div class="text-[11px] text-slate-500 mt-0.5">{{ $survey->lead?->site_address ?? 'Site' }} &middot; Completed {{ $survey->updated_at->format('d M Y') }}</div>
                                 </div>
-                                <span class="font-bold text-xs text-emerald-600 dark:text-emerald-400">{{ ucfirst($visit->status) }}</span>
+                                <span class="font-bold text-xs text-emerald-600 dark:text-emerald-400">Completed</span>
                             </div>
                         @empty
                             <div class="p-4 text-center text-xs text-slate-400">
-                                No completed AMC visits yet.
+                                No completed site surveys yet.
                             </div>
                         @endforelse
                     </div>
@@ -915,10 +695,7 @@
                                 </div>
                             </div>
                             <div class="flex items-center gap-2 flex-wrap">
-                                <a href="${data.rma_url}" class="bg-[#2563eb] text-white text-xs font-medium px-3 py-1.5 rounded transition">
-                                    Raise RMA Claim
-                                </a>
-                                <a href="${data.show_url}" class="border border-slate-700 text-slate-200 text-xs font-medium px-3 py-1.5 rounded transition">
+                                <a href="${data.show_url}" class="border border-slate-700 text-slate-200 text-xs font-medium px-3 py-1.5 rounded transition hover:bg-slate-800">
                                     View Asset History
                                 </a>
                             </div>

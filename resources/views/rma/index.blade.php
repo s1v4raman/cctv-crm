@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-                <h2 class="text-xl font-bold text-slate-900 dark:text-white">RMA Claims</h2>
+                <h2 class="text-xl font-bold text-slate-900 dark:text-white">RMA &amp; Warranty Claims</h2>
             </div>
             <a href="{{ route('rma.create') }}" class="btn-primary">
                 New RMA Claim

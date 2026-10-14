@@ -4,30 +4,53 @@ import TomSelect from 'tom-select';
 window.Alpine = Alpine;
 window.TomSelect = TomSelect;
 
+// Standard clean dropdowns and search inputs across all modules
 window.initSearchableSelect = function(element, options = {}) {
     if (!element || element.tomselect) return element.tomselect;
-    
-    // Don't initialize if marked to exclude
     if (element.hasAttribute('data-no-tom')) return null;
 
     try {
+        const firstEmptyOpt = element.querySelector('option[value=""]');
         const placeholder = element.getAttribute('data-placeholder') || 
-                            element.querySelector('option[value=""]')?.textContent || 
-                            'Type to search...';
+                            (firstEmptyOpt ? firstEmptyOpt.textContent.trim() : '') || 
+                            'Select customer';
+
+        const hasSelectedVal = Boolean(element.value && element.value !== '');
 
         const ts = new TomSelect(element, {
             create: false,
-            maxOptions: 150,
+            maxOptions: 250,
             allowEmptyOption: true,
             placeholder: placeholder,
-            dropdownParent: 'body',
-            plugins: ['clear_button'],
+            dropdownDirection: 'down',
+            plugins: [],
+            items: hasSelectedVal ? [element.value] : [],
+            onFocus: function() {
+                if (!this.getValue()) {
+                    this.clear(true);
+                }
+            },
             onChange: function(val) {
                 element.dispatchEvent(new Event('input', { bubbles: true }));
                 element.dispatchEvent(new Event('change', { bubbles: true }));
             },
             ...options
         });
+
+        // Ensure no empty item or label is rendered inside the search bar
+        if (!hasSelectedVal) {
+            ts.clear(true);
+        }
+
+        // Strictly guarantee the list of search data is displayed DOWNWARDS beneath the search bar
+        ts.on('dropdown_open', (dropdown) => {
+            if (dropdown) {
+                dropdown.style.setProperty('top', '100%', 'important');
+                dropdown.style.setProperty('bottom', 'auto', 'important');
+                dropdown.style.setProperty('margin-top', '3px', 'important');
+            }
+        });
+
         return ts;
     } catch (e) {
         console.warn('TomSelect init failed on', element, e);

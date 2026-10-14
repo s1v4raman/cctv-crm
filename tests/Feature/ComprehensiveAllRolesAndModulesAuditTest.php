@@ -528,75 +528,16 @@ class ComprehensiveAllRolesAndModulesAuditTest extends TestCase
     }
 
     /**
-     * Audit 3: Customer Client Portal Self-Service, Payments, AMC & Service Requests.
+     * Audit 3: Customer role is blocked from internal ERP screens and portal routes are retired.
      */
-    public function test_customer_client_portal_workflows_and_requests(): void
+    public function test_customer_role_restrictions_and_portal_retirement(): void
     {
         $this->actingAs($this->customerUser);
 
-        // 1. Customer Portal Dashboard
-        $response = $this->get(route('portal.dashboard'));
-        $response->assertOk();
-        $response->assertSee('Customer Portal');
-        $response->assertSee('Srinithish P');
+        // 1. Customer login redirects to login
+        $this->get(route('customer.login'))->assertRedirect(route('login'));
 
-        // 2. Customer Equipment Registry
-        $equipmentResponse = $this->get(route('portal.equipment'));
-        $equipmentResponse->assertOk();
-        $equipmentResponse->assertSee('HKV-4K-AUDIT-9901');
-
-        // 3. Customer AMC Overview & Renewal Request
-        $amcResponse = $this->get(route('portal.amc'));
-        $amcResponse->assertOk();
-        $amcResponse->assertSee('AMC-2026-AUDIT01');
-
-        $renewalResponse = $this->post(route('portal.amc.renew'), [
-            'notes' => 'Please extend AMC for another 2 years.',
-        ]);
-        $renewalResponse->assertRedirect();
-
-        // 4. Customer Service Tickets Listing & Creation
-        $ticketsResponse = $this->get(route('portal.tickets'));
-        $ticketsResponse->assertOk();
-
-        $createTicketPage = $this->get(route('portal.tickets.create'));
-        $createTicketPage->assertOk();
-
-        $storeTicketResponse = $this->post(route('portal.tickets.store'), [
-            'title' => 'PTZ Camera Preset Shifted',
-            'issue_type' => 'ptz_control_issue',
-            'priority' => 'medium',
-            'description' => 'Camera preset #4 pointing slightly upward.',
-        ]);
-        $storeTicketResponse->assertRedirect();
-        $this->assertDatabaseHas('service_tickets', [
-            'title' => 'PTZ Camera Preset Shifted',
-            'created_by_id' => $this->customerUser->id,
-        ]);
-
-        // 5. Customer Invoices & Billing
-        $invoicesResponse = $this->get(route('portal.invoices'));
-        $invoicesResponse->assertOk();
-        $invoicesResponse->assertSee('INV-2026-AUDIT01');
-
-        // 6. Customer Quotations & Acceptance
-        $quotationsResponse = $this->get(route('portal.quotations'));
-        $quotationsResponse->assertOk();
-        $quotationsResponse->assertSee('QT-2026-AUDIT01');
-
-        // 7. Customer Site Surveys
-        $surveysResponse = $this->get(route('portal.surveys'));
-        $surveysResponse->assertOk();
-
-        // 8. Customer Site Work Request
-        $workRequest = $this->post(route('portal.site-work-request'), [
-            'request_type' => 'new_installation',
-            'title' => 'Warehouse CCTV Expansion',
-            'details' => 'Need 6 additional weatherproof dome cameras.',
-        ]);
-        $workRequest->assertRedirect();
-
-        // 9. Security: Customer is blocked from internal ERP
+        // 2. Security: Customer is blocked from internal ERP
         $this->get(route('dashboard'))->assertStatus(403);
         $this->get(route('leads.index'))->assertStatus(403);
         $this->get(route('jobs.index'))->assertStatus(403);

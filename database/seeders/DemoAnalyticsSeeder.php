@@ -1719,18 +1719,6 @@ class DemoAnalyticsSeeder extends Seeder
                 ]
             );
 
-            // Customer User Portal Login
-            $custUser = User::updateOrCreate(
-                ['email' => $lData['email']],
-                [
-                    'name' => $lData['name'],
-                    'password' => Hash::make('password'),
-                    'role' => 'customer',
-                    'lead_id' => $lead->id,
-                    'email_verified_at' => $leadCreated,
-                ]
-            );
-
             // Site Survey if present
             if (isset($proj['survey'])) {
                 $sData = $proj['survey'];

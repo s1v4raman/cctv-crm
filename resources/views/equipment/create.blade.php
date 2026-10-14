@@ -31,7 +31,14 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                         {{-- Customer / Site --}}
                         <div class="sm:col-span-2">
-                            <label class="crm-label">Customer Site / Lead <span class="required-marker">*</span></label>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <label class="crm-label mb-0">Customer Site / Lead <span class="required-marker">*</span></label>
+                                <a href="{{ route('leads.create', ['return_to' => 'equipment']) }}" 
+                                   class="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200/80 px-2.5 py-1 rounded-md transition shadow-sm">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                                    <span>Add New Customer</span>
+                                </a>
+                            </div>
                             <select name="lead_id" class="crm-select" required>
                                 <option value="">Select Customer / Lead...</option>
                                 @foreach($leads as $l)

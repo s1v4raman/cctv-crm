@@ -7,12 +7,22 @@
 {{-- Universal Realtime CRM Theme & Dynamic Logo Recoloring Engine --}}
 <script>
 (function() {
+    // Respect stored mode or default to night mode as requested
+    try {
+        const earlyMode = localStorage.getItem('crm_mode') || 'night';
+        if (earlyMode === 'night' || earlyMode === 'dark') {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    } catch(e) {}
+
     window.crmLogoCache = window.crmLogoCache || {};
 
     const currentUserId = {{ json_encode($userId ?? (auth()->check() ? auth()->id() : null)) }};
     const dbAccent = {{ json_encode($userAccent ?? (auth()->check() ? auth()->user()->theme_accent : null)) }} || '#2563eb';
-    const dbMode = {{ json_encode($userMode ?? (auth()->check() ? auth()->user()->theme_mode : null)) }} || 'auto';
-    const dbStyle = {{ json_encode($userStyle ?? (auth()->check() ? auth()->user()->theme_style : null)) }} || 'dark';
+    const dbMode = {{ json_encode($userMode ?? (auth()->check() ? auth()->user()->theme_mode : null)) }} || 'night';
+    const dbStyle = {{ json_encode($userStyle ?? (auth()->check() ? auth()->user()->theme_style : null)) }} || 'lite';
 
     // Scoped storage keys per user to guarantee absolute isolation between users
     const accentKey = currentUserId ? ('crm_accent_user_' + currentUserId) : 'crm_accent';
@@ -587,12 +597,11 @@
         initialAccent = localStorage.getItem(accentKey) || localStorage.getItem('crm_accent');
     } catch(e) {}
 
-    let activeMode = storedMode || dbMode || 'auto';
+    let activeMode = storedMode || dbMode || 'night';
     if (activeMode === 'light') activeMode = 'day';
     if (activeMode === 'dark') activeMode = 'night';
 
-    const isDark = (activeMode === 'night') || 
-                   (activeMode === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    const isDark = (activeMode === 'night');
     if (isDark) {
         document.documentElement.classList.add('dark');
     } else {
@@ -657,7 +666,7 @@
         return window.applyCrmMode(isCurrentlyDark ? 'day' : 'night', true);
     };
 
-    const themeStyle = storedStyle || dbStyle || 'dark';
+    const themeStyle = storedStyle || dbStyle || 'lite';
     document.documentElement.setAttribute('data-header-theme', themeStyle);
 
     const activeAccent = initialAccent || dbAccent || '#2563eb';

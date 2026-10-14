@@ -3,7 +3,7 @@
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <h2 class="text-2xl font-black tracking-wider text-white uppercase font-['Outfit']">Add New User Account</h2>
-                <p class="mt-1 text-xs text-slate-400 font-mono">Register a new access account for an administrator, employee, technician or customer.</p>
+                <p class="mt-1 text-xs text-slate-400 font-mono">Register a new access account for an administrator, employee, or technician.</p>
             </div>
             <a href="{{ request('return_to', route('admin.users.index')) }}"
                class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-700/60 bg-slate-800/40 text-slate-400 hover:text-white text-xs font-semibold transition">
@@ -37,28 +37,13 @@
 
                     <div>
                         <label class="block text-sm font-semibold text-slate-300 mb-1.5">Account Role</label>
-                        <select name="role" id="roleSelect" class="w-full text-sm rounded-xl border border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:outline-none p-3" required onchange="toggleLeadField(this.value)">
+                        <select name="role" id="roleSelect" class="w-full text-sm rounded-xl border border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:outline-none p-3" required>
                             <option value="" disabled {{ !request('role') && !old('role') ? 'selected' : '' }} class="bg-[#0F172A] text-slate-500">Select Role...</option>
                             <option value="admin" @selected(request('role', old('role')) === 'admin') class="bg-[#0F172A]">Admin</option>
                             <option value="staff" @selected(request('role', old('role')) === 'staff') class="bg-[#0F172A]">Employee (Staff)</option>
                             <option value="technician" @selected(request('role', old('role')) === 'technician') class="bg-[#0F172A]">Technician</option>
-                            <option value="customer" @selected(request('role', old('role')) === 'customer') class="bg-[#0F172A]">Customer</option>
                         </select>
                         @error('role') <div class="text-xs text-rose-400 mt-1 font-mono">{{ $message }}</div> @enderror
-                    </div>
-
-                    <div id="leadField" style="{{ old('role') === 'customer' ? '' : 'display:none;' }}">
-                        <label class="block text-sm font-semibold text-slate-300 mb-1.5">Associated Customer (Lead / Client Site)</label>
-                        <select name="lead_id" class="w-full text-sm rounded-xl border border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:outline-none p-3">
-                            <option value="" class="bg-[#0F172A]">-- No Direct Link (Match by Email automatically) --</option>
-                            @foreach($leads as $lead)
-                                <option value="{{ $lead->id }}" @selected(old('lead_id') == $lead->id) class="bg-[#0F172A]">
-                                    {{ $lead->customer_name }} ({{ $lead->email ?: $lead->phone }})
-                                </option>
-                            @endforeach
-                        </select>
-                        <div class="text-[10px] text-slate-500 font-mono mt-1">Links this login account directly to all cameras, AMC, and invoices of this customer.</div>
-                        @error('lead_id') <div class="text-xs text-rose-400 mt-1 font-mono">{{ $message }}</div> @enderror
                     </div>
 
                     <div>
@@ -82,12 +67,4 @@
         </div>
     </div>
 
-    <script>
-        function toggleLeadField(role) {
-            const field = document.getElementById('leadField');
-            if (field) {
-                field.style.display = (role === 'customer') ? 'block' : 'none';
-            }
-        }
-    </script>
 </x-app-layout>

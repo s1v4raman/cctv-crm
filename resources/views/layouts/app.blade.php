@@ -1,10 +1,10 @@
 @php
     $cookieMode = request()->cookie('crm_mode');
-    $effectiveMode = $cookieMode ?: (auth()->check() ? auth()->user()->theme_mode : 'auto');
-    $isDarkServer = in_array($effectiveMode, ['night', 'dark']);
+    $effectiveMode = (auth()->check() && auth()->user()->theme_mode === 'night') ? 'night' : 'day';
+    $isDarkServer = false;
 @endphp
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-[#f5f5f5] {{ $isDarkServer ? 'dark bg-[#060913]' : '' }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-[#f8fafc]">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -90,27 +90,148 @@
                 border-color: #1e293b;
             }
 
-            /* Sidebar Module Navigation Click & Active State */
+            /* Header Bar: Clean standard background */
+            header.crm-topbar,
+            .crm-topbar {
+                background-color: #ffffff !important;
+                border-bottom: 1px solid #e2e8f0 !important;
+            }
+            html.dark header.crm-topbar,
+            html.dark .crm-topbar {
+                background-color: #0f172a !important;
+                border-bottom: 1px solid #1e293b !important;
+            }
+
+            /* Dashboard & Page Name Font in Header */
+            .crm-topbar .crm-page-title,
+            .crm-topbar span.font-bold {
+                font-size: 15px !important;
+                font-weight: 700 !important;
+                color: #0f172a !important;
+                letter-spacing: -0.01em !important;
+            }
+            html.dark .crm-topbar .crm-page-title,
+            html.dark .crm-topbar span.font-bold {
+                color: #f8fafc !important;
+            }
+
+            /* Mobile menu & search toggle icons */
+            .crm-topbar button[aria-label="Toggle navigation menu"],
+            .crm-topbar button[title="Search"] {
+                color: #64748b !important;
+            }
+            html.dark .crm-topbar button[aria-label="Toggle navigation menu"],
+            html.dark .crm-topbar button[title="Search"] {
+                color: #94a3b8 !important;
+            }
+
+            /* Crisp white background for search bar, theme toggle, notification, and profile */
+            .crm-topbar input[type="text"],
+            .crm-topbar .crm-search-input {
+                background-color: #ffffff !important;
+                border: 1px solid #cbd5e1 !important;
+                color: #0f172a !important;
+            }
+            html.dark .crm-topbar input[type="text"],
+            html.dark .crm-topbar .crm-search-input {
+                background-color: #0b132b !important;
+                border-color: #334155 !important;
+                color: #ffffff !important;
+            }
+
+            .crm-topbar #header-theme-toggle-btn {
+                background-color: #ffffff !important;
+                border: 1px solid #cbd5e1 !important;
+                color: #1e293b !important;
+            }
+            html.dark .crm-topbar #header-theme-toggle-btn {
+                background-color: #1e293b !important;
+                border-color: #334155 !important;
+                color: #e2e8f0 !important;
+            }
+
+            .crm-topbar #header-notification-btn {
+                background-color: #ffffff !important;
+                border: 1px solid #cbd5e1 !important;
+                color: #1e293b !important;
+            }
+            html.dark .crm-topbar #header-notification-btn {
+                background-color: #1e293b !important;
+                border-color: #334155 !important;
+                color: #e2e8f0 !important;
+            }
+
+            .crm-topbar #header-user-profile-pill {
+                background-color: #ffffff !important;
+                border: 1px solid #cbd5e1 !important;
+            }
+            html.dark .crm-topbar #header-user-profile-pill {
+                background-color: #1e293b !important;
+                border-color: #334155 !important;
+            }
+
+            /* Sidebar: Medium Matching Color Layout (#dbe6f6 / #cee0f4) */
+            .crm-sidebar-container,
+            aside {
+                background-color: #dbe6f6 !important;
+            }
+            .crm-sidebar-header {
+                background-color: #cee0f4 !important;
+                border-bottom: 1px solid #b9d1ef !important;
+            }
+            .crm-sidebar-footer {
+                background-color: #cee0f4 !important;
+                border-top: 1px solid #b9d1ef !important;
+            }
+
+            /* Sidebar Module Navigation Click & Active State: Cohesive #2563eb */
             aside nav a.crm-active-link,
             .crm-active-link {
-                background-color: #ebebed;
-                border-radius: 8px;
-                color: #0f172a;
-                font-weight: 600;
+                background-color: #2563eb !important;
+                border-radius: 8px !important;
+                color: #ffffff !important;
+                font-weight: 600 !important;
+                box-shadow: 0 1px 3px rgba(37, 99, 235, 0.25) !important;
+            }
+            aside nav a.crm-active-link svg,
+            .crm-active-link svg {
+                color: #ffffff !important;
+            }
+            aside nav a:hover:not(.crm-active-link) {
+                background-color: #cee0f4 !important;
+                color: #1d4ed8 !important;
+            }
+            aside nav a:hover:not(.crm-active-link) svg {
+                color: #2563eb !important;
+            }
+            aside nav a:not(.crm-active-link) {
+                color: #334155 !important;
+            }
+            aside nav a:not(.crm-active-link) svg {
+                color: #475569 !important;
+            }
+            aside div.uppercase {
+                color: #475569 !important;
+                font-weight: 700 !important;
+            }
+
+            html.dark .crm-sidebar-container,
+            html.dark aside {
+                background-color: #0f172a !important;
+            }
+            html.dark .crm-sidebar-header,
+            html.dark .crm-sidebar-footer {
+                background-color: #0f172a !important;
+                border-color: #1e293b !important;
             }
             html.dark aside nav a.crm-active-link,
             html.dark .crm-active-link {
-                background-color: #1e293b;
-                color: #f8fafc;
+                background-color: #2563eb !important;
+                color: #ffffff !important;
             }
-            aside nav a:hover {
-                background-color: #f1f2f4;
-            }
-            html.dark aside nav a:hover {
-                background-color: #1e293b80;
-            }
-            aside nav a:active {
-                background-color: #ebebed;
+            html.dark aside nav a:hover:not(.crm-active-link) {
+                background-color: #1e293b !important;
+                color: #f8fafc !important;
             }
 
             /* User Avatars & Brand Tiles: Perfect round circle, crisp white letter */
@@ -180,33 +301,147 @@
                 background-color: #334155;
             }
 
-            /* TomSelect Clean Single Border Specification */
-            .ts-wrapper,
-            .select-wrap,
-            .input-box,
-            .form-group:has(> .ts-wrapper),
-            .form-group:has(> select) {
-                border: none !important;
-                padding: 0 !important;
-                border-radius: 0 !important;
-                background: transparent !important;
-                box-shadow: none !important;
-            }
-            .ts-control {
+            /* ═══════════════════════════════════════════════════════════════════════
+               PREMIUM CUSTOM SEARCHABLE DROPDOWN & SELECT DESIGN
+               Matches Reference (Select customer | ▲ with bottom blue line):
+               - Placeholder/text "Select customer" on the left
+               - Vertical divider line '|' on the right
+               - Caret arrow: down when closed, up when active/open
+               - Blue accent underline (border-bottom: 2px solid #2563eb)
+               - Search list data ALWAYS opens DOWN (below the search bar), NEVER UP
+               ═══════════════════════════════════════════════════════════════════════ */
+
+            /* Native Select Elements */
+            select,
+            .crm-select,
+            select.crm-select {
                 height: 38px !important;
                 min-height: 38px !important;
                 max-height: 38px !important;
+                border: 1px solid #cbd5e1 !important;
+                border-bottom: 2px solid #2563eb !important;
+                border-radius: 4px !important;
+                font-size: 13px !important;
+                background-color: #ffffff !important;
+                color: #0f172a !important;
+                padding-left: 12px !important;
+                padding-right: 44px !important;
+                background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='36' height='24' viewBox='0 0 36 24'%3e%3cline x1='8' y1='3' x2='8' y2='21' stroke='%23cbd5e1' stroke-width='1.2'/%3e%3cpolygon points='23,15 28,9 18,9' fill='%2364748b'/%3e%3c/svg%3e") !important;
+                background-position: right 0.4rem center !important;
+                background-repeat: no-repeat !important;
+                background-size: 36px 24px !important;
+                appearance: none !important;
+                -webkit-appearance: none !important;
+                width: 100% !important;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03) !important;
+            }
+
+            select.crm-select:invalid,
+            select.crm-select option[value=""] {
+                color: #60a5fa !important;
+            }
+
+            html.dark select,
+            html.dark .crm-select,
+            html.dark select.crm-select {
+                background-color: #0f172a !important;
+                border-color: #334155 !important;
+                border-bottom: 2px solid #3b82f6 !important;
+                color: #f8fafc !important;
+                background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='36' height='24' viewBox='0 0 36 24'%3e%3cline x1='8' y1='3' x2='8' y2='21' stroke='%23334155' stroke-width='1.2'/%3e%3cpolygon points='23,15 28,9 18,9' fill='%2394a3b8'/%3e%3c/svg%3e") !important;
+            }
+
+            select:focus,
+            .crm-select:focus {
+                border-color: #cbd5e1 !important;
+                border-bottom: 2px solid #1d4ed8 !important;
+                outline: none !important;
+                box-shadow: 0 2px 4px rgba(37, 99, 235, 0.12) !important;
+            }
+
+            /* TomSelect Searchable Dropdown Matching Reference */
+            .ts-wrapper {
+                position: relative !important;
+                width: 100% !important;
+            }
+
+            .ts-wrapper.single .ts-control {
+                height: 38px !important;
+                min-height: 38px !important;
+                max-height: 38px !important;
+                border: 1px solid #cbd5e1 !important;
+                border-bottom: 2px solid #2563eb !important;
                 border-radius: 4px !important;
                 background-color: #ffffff !important;
-                border: 1px solid #cccccc !important;
-                box-sizing: border-box !important;
-                font-size: 14px !important;
-                padding: 0 10px !important;
+                background-image: none !important;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03) !important;
                 display: flex !important;
                 align-items: center !important;
-                box-shadow: none !important;
+                padding-left: 12px !important;
+                padding-right: 44px !important;
+                cursor: text !important;
+                position: relative !important;
             }
+
+            html.dark .ts-wrapper.single .ts-control {
+                background-color: #0f172a !important;
+                border-color: #334155 !important;
+                border-bottom: 2px solid #3b82f6 !important;
+                color: #f8fafc !important;
+            }
+
+            /* Right-side vertical divider line '|' */
+            .ts-wrapper.single .ts-control::before {
+                content: "" !important;
+                position: absolute !important;
+                right: 32px !important;
+                top: 7px !important;
+                bottom: 7px !important;
+                width: 1px !important;
+                background-color: #cbd5e1 !important;
+                z-index: 3 !important;
+            }
+
+            html.dark .ts-wrapper.single .ts-control::before {
+                background-color: #334155 !important;
+            }
+
+            /* Right-side Caret Arrow: Points DOWN when closed */
+            .ts-wrapper.single .ts-control::after {
+                content: "" !important;
+                display: block !important;
+                position: absolute !important;
+                top: 50% !important;
+                right: 12px !important;
+                margin-top: -2px !important;
+                width: 0 !important;
+                height: 0 !important;
+                border-style: solid !important;
+                border-width: 5px 5px 0 5px !important;
+                border-color: #64748b transparent transparent transparent !important;
+                transition: transform 0.15s ease !important;
+                z-index: 3 !important;
+            }
+
+            html.dark .ts-wrapper.single .ts-control::after {
+                border-color: #94a3b8 transparent transparent transparent !important;
+            }
+
+            /* Caret Arrow: Points UP when opened / active (matches user screenshot media_1791964586043.png) */
+            .ts-wrapper.single.dropdown-active .ts-control::after {
+                margin-top: -4px !important;
+                border-width: 0 5px 5px 5px !important;
+                border-color: transparent transparent #64748b transparent !important;
+            }
+
+            html.dark .ts-wrapper.single.dropdown-active .ts-control::after {
+                border-color: transparent transparent #94a3b8 transparent !important;
+            }
+
+            /* Fix inner input styling: completely flat, transparent, borderless, NO nested white box */
             .ts-control input,
+            .ts-control input[type="text"],
+            .ts-control > input,
             .ts-wrapper .ts-control input,
             .ts-wrapper.single .ts-control input {
                 border: none !important;
@@ -214,30 +449,208 @@
                 outline: none !important;
                 box-shadow: none !important;
                 background: transparent !important;
+                background-color: transparent !important;
                 padding: 0 !important;
                 margin: 0 !important;
                 height: 100% !important;
-                font-size: 14px !important;
-                color: #222222 !important;
+                font-size: 13px !important;
+                color: #0f172a !important;
+                min-height: 0 !important;
+                max-height: none !important;
+                width: 100% !important;
+                flex: 1 1 auto !important;
+                box-sizing: border-box !important;
+                border-radius: 0 !important;
+                -webkit-appearance: none !important;
+                appearance: none !important;
+                --tw-ring-offset-shadow: 0 0 #0000 !important;
+                --tw-ring-shadow: 0 0 #0000 !important;
+                --tw-shadow: 0 0 #0000 !important;
             }
-            .ts-wrapper .ts-control .item,
-            .ts-wrapper.single .ts-control .item {
+
+            .ts-control input:focus,
+            .ts-control input[type="text"]:focus,
+            .ts-control > input:focus,
+            .ts-wrapper .ts-control input:focus {
                 border: none !important;
+                border-width: 0 !important;
+                outline: none !important;
+                box-shadow: none !important;
+                ring: 0 !important;
+                --tw-ring-color: transparent !important;
+                --tw-ring-offset-width: 0px !important;
+                --tw-ring-offset-shadow: 0 0 #0000 !important;
+                --tw-ring-shadow: 0 0 #0000 !important;
+                --tw-shadow: 0 0 #0000 !important;
+            }
+
+            html.dark .ts-control > input,
+            html.dark .ts-wrapper .ts-control input {
+                color: #f8fafc !important;
+            }
+
+            /* REMOVE LABEL FROM SEARCH BAR:
+               Never show duplicate label/placeholder div inside the search bar.
+               When user focuses or types, hide any .item so only clean search input is active. */
+            .ts-control .placeholder,
+            .ts-control .item[data-value=""],
+            .ts-control .item:empty {
+                display: none !important;
+            }
+
+            .ts-wrapper.single.input-active .ts-control .item,
+            .ts-wrapper.single.focus .ts-control .item {
+                display: none !important;
+            }
+
+            /* Selected item when not actively searching */
+            .ts-wrapper.single .ts-control .item {
+                font-size: 13px !important;
+                color: #0f172a !important;
                 background: transparent !important;
+                border: none !important;
                 padding: 0 !important;
                 margin: 0 !important;
-                font-size: 14px !important;
-                color: #222222 !important;
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
             }
-            html.dark .ts-control {
+
+            html.dark .ts-wrapper.single .ts-control .item {
+                color: #f8fafc !important;
+            }
+
+            /* Native input placeholder styling */
+            .ts-wrapper.single .ts-control input::placeholder {
+                color: #60a5fa !important;
+                font-size: 13px !important;
+                opacity: 0.9 !important;
+            }
+
+            .ts-wrapper.single.input-active .ts-control input::placeholder,
+            .ts-wrapper.single.focus .ts-control input::placeholder {
+                color: #94a3b8 !important;
+                opacity: 0.5 !important;
+            }
+
+            html.dark .ts-wrapper.single .ts-control input::placeholder {
+                color: #60a5fa !important;
+                opacity: 0.8 !important;
+            }
+
+            /* Hide any clear button 'x' so it stays clean */
+            .ts-wrapper .clear-button {
+                display: none !important;
+            }
+
+            /* CRITICAL: List of search data MUST ALWAYS BE PLACED ON THE DOWN (below the search bar), NEVER UP */
+            .ts-dropdown,
+            .ts-dropdown.dropdown-up,
+            .ts-dropdown.dropdown-down {
+                position: absolute !important;
+                top: 100% !important;
+                bottom: auto !important;
+                left: 0 !important;
+                right: 0 !important;
+                width: 100% !important;
+                margin-top: 3px !important;
+                margin-bottom: 0 !important;
+                background: #ffffff !important;
+                border: 1px solid #cbd5e1 !important;
+                border-radius: 6px !important;
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.05) !important;
+                z-index: 99999 !important;
+                max-height: 240px !important;
+                overflow: hidden !important;
+            }
+
+            html.dark .ts-dropdown,
+            html.dark .ts-dropdown.dropdown-up,
+            html.dark .ts-dropdown.dropdown-down {
+                background: #0f172a !important;
+                border-color: #334155 !important;
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5) !important;
+            }
+
+            .ts-dropdown .ts-dropdown-content {
+                max-height: 230px !important;
+                overflow-y: auto !important;
+                padding: 4px 0 !important;
+            }
+
+            .ts-dropdown .option {
+                padding: 8px 12px !important;
+                font-size: 13px !important;
+                color: #1e293b !important;
+                cursor: pointer !important;
+                border-bottom: 1px solid #f1f5f9 !important;
+                transition: background-color 0.1s ease !important;
+            }
+
+            .ts-dropdown .option:last-child {
+                border-bottom: none !important;
+            }
+
+            .ts-dropdown .option:hover,
+            .ts-dropdown .option.active {
+                background-color: #eff6ff !important;
+                color: #1d4ed8 !important;
+            }
+
+            html.dark .ts-dropdown .option {
+                color: #f1f5f9 !important;
+                border-bottom-color: #1e293b !important;
+            }
+
+            html.dark .ts-dropdown .option:hover,
+            html.dark .ts-dropdown .option.active {
+                background-color: #1e293b !important;
+                color: #60a5fa !important;
+            }
+
+            .ts-dropdown .no-results {
+                padding: 10px 12px !important;
+                font-size: 13px !important;
+                color: #64748b !important;
+                background: transparent !important;
+            }
+
+            /* Also style table search inputs to have the same sleek bottom accent */
+            .crm-search-bar,
+            .search-input-box,
+            input[type="search"],
+            input[name="search"]:not([type="hidden"]) {
+                height: 38px !important;
+                min-height: 38px !important;
+                max-height: 38px !important;
+                border: 1px solid #cbd5e1 !important;
+                border-bottom: 2px solid #2563eb !important;
+                border-radius: 4px !important;
+                font-size: 13px !important;
+                background-color: #ffffff !important;
+                color: #0f172a !important;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03) !important;
+                transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+            }
+
+            html.dark .crm-search-bar,
+            html.dark .search-input-box,
+            html.dark input[type="search"],
+            html.dark input[name="search"]:not([type="hidden"]) {
                 background-color: #0f172a !important;
-                border-color: #475569 !important;
+                border-color: #334155 !important;
+                border-bottom: 2px solid #3b82f6 !important;
                 color: #f8fafc !important;
             }
-            html.dark .ts-control input,
-            html.dark .ts-wrapper .ts-control input,
-            html.dark .ts-wrapper .ts-control .item {
-                color: #f8fafc !important;
+
+            .crm-search-bar:focus,
+            .search-input-box:focus,
+            input[type="search"]:focus,
+            input[name="search"]:not([type="hidden"]):focus {
+                border-color: #cbd5e1 !important;
+                border-bottom: 2px solid #1d4ed8 !important;
+                outline: none !important;
+                box-shadow: 0 2px 4px rgba(37, 99, 235, 0.12) !important;
             }
         </style>
 
@@ -354,7 +767,7 @@
                 if (!isInput && e.altKey) {
                     if (e.key === 'd' || e.key === 'D') {
                         e.preventDefault();
-                        window.location.href = '{{ auth()->user()->role === 'technician' ? route('technician.dashboard') : (auth()->user()->isCustomer() ? route('portal.dashboard') : route('dashboard')) }}';
+                        window.location.href = '{{ auth()->user()->role === 'technician' ? route('technician.dashboard') : route('dashboard') }}';
                     } else if (e.key === 'a' || e.key === 'A') {
                         e.preventDefault();
                         window.location.href = '{{ route('attendance.index') }}';
@@ -368,7 +781,7 @@
             });
         </script>
     </head>
-    <body class="h-full font-sans antialiased text-slate-800 dark:text-slate-100 bg-[#f8fafc] dark:bg-[#060913] selection:bg-blue-600 selection:text-white" 
+    <body class="h-full font-sans antialiased text-slate-800 dark:text-slate-100 bg-[#f8fafc] dark:bg-[#0b1120] selection:bg-blue-600 selection:text-white" 
           x-data="{ 
               sidebarOpen: false, 
               sidebarCollapsed: window.crmSidebar ? window.crmSidebar.collapsed : false,
@@ -394,7 +807,7 @@
             {{-- ════════════════════════════════════════════════════════════════ --}}
             {{-- SECUREVISION UNIFIED ENTERPRISE SAAS CRM SUITE (ALL ROLES)        --}}
             {{-- ════════════════════════════════════════════════════════════════ --}}
-            <div class="crm-app-container min-h-screen flex bg-[#f8fafc] dark:bg-[#060913] text-slate-800 dark:text-slate-100 transition-colors duration-200">
+            <div class="crm-app-container min-h-screen flex bg-[#f8fafc] dark:bg-[#0b1120] text-slate-800 dark:text-slate-100 transition-colors duration-200">
                 
                 {{-- Mobile Drawer Overlay --}}
                 <div x-show="sidebarOpen" 
@@ -409,19 +822,19 @@
                      class="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-sm lg:hidden" 
                      style="display: none;"></div>
 
-                {{-- Sidebar Container: Fixed on mobile, sticky on desktop, 220px wide, white, 1px solid #ddd right border --}}
+                {{-- Sidebar Container: Fixed on mobile, sticky on desktop, 220px wide, white/slate-900, 1px solid border --}}
                 <div :class="{
                         'translate-x-0': sidebarOpen,
                         '-translate-x-full lg:translate-x-0': !sidebarOpen,
                         'lg:w-20': sidebarCollapsed,
                         'lg:w-[220px]': !sidebarCollapsed
                      }"
-                     class="fixed inset-y-0 left-0 z-50 lg:sticky lg:top-0 lg:h-screen lg:z-30 w-[220px] shrink-0 transition-[width,transform] duration-200 ease-in-out flex flex-col bg-white dark:bg-[#0f172a] border-r border-[#ddd] dark:border-slate-800 overflow-hidden">
+                     class="crm-sidebar-container fixed inset-y-0 left-0 z-50 lg:sticky lg:top-0 lg:h-screen lg:z-30 w-[220px] shrink-0 transition-[width,transform] duration-200 ease-in-out flex flex-col bg-[#dbe6f6] dark:bg-[#0f172a] border-r border-[#b9d1ef] dark:border-slate-800 overflow-hidden">
                     @include('layouts.navigation')
                 </div>
 
                 {{-- Main Application Wrapper --}}
-                <div class="flex-1 flex flex-col min-w-0 min-h-screen bg-[#f8fafc] dark:bg-[#060913] transition-colors duration-200">
+                <div class="flex-1 flex flex-col min-w-0 min-h-screen bg-[#f8fafc] dark:bg-[#0b1120] transition-colors duration-200">
                     
                     {{-- Modern SaaS Top Navigation Bar matching Image 3 --}}
                     <script>
@@ -491,8 +904,8 @@
                         }
                     </script>
 
-                    {{-- Fixed Top Bar: 56px high, white, bottom border 1px solid #ddd, sticky top: 0, z-index: 10 --}}
-                    <header class="h-[56px] min-h-[56px] max-h-[56px] bg-white dark:bg-[#0f172a] border-b border-[#ddd] dark:border-slate-800 px-5 flex items-center justify-between sticky top-0 z-10"
+                    {{-- Fixed Top Bar: 56px high, standard white in day / #0f172a in night --}}
+                    <header class="crm-topbar h-[56px] min-h-[56px] max-h-[56px] bg-white dark:bg-[#0f172a] border-b border-slate-200 dark:border-slate-800 px-5 flex items-center justify-between sticky top-0 z-10"
                             x-data="globalHeader()"
                             @theme-mode-changed.window="isDarkMode = $event.detail.isDark"
                             @theme-changed.window="if ($event.detail && typeof $event.detail.isDark === 'boolean') isDarkMode = $event.detail.isDark"
@@ -511,8 +924,20 @@
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
                             </button>
 
-                            <span class="text-sm font-bold text-slate-900 dark:text-white truncate">
-                                {{ request()->routeIs('dashboard') || request()->routeIs('portal.dashboard') ? 'Dashboard' : (request()->routeIs('projects.*') ? 'Projects' : (request()->routeIs('leads.*') ? 'Leads' : (request()->routeIs('jobs.*') ? 'Tasks & Field Jobs' : (request()->routeIs('service-tickets.*') || request()->routeIs('portal.tickets*') ? 'Support Tickets' : (request()->routeIs('quotations.*') || request()->routeIs('portal.quotations*') ? 'Quotations' : (request()->routeIs('calendar.*') ? 'Calendar' : (request()->routeIs('inventory.*') ? 'Inventory' : (request()->routeIs('invoices.*') || request()->routeIs('portal.invoices*') ? 'Invoices' : (request()->routeIs('site-surveys.*') ? 'Site Surveys' : (request()->routeIs('amc.*') ? 'AMC Contracts' : (request()->routeIs('equipment.*') ? 'Hardware' : (request()->routeIs('suppliers.*') ? 'Suppliers' : (request()->routeIs('reports.*') ? 'Reports' : 'Dashboard'))))))))))))) }}
+                            <span class="crm-page-title text-sm font-bold text-slate-900 dark:text-white truncate">
+                                @if(request()->routeIs('dashboard')) Dashboard
+                                @elseif(request()->routeIs('projects.*')) Projects
+                                @elseif(request()->routeIs('leads.*')) Leads
+                                @elseif(request()->routeIs('jobs.*')) Tasks &amp; Field Jobs
+                                @elseif(request()->routeIs('quotations.*')) Quotations
+                                @elseif(request()->routeIs('calendar.*')) Calendar
+                                @elseif(request()->routeIs('invoices.*')) Invoices
+                                @elseif(request()->routeIs('site-surveys.*')) Site Surveys
+                                @elseif(request()->routeIs('equipment.*')) Hardware
+                                @elseif(request()->routeIs('suppliers.*')) Suppliers
+                                @elseif(request()->routeIs('reports.*')) Reports
+                                @else Dashboard
+                                @endif
                             </span>
                         </div>
 
@@ -533,8 +958,8 @@
                                            @keydown.arrow-up.prevent="navigate(-1)"
                                            @keydown.enter.prevent="selectActive()"
                                            placeholder="Search leads, jobs, quotes, equipment..." 
-                                           style="padding-left: 2.5rem !important; height: 38px !important; border: 1px solid #ccc !important; border-radius: 4px !important; box-shadow: none !important;"
-                                           class="w-full text-xs bg-white dark:bg-slate-900 border border-[#ccc] dark:border-slate-700 rounded text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none">
+                                           style="padding-left: 2.5rem !important; height: 38px !important; border-radius: 4px !important; box-shadow: none !important;"
+                                           class="crm-search-input w-full text-xs bg-white dark:bg-[#0b132b] border border-[#ccc] dark:border-slate-700 rounded text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none">
                                     
                                     {{-- Clear button or loading spinner --}}
                                     <div class="absolute right-2.5 flex items-center">
@@ -723,8 +1148,8 @@
                                                 View All Assigned Work Orders →
                                             </a>
                                         @else
-                                            <a href="{{ route('portal.tickets') }}" class="text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:underline">
-                                                View Support Tickets →
+                                            <a href="{{ route('dashboard') }}" class="text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:underline">
+                                                View Operations Dashboard →
                                             </a>
                                         @endif
                                     </div>
@@ -844,8 +1269,8 @@
                         </div>
                     </header>
 
-                    {{-- Main Content Area: Background #f5f5f5, padding 20px, maximum width 1200px --}}
-                    <main class="flex-1 overflow-y-auto bg-[#f5f5f5] dark:bg-[#060913] p-[20px] transition-colors duration-200 pb-24 lg:pb-8">
+                    {{-- Main Content Area: Background #f8fafc (Clean light SaaS canvas) --}}
+                    <main class="flex-1 overflow-y-auto bg-[#f8fafc] dark:bg-[#060913] p-[20px] transition-colors duration-200 pb-24 lg:pb-8">
                         <div class="max-w-[1200px] mx-auto w-full">
                             {{-- Page Heading (One h2 at top of content area, with main action button on right) --}}
                             @isset($header)
@@ -866,43 +1291,7 @@
             {{-- ════════════════════════════════════════════════════════════════ --}}
             <nav class="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-[#0f172a]/95 backdrop-blur-md border-t border-slate-200/90 dark:border-slate-800 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] px-3 py-1.5 transition-colors">
                 <div class="max-w-md mx-auto flex items-center justify-between">
-                    @if(auth()->user()->isCustomer())
-                        {{-- Customer Mobile Dock --}}
-                        <a href="{{ route('portal.dashboard') }}" 
-                           class="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl transition {{ request()->routeIs('portal.dashboard') ? 'text-blue-600 dark:text-blue-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200' }}">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-                            <span class="text-[10px] tracking-tight">Home</span>
-                        </a>
-
-                        <a href="{{ route('portal.equipment') }}" 
-                           class="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl transition {{ request()->routeIs('portal.equipment') ? 'text-blue-600 dark:text-blue-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200' }}">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                            <span class="text-[10px] tracking-tight">Cameras</span>
-                        </a>
-
-                        {{-- Elevated Center Action: Report Ticket --}}
-                        <a href="{{ route('portal.tickets.create') }}" 
-                           class="-mt-5 flex flex-col items-center group">
-                            <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center shadow-lg shadow-blue-500/35 border-2 border-white dark:border-[#0f172a] active:scale-95 transition-transform">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-                            </div>
-                            <span class="text-[9px] font-bold text-blue-600 dark:text-blue-400 mt-0.5">Report</span>
-                        </a>
-
-                        <a href="{{ route('portal.tickets') }}" 
-                           class="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl transition {{ request()->routeIs('portal.tickets*') ? 'text-blue-600 dark:text-blue-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200' }}">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-                            <span class="text-[10px] tracking-tight">Tickets</span>
-                        </a>
-
-                        <button @click="sidebarOpen = true" 
-                                type="button"
-                                class="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition cursor-pointer">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
-                            <span class="text-[10px] tracking-tight">Menu</span>
-                        </button>
-
-                    @elseif(auth()->user()->role === 'technician')
+                    @if(auth()->user()->role === 'technician')
                         {{-- Technician Mobile Dock --}}
                         <a href="{{ route('technician.dashboard') }}" 
                            class="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl transition {{ request()->routeIs('technician.dashboard') ? 'text-blue-600 dark:text-blue-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200' }}">
@@ -926,10 +1315,10 @@
                             <span class="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 mt-0.5">Shift</span>
                         </a>
 
-                        <a href="{{ route('service-tickets.index') }}" 
-                           class="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl transition {{ request()->routeIs('service-tickets.*') ? 'text-blue-600 dark:text-blue-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200' }}">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/></svg>
-                            <span class="text-[10px] tracking-tight">Tickets</span>
+                        <a href="{{ route('projects.index') }}" 
+                           class="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl transition {{ request()->routeIs('projects.*') ? 'text-blue-600 dark:text-blue-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200' }}">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="7" rx="3"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line stroke-linecap="round" stroke-linejoin="round" x1="2" x2="22" y1="13" y2="13"/></svg>
+                            <span class="text-[10px] tracking-tight">Projects</span>
                         </a>
 
                         <a href="{{ route('profile.edit') }}" 
@@ -984,9 +1373,9 @@
                                         <span class="w-6 h-6 rounded-lg bg-emerald-100 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center font-bold text-xs">+</span>
                                         Generate Quotation
                                     </a>
-                                    <a href="{{ route('service-tickets.create') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 hover:text-rose-600">
-                                        <span class="w-6 h-6 rounded-lg bg-rose-100 dark:bg-rose-950 text-rose-600 flex items-center justify-center font-bold text-xs">+</span>
-                                        Log Service Ticket
+                                    <a href="{{ route('projects.create') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 hover:text-indigo-600">
+                                        <span class="w-6 h-6 rounded-lg bg-indigo-100 dark:bg-indigo-950 text-indigo-600 flex items-center justify-center font-bold text-xs">+</span>
+                                        New Installation Project
                                     </a>
                                     <a href="{{ route('attendance.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 hover:text-purple-600">
                                         <span class="w-6 h-6 rounded-lg bg-purple-100 dark:bg-purple-950 text-purple-600 flex items-center justify-center font-bold text-xs"></span>

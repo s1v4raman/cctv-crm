@@ -112,12 +112,5 @@ class SiteSurveyWorkflowTest extends TestCase
         $adminViewResponse->assertStatus(200);
         $adminViewResponse->assertSee('Bob Miller');
         $adminViewResponse->assertSee('Server Room Rack #1');
-
-        // 4. Customer sees survey report and photos on their portal
-        $customerPortalResponse = $this->actingAs($this->customer)->get(route('portal.surveys.show', $survey));
-        $customerPortalResponse->assertStatus(200);
-        $customerPortalResponse->assertSee('On-Site Inspection Completed');
-        $customerPortalResponse->assertSee('6 Units');
-        $customerPortalResponse->assertSee('Bob Miller');
     }
 }

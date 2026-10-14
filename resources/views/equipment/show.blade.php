@@ -17,9 +17,6 @@
                     <a href="{{ route('equipment.edit', $equipment) }}" class="btn-secondary">
                         Edit Details
                     </a>
-                    <a href="{{ route('rma.create', ['equipment_id' => $equipment->id]) }}" class="btn-primary">
-                        Raise RMA Claim
-                    </a>
                     @if(auth()->user()->isAdmin())
                         <form method="POST" action="{{ route('equipment.destroy', $equipment) }}" onsubmit="return confirm('Are you sure you want to delete this equipment record?');" class="inline">
                             @csrf

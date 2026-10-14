@@ -24,9 +24,6 @@ class StorefrontController extends Controller
                 if ($user->role === 'technician') {
                     return redirect()->route('technician.dashboard');
                 }
-                if ($user->isCustomer()) {
-                    return redirect()->route('portal.dashboard');
-                }
                 return redirect()->route('dashboard');
             }
 

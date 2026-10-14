@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\InstallationJob;
 use App\Models\Lead;
 use App\Models\Quotation;
-use App\Models\ServiceTicket;
 use App\Models\SiteSurvey;
 use App\Models\EmployeeAttendance;
 use Illuminate\Support\Facades\DB;
@@ -83,23 +82,6 @@ class DashboardController extends Controller
                 ->whereDate('date', $now->toDateString())
                 ->first();
 
-            $openTickets = ServiceTicket::query()
-                ->with(['lead:id,customer_name', 'technician:id,name'])
-                ->whereIn('status', ['open', 'assigned', 'in_progress'])
-                ->orderByRaw('CASE WHEN priority = "critical" THEN 1 WHEN priority = "high" THEN 2 WHEN priority = "medium" THEN 3 ELSE 4 END')
-                ->orderBy('created_at', 'desc')
-                ->limit(8)
-                ->get([
-                    'id',
-                    'ticket_no',
-                    'lead_id',
-                    'assigned_technician_id',
-                    'title',
-                    'priority',
-                    'status',
-                    'created_at',
-                ]);
-
             $pendingSurveys = SiteSurvey::query()
                 ->with('lead:id,customer_name')
                 ->where('status', 'pending')
@@ -113,15 +95,14 @@ class DashboardController extends Controller
                     'open_jobs' => InstallationJob::whereIn('status', ['pending', 'scheduled', 'assigned', 'in_progress'])->count(),
                     'in_progress_jobs' => InstallationJob::whereIn('status', ['assigned', 'in_progress'])->count(),
                     'completed_jobs' => InstallationJob::where('status', 'completed')->count(),
-                    'open_tickets' => ServiceTicket::whereIn('status', ['open', 'assigned', 'in_progress'])->count(),
-                    'critical_tickets' => ServiceTicket::whereIn('status', ['open', 'assigned', 'in_progress'])->where('priority', 'critical')->count(),
                     'pending_surveys' => SiteSurvey::where('status', 'pending')->count(),
+                    'open_tickets' => 0,
                     'my_assigned_jobs' => InstallationJob::where('assigned_technician_id', $user->id)->whereIn('status', ['pending', 'scheduled', 'assigned', 'in_progress'])->count(),
                 ],
                 'jobChart' => $jobChart,
                 'upcomingJobs' => $upcomingJobs,
-                'recentTickets' => $openTickets,
                 'pendingSurveys' => $pendingSurveys,
+                'recentTickets' => [],
                 'attendance' => [
                     'clocked_in' => $myAttendance && $myAttendance->clock_in !== null,
                     'clock_in' => $myAttendance ? $myAttendance->clock_in : null,
@@ -187,7 +168,7 @@ class DashboardController extends Controller
             'completed_jobs' => InstallationJob::query()
                 ->where('status', 'completed')
                 ->count(),
-            'open_tickets' => ServiceTicket::whereIn('status', ['open', 'assigned', 'in_progress'])->count(),
+            'open_tickets' => 0,
             'total_projects' => \App\Models\Project::count(),
             'in_progress_projects' => \App\Models\Project::where('status', 'in_progress')->count(),
             'pending_approval_projects' => \App\Models\Project::where('status', 'pending_approval')->count(),

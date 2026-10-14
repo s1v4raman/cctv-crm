@@ -56,9 +56,35 @@ class LeadController extends Controller
             \Illuminate\Support\Facades\Log::warning("Lead creation alert failed: " . $e->getMessage());
         }
 
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'lead'    => [
+                    'id'            => $lead->id,
+                    'customer_name' => $lead->customer_name,
+                    'company_name'  => $lead->company_name,
+                    'phone'         => $lead->phone,
+                    'email'         => $lead->email,
+                    'site_address'  => $lead->site_address,
+                    'notes'         => $lead->notes,
+                ],
+                'message' => "Customer '{$lead->customer_name}' registered successfully.",
+            ]);
+        }
+
         if ($request->boolean('for_quote') || $request->input('return_to') === 'quotation') {
             return redirect()->route('quotations.create', $lead)
                 ->with('status', "Customer '{$lead->customer_name}' added. You can now create their quotation.");
+        }
+
+        if ($request->input('return_to') === 'survey') {
+            return redirect()->route('site-surveys.create', ['lead_id' => $lead->id])
+                ->with('status', "Customer '{$lead->customer_name}' added. You can now schedule their site survey.");
+        }
+
+        if ($request->input('return_to') === 'equipment') {
+            return redirect()->route('equipment.create', ['lead_id' => $lead->id])
+                ->with('status', "Customer '{$lead->customer_name}' added. You can now register their equipment.");
         }
 
         return redirect()->route('leads.show', $lead)->with('status', 'Lead created.');

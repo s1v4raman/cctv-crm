@@ -36,11 +36,6 @@
                    @if(request()->routeIs('analytics.technicians')) style="background-color: #2563eb !important; color: #ffffff !important;" @endif>
                     🛠️ Technician Performance (FTFR &amp; MTTR)
                 </a>
-                <a href="{{ route('analytics.mrr-retention', ['range' => $selectedRange]) }}"
-                   class="crm-filter-tab filter-tab px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap {{ request()->routeIs('analytics.mrr-retention') ? 'active crm-tab-active text-white font-black shadow-xs' : 'text-slate-400 hover:text-white bg-[#0F172A] border border-white/10' }}"
-                   @if(request()->routeIs('analytics.mrr-retention')) style="background-color: #2563eb !important; color: #ffffff !important;" @endif>
-                    📈 Monthly Revenue &amp; AMC Retention
-                </a>
                 <a href="{{ route('analytics.cost-profit', ['range' => $selectedRange]) }}"
                    class="crm-filter-tab filter-tab px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap {{ request()->routeIs('analytics.cost-profit') ? 'active crm-tab-active text-white font-black shadow-xs' : 'text-slate-400 hover:text-white bg-[#0F172A] border border-white/10' }}"
                    @if(request()->routeIs('analytics.cost-profit')) style="background-color: #2563eb !important; color: #ffffff !important;" @endif>
@@ -101,7 +96,7 @@
                     </div>
                     <div>
                         <div class="text-2xl font-black text-white mt-1 leading-tight font-['Outfit']">{{ $data['summary']['total_jobs_completed'] }} Jobs</div>
-                        <span class="text-[11px] text-slate-400 font-mono block mt-1">+ {{ $data['summary']['total_tickets_resolved'] }} service tickets</span>
+                        <span class="text-[11px] text-slate-400 font-mono block mt-1">{{ $data['summary']['total_surveys_completed'] ?? 0 }} site surveys completed</span>
                     </div>
                 </div>
 
@@ -113,7 +108,7 @@
                     </div>
                     <div>
                         <div class="text-2xl font-black text-amber-400 mt-1 leading-tight font-['Outfit']">{{ $data['summary']['team_avg_csat'] }} / 5.0</div>
-                        <span class="text-[11px] text-slate-400 font-mono block mt-1">Across digital JCR sign-offs</span>
+                        <span class="text-[11px] text-slate-400 font-mono block mt-1">Average engineer service rating</span>
                     </div>
                 </div>
 
@@ -139,8 +134,8 @@
                 <div class="bg-[#0F172A] p-6 rounded-2xl shadow-xl border border-white/10">
                     <div class="flex items-center justify-between mb-4">
                         <div>
-                            <h3 class="text-sm font-bold uppercase tracking-wider text-slate-200 font-['Outfit']">Completed Installations & Resolved Tickets Workload</h3>
-                            <p class="text-xs text-slate-400 font-mono mt-0.5">Total volume of completed field projects & service dispatches</p>
+                            <h3 class="text-sm font-bold uppercase tracking-wider text-slate-200 font-['Outfit']">Completed Installations & Engineering Surveys</h3>
+                            <p class="text-xs text-slate-400 font-mono mt-0.5">Total volume of completed field installations & site surveys</p>
                         </div>
                     </div>
                     <div class="h-64">
@@ -169,9 +164,9 @@
                                 <th class="px-4 py-3 text-center text-emerald-400">FTFR (%)</th>
                                 <th class="px-4 py-3 text-center text-sky-400">Avg MTTR</th>
                                 <th class="px-4 py-3 text-center text-amber-400">Completed Jobs</th>
-                                <th class="px-4 py-3 text-center">Resolved Tickets</th>
+                                <th class="px-4 py-3 text-center text-sky-400">Site Surveys</th>
+                                <th class="px-4 py-3 text-center text-indigo-400">Projects</th>
                                 <th class="px-4 py-3 text-center">Open Backlog</th>
-                                <th class="px-4 py-3 text-center">JCR Signed</th>
                                 <th class="px-4 py-3 text-right text-amber-400">CSAT ⭐</th>
                             </tr>
                         </thead>
@@ -193,7 +188,6 @@
                                         <span class="inline-block px-2.5 py-1 rounded-full font-bold text-[10px] {{ $tech['first_time_fix_rate'] >= 80 ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : ($tech['first_time_fix_rate'] >= 60 ? 'bg-amber-500/10 text-amber-400 border border-amber-500/30' : 'bg-rose-500/10 text-rose-400 border border-rose-500/30') }}">
                                             {{ $tech['first_time_fix_rate'] }}%
                                         </span>
-                                        <div class="text-[9px] text-slate-500 mt-0.5">{{ $tech['first_time_fix_count'] }} of {{ $tech['tickets_resolved'] }}</div>
                                     </td>
                                     <td class="px-4 py-3.5 text-center font-bold text-sky-400">
                                         <span class="inline-block px-2 py-0.5 rounded-lg bg-sky-500/10 text-sky-400 border border-sky-500/20 text-xs">
@@ -205,8 +199,12 @@
                                         <span class="text-[10px] text-slate-500 block">of {{ $tech['jobs_total'] }}</span>
                                     </td>
                                     <td class="px-4 py-3.5 text-center">
-                                        <span class="font-black text-slate-200 text-sm">{{ $tech['tickets_resolved'] }}</span>
-                                        <span class="text-[10px] text-slate-500 block">of {{ $tech['tickets_total'] }}</span>
+                                        <span class="font-black text-sky-400 text-sm">{{ $tech['surveys_completed'] }}</span>
+                                        <span class="text-[10px] text-slate-500 block">surveys</span>
+                                    </td>
+                                    <td class="px-4 py-3.5 text-center">
+                                        <span class="font-black text-indigo-400 text-sm">{{ $tech['projects_count'] }}</span>
+                                        <span class="text-[10px] text-slate-500 block">projects</span>
                                     </td>
                                     <td class="px-4 py-3.5 text-center font-semibold">
                                         @if($tech['open_backlog'] > 0)
@@ -216,9 +214,6 @@
                                         @else
                                             <span class="text-slate-500 text-xs">0 active</span>
                                         @endif
-                                    </td>
-                                    <td class="px-4 py-3.5 text-center font-semibold text-emerald-400">
-                                        {{ $tech['jcr_signoffs'] }} JCRs
                                     </td>
                                     <td class="px-4 py-3.5 text-right">
                                         <span class="inline-block px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30 font-bold text-xs">
@@ -299,7 +294,7 @@
                 }
             });
 
-            // 2. Completed Workload (Installations vs Tickets)
+            // 2. Completed Workload (Installations vs Surveys)
             const workloadCtx = document.getElementById('workloadChart').getContext('2d');
             new Chart(workloadCtx, {
                 type: 'bar',
@@ -313,8 +308,8 @@
                             borderRadius: 6,
                         },
                         {
-                            label: 'Resolved Service Tickets',
-                            data: @json($data['chart_data']['tickets']),
+                            label: 'Completed Site Surveys',
+                            data: @json($data['chart_data']['surveys']),
                             backgroundColor: '#38bdf8',
                             borderRadius: 6,
                         }

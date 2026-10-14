@@ -352,17 +352,17 @@
                                     <span class="text-xs text-[#2563eb] font-semibold">Open &rarr;</span>
                                 </a>
 
-                                <a href="{{ route('jcr.index') }}" class="flex items-center justify-between p-3 rounded-[4px] bg-slate-50 dark:bg-slate-800/60 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 border border-[#eee] dark:border-slate-800 transition">
+                                <a href="{{ route('projects.index') }}" class="flex items-center justify-between p-3 rounded-[4px] bg-slate-50 dark:bg-slate-800/60 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 border border-[#eee] dark:border-slate-800 transition">
                                     <div class="flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded-[4px] bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                        <div class="w-8 h-8 rounded-[4px] bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="7" rx="3"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line stroke-linecap="round" stroke-linejoin="round" x1="2" x2="22" y1="13" y2="13"/></svg>
                                         </div>
                                         <div>
-                                            <div class="text-xs font-bold text-slate-800 dark:text-slate-200">Job Completion Reports</div>
-                                            <div class="text-[11px] text-slate-400">Sign-off reports &amp; PDF</div>
+                                            <div class="text-xs font-bold text-slate-800 dark:text-slate-200">Projects &amp; Sites</div>
+                                            <div class="text-[11px] text-slate-400">Architecture &amp; execution</div>
                                         </div>
                                     </div>
-                                    <span class="text-xs text-emerald-600 font-semibold">Open &rarr;</span>
+                                    <span class="text-xs text-indigo-600 font-semibold">Open &rarr;</span>
                                 </a>
 
                                 <a href="{{ route('equipment.index') }}" class="flex items-center justify-between p-3 rounded-[4px] bg-slate-50 dark:bg-slate-800/60 hover:bg-purple-50 dark:hover:bg-purple-950/40 border border-[#eee] dark:border-slate-800 transition">

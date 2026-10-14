@@ -49,8 +49,7 @@ class UserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role' => ['required', 'string', Rule::in(['admin', 'staff', 'technician', 'customer'])],
-            'lead_id' => ['nullable', 'exists:leads,id'],
+            'role' => ['required', 'string', Rule::in(['admin', 'staff', 'technician'])],
         ]);
 
         $user = User::create([
@@ -58,7 +57,6 @@ class UserController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => $request->role,
-            'lead_id' => $request->role === 'customer' ? $request->lead_id : null,
         ]);
 
         if ($request->filled('return_to')) {
@@ -138,15 +136,13 @@ class UserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
             'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
-            'role' => ['required', 'string', Rule::in(['admin', 'staff', 'technician', 'customer'])],
-            'lead_id' => ['nullable', 'exists:leads,id'],
+            'role' => ['required', 'string', Rule::in(['admin', 'staff', 'technician'])],
         ]);
 
         $data = [
             'name' => $request->name,
             'email' => $request->email,
             'role' => $request->role,
-            'lead_id' => $request->role === 'customer' ? $request->lead_id : null,
         ];
 
         if ($request->filled('password')) {
@@ -154,17 +150,6 @@ class UserController extends Controller
         }
 
         $user->update($data);
-
-        // If customer account, synchronize the CRM Lead email and name
-        if ($user->role === 'customer') {
-            $lead = $user->lead ?? ($user->lead_id ? \App\Models\Lead::find($user->lead_id) : null);
-            if ($lead) {
-                $lead->update([
-                    'customer_name' => $user->name,
-                    'email'         => $user->email,
-                ]);
-            }
-        }
 
         return redirect()->route('admin.users.index')
             ->with('status', 'Account updated successfully.');

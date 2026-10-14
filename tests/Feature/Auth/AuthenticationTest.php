@@ -42,14 +42,14 @@ class AuthenticationTest extends TestCase
         $this->assertGuest();
     }
 
-    public function test_customer_can_logout_and_redirects_to_home(): void
+    public function test_customer_can_logout_and_redirects_to_login(): void
     {
         $user = User::factory()->create(['role' => 'customer']);
 
         $response = $this->actingAs($user)->post('/logout');
 
         $this->assertGuest();
-        $response->assertRedirect('/');
+        $response->assertRedirect(route('staff.login'));
     }
 
     public function test_staff_can_logout_and_redirects_to_login(): void
@@ -62,14 +62,28 @@ class AuthenticationTest extends TestCase
         $response->assertRedirect(route('staff.login'));
     }
 
-    public function test_customer_login_screen_renders_customer_portal_branding(): void
+    public function test_customer_login_screen_redirects_to_login(): void
     {
         $response = $this->get(route('customer.login'));
 
-        $response->assertOk()
-            ->assertSee('Customer Sign In')
-            ->assertSee('Customer Portal')
-            ->assertDontSee('Operations Sign In');
+        $response->assertRedirect(route('login'));
+    }
+
+    public function test_customer_cannot_login_to_retired_portal(): void
+    {
+        $customer = User::factory()->create([
+            'email' => 'customer@example.com',
+            'role' => 'customer',
+        ]);
+
+        $response = $this->post(route('login'), [
+            'email' => 'customer@example.com',
+            'password' => 'password',
+        ]);
+
+        $this->assertGuest();
+        $response->assertRedirect(route('login'));
+        $response->assertSessionHasErrors(['email']);
     }
 
     public function test_staff_login_screen_renders_staff_erp_branding(): void
@@ -78,8 +92,7 @@ class AuthenticationTest extends TestCase
 
         $response->assertOk()
             ->assertSee('Operations Sign In')
-            ->assertSee('Staff')
-            ->assertSee('Admin ERP')
+            ->assertSee('Staff &amp; Admin ERP', false)
             ->assertDontSee('Customer Sign In');
     }
 
@@ -120,45 +133,17 @@ class AuthenticationTest extends TestCase
         $this->assertDatabaseMissing('users', ['email' => 'unregistered@gmail.com']);
     }
 
-    public function test_google_callback_creates_and_authenticates_customer_in_register_mode(): void
-    {
-        $abstractUser = \Mockery::mock(\Laravel\Socialite\Two\User::class);
-        $abstractUser->shouldReceive('getId')->andReturn('google-123456');
-        $abstractUser->shouldReceive('getName')->andReturn('Google Customer');
-        $abstractUser->shouldReceive('getEmail')->andReturn('newcustomer@gmail.com');
-        $abstractUser->shouldReceive('getAvatar')->andReturn('https://lh3.googleusercontent.com/avatar.jpg');
-        $abstractUser->shouldReceive('getNickname')->andReturn(null);
-
-        $provider = \Mockery::mock(\Laravel\Socialite\Two\GoogleProvider::class);
-        $provider->shouldReceive('user')->andReturn($abstractUser);
-
-        \Laravel\Socialite\Facades\Socialite::shouldReceive('driver')
-            ->with('google')
-            ->andReturn($provider);
-
-        $response = $this->withSession(['oauth_mode' => 'register', 'oauth_portal' => 'customer'])
-            ->get(route('auth.google.callback'));
-
-        $this->assertAuthenticated();
-        $user = User::where('email', 'newcustomer@gmail.com')->first();
-        $this->assertNotNull($user);
-        $this->assertEquals('customer', $user->role);
-        $this->assertEquals('google-123456', $user->google_id);
-        $this->assertEquals('https://lh3.googleusercontent.com/avatar.jpg', $user->avatar);
-        $response->assertRedirect(route('portal.dashboard'));
-    }
-
-    public function test_google_callback_authenticates_existing_registered_customer_in_login_mode(): void
+    public function test_google_callback_authenticates_existing_registered_staff_in_login_mode(): void
     {
         $user = User::factory()->create([
-            'email' => 'existingcustomer@gmail.com',
-            'role' => 'customer',
+            'email' => 'existingstaff@gmail.com',
+            'role' => 'staff',
         ]);
 
         $abstractUser = \Mockery::mock(\Laravel\Socialite\Two\User::class);
         $abstractUser->shouldReceive('getId')->andReturn('google-999');
-        $abstractUser->shouldReceive('getName')->andReturn('Existing Customer');
-        $abstractUser->shouldReceive('getEmail')->andReturn('existingcustomer@gmail.com');
+        $abstractUser->shouldReceive('getName')->andReturn('Existing Staff');
+        $abstractUser->shouldReceive('getEmail')->andReturn('existingstaff@gmail.com');
         $abstractUser->shouldReceive('getAvatar')->andReturn('https://lh3.googleusercontent.com/avatar2.jpg');
         $abstractUser->shouldReceive('getNickname')->andReturn(null);
 
@@ -169,11 +154,40 @@ class AuthenticationTest extends TestCase
             ->with('google')
             ->andReturn($provider);
 
-        $response = $this->withSession(['oauth_mode' => 'login', 'oauth_portal' => 'customer'])
+        $response = $this->withSession(['oauth_mode' => 'login', 'oauth_portal' => 'staff'])
             ->get(route('auth.google.callback'));
 
         $this->assertAuthenticatedAs($user);
-        $response->assertRedirect(route('portal.dashboard'));
+        $response->assertRedirect(route('dashboard'));
         $this->assertEquals('google-999', $user->fresh()->google_id);
+    }
+
+    public function test_google_callback_rejects_customer_role_user(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'customeruser@gmail.com',
+            'role' => 'customer',
+        ]);
+
+        $abstractUser = \Mockery::mock(\Laravel\Socialite\Two\User::class);
+        $abstractUser->shouldReceive('getId')->andReturn('google-888');
+        $abstractUser->shouldReceive('getName')->andReturn('Customer User');
+        $abstractUser->shouldReceive('getEmail')->andReturn('customeruser@gmail.com');
+        $abstractUser->shouldReceive('getAvatar')->andReturn(null);
+        $abstractUser->shouldReceive('getNickname')->andReturn(null);
+
+        $provider = \Mockery::mock(\Laravel\Socialite\Two\GoogleProvider::class);
+        $provider->shouldReceive('user')->andReturn($abstractUser);
+
+        \Laravel\Socialite\Facades\Socialite::shouldReceive('driver')
+            ->with('google')
+            ->andReturn($provider);
+
+        $response = $this->withSession(['oauth_mode' => 'login', 'oauth_portal' => 'staff'])
+            ->get(route('auth.google.callback'));
+
+        $this->assertGuest();
+        $response->assertRedirect(route('login'));
+        $response->assertSessionHasErrors(['email']);
     }
 }

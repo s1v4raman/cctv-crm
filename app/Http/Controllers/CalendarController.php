@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AmcVisit;
 use App\Models\InstallationJob;
-use App\Models\ServiceTicket;
 use App\Models\SiteSurvey;
 use App\Models\User;
 use Carbon\Carbon;
@@ -40,8 +38,6 @@ class CalendarController extends Controller
             'total'     => count($events),
             'surveys'   => collect($events)->where('type', 'survey')->count(),
             'jobs'      => collect($events)->where('type', 'job')->count(),
-            'amcs'      => collect($events)->where('type', 'amc')->count(),
-            'tickets'   => collect($events)->where('type', 'ticket')->count(),
             'today'     => count($todayEvents),
         ];
 
@@ -130,61 +126,63 @@ class CalendarController extends Controller
         }
 
         // 3. AMC Routine Visits
-        $visits = AmcVisit::with(['amcContract.lead', 'assignedTechnician'])
-            ->whereNotNull('scheduled_date')
-            ->whereBetween('scheduled_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
-            ->get();
+        if (class_exists(\App\Models\AmcVisit::class)) {
+            $amcVisits = \App\Models\AmcVisit::with(['amcContract.lead', 'assignedTechnician'])
+                ->whereNotNull('scheduled_date')
+                ->whereBetween('scheduled_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
+                ->get();
 
-        foreach ($visits as $v) {
-            $contract = $v->amcContract;
-            $customerName = $contract->lead->customer_name ?? 'Client';
-            $events[] = [
-                'id'          => 'amc-' . $v->id,
-                'raw_id'      => $v->id,
-                'type'        => 'amc',
-                'badge'       => 'AMC Routine Visit',
-                'title'       => 'AMC #' . ($contract->contract_no ?? $v->amc_contract_id) . ' (' . ucfirst($contract->frequency ?? 'Quarterly') . ')',
-                'date'        => $v->scheduled_date->format('Y-m-d'),
-                'time'        => '10:30 AM',
-                'status'      => $v->status,
-                'customer'    => $customerName,
-                'phone'       => $contract->lead->phone ?? '—',
-                'address'     => $contract->lead->site_address ?? '—',
-                'tech_id'     => $v->assigned_technician_id,
-                'tech'        => $v->assignedTechnician->name ?? 'Unassigned',
-                'url'         => route('amcs.show', $v->amc_contract_id),
-                'color'       => 'emerald',
-                'notes'       => $v->completion_notes,
-            ];
+            foreach ($amcVisits as $v) {
+                $customerName = $v->amcContract->lead->customer_name ?? 'Client';
+                $events[] = [
+                    'id'          => 'amc-' . $v->id,
+                    'raw_id'      => $v->id,
+                    'type'        => 'amc',
+                    'badge'       => 'AMC Routine Visit',
+                    'title'       => 'AMC Visit: ' . $customerName,
+                    'date'        => $v->scheduled_date->format('Y-m-d'),
+                    'time'        => '11:00 AM',
+                    'status'      => $v->status,
+                    'customer'    => $customerName,
+                    'phone'       => $v->amcContract->lead->phone ?? '—',
+                    'address'     => $v->amcContract->lead->site_address ?? '—',
+                    'tech_id'     => $v->assigned_technician_id,
+                    'tech'        => $v->assignedTechnician->name ?? 'Unassigned',
+                    'url'         => route('amcs.show', $v->amc_contract_id),
+                    'color'       => 'purple',
+                    'notes'       => $v->completion_notes,
+                ];
+            }
         }
 
         // 4. Service Tickets
-        $tickets = ServiceTicket::with(['lead', 'assignedTechnician'])
-            ->whereNotNull('scheduled_date')
-            ->whereBetween('scheduled_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
-            ->get();
+        if (class_exists(\App\Models\ServiceTicket::class)) {
+            $tickets = \App\Models\ServiceTicket::with(['lead', 'assignedTechnician'])
+                ->whereNotNull('scheduled_date')
+                ->whereBetween('scheduled_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
+                ->get();
 
-        foreach ($tickets as $t) {
-            $customerName = $t->lead->customer_name ?? 'Client';
-            $events[] = [
-                'id'          => 'ticket-' . $t->id,
-                'raw_id'      => $t->id,
-                'type'        => 'ticket',
-                'badge'       => 'Service Ticket',
-                'title'       => 'Ticket ' . $t->ticket_no . ': ' . ($t->title ?: $t->issue_type_label),
-                'date'        => $t->scheduled_date->format('Y-m-d'),
-                'time'        => '02:00 PM',
-                'status'      => $t->status,
-                'priority'    => $t->priority,
-                'customer'    => $customerName,
-                'phone'       => $t->lead->phone ?? '—',
-                'address'     => $t->lead->site_address ?? '—',
-                'tech_id'     => $t->assigned_technician_id,
-                'tech'        => $t->assignedTechnician->name ?? 'Unassigned',
-                'url'         => route('service-tickets.show', $t),
-                'color'       => 'rose',
-                'notes'       => $t->description,
-            ];
+            foreach ($tickets as $t) {
+                $customerName = $t->lead->customer_name ?? 'Client';
+                $events[] = [
+                    'id'          => 'ticket-' . $t->id,
+                    'raw_id'      => $t->id,
+                    'type'        => 'ticket',
+                    'badge'       => 'Support Ticket',
+                    'title'       => 'Ticket: ' . $t->title,
+                    'date'        => $t->scheduled_date->format('Y-m-d'),
+                    'time'        => '02:00 PM',
+                    'status'      => $t->status,
+                    'customer'    => $customerName,
+                    'phone'       => $t->lead->phone ?? '—',
+                    'address'     => $t->lead->site_address ?? '—',
+                    'tech_id'     => $t->assigned_technician_id,
+                    'tech'        => $t->assignedTechnician->name ?? 'Unassigned',
+                    'url'         => route('service-tickets.show', $t),
+                    'color'       => 'rose',
+                    'notes'       => $t->description,
+                ];
+            }
         }
 
         // Sort by date and time

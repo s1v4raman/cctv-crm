@@ -45,10 +45,6 @@
                     BOM
                 </a>
 
-                <a href="{{ route('service-tickets.create', ['lead_id' => $lead->id]) }}" class="btn-secondary text-xs">
-                    Ticket
-                </a>
-
                 <a href="{{ route('leads.vcard', $lead) }}" class="btn-secondary text-xs">
                     Save Contact
                 </a>
@@ -296,67 +292,7 @@
                         </tbody>
                     </table>
                 </div>
-            </div>
-
-            {{-- 4. Lower Section: Support & Service Tickets --}}
-            <div class="crm-section">
-                <div class="flex items-center justify-between mb-4 pb-2 border-b border-[#ddd]">
-                    <h3 class="border-b-0 pb-0 mb-0">Tickets</h3>
-                    <a href="{{ route('service-tickets.create', ['lead_id' => $lead->id]) }}" class="btn-secondary text-xs">
-                        Log Ticket
-                    </a>
-                </div>
-
-                <div class="overflow-x-auto">
-                    <table class="crm-table w-full">
-                        <thead>
-                            <tr>
-                                <th>Ticket #</th>
-                                <th>Issue Title</th>
-                                <th>Priority</th>
-                                <th>Assigned Engineer</th>
-                                <th>Status</th>
-                                <th class="text-right">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse ($lead->serviceTickets as $t)
-                                <tr>
-                                    <td class="font-semibold text-slate-900" style="white-space: nowrap;">
-                                        <a href="{{ route('service-tickets.show', $t) }}" class="action-link">
-                                            {{ $t->ticket_no }}
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <div class="font-semibold text-slate-900">{{ $t->title }}</div>
-                                        <div class="text-[11px] text-slate-500">{{ $t->issue_type_label }}</div>
-                                    </td>
-                                    <td>
-                                        <span class="font-medium text-slate-700 capitalize">{{ $t->priority }}</span>
-                                    </td>
-                                    <td style="white-space: nowrap;">{{ $t->assignedTechnician->name ?? 'Unassigned' }}</td>
-                                    <td>
-                                        <span class="status-{{ strtolower($t->status) }}">
-                                            {{ ucfirst($t->status_label) }}
-                                        </span>
-                                    </td>
-                                    <td class="text-right">
-                                        <a href="{{ route('service-tickets.show', $t) }}" class="action-link">
-                                            View
-                                        </a>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="6" class="text-center py-6 text-slate-500 text-sm">
-                                        No support tickets yet
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+              </div>
 
             {{-- 5. Lower Section: Installed CCTV Hardware --}}
             <div class="crm-section">

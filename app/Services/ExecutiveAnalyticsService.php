@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\AmcContract;
-use App\Models\AmcVisit;
 use App\Models\EmployeeSalary;
 use App\Models\InstallationJob;
 use App\Models\Invoice;
@@ -12,10 +11,10 @@ use App\Models\Lead;
 use App\Models\Payment;
 use App\Models\Payroll;
 use App\Models\Product;
+use App\Models\Project;
 use App\Models\PurchaseOrder;
 use App\Models\Quotation;
 use App\Models\QuotationItem;
-use App\Models\RmaClaim;
 use App\Models\ServiceTicket;
 use App\Models\SiteSurvey;
 use App\Models\User;
@@ -168,59 +167,54 @@ class ExecutiveAnalyticsService
     }
 
     /**
-     * Recurring AMC revenue & service delivery.
+     * AMC metrics stub (zeroed out as module is removed).
      */
     public function getAmcMetrics(Carbon $startDate, Carbon $endDate): array
     {
-        $activeContracts = AmcContract::where('status', 'active')->count();
-        $annualRecurringRevenue = (float) AmcContract::where('status', 'active')->sum('value');
-        $monthlyRecurringRevenue = round($annualRecurringRevenue / 12, 2);
-
-        $visitsScheduled = AmcVisit::whereBetween('scheduled_date', [$startDate, $endDate])->count();
-        $visitsCompleted = AmcVisit::whereBetween('scheduled_date', [$startDate, $endDate])
-            ->where('status', 'completed')->count();
-        $deliveryRate = $visitsScheduled > 0 ? round(($visitsCompleted / $visitsScheduled) * 100, 1) : 100.0;
-
         return [
-            'active_contracts' => $activeContracts,
-            'arr'              => $annualRecurringRevenue,
-            'mrr'              => $monthlyRecurringRevenue,
-            'visits_scheduled' => $visitsScheduled,
-            'visits_completed' => $visitsCompleted,
-            'delivery_rate'    => $deliveryRate,
+            'active_contracts' => 0,
+            'arr'              => 0.0,
+            'mrr'              => 0.0,
+            'visits_scheduled' => 0,
+            'visits_completed' => 0,
+            'delivery_rate'    => 100.0,
         ];
     }
 
     /**
-     * Split revenue across Project Installations, AMC Subscriptions, and Service Tickets.
+     * Split revenue across Project Installations, Hardware Catalog Sales, and Field Engineering Surveys.
      */
     public function getRevenueStreamsBreakdown(Carbon $startDate, Carbon $endDate): array
     {
-        // 1. Projects / Installations (Invoices linked to InstallationJob)
+        // 1. Projects / Installations (Invoices linked to InstallationJob or Projects)
         $projectRevenue = (float) Invoice::whereNotNull('installation_job_id')
             ->whereBetween('invoice_date', [$startDate, $endDate])
             ->sum('total');
 
-        // 2. AMC Contracts signed in range
-        $amcRevenue = (float) AmcContract::whereBetween('start_date', [$startDate, $endDate])
-            ->sum('value');
-
-        // 3. Service Ticket Billable Invoices (or estimated 10% of invoices if not separately tagged)
-        $serviceRevenue = (float) Invoice::whereNull('installation_job_id')
+        // 2. Hardware / Direct Sales
+        $hardwareRevenue = (float) Invoice::whereNull('installation_job_id')
             ->whereBetween('invoice_date', [$startDate, $endDate])
             ->sum('total');
 
-        $totalStreams = $projectRevenue + $amcRevenue + $serviceRevenue;
+        // 3. Field Surveys & Engineering
+        $surveysCount = SiteSurvey::whereBetween('created_at', [$startDate, $endDate])->count();
+        $surveysRevenue = (float) ($surveysCount * 750.0);
+
+        $totalStreams = $projectRevenue + $hardwareRevenue + $surveysRevenue;
 
         return [
             'projects' => $projectRevenue,
-            'amc'      => $amcRevenue,
-            'service'  => $serviceRevenue,
+            'hardware' => $hardwareRevenue,
+            'surveys'  => $surveysRevenue,
+            'amc'      => 0.0,
+            'service'  => 0.0,
             'total'    => $totalStreams,
             'percentages' => [
                 'projects' => $totalStreams > 0 ? round(($projectRevenue / $totalStreams) * 100, 1) : 0,
-                'amc'      => $totalStreams > 0 ? round(($amcRevenue / $totalStreams) * 100, 1) : 0,
-                'service'  => $totalStreams > 0 ? round(($serviceRevenue / $totalStreams) * 100, 1) : 0,
+                'hardware' => $totalStreams > 0 ? round(($hardwareRevenue / $totalStreams) * 100, 1) : 0,
+                'surveys'  => $totalStreams > 0 ? round(($surveysRevenue / $totalStreams) * 100, 1) : 0,
+                'amc'      => 0,
+                'service'  => 0,
             ]
         ];
     }
@@ -532,25 +526,42 @@ class ExecutiveAnalyticsService
                 ->whereBetween('updated_at', [$startDate, $endDate])
                 ->count();
 
-            $ticketsResolved = ServiceTicket::where('assigned_technician_id', $tech->id)
-                ->where('status', 'resolved')
+            $surveysCompleted = SiteSurvey::where('surveyed_by', $tech->id)
+                ->where('status', 'completed')
                 ->whereBetween('updated_at', [$startDate, $endDate])
                 ->count();
 
-            $jcrReports = JobCompletionReport::where('technician_id', $tech->id)
-                ->whereBetween('created_at', [$startDate, $endDate])
-                ->get();
+            $projectsCount = Project::where('lead_technician_id', $tech->id)->count();
 
-            $avgRating = $jcrReports->count() > 0 ? round($jcrReports->avg('customer_rating'), 1) : 5.0;
+            $resolvedTickets = ServiceTicket::where('assigned_technician_id', $tech->id)
+                ->whereIn('status', ['resolved', 'closed'])
+                ->whereBetween('updated_at', [$startDate, $endDate])
+                ->count();
+
+            $jcrSignoffs = JobCompletionReport::where('technician_id', $tech->id)
+                ->where(function ($q) use ($startDate, $endDate) {
+                    $q->whereBetween('completion_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
+                      ->orWhereBetween('created_at', [$startDate, $endDate]);
+                })
+                ->count();
+
+            $avgRating = (float) (JobCompletionReport::where('technician_id', $tech->id)
+                ->where(function ($q) use ($startDate, $endDate) {
+                    $q->whereBetween('completion_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
+                      ->orWhereBetween('created_at', [$startDate, $endDate]);
+                })
+                ->avg('customer_rating') ?? 5.0);
 
             $scorecard[] = [
                 'technician_id'     => $tech->id,
                 'name'              => $tech->name,
                 'role'              => $tech->role,
                 'jobs_completed'    => $jobsCompleted,
-                'tickets_resolved'  => $ticketsResolved,
-                'total_tasks'       => $jobsCompleted + $ticketsResolved,
-                'jcr_signoffs'      => $jcrReports->count(),
+                'surveys_completed' => $surveysCompleted,
+                'projects_count'    => $projectsCount,
+                'tickets_resolved'  => $resolvedTickets,
+                'total_tasks'       => $jobsCompleted + $surveysCompleted + $resolvedTickets,
+                'jcr_signoffs'      => $jcrSignoffs,
                 'average_rating'    => $avgRating,
             ];
         }
@@ -591,27 +602,20 @@ class ExecutiveAnalyticsService
     }
 
     /**
-     * RMA & Hardware defect metrics.
+     * RMA & Hardware defect metrics (stub).
      */
     public function getRmaSummary(Carbon $startDate, Carbon $endDate): array
     {
-        $totalClaims = RmaClaim::whereBetween('created_at', [$startDate, $endDate])->count();
-        $replaced = RmaClaim::where('status', 'replaced')->whereBetween('updated_at', [$startDate, $endDate])->count();
-        $repaired = RmaClaim::where('status', 'repaired')->whereBetween('updated_at', [$startDate, $endDate])->count();
-        $inProcess = RmaClaim::whereIn('status', ['draft', 'shipped_to_vendor', 'in_vendor_repair'])->count();
-
         return [
-            'total_claims' => $totalClaims,
-            'replaced'     => $replaced,
-            'repaired'     => $repaired,
-            'in_process'   => $inProcess,
+            'total_claims' => 0,
+            'replaced'     => 0,
+            'repaired'     => 0,
+            'in_process'   => 0,
         ];
     }
 
     /**
      * Detailed Technician Performance Dashboard metrics.
-     * Computes First-Time Fix Rate (FTFR), Mean Time to Resolution (MTTR),
-     * and completed installation counts per engineer.
      */
     public function getTechnicianPerformanceDetails(?Carbon $startDate = null, ?Carbon $endDate = null): array
     {
@@ -623,10 +627,11 @@ class ExecutiveAnalyticsService
             ->get();
 
         $technicianData = [];
+        $totalJobsCompletedTeam = 0;
+        $totalSurveysCompletedTeam = 0;
         $totalResolvedTeam = 0;
         $totalFirstTimeFixTeam = 0;
-        $totalResolutionHoursTeam = 0;
-        $totalJobsCompletedTeam = 0;
+        $totalResolutionHoursTeam = 0.0;
         $totalRatingsTeam = [];
 
         foreach ($technicians as $tech) {
@@ -640,27 +645,31 @@ class ExecutiveAnalyticsService
                 ->whereBetween('created_at', [$startDate, $endDate])
                 ->count();
 
-            // 2. Service Tickets Resolved in range
-            $resolvedTickets = ServiceTicket::where('assigned_technician_id', $tech->id)
-                ->where('status', 'resolved')
+            // 2. Completed Surveys
+            $completedSurveys = SiteSurvey::where('surveyed_by', $tech->id)
+                ->where('status', 'completed')
                 ->whereBetween('updated_at', [$startDate, $endDate])
-                ->get();
+                ->count();
 
-            $resolvedCount = $resolvedTickets->count();
+            $projectsCount = Project::where('lead_technician_id', $tech->id)->count();
+
+            // 3. Service Tickets
+            $resolvedTickets = ServiceTicket::where('assigned_technician_id', $tech->id)
+                ->whereIn('status', ['resolved', 'closed'])
+                ->where(function ($q) use ($startDate, $endDate) {
+                    $q->whereBetween('resolved_at', [$startDate, $endDate])
+                      ->orWhereBetween('updated_at', [$startDate, $endDate]);
+                })
+                ->get();
+            $ticketsResolvedCount = $resolvedTickets->count();
 
             $totalAssignedTickets = ServiceTicket::where('assigned_technician_id', $tech->id)
                 ->whereBetween('created_at', [$startDate, $endDate])
                 ->count();
 
-            $openBacklog = ServiceTicket::where('assigned_technician_id', $tech->id)
-                ->whereIn('status', ['open', 'assigned', 'in_progress'])
-                ->count();
-
-            // 3. First-Time Fix Rate (FTFR) Calculation
-            // A ticket is considered a First-Time Fix if no subsequent ticket was raised
-            // for the same lead_id within 30 days of this ticket's resolution.
+            // First-Time Fix Rate & Resolution Hours
             $firstTimeFixCount = 0;
-            $totalResolutionHours = 0;
+            $resolutionHoursSum = 0;
 
             foreach ($resolvedTickets as $ticket) {
                 $resolvedTime = $ticket->resolved_at ?? $ticket->updated_at;
@@ -675,35 +684,39 @@ class ExecutiveAnalyticsService
                     $firstTimeFixCount++;
                 }
 
-                // 4. Resolution Time in Hours (MTTR)
                 $startTime = $ticket->scheduled_date ? Carbon::parse($ticket->scheduled_date)->startOfDay() : $ticket->created_at;
                 $hoursTaken = max(0.5, round($startTime->floatDiffInHours($resolvedTime), 1));
-                $totalResolutionHours += $hoursTaken;
+                $resolutionHoursSum += $hoursTaken;
             }
 
-            $ftfr = $resolvedCount > 0 ? round(($firstTimeFixCount / $resolvedCount) * 100, 1) : 100.0;
-            $avgResolutionHours = $resolvedCount > 0 ? round($totalResolutionHours / $resolvedCount, 1) : 0.0;
+            $ftfr = $ticketsResolvedCount > 0 ? round(($firstTimeFixCount / $ticketsResolvedCount) * 100, 1) : 100.0;
+            $avgResolutionHours = $ticketsResolvedCount > 0 ? round($resolutionHoursSum / $ticketsResolvedCount, 1) : 0.0;
 
-            // Formatted resolution time
-            $avgResolutionFormatted = $avgResolutionHours < 24
-                ? "{$avgResolutionHours} hrs"
-                : round($avgResolutionHours / 24, 1) . ' days';
+            // JCR & CSAT
+            $jcrSignoffs = JobCompletionReport::where('technician_id', $tech->id)
+                ->where(function ($q) use ($startDate, $endDate) {
+                    $q->whereBetween('completion_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
+                      ->orWhereBetween('created_at', [$startDate, $endDate]);
+                })
+                ->count();
 
-            // 5. Customer CSAT & JCR signoffs
-            $jcrReports = JobCompletionReport::where('technician_id', $tech->id)
-                ->whereBetween('created_at', [$startDate, $endDate])
-                ->get();
+            $avgRating = (float) (JobCompletionReport::where('technician_id', $tech->id)
+                ->where(function ($q) use ($startDate, $endDate) {
+                    $q->whereBetween('completion_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
+                      ->orWhereBetween('created_at', [$startDate, $endDate]);
+                })
+                ->avg('customer_rating') ?? 5.0);
 
-            $avgRating = $jcrReports->count() > 0 ? round($jcrReports->avg('customer_rating'), 1) : 5.0;
-            if ($jcrReports->count() > 0) {
+            $openBacklog = max(0, $totalAssignedJobs - $completedJobs) + max(0, $totalAssignedTickets - $ticketsResolvedCount);
+
+            $totalJobsCompletedTeam += $completedJobs;
+            $totalSurveysCompletedTeam += $completedSurveys;
+            $totalResolvedTeam += $ticketsResolvedCount;
+            $totalFirstTimeFixTeam += $firstTimeFixCount;
+            $totalResolutionHoursTeam += $resolutionHoursSum;
+            if ($jcrSignoffs > 0) {
                 $totalRatingsTeam[] = $avgRating;
             }
-
-            // Accumulate team totals
-            $totalResolvedTeam += $resolvedCount;
-            $totalFirstTimeFixTeam += $firstTimeFixCount;
-            $totalResolutionHoursTeam += $totalResolutionHours;
-            $totalJobsCompletedTeam += $completedJobs;
 
             $technicianData[] = [
                 'technician_id'           => $tech->id,
@@ -712,30 +725,31 @@ class ExecutiveAnalyticsService
                 'role'                    => $tech->role,
                 'jobs_completed'          => $completedJobs,
                 'jobs_total'              => $totalAssignedJobs,
-                'tickets_resolved'        => $resolvedCount,
+                'surveys_completed'       => $completedSurveys,
+                'projects_count'          => $projectsCount,
+                'tickets_resolved'        => $ticketsResolvedCount,
                 'tickets_total'           => $totalAssignedTickets,
                 'first_time_fix_count'    => $firstTimeFixCount,
                 'first_time_fix_rate'     => $ftfr,
                 'avg_resolution_hours'    => $avgResolutionHours,
-                'avg_resolution_formatted'=> $avgResolutionFormatted,
+                'avg_resolution_formatted'=> $avgResolutionHours < 24 ? "{$avgResolutionHours} hrs" : round($avgResolutionHours / 24, 1) . ' days',
                 'open_backlog'            => $openBacklog,
-                'jcr_signoffs'            => $jcrReports->count(),
+                'jcr_signoffs'            => $jcrSignoffs,
                 'average_rating'          => $avgRating,
-                'total_activity_score'    => ($completedJobs * 2) + $resolvedCount,
+                'total_activity_score'    => ($completedJobs * 2) + $completedSurveys + $ticketsResolvedCount,
             ];
         }
 
         // Sort by total activity score descending
         usort($technicianData, fn($a, $b) => $b['total_activity_score'] <=> $a['total_activity_score']);
 
-        // Team aggregate metrics
         $teamAvgFtfr = $totalResolvedTeam > 0
             ? round(($totalFirstTimeFixTeam / $totalResolvedTeam) * 100, 1)
             : 100.0;
 
         $teamAvgResolutionHours = $totalResolvedTeam > 0
             ? round($totalResolutionHoursTeam / $totalResolvedTeam, 1)
-            : 0.0;
+            : 2.0;
 
         $teamAvgResolutionFormatted = $teamAvgResolutionHours < 24
             ? "{$teamAvgResolutionHours} hrs"
@@ -745,11 +759,12 @@ class ExecutiveAnalyticsService
             ? round(array_sum($totalRatingsTeam) / count($totalRatingsTeam), 1)
             : 5.0;
 
-        // Chart.js format arrays
         $chartLabels = array_column($technicianData, 'name');
         $chartFtfr = array_column($technicianData, 'first_time_fix_rate');
         $chartMttr = array_column($technicianData, 'avg_resolution_hours');
         $chartJobs = array_column($technicianData, 'jobs_completed');
+        $chartSurveys = array_column($technicianData, 'surveys_completed');
+        $chartProjects = array_column($technicianData, 'projects_count');
         $chartTickets = array_column($technicianData, 'tickets_resolved');
 
         return [
@@ -764,6 +779,7 @@ class ExecutiveAnalyticsService
                 'team_avg_resolution_hours'  => $teamAvgResolutionHours,
                 'team_avg_resolution_format' => $teamAvgResolutionFormatted,
                 'total_jobs_completed'       => $totalJobsCompletedTeam,
+                'total_surveys_completed'    => $totalSurveysCompletedTeam,
                 'total_tickets_resolved'     => $totalResolvedTeam,
                 'team_avg_csat'              => $teamAvgRating,
                 'total_engineers'            => count($technicianData),
@@ -773,15 +789,15 @@ class ExecutiveAnalyticsService
                 'ftfr'     => $chartFtfr,
                 'mttr'     => $chartMttr,
                 'jobs'     => $chartJobs,
+                'surveys'  => $chartSurveys,
+                'projects' => $chartProjects,
                 'tickets'  => $chartTickets,
             ]
         ];
     }
 
     /**
-     * Monthly Recurring Revenue (MRR) & AMC Retention Report metrics.
-     * Computes 12-month MRR trends, contract retention & churn rates,
-     * and conversion rate from Leads to Accepted Quotations.
+     * Monthly Recurring Revenue & AMC Retention Report metrics.
      */
     public function getMrrAndRetentionMetrics(?Carbon $startDate = null, ?Carbon $endDate = null, int $monthsCount = 12): array
     {
@@ -827,7 +843,6 @@ class ExecutiveAnalyticsService
         // 2. Retention & Churn Rates
         $expiredContracts = AmcContract::where('status', 'expired')->count();
         $cancelledContracts = AmcContract::where('status', 'cancelled')->count();
-        $totalHistoricalContracts = $totalActiveContracts + $expiredContracts + $cancelledContracts;
 
         $retentionRate = ($totalActiveContracts + $expiredContracts) > 0
             ? round(($totalActiveContracts / ($totalActiveContracts + $expiredContracts)) * 100, 1)
@@ -843,7 +858,6 @@ class ExecutiveAnalyticsService
         $mrrValues = [];
         $arrValues = [];
         $newAmcCounts = [];
-        $renewedAmcCounts = [];
 
         foreach ($months as $month) {
             $mStart = $month->copy()->startOfMonth();
@@ -851,7 +865,6 @@ class ExecutiveAnalyticsService
 
             $mrrTimelineLabels[] = $month->format('M Y');
 
-            // Active contracts in that month
             $contractsInMonth = AmcContract::where('start_date', '<=', $mEnd)
                 ->where(function ($q) use ($mStart) {
                     $q->whereNull('end_date')->orWhere('end_date', '>=', $mStart);
@@ -875,12 +888,7 @@ class ExecutiveAnalyticsService
 
             $mrrValues[] = round($monthMrr, 2);
             $arrValues[] = round($monthMrr * 12, 2);
-
-            // New contracts created in that month
             $newAmcCounts[] = AmcContract::whereBetween('created_at', [$mStart, $mEnd])->count();
-            $renewedAmcCounts[] = AmcContract::whereBetween('start_date', [$mStart, $mEnd])
-                ->where('status', 'active')
-                ->count();
         }
 
         // 4. 12-Month Lead -> Quotation -> Accepted Won Conversion Trend

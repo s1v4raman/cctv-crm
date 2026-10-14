@@ -75,38 +75,19 @@ class RoleDataFlowTest extends TestCase
         $response->assertSee('Bob Miller');
     }
 
-    public function test_customer_srinithish_can_access_self_service_portal()
+    public function test_customer_portal_routes_are_retired_and_customer_is_restricted()
     {
-        $customer = User::where('email', 'srinithish.p@example.com')->first();
-        $this->assertNotNull($customer, 'Customer srinithish.p exists');
+        $this->assertNull(User::where('email', 'srinithish.p@example.com')->first(), 'Customer demo account was removed');
 
-        // Customer Dashboard
-        $response = $this->actingAs($customer)->get('/portal/dashboard');
-        $response->assertStatus(200);
+        $customer = User::factory()->create(['role' => 'customer']);
 
-        // Equipment & Warranty Tracking
-        $response = $this->actingAs($customer)->get('/portal/equipment');
-        $response->assertStatus(200);
-        $response->assertSee('HKV-4MP-984210');
+        // Customer Portal routes are retired (404)
+        $this->actingAs($customer)->get('/portal/dashboard')->assertStatus(404);
+        $this->actingAs($customer)->get('/portal/equipment')->assertStatus(404);
+        $this->actingAs($customer)->get('/portal/amc')->assertStatus(404);
+        $this->actingAs($customer)->get('/portal/tickets')->assertStatus(404);
 
-        // AMC Contract
-        $response = $this->actingAs($customer)->get('/portal/amc');
-        $response->assertStatus(200);
-        $response->assertSee('AMC-2026-SRI');
-
-        // Service Tickets
-        $response = $this->actingAs($customer)->get('/portal/tickets');
-        $response->assertStatus(200);
-        $response->assertSee('TKT-2026-101');
-
-        // Invoices & Billing
-        $response = $this->actingAs($customer)->get('/portal/invoices');
-        $response->assertStatus(200);
-        $response->assertSee('INV-2026-0042');
-
-        // Quotations
-        $response = $this->actingAs($customer)->get('/portal/quotations');
-        $response->assertStatus(200);
-        $response->assertSee('QT-2026-SRI01');
+        // Customer is restricted from internal ERP (403)
+        $this->actingAs($customer)->get('/dashboard')->assertStatus(403);
     }
 }
