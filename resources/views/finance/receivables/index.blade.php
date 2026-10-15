@@ -46,11 +46,11 @@
         }
         html.dark .stat-card {
             background: #0f172a;
-            border-color: #1e293b;
+            border-color: var(--text-main);
         }
         .stat-label { font-size: 14px; font-weight: 500; color: #64748b; margin-bottom: 0.25rem; }
-        html.dark .stat-label { color: #94a3b8; }
-        .stat-value { font-size: 1.5rem; font-weight: 700; color: #0f172a; line-height: 1; }
+        html.dark .stat-label { color: var(--text-muted); }
+        .stat-value { font-size: 1.5rem; font-weight: 700; color: var(--text-main); line-height: 1; }
         html.dark .stat-value { color: #ffffff; }
 
         .pg-card {
@@ -61,7 +61,7 @@
         }
         html.dark .pg-card {
             background: #0f172a;
-            border-color: #1e293b;
+            border-color: var(--text-main);
         }
     </style>
 

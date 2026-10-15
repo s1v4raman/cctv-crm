@@ -57,7 +57,7 @@
             font-weight: 700;
         }
         .tab-btn:hover:not(.active) {
-            color: #1e293b;
+            color: var(--text-main);
         }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
@@ -85,7 +85,7 @@
         .card-title {
             font-size: 0.9rem;
             font-weight: 700;
-            color: #0f172a;
+            color: var(--text-main);
         }
         .card-sub {
             font-size: 0.75rem;
@@ -109,7 +109,7 @@
             align-items: flex-start;
             margin-bottom: 0.5rem;
             font-size: 0.82rem;
-            color: #334155;
+            color: var(--card-border);
         }
         .info-label {
             font-weight: 600;
@@ -138,7 +138,7 @@
             border-radius: 4px;
             padding: 0.55rem 0.8rem;
             font-size: 0.82rem;
-            color: #0f172a;
+            color: var(--text-main);
             outline: none;
             background: #ffffff;
             box-sizing: border-box;
@@ -161,11 +161,11 @@
             align-items: center;
             gap: 0.4rem;
             background: #ffffff;
-            color: #334155;
+            color: var(--card-border);
         }
         .btn-submit:hover {
             background: #f8fafc;
-            color: #0f172a;
+            color: var(--text-main);
         }
 
         .alert-success {
@@ -182,59 +182,59 @@
         .empty-state {
             text-align: center;
             padding: 3rem 1rem;
-            color: #94a3b8;
+            color: var(--text-muted);
         }
         .empty-state svg {
             width: 2.5rem;
             height: 2.5rem;
             margin: 0 auto 0.75rem;
-            color: #cbd5e1;
+            color: var(--text-muted);
         }
         .empty-state h4 {
             font-size: 0.95rem;
             font-weight: 700;
-            color: #1e293b;
+            color: var(--text-main);
             margin-bottom: 0.3rem;
         }
 
-        html.dark .tab-bar { border-bottom-color: #1e293b; }
-        html.dark .tab-btn { color: #94a3b8; }
+        html.dark .tab-bar { border-bottom-color: var(--text-main); }
+        html.dark .tab-btn { color: var(--text-muted); }
         html.dark .tab-btn.active { color: #3b82f6; border-bottom-color: #3b82f6; }
-        html.dark .tab-btn:hover:not(.active) { color: #f8fafc; }
+        html.dark .tab-btn:hover:not(.active) { color: var(--text-main); }
 
         html.dark .tech-card {
             background: #0f172a;
-            border-color: #1e293b;
-            color: #f8fafc;
+            border-color: var(--text-main);
+            color: var(--text-main);
         }
         html.dark .card-head {
             background: #0f172a;
-            border-bottom-color: #1e293b;
+            border-bottom-color: var(--text-main);
         }
         html.dark .card-title {
             color: #ffffff;
         }
         html.dark .card-sub {
-            color: #94a3b8;
+            color: var(--text-muted);
         }
         html.dark .info-row {
-            color: #cbd5e1;
+            color: var(--text-muted);
         }
         html.dark .info-label {
-            color: #94a3b8;
+            color: var(--text-muted);
         }
         html.dark .update-form {
             background: #0b1120;
-            border-color: #1e293b;
+            border-color: var(--text-main);
         }
         html.dark .form-label {
-            color: #cbd5e1;
+            color: var(--text-muted);
         }
         html.dark .form-select,
         html.dark .form-textarea,
         html.dark .form-input {
             background: #060913;
-            border-color: #334155;
+            border-color: var(--card-border);
             color: #ffffff;
         }
         html.dark .empty-state h4 {

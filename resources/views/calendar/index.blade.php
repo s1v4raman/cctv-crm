@@ -37,39 +37,55 @@
         /* Responsive cohesive horizontal theming on Operations Calendar */
         .crm-cal-input {
             background-color: #ffffff;
-            color: #0f172a;
-            border-color: #cbd5e1;
+            color: var(--text-main);
+            border: 1px solid var(--card-border) !important;
             padding-left: 36px !important;
             height: 36px !important;
             font-size: 12px !important;
+            border-radius: 6px !important;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
         }
         .crm-cal-select {
             background-color: #ffffff;
-            color: #0f172a;
-            border-color: #cbd5e1;
+            color: var(--text-main);
+            border: 1px solid var(--card-border) !important;
             width: auto !important;
             min-width: 135px !important;
             max-width: 180px !important;
             height: 36px !important;
             font-size: 12px !important;
+            border-radius: 6px !important;
             display: inline-block !important;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+        .crm-cal-input:focus,
+        .crm-cal-select:focus {
+            border-color: #2563eb !important;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.28) !important;
+            outline: none !important;
         }
         .crm-cal-input::placeholder {
-            color: #94a3b8;
+            color: var(--text-muted);
         }
         .crm-cal-select option {
             background-color: #ffffff;
-            color: #0f172a;
+            color: var(--text-main);
         }
         html.dark .crm-cal-input {
             background-color: #0b132b !important;
             color: #f8fafc !important;
-            border-color: #334155 !important;
+            border: 1px solid #475569 !important;
         }
         html.dark .crm-cal-select {
             background-color: #0b132b !important;
             color: #f8fafc !important;
-            border-color: #334155 !important;
+            border: 1px solid #475569 !important;
+        }
+        html.dark .crm-cal-input:focus,
+        html.dark .crm-cal-select:focus {
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.35) !important;
+            outline: none !important;
         }
         html.dark .crm-cal-input::placeholder {
             color: #64748b !important;
@@ -82,10 +98,10 @@
 
     <div class="space-y-4" x-data="calendarApp(window.crmCalendarConfig)">
 
-        {{-- 1. Stat cards: 4 clean, cohesive cards with refined metrics --}}
+        {{-- 1. Stat cards: 4 clean, cohesive cards with refined metrics and dark borders --}}
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
             {{-- Total Operations --}}
-            <div class="bg-white dark:bg-[#0f172a] rounded-xl border border-slate-200/80 dark:border-slate-800 p-4 shadow-[0_1px_3px_rgba(0,0,0,0.03)] hover:border-slate-300 dark:hover:border-slate-700 transition">
+            <div class="stat-card bg-white dark:bg-[#0f172a] rounded-xl border border-[var(--card-border)] dark:border-slate-700 p-4 shadow-xs hover:border-slate-900 dark:hover:border-slate-500 transition">
                 <div class="flex items-center justify-between">
                     <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Scheduled Operations</span>
                     <div class="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center">
@@ -99,7 +115,7 @@
             </div>
 
             {{-- Site Surveys --}}
-            <div class="bg-white dark:bg-[#0f172a] rounded-xl border border-slate-200/80 dark:border-slate-800 p-4 shadow-[0_1px_3px_rgba(0,0,0,0.03)] hover:border-emerald-200 dark:hover:border-emerald-800/60 transition">
+            <div class="stat-card bg-white dark:bg-[#0f172a] rounded-xl border border-[var(--card-border)] dark:border-slate-700 p-4 shadow-xs hover:border-slate-900 dark:hover:border-slate-500 transition">
                 <div class="flex items-center justify-between">
                     <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Site Surveys</span>
                     <div class="w-7 h-7 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
@@ -113,7 +129,7 @@
             </div>
 
             {{-- Installations --}}
-            <div class="bg-white dark:bg-[#0f172a] rounded-xl border border-slate-200/80 dark:border-slate-800 p-4 shadow-[0_1px_3px_rgba(0,0,0,0.03)] hover:border-blue-200 dark:hover:border-blue-800/60 transition">
+            <div class="stat-card bg-white dark:bg-[#0f172a] rounded-xl border border-[var(--card-border)] dark:border-slate-700 p-4 shadow-xs hover:border-slate-900 dark:hover:border-slate-500 transition">
                 <div class="flex items-center justify-between">
                     <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Installations</span>
                     <div class="w-7 h-7 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center">
@@ -127,7 +143,7 @@
             </div>
 
             {{-- Due Today --}}
-            <div class="bg-white dark:bg-[#0f172a] rounded-xl border border-slate-200/80 dark:border-slate-800 p-4 shadow-[0_1px_3px_rgba(0,0,0,0.03)] hover:border-amber-200 dark:hover:border-amber-800/60 transition">
+            <div class="stat-card bg-white dark:bg-[#0f172a] rounded-xl border border-[var(--card-border)] dark:border-slate-700 p-4 shadow-xs hover:border-slate-900 dark:hover:border-slate-500 transition">
                 <div class="flex items-center justify-between">
                     <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Due Today</span>
                     <div class="w-7 h-7 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center">
@@ -142,7 +158,7 @@
         </div>
 
         {{-- 2. Integrated Horizontal Filter & View Toolbar --}}
-        <div class="bg-white dark:bg-[#0f172a] rounded-xl border border-slate-200/80 dark:border-slate-800 p-2.5 shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-wrap items-center justify-between gap-2.5">
+        <div class="bg-white dark:bg-[#0f172a] rounded-xl border border-[var(--card-border)] dark:border-slate-700 p-2.5 shadow-xs flex flex-wrap items-center justify-between gap-2.5">
             
             {{-- Left Horizontal Filters: Search, Category, Technician, Status --}}
             <div class="flex items-center gap-2 flex-wrap flex-1 min-w-0">
@@ -251,11 +267,11 @@
                     </div>
                 </div>
 
-                {{-- ── MONTH VIEW: Clean table with soft borders, rounded corners, and clear day cards ── --}}
-                <div x-show="currentView === 'month'" class="border border-slate-200/80 dark:border-slate-800 rounded-xl overflow-hidden bg-white dark:bg-[#0f172a] shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
+                {{-- ── MONTH VIEW: Defined dark gridlines between days and headers ── --}}
+                <div x-show="currentView === 'month'" class="border border-[var(--card-border)] dark:border-slate-700 rounded-xl overflow-hidden bg-white dark:bg-[#0f172a] shadow-xs">
                     
                     {{-- 7-Day Weekday Header --}}
-                    <div class="grid grid-cols-7 border-b border-slate-200/80 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-800/80 text-center text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider py-2.5 select-none">
+                    <div class="grid grid-cols-7 border-b-2 border-[var(--card-border)] dark:border-slate-700 bg-slate-50/90 dark:bg-slate-800/80 text-center text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider py-2.5 select-none">
                         <div>Mon</div>
                         <div>Tue</div>
                         <div>Wed</div>
@@ -268,9 +284,9 @@
                     {{-- Month Grid Days --}}
                     <div class="grid grid-cols-7">
                         <template x-for="(day, dIndex) in calendarDays" :key="day.date">
-                            <div class="border-b border-slate-100 dark:border-slate-800/80 min-h-[105px] transition-colors"
+                            <div class="border-b-[1px] border-[var(--card-border)] dark:border-slate-700 min-h-[105px] transition-colors"
                                  :class="{
-                                     'border-r border-slate-100 dark:border-slate-800/80': (dIndex + 1) % 7 !== 0,
+                                     'border-r-[1px] border-[var(--card-border)] dark:border-slate-700': (dIndex + 1) % 7 !== 0,
                                      'bg-blue-50/25 dark:bg-blue-950/30': day.isCurrentMonth && day.isToday,
                                      'bg-white dark:bg-[#0f172a] hover:bg-slate-50/50 dark:hover:bg-slate-800/50': day.isCurrentMonth && !day.isToday,
                                      'bg-slate-50/40 dark:bg-slate-900/50 text-slate-300 dark:text-slate-600': !day.isCurrentMonth

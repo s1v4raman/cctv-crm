@@ -35,8 +35,8 @@
         }
         html.dark .status-tab {
             background: #0f172a;
-            border-color: #1e293b;
-            color: #94a3b8;
+            border-color: var(--text-main);
+            color: var(--text-muted);
         }
         .status-tab.active {
             background: #2563eb !important;
@@ -67,7 +67,7 @@
         }
         html.dark .stat-card {
             background: #0f172a;
-            border-color: #1e293b;
+            border-color: var(--text-main);
         }
 
         /* Priority: plain bold colored text */
@@ -293,7 +293,7 @@
             <div class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm" @click="emailModalOpen = false"></div>
 
             <div class="relative min-h-screen flex items-center justify-center p-4">
-                <div class="relative bg-[#0f172a] rounded-[4px] max-w-xl w-full p-6 border border-slate-700 overflow-hidden text-slate-200" @click.stop style="background-color: #0f172a;">
+                <div class="relative bg-[#0f172a] rounded-[4px] max-w-xl w-full p-6 border border-slate-700 overflow-hidden text-slate-200" @click.stop style="background-color: var(--text-main);">
                     
                     <div class="flex items-center justify-between pb-4 border-b border-slate-800">
                         <div class="flex items-center gap-2.5">

@@ -83,6 +83,16 @@ class User extends Authenticatable
         return $this->role === 'technician';
     }
 
+    public function isWorker(): bool
+    {
+        return $this->role === 'worker';
+    }
+
+    public function worker(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Worker::class, 'user_id');
+    }
+
     public function isInternal(): bool
     {
         return in_array($this->role, ['admin', 'staff', 'technician']);

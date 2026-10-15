@@ -51,28 +51,28 @@
                 <table class="crm-table w-full">
                     <tbody>
                         <tr>
-                            <td style="width: 25%; color: #555; font-weight: 500;">Work Order ID</td>
-                            <td style="color: #222; font-weight: 500;">{{ $job->job_no }}</td>
+                            <td style="width: 25%; color: var(--text-muted); font-weight: 500;">Work Order ID</td>
+                            <td style="color: var(--text-main); font-weight: 500;">{{ $job->job_no }}</td>
                         </tr>
                         <tr>
-                            <td style="color: #555; font-weight: 500;">Customer Premise</td>
-                            <td style="color: #222; font-weight: 500;">
+                            <td style="color: var(--text-muted); font-weight: 500;">Customer Premise</td>
+                            <td style="color: var(--text-main); font-weight: 500;">
                                 <a href="{{ route('leads.show', $job->quotation->lead) }}" class="action-link">
                                     {{ $job->quotation->lead->customer_name }}
                                 </a>
                             </td>
                         </tr>
                         <tr>
-                            <td style="color: #555; font-weight: 500;">Linked Commercial Quote</td>
-                            <td style="color: #222; font-weight: 500;">
+                            <td style="color: var(--text-muted); font-weight: 500;">Linked Commercial Quote</td>
+                            <td style="color: var(--text-main); font-weight: 500;">
                                 <a href="{{ route('quotations.show', $job->quotation) }}" class="action-link">
                                     {{ $job->quotation->quotation_no }}
                                 </a>
                             </td>
                         </tr>
                         <tr>
-                            <td style="color: #555; font-weight: 500;">Assigned Field Engineer</td>
-                            <td style="color: #222; font-weight: 500;">
+                            <td style="color: var(--text-muted); font-weight: 500;">Assigned Field Engineer</td>
+                            <td style="color: var(--text-main); font-weight: 500;">
                                 {{ $job->technician?->name ?? 'Unassigned' }}
                                 @if($job->technician?->phone)
                                     <span class="text-slate-500 font-normal">({{ $job->technician->phone }})</span>
@@ -80,14 +80,14 @@
                             </td>
                         </tr>
                         <tr>
-                            <td style="color: #555; font-weight: 500;">Scheduled Date</td>
-                            <td style="color: #222; font-weight: 500;">
+                            <td style="color: var(--text-muted); font-weight: 500;">Scheduled Date</td>
+                            <td style="color: var(--text-main); font-weight: 500;">
                                 {{ $job->scheduled_date ? $job->scheduled_date->format('d M Y') : 'Pending Schedule' }}
                             </td>
                         </tr>
                         <tr>
-                            <td style="color: #555; font-weight: 500;">Execution Phase</td>
-                            <td style="color: #222; font-weight: 500;">
+                            <td style="color: var(--text-muted); font-weight: 500;">Execution Phase</td>
+                            <td style="color: var(--text-main); font-weight: 500;">
                                 <span class="status-{{ strtolower($job->status) }}">
                                     {{ ucfirst(str_replace('_', ' ', $job->status)) }}
                                 </span>
@@ -95,14 +95,14 @@
                         </tr>
                         @if($job->quotation->lead->site_address)
                         <tr>
-                            <td style="color: #555; font-weight: 500;">Site Installation Address</td>
-                            <td style="color: #222; font-weight: 500;">{{ $job->quotation->lead->site_address }}</td>
+                            <td style="color: var(--text-muted); font-weight: 500;">Site Installation Address</td>
+                            <td style="color: var(--text-main); font-weight: 500;">{{ $job->quotation->lead->site_address }}</td>
                         </tr>
                         @endif
                         @if($job->installation_notes)
                         <tr>
-                            <td style="color: #555; font-weight: 500;">Installation Notes</td>
-                            <td style="color: #222; font-weight: 500;">{{ $job->installation_notes }}</td>
+                            <td style="color: var(--text-muted); font-weight: 500;">Installation Notes</td>
+                            <td style="color: var(--text-main); font-weight: 500;">{{ $job->installation_notes }}</td>
                         </tr>
                         @endif
                     </tbody>
@@ -111,8 +111,8 @@
 
             {{-- 2. Deployed CCTV Hardware --}}
             <div class="crm-section">
-                <div class="flex items-center justify-between mb-4 pb-2 border-b border-[#ddd]">
-                    <h3 class="border-b-0 pb-0 mb-0">Deployed CCTV Hardware</h3>
+                <div class="flex items-center justify-between mb-4 pb-2 border-b border-[var(--card-border)] dark:border-slate-700">
+                    <h3 class="border-none pb-0 mb-0" style="border:none !important; border-bottom:none !important; margin-bottom:0 !important; padding-bottom:0 !important;">Deployed CCTV Hardware</h3>
                     <a href="{{ route('equipment.create', ['lead_id' => $job->quotation->lead_id, 'job_id' => $job->id, 'redirect_to' => url()->current()]) }}" class="btn-secondary text-xs">
                         Log Serial
                     </a>

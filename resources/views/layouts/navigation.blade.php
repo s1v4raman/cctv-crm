@@ -1,13 +1,13 @@
 {{-- SecureVision Modern SaaS Sidebar Navigation Component --}}
-<aside class="w-full h-full flex flex-col justify-between shrink-0 bg-[#dbe6f6] dark:bg-[#0f172a] text-slate-700 dark:text-slate-200 select-none overflow-hidden transition-all duration-300">
+<aside class="w-full h-full flex flex-col justify-between shrink-0 bg-[var(--card-bg)] text-[var(--text-main)] select-none overflow-hidden transition-all duration-300">
     
     {{-- Sidebar Top: Brand Logo matching 56px fixed frame --}}
-    <div class="crm-sidebar-header h-[56px] min-h-[56px] max-h-[56px] shrink-0 flex items-center justify-between px-4 border-b border-[#b9d1ef] dark:border-slate-800 bg-[#cee0f4] dark:bg-[#0f172a] transition-colors duration-200">
+    <div class="crm-sidebar-header h-[56px] min-h-[56px] max-h-[56px] shrink-0 flex items-center justify-between px-4 border-b border-[var(--card-border)] bg-[var(--card-bg)] text-[var(--text-main)] transition-colors duration-200">
         <a href="{{ auth()->user()->role === 'technician' ? route('technician.dashboard') : route('dashboard') }}" class="flex items-center gap-2.5 group overflow-hidden">
             <img src="{{ asset('logos/logo_' . ltrim(auth()->user()->theme_accent ?? '2563eb', '#') . '.png') }}" alt="Precision IT Systems" class="crm-brand-logo h-8 w-8 object-contain group-hover:scale-105 transition-transform shrink-0" onerror="this.src='{{ asset('logo.png') }}'">
             <div :class="sidebarCollapsed ? 'lg:hidden' : ''" class="min-w-0">
-                <span class="block text-sm font-bold tracking-tight text-slate-900 dark:text-slate-100 truncate">Precision IT</span>
-                <span class="block text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 font-mono truncate">CRM SUITE</span>
+                <span class="block text-sm font-bold tracking-tight text-[var(--text-main)] truncate">Precision IT</span>
+                <span class="block text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)] font-mono truncate">CRM SUITE</span>
             </div>
         </a>
         
@@ -369,7 +369,7 @@
     </nav>
 
     {{-- Sidebar Bottom: Comfortable User Profile & Quick Logout --}}
-    <div class="crm-sidebar-footer shrink-0 p-3.5 border-t border-[#b9d1ef] dark:border-slate-800 bg-[#cee0f4] dark:bg-slate-900/80 transition-colors">
+    <div class="crm-sidebar-footer shrink-0 p-3.5 border-t border-[var(--card-border)] bg-[var(--card-bg)] text-[var(--text-main)] transition-colors">
         <div class="flex items-center justify-between gap-2.5" :class="sidebarCollapsed ? 'lg:justify-center' : ''">
             <div class="flex items-center gap-3 min-w-0">
                 @if(Auth::user()->avatar_url)
@@ -380,8 +380,8 @@
                     </div>
                 @endif
                 <div class="min-w-0 truncate" :class="sidebarCollapsed ? 'lg:hidden' : ''">
-                    <span class="block text-sm font-semibold text-slate-800 dark:text-slate-200 truncate">{{ Auth::user()->name }}</span>
-                    <span class="block text-xs text-slate-400 font-medium truncate">{{ Auth::user()->role_title }}</span>
+                    <span class="block text-sm font-semibold text-[var(--text-main)] truncate">{{ Auth::user()->name }}</span>
+                    <span class="block text-xs text-blue-600 dark:text-blue-400 font-semibold truncate">{{ Auth::user()->role_title }}</span>
                 </div>
             </div>
 

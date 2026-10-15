@@ -105,22 +105,34 @@ class ProfileController extends Controller
         ]);
 
         $user = $request->user();
-        if (isset($validated['accent'])) {
-            $user->theme_accent = $validated['accent'];
+        if ($user) {
+            if (isset($validated['accent'])) {
+                $user->theme_accent = $validated['accent'];
+            }
+            if (isset($validated['mode'])) {
+                $m = $validated['mode'];
+                if ($m === 'light') $m = 'day';
+                if ($m === 'dark') $m = 'night';
+                $user->theme_mode = $m;
+            }
+            if (isset($validated['themeStyle'])) {
+                $user->theme_style = $validated['themeStyle'];
+            }
+            $user->save();
         }
-        if (isset($validated['mode'])) {
-            $user->theme_mode = $validated['mode'];
-        }
-        if (isset($validated['themeStyle'])) {
-            $user->theme_style = $validated['themeStyle'];
-        }
-        $user->save();
+
+        $effectiveMode = $user?->theme_mode ?? ($validated['mode'] ?? 'night');
+        if ($effectiveMode === 'light') $effectiveMode = 'day';
+        if ($effectiveMode === 'dark') $effectiveMode = 'night';
+
+        // Keep session in sync with user's theme mode
+        session(['crm_mode' => $effectiveMode]);
 
         return response()->json([
             'success'      => true,
-            'theme_accent' => $user->theme_accent,
-            'theme_mode'   => $user->theme_mode,
-            'theme_style'  => $user->theme_style,
-        ])->withCookie(cookie('crm_mode', $user->theme_mode, 525600, null, null, false, false));
+            'theme_accent' => $user?->theme_accent,
+            'theme_mode'   => $user?->theme_mode ?? $effectiveMode,
+            'theme_style'  => $user?->theme_style,
+        ])->withCookie(cookie('crm_mode', $effectiveMode, 525600, '/', null, false, false, false, 'Lax'));
     }
 }

@@ -18,9 +18,12 @@ class ProjectWorkerAttendance extends Model
         'work_day_id',
         'worker_id',
         'attendance_type',
+        'photo_path',
+        'check_in_at',
         'daily_rate_snapshot',
         'rate_applied',
         'cabling_metres',
+        'cameras_installed',
         'cabling_rate',
         'cabling_amount',
         'extra_type',
@@ -36,12 +39,14 @@ class ProjectWorkerAttendance extends Model
         'unlocked_by',
         'unlocked_at',
         'notes',
+        'work_summary',
     ];
 
     protected $casts = [
         'daily_rate_snapshot' => 'decimal:2',
         'rate_applied' => 'decimal:2',
         'cabling_metres' => 'decimal:2',
+        'cameras_installed' => 'integer',
         'cabling_rate' => 'decimal:2',
         'cabling_amount' => 'decimal:2',
         'metres' => 'decimal:2',
@@ -50,8 +55,20 @@ class ProjectWorkerAttendance extends Model
         'is_locked' => 'boolean',
         'is_paid' => 'boolean',
         'paid_week_start' => 'date',
+        'check_in_at' => 'datetime',
         'unlocked_at' => 'datetime',
     ];
+
+    public function getPhotoUrlAttribute(): ?string
+    {
+        if (!$this->photo_path) {
+            return null;
+        }
+        if (filter_var($this->photo_path, FILTER_VALIDATE_URL)) {
+            return $this->photo_path;
+        }
+        return asset('storage/' . $this->photo_path);
+    }
 
     public function workDay(): BelongsTo
     {

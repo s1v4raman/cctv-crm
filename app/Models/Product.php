@@ -53,6 +53,11 @@ class Product extends Model
         return $this->hasMany(InstalledEquipment::class);
     }
 
+    public function taskConsumptions(): HasMany
+    {
+        return $this->hasMany(TaskMaterialConsumption::class);
+    }
+
     public function isLowStock(): bool
     {
         return $this->stock_quantity > 0 && $this->stock_quantity <= $this->min_stock_alert;

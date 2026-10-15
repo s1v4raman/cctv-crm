@@ -164,6 +164,11 @@ class Project extends Model
         return $this->hasMany(ProjectMaterial::class);
     }
 
+    public function materialConsumptions(): HasMany
+    {
+        return $this->hasMany(TaskMaterialConsumption::class)->latest();
+    }
+
     public function documents(): HasMany
     {
         return $this->hasMany(ProjectDocument::class)->latest();

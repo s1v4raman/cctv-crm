@@ -28,31 +28,31 @@
             <div class="flex flex-col sm:flex-row gap-[12px] mb-[20px] w-full">
 
                 {{-- Total Leads Card --}}
-                <div class="stat-card flex-1 p-[16px] bg-white dark:bg-[#0f172a] border border-[#ddd] dark:border-slate-800 rounded">
-                    <div class="text-xs font-medium text-slate-500 uppercase tracking-wide">Total Leads</div>
-                    <div class="text-2xl font-bold text-slate-900 dark:text-white mt-1" id="stat-total-leads">{{ $totalLeads ?? 16 }}</div>
+                <div class="stat-card flex-1 p-[16px] bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl shadow-xs">
+                    <div class="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide">Total Leads</div>
+                    <div class="text-2xl font-bold text-[var(--text-main)] mt-1" id="stat-total-leads">{{ $totalLeads ?? 16 }}</div>
                     <span id="stat-leads-month" class="hidden">0</span>
                 </div>
 
                 {{-- Conversion Rate Card --}}
-                <div class="stat-card flex-1 p-[16px] bg-white dark:bg-[#0f172a] border border-[#ddd] dark:border-slate-800 rounded">
-                    <div class="text-xs font-medium text-slate-500 uppercase tracking-wide">Conversion Rate</div>
-                    <div class="text-2xl font-bold text-slate-900 dark:text-white mt-1"><span id="stat-conversion">0</span>%</div>
+                <div class="stat-card flex-1 p-[16px] bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl shadow-xs">
+                    <div class="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide">Conversion Rate</div>
+                    <div class="text-2xl font-bold text-[var(--text-main)] mt-1"><span id="stat-conversion">0</span>%</div>
                     <span id="stat-won" class="hidden">0</span>
                     <span id="stat-lost" class="hidden">0</span>
                 </div>
 
                 {{-- Accepted Revenue Card --}}
-                <div class="stat-card flex-1 p-[16px] bg-white dark:bg-[#0f172a] border border-[#ddd] dark:border-slate-800 rounded">
-                    <div class="text-xs font-medium text-slate-500 uppercase tracking-wide">Accepted Revenue</div>
-                    <div class="text-2xl font-bold text-slate-900 dark:text-white mt-1" id="stat-revenue">₹0</div>
+                <div class="stat-card flex-1 p-[16px] bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl shadow-xs">
+                    <div class="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide">Accepted Revenue</div>
+                    <div class="text-2xl font-bold text-[var(--text-main)] mt-1" id="stat-revenue">₹0</div>
                     <span id="stat-revenue-month" class="hidden">0</span>
                 </div>
 
                 {{-- Open Jobs Card --}}
-                <div class="stat-card flex-1 p-[16px] bg-white dark:bg-[#0f172a] border border-[#ddd] dark:border-slate-800 rounded">
-                    <div class="text-xs font-medium text-slate-500 uppercase tracking-wide">Open Jobs</div>
-                    <div class="text-2xl font-bold text-slate-900 dark:text-white mt-1" id="stat-open-jobs">0</div>
+                <div class="stat-card flex-1 p-[16px] bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl shadow-xs">
+                    <div class="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide">Open Jobs</div>
+                    <div class="text-2xl font-bold text-[var(--text-main)] mt-1" id="stat-open-jobs">0</div>
                     <span id="stat-inprogress-jobs" class="hidden">0</span>
                     {{-- Hidden spans for DOM script compatibility --}}
                     <span id="stat-total-projects" class="hidden">0</span>
@@ -65,12 +65,12 @@
             {{-- ── 2. Middle Row: Sales & Deals Pipeline Funnel ── --}}
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-[20px] mb-[20px]">
 
-                {{-- Sales (Bar Chart): Single white box with a border, no nested cards --}}
-                <div class="lg:col-span-7 bg-white dark:bg-[#0f172a] border border-[#ddd] dark:border-slate-800 rounded p-[20px]">
-                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-3 border-b border-[#ddd] dark:border-slate-800 mb-4">
-                        <h3 class="text-sm font-bold text-slate-900 dark:text-white">Revenue Overview</h3>
+                {{-- Sales (Bar Chart): Single box with a border, no nested cards --}}
+                <div class="lg:col-span-7 bg-[var(--card-bg)] text-[var(--text-main)] border border-[var(--card-border)] rounded-xl p-[20px] shadow-xs">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-3 border-b border-[var(--card-border)] mb-4">
+                        <h3 class="text-sm font-bold text-[var(--text-main)]">Revenue Overview</h3>
                         <div class="flex items-center gap-3">
-                            <select class="h-[32px] px-2.5 text-xs rounded border border-[#ddd] dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:outline-none">
+                            <select class="h-[32px] px-2.5 text-xs rounded-md border border-[var(--input-border)] bg-[var(--card-bg)] text-[var(--text-main)] focus:outline-none focus:ring-2 focus:ring-blue-500/30">
                                 <option value="6">Past 6 Months</option>
                                 <option value="12">Past 12 Months</option>
                                 <option value="3">Past 3 Months</option>
@@ -82,83 +82,83 @@
                         <canvas id="revenueChart"></canvas>
                     </div>
                     <div id="revenue-table-container" class="hidden overflow-x-auto my-2">
-                        <table class="w-full text-xs border-collapse">
+                        <table class="w-full text-xs border border-[var(--table-border)] border-collapse">
                             <thead>
-                                <tr class="border-b border-[#ddd] dark:border-slate-800 bg-[#f8f9fa] dark:bg-slate-900/60 text-slate-600 dark:text-slate-400">
-                                    <th class="text-left py-2 px-3 font-semibold">Period</th>
+                                <tr class="border-b border-[var(--table-border)] bg-[var(--table-header-bg)] text-[var(--text-main)]">
+                                    <th class="text-left py-2 px-3 font-semibold border-r border-[var(--table-border)]">Period</th>
                                     <th class="text-right py-2 px-3 font-semibold">Accepted Revenue</th>
                                 </tr>
                             </thead>
-                            <tbody id="revenue-table-body" class="divide-y divide-[#eee] dark:divide-slate-800 text-slate-800 dark:text-slate-200">
+                            <tbody id="revenue-table-body" class="divide-y divide-[var(--table-border)] text-[var(--text-main)]">
                             </tbody>
                         </table>
                     </div>
 
                     {{-- Sales Mini Metrics Footer: clean columns, no card inside card --}}
-                    <div class="grid grid-cols-3 gap-[12px] pt-[16px] mt-[16px] border-t border-[#ddd] dark:border-slate-800 text-center sm:text-left">
+                    <div class="grid grid-cols-3 gap-[12px] pt-[16px] mt-[16px] border-t border-[var(--card-border)] text-center sm:text-left">
                         <div>
-                            <div class="text-[11px] font-medium uppercase tracking-wider text-slate-500">Total Invoiced</div>
-                            <div class="text-base font-bold text-slate-900 dark:text-white mt-0.5" id="stat-footer-rev">₹0</div>
+                            <div class="text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]">Total Invoiced</div>
+                            <div class="text-base font-bold text-[var(--text-main)] mt-0.5" id="stat-footer-rev">₹0</div>
                         </div>
                         <div>
-                            <div class="text-[11px] font-medium uppercase tracking-wider text-slate-500">Won Ratio</div>
-                            <div class="text-base font-bold text-slate-900 dark:text-white mt-0.5"><span id="stat-footer-ratio">0</span>%</div>
+                            <div class="text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]">Won Ratio</div>
+                            <div class="text-base font-bold text-[var(--text-main)] mt-0.5"><span id="stat-footer-ratio">0</span>%</div>
                         </div>
                         <div>
-                            <div class="text-[11px] font-medium uppercase tracking-wider text-slate-500">Active Pipeline</div>
-                            <div class="text-base font-bold text-slate-900 dark:text-white mt-0.5"><span id="stat-footer-active">0</span> Quotes</div>
+                            <div class="text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]">Active Pipeline</div>
+                            <div class="text-base font-bold text-[var(--text-main)] mt-0.5"><span id="stat-footer-active">0</span> Quotes</div>
                         </div>
                     </div>
                 </div>
 
-                    {{-- Deals Pipeline: Simple Plain Table --}}
-                    <div class="lg:col-span-5 bg-white dark:bg-[#0f172a] border border-[#ddd] dark:border-slate-800 rounded-[4px] p-5 flex flex-col justify-between">
-                        <div>
-                            <div class="flex items-center justify-between pb-3 border-b border-[#ddd] dark:border-slate-800 mb-3">
-                                <h3 class="text-sm font-bold text-slate-900 dark:text-white">Deals Pipeline</h3>
-                                <a href="{{ route('quotations.index') }}" class="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline">
-                                    View all
-                                </a>
-                            </div>
-
-                            <table class="w-full text-xs border-collapse">
-                                <thead>
-                                    <tr class="border-b border-[#ddd] dark:border-slate-800 bg-[#f8f9fa] dark:bg-slate-900/60 text-slate-600 dark:text-slate-400">
-                                        <th class="text-left py-2 px-3 font-semibold">Stage</th>
-                                        <th class="text-right py-2 px-3 font-semibold">Deals</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-[#eee] dark:divide-slate-800 text-slate-800 dark:text-slate-200">
-                                    <tr>
-                                        <td class="py-2.5 px-3">Draft Proposals</td>
-                                        <td class="py-2.5 px-3 text-right font-medium" id="stat-draft-quotes">0</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="py-2.5 px-3">Sent to Client</td>
-                                        <td class="py-2.5 px-3 text-right font-medium" id="stat-sent-quotes">0</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="py-2.5 px-3">Accepted / Won</td>
-                                        <td class="py-2.5 px-3 text-right font-medium" id="stat-accepted-quotes">0</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="py-2.5 px-3">Expired / Stalled</td>
-                                        <td class="py-2.5 px-3 text-right font-medium" id="stat-expired-quotes">0</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="py-2.5 px-3">Declined / Lost</td>
-                                        <td class="py-2.5 px-3 text-right font-medium" id="stat-rejected-quotes">0</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                {{-- Deals Pipeline: Table with defined borders between headers, rows, and cells --}}
+                <div class="lg:col-span-5 bg-[var(--card-bg)] text-[var(--text-main)] border border-[var(--card-border)] rounded-xl p-5 flex flex-col justify-between shadow-xs">
+                    <div>
+                        <div class="flex items-center justify-between pb-3 border-b border-[var(--card-border)] mb-3">
+                            <h3 class="text-sm font-bold text-[var(--text-main)]">Deals Pipeline</h3>
+                            <a href="{{ route('quotations.index') }}" class="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline">
+                                View all
+                            </a>
                         </div>
 
-                        {{-- Pipeline Total Summary --}}
-                        <div class="pt-4 mt-4 border-t border-[#ddd] dark:border-slate-800 flex items-center justify-between text-xs">
-                            <span class="font-medium text-slate-500 dark:text-slate-400">Total Live Pipeline Value</span>
-                            <span class="font-bold text-slate-900 dark:text-white text-sm" id="stat-pipeline-total">₹0</span>
-                        </div>
+                        <table class="w-full text-xs border border-[var(--table-border)] border-collapse rounded overflow-hidden">
+                            <thead>
+                                <tr class="border-b border-[var(--table-border)] bg-[var(--table-header-bg)] text-[var(--text-main)]">
+                                    <th class="text-left py-2 px-3 font-semibold border-r border-[var(--table-border)]">Stage</th>
+                                    <th class="text-right py-2 px-3 font-semibold">Deals</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-[var(--table-border)] text-[var(--text-main)]">
+                                <tr class="border-b border-[var(--table-border)]">
+                                    <td class="py-2.5 px-3 border-r border-[var(--table-border)] text-[var(--text-main)]">Draft Proposals</td>
+                                    <td class="py-2.5 px-3 text-right font-medium text-[var(--text-main)]" id="stat-draft-quotes">0</td>
+                                </tr>
+                                <tr class="border-b border-[var(--table-border)]">
+                                    <td class="py-2.5 px-3 border-r border-[var(--table-border)] text-[var(--text-main)]">Sent to Client</td>
+                                    <td class="py-2.5 px-3 text-right font-medium text-[var(--text-main)]" id="stat-sent-quotes">0</td>
+                                </tr>
+                                <tr class="border-b border-[var(--table-border)]">
+                                    <td class="py-2.5 px-3 border-r border-[var(--table-border)] text-[var(--text-main)]">Accepted / Won</td>
+                                    <td class="py-2.5 px-3 text-right font-medium text-[var(--text-main)]" id="stat-accepted-quotes">0</td>
+                                </tr>
+                                <tr class="border-b border-[var(--table-border)]">
+                                    <td class="py-2.5 px-3 border-r border-[var(--table-border)] text-[var(--text-main)]">Expired / Stalled</td>
+                                    <td class="py-2.5 px-3 text-right font-medium text-[var(--text-main)]" id="stat-expired-quotes">0</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2.5 px-3 border-r border-[var(--table-border)] text-[var(--text-main)]">Declined / Lost</td>
+                                    <td class="py-2.5 px-3 text-right font-medium text-[var(--text-main)]" id="stat-rejected-quotes">0</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
+
+                    {{-- Pipeline Total Summary --}}
+                    <div class="pt-4 mt-4 border-t border-[var(--card-border)] flex items-center justify-between text-xs">
+                        <span class="font-medium text-[var(--text-muted)]">Total Live Pipeline Value</span>
+                        <span class="font-bold text-[var(--text-main)] text-sm" id="stat-pipeline-total">₹0</span>
+                    </div>
+                </div>
 
                 </div>
 
@@ -166,34 +166,34 @@
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
 
                     {{-- Recent Leads Card --}}
-                    <div class="bg-white dark:bg-[#0f172a] border border-[#ddd] dark:border-slate-800 rounded-[4px] p-5 shadow-xs transition-colors duration-200">
+                    <div class="bg-[var(--card-bg)] text-[var(--text-main)] border border-[var(--card-border)] rounded-xl p-5 shadow-xs transition-colors duration-200">
                         <div class="flex items-center justify-between mb-4">
                             <div>
-                                <h3 class="text-sm font-bold text-slate-900 dark:text-white tracking-tight">Recent Leads</h3>
+                                <h3 class="text-sm font-bold text-[var(--text-main)] tracking-tight">Recent Leads</h3>
                             </div>
                             <a href="{{ route('leads.index') }}" class="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline">
                                 View all
                             </a>
                         </div>
 
-                        <div class="divide-y divide-[#eee] dark:divide-slate-800" id="recent-leads-list">
-                            <div class="py-8 text-center text-xs text-slate-400">Loading leads...</div>
+                        <div class="divide-y divide-[var(--card-border)]" id="recent-leads-list">
+                            <div class="py-8 text-center text-xs text-[var(--text-muted)]">Loading leads...</div>
                         </div>
                     </div>
 
                     {{-- Tasks & Scheduled Jobs Card --}}
-                    <div class="bg-white dark:bg-[#0f172a] border border-[#ddd] dark:border-slate-800 rounded-[4px] p-5 shadow-xs transition-colors duration-200">
+                    <div class="bg-[var(--card-bg)] text-[var(--text-main)] border border-[var(--card-border)] rounded-xl p-5 shadow-xs transition-colors duration-200">
                         <div class="flex items-center justify-between mb-4">
                             <div>
-                                <h3 class="text-sm font-bold text-slate-900 dark:text-white tracking-tight">Tasks &amp; Scheduled Work</h3>
+                                <h3 class="text-sm font-bold text-[var(--text-main)] tracking-tight">Tasks &amp; Scheduled Work</h3>
                             </div>
                             <a href="{{ route('jobs.index') }}" class="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline">
                                 View all
                             </a>
                         </div>
 
-                        <div class="divide-y divide-[#eee] dark:divide-slate-800" id="upcoming-jobs-list">
-                            <div class="py-8 text-center text-xs text-slate-400">Loading jobs...</div>
+                        <div class="divide-y divide-[var(--card-border)]" id="upcoming-jobs-list">
+                            <div class="py-8 text-center text-xs text-[var(--text-muted)]">Loading jobs...</div>
                         </div>
                     </div>
 
@@ -203,10 +203,10 @@
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mt-6">
 
                     {{-- Quotation Distribution --}}
-                    <div class="bg-white dark:bg-[#0f172a] border border-[#ddd] dark:border-slate-800 rounded-[4px] p-5 shadow-xs transition-colors duration-200">
+                    <div class="bg-[var(--card-bg)] text-[var(--text-main)] border border-[var(--card-border)] rounded-xl p-5 shadow-xs transition-colors duration-200">
                         <div class="flex items-center justify-between mb-3">
-                            <h4 class="text-sm font-bold text-slate-900 dark:text-white">Quotation Breakdown</h4>
-                            <span class="text-xs text-slate-400">Status</span>
+                            <h4 class="text-sm font-bold text-[var(--text-main)]">Quotation Breakdown</h4>
+                            <span class="text-xs text-[var(--text-muted)]">Status</span>
                         </div>
                         <div class="relative" style="height: 180px;">
                             <canvas id="quotationChart"></canvas>
@@ -215,10 +215,10 @@
                     </div>
 
                     {{-- Lead Status Breakdown --}}
-                    <div class="bg-white dark:bg-[#0f172a] border border-[#ddd] dark:border-slate-800 rounded-[4px] p-5 shadow-xs transition-colors duration-200">
+                    <div class="bg-[var(--card-bg)] text-[var(--text-main)] border border-[var(--card-border)] rounded-xl p-5 shadow-xs transition-colors duration-200">
                         <div class="flex items-center justify-between mb-3">
-                            <h4 class="text-sm font-bold text-slate-900 dark:text-white">Lead Status Share</h4>
-                            <span class="text-xs text-slate-400">Pipeline</span>
+                            <h4 class="text-sm font-bold text-[var(--text-main)]">Lead Status Share</h4>
+                            <span class="text-xs text-[var(--text-muted)]">Pipeline</span>
                         </div>
                         <div class="relative" style="height: 180px;">
                             <canvas id="leadChart"></canvas>
@@ -227,10 +227,10 @@
                     </div>
 
                     {{-- Installation Jobs Bar Chart --}}
-                    <div class="bg-white dark:bg-[#0f172a] border border-[#ddd] dark:border-slate-800 rounded-[4px] p-5 shadow-xs transition-colors duration-200">
+                    <div class="bg-[var(--card-bg)] text-[var(--text-main)] border border-[var(--card-border)] rounded-xl p-5 shadow-xs transition-colors duration-200">
                         <div class="flex items-center justify-between mb-3">
-                            <h4 class="text-sm font-bold text-slate-900 dark:text-white">Field Job Distribution</h4>
-                            <span class="text-xs text-slate-400">Work Orders</span>
+                            <h4 class="text-sm font-bold text-[var(--text-main)]">Field Job Distribution</h4>
+                            <span class="text-xs text-[var(--text-muted)]">Work Orders</span>
                         </div>
                         <div class="relative" style="height: 180px;">
                             <canvas id="jobChart"></canvas>
@@ -248,29 +248,29 @@
                 <div class="flex flex-col sm:flex-row gap-[12px] mb-[20px] w-full">
 
                     {{-- Open Jobs Card --}}
-                    <div class="stat-card flex-1 p-[16px] bg-white dark:bg-[#0f172a] border border-[#ddd] dark:border-slate-800 rounded">
-                        <div class="text-xs font-medium text-slate-500 uppercase tracking-wide">Open Jobs</div>
-                        <div class="text-2xl font-bold text-slate-900 dark:text-white mt-1" id="staff-open-jobs">0</div>
+                    <div class="stat-card flex-1 p-[16px] bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl shadow-xs">
+                        <div class="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide">Open Jobs</div>
+                        <div class="text-2xl font-bold text-[var(--text-main)] mt-1" id="staff-open-jobs">0</div>
                         <span id="staff-inprogress-jobs" class="hidden">0</span>
                     </div>
 
                     {{-- Support Tickets Card --}}
-                    <div class="stat-card flex-1 p-[16px] bg-white dark:bg-[#0f172a] border border-[#ddd] dark:border-slate-800 rounded">
-                        <div class="text-xs font-medium text-slate-500 uppercase tracking-wide">Support Tickets</div>
-                        <div class="text-2xl font-bold text-slate-900 dark:text-white mt-1" id="staff-open-tickets">0</div>
+                    <div class="stat-card flex-1 p-[16px] bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl shadow-xs">
+                        <div class="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide">Support Tickets</div>
+                        <div class="text-2xl font-bold text-[var(--text-main)] mt-1" id="staff-open-tickets">0</div>
                         <span id="staff-critical-tickets" class="hidden">0</span>
                     </div>
 
                     {{-- Completed Jobs Card --}}
-                    <div class="stat-card flex-1 p-[16px] bg-white dark:bg-[#0f172a] border border-[#ddd] dark:border-slate-800 rounded">
-                        <div class="text-xs font-medium text-slate-500 uppercase tracking-wide">Completed Jobs</div>
-                        <div class="text-2xl font-bold text-slate-900 dark:text-white mt-1" id="staff-completed-jobs">0</div>
+                    <div class="stat-card flex-1 p-[16px] bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl shadow-xs">
+                        <div class="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide">Completed Jobs</div>
+                        <div class="text-2xl font-bold text-[var(--text-main)] mt-1" id="staff-completed-jobs">0</div>
                     </div>
 
                     {{-- Attendance Card --}}
-                    <div class="stat-card flex-1 p-[16px] bg-white dark:bg-[#0f172a] border border-[#ddd] dark:border-slate-800 rounded">
-                        <div class="text-xs font-medium text-slate-500 uppercase tracking-wide">Attendance</div>
-                        <div class="text-2xl font-bold text-slate-900 dark:text-white mt-1 capitalize" id="staff-att-status">
+                    <div class="stat-card flex-1 p-[16px] bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl shadow-xs">
+                        <div class="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide">Attendance</div>
+                        <div class="text-2xl font-bold text-[var(--text-main)] mt-1 capitalize" id="staff-att-status">
                             {{ $myAttendanceToday ? ucfirst($myAttendanceToday->status) : 'Not Clocked In' }}
                         </div>
                         <span id="staff-att-badge" class="hidden"></span>
@@ -283,34 +283,34 @@
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">
 
                     {{-- Jobs Card --}}
-                    <div class="bg-white dark:bg-[#0f172a] border border-[#ddd] dark:border-slate-800 rounded-[4px] p-5 shadow-xs transition-colors duration-200">
+                    <div class="bg-[var(--card-bg)] text-[var(--text-main)] border border-[var(--card-border)] rounded-xl p-5 shadow-xs transition-colors duration-200">
                         <div class="flex items-center justify-between mb-4">
                             <div>
-                                <h3 class="text-sm font-bold text-slate-900 dark:text-white tracking-tight">Tasks &amp; Scheduled Field Jobs</h3>
+                                <h3 class="text-sm font-bold text-[var(--text-main)] tracking-tight">Tasks &amp; Scheduled Field Jobs</h3>
                             </div>
                             <a href="{{ route('jobs.index') }}" class="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline">
                                 View all
                             </a>
                         </div>
 
-                        <div class="divide-y divide-[#eee] dark:divide-slate-800" id="upcoming-jobs-list">
-                            <div class="py-8 text-center text-xs text-slate-400">Loading upcoming jobs...</div>
+                        <div class="divide-y divide-[var(--card-border)]" id="upcoming-jobs-list">
+                            <div class="py-8 text-center text-xs text-[var(--text-muted)]">Loading upcoming jobs...</div>
                         </div>
                     </div>
 
                     {{-- Support Tickets Queue --}}
-                    <div class="bg-white dark:bg-[#0f172a] border border-[#ddd] dark:border-slate-800 rounded-[4px] p-5 shadow-xs transition-colors duration-200">
+                    <div class="bg-[var(--card-bg)] text-[var(--text-main)] border border-[var(--card-border)] rounded-xl p-5 shadow-xs transition-colors duration-200">
                         <div class="flex items-center justify-between mb-4">
                             <div>
-                                <h3 class="text-sm font-bold text-slate-900 dark:text-white tracking-tight">Active Support &amp; SLA Tickets</h3>
+                                <h3 class="text-sm font-bold text-[var(--text-main)] tracking-tight">Active Support &amp; SLA Tickets</h3>
                             </div>
                             <a href="{{ route('service-tickets.index') }}" class="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline">
                                 View all
                             </a>
                         </div>
 
-                        <div class="divide-y divide-[#eee] dark:divide-slate-800" id="staff-tickets-list">
-                            <div class="py-8 text-center text-xs text-slate-400">Loading service tickets...</div>
+                        <div class="divide-y divide-[var(--card-border)]" id="staff-tickets-list">
+                            <div class="py-8 text-center text-xs text-[var(--text-muted)]">Loading service tickets...</div>
                         </div>
                     </div>
 
@@ -320,11 +320,11 @@
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
                     {{-- Field Job Distribution Chart --}}
-                    <div class="lg:col-span-2 bg-white dark:bg-[#0f172a] border border-[#ddd] dark:border-slate-800 rounded-[4px] p-6 shadow-xs transition-colors duration-200">
+                    <div class="lg:col-span-2 bg-[var(--card-bg)] text-[var(--text-main)] border border-[var(--card-border)] rounded-xl p-6 shadow-xs transition-colors duration-200">
                         <div class="flex items-center justify-between mb-4">
                             <div>
-                                <h4 class="text-base font-bold text-slate-900 dark:text-white tracking-tight">Field Work Distribution</h4>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Status breakdown of current installation jobs</p>
+                                <h4 class="text-base font-bold text-[var(--text-main)] tracking-tight">Field Work Distribution</h4>
+                                <p class="text-xs text-[var(--text-muted)] mt-0.5">Status breakdown of current installation jobs</p>
                             </div>
                         </div>
                         <div class="relative" style="height: 220px;">
@@ -333,7 +333,7 @@
                     </div>
 
                     {{-- Operational Quick Links Hub --}}
-                    <div class="bg-white dark:bg-[#0f172a] border border-[#ddd] dark:border-slate-800 rounded-[4px] p-5 shadow-xs transition-colors duration-200 flex flex-col justify-between">
+                    <div class="bg-[var(--card-bg)] text-[var(--text-main)] border border-[var(--card-border)] rounded-xl p-5 shadow-xs transition-colors duration-200 flex flex-col justify-between">
                         <div>
                             <h4 class="text-sm font-bold text-slate-900 dark:text-white tracking-tight mb-1">Field Operations Hub</h4>
                             <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">Quick access to field engineering modules</p>
@@ -431,8 +431,25 @@
     }
 
     function statusBadge(status) {
+        const s = (status || '').toLowerCase();
+        let color = 'var(--text-main)';
+        let bg = 'var(--table-header-bg)';
+        let border = 'var(--card-border)';
+        if (s.includes('won') || s.includes('accepted') || s.includes('completed') || s.includes('active') || s.includes('paid')) {
+            color = 'var(--status-green)';
+            bg = isDarkTheme() ? 'rgba(74, 222, 128, 0.15)' : 'rgba(22, 163, 74, 0.12)';
+            border = 'var(--status-green)';
+        } else if (s.includes('lost') || s.includes('rejected') || s.includes('cancelled') || s.includes('critical') || s.includes('expired')) {
+            color = 'var(--status-red)';
+            bg = isDarkTheme() ? 'rgba(248, 113, 113, 0.15)' : 'rgba(220, 38, 38, 0.12)';
+            border = 'var(--status-red)';
+        } else if (s.includes('pending') || s.includes('draft') || s.includes('sent') || s.includes('progress') || s.includes('scheduled')) {
+            color = 'var(--status-orange)';
+            bg = isDarkTheme() ? 'rgba(251, 191, 36, 0.15)' : 'rgba(217, 119, 6, 0.12)';
+            border = 'var(--status-orange)';
+        }
         const label = (status || '').replace(/_/g, ' ');
-        return `<span style="border: 1px solid #ddd; border-radius: 4px; padding: 2px 8px; font-size: 11px; color: #475569; text-transform: capitalize; background: #fff;">${escapeHtml(label)}</span>`;
+        return `<span style="border: 1px solid ${border}; border-radius: 4px; padding: 2px 8px; font-size: 11px; color: ${color}; text-transform: capitalize; background: ${bg}; font-weight: 600;">${escapeHtml(label)}</span>`;
     }
 
     function getInitials(name) {
@@ -460,10 +477,10 @@
             plugins: {
                 legend: { display: false },
                 tooltip: {
-                    backgroundColor: dark ? '#0f172a' : '#1e293b',
+                    backgroundColor: dark ? '#0f172a' : 'var(--card-border)',
                     titleColor: dark ? '#f8fafc' : '#f8fafc',
                     bodyColor: dark ? '#cbd5e1' : '#cbd5e1',
-                    borderColor: dark ? '#334155' : 'transparent',
+                    borderColor: dark ? 'var(--card-border)' : 'transparent',
                     borderWidth: dark ? 1 : 0,
                     padding: 10,
                     cornerRadius: 4,

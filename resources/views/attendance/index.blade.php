@@ -50,11 +50,11 @@
             background:#ffffff; border-radius:4px; border:1px solid #e2e8f0;
             box-shadow:none !important;
         }
-        .dark .pg-card { background:#0f172a; border-color:#1e293b; }
+        .dark .pg-card { background:#0f172a; border-color: var(--text-main); }
         .custom-scrollbar::-webkit-scrollbar { height: 7px; width: 7px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--card-border); }
     </style>
 
     <div class="pg-wrap">

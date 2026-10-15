@@ -163,4 +163,45 @@ class ProfileTest extends TestCase
         $this->assertNull($user->avatar);
         $this->assertNull($user->avatar_url);
     }
+
+    public function test_user_can_update_theme_preferences(): void
+    {
+        $user = User::factory()->create([
+            'theme_mode' => 'day',
+        ]);
+
+        $response = $this->actingAs($user)->post('/profile/theme', [
+            'mode'   => 'night',
+            'accent' => '#2563eb',
+        ]);
+
+        $response->assertOk();
+        $response->assertJson([
+            'success'      => true,
+            'theme_mode'   => 'night',
+            'theme_accent' => '#2563eb',
+        ]);
+        $response->assertPlainCookie('crm_mode', 'night');
+
+        $user->refresh();
+        $this->assertSame('night', $user->theme_mode);
+        $this->assertSame('#2563eb', $user->theme_accent);
+    }
+
+    public function test_unverified_user_can_also_update_theme_preferences(): void
+    {
+        $user = User::factory()->unverified()->create([
+            'theme_mode' => 'night',
+        ]);
+
+        $response = $this->actingAs($user)->post('/profile/theme', [
+            'mode' => 'day',
+        ]);
+
+        $response->assertOk();
+        $response->assertPlainCookie('crm_mode', 'day');
+
+        $user->refresh();
+        $this->assertSame('day', $user->theme_mode);
+    }
 }

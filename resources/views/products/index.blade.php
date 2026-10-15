@@ -21,66 +21,74 @@
         }
         html.dark .pg-card {
             background:#0f172a;
-            border-color:#1e293b;
+            border-color: var(--text-main);
         }
 
         /* Filter bar */
         .filter-bar {
             display:flex; align-items:center; gap:.75rem;
-            padding:.75rem 1rem; border-bottom:1px solid #e2e8f0; flex-wrap:wrap;
+            padding:.75rem 1rem; border-bottom:1px solid var(--card-border); flex-wrap:wrap;
             background:#ffffff;
         }
         html.dark .filter-bar {
             background:#0b1120;
-            border-color:#1e293b;
+            border-color:var(--card-border);
         }
         .filter-bar input, .filter-bar select {
-            border:1px solid #cbd5e1; border-radius:6px;
+            border:1px solid var(--card-border); border-radius:6px;
             height:36px !important; min-height:36px !important; max-height:36px !important;
-            padding:0 .75rem; font-size:12px !important; color:#0f172a;
+            padding:0 .75rem; font-size:12px !important; color: var(--text-main);
             background:#ffffff; outline:none;
         }
         html.dark .filter-bar input, html.dark .filter-bar select {
-            background:#0b1120; border-color:#334155; color:#ffffff;
+            background:#0b1120; border-color:#475569; color:#ffffff;
         }
         .filter-bar input:focus, .filter-bar select:focus { border-color:#2563eb; }
         .filter-bar input { min-width:220px; }
 
         /* Table */
         .p-table { width:100%; border-collapse:collapse; }
-        .p-table thead { background:#f8fafc; border-bottom:1px solid #e2e8f0; }
-        html.dark .p-table thead { background:#0b1120; border-color:#1e293b; }
+        .p-table thead { background:#f8fafc; border-bottom:1px solid var(--card-border); }
+        html.dark .p-table thead { background:#0b1120; border-color: var(--text-main); }
         .p-table thead th {
+            border-right: 1px solid var(--card-border) !important;
+            border-bottom: 1px solid var(--card-border) !important;
             padding:.75rem 1rem;
             font-size:.8rem; font-weight:600; text-transform:none;
             color:#475569; text-align:left; white-space:nowrap;
         }
-        html.dark .p-table thead th { color:#94a3b8; }
+        html.dark .p-table thead th {
+            border-right: 1px solid var(--card-border) !important;
+            border-bottom: 1px solid var(--card-border) !important; color: var(--text-muted); }
         .p-table thead th.right { text-align:right; }
         .p-table thead th.center { text-align:center; }
-        .p-table tbody tr { border-bottom:1px solid #e2e8f0; background:#ffffff; }
-        html.dark .p-table tbody tr { border-bottom-color:#1e293b; background:#0f172a; }
+        .p-table tbody tr { border-bottom:1px solid var(--card-border); background:#ffffff; }
+        html.dark .p-table tbody tr { border-bottom:1px solid var(--card-border); background:#0f172a; }
         .p-table tbody tr:last-child { border-bottom:none; }
         .p-table tbody tr:hover { background:#f8fafc; }
-        html.dark .p-table tbody tr:hover { background:#1e293b; }
-        .p-table tbody td { padding:.75rem 1rem; vertical-align:middle; font-size:.85rem; color:#475569; }
-        html.dark .p-table tbody td { color:#cbd5e1; }
+        html.dark .p-table tbody tr:hover { background:var(--card-border); }
+        .p-table tbody td {
+            border-right: 1px solid var(--card-border) !important;
+            border-bottom: 1px solid var(--card-border) !important; padding:.75rem 1rem; vertical-align:middle; font-size:.85rem; color:#475569; }
+        html.dark .p-table tbody td {
+            border-right: 1px solid var(--card-border) !important;
+            border-bottom: 1px solid var(--card-border) !important; color: var(--text-muted); }
         .p-table tbody td.right { text-align:right; }
         .p-table tbody td.center { text-align:center; }
 
-        .cell-name { font-size:.85rem; font-weight:600; color:#0f172a; }
+        .cell-name { font-size:.85rem; font-weight:600; color: var(--text-main); }
         html.dark .cell-name { color:#ffffff; }
         .cell-desc { font-size:.75rem; color:#64748b; margin-top:.15rem; max-width:280px; }
         .cell-sku  { font-size:.8rem; font-family:ui-monospace,monospace; font-weight:500; color:#475569; }
-        html.dark .cell-sku { color:#94a3b8; }
+        html.dark .cell-sku { color: var(--text-muted); }
         .cell-unit { font-size:.85rem; color:#64748b; }
         .cell-cost { font-size:.85rem; color:#475569; }
-        html.dark .cell-cost { color:#94a3b8; }
-        .cell-price { font-size:.85rem; font-weight:700; color:#0f172a; }
+        html.dark .cell-cost { color: var(--text-muted); }
+        .cell-price { font-size:.85rem; font-weight:700; color: var(--text-main); }
         html.dark .cell-price { color:#ffffff; }
 
         .pg-links { padding:.75rem 1rem; border-top:1px solid #e2e8f0; }
-        html.dark .pg-links { border-top-color:#1e293b; }
+        html.dark .pg-links { border-top-color: var(--text-main); }
         .empty-state { text-align:center; padding:3rem 1rem; color:#64748b; font-size:.85rem; }
     </style>
 
@@ -179,7 +187,7 @@
                                         @if($product->is_active)
                                             <span class="status-text" style="color: #16a34a; font-weight: bold;">Active</span>
                                         @else
-                                            <span class="status-text" style="color: #555555; font-weight: bold;">Inactive</span>
+                                            <span class="status-text" style="color: var(--text-muted); font-weight: bold;">Inactive</span>
                                         @endif
                                     </td>
 

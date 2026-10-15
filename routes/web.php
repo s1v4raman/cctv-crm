@@ -43,6 +43,7 @@ use App\Http\Controllers\SiteController;
 use App\Http\Controllers\WorkerController;
 use App\Http\Controllers\WorkDayController;
 use App\Http\Controllers\IpDeviceController;
+use App\Http\Controllers\WorkerPortalController;
 use App\Http\Controllers\WageController;
 use App\Http\Controllers\ProjectDocumentController;
 use App\Http\Controllers\ProjectTaskController;
@@ -101,13 +102,17 @@ Route::get('/view-jcr/{jobCompletionReport}', [JobCompletionReportController::cl
     ->middleware('throttle:60,1')
     ->name('jcr.public-pdf');
 
+// Universal theme preference persistence (all authenticated users)
+Route::middleware(['auth'])->group(function () {
+    Route::post('/profile/theme', [ProfileController::class, 'updateTheme'])->name('profile.theme');
+});
+
 Route::middleware(['auth', 'verified'])->group(function () {
 
     // Profile management (all authenticated users)
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::post('/profile/theme', [ProfileController::class, 'updateTheme'])->name('profile.theme');
 
     // ================================================================
     // ADMIN ONLY â€” Full Read + Write + Delete for all modules
@@ -302,14 +307,23 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/projects/{project}/materials/{material}', [ProjectController::class, 'deleteMaterial'])->name('projects.materials.destroy');
 
         // Project Tasks, Workflows & Checklists
+        Route::get('/projects/{project}/tasks', [ProjectTaskController::class, 'index'])->name('projects.tasks.index');
         Route::post('/projects/{project}/tasks/apply-template', [ProjectTaskController::class, 'applyTemplate'])->name('projects.tasks.apply-template');
         Route::post('/projects/{project}/tasks', [ProjectTaskController::class, 'store'])->name('projects.tasks.store');
+        Route::post('/projects/{project}/tasks/reorder', [ProjectTaskController::class, 'reorder'])->name('projects.tasks.reorder');
         Route::put('/projects/{project}/tasks/{task}', [ProjectTaskController::class, 'update'])->name('projects.tasks.update');
         Route::patch('/projects/{project}/tasks/{task}/status', [ProjectTaskController::class, 'updateStatus'])->name('projects.tasks.status');
+        Route::post('/projects/{project}/tasks/{task}/flag-blocker', [ProjectTaskController::class, 'flagBlocker'])->name('projects.tasks.flag-blocker');
+        Route::post('/projects/{project}/tasks/{task}/unblock', [ProjectTaskController::class, 'unblock'])->name('projects.tasks.unblock');
         Route::delete('/projects/{project}/tasks/{task}', [ProjectTaskController::class, 'destroy'])->name('projects.tasks.destroy');
         Route::post('/tasks/checklists/{checklist}/toggle', [ProjectTaskController::class, 'toggleChecklist'])->name('tasks.checklists.toggle');
         Route::post('/tasks/{task}/checklists', [ProjectTaskController::class, 'addChecklistItem'])->name('tasks.checklists.store');
         Route::delete('/tasks/checklists/{checklist}', [ProjectTaskController::class, 'deleteChecklistItem'])->name('tasks.checklists.destroy');
+
+        // Task Material & Cable Consumption Tracking (BOM Integration)
+        Route::post('/projects/{project}/tasks/{task}/materials', [ProjectTaskController::class, 'logMaterialConsumption'])->name('projects.tasks.materials.store');
+        Route::post('/projects/{project}/material-consumptions', [ProjectTaskController::class, 'storeMaterialConsumption'])->name('projects.material-consumptions.store');
+        Route::delete('/projects/{project}/material-consumptions/{consumption}', [ProjectTaskController::class, 'destroyMaterialConsumption'])->name('projects.material-consumptions.destroy');
 
         // Project Documents & Delivery Challans
         Route::post('/projects/{project}/documents', [ProjectDocumentController::class, 'store'])->name('projects.documents.store');
@@ -519,6 +533,17 @@ Route::middleware(['auth', 'technician'])->prefix('technician')->name('technicia
     Route::post('/service-tickets/{ticket}/update', [TechnicianPortalController::class, 'updateServiceTicket'])->name('service-tickets.update');
     Route::get('/surveys/{siteSurvey}', [TechnicianPortalController::class, 'showSurvey'])->name('surveys.show');
     Route::post('/surveys/{siteSurvey}/complete', [TechnicianPortalController::class, 'completeSurvey'])->name('surveys.complete');
+});
+
+// Daily Wages Worker Mobile Portal & Work Logging
+Route::post('/login/worker', [WorkerPortalController::class, 'workerLogin'])
+    ->middleware('throttle:30,1')
+    ->name('login.worker');
+
+Route::middleware(['auth'])->prefix('worker')->name('worker.')->group(function () {
+    Route::get('/portal', [WorkerPortalController::class, 'portal'])->name('portal');
+    Route::post('/attendance/punch', [WorkerPortalController::class, 'punchAttendance'])->name('attendance.punch');
+    Route::post('/work/log', [WorkerPortalController::class, 'logWork'])->name('work.log');
 });
 
 // Staff & Admin ERP Login Aliases

@@ -1,9 +1,9 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center justify-between">
-            <h2 class="text-xl font-bold text-slate-900 dark:text-white">Leads</h2>
+            <h2 class="text-xl font-bold text-[var(--text-main)]">Leads</h2>
             @if(auth()->user()->isAdmin() || auth()->user()->isStaff())
-            <a href="{{ route('leads.create') }}" class="btn-primary">
+            <a href="{{ route('leads.create') }}" class="btn-primary" style="background-color: var(--primary-btn-bg) !important; color: #ffffff !important;">
                 New Lead
             </a>
             @endif
@@ -13,19 +13,14 @@
     <style>
         .leads-table {
             width: 100%;
-            border-collapse: collapse;
-            background: #ffffff;
-        }
-        .dark .leads-table {
-            background: #0f172a;
+            border-collapse: collapse !important;
+            background: var(--card-bg) !important;
+            border: none !important;
         }
         .leads-table thead tr {
-            background-color: #f0f0f0 !important;
-            border-bottom: 1px solid #ddd !important;
-        }
-        .dark .leads-table thead tr {
-            background-color: #1e293b !important;
-            border-bottom-color: #334155 !important;
+            background-color: var(--table-header-bg) !important;
+            border-top: none !important;
+            border-bottom: 1px solid var(--table-border) !important;
         }
         .leads-table thead th {
             padding: 0.65rem 1rem;
@@ -33,33 +28,41 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.04em;
-            color: #475569;
+            color: var(--text-main) !important;
             text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        .dark .leads-table thead th {
-            color: #94a3b8;
-            border-bottom-color: #334155;
+            border-top: none !important;
+            border-bottom: 1px solid var(--table-border) !important;
         }
         .leads-table tbody tr {
-            background-color: #ffffff !important;
-            border-bottom: 1px solid #ddd !important;
+            background-color: var(--card-bg) !important;
+            border-bottom: 1px solid var(--table-border) !important;
             transition: background-color 0.1s;
         }
-        .dark .leads-table tbody tr {
-            background-color: #0f172a !important;
-            border-bottom-color: #334155 !important;
+        .leads-table tbody tr:last-child,
+        .leads-table tbody tr:last-child td {
+            border-bottom: none !important;
+        }
+        .leads-table th:not(:last-child),
+        .leads-table td:not(:last-child) {
+            border-right: 1px solid var(--table-border) !important;
+        }
+        .leads-table th:first-child,
+        .leads-table td:first-child {
+            border-left: none !important;
+        }
+        .leads-table th:last-child,
+        .leads-table td:last-child {
+            border-right: none !important;
         }
         .leads-table tbody tr:hover {
-            background-color: #f9fafb !important;
-        }
-        .dark .leads-table tbody tr:hover {
-            background-color: #1e293b !important;
+            background-color: var(--page-bg) !important;
         }
         .leads-table tbody td {
             padding: 0.75rem 1rem;
             vertical-align: middle;
             font-size: 0.8rem;
+            color: var(--text-main);
+            border-bottom: 1px solid var(--table-border) !important;
         }
         .col-phone {
             white-space: nowrap !important;
@@ -83,20 +86,20 @@
                 </div>
             @endif
 
-            <div class="bg-white dark:bg-[#0f172a] border border-[#ddd] dark:border-slate-800 rounded-[4px] overflow-hidden">
+            <div class="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl overflow-hidden shadow-xs">
 
                 {{-- Horizontal Filter bar - Uniform 36px Height Level --}}
-                <form method="GET" action="{{ route('leads.index') }}" class="p-2 border-b border-[#ddd] dark:border-slate-800 bg-white dark:bg-[#0f172a] flex items-center gap-2 flex-wrap text-xs">
+                <form method="GET" action="{{ route('leads.index') }}" class="p-2 border-b border-[var(--card-border)] bg-[var(--card-bg)] flex items-center gap-2 flex-wrap text-xs">
                     <div class="relative w-60 min-w-[180px] shrink-0">
                         <input type="text" name="search" id="lead-search" value="{{ request('search') }}" 
                                 placeholder="Search customer, phone, address…" 
                                 style="height: 36px !important; min-height: 36px !important; max-height: 36px !important; border-radius: 6px !important; box-sizing: border-box; padding-left: 10px;"
-                                class="crm-input w-full text-xs border border-[#cbd5e1] dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-blue-500">
+                                class="crm-input w-full text-xs border border-[var(--input-border)] bg-[var(--card-bg)] text-[var(--text-main)] placeholder-[var(--text-muted)] focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/30">
                     </div>
 
                     <select name="status" id="lead-status-filter" 
                             style="height: 36px !important; min-height: 36px !important; max-height: 36px !important; border-radius: 6px !important; box-sizing: border-box;"
-                            class="crm-select text-xs border border-[#cbd5e1] dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:outline-none focus:border-blue-500 shrink-0">
+                            class="crm-select text-xs border border-[var(--input-border)] bg-[var(--card-bg)] text-[var(--text-main)] focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/30 shrink-0">
                         <option value="">All Statuses</option>
                         <option value="new" @selected(request('status') === 'new')>New</option>
                         <option value="contacted" @selected(request('status') === 'contacted')>Contacted</option>
@@ -107,7 +110,7 @@
 
                     <button type="submit" 
                             style="height: 36px !important; min-height: 36px !important; max-height: 36px !important; border-radius: 6px !important; box-sizing: border-box;"
-                            class="crm-btn-primary px-3 text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white transition shrink-0 inline-flex items-center gap-1.5 shadow-xs">
+                            class="crm-btn-primary px-3 text-xs font-semibold bg-[var(--primary-btn-bg)] hover:bg-[var(--primary-btn-hover)] text-white transition shrink-0 inline-flex items-center gap-1.5 shadow-xs">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                         <span>Search</span>
                     </button>
@@ -115,13 +118,13 @@
                     @if(request('search') || request('status'))
                         <a href="{{ route('leads.index') }}" 
                            style="height: 36px !important; min-height: 36px !important; max-height: 36px !important; border-radius: 6px !important; box-sizing: border-box;"
-                           class="crm-btn-secondary px-3 text-xs font-medium border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition inline-flex items-center shrink-0">
+                           class="crm-btn-secondary px-3 text-xs font-medium border border-[var(--button-border)] bg-[var(--card-bg)] text-[var(--text-main)] hover:bg-[var(--page-bg)] transition inline-flex items-center shrink-0">
                             Reset
                         </a>
                     @endif
                 </form>
 
-                {{-- Table with white background, #f0f0f0 header row, 1px solid #ddd borders --}}
+                {{-- Table with proper theme variables and 1px borders --}}
                 <div class="overflow-x-auto">
                     <table class="leads-table">
                         <thead>
@@ -139,65 +142,65 @@
                             @forelse ($leads as $lead)
                                 @php
                                     $statusColors = [
-                                        'won' => '#16a34a',
-                                        'quoted' => '#d97706',
-                                        'new' => '#2563eb',
-                                        'contacted' => '#2563eb',
-                                        'lost' => '#dc2626',
+                                        'won' => 'var(--status-green)',
+                                        'quoted' => 'var(--status-orange)',
+                                        'new' => 'var(--crm-accent)',
+                                        'contacted' => 'var(--crm-accent)',
+                                        'lost' => 'var(--status-red)',
                                     ];
-                                    $sColor = $statusColors[strtolower($lead->status)] ?? '#2563eb';
+                                    $sColor = $statusColors[strtolower($lead->status)] ?? 'var(--crm-accent)';
                                 @endphp
                                 <tr>
                                     {{-- Customer name --}}
                                     <td>
                                         <div>
-                                            <a href="{{ route('leads.show', $lead) }}" class="font-bold text-slate-900 dark:text-white hover:underline">
+                                            <a href="{{ route('leads.show', $lead) }}" class="font-bold text-[var(--text-main)] hover:underline">
                                                 {{ $lead->customer_name }}
                                             </a>
                                         </div>
                                         @if($lead->site_address)
-                                            <div class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                                            <div class="text-xs text-[var(--text-muted)] mt-0.5">
                                                 {{ $lead->site_address }}
                                             </div>
                                         @endif
                                     </td>
 
                                     {{-- Phone with whitespace-nowrap --}}
-                                    <td class="col-phone text-slate-700 dark:text-slate-300">
+                                    <td class="col-phone text-[var(--text-main)]">
                                         {{ $lead->phone }}
                                     </td>
 
-                                    <td class="text-slate-600 dark:text-slate-400">
+                                    <td class="text-[var(--text-muted)]">
                                         {{ $lead->email ?? '—' }}
                                     </td>
 
-                                    <td class="text-slate-700 dark:text-slate-300 capitalize">
+                                    <td class="text-[var(--text-main)] capitalize">
                                         {{ $lead->source ?: '—' }}
                                     </td>
 
-                                    {{-- Status: Plain bold colored text, never a pill/badge --}}
+                                    {{-- Status: Plain bold colored text, semantic variable --}}
                                     <td>
                                         <span class="font-bold" style="color: {{ $sColor }};">
                                             {{ ucfirst(strtolower($lead->status)) }}
                                         </span>
                                     </td>
 
-                                    <td class="text-slate-500 dark:text-slate-400 whitespace-nowrap">
+                                    <td class="text-[var(--text-muted)] whitespace-nowrap">
                                         {{ $lead->created_at->format('d M Y') }}
                                     </td>
 
                                     {{-- Actions: View, Edit, Delete separated by a space --}}
                                     <td class="text-right whitespace-nowrap">
                                         <div class="inline-flex items-center gap-2 justify-end">
-                                            <a href="{{ route('leads.show', $lead) }}" class="action-link">View</a>
+                                            <a href="{{ route('leads.show', $lead) }}" class="action-link text-[var(--crm-accent)] hover:underline">View</a>
                                             @if(auth()->user()->isAdmin())
-                                                <a href="{{ route('leads.edit', $lead) }}" class="action-link">Edit</a>
+                                                <a href="{{ route('leads.edit', $lead) }}" class="action-link text-[var(--crm-accent)] hover:underline">Edit</a>
                                                 <form method="POST" action="{{ route('leads.destroy', $lead) }}"
                                                       class="inline"
                                                       onsubmit="return confirm('Delete lead {{ addslashes($lead->customer_name) }}?')">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="danger-link">Delete</button>
+                                                    <button type="submit" class="danger-link text-[var(--status-red)] hover:underline">Delete</button>
                                                 </form>
                                             @endif
                                         </div>
@@ -205,7 +208,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="text-center py-6 text-slate-500">
+                                    <td colspan="7" class="text-center py-6 text-[var(--text-muted)]">
                                         No leads yet
                                     </td>
                                 </tr>
@@ -215,7 +218,7 @@
                 </div>
 
                 {{-- Total count shown below the table --}}
-                <div class="px-4 py-2.5 border-t border-[#ddd] dark:border-slate-800 bg-[#fbfbfb] dark:bg-slate-900/60 flex items-center justify-between text-xs text-slate-500">
+                <div class="px-4 py-2.5 border-t border-[var(--table-border)] bg-[var(--table-header-bg)] flex items-center justify-between text-xs text-[var(--text-muted)]">
                     <span class="font-medium">Total: {{ $leads->total() }}</span>
                     @if($leads->hasPages())
                         <div class="text-xs">

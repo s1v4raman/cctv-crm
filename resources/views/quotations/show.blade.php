@@ -146,20 +146,20 @@
                 <table class="crm-table w-full">
                     <tbody>
                         <tr>
-                            <td style="width: 25%; color: #555; font-weight: 500;">Quotation Identifier</td>
-                            <td style="color: #222; font-weight: 500;">{{ $quotation->quotation_no }}</td>
+                            <td style="width: 25%; color: var(--text-muted); font-weight: 500;">Quotation Identifier</td>
+                            <td style="color: var(--text-main); font-weight: 500;">{{ $quotation->quotation_no }}</td>
                         </tr>
                         <tr>
-                            <td style="color: #555; font-weight: 500;">Date Issued</td>
-                            <td style="color: #222; font-weight: 500;">{{ $quotation->quotation_date?->format('d M Y') ?? '—' }}</td>
+                            <td style="color: var(--text-muted); font-weight: 500;">Date Issued</td>
+                            <td style="color: var(--text-main); font-weight: 500;">{{ $quotation->quotation_date?->format('d M Y') ?? '—' }}</td>
                         </tr>
                         <tr>
-                            <td style="color: #555; font-weight: 500;">Valid Until</td>
-                            <td style="color: #222; font-weight: 500;">{{ $quotation->valid_until?->format('d M Y') ?? '—' }}</td>
+                            <td style="color: var(--text-muted); font-weight: 500;">Valid Until</td>
+                            <td style="color: var(--text-main); font-weight: 500;">{{ $quotation->valid_until?->format('d M Y') ?? '—' }}</td>
                         </tr>
                         <tr>
-                            <td style="color: #555; font-weight: 500;">Customer</td>
-                            <td style="color: #222; font-weight: 500;">
+                            <td style="color: var(--text-muted); font-weight: 500;">Customer</td>
+                            <td style="color: var(--text-main); font-weight: 500;">
                                 <a href="{{ route('leads.show', $quotation->lead) }}" class="action-link">
                                     {{ $quotation->lead->customer_name }}
                                 </a>
@@ -167,8 +167,8 @@
                         </tr>
                         @if($quotation->lead->site_address)
                         <tr>
-                            <td style="color: #555; font-weight: 500;">Installation Facility Address</td>
-                            <td style="color: #222; font-weight: 500;">{{ $quotation->lead->site_address }}</td>
+                            <td style="color: var(--text-muted); font-weight: 500;">Installation Facility Address</td>
+                            <td style="color: var(--text-main); font-weight: 500;">{{ $quotation->lead->site_address }}</td>
                         </tr>
                         @endif
                     </tbody>

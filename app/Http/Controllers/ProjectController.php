@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Company;
 use App\Models\Lead;
+use App\Models\Product;
 use App\Models\Project;
 use App\Models\ProjectAuditLog;
 use App\Models\ProjectDocument;
 use App\Models\ProjectMaterial;
 use App\Models\Site;
+use App\Models\TaskMaterialConsumption;
 use App\Models\User;
 use App\Models\Worker;
 use Carbon\Carbon;
@@ -282,7 +284,13 @@ class ProjectController extends Controller
             'assignedUser',
             'creator',
             'approver',
-            'materials',
+            'materials.product',
+            'materials.consumptions.task',
+            'materials.consumptions.consumedBy',
+            'materialConsumptions.task',
+            'materialConsumptions.projectMaterial',
+            'materialConsumptions.product',
+            'materialConsumptions.consumedBy',
             'documents.uploader',
             'workDays.attendances.worker',
             'ipDevices',
@@ -290,12 +298,23 @@ class ProjectController extends Controller
             'tasks.checklists.completedByUser',
             'tasks.assignedUser',
             'tasks.completedByUser',
+            'tasks.dependsOnTask',
+            'tasks.blockedByUser',
+            'tasks.materialConsumptions',
         ]);
 
         $activeTab = $request->input('tab', 'overview');
+        $activeTaskView = $request->input('view', 'kanban');
         $companies = Company::where('is_active', true)->get();
         $workers = Worker::where('is_active', true)->orderBy('name')->get();
         $technicians = User::whereIn('role', ['admin', 'technician', 'staff'])->orderBy('name')->get();
+        $availableProducts = Product::where('is_active', true)->orderBy('name')->get();
+
+        // Calculate BOM & Material Consumption metrics for Tab 2 & 6
+        $totalBomQuantity = (float) $project->materials->sum('quantity');
+        $totalConsumedQuantity = (float) $project->materialConsumptions->sum('quantity_used');
+        $totalCableMeters = (float) $project->materialConsumptions->where('unit', 'meters')->sum('quantity_used');
+        $totalWastageQuantity = (float) $project->materialConsumptions->sum('wastage_quantity');
 
         // Calculate Work Days & Wages KPI for Tab 4
         $totalManDays = 0;
@@ -320,16 +339,19 @@ class ProjectController extends Controller
         $tasksCount = $project->tasks->count();
         $completedTasksCount = $project->tasks->where('status', 'completed')->count();
         $inProgressTasksCount = $project->tasks->where('status', 'in_progress')->count();
+        $underReviewTasksCount = $project->tasks->where('status', 'under_review')->count();
         $pendingTasksCount = $project->tasks->where('status', 'pending')->count();
         $blockedTasksCount = $project->tasks->where('status', 'blocked')->count();
         $taskCompletionPercentage = $tasksCount > 0 ? (int) round(($completedTasksCount / $tasksCount) * 100) : 0;
         $tasksByPhase = $project->tasks->groupBy('phase_name');
+        $kanbanColumns = \App\Models\ProjectTask::kanbanColumns();
         $workflowTemplates = \App\Services\ProjectWorkflowTemplateService::getTemplatesForType($project->project_type ?? 'hardware_cctv');
         $allWorkflowTemplates = \App\Services\ProjectWorkflowTemplateService::getAllTemplates();
 
         return view('projects.show', compact(
             'project',
             'activeTab',
+            'activeTaskView',
             'companies',
             'workers',
             'technicians',
@@ -340,12 +362,19 @@ class ProjectController extends Controller
             'tasksCount',
             'completedTasksCount',
             'inProgressTasksCount',
+            'underReviewTasksCount',
             'pendingTasksCount',
             'blockedTasksCount',
             'taskCompletionPercentage',
             'tasksByPhase',
+            'kanbanColumns',
             'workflowTemplates',
-            'allWorkflowTemplates'
+            'allWorkflowTemplates',
+            'availableProducts',
+            'totalBomQuantity',
+            'totalConsumedQuantity',
+            'totalCableMeters',
+            'totalWastageQuantity'
         ));
     }
 
@@ -455,10 +484,12 @@ class ProjectController extends Controller
     public function addMaterial(Request $request, Project $project)
     {
         $validated = $request->validate([
+            'product_id' => 'nullable|exists:products,id',
             'item_name' => 'required|string|max:255',
             'quantity' => 'required|numeric|min:0.01',
             'unit' => 'required|string|max:50',
-            'source' => 'required|in:warehouse,local_purchase',
+            'unit_cost' => 'nullable|numeric|min:0',
+            'source' => 'required|in:warehouse,local_purchase,company_stock,bought_from_shop',
             'shop_name' => 'nullable|string|max:255',
             'notes' => 'nullable|string|max:255',
         ]);

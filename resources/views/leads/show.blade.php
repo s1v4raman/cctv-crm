@@ -77,40 +77,83 @@
     </x-slot>
 
     <style>
+        .crm-table,
         .detail-table {
-            width: 100%;
-            border-collapse: collapse;
+            width: 100% !important;
+            border-collapse: collapse !important;
+            border-spacing: 0 !important;
+            border: none !important;
         }
+        .crm-table thead tr,
         .detail-table thead tr {
-            background-color: #f0f0f0 !important;
-            border-bottom: 1px solid #ddd !important;
+            background-color: #f1f5f9 !important;
+            border-top: none !important;
+            border-bottom: 1px solid var(--card-border) !important;
         }
+        html.dark .crm-table thead tr,
         .dark .detail-table thead tr {
-            background-color: #1e293b !important;
-            border-bottom-color: #334155 !important;
+            background-color: #0b1120 !important;
+            border-bottom: 1px solid var(--card-border) !important;
         }
+        .crm-table thead th,
         .detail-table thead th {
-            padding: 0.65rem 1rem;
-            font-size: 0.72rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-            color: #475569;
-            text-align: left;
+            padding: 0.65rem 1rem !important;
+            font-size: 0.75rem !important;
+            font-weight: 700 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.04em !important;
+            color: var(--card-border) !important;
+            text-align: left !important;
+            border-top: none !important;
+            border-bottom: 1px solid var(--card-border) !important;
+            border-right: 1px solid var(--card-border) !important;
         }
+        html.dark .crm-table thead th,
         .dark .detail-table thead th {
-            color: #94a3b8;
+            color: #94a3b8 !important;
+            border-bottom: 1px solid var(--card-border) !important;
+            border-right: 1px solid var(--card-border) !important;
         }
+        .crm-table tbody tr,
         .detail-table tbody tr {
-            border-bottom: 1px solid #ddd !important;
+            background-color: #ffffff !important;
+            border-bottom: none !important;
         }
+        html.dark .crm-table tbody tr,
         .dark .detail-table tbody tr {
-            border-bottom-color: #334155 !important;
+            background-color: #0f172a !important;
+            border-bottom: none !important;
         }
+        .crm-table tbody td,
         .detail-table tbody td {
-            padding: 0.75rem 1rem;
-            vertical-align: middle;
-            font-size: 0.8rem;
+            padding: 0.75rem 1rem !important;
+            vertical-align: middle !important;
+            font-size: 0.85rem !important;
+            border-bottom: 1px solid var(--card-border) !important;
+            border-right: 1px solid var(--card-border) !important;
+            color: var(--card-border) !important;
+        }
+        html.dark .crm-table tbody td,
+        .dark .detail-table tbody td {
+            border-bottom: 1px solid var(--card-border) !important;
+            border-right: 1px solid var(--card-border) !important;
+            color: #cbd5e1 !important;
+        }
+        .crm-table th:first-child,
+        .crm-table td:first-child,
+        .detail-table th:first-child,
+        .detail-table td:first-child {
+            border-left: none !important;
+        }
+        .crm-table th:last-child,
+        .crm-table td:last-child,
+        .detail-table th:last-child,
+        .detail-table td:last-child {
+            border-right: none !important;
+        }
+        .crm-table tbody tr:last-child td,
+        .detail-table tbody tr:last-child td {
+            border-bottom: none !important;
         }
     </style>
 
@@ -129,37 +172,37 @@
                 <table class="crm-table w-full">
                     <tbody>
                         <tr>
-                            <td style="width: 25%; color: #555; font-weight: 500;">Phone</td>
-                            <td style="color: #222; font-weight: 500;">{{ $lead->phone }}</td>
+                            <td style="width: 25%; color: var(--text-muted); font-weight: 500;">Phone</td>
+                            <td style="color: var(--text-main); font-weight: 500;">{{ $lead->phone }}</td>
                         </tr>
                         <tr>
-                            <td style="color: #555; font-weight: 500;">Email</td>
-                            <td style="color: #222; font-weight: 500;">{{ $lead->email ?: '—' }}</td>
+                            <td style="color: var(--text-muted); font-weight: 500;">Email</td>
+                            <td style="color: var(--text-main); font-weight: 500;">{{ $lead->email ?: '—' }}</td>
                         </tr>
                         @if($lead->company_name)
                         <tr>
-                            <td style="color: #555; font-weight: 500;">Company</td>
-                            <td style="color: #222; font-weight: 500;">{{ $lead->company_name }}</td>
+                            <td style="color: var(--text-muted); font-weight: 500;">Company</td>
+                            <td style="color: var(--text-main); font-weight: 500;">{{ $lead->company_name }}</td>
                         </tr>
                         @endif
                         <tr>
-                            <td style="color: #555; font-weight: 500;">Source</td>
-                            <td style="color: #222; font-weight: 500;">{{ ucfirst($lead->source ?: '—') }}</td>
+                            <td style="color: var(--text-muted); font-weight: 500;">Source</td>
+                            <td style="color: var(--text-main); font-weight: 500;">{{ ucfirst($lead->source ?: '—') }}</td>
                         </tr>
                         <tr>
-                            <td style="color: #555; font-weight: 500;">Created</td>
-                            <td style="color: #222; font-weight: 500;">{{ $lead->created_at->format('d M Y') }}</td>
+                            <td style="color: var(--text-muted); font-weight: 500;">Created</td>
+                            <td style="color: var(--text-main); font-weight: 500;">{{ $lead->created_at->format('d M Y') }}</td>
                         </tr>
                         @if($lead->site_address)
                         <tr>
-                            <td style="color: #555; font-weight: 500;">Site Address</td>
-                            <td style="color: #222; font-weight: 500;">{{ $lead->site_address }}</td>
+                            <td style="color: var(--text-muted); font-weight: 500;">Site Address</td>
+                            <td style="color: var(--text-main); font-weight: 500;">{{ $lead->site_address }}</td>
                         </tr>
                         @endif
                         @if($lead->notes)
                         <tr>
-                            <td style="color: #555; font-weight: 500;">Notes</td>
-                            <td style="color: #222; font-weight: 500;">{{ $lead->notes }}</td>
+                            <td style="color: var(--text-muted); font-weight: 500;">Notes</td>
+                            <td style="color: var(--text-main); font-weight: 500;">{{ $lead->notes }}</td>
                         </tr>
                         @endif
                     </tbody>
@@ -186,8 +229,8 @@
 
             {{-- 2. Lower Section: Site Surveys --}}
             <div class="crm-section">
-                <div class="flex items-center justify-between mb-4 pb-2 border-b border-[#ddd]">
-                    <h3 class="border-b-0 pb-0 mb-0">Site Surveys</h3>
+                <div class="flex items-center justify-between mb-4 pb-2 border-b border-[var(--card-border)] dark:border-slate-700">
+                    <h3 class="border-none pb-0 mb-0" style="border:none !important; border-bottom:none !important; margin-bottom:0 !important; padding-bottom:0 !important;">Site Surveys</h3>
                     <a href="{{ route('site-surveys.create', ['lead_id' => $lead->id]) }}" class="btn-secondary text-xs">
                         Schedule Survey
                     </a>
@@ -241,8 +284,8 @@
 
             {{-- 3. Lower Section: Quotations --}}
             <div class="crm-section">
-                <div class="flex items-center justify-between mb-4 pb-2 border-b border-[#ddd]">
-                    <h3 class="border-b-0 pb-0 mb-0">Quotations</h3>
+                <div class="flex items-center justify-between mb-4 pb-2 border-b border-[var(--card-border)] dark:border-slate-700">
+                    <h3 class="border-none pb-0 mb-0" style="border:none !important; border-bottom:none !important; margin-bottom:0 !important; padding-bottom:0 !important;">Quotations</h3>
                     <a href="{{ route('quotations.create', $lead) }}" class="btn-secondary text-xs">
                         Create Quotation
                     </a>
@@ -296,8 +339,8 @@
 
             {{-- 5. Lower Section: Installed CCTV Hardware --}}
             <div class="crm-section">
-                <div class="flex items-center justify-between mb-4 pb-2 border-b border-[#ddd]">
-                    <h3 class="border-b-0 pb-0 mb-0">Installed CCTV Hardware & Serial Numbers</h3>
+                <div class="flex items-center justify-between mb-4 pb-2 border-b border-[var(--card-border)] dark:border-slate-700">
+                    <h3 class="border-none pb-0 mb-0" style="border:none !important; border-bottom:none !important; margin-bottom:0 !important; padding-bottom:0 !important;">Installed CCTV Hardware & Serial Numbers</h3>
                     <a href="{{ route('equipment.create', ['lead_id' => $lead->id, 'redirect_to' => url()->current()]) }}" class="btn-secondary text-xs">
                         Add Asset
                     </a>

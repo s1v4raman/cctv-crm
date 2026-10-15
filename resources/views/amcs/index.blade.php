@@ -29,11 +29,11 @@
         }
         html.dark .stat-card {
             background: #0f172a;
-            border-color: #1e293b;
+            border-color: var(--text-main);
         }
         .stat-label { font-size: 14px; font-weight: 500; color: #64748b; margin-bottom: 0.25rem; }
-        html.dark .stat-label { color: #94a3b8; }
-        .stat-value { font-size: 1.6rem; font-weight: 700; color: #0f172a; line-height: 1; }
+        html.dark .stat-label { color: var(--text-muted); }
+        .stat-value { font-size: 1.6rem; font-weight: 700; color: var(--text-main); line-height: 1; }
         html.dark .stat-value { color: #ffffff; }
 
         .pg-card {
@@ -44,31 +44,31 @@
         }
         html.dark .pg-card {
             background: #0f172a;
-            border-color: #1e293b;
+            border-color: var(--text-main);
         }
 
         .p-table { width: 100%; border-collapse: collapse; }
         .p-table thead { background: #f8fafc; border-bottom: 1px solid #e2e8f0; }
-        html.dark .p-table thead { background: #0b1120; border-color: #1e293b; }
+        html.dark .p-table thead { background: #0b1120; border-color: var(--text-main); }
         .p-table thead th {
             padding: 0.75rem 1rem;
             font-size: 0.8rem; font-weight: 600; text-transform: none;
             color: #475569; text-align: left; white-space: nowrap;
         }
-        html.dark .p-table thead th { color: #94a3b8; }
+        html.dark .p-table thead th { color: var(--text-muted); }
         .p-table thead th.right { text-align: right; }
         .p-table tbody tr { border-bottom: 1px solid #e2e8f0; background: #ffffff; }
-        html.dark .p-table tbody tr { border-bottom-color: #1e293b; background: #0f172a; }
+        html.dark .p-table tbody tr { border-bottom-color: var(--text-main); background: #0f172a; }
         .p-table tbody tr:last-child { border-bottom: none; }
         .p-table tbody tr:hover { background: #f8fafc; }
-        html.dark .p-table tbody tr:hover { background: #1e293b; }
+        html.dark .p-table tbody tr:hover { background: var(--card-border); }
         .p-table tbody td { padding: 0.75rem 1rem; vertical-align: middle; font-size: 0.85rem; color: #475569; }
-        html.dark .p-table tbody td { color: #cbd5e1; }
+        html.dark .p-table tbody td { color: var(--text-muted); }
         .p-table tbody td.right { text-align: right; }
 
         .cell-no { font-weight: 600; font-family: ui-monospace,monospace; color: #2563eb; text-decoration: none; }
         .cell-no:hover { text-decoration: underline; }
-        .cell-name { font-weight: 600; color: #0f172a; }
+        .cell-name { font-weight: 600; color: var(--text-main); }
         html.dark .cell-name { color: #ffffff; }
 
         /* Status: Plain bold colored text */
@@ -79,7 +79,7 @@
         .badge-cancelled { color: #ea580c !important; }
 
         .pg-links { padding: 0.75rem 1rem; border-top: 1px solid #e2e8f0; }
-        html.dark .pg-links { border-top-color: #1e293b; }
+        html.dark .pg-links { border-top-color: var(--text-main); }
     </style>
 
     <div class="pg-wrap">

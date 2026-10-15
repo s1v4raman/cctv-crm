@@ -40,13 +40,13 @@
                     
                     {{-- Lead Selector --}}
                     <div class="md:col-span-5">
-                        <label class="block text-sm font-semibold text-slate-300 mb-1.5 flex items-center justify-between">
-                            <span>Target Customer / Lead <span class="text-amber-400">*</span></span>
+                        <label class="block text-sm font-semibold text-slate-800 dark:text-slate-300 mb-1.5 flex items-center justify-between">
+                            <span>Target Customer / Lead <span class="text-amber-500">*</span></span>
                             @if(!empty($initialData['survey_id']))
                                 <span class="text-[10px] text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded font-mono font-semibold">Loaded from Site Survey #{{ $initialData['survey_id'] }}</span>
                             @endif
                         </label>
-                        <select x-model="selectedLeadId" class="w-full text-xs rounded-xl border border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:outline-none p-2.5">
+                        <select x-model="selectedLeadId" class="w-full text-xs rounded-xl border border-[var(--card-border)] dark:border-slate-600 bg-white dark:bg-[#060913] text-slate-900 dark:text-white focus:border-blue-600 focus:outline-none p-2.5">
                             <option value="">-- Select Customer / Lead (or General Estimate) --</option>
                             @foreach($leads as $lead)
                                 <option value="{{ $lead->id }}">
@@ -58,21 +58,21 @@
 
                     {{-- System Topology Switch --}}
                     <div class="md:col-span-4">
-                        <label class="block text-sm font-semibold text-slate-300 mb-1.5">
+                        <label class="block text-sm font-semibold text-slate-800 dark:text-slate-300 mb-1.5">
                             System Architecture
                         </label>
-                        <div class="grid grid-cols-2 gap-2 bg-[#060913] p-1.5 rounded-xl border border-slate-800">
+                        <div class="grid grid-cols-2 gap-2 bg-white dark:bg-[#060913] p-1.5 rounded-xl border border-[var(--card-border)] dark:border-slate-700">
                             <button type="button" 
                                     @click="systemType = 'ip'; recalculateAll()"
                                     :style="systemType === 'ip' ? { backgroundColor: 'var(--crm-accent, #2563eb)', color: '#ffffff', boxShadow: '0 4px 12px var(--crm-accent-shadow, rgba(37,99,235,0.3))' } : {}"
-                                    :class="systemType !== 'ip' ? 'text-slate-400 hover:text-white font-semibold' : 'font-black'"
+                                    :class="systemType !== 'ip' ? 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-semibold' : 'font-black'"
                                     class="py-2 text-xs rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer">
                                 <span>🌐 IP Network (NVR)</span>
                             </button>
                             <button type="button" 
                                     @click="systemType = 'analog'; recalculateAll()"
                                     :style="systemType === 'analog' ? { backgroundColor: 'var(--crm-accent, #2563eb)', color: '#ffffff', boxShadow: '0 4px 12px var(--crm-accent-shadow, rgba(37,99,235,0.3))' } : {}"
-                                    :class="systemType !== 'analog' ? 'text-slate-400 hover:text-white font-semibold' : 'font-black'"
+                                    :class="systemType !== 'analog' ? 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-semibold' : 'font-black'"
                                     class="py-2 text-xs rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer">
                                 <span>📹 HD Analog (DVR)</span>
                             </button>
@@ -81,20 +81,20 @@
 
                     {{-- Quick Template Presets --}}
                     <div class="md:col-span-3">
-                        <label class="block text-sm font-semibold text-slate-300 mb-1.5">
+                        <label class="block text-sm font-semibold text-slate-800 dark:text-slate-300 mb-1.5">
                             Quick Setup Presets
                         </label>
                         <div class="flex items-center gap-2">
                             <button type="button" @click="loadPreset('home_4')" 
-                                    class="flex-1 py-2 px-2 text-[11px] font-bold rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-amber-500/10 hover:border-amber-500/30 hover:text-amber-400 text-slate-300 transition">
+                                    class="flex-1 py-2 px-2 text-[11px] font-bold rounded-xl border border-[var(--card-border)] dark:border-slate-600 bg-white dark:bg-slate-800/80 hover:bg-slate-100 dark:hover:bg-amber-500/10 text-slate-800 dark:text-slate-300 transition cursor-pointer">
                                 4-Cam Home
                             </button>
                             <button type="button" @click="loadPreset('shop_8')" 
-                                    class="flex-1 py-2 px-2 text-[11px] font-bold rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-amber-500/10 hover:border-amber-500/30 hover:text-amber-400 text-slate-300 transition">
+                                    class="flex-1 py-2 px-2 text-[11px] font-bold rounded-xl border border-[var(--card-border)] dark:border-slate-600 bg-white dark:bg-slate-800/80 hover:bg-slate-100 dark:hover:bg-amber-500/10 text-slate-800 dark:text-slate-300 transition cursor-pointer">
                                 8-Cam Retail
                             </button>
                             <button type="button" @click="loadPreset('factory_16')" 
-                                    class="flex-1 py-2 px-2 text-[11px] font-bold rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-amber-500/10 hover:border-amber-500/30 hover:text-amber-400 text-slate-300 transition">
+                                    class="flex-1 py-2 px-2 text-[11px] font-bold rounded-xl border border-[var(--card-border)] dark:border-slate-600 bg-white dark:bg-slate-800/80 hover:bg-slate-100 dark:hover:bg-amber-500/10 text-slate-800 dark:text-slate-300 transition cursor-pointer">
                                 16-Cam Plant
                             </button>
                         </div>

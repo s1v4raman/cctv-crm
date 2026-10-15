@@ -44,17 +44,167 @@
     <div class="py-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-6"
          x-data="{
              currentTab: '{{ $activeTab }}',
+             activeTaskView: '{{ $activeTaskView ?? 'kanban' }}',
+             taskSearchQuery: '',
              approveModalOpen: false,
              rejectModalOpen: false,
              materialModalOpen: false,
+             consumeModalOpen: false,
+             consumeTaskId: '',
+             consumeTaskTitle: '',
+             consumeMaterialId: '',
+             consumeProductId: '',
+             consumeItemName: '',
+             consumeQty: '',
+             consumeUnit: 'meters',
+             consumeWastage: '0',
+             consumeDrumNo: '',
+             consumeDeductStock: true,
+             consumeNotes: '',
              documentModalOpen: false,
              workDayModalOpen: false,
+             workerPhotoModalUrl: null,
              deviceModalOpen: false,
              bulkDeviceModalOpen: false,
              templateModalOpen: false,
              taskModalOpen: false,
+             blockerModalOpen: false,
+             blockerTaskId: null,
+             blockerTaskTitle: '',
+             blockerReason: '',
+             blockerSubmitting: false,
+             blockerAlertUrl: null,
+             editTaskModalOpen: false,
+             editTaskId: null,
+             editTaskTitle: '',
+             editTaskPhase: '',
+             editTaskDescription: '',
+             editTaskPriority: 'medium',
+             editTaskStatus: 'pending',
+             editTaskAssignedTo: '',
+             editTaskStartDate: '',
+             editTaskDueDate: '',
+             editTaskEstHours: '',
+             editTaskDependsOn: '',
+             editTaskBlockerReason: '',
              selectedTemplateKey: '{{ array_key_first($workflowTemplates) ?? 'cctv_commercial' }}',
              activePhaseFilter: 'all',
+
+             // Quick common CCTV blocker preset reasons
+             quickBlockers: [
+                 'Cannot start Camera Mounting until Client Finishes False Ceiling Paint',
+                 'Waiting for Civil Contractor conduit pipe laying and coring',
+                 'Client IT department IP pool allocation & VLAN tagging pending',
+                 'Site electrical main power supply down / DG backup unavailable',
+                 'Awaiting hardware dispatch / NVR & 4K Camera delivery from supplier',
+                 'Server rack room locked / Site engineer access permit delayed'
+             ],
+
+             openBlockerModal(taskId, taskTitle, prefill = '') {
+                 this.blockerTaskId = taskId;
+                 this.blockerTaskTitle = taskTitle || 'Project Task';
+                 this.blockerReason = prefill || 'Cannot start Camera Mounting until Client Finishes False Ceiling Paint';
+                 this.blockerAlertUrl = null;
+                 this.blockerModalOpen = true;
+             },
+
+             async submitBlockerModal() {
+                 if (!this.blockerTaskId || !this.blockerReason.trim()) {
+                     alert('Please specify a blocker reason before submitting.');
+                     return;
+                 }
+                 this.blockerSubmitting = true;
+                 try {
+                     const res = await fetch(`/projects/{{ $project->id }}/tasks/${this.blockerTaskId}/flag-blocker`, {
+                         method: 'POST',
+                         headers: {
+                             'Content-Type': 'application/json',
+                             'Accept': 'application/json',
+                             'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                         },
+                         body: JSON.stringify({ blocker_reason: this.blockerReason.trim() })
+                     });
+                     const data = await res.json();
+                     if (data.success) {
+                         if (data.whatsapp_url) {
+                             this.blockerAlertUrl = data.whatsapp_url;
+                             window.open(data.whatsapp_url, '_blank');
+                         }
+                         window.location.reload();
+                     } else {
+                         alert(data.message || 'Error flagging blocker');
+                     }
+                 } catch (e) {
+                     console.error('Blocker flag error:', e);
+                     alert('Network error while flagging blocker');
+                 } finally {
+                     this.blockerSubmitting = false;
+                 }
+             },
+
+             async unblockTask(taskId) {
+                 if (!confirm('Mark this task as Unblocked and resume execution to In Progress?')) {
+                     return;
+                 }
+                 try {
+                     const res = await fetch(`/projects/{{ $project->id }}/tasks/${taskId}/unblock`, {
+                         method: 'POST',
+                         headers: {
+                             'Content-Type': 'application/json',
+                             'Accept': 'application/json',
+                             'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                         }
+                     });
+                     const data = await res.json();
+                     if (data.success) {
+                         window.location.reload();
+                     } else {
+                         alert(data.message || 'Error unblocking task');
+                     }
+                 } catch (e) {
+                     console.error('Unblock error:', e);
+                 }
+             },
+
+             openEditTaskModal(task) {
+                 this.editTaskId = task.id;
+                 this.editTaskTitle = task.title || '';
+                 this.editTaskPhase = task.phase_name || '';
+                 this.editTaskDescription = task.description || '';
+                 this.editTaskPriority = task.priority || 'medium';
+                 this.editTaskStatus = task.status || 'pending';
+                 this.editTaskAssignedTo = task.assigned_to || '';
+                 this.editTaskStartDate = task.start_date ? task.start_date.substring(0, 10) : '';
+                 this.editTaskDueDate = task.due_date ? task.due_date.substring(0, 10) : '';
+                 this.editTaskEstHours = task.estimated_hours || '';
+                 this.editTaskDependsOn = task.depends_on_task_id || '';
+                 this.editTaskBlockerReason = task.blocker_reason || '';
+                 this.editTaskModalOpen = true;
+             },
+
+             openConsumeModal(taskId = null, taskTitle = '', materialId = null, itemName = '', unit = 'meters', productId = '') {
+                 this.consumeTaskId = taskId || '{{ $project->tasks->isNotEmpty() ? $project->tasks->first()->id : '' }}';
+                 this.consumeTaskTitle = taskTitle || '';
+                 this.consumeMaterialId = materialId || '';
+                 this.consumeProductId = productId || '';
+                 this.consumeItemName = itemName || '';
+                 this.consumeQty = '';
+                 this.consumeUnit = unit || 'meters';
+                 this.consumeWastage = '0';
+                 this.consumeDrumNo = '';
+                 this.consumeDeductStock = true;
+                 this.consumeNotes = '';
+                 this.consumeModalOpen = true;
+             },
+
+             onBomSelectChange(evt) {
+                 const opt = evt.target.selectedOptions[0];
+                 if (opt && opt.dataset.itemName) {
+                     this.consumeItemName = opt.dataset.itemName;
+                     this.consumeUnit = opt.dataset.unit || 'meters';
+                     this.consumeProductId = opt.dataset.productId || '';
+                 }
+             },
 
              // Device password reveal state
              revealedPasswords: {},
@@ -115,6 +265,10 @@
              // Quick task status change
              async updateTaskStatus(taskId, selectEl) {
                  const newStatus = selectEl.value;
+                 if (newStatus === 'blocked') {
+                     this.openBlockerModal(taskId, selectEl.dataset.taskTitle || 'Task', 'Cannot start Camera Mounting until Client Finishes False Ceiling Paint');
+                     return;
+                 }
                  try {
                      const res = await fetch(`/projects/{{ $project->id }}/tasks/${taskId}/status`, {
                          method: 'PATCH',
@@ -132,8 +286,65 @@
                  } catch (e) {
                      console.error('Error updating status:', e);
                  }
+             },
+
+             // Initialize Sortable.js drag-and-drop across the 5 Kanban columns
+             initSortableKanban() {
+                 this.$nextTick(() => {
+                     if (typeof Sortable === 'undefined') {
+                         console.warn('Sortable.js library not detected');
+                         return;
+                     }
+                     const columns = document.querySelectorAll('.kanban-sortable-list');
+                     columns.forEach(col => {
+                         new Sortable(col, {
+                             group: 'kanban-board',
+                             animation: 200,
+                             ghostClass: 'bg-blue-50/80 dark:bg-blue-950/40 border-2 border-dashed border-blue-400 rounded-xl',
+                             chosenClass: 'opacity-70 scale-[1.01]',
+                             dragClass: 'shadow-2xl opacity-90 rotate-1',
+                             handle: '.kanban-drag-handle',
+                             onEnd: async (evt) => {
+                                 const taskId = evt.item.dataset.taskId;
+                                 const taskTitle = evt.item.dataset.taskTitle;
+                                 const newStatus = evt.to.dataset.status;
+                                 const oldStatus = evt.from.dataset.status;
+
+                                 if (newStatus === oldStatus && evt.newIndex === evt.oldIndex) {
+                                     return;
+                                 }
+
+                                 if (newStatus === 'blocked' && oldStatus !== 'blocked') {
+                                     // Return element to original spot and open blocker modal
+                                     evt.from.insertBefore(evt.item, evt.from.children[evt.oldIndex]);
+                                     this.openBlockerModal(taskId, taskTitle, 'Cannot start Camera Mounting until Client Finishes False Ceiling Paint');
+                                     return;
+                                 }
+
+                                 try {
+                                     const res = await fetch(`/projects/{{ $project->id }}/tasks/${taskId}/status`, {
+                                         method: 'PATCH',
+                                         headers: {
+                                             'Content-Type': 'application/json',
+                                             'Accept': 'application/json',
+                                             'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                         },
+                                         body: JSON.stringify({ status: newStatus })
+                                     });
+                                     const data = await res.json();
+                                     if (data.success) {
+                                         window.location.reload();
+                                     }
+                                 } catch (err) {
+                                     console.error('Drag status change error:', err);
+                                 }
+                             }
+                         });
+                     });
+                 });
              }
-         }">
+         }"
+         x-init="initSortableKanban()">
 
         {{-- Flash Alerts --}}
         @if (session('status'))
@@ -191,7 +402,10 @@
                     1. Overview
                 </button>
                 <button type="button" @click="currentTab = 'materials'" :class="currentTab === 'materials' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'">
-                    2. Materials ({{ $project->materials->count() }})
+                    2. Materials &bull; BOM ({{ $project->materials->count() }})
+                    @if($totalCableMeters > 0)
+                        <span class="ml-1 px-1.5 py-0.5 text-[10px] rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 font-bold">{{ number_format($totalCableMeters, 0) }}m</span>
+                    @endif
                 </button>
                 <button type="button" @click="currentTab = 'documents'" :class="currentTab === 'documents' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'">
                     3. Documents &bull; DCs ({{ $project->documents->count() }})
@@ -765,74 +979,199 @@
         </div>
 
         {{-- ════════════════════════════════════════════════════════════════ --}}
-        {{-- TAB 2: MATERIALS (BOM)                                           --}}
+        {{-- TAB 2: MATERIALS & BOM CONSUMPTION TRACKER                        --}}
         {{-- ════════════════════════════════════════════════════════════════ --}}
         <div x-show="currentTab === 'materials'" x-cloak class="space-y-6">
-            <div class="rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden">
-                <div class="p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+
+            {{-- Top KPI Cards for Materials & Cable Tracking --}}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {{-- Total BOM Allocation --}}
+                <div class="p-5 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs flex items-center justify-between">
                     <div>
-                        <h3 class="font-extrabold text-slate-900 dark:text-white text-base">Bill of Materials (BOM)</h3>
-                        <p class="text-xs text-slate-500">Hardware, cabling and consumables allocated for this deployment</p>
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">BOM Allocation</span>
+                        <span class="text-2xl font-black text-slate-900 dark:text-white mt-1 block">
+                            {{ $project->materials->count() }} <span class="text-sm font-semibold text-slate-400">Items</span>
+                        </span>
+                        <span class="text-[11px] text-blue-600 dark:text-blue-400 font-semibold mt-0.5 block">
+                            {{ number_format($totalBomQuantity, 1) }} total planned units
+                        </span>
+                    </div>
+                    <div class="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-900 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-xl shrink-0">
+                        📋
+                    </div>
+                </div>
+
+                {{-- Cable Laid / Consumed --}}
+                <div class="p-5 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Cable Pulled in Field</span>
+                        <span class="text-2xl font-black text-indigo-600 dark:text-indigo-400 mt-1 block font-mono">
+                            {{ number_format($totalCableMeters, 1) }} <span class="text-sm font-semibold">mtrs</span>
+                        </span>
+                        <span class="text-[11px] text-slate-500 font-semibold mt-0.5 block">
+                            Cat6 / Cat5 &amp; 3+1 Power cabling
+                        </span>
+                    </div>
+                    <div class="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-900 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-xl shrink-0">
+                        🔌
+                    </div>
+                </div>
+
+                {{-- Hardware Units Installed --}}
+                <div class="p-5 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Hardware Installed</span>
+                        <span class="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1 block font-mono">
+                            {{ number_format($project->materialConsumptions->where('unit', '!=', 'meters')->sum('quantity_used'), 1) }} <span class="text-sm font-semibold">units</span>
+                        </span>
+                        <span class="text-[11px] text-emerald-600/80 font-semibold mt-0.5 block">
+                            Cameras, NVRs &amp; Accessories
+                        </span>
+                    </div>
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-900 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-xl shrink-0">
+                        📹
+                    </div>
+                </div>
+
+                {{-- Scrap & Cut Wastage --}}
+                <div class="p-5 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Scrap &amp; Wastage</span>
+                        <span class="text-2xl font-black text-amber-600 dark:text-amber-400 mt-1 block font-mono">
+                            {{ number_format($totalWastageQuantity, 1) }} <span class="text-sm font-semibold">mtrs/units</span>
+                        </span>
+                        <span class="text-[11px] text-amber-600/80 font-semibold mt-0.5 block">
+                            Cut-offs &amp; off-cuts logged
+                        </span>
+                    </div>
+                    <div class="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-900 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold text-xl shrink-0">
+                        ✂️
+                    </div>
+                </div>
+            </div>
+
+            {{-- 1. Bill of Materials (BOM) & Reconciliation Table --}}
+            <div class="rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden">
+                <div class="p-5 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h3 class="font-extrabold text-slate-900 dark:text-white text-base flex items-center gap-2">
+                            <span>Bill of Materials (BOM) &amp; Variance Reconciliation</span>
+                            <span class="px-2 py-0.5 text-[10px] rounded-full bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 font-bold">Planned vs Actual</span>
+                        </h3>
+                        <p class="text-xs text-slate-500 mt-0.5">Track allocated equipment against real-time consumption logged from field tasks</p>
                     </div>
 
-                    <button type="button" @click="materialModalOpen = true" class="btn-secondary">
-                        Add Material
-                    </button>
+                    <div class="flex items-center gap-2.5 flex-wrap">
+                        <button type="button" @click="openConsumeModal()" class="btn-primary text-xs shadow-md">
+                            + Log Material / Cable Used
+                        </button>
+                        <button type="button" @click="materialModalOpen = true" class="btn-secondary text-xs">
+                            + Add BOM Item
+                        </button>
+                    </div>
                 </div>
 
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm text-slate-600 dark:text-slate-300">
                         <thead class="bg-slate-50/80 dark:bg-slate-800/50 text-xs uppercase font-bold text-slate-500 border-b border-slate-100 dark:border-slate-800">
                             <tr>
-                                <th class="px-5 py-3.5">Item Name</th>
-                                <th class="px-5 py-3.5 text-center">Quantity</th>
-                                <th class="px-5 py-3.5">Unit</th>
-                                <th class="px-5 py-3.5">Procurement Source</th>
-                                <th class="px-5 py-3.5">Local Shop Name</th>
+                                <th class="px-5 py-3.5">Material / Equipment</th>
+                                <th class="px-5 py-3.5">Sourcing</th>
+                                <th class="px-5 py-3.5 text-center">Allocated (BOM)</th>
+                                <th class="px-5 py-3.5 text-center">Actual Consumed</th>
+                                <th class="px-5 py-3.5 text-center">Remaining Balance</th>
+                                <th class="px-5 py-3.5 text-center">Wastage</th>
+                                <th class="px-5 py-3.5 min-w-[160px]">Installation Progress</th>
                                 <th class="px-5 py-3.5 text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100 dark:border-slate-800">
                             @forelse($project->materials as $mat)
-                                <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40">
-                                    <td class="px-5 py-3.5 font-bold text-slate-900 dark:text-white">
-                                        {{ $mat->item_name }}
+                                @php
+                                    $consumed = $mat->total_consumed;
+                                    $allocated = (float) $mat->quantity;
+                                    $percent = $mat->consumption_percentage;
+                                    $isOver = $mat->is_over_consumed;
+                                    $remaining = $mat->remaining_quantity;
+                                @endphp
+                                <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition">
+                                    <td class="px-5 py-3.5">
+                                        <div class="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                                            <span>{{ $mat->item_name }}</span>
+                                            @if($mat->product)
+                                                <span class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                                                    {{ $mat->product->sku }}
+                                                </span>
+                                            @endif
+                                        </div>
                                         @if($mat->notes)
-                                            <span class="text-xs text-slate-400 block font-normal">{{ $mat->notes }}</span>
+                                            <span class="text-xs text-slate-400 block font-normal mt-0.5">{{ $mat->notes }}</span>
                                         @endif
-                                    </td>
-                                    <td class="px-5 py-3.5 text-center font-bold font-mono">
-                                        {{ $mat->quantity }}
-                                    </td>
-                                    <td class="px-5 py-3.5 uppercase text-xs font-semibold">
-                                        {{ $mat->unit }}
                                     </td>
                                     <td class="px-5 py-3.5">
-                                        <span class="px-2 py-0.5 text-xs font-semibold rounded {{ $mat->source === 'warehouse' ? 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300' : 'bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300' }}">
-                                            {{ $mat->source === 'warehouse' ? 'Warehouse Dispatch' : 'Local Purchase' }}
+                                        <span class="px-2 py-0.5 text-xs font-semibold rounded {{ in_array($mat->source, ['warehouse', 'company_stock']) ? 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300' : 'bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300' }}">
+                                            {{ in_array($mat->source, ['warehouse', 'company_stock']) ? 'Warehouse Stock' : 'Local Purchase' }}
                                         </span>
-                                    </td>
-                                    <td class="px-5 py-3.5 text-xs text-slate-700 dark:text-slate-300">
-                                        {{ $mat->shop_name ?? '—' }}
-                                    </td>
-                                    <td class="px-5 py-3.5 text-right">
-                                        @if(auth()->user()->isAdmin())
-                                        <form method="POST" action="{{ route('projects.materials.destroy', ['project' => $project, 'material' => $mat]) }}" onsubmit="return confirm('Remove this material item?')" class="inline-block">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="text-rose-500 hover:text-rose-700 text-xs font-bold">
-                                                Delete
-                                            </button>
-                                        </form>
-                                        @else
-                                            <span class="text-slate-400 text-xs">—</span>
+                                        @if($mat->shop_name)
+                                            <span class="block text-[11px] text-slate-400 mt-0.5">{{ $mat->shop_name }}</span>
                                         @endif
+                                    </td>
+                                    <td class="px-5 py-3.5 text-center font-bold font-mono text-slate-900 dark:text-white">
+                                        {{ number_format($mat->quantity, 1) }} <span class="text-xs font-normal text-slate-400 uppercase">{{ $mat->unit }}</span>
+                                    </td>
+                                    <td class="px-5 py-3.5 text-center font-bold font-mono {{ $isOver ? 'text-rose-600 dark:text-rose-400' : 'text-blue-600 dark:text-blue-400' }}">
+                                        {{ number_format($consumed, 1) }} <span class="text-xs font-normal text-slate-400 uppercase">{{ $mat->unit }}</span>
+                                    </td>
+                                    <td class="px-5 py-3.5 text-center font-bold font-mono">
+                                        @if($isOver)
+                                            <span class="text-rose-600 dark:text-rose-400 font-extrabold">+{{ number_format($consumed - $allocated, 1) }} over</span>
+                                        @else
+                                            <span class="text-emerald-600 dark:text-emerald-400">{{ number_format($remaining, 1) }} {{ $mat->unit }}</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-5 py-3.5 text-center font-mono text-xs text-slate-500">
+                                        {{ number_format($mat->total_wastage, 1) }} {{ $mat->unit }}
+                                    </td>
+                                    <td class="px-5 py-3.5">
+                                        <div class="space-y-1">
+                                            <div class="flex items-center justify-between text-xs font-bold">
+                                                <span class="{{ $isOver ? 'text-rose-600' : ($percent >= 100 ? 'text-emerald-600' : 'text-blue-600') }}">
+                                                    @if($isOver)
+                                                        ⚠️ Exceeded ({{ round(($consumed / $allocated) * 100) }}%)
+                                                    @elseif($percent >= 100)
+                                                        ✓ 100% Installed
+                                                    @else
+                                                        {{ $percent }}% Installed
+                                                    @endif
+                                                </span>
+                                            </div>
+                                            <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2 overflow-hidden">
+                                                <div class="h-2 rounded-full transition-all {{ $isOver ? 'bg-rose-500' : ($percent >= 100 ? 'bg-emerald-500' : 'bg-blue-600') }}" style="width: {{ min(100, $percent) }}%"></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-5 py-3.5 text-right whitespace-nowrap">
+                                        <div class="inline-flex items-center gap-1.5">
+                                            <button type="button" @click="openConsumeModal(null, '', {{ $mat->id }}, '{{ addslashes($mat->item_name) }}', '{{ $mat->unit }}', '{{ $mat->product_id }}')" class="px-2 py-1 rounded text-xs font-bold bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition" title="Log usage for this BOM item">
+                                                + Log Usage
+                                            </button>
+
+                                            @if(auth()->user()->isAdmin())
+                                            <form method="POST" action="{{ route('projects.materials.destroy', ['project' => $project, 'material' => $mat]) }}" onsubmit="return confirm('Remove this material from BOM?')" class="inline-block">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="p-1 rounded text-slate-400 hover:text-rose-600 text-xs font-bold" title="Delete BOM Item">
+                                                    &times;
+                                                </button>
+                                            </form>
+                                            @endif
+                                        </div>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="px-5 py-12 text-center text-slate-400 text-xs">
-                                        No materials recorded in the Bill of Materials.
+                                    <td colspan="8" class="px-5 py-12 text-center text-slate-400 text-xs">
+                                        No materials recorded in the Bill of Materials yet. Click <strong>+ Add BOM Item</strong> to set up planned hardware and cables.
                                     </td>
                                 </tr>
                             @endforelse
@@ -840,6 +1179,116 @@
                     </table>
                 </div>
             </div>
+
+            {{-- 2. Chronological Field Consumption & Cable Pulling History Log --}}
+            <div class="rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden">
+                <div class="p-5 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                        <h3 class="font-extrabold text-slate-900 dark:text-white text-base flex items-center gap-2">
+                            <span>Field Execution &amp; Cable Consumption Log</span>
+                            <span class="px-2 py-0.5 text-[10px] rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 font-bold font-mono">
+                                {{ $project->materialConsumptions->count() }} Entries Logged
+                            </span>
+                        </h3>
+                        <p class="text-xs text-slate-500 mt-0.5">Audit log of cable pulls, meters, drum serials, and equipment consumed per specific task</p>
+                    </div>
+
+                    <button type="button" @click="openConsumeModal()" class="btn-secondary text-xs">
+                        + Record Field Usage
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-slate-600 dark:text-slate-300">
+                        <thead class="bg-slate-50/80 dark:bg-slate-800/50 text-xs uppercase font-bold text-slate-500 border-b border-slate-100 dark:border-slate-800">
+                            <tr>
+                                <th class="px-5 py-3.5">Date &amp; Time</th>
+                                <th class="px-5 py-3.5">Associated Task</th>
+                                <th class="px-5 py-3.5">Item Consumed</th>
+                                <th class="px-5 py-3.5 text-center">Quantity Used</th>
+                                <th class="px-5 py-3.5 text-center">Scrap / Cutoff</th>
+                                <th class="px-5 py-3.5">Drum / Reel / Batch #</th>
+                                <th class="px-5 py-3.5">Logged By</th>
+                                <th class="px-5 py-3.5">Inventory Status</th>
+                                <th class="px-5 py-3.5 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 dark:border-slate-800">
+                            @forelse($project->materialConsumptions as $cLog)
+                                <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition">
+                                    <td class="px-5 py-3.5 whitespace-nowrap text-xs text-slate-500">
+                                        <span class="font-bold text-slate-700 dark:text-slate-300 block">{{ $cLog->consumed_at ? $cLog->consumed_at->format('d M Y') : $cLog->created_at->format('d M Y') }}</span>
+                                        <span class="text-[10px] text-slate-400">{{ $cLog->consumed_at ? $cLog->consumed_at->format('h:i A') : $cLog->created_at->format('h:i A') }}</span>
+                                    </td>
+                                    <td class="px-5 py-3.5">
+                                        <div class="flex items-center gap-1.5 font-bold text-slate-800 dark:text-slate-200 text-xs">
+                                            <span>📌</span>
+                                            <span>{{ $cLog->task?->title ?? 'General Project Task' }}</span>
+                                        </div>
+                                        @if($cLog->task?->phase_name)
+                                            <span class="text-[10px] text-slate-400 block mt-0.5">{{ $cLog->task->phase_name }}</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-5 py-3.5 font-bold text-slate-900 dark:text-white">
+                                        {{ $cLog->item_name }}
+                                        @if($cLog->notes)
+                                            <span class="text-xs text-slate-400 block font-normal mt-0.5 italic">"{{ $cLog->notes }}"</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-5 py-3.5 text-center font-bold font-mono text-indigo-600 dark:text-indigo-400 text-sm">
+                                        {{ number_format($cLog->quantity_used, 1) }} <span class="text-xs uppercase text-slate-400 font-normal">{{ $cLog->unit }}</span>
+                                    </td>
+                                    <td class="px-5 py-3.5 text-center font-mono text-xs text-slate-500">
+                                        @if($cLog->wastage_quantity > 0)
+                                            <span class="text-amber-600 dark:text-amber-400 font-bold">{{ number_format($cLog->wastage_quantity, 1) }} {{ $cLog->unit }}</span>
+                                        @else
+                                            <span class="text-slate-400">—</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-5 py-3.5 text-xs font-mono text-slate-700 dark:text-slate-300">
+                                        {{ $cLog->drum_or_batch_no ?: '—' }}
+                                    </td>
+                                    <td class="px-5 py-3.5 whitespace-nowrap text-xs">
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-[10px] font-bold flex items-center justify-center">
+                                                {{ strtoupper(substr($cLog->consumedBy?->name ?? 'T', 0, 1)) }}
+                                            </span>
+                                            <span class="font-medium text-slate-700 dark:text-slate-300">{{ $cLog->consumedBy?->name ?? 'Technician' }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-5 py-3.5 whitespace-nowrap text-xs">
+                                        @if($cLog->deduct_from_stock)
+                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                                                ✓ Warehouse Deducted
+                                            </span>
+                                        @else
+                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+                                                Site Direct
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td class="px-5 py-3.5 text-right whitespace-nowrap">
+                                        <form method="POST" action="{{ route('projects.material-consumptions.destroy', ['project' => $project, 'consumption' => $cLog]) }}" onsubmit="return confirm('Revert this consumption entry? If deducted from warehouse stock, inventory will be restored.')" class="inline-block">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="text-rose-500 hover:text-rose-700 text-xs font-bold" title="Revert entry and restore inventory">
+                                                Revert
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="9" class="px-5 py-12 text-center text-slate-400 text-xs">
+                                        No task-level material or cable consumption logged yet. Use <strong>+ Record Field Usage</strong> or log directly from any task in the Kanban board.
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
         </div>
 
         {{-- ════════════════════════════════════════════════════════════════ --}}
@@ -991,11 +1440,11 @@
                             <table class="w-full text-left text-sm text-slate-600 dark:text-slate-300">
                                 <thead class="text-xs uppercase font-bold text-slate-400 border-b border-slate-100 dark:border-slate-800">
                                     <tr>
-                                        <th class="px-5 py-2.5">Worker Name</th>
+                                        <th class="px-5 py-2.5">Worker &amp; Photo</th>
                                         <th class="px-5 py-2.5">Shift Type</th>
                                         <th class="px-5 py-2.5">Rate Snapshot</th>
-                                        <th class="px-5 py-2.5">Cabling Metres</th>
-                                        <th class="px-5 py-2.5">Extras</th>
+                                        <th class="px-5 py-2.5">Cabling &amp; Cameras</th>
+                                        <th class="px-5 py-2.5">Work Notes &amp; Extras</th>
                                         <th class="px-5 py-2.5 text-right">Row Total</th>
                                         <th class="px-5 py-2.5 text-center">Settlement Status</th>
                                     </tr>
@@ -1003,8 +1452,35 @@
                                 <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
                                     @foreach($wd->attendances as $att)
                                         <tr>
-                                            <td class="px-5 py-3 font-bold text-slate-900 dark:text-white">
-                                                {{ $att->worker->name }}
+                                            <td class="px-5 py-3">
+                                                <div class="flex items-center gap-3">
+                                                    @if($att->photo_path)
+                                                        <div class="relative shrink-0">
+                                                            <img src="{{ $att->photo_url }}" 
+                                                                 alt="{{ $att->worker->name }}" 
+                                                                 @click="workerPhotoModalUrl = '{{ $att->photo_url }}'"
+                                                                 title="Click to view verified punch selfie"
+                                                                 class="w-10 h-10 rounded-full object-cover border-2 border-emerald-500 cursor-pointer shadow-sm hover:scale-105 transition-transform">
+                                                            <span class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-white dark:border-slate-900 rounded-full" title="Photo Verified"></span>
+                                                        </div>
+                                                    @else
+                                                        <div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 flex items-center justify-center text-xs font-bold text-slate-500 shrink-0">
+                                                            {{ strtoupper(substr($att->worker->name, 0, 2)) }}
+                                                        </div>
+                                                    @endif
+
+                                                    <div>
+                                                        <div class="font-bold text-slate-900 dark:text-white leading-tight">
+                                                            {{ $att->worker->name }}
+                                                        </div>
+                                                        <div class="text-[11px] text-slate-500 font-mono mt-0.5 flex items-center gap-2">
+                                                            <span>📞 {{ $att->worker->phone }}</span>
+                                                            @if($att->check_in_at)
+                                                                <span class="text-emerald-600 dark:text-emerald-400 font-semibold">• {{ $att->check_in_at->format('h:i A') }}</span>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </td>
                                             <td class="px-5 py-3">
                                                 <span class="px-2 py-0.5 text-xs font-semibold rounded {{ $att->attendance_type === 'full_day' ? 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300' : 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300' }}">
@@ -1014,11 +1490,36 @@
                                             <td class="px-5 py-3 font-mono text-xs">
                                                 ₹{{ number_format($att->daily_rate_snapshot, 2) }}
                                             </td>
-                                            <td class="px-5 py-3 font-mono text-xs">
-                                                {{ $att->cabling_metres > 0 ? $att->cabling_metres . ' m (+₹' . number_format($att->cabling_amount, 2) . ')' : '—' }}
+                                            <td class="px-5 py-3 text-xs">
+                                                <div class="font-mono font-semibold text-slate-900 dark:text-white">
+                                                    {{ $att->cabling_metres > 0 ? $att->cabling_metres . ' m' : '—' }}
+                                                    @if($att->cabling_metres > 0)
+                                                        <span class="text-slate-400 font-normal">(+₹{{ number_format($att->cabling_amount, 2) }})</span>
+                                                    @endif
+                                                </div>
+                                                @if($att->cameras_installed > 0)
+                                                    <div class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 mt-0.5">
+                                                        📹 {{ $att->cameras_installed }} cameras installed
+                                                    </div>
+                                                @endif
                                             </td>
                                             <td class="px-5 py-3 text-xs">
-                                                {{ $att->extra_amount > 0 ? '+₹' . number_format($att->extra_amount, 2) . ' (' . $att->extra_description . ')' : '—' }}
+                                                @if($att->extra_amount > 0)
+                                                    <div class="font-semibold text-slate-800 dark:text-slate-200">
+                                                        +₹{{ number_format($att->extra_amount, 2) }} ({{ $att->extra_description }})
+                                                    </div>
+                                                @endif
+                                                @if($att->work_summary)
+                                                    <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-2" title="{{ $att->work_summary }}">
+                                                        {{ $att->work_summary }}
+                                                    </div>
+                                                @elseif($att->notes)
+                                                    <div class="text-[11px] text-slate-400 italic mt-0.5">
+                                                        "{{ $att->notes }}"
+                                                    </div>
+                                                @elseif($att->extra_amount <= 0)
+                                                    <span class="text-slate-400">—</span>
+                                                @endif
                                             </td>
                                             <td class="px-5 py-3 text-right font-bold font-mono text-slate-900 dark:text-white">
                                                 ₹{{ number_format($att->total_amount, 2) }}
@@ -1053,6 +1554,25 @@
                         No daily work shifts logged yet. Click "+ Log Daily Work Day" to record technician &amp; worker shifts.
                     </div>
                 @endforelse
+            </div>
+
+            {{-- Worker Photo Modal Preview in Tab 4 --}}
+            <div x-show="workerPhotoModalUrl" 
+                 x-cloak 
+                 class="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
+                 @click.self="workerPhotoModalUrl = null">
+                <div class="relative bg-white dark:bg-[#0f172a] rounded-2xl overflow-hidden max-w-md w-full border border-slate-200 dark:border-slate-800 shadow-2xl">
+                    <div class="p-3 bg-slate-900 text-white flex items-center justify-between">
+                        <span class="text-xs font-bold">Worker Attendance Verified Selfie</span>
+                        <button type="button" @click="workerPhotoModalUrl = null" class="text-slate-400 hover:text-white text-base leading-none">&times;</button>
+                    </div>
+                    <div class="p-3 bg-slate-100 dark:bg-slate-950 flex items-center justify-center">
+                        <img :src="workerPhotoModalUrl" alt="Worker Punch Photo" class="max-h-[70vh] w-auto object-contain rounded-xl">
+                    </div>
+                    <div class="p-3 text-right bg-white dark:bg-[#0f172a] border-t border-slate-100 dark:border-slate-800">
+                        <button type="button" @click="workerPhotoModalUrl = null" class="px-4 py-1.5 bg-slate-800 text-white text-xs font-bold rounded-lg hover:bg-slate-700">Close</button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -1153,9 +1673,26 @@
         </div>
 
         {{-- ════════════════════════════════════════════════════════════════ --}}
-        {{-- TAB 6: TASKS & WORKFLOW ENGINE                                   --}}
+        {{-- TAB 6: TASKS & WORKFLOW ENGINE (KANBAN & GANTT)                  --}}
         {{-- ════════════════════════════════════════════════════════════════ --}}
         <div x-show="currentTab === 'tasks'" class="space-y-6">
+
+            {{-- Flash WhatsApp Blocker Alert Banner --}}
+            @if(session('whatsapp_blocker_url'))
+            <div class="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-300 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-md animate-fade-in">
+                <div class="flex items-center gap-3">
+                    <span class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-xl shrink-0">💬</span>
+                    <div>
+                        <strong class="font-extrabold text-sm block">Task Blocked Alert Dispatched to Dashboard &amp; WhatsApp</strong>
+                        <p class="text-xs text-emerald-700 dark:text-emerald-300 mt-0.5">The blocker has been logged. Click below to launch WhatsApp and notify the Project Manager with the pre-formatted alert.</p>
+                    </div>
+                </div>
+                <a href="{{ session('whatsapp_blocker_url') }}" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-extrabold bg-emerald-600 hover:bg-emerald-700 text-white shadow-md transition shrink-0">
+                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.312.045-.698.077-1.112-.057-.267-.087-.599-.21-1.047-.404-1.894-.82-3.13-2.73-3.224-2.856-.095-.126-.777-1.034-.777-1.97 0-.937.49-1.397.665-1.589.174-.192.38-.24.507-.24.127 0 .253.002.364.007.117.006.273-.044.427.327.159.38.54 1.319.588 1.415.048.096.08.209.016.335-.064.127-.096.206-.191.317-.095.112-.2.25-.286.335-.096.096-.196.2-.084.392.112.192.499.824 1.07 1.334.736.655 1.356.858 1.548.954.192.096.303.08.414-.048.112-.128.477-.557.604-.748.127-.191.254-.159.427-.095.174.064 1.107.522 1.298.618.19.095.317.143.364.223.048.079.048.46-.096.865z"/></svg>
+                    <span>Launch WhatsApp Alert</span>
+                </a>
+            </div>
+            @endif
 
             {{-- Workflow KPI & Action Header --}}
             <div class="p-6 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-5">
@@ -1163,47 +1700,61 @@
                     <div>
                         <h3 class="font-extrabold text-slate-900 dark:text-white text-base flex items-center gap-2">
                             <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
-                            Tasks &bull; Milestones &bull; SOP Workflows
+                            Interactive Kanban Board &amp; Timeline (Gantt)
                         </h3>
                         <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                            Standard operating procedures, quality assurance checklists, and phase progress tracking.
+                            Visual 5-column Kanban with drag-and-drop status changes, Gantt dependencies, and instant WhatsApp blocker alerts.
                         </p>
                     </div>
 
                     <div class="flex items-center gap-2 flex-wrap">
-                        <button type="button" @click="templateModalOpen = true" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-sm hover:from-blue-700 hover:to-indigo-700 transition">
+                        <button type="button" @click="templateModalOpen = true" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-xs hover:from-blue-700 hover:to-indigo-700 transition">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                             <span>Apply Workflow Template</span>
                         </button>
 
-                        <button type="button" @click="taskModalOpen = true" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+                        <button type="button" @click="openBlockerModal(null, null)" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200 dark:border-rose-800 hover:bg-rose-100 dark:hover:bg-rose-900/40 transition">
+                            <span>🚩 Flag Blocker</span>
+                        </button>
+
+                        <button type="button" @click="taskModalOpen = true" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
                             <span>Add Custom Task</span>
                         </button>
                     </div>
                 </div>
 
-                {{-- Progress Metric Bar --}}
-                <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-2 border-t border-slate-100 dark:border-slate-800/80 text-center">
+                {{-- 5-Column + Total KPI Metric Bar --}}
+                <div class="grid grid-cols-2 sm:grid-cols-6 gap-3 pt-2 border-t border-slate-100 dark:border-slate-800/80 text-center">
                     <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
-                        <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">Total Tasks</span>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Total Tasks</span>
                         <span class="text-xl font-extrabold text-slate-900 dark:text-white">{{ $tasksCount }}</span>
                     </div>
-                    <div class="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-900/50">
-                        <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 block">Completed</span>
-                        <span class="text-xl font-extrabold text-emerald-700 dark:text-emerald-300">{{ $completedTasksCount }}</span>
+                    <div class="p-3 rounded-xl bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 block">Pending / Backlog</span>
+                        <span class="text-xl font-extrabold text-slate-700 dark:text-slate-300">{{ $pendingTasksCount }}</span>
                     </div>
                     <div class="p-3 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-900/50">
-                        <span class="text-[11px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 block">In Progress</span>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 block">Assigned / In Progress</span>
                         <span class="text-xl font-extrabold text-blue-700 dark:text-blue-300">{{ $inProgressTasksCount }}</span>
                     </div>
-                    <div class="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-100 dark:border-amber-900/50">
-                        <span class="text-[11px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 block">Pending</span>
-                        <span class="text-xl font-extrabold text-amber-700 dark:text-amber-300">{{ $pendingTasksCount }}</span>
+                    <div class="p-3 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-100 dark:border-purple-900/50">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 block">Review / QA</span>
+                        <span class="text-xl font-extrabold text-purple-700 dark:text-purple-300">{{ $underReviewTasksCount }}</span>
                     </div>
-                    <div class="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-100 dark:border-rose-900/50 col-span-2 sm:col-span-1">
-                        <span class="text-[11px] font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400 block">Blocked</span>
+                    <div class="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-900/50">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 block">Completed</span>
+                        <span class="text-xl font-extrabold text-emerald-700 dark:text-emerald-300">{{ $completedTasksCount }}</span>
+                    </div>
+                    <div class="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 relative overflow-hidden">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400 block">Blocked</span>
                         <span class="text-xl font-extrabold text-rose-700 dark:text-rose-300">{{ $blockedTasksCount }}</span>
+                        @if($blockedTasksCount > 0)
+                            <span class="absolute top-1.5 right-1.5 flex h-2 w-2">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
+                            </span>
+                        @endif
                     </div>
                 </div>
 
@@ -1221,7 +1772,73 @@
                 @endif
             </div>
 
-            {{-- EMPTY STATE: 1-Click Template Launchpad --}}
+            {{-- ACTIVE BLOCKER ALERT HERO (If tasks are blocked) --}}
+            @if($blockedTasksCount > 0)
+            @php
+                $blockedTasks = $project->tasks->where('status', 'blocked');
+            @endphp
+            <div class="p-5 rounded-2xl bg-gradient-to-r from-rose-500/10 via-rose-50 to-amber-50/40 dark:from-rose-950/50 dark:via-rose-900/20 dark:to-amber-950/20 border-2 border-rose-300 dark:border-rose-800 shadow-sm space-y-3">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-rose-600 text-white flex items-center justify-center font-bold text-lg shadow-sm shrink-0 animate-pulse">
+                            ⛔
+                        </div>
+                        <div>
+                            <h4 class="font-extrabold text-rose-950 dark:text-rose-200 text-sm flex items-center gap-2">
+                                <span>{{ $blockedTasksCount }} Critical Blocker(s) Active</span>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-rose-600 text-white">Action Required</span>
+                            </h4>
+                            <p class="text-xs text-rose-700 dark:text-rose-400 mt-0.5">
+                                Dependencies or site bottlenecks are impeding installation. Review reasons below and alert stakeholders.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+                    @foreach($blockedTasks as $bTask)
+                    @php
+                        $pmPhone = $project->leadTechnician?->phone ?? $project->assignedUser?->phone ?? '919677257774';
+                        $pmPhoneClean = preg_replace('/[^0-9]/', '', (string)$pmPhone);
+                        if (!str_starts_with($pmPhoneClean, '91') && strlen($pmPhoneClean) === 10) {
+                            $pmPhoneClean = '91' . $pmPhoneClean;
+                        }
+                        $waText = "🚨 *TASK BLOCKED ALERT*\n\n*Project:* {$project->title} ({$project->project_code})\n*Task:* {$bTask->title}\n*Phase:* {$bTask->phase_name}\n*Reason:* \"{$bTask->blocker_reason}\"\n*Flagged By:* " . ($bTask->blockedByUser?->name ?? 'Technician') . "\n\n👉 *Review:* " . route('projects.show', [$project, 'tab' => 'tasks']);
+                        $waLink = "https://wa.me/{$pmPhoneClean}?text=" . urlencode($waText);
+                    @endphp
+                    <div class="p-3.5 rounded-xl bg-white dark:bg-[#0b1329] border border-rose-200 dark:border-rose-800/60 shadow-xs flex flex-col justify-between space-y-2">
+                        <div class="space-y-1">
+                            <div class="flex items-center justify-between text-[11px]">
+                                <span class="font-extrabold text-rose-600 dark:text-rose-400">{{ $bTask->phase_name }}</span>
+                                <span class="text-slate-400">{{ $bTask->blocked_at?->diffForHumans() ?? 'Recently' }}</span>
+                            </div>
+                            <h5 class="text-xs font-bold text-slate-900 dark:text-white leading-snug">{{ $bTask->title }}</h5>
+                            <div class="p-2 rounded-lg bg-rose-50/80 dark:bg-rose-950/40 text-[11px] font-medium text-rose-900 dark:text-rose-300 border border-rose-100 dark:border-rose-900/40">
+                                <strong>Blocker:</strong> "{{ $bTask->blocker_reason ?? 'Awaiting clearance' }}"
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800 text-xs">
+                            <span class="text-[11px] text-slate-500">
+                                By: <strong>{{ $bTask->blockedByUser?->name ?? 'Staff' }}</strong>
+                            </span>
+                            <div class="flex items-center gap-1.5">
+                                <button type="button" @click="unblockTask({{ $bTask->id }})" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 transition">
+                                    ✓ Resolve / Unblock
+                                </button>
+                                <a href="{{ $waLink }}" target="_blank" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition flex items-center gap-1" title="Alert Project Manager via WhatsApp">
+                                    <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.312.045-.698.077-1.112-.057-.267-.087-.599-.21-1.047-.404-1.894-.82-3.13-2.73-3.224-2.856-.095-.126-.777-1.034-.777-1.97 0-.937.49-1.397.665-1.589.174-.192.38-.24.507-.24.127 0 .253.002.364.007.117.006.273-.044.427.327.159.38.54 1.319.588 1.415.048.096.08.209.016.335-.064.127-.096.206-.191.317-.095.112-.2.25-.286.335-.096.096-.196.2-.084.392.112.192.499.824 1.07 1.334.736.655 1.356.858 1.548.954.192.096.303.08.414-.048.112-.128.477-.557.604-.748.127-.191.254-.159.427-.095.174.064 1.107.522 1.298.618.19.095.317.143.364.223.048.079.048.46-.096.865z"/></svg>
+                                    <span>WhatsApp PM</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+
+            {{-- EMPTY STATE: 1-Click Template Launchpad (When 0 tasks exist) --}}
             @if($tasksCount === 0)
             <div class="p-8 rounded-2xl bg-gradient-to-br from-blue-50/60 via-white to-indigo-50/40 dark:from-slate-900 dark:via-[#0f172a] dark:to-indigo-950/20 border-2 border-dashed border-blue-200 dark:border-blue-900/50 space-y-6 text-center">
                 <div class="max-w-xl mx-auto space-y-2">
@@ -1279,179 +1896,631 @@
                 </div>
             </div>
 
-            {{-- ACTIVE TASKS BY PHASE --}}
+            {{-- ACTIVE TASKS MAIN CONTAINER --}}
             @else
-            <div class="space-y-6">
+            <div class="space-y-5">
 
-                {{-- Phase Filter Pills --}}
-                <div class="flex items-center gap-2 overflow-x-auto pb-1 text-xs font-bold">
-                    <button type="button" @click="activePhaseFilter = 'all'" :class="activePhaseFilter === 'all' ? 'bg-blue-600 text-white shadow-xs' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'" class="px-3.5 py-1.5 rounded-xl transition shrink-0">
-                        All Phases ({{ $tasksCount }})
-                    </button>
-                    @foreach($tasksByPhase as $phaseName => $phaseTasks)
-                    <button type="button" @click="activePhaseFilter = '{{ md5($phaseName) }}'" :class="activePhaseFilter === '{{ md5($phaseName) }}' ? 'bg-blue-600 text-white shadow-xs' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'" class="px-3.5 py-1.5 rounded-xl transition shrink-0 flex items-center gap-1.5">
-                        <span>{{ $phaseName }}</span>
-                        <span class="px-1.5 py-0.2 rounded-full text-[10px] {{ $phaseTasks->where('status', 'completed')->count() === $phaseTasks->count() ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-200' }}">
-                            {{ $phaseTasks->where('status', 'completed')->count() }}/{{ $phaseTasks->count() }}
-                        </span>
-                    </button>
-                    @endforeach
-                </div>
-
-                {{-- Phase Group Accordions / Sections --}}
-                @foreach($tasksByPhase as $phaseName => $phaseTasks)
-                @php
-                    $phaseTotal = $phaseTasks->count();
-                    $phaseCompleted = $phaseTasks->where('status', 'completed')->count();
-                    $phasePct = $phaseTotal > 0 ? (int) round(($phaseCompleted / $phaseTotal) * 100) : 0;
-                    $phaseEstHours = (float) $phaseTasks->sum('estimated_hours');
-                @endphp
-                <div x-show="activePhaseFilter === 'all' || activePhaseFilter === '{{ md5($phaseName) }}'" class="space-y-4" x-data="{ expanded: true }">
-                    {{-- Phase Header Bar --}}
-                    <div class="flex items-center justify-between p-4 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs cursor-pointer select-none" @click="expanded = !expanded">
-                        <div class="flex items-center gap-3">
-                            <span class="w-8 h-8 rounded-xl flex items-center justify-center font-extrabold text-xs {{ $phaseCompleted === $phaseTotal ? 'bg-emerald-500 text-white' : 'bg-blue-500 text-white' }}">
-                                @if($phaseCompleted === $phaseTotal)
-                                    ✓
-                                @else
-                                    {{ $loop->iteration }}
-                                @endif
-                            </span>
-                            <div>
-                                <h4 class="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-2">
-                                    <span>{{ $phaseName }}</span>
-                                    <span class="text-xs font-semibold text-slate-400">({{ $phaseCompleted }}/{{ $phaseTotal }} done)</span>
-                                </h4>
-                                @if($phaseEstHours > 0)
-                                <span class="text-[11px] text-slate-400">Est. {{ $phaseEstHours }} hrs total</span>
-                                @endif
-                            </div>
-                        </div>
-
-                        <div class="flex items-center gap-3">
-                            <div class="hidden sm:block w-28 bg-slate-100 dark:bg-slate-800 rounded-full h-2 overflow-hidden">
-                                <div class="bg-emerald-500 h-2 rounded-full" style="width: {{ $phasePct }}%"></div>
-                            </div>
-                            <span class="text-xs font-extrabold {{ $phasePct === 100 ? 'text-emerald-600' : 'text-slate-600 dark:text-slate-300' }}">
-                                {{ $phasePct }}%
-                            </span>
-                            <svg class="w-4 h-4 text-slate-400 transition-transform duration-200" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-                        </div>
+                {{-- View Controls & Search Bar --}}
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 p-3 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs">
+                    {{-- 3 View Modes Switcher --}}
+                    <div class="inline-flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800/80 rounded-xl">
+                        <button type="button" @click="activeTaskView = 'kanban'" :class="activeTaskView === 'kanban' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-300 shadow-xs font-extrabold' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 font-semibold'" class="px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1.5">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"/></svg>
+                            <span>Visual Kanban</span>
+                            <span class="px-1.5 py-0.2 rounded-full text-[10px] bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300 font-bold">5 Cols</span>
+                        </button>
+                        <button type="button" @click="activeTaskView = 'gantt'" :class="activeTaskView === 'gantt' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-300 shadow-xs font-extrabold' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 font-semibold'" class="px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1.5">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            <span>Timeline (Gantt)</span>
+                        </button>
+                        <button type="button" @click="activeTaskView = 'list'" :class="activeTaskView === 'list' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-300 shadow-xs font-extrabold' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 font-semibold'" class="px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1.5">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+                            <span>Phase List &amp; SOPs</span>
+                        </button>
                     </div>
 
-                    {{-- Tasks Cards Grid --}}
-                    <div x-show="expanded" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        @foreach($phaseTasks as $task)
+                    {{-- Search & Phase Filter --}}
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <div class="relative">
+                            <input type="text" x-model="taskSearchQuery" placeholder="Filter tasks or assignee..." class="text-xs pl-8 pr-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200 outline-none w-48 sm:w-56 focus:ring-2 focus:ring-blue-500">
+                            <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        </div>
+
+                        {{-- Phase Pill Dropdown / Selector --}}
+                        <select x-model="activePhaseFilter" class="text-xs font-semibold py-1.5 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 outline-none">
+                            <option value="all">All Phases ({{ $tasksCount }})</option>
+                            @foreach($tasksByPhase as $phaseName => $phaseTasks)
+                                <option value="{{ md5($phaseName) }}">{{ $phaseName }} ({{ $phaseTasks->count() }})</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+                {{-- ════════════════════════════════════════════════════════════ --}}
+                {{-- VIEW 1: VISUAL KANBAN BOARD                                  --}}
+                {{-- ════════════════════════════════════════════════════════════ --}}
+                <div x-show="activeTaskView === 'kanban'" class="space-y-4">
+                    <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 px-1">
+                        <span class="flex items-center gap-1.5">
+                            <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11"/></svg>
+                            <strong>Drag-and-Drop Enabled:</strong> Grab cards by handle to change status across columns. Dropping into "Blocked" prompts for blocker reason and notifies the PM.
+                        </span>
+                        <span>Showing {{ $tasksCount }} tasks</span>
+                    </div>
+
+                    {{-- 5 Columns Grid (Backlog -> In Progress -> Under Review -> Completed -> Blocked) --}}
+                    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 items-start overflow-x-auto pb-4">
                         @php
-                            $chkProg = $task->checklist_progress;
+                            $columnsList = [
+                                'pending' => [
+                                    'title' => 'Backlog / Pending',
+                                    'status' => 'pending',
+                                    'border_top' => 'border-t-slate-400',
+                                    'badge' => 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300',
+                                    'bg' => 'bg-slate-50/70 dark:bg-slate-900/40',
+                                    'dot' => 'bg-slate-400',
+                                ],
+                                'in_progress' => [
+                                    'title' => 'Assigned / In Progress',
+                                    'status' => 'in_progress',
+                                    'border_top' => 'border-t-blue-500',
+                                    'badge' => 'bg-blue-100 text-blue-700 dark:bg-blue-900/60 dark:text-blue-300',
+                                    'bg' => 'bg-blue-50/40 dark:bg-blue-950/20',
+                                    'dot' => 'bg-blue-500',
+                                ],
+                                'under_review' => [
+                                    'title' => 'Under Review / QA',
+                                    'status' => 'under_review',
+                                    'border_top' => 'border-t-purple-500',
+                                    'badge' => 'bg-purple-100 text-purple-700 dark:bg-purple-900/60 dark:text-purple-300',
+                                    'bg' => 'bg-purple-50/40 dark:bg-purple-950/20',
+                                    'dot' => 'bg-purple-500',
+                                ],
+                                'completed' => [
+                                    'title' => 'Completed',
+                                    'status' => 'completed',
+                                    'border_top' => 'border-t-emerald-500',
+                                    'badge' => 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/60 dark:text-emerald-300',
+                                    'bg' => 'bg-emerald-50/40 dark:bg-emerald-950/20',
+                                    'dot' => 'bg-emerald-500',
+                                ],
+                                'blocked' => [
+                                    'title' => 'Blocked',
+                                    'status' => 'blocked',
+                                    'border_top' => 'border-t-rose-500',
+                                    'badge' => 'bg-rose-100 text-rose-700 dark:bg-rose-900/60 dark:text-rose-300',
+                                    'bg' => 'bg-rose-50/40 dark:bg-rose-950/20',
+                                    'dot' => 'bg-rose-500',
+                                ],
+                            ];
                         @endphp
-                        <div class="p-5 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs flex flex-col justify-between space-y-4 transition hover:border-slate-300 dark:hover:border-slate-700">
-                            {{-- Top Bar: Priority & Status Dropdown --}}
-                            <div class="space-y-3">
-                                <div class="flex items-center justify-between gap-2">
-                                    <span class="px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide rounded-md border {{ $task->priority_badge_classes }}">
-                                        {{ ucfirst($task->priority) }} Priority
+
+                        @foreach($columnsList as $colKey => $colDef)
+                        @php
+                            $colTasks = $project->tasks->where('status', $colKey)->sortBy('order_column');
+                        @endphp
+                        <div class="rounded-2xl border-t-4 {{ $colDef['border_top'] }} bg-white dark:bg-[#0f172a] border-x border-b border-slate-200/80 dark:border-slate-800 shadow-xs flex flex-col min-w-[270px]">
+                            {{-- Column Header --}}
+                            <div class="p-3.5 border-b border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2 h-2 rounded-full {{ $colDef['dot'] }}"></span>
+                                    <h4 class="font-extrabold text-xs text-slate-900 dark:text-white uppercase tracking-wider">
+                                        {{ $colDef['title'] }}
+                                    </h4>
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold {{ $colDef['badge'] }}">
+                                        {{ $colTasks->count() }}
                                     </span>
-
-                                    {{-- Live Status Dropdown --}}
-                                    <div class="flex items-center gap-1.5">
-                                        <select @change="updateTaskStatus({{ $task->id }}, $el)" class="text-xs font-bold py-1 px-2.5 rounded-lg border outline-none cursor-pointer {{ $task->status_badge_classes }}">
-                                            @foreach(\App\Models\ProjectTask::statusOptions() as $stVal => $stLbl)
-                                                <option value="{{ $stVal }}" {{ $task->status === $stVal ? 'selected' : '' }}>{{ $stLbl }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
                                 </div>
 
-                                {{-- Task Title & Description --}}
-                                <div>
-                                    <h5 class="font-extrabold text-sm text-slate-900 dark:text-white flex items-start gap-2">
-                                        @if($task->status === 'completed')
-                                            <span class="text-emerald-500 font-bold shrink-0">✓</span>
-                                        @endif
-                                        <span class="{{ $task->status === 'completed' ? 'line-through text-slate-400' : '' }}">{{ $task->title }}</span>
-                                    </h5>
-                                    @if($task->description)
-                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
-                                        {{ $task->description }}
-                                    </p>
-                                    @endif
-                                </div>
-
-                                {{-- Metadata Row --}}
-                                <div class="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400 flex-wrap pt-1">
-                                    {{-- Assignee --}}
-                                    <div class="flex items-center gap-1.5 font-semibold text-slate-700 dark:text-slate-300">
-                                        <span class="w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-[10px] font-bold flex items-center justify-center">
-                                            {{ strtoupper(substr($task->assignedUser?->name ?? 'U', 0, 1)) }}
-                                        </span>
-                                        <span>{{ $task->assignedUser?->name ?? 'Unassigned' }}</span>
-                                    </div>
-
-                                    @if($task->estimated_hours)
-                                    <div class="flex items-center gap-1 text-[11px]">
-                                        <span class="text-slate-400">Est:</span>
-                                        <span class="font-bold text-slate-700 dark:text-slate-300">{{ $task->estimated_hours }}h</span>
-                                    </div>
-                                    @endif
-
-                                    @if($task->due_date)
-                                    <div class="flex items-center gap-1 text-[11px] {{ $task->due_date->isPast() && $task->status !== 'completed' ? 'text-rose-600 font-bold' : '' }}">
-                                        <span class="text-slate-400">Due:</span>
-                                        <span>{{ $task->due_date->format('d M') }}</span>
-                                    </div>
-                                    @endif
-                                </div>
-
-                                {{-- Quality Assurance Checklist Section --}}
-                                @if($task->checklists->isNotEmpty())
-                                <div class="pt-3 border-t border-slate-100 dark:border-slate-800/80 space-y-2">
-                                    <div class="flex items-center justify-between text-[11px] font-bold text-slate-500 dark:text-slate-400">
-                                        <span>SOP Quality Checklist</span>
-                                        <span id="task-progress-{{ $task->id }}" class="text-blue-600 dark:text-blue-400">
-                                            {{ $chkProg['completed'] }}/{{ $chkProg['total'] }} ({{ $chkProg['percentage'] }}%)
-                                        </span>
-                                    </div>
-
-                                    <div class="space-y-1.5 max-h-48 overflow-y-auto pr-1">
-                                        @foreach($task->checklists as $chk)
-                                        <label class="flex items-start gap-2.5 p-1.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer text-xs">
-                                            <input type="checkbox" {{ $chk->is_completed ? 'checked' : '' }} @change="toggleChecklist({{ $chk->id }}, $el)" class="mt-0.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500">
-                                            <span id="checklist-label-{{ $chk->id }}" class="flex-1 leading-snug {{ $chk->is_completed ? 'line-through text-slate-400' : 'text-slate-700 dark:text-slate-300' }}">
-                                                {{ $chk->item_text }}
-                                            </span>
-                                        </label>
-                                        @endforeach
-                                    </div>
-                                </div>
-                                @endif
+                                <button type="button" @click="taskModalOpen = true" title="Add task to {{ $colDef['title'] }}" class="w-6 h-6 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center text-xs font-bold transition">
+                                    +
+                                </button>
                             </div>
 
-                            {{-- Card Footer --}}
-                            <div class="pt-2 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs">
-                                {{-- Quick Add Checklist Item Form --}}
-                                <form method="POST" action="{{ route('tasks.checklists.store', $task) }}" class="flex items-center gap-1.5 flex-1 mr-2">
-                                    @csrf
-                                    <input type="text" name="item_text" placeholder="+ Add check item..." required class="w-full text-xs py-1 px-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none">
-                                    <button type="submit" class="px-2 py-1 text-xs font-bold rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200">+</button>
-                                </form>
+                            {{-- Dropzone / Task List --}}
+                            <div class="p-2.5 space-y-3 min-h-[360px] kanban-sortable-list {{ $colDef['bg'] }}"
+                                 data-status="{{ $colKey }}">
+                                @foreach($colTasks as $task)
+                                @php
+                                    $chkProg = $task->checklist_progress;
+                                @endphp
+                                <div class="p-4 rounded-xl bg-white dark:bg-[#0b1329] border border-slate-200/80 dark:border-slate-800 shadow-xs hover:shadow-md transition-all space-y-3 group cursor-grab"
+                                     data-task-id="{{ $task->id }}"
+                                     data-task-title="{{ $task->title }}"
+                                     data-phase-md5="{{ md5($task->phase_name) }}"
+                                     x-show="(activePhaseFilter === 'all' || activePhaseFilter === '{{ md5($task->phase_name) }}') && (!taskSearchQuery || '{{ strtolower(addslashes($task->title . ' ' . ($task->assignedUser?->name ?? ''))) }}'.includes(taskSearchQuery.toLowerCase()))">
 
-                                {{-- Delete Task --}}
-                                @if(auth()->user()->isAdmin())
-                                <form method="POST" action="{{ route('projects.tasks.destroy', ['project' => $project, 'task' => $task]) }}" onsubmit="return confirm('Delete this task?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-rose-500 hover:text-rose-700 text-xs font-bold p-1" title="Delete Task">
-                                        &times;
-                                    </button>
-                                </form>
-                                @endif
+                                    {{-- Card Top Row: Priority Pill, Phase, & Drag Handle --}}
+                                    <div class="flex items-center justify-between gap-1.5">
+                                        {{-- Priority Pill matching project schema --}}
+                                        <span class="px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide rounded-md border {{ $task->priority_badge_classes }}">
+                                            {{ ucfirst($task->priority) }}
+                                        </span>
+
+                                        <div class="flex items-center gap-1">
+                                            <span class="text-[10px] text-slate-400 font-semibold truncate max-w-[110px]" title="{{ $task->phase_name }}">
+                                                {{ Str::limit($task->phase_name, 16) }}
+                                            </span>
+                                            {{-- Drag Handle --}}
+                                            <span class="kanban-drag-handle p-1 text-slate-300 hover:text-slate-600 dark:hover:text-slate-200 cursor-grab active:cursor-grabbing rounded">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 8h16M4 16h16"/></svg>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    {{-- Task Title --}}
+                                    <div>
+                                        <h5 class="text-xs font-bold text-slate-900 dark:text-white leading-snug flex items-start gap-1.5">
+                                            @if($task->status === 'completed')
+                                                <span class="text-emerald-500 font-extrabold shrink-0">✓</span>
+                                            @endif
+                                            <span class="{{ $task->status === 'completed' ? 'line-through text-slate-400' : '' }}">{{ $task->title }}</span>
+                                        </h5>
+                                        @if($task->description)
+                                            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 line-clamp-2 leading-relaxed">
+                                                {{ $task->description }}
+                                            </p>
+                                        @endif
+                                    </div>
+
+                                    {{-- BLOCKER BANNER (If Task is Blocked) --}}
+                                    @if($task->status === 'blocked')
+                                    <div class="p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-900/60 space-y-1.5">
+                                        <div class="flex items-start gap-1.5 text-rose-700 dark:text-rose-300 font-extrabold text-[10px] uppercase tracking-wide">
+                                            <span>⛔</span>
+                                            <span>Blocked Dependency</span>
+                                        </div>
+                                        <p class="text-xs font-semibold text-rose-950 dark:text-rose-100 leading-snug">
+                                            "{{ $task->blocker_reason ?? 'Awaiting site clearance' }}"
+                                        </p>
+                                        <div class="flex items-center justify-between pt-1 border-t border-rose-200/60 dark:border-rose-900/40 text-[10px] text-rose-600 dark:text-rose-400">
+                                            <span>By: {{ $task->blockedByUser?->name ?? 'Technician' }}</span>
+                                            <button type="button" @click.stop="unblockTask({{ $task->id }})" class="font-bold underline hover:text-rose-800">
+                                                Resolve
+                                            </button>
+                                        </div>
+                                    </div>
+                                    @endif
+
+                                    {{-- TASK DEPENDENCY CALLOUT (If has dependency) --}}
+                                    @if($task->dependsOnTask)
+                                    @php
+                                        $dep = $task->dependsOnTask;
+                                        $depColor = match($dep->status) {
+                                            'completed' => 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300',
+                                            'blocked' => 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/40 dark:text-rose-300',
+                                            'in_progress' => 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/40 dark:text-blue-300',
+                                            default => 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300'
+                                        };
+                                    @endphp
+                                    <div class="p-1.5 rounded-lg border text-[10px] {{ $depColor }} flex items-center justify-between gap-1" title="Depends on: {{ $dep->title }}">
+                                        <div class="flex items-center gap-1 truncate">
+                                            <span class="font-bold">🔗 Depends:</span>
+                                            <span class="truncate font-medium">{{ Str::limit($dep->title, 20) }}</span>
+                                        </div>
+                                        <span class="font-extrabold uppercase shrink-0">
+                                            @if($dep->status === 'completed')
+                                                ✓ Ready
+                                            @elseif($dep->status === 'blocked')
+                                                ⛔ Blocked
+                                            @else
+                                                ⏳ {{ ucfirst(str_replace('_', ' ', $dep->status)) }}
+                                            @endif
+                                        </span>
+                                    </div>
+                                    @endif
+
+                                    {{-- Quality Assurance SOP Checklist Mini Progress --}}
+                                    @if($task->checklists->isNotEmpty())
+                                    <div class="space-y-1 pt-1 border-t border-slate-100 dark:border-slate-800/60">
+                                        <div class="flex items-center justify-between text-[10px] text-slate-500 font-semibold">
+                                            <span>SOP Checkpoints</span>
+                                            <span class="font-bold text-blue-600 dark:text-blue-400">{{ $chkProg['completed'] }}/{{ $chkProg['total'] }}</span>
+                                        </div>
+                                        <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                                            <div class="bg-blue-500 h-1.5 rounded-full" style="width: {{ $chkProg['percentage'] }}%"></div>
+                                        </div>
+                                    </div>
+                                    @endif
+
+                                    {{-- Task Consumed Materials & Cable Badge --}}
+                                    @if($task->materialConsumptions->isNotEmpty())
+                                    <div class="p-2 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/60 dark:border-indigo-900/60 text-[10px] space-y-1">
+                                        <div class="flex items-center justify-between text-indigo-700 dark:text-indigo-300 font-extrabold">
+                                            <span class="flex items-center gap-1">
+                                                <span>📦</span>
+                                                <span>Consumed ({{ $task->materialConsumptions->count() }})</span>
+                                            </span>
+                                            <button type="button" @click.stop="openConsumeModal({{ $task->id }}, '{{ addslashes($task->title) }}')" class="hover:underline text-[10px] text-indigo-600 dark:text-indigo-400 font-bold">
+                                                + Log More
+                                            </button>
+                                        </div>
+                                        <div class="flex flex-wrap gap-1">
+                                            @foreach($task->materialConsumptions->take(2) as $mUsed)
+                                                <span class="px-1.5 py-0.5 rounded bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 font-mono text-[9px] font-semibold">
+                                                    {{ number_format($mUsed->quantity_used, 1) }}{{ $mUsed->unit }} {{ Str::limit($mUsed->item_name, 14) }}
+                                                </span>
+                                            @endforeach
+                                            @if($task->materialConsumptions->count() > 2)
+                                                <span class="text-[9px] text-indigo-500 font-bold self-center">+{{ $task->materialConsumptions->count() - 2 }}</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    @endif
+
+                                    {{-- Card Footer: Assignee, Dates, & Quick Actions --}}
+                                    <div class="pt-2 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs text-slate-500">
+                                        {{-- Assignee Avatar & Name --}}
+                                        <div class="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-300 text-[11px] truncate max-w-[120px]">
+                                            <span class="w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-[10px] font-bold flex items-center justify-center shrink-0">
+                                                {{ strtoupper(substr($task->assignedUser?->name ?? 'U', 0, 1)) }}
+                                            </span>
+                                            <span class="truncate">{{ $task->assignedUser?->name ?? 'Unassigned' }}</span>
+                                        </div>
+
+                                        {{-- Actions --}}
+                                        <div class="flex items-center gap-1 shrink-0">
+                                            {{-- Log Material / Cable Used --}}
+                                            <button type="button" @click.stop="openConsumeModal({{ $task->id }}, '{{ addslashes($task->title) }}')" class="p-1 rounded text-slate-400 hover:text-indigo-600 transition" title="Log Cable / Material Used on this task">
+                                                📦
+                                            </button>
+
+                                            @if($task->status !== 'blocked')
+                                                <button type="button" @click.stop="openBlockerModal({{ $task->id }}, '{{ addslashes($task->title) }}')" class="p-1 rounded text-slate-400 hover:text-rose-600 transition" title="Flag Blocker on this task">
+                                                    🚩
+                                                </button>
+                                            @endif
+
+                                            <button type="button" @click.stop="openEditTaskModal({{ json_encode($task) }})" class="p-1 rounded text-slate-400 hover:text-blue-600 transition" title="Edit Task Details">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                            </button>
+
+                                            @if(auth()->user()->isAdmin())
+                                            <form method="POST" action="{{ route('projects.tasks.destroy', ['project' => $project, 'task' => $task]) }}" onsubmit="return confirm('Delete this task?');" class="inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="p-1 rounded text-slate-300 hover:text-rose-600 transition" title="Delete Task">
+                                                    &times;
+                                                </button>
+                                            </form>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                                @endforeach
                             </div>
                         </div>
                         @endforeach
                     </div>
                 </div>
-                @endforeach
+
+                {{-- ════════════════════════════════════════════════════════════ --}}
+                {{-- VIEW 2: INTERACTIVE TIMELINE (GANTT)                         --}}
+                {{-- ════════════════════════════════════════════════════════════ --}}
+                <div x-show="activeTaskView === 'gantt'" class="space-y-4">
+                    <div class="p-5 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
+                            <div>
+                                <h4 class="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+                                    <span>Gantt Chart &amp; Dependency Timeline</span>
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 font-bold">Chronological Schedule</span>
+                                </h4>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                                    Track phase milestones, dependency prerequisites, and identify schedule bottlenecks at a glance.
+                                </p>
+                            </div>
+
+                            <div class="flex items-center gap-3 text-xs">
+                                <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-blue-500"></span> <span>In Progress</span></div>
+                                <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-purple-500"></span> <span>QA Review</span></div>
+                                <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-emerald-500"></span> <span>Done</span></div>
+                                <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-rose-500"></span> <span>Blocked</span></div>
+                            </div>
+                        </div>
+
+                        {{-- Gantt Chart Container --}}
+                        <div class="overflow-x-auto">
+                            <div class="min-w-[850px] space-y-3">
+                                {{-- Timeline Header Days (14 Days Window from project start or today) --}}
+                                @php
+                                    $today = now()->startOfDay();
+                                    $ganttStart = $project->created_at ? $project->created_at->startOfDay() : $today->copy()->subDays(3);
+                                    if ($ganttStart->diffInDays($today) > 20) {
+                                        $ganttStart = $today->copy()->subDays(3);
+                                    }
+                                    $totalTimelineDays = 18;
+                                @endphp
+
+                                <div class="grid grid-cols-12 gap-1 text-[11px] font-bold text-slate-400 border-b border-slate-200 dark:border-slate-800 pb-2">
+                                    <div class="col-span-4 pl-2 text-slate-700 dark:text-slate-300">Phase &amp; Task Milestone</div>
+                                    <div class="col-span-8 grid grid-cols-14 text-center" style="grid-template-columns: repeat({{ $totalTimelineDays }}, minmax(0, 1fr));">
+                                        @for($d = 0; $d < $totalTimelineDays; $d++)
+                                        @php
+                                            $currDate = $ganttStart->copy()->addDays($d);
+                                            $isToday = $currDate->isSameDay($today);
+                                        @endphp
+                                        <div class="py-1 px-0.5 rounded text-[10px] {{ $isToday ? 'bg-blue-600 text-white font-extrabold shadow-xs' : 'text-slate-500 dark:text-slate-400' }}">
+                                            <div>{{ $currDate->format('D') }}</div>
+                                            <div>{{ $currDate->format('d') }}</div>
+                                        </div>
+                                        @endfor
+                                    </div>
+                                </div>
+
+                                {{-- Timeline Rows per Phase --}}
+                                @foreach($tasksByPhase as $pName => $pTasks)
+                                <div class="space-y-1.5 pt-2"
+                                     x-show="activePhaseFilter === 'all' || activePhaseFilter === '{{ md5($pName) }}'">
+                                    {{-- Phase Label Row --}}
+                                    <div class="py-1 px-2 rounded-lg bg-slate-100/80 dark:bg-slate-800/80 text-xs font-extrabold text-slate-700 dark:text-slate-300 flex items-center justify-between">
+                                        <span>{{ $pName }}</span>
+                                        <span class="text-[10px] font-normal text-slate-500">{{ $pTasks->count() }} milestones</span>
+                                    </div>
+
+                                    {{-- Tasks in this Phase --}}
+                                    @foreach($pTasks as $task)
+                                    @php
+                                        // Calculate timeline bar offset and span
+                                        $taskStart = $task->start_date ? $task->start_date->startOfDay() : ($task->created_at ? $task->created_at->startOfDay() : $ganttStart);
+                                        $taskDue = $task->due_date ? $task->due_date->startOfDay() : $taskStart->copy()->addDays(max(1, (int)ceil(($task->estimated_hours ?? 4) / 8)));
+
+                                        $dayOffset = max(0, $ganttStart->diffInDays($taskStart, false));
+                                        $dayDuration = max(1, min($totalTimelineDays - $dayOffset, $taskStart->diffInDays($taskDue) + 1));
+
+                                        if ($dayOffset >= $totalTimelineDays) {
+                                            $dayOffset = $totalTimelineDays - 2;
+                                            $dayDuration = 2;
+                                        }
+
+                                        $barColor = match($task->status) {
+                                            'completed' => 'bg-emerald-500 text-white',
+                                            'under_review' => 'bg-purple-500 text-white',
+                                            'in_progress' => 'bg-blue-600 text-white',
+                                            'blocked' => 'bg-rose-600 text-white border-2 border-rose-300 animate-pulse',
+                                            default => 'bg-slate-400 text-white',
+                                        };
+                                    @endphp
+                                    <div class="grid grid-cols-12 gap-1 items-center py-1 hover:bg-slate-50 dark:hover:bg-slate-800/40 rounded-lg transition"
+                                         x-show="!taskSearchQuery || '{{ strtolower(addslashes($task->title . ' ' . ($task->assignedUser?->name ?? ''))) }}'.includes(taskSearchQuery.toLowerCase())">
+                                        {{-- Left Task Info --}}
+                                        <div class="col-span-4 pl-3 pr-2 flex items-center justify-between gap-2">
+                                            <div class="truncate">
+                                                <div class="text-xs font-bold text-slate-900 dark:text-white truncate flex items-center gap-1.5">
+                                                    @if($task->status === 'blocked')
+                                                        <span class="text-rose-500">⛔</span>
+                                                    @elseif($task->status === 'completed')
+                                                        <span class="text-emerald-500 font-extrabold">✓</span>
+                                                    @endif
+                                                    <span class="truncate">{{ $task->title }}</span>
+                                                </div>
+                                                <div class="text-[10px] text-slate-400 flex items-center gap-1 mt-0.5">
+                                                    <span>{{ $task->assignedUser?->name ?? 'Unassigned' }}</span>
+                                                    @if($task->dependsOnTask)
+                                                        <span class="text-amber-500 font-semibold">&bull; Req: #{{ $task->dependsOnTask->id }}</span>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                            <span class="px-1.5 py-0.2 rounded text-[9px] font-extrabold uppercase {{ $task->priority_badge_classes }} shrink-0">
+                                                {{ substr($task->priority, 0, 3) }}
+                                            </span>
+                                        </div>
+
+                                        {{-- Right Timeline Bar Grid --}}
+                                        <div class="col-span-8 relative h-7 bg-slate-50/50 dark:bg-slate-900/30 rounded-lg flex items-center px-1 border border-dashed border-slate-200/60 dark:border-slate-800/60">
+                                            <div class="absolute h-5 rounded-md px-2 flex items-center text-[10px] font-bold shadow-xs truncate cursor-pointer transition hover:brightness-110 {{ $barColor }}"
+                                                 style="left: {{ ($dayOffset / $totalTimelineDays) * 100 }}%; width: {{ max(6, ($dayDuration / $totalTimelineDays) * 100) }}%;"
+                                                 @click="openEditTaskModal({{ json_encode($task) }})"
+                                                 title="{{ $task->title }} ({{ ucfirst(str_replace('_', ' ', $task->status)) }}) - Click to inspect">
+                                                <span class="truncate">{{ $task->title }}</span>
+                                                @if($task->status === 'blocked')
+                                                    <span class="ml-1 text-[9px] font-extrabold bg-rose-900 px-1 rounded shrink-0">BLOCKED</span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- ════════════════════════════════════════════════════════════ --}}
+                {{-- VIEW 3: PHASE LIST & SOPS                                    --}}
+                {{-- ════════════════════════════════════════════════════════════ --}}
+                <div x-show="activeTaskView === 'list'" class="space-y-4">
+                    {{-- Phase Filter Pills --}}
+                    <div class="flex items-center gap-2 overflow-x-auto pb-1 text-xs font-bold">
+                        <button type="button" @click="activePhaseFilter = 'all'" :class="activePhaseFilter === 'all' ? 'bg-blue-600 text-white shadow-xs' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'" class="px-3.5 py-1.5 rounded-xl transition shrink-0">
+                            All Phases ({{ $tasksCount }})
+                        </button>
+                        @foreach($tasksByPhase as $phaseName => $phaseTasks)
+                        <button type="button" @click="activePhaseFilter = '{{ md5($phaseName) }}'" :class="activePhaseFilter === '{{ md5($phaseName) }}' ? 'bg-blue-600 text-white shadow-xs' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'" class="px-3.5 py-1.5 rounded-xl transition shrink-0 flex items-center gap-1.5">
+                            <span>{{ $phaseName }}</span>
+                            <span class="px-1.5 py-0.2 rounded-full text-[10px] {{ $phaseTasks->where('status', 'completed')->count() === $phaseTasks->count() ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-200' }}">
+                                {{ $phaseTasks->where('status', 'completed')->count() }}/{{ $phaseTasks->count() }}
+                            </span>
+                        </button>
+                        @endforeach
+                    </div>
+
+                    {{-- Phase Group Accordions / Sections --}}
+                    @foreach($tasksByPhase as $phaseName => $phaseTasks)
+                    @php
+                        $phaseTotal = $phaseTasks->count();
+                        $phaseCompleted = $phaseTasks->where('status', 'completed')->count();
+                        $phasePct = $phaseTotal > 0 ? (int) round(($phaseCompleted / $phaseTotal) * 100) : 0;
+                        $phaseEstHours = (float) $phaseTasks->sum('estimated_hours');
+                    @endphp
+                    <div x-show="activePhaseFilter === 'all' || activePhaseFilter === '{{ md5($phaseName) }}'" class="space-y-4" x-data="{ expanded: true }">
+                        {{-- Phase Header Bar --}}
+                        <div class="flex items-center justify-between p-4 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs cursor-pointer select-none" @click="expanded = !expanded">
+                            <div class="flex items-center gap-3">
+                                <span class="w-8 h-8 rounded-xl flex items-center justify-center font-extrabold text-xs {{ $phaseCompleted === $phaseTotal ? 'bg-emerald-500 text-white' : 'bg-blue-500 text-white' }}">
+                                    @if($phaseCompleted === $phaseTotal)
+                                        ✓
+                                    @else
+                                        {{ $loop->iteration }}
+                                    @endif
+                                </span>
+                                <div>
+                                    <h4 class="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+                                        <span>{{ $phaseName }}</span>
+                                        <span class="text-xs font-semibold text-slate-400">({{ $phaseCompleted }}/{{ $phaseTotal }} done)</span>
+                                    </h4>
+                                    @if($phaseEstHours > 0)
+                                    <span class="text-[11px] text-slate-400">Est. {{ $phaseEstHours }} hrs total</span>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-3">
+                                <div class="hidden sm:block w-28 bg-slate-100 dark:bg-slate-800 rounded-full h-2 overflow-hidden">
+                                    <div class="bg-emerald-500 h-2 rounded-full" style="width: {{ $phasePct }}%"></div>
+                                </div>
+                                <span class="text-xs font-extrabold {{ $phasePct === 100 ? 'text-emerald-600' : 'text-slate-600 dark:text-slate-300' }}">
+                                    {{ $phasePct }}%
+                                </span>
+                                <svg class="w-4 h-4 text-slate-400 transition-transform duration-200" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                            </div>
+                        </div>
+
+                        {{-- Tasks Cards Grid --}}
+                        <div x-show="expanded" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            @foreach($phaseTasks as $task)
+                            @php
+                                $chkProg = $task->checklist_progress;
+                            @endphp
+                            <div class="p-5 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs flex flex-col justify-between space-y-4 transition hover:border-slate-300 dark:hover:border-slate-700"
+                                 x-show="!taskSearchQuery || '{{ strtolower(addslashes($task->title . ' ' . ($task->assignedUser?->name ?? ''))) }}'.includes(taskSearchQuery.toLowerCase())">
+                                {{-- Top Bar: Priority & Status Dropdown --}}
+                                <div class="space-y-3">
+                                    <div class="flex items-center justify-between gap-2">
+                                        <span class="px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide rounded-md border {{ $task->priority_badge_classes }}">
+                                            {{ ucfirst($task->priority) }} Priority
+                                        </span>
+
+                                        {{-- Live Status Dropdown --}}
+                                        <div class="flex items-center gap-1.5">
+                                            <select @change="updateTaskStatus({{ $task->id }}, $el)" data-task-title="{{ $task->title }}" class="text-xs font-bold py-1 px-2.5 rounded-lg border outline-none cursor-pointer {{ $task->status_badge_classes }}">
+                                                @foreach(\App\Models\ProjectTask::statusOptions() as $stVal => $stLbl)
+                                                    <option value="{{ $stVal }}" {{ $task->status === $stVal ? 'selected' : '' }}>{{ $stLbl }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    {{-- Task Title & Description --}}
+                                    <div>
+                                        <h5 class="font-extrabold text-sm text-slate-900 dark:text-white flex items-start gap-2">
+                                            @if($task->status === 'completed')
+                                                <span class="text-emerald-500 font-bold shrink-0">✓</span>
+                                            @endif
+                                            <span class="{{ $task->status === 'completed' ? 'line-through text-slate-400' : '' }}">{{ $task->title }}</span>
+                                        </h5>
+                                        @if($task->description)
+                                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                                            {{ $task->description }}
+                                        </p>
+                                        @endif
+                                    </div>
+
+                                    {{-- Blocker Callout if blocked --}}
+                                    @if($task->status === 'blocked')
+                                    <div class="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900/60 space-y-1">
+                                        <div class="flex items-center justify-between text-xs font-bold text-rose-700 dark:text-rose-300">
+                                            <span>⛔ Flagged Blocker</span>
+                                            <button type="button" @click="unblockTask({{ $task->id }})" class="underline text-[11px] font-extrabold">Mark Resolved</button>
+                                        </div>
+                                        <p class="text-xs font-semibold text-rose-900 dark:text-rose-200">
+                                            "{{ $task->blocker_reason }}"
+                                        </p>
+                                        <span class="text-[10px] text-rose-500 block">Flagged by {{ $task->blockedByUser?->name ?? 'Staff' }} on {{ $task->blocked_at?->format('d M Y, h:i A') }}</span>
+                                    </div>
+                                    @endif
+
+                                    {{-- Metadata Row --}}
+                                    <div class="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400 flex-wrap pt-1">
+                                        <div class="flex items-center gap-1.5 font-semibold text-slate-700 dark:text-slate-300">
+                                            <span class="w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-[10px] font-bold flex items-center justify-center">
+                                                {{ strtoupper(substr($task->assignedUser?->name ?? 'U', 0, 1)) }}
+                                            </span>
+                                            <span>{{ $task->assignedUser?->name ?? 'Unassigned' }}</span>
+                                        </div>
+
+                                        @if($task->estimated_hours)
+                                        <div class="flex items-center gap-1 text-[11px]">
+                                            <span class="text-slate-400">Est:</span>
+                                            <span class="font-bold text-slate-700 dark:text-slate-300">{{ $task->estimated_hours }}h</span>
+                                        </div>
+                                        @endif
+
+                                        @if($task->due_date)
+                                        <div class="flex items-center gap-1 text-[11px] {{ $task->due_date->isPast() && $task->status !== 'completed' ? 'text-rose-600 font-bold' : '' }}">
+                                            <span class="text-slate-400">Due:</span>
+                                            <span>{{ $task->due_date->format('d M') }}</span>
+                                        </div>
+                                        @endif
+                                    </div>
+
+                                    {{-- Quality Assurance Checklist Section --}}
+                                    @if($task->checklists->isNotEmpty())
+                                    <div class="pt-3 border-t border-slate-100 dark:border-slate-800/80 space-y-2">
+                                        <div class="flex items-center justify-between text-[11px] font-bold text-slate-500 dark:text-slate-400">
+                                            <span>SOP Quality Checklist</span>
+                                            <span id="task-progress-{{ $task->id }}" class="text-blue-600 dark:text-blue-400">
+                                                {{ $chkProg['completed'] }}/{{ $chkProg['total'] }} ({{ $chkProg['percentage'] }}%)
+                                            </span>
+                                        </div>
+
+                                        <div class="space-y-1.5 max-h-48 overflow-y-auto pr-1">
+                                            @foreach($task->checklists as $chk)
+                                            <label class="flex items-start gap-2.5 p-1.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer text-xs">
+                                                <input type="checkbox" {{ $chk->is_completed ? 'checked' : '' }} @change="toggleChecklist({{ $chk->id }}, $el)" class="mt-0.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                                                <span id="checklist-label-{{ $chk->id }}" class="flex-1 leading-snug {{ $chk->is_completed ? 'line-through text-slate-400' : 'text-slate-700 dark:text-slate-300' }}">
+                                                    {{ $chk->item_text }}
+                                                </span>
+                                            </label>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                    @endif
+                                </div>
+
+                                {{-- Card Footer --}}
+                                <div class="pt-2 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs">
+                                    <form method="POST" action="{{ route('tasks.checklists.store', $task) }}" class="flex items-center gap-1.5 flex-1 mr-2">
+                                        @csrf
+                                        <input type="text" name="item_text" placeholder="+ Add check item..." required class="w-full text-xs py-1 px-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none">
+                                        <button type="submit" class="px-2 py-1 text-xs font-bold rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200">+</button>
+                                    </form>
+
+                                    <div class="flex items-center gap-1">
+                                        <button type="button" @click="openBlockerModal({{ $task->id }}, '{{ addslashes($task->title) }}')" class="text-xs p-1 text-slate-400 hover:text-rose-600" title="Flag Blocker">
+                                            🚩
+                                        </button>
+                                        <button type="button" @click="openEditTaskModal({{ json_encode($task) }})" class="text-xs p-1 text-slate-400 hover:text-blue-600" title="Edit Task">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                        </button>
+                                        @if(auth()->user()->isAdmin())
+                                        <form method="POST" action="{{ route('projects.tasks.destroy', ['project' => $project, 'task' => $task]) }}" onsubmit="return confirm('Delete this task?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="text-rose-500 hover:text-rose-700 text-xs font-bold p-1" title="Delete Task">
+                                                &times;
+                                            </button>
+                                        </form>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+
             </div>
             @endif
         </div>
@@ -1531,40 +2600,60 @@
         <div x-show="materialModalOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
             <div @click.away="materialModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
-                    <h3 class="font-bold text-slate-900 dark:text-white text-base">Add Material Line Item</h3>
+                    <h3 class="font-bold text-slate-900 dark:text-white text-base">Add Material Line Item to BOM</h3>
                     <button type="button" @click="materialModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
                 </div>
 
                 <form method="POST" action="{{ route('projects.materials.store', $project) }}" class="space-y-4">
                     @csrf
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Select from Catalog (Optional)</label>
+                        <select name="product_id" onchange="if(this.value) { const opt = this.selectedOptions[0]; document.getElementById('bom_item_name').value = opt.dataset.name; document.getElementById('bom_unit').value = opt.dataset.unit || 'nos'; }" class="w-full px-3.5 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                            <option value="">-- Custom Non-Catalog Item --</option>
+                            @foreach($availableProducts as $prod)
+                                <option value="{{ $prod->id }}" data-name="{{ $prod->name }}" data-unit="{{ $prod->unit }}">
+                                    [{{ $prod->sku }}] {{ $prod->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
                     <div>
                         <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Item Description *</label>
-                        <input type="text" name="item_name" required placeholder="e.g. 4-Channel SMPS Power Supply" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                        <input type="text" id="bom_item_name" name="item_name" required placeholder="e.g. 4-Channel SMPS Power Supply or Cat6 Cable" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-medium">
                     </div>
 
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Quantity *</label>
-                            <input type="number" step="any" min="0.01" name="quantity" required placeholder="1" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-bold font-mono">
+                            <input type="number" step="any" min="0.01" name="quantity" required placeholder="1" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-bold font-mono text-blue-600 dark:text-blue-400">
                         </div>
                         <div>
                             <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Unit *</label>
-                            <select name="unit" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
-                                <option value="nos">nos</option>
-                                <option value="mtr">mtr</option>
+                            <select id="bom_unit" name="unit" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-semibold">
+                                <option value="meters">meters (mtr)</option>
+                                <option value="nos">nos (units)</option>
                                 <option value="box">box</option>
                                 <option value="roll">roll</option>
                                 <option value="pkt">pkt</option>
+                                <option value="feet">feet</option>
                             </select>
                         </div>
                     </div>
 
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Sourcing Channel *</label>
-                        <select name="source" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
-                            <option value="warehouse">Warehouse Stock Dispatch</option>
-                            <option value="local_purchase">Direct Local Purchase</option>
-                        </select>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Est. Unit Cost (₹)</label>
+                            <input type="number" step="any" min="0" name="unit_cost" placeholder="0.00" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Sourcing Channel *</label>
+                            <select name="source" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                                <option value="warehouse">Warehouse Dispatch</option>
+                                <option value="local_purchase">Direct Local Purchase</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div>
@@ -1572,9 +2661,130 @@
                         <input type="text" name="shop_name" placeholder="Vendor / Hardware shop name" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
                     </div>
 
-                    <div class="flex items-center justify-end gap-2 pt-2">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Notes / Location Tag</label>
+                        <input type="text" name="notes" placeholder="e.g. For Floor 1 perimeter cameras" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                    </div>
+
+                    <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
                         <button type="button" @click="materialModalOpen = false" class="btn-secondary text-xs">Cancel</button>
-                        <button type="submit" class="btn-primary text-xs shadow-md">Add Item</button>
+                        <button type="submit" class="btn-primary text-xs shadow-md">Add to BOM</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {{-- Log Material & Cable Consumption Modal --}}
+        <div x-show="consumeModalOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+            <div @click.away="consumeModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                    <div>
+                        <h3 class="font-bold text-slate-900 dark:text-white text-base flex items-center gap-2">
+                            <span>📦</span>
+                            <span>Log Material / Cable Used</span>
+                        </h3>
+                        <p class="text-xs text-slate-500 mt-0.5">Record actual meters laid or hardware installed for a specific task</p>
+                    </div>
+                    <button type="button" @click="consumeModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+                </div>
+
+                <form method="POST" action="{{ route('projects.material-consumptions.store', $project) }}" class="space-y-4">
+                    @csrf
+                    <input type="hidden" name="redirect_tab" :value="currentTab === 'tasks' ? 'tasks' : 'materials'">
+
+                    {{-- Target Task --}}
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Associated Project Task *</label>
+                        <select name="project_task_id" x-model="consumeTaskId" required class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-semibold">
+                            @foreach($project->tasks as $tItem)
+                                <option value="{{ $tItem->id }}">
+                                    [{{ $tItem->phase_name }}] {{ $tItem->title }} ({{ ucfirst($tItem->status) }})
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    {{-- BOM Item Link (Optional) --}}
+                    @if($project->materials->isNotEmpty())
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Link to Planned BOM Item (Optional)</label>
+                        <select name="project_material_id" x-model="consumeMaterialId" @change="onBomSelectChange($event)" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                            <option value="" data-item-name="" data-unit="meters" data-product-id="">-- Direct Entry / Unplanned Item --</option>
+                            @foreach($project->materials as $bItem)
+                                <option value="{{ $bItem->id }}" data-item-name="{{ $bItem->item_name }}" data-unit="{{ $bItem->unit }}" data-product-id="{{ $bItem->product_id }}">
+                                    {{ $bItem->item_name }} (Allocated: {{ $bItem->quantity }} {{ $bItem->unit }} &bull; Remaining: {{ $bItem->remaining_quantity }} {{ $bItem->unit }})
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @endif
+
+                    {{-- Item Description --}}
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Material / Cable Description *</label>
+                        <input type="text" name="item_name" x-model="consumeItemName" required placeholder="e.g. D-Link Cat6 UTP Solid Cable" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-medium">
+                    </div>
+
+                    {{-- Quantity and Unit --}}
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Quantity Used *</label>
+                            <input type="number" step="any" min="0.01" name="quantity_used" x-model="consumeQty" required placeholder="e.g. 125" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-bold font-mono text-indigo-600 dark:text-indigo-400">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Unit of Measure *</label>
+                            <select name="unit" x-model="consumeUnit" required class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-semibold">
+                                <option value="meters">meters (mtr)</option>
+                                <option value="nos">nos (units)</option>
+                                <option value="rolls">rolls</option>
+                                <option value="coils">coils</option>
+                                <option value="box">box</option>
+                                <option value="pkt">pkt</option>
+                                <option value="feet">feet</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    {{-- Wastage & Drum / Reel # --}}
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Scrap / Cut Wastage</label>
+                            <input type="number" step="any" min="0" name="wastage_quantity" x-model="consumeWastage" placeholder="0" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Cable Drum / Reel #</label>
+                            <input type="text" name="drum_or_batch_no" x-model="consumeDrumNo" placeholder="e.g. Drum #2 (140m-265m)" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-mono">
+                        </div>
+                    </div>
+
+                    {{-- Warehouse Catalog Item Link & Stock Deduction --}}
+                    <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 space-y-2">
+                        <div class="flex items-center justify-between">
+                            <label class="text-xs font-bold text-slate-700 dark:text-slate-300">Warehouse Inventory Integration</label>
+                            <label class="inline-flex items-center gap-1.5 cursor-pointer text-xs font-semibold text-slate-600 dark:text-slate-400">
+                                <input type="checkbox" name="deduct_from_stock" value="1" x-model="consumeDeductStock" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                                <span>Auto-deduct stock</span>
+                            </label>
+                        </div>
+                        <select name="product_id" x-model="consumeProductId" class="w-full px-3 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg outline-none">
+                            <option value="">-- Match Catalog Product (Optional) --</option>
+                            @foreach($availableProducts as $pItem)
+                                <option value="{{ $pItem->id }}">
+                                    [{{ $pItem->sku }}] {{ $pItem->name }} (In Stock: {{ $pItem->stock_quantity }} {{ $pItem->unit }})
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    {{-- Notes --}}
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Execution Notes / Location</label>
+                        <input type="text" name="notes" x-model="consumeNotes" placeholder="e.g. Pulled from server rack to Reception desk" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                    </div>
+
+                    <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                        <button type="button" @click="consumeModalOpen = false" class="btn-secondary text-xs">Cancel</button>
+                        <button type="submit" class="btn-primary text-xs shadow-md">Record Consumption</button>
                     </div>
                 </form>
             </div>
@@ -1957,12 +3167,36 @@
                         <div>
                             <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Status *</label>
                             <select name="status" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-semibold">
-                                <option value="pending" selected>Pending</option>
-                                <option value="in_progress">In Progress</option>
+                                <option value="pending" selected>Backlog / Pending</option>
+                                <option value="in_progress">Assigned / In Progress</option>
+                                <option value="under_review">Under Review / QA</option>
                                 <option value="completed">Completed</option>
                                 <option value="blocked">Blocked</option>
                             </select>
                         </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Start Date</label>
+                            <input type="date" name="start_date" value="{{ date('Y-m-d') }}" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Due Date</label>
+                            <input type="date" name="due_date" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Prerequisite Task Dependency</label>
+                        <select name="depends_on_task_id" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                            <option value="">No Prerequisite (Can Start Immediately)</option>
+                            @foreach($project->tasks as $otherTask)
+                                <option value="{{ $otherTask->id }}">
+                                    [{{ $otherTask->phase_name }}] {{ $otherTask->title }} ({{ ucfirst(str_replace('_', ' ', $otherTask->status)) }})
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
 
                     <div class="grid grid-cols-2 gap-3">
@@ -1984,8 +3218,8 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Due Date</label>
-                        <input type="date" name="due_date" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Blocker Reason (If Blocked)</label>
+                        <input type="text" name="blocker_reason" placeholder="e.g. Cannot start Camera Mounting until Client Finishes False Ceiling Paint" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
                     </div>
 
                     <div class="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">
@@ -2003,5 +3237,180 @@
             </div>
         </div>
 
+        {{-- Dedicated Flag Blocker Modal (Auto-Alerts WhatsApp & Dashboard Bell) --}}
+        <div x-show="blockerModalOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+            <div @click.away="blockerModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-lg w-full p-6 shadow-2xl border-2 border-rose-300 dark:border-rose-800 space-y-4">
+                <div class="flex items-center justify-between pb-3 border-b border-rose-100 dark:border-rose-900/60">
+                    <div class="flex items-center gap-2">
+                        <span class="w-8 h-8 rounded-xl bg-rose-600 text-white flex items-center justify-center font-bold text-base shadow-xs">⛔</span>
+                        <div>
+                            <h3 class="font-extrabold text-slate-900 dark:text-white text-base">Flag Blocker on Task</h3>
+                            <p class="text-[11px] text-slate-400">Instantly alerts Project Managers via Dashboard Notification &amp; WhatsApp</p>
+                        </div>
+                    </div>
+                    <button type="button" @click="blockerModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+                </div>
+
+                {{-- Task Context --}}
+                <div class="p-3 rounded-xl bg-rose-50/70 dark:bg-rose-950/40 border border-rose-200/80 dark:border-rose-900/50">
+                    <span class="text-[10px] font-extrabold uppercase tracking-wide text-rose-600 block">Affected Task</span>
+                    <h5 class="text-xs font-extrabold text-slate-900 dark:text-white mt-0.5" x-text="blockerTaskTitle"></h5>
+                </div>
+
+                {{-- Reason Input & Quick Chips --}}
+                <div class="space-y-3">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-600 dark:text-slate-300 mb-1">
+                            Blocker Reason / Bottleneck Details *
+                        </label>
+                        <textarea x-model="blockerReason" rows="3" required placeholder="e.g., Cannot start Camera Mounting until Client Finishes False Ceiling Paint" class="w-full px-3.5 py-2.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-rose-500 font-medium"></textarea>
+                    </div>
+
+                    {{-- Quick Select Preset Reasons --}}
+                    <div class="space-y-1.5">
+                        <span class="text-[10px] font-bold uppercase text-slate-400 block">Common CCTV Installation Blockers (Click to Fill):</span>
+                        <div class="flex flex-wrap gap-1.5">
+                            <template x-for="chip in quickBlockers" :key="chip">
+                                <button type="button" @click="setBlockerReason(chip)" class="text-[10px] px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-rose-50 hover:text-rose-700 dark:bg-slate-800 dark:hover:bg-rose-950/50 dark:hover:text-rose-300 border border-slate-200 dark:border-slate-700 transition text-left">
+                                    <span x-text="chip"></span>
+                                </button>
+                            </template>
+                        </div>
+                    </div>
+
+                    {{-- Auto-Alert Channels Callout --}}
+                    <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-[11px] text-slate-600 dark:text-slate-300 space-y-1">
+                        <div class="font-extrabold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                            <span class="text-emerald-500">✓</span>
+                            <span>Automated Multi-Channel Dispatch Enabled</span>
+                        </div>
+                        <p class="text-[10px] text-slate-500 leading-relaxed">
+                            Upon submitting, a high-priority alert is saved to the topbar notification bell for Project Managers and Admins, and a formatted WhatsApp dispatch message is generated automatically.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                    <button type="button" @click="blockerModalOpen = false" class="btn-secondary text-xs">Cancel</button>
+                    <button type="button" @click="submitBlockerModal()" :disabled="blockerSubmitting" class="px-4 py-2 rounded-xl text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white shadow-md transition flex items-center gap-1.5">
+                        <span x-show="!blockerSubmitting">Confirm Blocker &amp; Alert Management</span>
+                        <span x-show="blockerSubmitting">Dispatching Alerts...</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        {{-- Edit Task Details Modal --}}
+        <div x-show="editTaskModalOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+            <div @click.away="editTaskModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 max-h-[90vh] overflow-y-auto">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                    <h3 class="font-bold text-slate-900 dark:text-white text-base">Edit Project Task</h3>
+                    <button type="button" @click="editTaskModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+                </div>
+
+                <form :action="`/projects/{{ $project->id }}/tasks/${editTaskId}`" method="POST" class="space-y-3.5">
+                    @csrf
+                    @method('PUT')
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Phase / Milestone Name *</label>
+                        <input type="text" name="phase_name" x-model="editTaskPhase" required class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-semibold">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Task Title *</label>
+                        <input type="text" name="title" x-model="editTaskTitle" required class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-bold">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Description</label>
+                        <textarea name="description" x-model="editTaskDescription" rows="2" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none"></textarea>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Priority *</label>
+                            <select name="priority" x-model="editTaskPriority" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-semibold">
+                                <option value="low">Low</option>
+                                <option value="medium">Medium</option>
+                                <option value="high">High</option>
+                                <option value="urgent">Urgent</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Status *</label>
+                            <select name="status" x-model="editTaskStatus" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-semibold">
+                                <option value="pending">Backlog / Pending</option>
+                                <option value="in_progress">Assigned / In Progress</option>
+                                <option value="under_review">Under Review / QA</option>
+                                <option value="completed">Completed</option>
+                                <option value="blocked">Blocked</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Start Date</label>
+                            <input type="date" name="start_date" x-model="editTaskStartDate" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Due Date</label>
+                            <input type="date" name="due_date" x-model="editTaskDueDate" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Prerequisite Task Dependency</label>
+                        <select name="depends_on_task_id" x-model="editTaskDependsOn" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                            <option value="">No Prerequisite (Can Start Immediately)</option>
+                            @foreach($project->tasks as $otherTask)
+                                <option value="{{ $otherTask->id }}">
+                                    [{{ $otherTask->phase_name }}] {{ $otherTask->title }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Assigned Technician</label>
+                            <select name="assigned_to" x-model="editTaskAssignedTo" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                                <option value="">Select Technician</option>
+                                @foreach($technicians as $tech)
+                                    <option value="{{ $tech->id }}">{{ $tech->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Estimated Hours</label>
+                            <input type="number" step="0.5" min="0" name="estimated_hours" x-model="editTaskEstHours" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono outline-none">
+                        </div>
+                    </div>
+
+                    {{-- Conditional Blocker Reason --}}
+                    <div x-show="editTaskStatus === 'blocked'" class="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 space-y-1">
+                        <label class="block text-xs font-extrabold uppercase text-rose-700 dark:text-rose-300">Blocker Reason *</label>
+                        <input type="text" name="blocker_reason" x-model="editTaskBlockerReason" placeholder="e.g. Cannot start Camera Mounting until Client Finishes False Ceiling Paint" class="w-full px-3 py-2 text-xs bg-white dark:bg-slate-800 border border-rose-300 dark:border-rose-800 rounded-lg outline-none font-medium">
+                    </div>
+
+                    {{-- Quick Log Material / Cable Action --}}
+                    <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                        <span class="text-xs text-slate-500 font-medium">Field Material / Cable Logging:</span>
+                        <button type="button" @click="editTaskModalOpen = false; openConsumeModal(editTaskId, editTaskTitle)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100">
+                            📦 Log Materials on this Task
+                        </button>
+                    </div>
+
+                    <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                        <button type="button" @click="editTaskModalOpen = false" class="btn-secondary text-xs">Cancel</button>
+                        <button type="submit" class="btn-primary text-xs shadow-md">Update Task</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
     </div>
+
+    {{-- Sortable.js CDN for Drag-and-Drop Kanban Interaction --}}
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 </x-app-layout>

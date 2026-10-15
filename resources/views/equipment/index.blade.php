@@ -25,35 +25,52 @@
 
         .stat-card {
             background: #ffffff;
-            border-radius: 4px;
+            border-radius: 8px;
             padding: 12px 16px;
-            border: 1px solid #dddddd;
+            border: 1px solid var(--card-border);
         }
-        .stat-label { font-size: 14px; font-weight: normal; color: #555555; margin-bottom: 0.25rem; }
-        .stat-value { font-size: 26px; font-weight: bold; color: #222222; line-height: 1.2; }
+        html.dark .stat-card {
+            background: #0f172a;
+            border-color: var(--card-border);
+        }
+        .stat-label { font-size: 14px; font-weight: normal; color: var(--text-muted); margin-bottom: 0.25rem; }
+        .stat-value { font-size: 26px; font-weight: bold; color: var(--text-main); line-height: 1.2; }
 
         .pg-card {
             background: #ffffff;
-            border-radius: 4px;
-            border: 1px solid #dddddd;
+            border-radius: 8px;
+            border: 1px solid var(--card-border);
             overflow: hidden;
+        }
+        html.dark .pg-card {
+            background: #0f172a;
+            border-color: var(--card-border);
         }
 
         .filter-bar {
             display: flex; align-items: center; gap: 0.75rem;
-            padding: 0.75rem 1rem; border-bottom: 1px solid #dddddd; flex-wrap: wrap;
+            padding: 0.75rem 1rem; border-bottom: 1px solid var(--card-border); flex-wrap: wrap;
             background: #ffffff;
         }
+        html.dark .filter-bar {
+            border-bottom: 1px solid var(--card-border);
+            background: #0f172a;
+        }
         .filter-bar input, .filter-bar select {
-            border: 1px solid #cbd5e1; border-radius: 8px;
-            height: 42px; min-height: 42px; padding: 0 0.875rem; font-size: 14px; color: #0f172a;
+            border: 1px solid var(--card-border); border-radius: 6px;
+            height: 38px; min-height: 38px; padding: 0 0.875rem; font-size: 14px; color: var(--text-main);
             background: #ffffff; outline: none; font-family: inherit;
             box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
             transition: border-color 0.15s ease, box-shadow 0.15s ease;
         }
+        html.dark .filter-bar input, html.dark .filter-bar select {
+            border: 1px solid #475569;
+            background: #0b1120;
+            color: var(--text-main);
+        }
         .filter-bar select {
             padding-right: 2.25rem;
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%231e293b' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
             background-position: right 0.75rem center;
             background-repeat: no-repeat;
             background-size: 1.25em 1.25em;
@@ -61,39 +78,68 @@
             -webkit-appearance: none;
             cursor: pointer;
         }
+        html.dark .filter-bar select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+        }
         .filter-bar input:focus, .filter-bar select:focus {
             border-color: #2563eb;
             box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
         }
 
-        .p-table { width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; }
-        .p-table thead { background: #f0f0f0; border-bottom: 1px solid #dddddd; }
+        .p-table { width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; border: none !important; }
+        .p-table thead { background: #f0f0f0; border-top: none !important; border-bottom: 1px solid var(--card-border); }
+        html.dark .p-table thead { background: var(--card-border); border-bottom: 1px solid var(--card-border); }
         .p-table thead th {
             padding: 0.75rem 1rem;
             font-size: 14px; font-weight: bold; text-transform: none;
-            color: #222222; text-align: left; white-space: nowrap;
+            color: var(--text-main); text-align: left; white-space: nowrap;
+            border-top: none !important;
+            border-bottom: 1px solid var(--card-border);
+        }
+        html.dark .p-table thead th {
+            color: var(--text-main);
+            border-bottom: 1px solid var(--card-border);
         }
         .p-table thead th.center { text-align: center; }
         .p-table thead th.right { text-align: right; }
-        .p-table tbody tr { border-bottom: 1px solid #dddddd; background: #ffffff; }
-        .p-table tbody tr:last-child { border-bottom: none; }
+        .p-table tbody tr { border-bottom: 1px solid var(--card-border); background: #ffffff; }
+        html.dark .p-table tbody tr { border-bottom: 1px solid var(--card-border); background: #0f172a; }
+        .p-table tbody tr:last-child,
+        .p-table tbody tr:last-child td { border-bottom: none !important; }
         .p-table tbody tr:hover { background: #f5f5f5; }
-        .p-table tbody td { padding: 0.75rem 1rem; vertical-align: middle; font-size: 14px; color: #222222; }
+        html.dark .p-table tbody tr:hover { background: var(--card-border); }
+        .p-table tbody td { padding: 0.75rem 1rem; vertical-align: middle; font-size: 14px; color: var(--text-main); border-bottom: 1px solid var(--card-border); }
+        html.dark .p-table tbody td { color: var(--text-main); border-bottom: 1px solid var(--card-border); }
         .p-table tbody td.center { text-align: center; }
         .p-table tbody td.right { text-align: right; }
 
         .sn-link { font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; color: #2563eb; text-decoration: none; }
         .sn-link:hover { text-decoration: underline; color: #1d4ed8; }
         .mac-text { font-family: Arial, sans-serif; font-size: 12px; color: #666666; }
+        html.dark .mac-text { color: var(--text-muted); }
 
-        /* Status: Plain bold colored text */
-        .status-badge { font-size: 14px; font-weight: bold; background: transparent !important; border: none !important; padding: 0 !important; }
+        /* Status: Clean 1px single border badge matching Image 4 */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 2px 8px !important;
+            border-radius: 4px;
+            border: 1px solid var(--card-border) !important;
+            background: #ffffff;
+        }
+        html.dark .status-badge {
+            border-color: #475569 !important;
+            background: #0f172a;
+        }
         .status-active         { color: #16a34a !important; }
         .status-under_repair   { color: #d97706 !important; }
         .status-replaced       { color: #2563eb !important; }
         .status-decommissioned { color: #555555 !important; }
 
-        .pg-links { padding: 0.75rem 1rem; border-top: 1px solid #dddddd; }
+        .pg-links { padding: 0.75rem 1rem; border-top: 1px solid var(--card-border); }
+        html.dark .pg-links { border-top: 1px solid var(--card-border); }
     </style>
 
     <div class="pg-wrap">
@@ -137,7 +183,7 @@
                         <span>Search</span>
                     </button>
                     @if(request()->hasAny(['search', 'lead_id', 'warranty', 'status']))
-                        <a href="{{ route('equipment.index') }}" class="h-[42px] px-4 inline-flex items-center rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-sm font-semibold transition shadow-xs">Clear</a>
+                        <a href="{{ route('equipment.index') }}" class="h-[42px] px-4 inline-flex items-center rounded-lg border border-[var(--card-border)] dark:border-slate-600 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm font-semibold transition shadow-xs">Clear</a>
                     @endif
                 </form>
 

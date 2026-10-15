@@ -31,11 +31,11 @@
         }
         html.dark .pip-card {
             background:#0f172a;
-            border-color:#1e293b;
+            border-color: var(--text-main);
         }
         .pip-label { font-size:14px; font-weight:500; text-transform:none; color:#64748b; margin-bottom:.25rem; }
-        html.dark .pip-label { color:#94a3b8; }
-        .pip-count { font-size:1.6rem; font-weight:700; color:#0f172a; line-height:1; }
+        html.dark .pip-label { color: var(--text-muted); }
+        .pip-count { font-size:1.6rem; font-weight:700; color: var(--text-main); line-height:1; }
         html.dark .pip-count { color:#ffffff; }
 
         /* Main table card */
@@ -47,62 +47,89 @@
         }
         html.dark .pg-card {
             background:#0f172a;
-            border-color:#1e293b;
+            border-color: var(--text-main);
         }
 
         /* Filter bar */
         .filter-bar {
             display:flex; align-items:center; gap:.75rem;
-            padding:.75rem 1rem; border-bottom:1px solid #e2e8f0;
+            padding:.75rem 1rem; border-bottom:1px solid var(--card-border);
             background:#ffffff; flex-wrap:wrap;
         }
         html.dark .filter-bar {
-            background:#0b1120; border-color:#1e293b;
+            background:#0b1120; border-color:var(--card-border);
         }
         .filter-bar input, .filter-bar select {
-            border:1px solid #cbd5e1; border-radius:6px;
+            border:1px solid var(--card-border); border-radius:6px;
             height:36px !important; min-height:36px !important; max-height:36px !important;
-            padding:0 .75rem; font-size:12px !important; color:#1e293b;
+            padding:0 .75rem; font-size:12px !important; color: var(--text-main);
             background:#ffffff; outline:none;
         }
         html.dark .filter-bar input, html.dark .filter-bar select {
-            background:#0b1120; border-color:#334155; color:#ffffff;
+            background:#0b1120; border-color:#475569; color:#ffffff;
         }
         .filter-bar input:focus, .filter-bar select:focus { border-color:#2563eb; }
         .filter-bar input { min-width:180px; }
 
         /* Table */
-        .q-table { width:100%; border-collapse:collapse; }
+        .q-table { width:100%; border-collapse:collapse; border:none !important; }
         .q-table thead { background:#f8fafc; }
         html.dark .q-table thead { background:#0b1120; }
         .q-table thead th {
             padding:.75rem 1rem;
             font-size:.8rem; font-weight:600; text-transform:none;
             color:#475569; text-align:left; white-space:nowrap;
-            border-bottom:1px solid #e2e8f0;
+            border-top:none !important;
+            border-bottom:1px solid var(--card-border) !important;
+            border-right:1px solid var(--card-border) !important;
         }
-        html.dark .q-table thead th { color:#94a3b8; border-bottom-color:#1e293b; }
+        html.dark .q-table thead th {
+            color: var(--text-muted);
+            border-top:none !important;
+            border-bottom:1px solid var(--card-border) !important;
+            border-right:1px solid var(--card-border) !important;
+        }
         .q-table thead th.right { text-align:right; }
-        .q-table tbody tr { border-bottom:1px solid #e2e8f0; background:#ffffff; }
-        html.dark .q-table tbody tr { border-bottom-color:#1e293b; background:#0f172a; }
-        .q-table tbody tr:last-child { border-bottom:none; }
+        .q-table tbody tr { border-bottom:none !important; background:#ffffff; }
+        html.dark .q-table tbody tr { border-bottom:none !important; background:#0f172a; }
         .q-table tbody tr:hover { background:#f8fafc; }
-        html.dark .q-table tbody tr:hover { background:#1e293b; }
-        .q-table tbody td { padding:.75rem 1rem; vertical-align:middle; font-size:.85rem; }
+        html.dark .q-table tbody tr:hover { background:var(--card-border); }
+        .q-table tbody td {
+            padding:.75rem 1rem;
+            vertical-align:middle;
+            font-size:.85rem;
+            border-bottom:1px solid var(--card-border) !important;
+            border-right:1px solid var(--card-border) !important;
+        }
+        html.dark .q-table tbody td {
+            border-bottom:1px solid var(--card-border) !important;
+            border-right:1px solid var(--card-border) !important;
+        }
         .q-table tbody td.right { text-align:right; }
+        .q-table th:first-child,
+        .q-table td:first-child {
+            border-left:none !important;
+        }
+        .q-table th:last-child,
+        .q-table td:last-child {
+            border-right:none !important;
+        }
+        .q-table tbody tr:last-child td {
+            border-bottom:none !important;
+        }
 
-        .cell-no { font-size:.85rem; font-weight:600; color:#0f172a; }
+        .cell-no { font-size:.85rem; font-weight:600; color: var(--text-main); }
         html.dark .cell-no { color:#ffffff; }
         .cell-no a { color:#2563eb; text-decoration:none; }
         .cell-no a:hover { text-decoration:underline; }
         .cell-sub { font-size:.75rem; color:#64748b; margin-top:.15rem; }
-        html.dark .cell-sub { color:#94a3b8; }
+        html.dark .cell-sub { color: var(--text-muted); }
         .cell-text { font-size:.85rem; color:#475569; }
-        html.dark .cell-text { color:#cbd5e1; }
-        .cell-amount { font-size:.9rem; font-weight:700; color:#0f172a; }
+        html.dark .cell-text { color: var(--text-muted); }
+        .cell-amount { font-size:.9rem; font-weight:700; color: var(--text-main); }
         html.dark .cell-amount { color:#ffffff; }
         .cell-date { font-size:.85rem; color:#475569; white-space:nowrap; }
-        html.dark .cell-date { color:#94a3b8; }
+        html.dark .cell-date { color: var(--text-muted); }
 
         /* Status: Plain bold colored text */
         .badge {
@@ -120,9 +147,9 @@
         .badge-expired  { color:#ea580c !important; }
 
         .pg-links { padding:.75rem 1rem; border-top:1px solid #e2e8f0; }
-        html.dark .pg-links { border-top-color:#1e293b; }
+        html.dark .pg-links { border-top-color: var(--text-main); }
         .empty-state { text-align:center; padding:3rem 1rem; color:#64748b; font-size:.85rem; }
-        html.dark .empty-state { color:#94a3b8; }
+        html.dark .empty-state { color: var(--text-muted); }
     </style>
 
     <div class="pg-wrap">
@@ -158,7 +185,7 @@
                             Clear
                         </a>
                     @endif
-                    <span id="q-count" style="margin-left:auto;font-size:.75rem;color:#94a3b8;"></span>
+                    <span id="q-count" style="margin-left:auto;font-size:.75rem;color: var(--text-muted);"></span>
                 </form>
 
                 <div style="overflow-x:auto">

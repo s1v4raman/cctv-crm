@@ -53,32 +53,32 @@
                 <table class="crm-table w-full">
                     <tbody>
                         <tr>
-                            <td style="width: 25%; color: #555; font-weight: 500;">Contract Number</td>
-                            <td style="color: #222; font-weight: 500;">{{ $amc->contract_no }}</td>
+                            <td style="width: 25%; color: var(--text-muted); font-weight: 500;">Contract Number</td>
+                            <td style="color: var(--text-main); font-weight: 500;">{{ $amc->contract_no }}</td>
                         </tr>
                         <tr>
-                            <td style="color: #555; font-weight: 500;">Servicing Period</td>
-                            <td style="color: #222; font-weight: 500;">{{ $amc->start_date->format('d M Y') }} to {{ $amc->end_date->format('d M Y') }}</td>
+                            <td style="color: var(--text-muted); font-weight: 500;">Servicing Period</td>
+                            <td style="color: var(--text-main); font-weight: 500;">{{ $amc->start_date->format('d M Y') }} to {{ $amc->end_date->format('d M Y') }}</td>
                         </tr>
                         <tr>
-                            <td style="color: #555; font-weight: 500;">Annual Value</td>
-                            <td style="color: #222; font-weight: 500;">₹{{ number_format($amc->value, 2) }}</td>
+                            <td style="color: var(--text-muted); font-weight: 500;">Annual Value</td>
+                            <td style="color: var(--text-main); font-weight: 500;">₹{{ number_format($amc->value, 2) }}</td>
                         </tr>
                         <tr>
-                            <td style="color: #555; font-weight: 500;">Servicing Frequency</td>
-                            <td style="color: #222; font-weight: 500;">{{ ucfirst(str_replace('_', ' ', $amc->frequency)) }}</td>
+                            <td style="color: var(--text-muted); font-weight: 500;">Servicing Frequency</td>
+                            <td style="color: var(--text-main); font-weight: 500;">{{ ucfirst(str_replace('_', ' ', $amc->frequency)) }}</td>
                         </tr>
                         <tr>
-                            <td style="color: #555; font-weight: 500;">Customer Premise</td>
-                            <td style="color: #222; font-weight: 500;">
+                            <td style="color: var(--text-muted); font-weight: 500;">Customer Premise</td>
+                            <td style="color: var(--text-main); font-weight: 500;">
                                 <a href="{{ route('leads.show', $amc->lead) }}" class="action-link">
                                     {{ $amc->lead->customer_name }}
                                 </a>
                             </td>
                         </tr>
                         <tr>
-                            <td style="color: #555; font-weight: 500;">Status</td>
-                            <td style="color: #222; font-weight: 500;">
+                            <td style="color: var(--text-muted); font-weight: 500;">Status</td>
+                            <td style="color: var(--text-main); font-weight: 500;">
                                 <form method="POST" action="{{ route('amcs.updateStatus', $amc) }}" class="inline">
                                     @csrf
                                     @method('PATCH')
@@ -93,8 +93,8 @@
                         </tr>
                         @if($amc->notes)
                         <tr>
-                            <td style="color: #555; font-weight: 500;">Coverage &amp; Scope</td>
-                            <td style="color: #222; font-weight: 500;">{{ $amc->notes }}</td>
+                            <td style="color: var(--text-muted); font-weight: 500;">Coverage &amp; Scope</td>
+                            <td style="color: var(--text-main); font-weight: 500;">{{ $amc->notes }}</td>
                         </tr>
                         @endif
                     </tbody>

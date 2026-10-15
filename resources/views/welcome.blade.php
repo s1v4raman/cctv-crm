@@ -1270,9 +1270,13 @@
             if (document.documentElement.classList.contains('dark')) {
                 document.documentElement.classList.remove('dark');
                 localStorage.setItem('theme', 'light');
+                localStorage.setItem('crm_mode', 'day');
+                document.cookie = "crm_mode=day; path=/; max-age=31536000; SameSite=Lax";
             } else {
                 document.documentElement.classList.add('dark');
                 localStorage.setItem('theme', 'dark');
+                localStorage.setItem('crm_mode', 'night');
+                document.cookie = "crm_mode=night; path=/; max-age=31536000; SameSite=Lax";
             }
             syncThemeUI();
         }

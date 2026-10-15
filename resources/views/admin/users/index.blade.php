@@ -19,7 +19,7 @@
         }
         html.dark .pg-card {
             background: #0f172a;
-            border-color: #1e293b;
+            border-color: var(--text-main);
         }
 
         .filter-tabs {
@@ -33,7 +33,7 @@
         }
         html.dark .filter-tabs {
             background: #0b1120;
-            border-color: #1e293b;
+            border-color: var(--text-main);
         }
         .filter-tab {
             padding: 0.4rem 0.85rem;
@@ -46,7 +46,7 @@
             border: 1px solid transparent;
         }
         .filter-tab:hover {
-            color: #1e293b;
+            color: var(--text-main);
             background: #e2e8f0;
         }
         html.dark .filter-tab:hover {
@@ -72,21 +72,21 @@
             border-bottom: 1px solid #e2e8f0;
         }
         html.dark .p-table thead th {
-            color: #94a3b8;
-            border-color: #1e293b;
+            color: var(--text-muted);
+            border-color: var(--text-main);
         }
         .p-table tbody tr { border-bottom: 1px solid #f1f5f9; }
-        html.dark .p-table tbody tr { border-color: #1e293b; }
+        html.dark .p-table tbody tr { border-color: var(--text-main); }
         .p-table tbody tr:hover { background: #f8fafc; }
         html.dark .p-table tbody tr:hover { background: rgba(30,41,59,0.4); }
         .p-table tbody td { padding: 0.75rem 1rem; vertical-align: middle; font-size: 14px; }
 
-        .cell-name { font-weight: 600; color: #0f172a; }
-        html.dark .cell-name { color: #f8fafc; }
+        .cell-name { font-weight: 600; color: var(--text-main); }
+        html.dark .cell-name { color: var(--text-main); }
         .cell-email { font-size: 13px; color: #2563eb; }
         html.dark .cell-email { color: #38bdf8; }
         .cell-date { font-size: 13px; color: #64748b; }
-        html.dark .cell-date { color: #94a3b8; }
+        html.dark .cell-date { color: var(--text-muted); }
     </style>
 
     <div class="py-6 bg-slate-50 dark:bg-[#060913] min-h-screen">

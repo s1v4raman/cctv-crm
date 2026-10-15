@@ -51,38 +51,38 @@
                 <table class="crm-table w-full">
                     <tbody>
                         <tr>
-                            <td style="width: 25%; color: #555; font-weight: 500;">Invoice Identifier</td>
-                            <td style="color: #222; font-weight: 500;">{{ $invoice->invoice_no }}</td>
+                            <td style="width: 25%; color: var(--text-muted); font-weight: 500;">Invoice Identifier</td>
+                            <td style="color: var(--text-main); font-weight: 500;">{{ $invoice->invoice_no }}</td>
                         </tr>
                         <tr>
-                            <td style="color: #555; font-weight: 500;">Invoice Date</td>
-                            <td style="color: #222; font-weight: 500;">{{ $invoice->invoice_date->format('d M Y') }}</td>
+                            <td style="color: var(--text-muted); font-weight: 500;">Invoice Date</td>
+                            <td style="color: var(--text-main); font-weight: 500;">{{ $invoice->invoice_date->format('d M Y') }}</td>
                         </tr>
                         <tr>
-                            <td style="color: #555; font-weight: 500;">Payment Due Date</td>
-                            <td style="color: #222; font-weight: 500;">
+                            <td style="color: var(--text-muted); font-weight: 500;">Payment Due Date</td>
+                            <td style="color: var(--text-main); font-weight: 500;">
                                 {{ $invoice->due_date?->format('d M Y') ?? 'Immediate' }}
                             </td>
                         </tr>
                         <tr>
-                            <td style="color: #555; font-weight: 500;">Installation Job</td>
-                            <td style="color: #222; font-weight: 500;">
+                            <td style="color: var(--text-muted); font-weight: 500;">Installation Job</td>
+                            <td style="color: var(--text-main); font-weight: 500;">
                                 <a href="{{ route('jobs.show', $invoice->installationJob) }}" class="action-link">
                                     {{ $invoice->installationJob->job_no }}
                                 </a>
                             </td>
                         </tr>
                         <tr>
-                            <td style="color: #555; font-weight: 500;">Quotation Proposal</td>
-                            <td style="color: #222; font-weight: 500;">
+                            <td style="color: var(--text-muted); font-weight: 500;">Quotation Proposal</td>
+                            <td style="color: var(--text-main); font-weight: 500;">
                                 <a href="{{ route('quotations.show', $invoice->quotation) }}" class="action-link">
                                     {{ $invoice->quotation->quotation_no }}
                                 </a>
                             </td>
                         </tr>
                         <tr>
-                            <td style="color: #555; font-weight: 500;">Customer Premise</td>
-                            <td style="color: #222; font-weight: 500;">
+                            <td style="color: var(--text-muted); font-weight: 500;">Customer Premise</td>
+                            <td style="color: var(--text-main); font-weight: 500;">
                                 <a href="{{ route('leads.show', $invoice->quotation->lead) }}" class="action-link">
                                     {{ $invoice->quotation->lead->customer_name }}
                                 </a>
@@ -90,8 +90,8 @@
                         </tr>
                         @if($invoice->notes)
                         <tr>
-                            <td style="color: #555; font-weight: 500;">Invoice Terms &amp; Notes</td>
-                            <td style="color: #222; font-weight: 500;">{{ $invoice->notes }}</td>
+                            <td style="color: var(--text-muted); font-weight: 500;">Invoice Terms &amp; Notes</td>
+                            <td style="color: var(--text-main); font-weight: 500;">{{ $invoice->notes }}</td>
                         </tr>
                         @endif
                     </tbody>

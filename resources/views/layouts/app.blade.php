@@ -1,10 +1,27 @@
 @php
-    $cookieMode = request()->cookie('crm_mode');
-    $effectiveMode = (auth()->check() && auth()->user()->theme_mode === 'night') ? 'night' : 'day';
-    $isDarkServer = false;
+    $cookieMode = request()->cookie('crm_mode') ?: session('crm_mode');
+    $user = auth()->user();
+    $userMode = $user?->theme_mode;
+
+    // Standardize mode strings
+    $cleanCookie = ($cookieMode === 'dark' || $cookieMode === 'night') ? 'night' : (($cookieMode === 'light' || $cookieMode === 'day') ? 'day' : null);
+    $cleanUser   = ($userMode === 'dark' || $userMode === 'night') ? 'night' : (($userMode === 'light' || $userMode === 'day') ? 'day' : null);
+
+    // Active mode: Cookie/session represents real-time client UI state and takes precedence over stale DB state on instant navigation/refresh
+    $activeMode = $cleanCookie ?? $cleanUser ?? 'night';
+
+    // Auto-sync database preference if the user clicked the toggle in the browser
+    if ($user && $cleanCookie && $cleanCookie !== $cleanUser) {
+        try {
+            $user->theme_mode = $cleanCookie;
+            $user->saveQuietly();
+        } catch (\Throwable $e) {}
+    }
+
+    $isDarkServer = ($activeMode === 'night');
 @endphp
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-[#f8fafc]">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full {{ $isDarkServer ? 'dark' : '' }}" data-theme="{{ $isDarkServer ? 'dark' : 'light' }}" style="background-color: var(--page-bg); color: var(--text-main);">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,7 +30,7 @@
         <title>{{ config('app.name', 'Precision IT Systems CRM') }} | Smart Operations</title>
 
         <!-- Dynamic Logo Engine -->
-        <x-crm-theme-init :userId="auth()->id()" :userAccent="auth()->user()->theme_accent" :userMode="auth()->user()->theme_mode" :userStyle="auth()->user()->theme_style" />
+        <x-crm-theme-init :userId="auth()->id()" :userAccent="auth()->user()->theme_accent" :userMode="$activeMode" :userStyle="auth()->user()->theme_style" />
 
         <!-- Tailwind CSS & Alpine.js CDN Guard -->
         <script src="https://cdn.tailwindcss.com"></script>
@@ -43,6 +60,100 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
         <style>
+            /* ═══════════════════════════════════════════════════════════════════════
+               SECUREVISION AI CRM — THEME VARIABLES SYSTEM
+               ═══════════════════════════════════════════════════════════════════════ */
+            :root,
+            [data-theme='light'],
+            html:not(.dark) {
+                --page-bg: #f1f5f9;
+                --bg-canvas: #f1f5f9;
+
+                --card-bg: #ffffff;
+                --bg-card: #ffffff;
+
+                --card-border: #cbd5e1;
+                --border-card: #cbd5e1;
+
+                --input-border: #94a3b8;
+                --border-input: #94a3b8;
+                --button-border: #94a3b8;
+
+                --table-header-bg: #e2e8f0;
+                --bg-table-header: #e2e8f0;
+
+                --table-border: #cbd5e1;
+                --border-table: #cbd5e1;
+                --border-dark-line: #cbd5e1;
+
+                --text-main: #0f172a;
+                --text-muted: #64748b;
+                --text-secondary: #475569;
+                --text-hint: #64748b;
+
+                --status-green: #16a34a;
+                --status-orange: #d97706;
+                --status-red: #dc2626;
+                --status-success: #16a34a;
+                --status-warning: #d97706;
+                --status-danger: #dc2626;
+
+                --primary-btn-bg: #2563eb;
+                --primary-btn-hover: #1d4ed8;
+                --primary-btn-text: #ffffff;
+                --crm-accent: #2563eb;
+                --crm-accent-hover: #1d4ed8;
+                --crm-accent-light: #eff6ff;
+                --brand-blue: #2563eb;
+                --brand-blue-hover: #1d4ed8;
+            }
+
+            [data-theme='dark'],
+            html.dark,
+            html[data-theme='dark'] {
+                --page-bg: #0f172a;
+                --bg-canvas: #0f172a;
+
+                --card-bg: #1e293b;
+                --bg-card: #1e293b;
+
+                --card-border: #334155;
+                --border-card: #334155;
+
+                --input-border: #334155;
+                --border-input: #334155;
+                --button-border: #334155;
+
+                --table-header-bg: #1e293b;
+                --bg-table-header: #1e293b;
+
+                --table-border: #334155;
+                --border-table: #334155;
+                --border-dark-line: #334155;
+
+                --text-main: #e2e8f0; /* strictly no pure white */
+                --text-muted: #94a3b8;
+                --text-secondary: #94a3b8;
+                --text-hint: #94a3b8;
+
+                --status-green: #4ade80;
+                --status-orange: #fbbf24;
+                --status-red: #f87171;
+                --status-success: #4ade80;
+                --status-warning: #fbbf24;
+                --status-danger: #f87171;
+
+                --primary-btn-bg: #2563eb; /* primary button stays #2563eb */
+                --primary-btn-hover: #1d4ed8;
+                --primary-btn-text: #ffffff;
+                --crm-accent: #2563eb;
+                --crm-accent-hover: #1d4ed8;
+                --crm-accent-light: rgba(37, 99, 235, 0.15);
+                --brand-blue: #2563eb;
+                --brand-blue-hover: #1d4ed8;
+            }
+
+
             html {
                 font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             }
@@ -53,10 +164,10 @@
             .custom-sidebar-scroll {
                 overflow-y: auto;
                 scrollbar-width: thin;
-                scrollbar-color: #94a3b8 transparent;
+                scrollbar-color: var(--input-border) transparent;
             }
             .custom-sidebar-scroll::-webkit-scrollbar {
-                width: 5px;
+                width: 4px;
             }
             .custom-sidebar-scroll::-webkit-scrollbar-track {
                 background: transparent;
@@ -65,11 +176,15 @@
                 background-color: #cbd5e1;
                 border-radius: 9999px;
             }
-            .dark .custom-sidebar-scroll::-webkit-scrollbar-thumb {
+            html.dark .custom-sidebar-scroll {
+                scrollbar-width: thin;
+                scrollbar-color: var(--input-border) transparent;
+            }
+            html.dark .custom-sidebar-scroll::-webkit-scrollbar-thumb {
                 background-color: #334155;
             }
-            .custom-sidebar-scroll::-webkit-scrollbar-thumb:hover {
-                background-color: #94a3b8;
+            html.dark .custom-sidebar-scroll::-webkit-scrollbar-thumb:hover {
+                background-color: #475569;
             }
 
             :root {
@@ -77,29 +192,353 @@
                 --crm-accent-hover: #1d4ed8;
             }
 
-            /* Modern Stat Card Surface */
-            .stat-card {
-                background: #ffffff;
-                border: 1px solid #e2e8f0;
-                border-radius: 12px;
+            /* Modern Stat Card Surface with Crisp Single 1px Dark Border Line (Matching Image 4) */
+            .stat-card,
+            .saas-card,
+            .crm-card,
+            .crm-card-surface,
+            .pip-card,
+            .pg-card,
+            .card {
+                background: var(--card-bg) !important;
+                color: var(--text-main) !important;
+                border: 1px solid var(--card-border) !important;
+                border-radius: 10px;
                 padding: 1rem 1.25rem;
                 transition: all 0.2s ease-in-out;
             }
-            html.dark .stat-card {
-                background: #0f172a;
-                border-color: #1e293b;
+            html.dark .stat-card,
+            html.dark .saas-card,
+            html.dark .crm-card,
+            html.dark .crm-card-surface,
+            html.dark .pip-card,
+            html.dark .pg-card,
+            html.dark .card {
+                background: var(--card-bg) !important;
+                color: var(--text-main) !important;
+                border: 1px solid var(--card-border) !important;
             }
 
-            /* Header Bar: Clean standard background */
+            /* Universal Tailwind Utility Overrides to Crisp 1px Border */
+            .border-\[\#ddd\],
+            .border-\[\#dddddd\],
+            .border-\[\#cbd5e1\],
+            .border-\[\#e2e8f0\],
+            .border-slate-100,
+            .border-slate-200,
+            .border-slate-300,
+            .border-gray-100,
+            .border-gray-200,
+            .border-gray-300 {
+                border-width: 1px !important;
+                border-color: var(--card-border) !important;
+            }
+            html.dark .border-\[\#ddd\],
+            html.dark .border-\[\#dddddd\],
+            html.dark .border-\[\#cbd5e1\],
+            html.dark .border-\[\#e2e8f0\],
+            html.dark .border-slate-100,
+            html.dark .border-slate-200,
+            html.dark .border-slate-300,
+            html.dark .border-gray-100,
+            html.dark .border-gray-200,
+            html.dark .border-gray-300,
+            html.dark .dark\:border-slate-800,
+            html.dark .dark\:border-slate-700 {
+                border-width: 1px !important;
+                border-color: var(--card-border) !important;
+            }
+
+            /* Universal Form Search & Input Bars: Crisp single 1px dark borders with distinct focus ring */
+            input[type="text"]:not([class*="bg-transparent"]):not([class*="border-0"]):not([class*="border-b"]),
+            input[type="search"]:not([class*="bg-transparent"]):not([class*="border-0"]):not([class*="border-b"]),
+            input[type="email"]:not([class*="bg-transparent"]):not([class*="border-0"]):not([class*="border-b"]),
+            input[type="password"]:not([class*="bg-transparent"]):not([class*="border-0"]):not([class*="border-b"]),
+            input[type="number"]:not([class*="bg-transparent"]):not([class*="border-0"]):not([class*="border-b"]),
+            input[type="tel"]:not([class*="bg-transparent"]):not([class*="border-0"]):not([class*="border-b"]),
+            input[type="date"]:not([class*="bg-transparent"]):not([class*="border-0"]):not([class*="border-b"]),
+            select:not([class*="border-0"]):not([class*="border-b"]),
+            textarea:not([class*="border-0"]):not([class*="border-b"]),
+            .crm-input,
+            .crm-select,
+            .crm-search-input,
+            .crm-cal-input,
+            .crm-cal-select,
+            .ts-control {
+                border: 1px solid var(--card-border) !important;
+                transition: border-color 0.15s ease, box-shadow 0.15s ease;
+            }
+            html.dark input[type="text"]:not([class*="bg-transparent"]):not([class*="border-0"]):not([class*="border-b"]),
+            html.dark input[type="search"]:not([class*="bg-transparent"]):not([class*="border-0"]):not([class*="border-b"]),
+            html.dark input[type="email"]:not([class*="bg-transparent"]):not([class*="border-0"]):not([class*="border-b"]),
+            html.dark input[type="password"]:not([class*="bg-transparent"]):not([class*="border-0"]):not([class*="border-b"]),
+            html.dark input[type="number"]:not([class*="bg-transparent"]):not([class*="border-0"]):not([class*="border-b"]),
+            html.dark input[type="tel"]:not([class*="bg-transparent"]):not([class*="border-0"]):not([class*="border-b"]),
+            html.dark input[type="date"]:not([class*="bg-transparent"]):not([class*="border-0"]):not([class*="border-b"]),
+            html.dark select:not([class*="border-0"]):not([class*="border-b"]),
+            html.dark textarea:not([class*="border-0"]):not([class*="border-b"]),
+            html.dark .crm-input,
+            html.dark .crm-select,
+            html.dark .crm-search-input,
+            html.dark .crm-cal-input,
+            html.dark .crm-cal-select,
+            html.dark .ts-control {
+                border: 1px solid var(--input-border) !important;
+            }
+
+            /* Distinct Focus Ring */
+            input:focus:not([class*="border-0"]),
+            select:focus:not([class*="border-0"]),
+            textarea:focus:not([class*="border-0"]),
+            .crm-input:focus,
+            .crm-select:focus,
+            .crm-search-input:focus,
+            .crm-cal-input:focus,
+            .crm-cal-select:focus,
+            .ts-control.focus,
+            .ts-control:focus-within {
+                border-color: #2563eb !important;
+                box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.28) !important;
+                outline: none !important;
+            }
+            html.dark input:focus:not([class*="border-0"]),
+            html.dark select:focus:not([class*="border-0"]),
+            html.dark textarea:focus:not([class*="border-0"]),
+            html.dark .crm-input:focus,
+            html.dark .crm-select:focus,
+            html.dark .crm-search-input:focus,
+            html.dark .crm-cal-input:focus,
+            html.dark .crm-cal-select:focus,
+            html.dark .ts-control.focus,
+            html.dark .ts-control:focus-within {
+                border-color: #3b82f6 !important;
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.35) !important;
+                outline: none !important;
+            }
+
+            /* Universal Data Tables: Crisp Single 1px Border System (Fixes Overlapping / Double Borders) */
+            table,
+            table.min-w-full,
+            table.w-full,
+            .leads-table,
+            .jobs-table,
+            .q-table,
+            .p-table,
+            .crm-table,
+            .detail-table,
+            .surveys-table,
+            .inv-table,
+            .eq-table,
+            .amc-table,
+            .users-table,
+            .suppliers-table,
+            .products-table,
+            .data-table,
+            .pg-table,
+            .saas-table {
+                border: none !important;
+                border-collapse: collapse !important;
+                border-spacing: 0 !important;
+                width: 100% !important;
+                margin: 0 !important;
+            }
+
+            /* Containers around tables provide the clean, single 1px outer frame (Image 4 standard) */
+            .pg-card,
+            .table-container,
+            .saas-card {
+                border: 1px solid var(--card-border) !important;
+                border-radius: 8px !important;
+                overflow: hidden !important;
+            }
+            html.dark .pg-card,
+            html.dark .table-container,
+            html.dark .saas-card {
+                border-color: var(--card-border) !important;
+            }
+
+            /* Inner table wrappers must NEVER add duplicate borders inside the card */
+            .overflow-x-auto,
+            div[style*="overflow-x:auto"],
+            div[style*="overflow-x: auto"],
+            .pg-card > div:has(> table),
+            .table-container > div:has(> table) {
+                border: none !important;
+                border-radius: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            /* Single 1px divider between filter toolbar and table header */
+            .filter-bar,
+            form.filter-bar,
+            .crm-filter-bar {
+                border-top: none !important;
+                border-left: none !important;
+                border-right: none !important;
+                border-bottom: 1px solid var(--table-border) !important;
+            }
+            html.dark .filter-bar,
+            html.dark form.filter-bar,
+            html.dark .crm-filter-bar {
+                border-bottom: 1px solid var(--table-border) !important;
+            }
+
+            /* Single 1px top divider for pagination footer inside card */
+            .pg-links,
+            .pagination-wrap {
+                border-bottom: none !important;
+                border-left: none !important;
+                border-right: none !important;
+                border-top: 1px solid var(--card-border) !important;
+            }
+            html.dark .pg-links,
+            html.dark .pagination-wrap {
+                border-top: 1px solid var(--card-border) !important;
+            }
+
+            table thead,
+            table thead tr {
+                border-top: none !important;
+                border-bottom: 1px solid var(--table-border) !important;
+                background-color: var(--table-header-bg) !important;
+            }
+            html.dark table thead,
+            html.dark table thead tr {
+                border-top: none !important;
+                border-bottom: 1px solid var(--table-border) !important;
+                background-color: var(--table-header-bg) !important;
+            }
+
+            table th {
+                border-top: none !important;
+                border-bottom: 1px solid var(--table-border) !important;
+                background-color: var(--table-header-bg) !important;
+                color: var(--text-main) !important;
+                font-weight: 600 !important;
+            }
+            html.dark table th {
+                border-top: none !important;
+                border-bottom: 1px solid var(--table-border) !important;
+                background-color: var(--table-header-bg) !important;
+                color: var(--text-main) !important;
+                font-weight: 600 !important;
+            }
+
+            table tbody tr,
+            table tr {
+                border-bottom: none !important;
+            }
+            table td {
+                border-bottom: 1px solid var(--table-border) !important;
+                color: var(--text-main) !important;
+            }
+            html.dark table tbody tr,
+            html.dark table tr {
+                border-bottom: none !important;
+            }
+            html.dark table td {
+                border-bottom: 1px solid var(--table-border) !important;
+                color: var(--text-main) !important;
+            }
+
+            /* Never double the bottom border on the last table row */
+            table tbody tr:last-child,
+            table tbody tr:last-child td {
+                border-bottom: none !important;
+            }
+
+            /* Single 1px vertical column dividers & horizontal cell dividers (cleanly collapsed, no double outer strokes) */
+            table th,
+            table td,
+            .leads-table th, .leads-table td,
+            .jobs-table th, .jobs-table td,
+            .q-table th, .q-table td,
+            .p-table th, .p-table td,
+            .crm-table th, .crm-table td,
+            .detail-table th, .detail-table td {
+                border-right: 1px solid var(--table-border) !important;
+                border-bottom: 1px solid var(--table-border) !important;
+            }
+            html.dark table th,
+            html.dark table td,
+            html.dark .leads-table th, html.dark .leads-table td,
+            html.dark .jobs-table th, html.dark .jobs-table td,
+            html.dark .q-table th, html.dark .q-table td,
+            html.dark .p-table th, html.dark .p-table td,
+            html.dark .crm-table th, html.dark .crm-table td,
+            html.dark .detail-table th, html.dark .detail-table td {
+                border-right: 1px solid var(--table-border) !important;
+                border-bottom: 1px solid var(--table-border) !important;
+            }
+            table th:first-child,
+            table td:first-child {
+                border-left: none !important;
+            }
+            table th:last-child,
+            table td:last-child {
+                border-right: none !important;
+            }
+            table tbody tr:last-child td,
+            table tr:last-child td {
+                border-bottom: none !important;
+            }
+
+            /* Omnisearch & Search Bar Border System */
+            .crm-search-input,
+            header input[type="text"],
+            input[placeholder*="Search"] {
+                border: 1px solid var(--card-border) !important;
+                border-color: var(--card-border) !important;
+                border-radius: 6px !important;
+            }
+            html.dark .crm-search-input,
+            html.dark header input[type="text"],
+            html.dark input[placeholder*="Search"] {
+                border: 1px solid var(--input-border) !important;
+                border-color: var(--input-border) !important;
+            }
+
+            /* Calendar Grid Cell Borders */
+            .grid-cols-7 > div[class*="border-b"] {
+                border-bottom: 1px solid var(--table-border) !important;
+            }
+            .grid-cols-7 > div[class*="border-r"] {
+                border-right: 1px solid var(--table-border) !important;
+            }
+            html.dark .grid-cols-7 > div[class*="border-b"] {
+                border-bottom: 1px solid var(--table-border) !important;
+            }
+            html.dark .grid-cols-7 > div[class*="border-r"] {
+                border-right: 1px solid var(--table-border) !important;
+            }
+
+            /* Universal Divide Lines */
+            .divide-y > * + *,
+            .divide-\[\#eee\] > * + *,
+            .divide-\[\#ddd\] > * + *,
+            .divide-slate-100 > * + *,
+            .divide-slate-200 > * + * {
+                border-top: 1px solid var(--card-border) !important;
+            }
+            html.dark .divide-y > * + *,
+            html.dark .divide-\[\#eee\] > * + *,
+            html.dark .divide-\[\#ddd\] > * + *,
+            html.dark .divide-slate-800 > * + *,
+            html.dark .divide-slate-700 > * + * {
+                border-top: 1px solid var(--card-border) !important;
+            }
+
+            /* Header Bar: Defined Dark Border Bottom */
             header.crm-topbar,
             .crm-topbar {
-                background-color: #ffffff !important;
-                border-bottom: 1px solid #e2e8f0 !important;
+                background-color: var(--card-bg) !important;
+                border-bottom: 1px solid var(--table-border) !important;
             }
             html.dark header.crm-topbar,
             html.dark .crm-topbar {
-                background-color: #0f172a !important;
-                border-bottom: 1px solid #1e293b !important;
+                background-color: var(--card-bg) !important;
+                border-bottom: 1px solid var(--table-border) !important;
             }
 
             /* Dashboard & Page Name Font in Header */
@@ -107,150 +546,193 @@
             .crm-topbar span.font-bold {
                 font-size: 15px !important;
                 font-weight: 700 !important;
-                color: #0f172a !important;
+                color: var(--text-main) !important;
                 letter-spacing: -0.01em !important;
             }
             html.dark .crm-topbar .crm-page-title,
             html.dark .crm-topbar span.font-bold {
-                color: #f8fafc !important;
+                color: var(--text-main) !important;
             }
 
             /* Mobile menu & search toggle icons */
             .crm-topbar button[aria-label="Toggle navigation menu"],
             .crm-topbar button[title="Search"] {
-                color: #64748b !important;
+                color: #334155 !important;
             }
             html.dark .crm-topbar button[aria-label="Toggle navigation menu"],
             html.dark .crm-topbar button[title="Search"] {
-                color: #94a3b8 !important;
+                color: var(--text-muted) !important;
             }
 
-            /* Crisp white background for search bar, theme toggle, notification, and profile */
+            /* Crisp dark borders for search bar, theme toggle, notification, and profile */
             .crm-topbar input[type="text"],
             .crm-topbar .crm-search-input {
-                background-color: #ffffff !important;
-                border: 1px solid #cbd5e1 !important;
-                color: #0f172a !important;
+                background-color: var(--card-bg) !important;
+                border: 1px solid var(--card-border) !important;
+                color: var(--text-main) !important;
+                transition: border-color 0.15s ease, box-shadow 0.15s ease;
+            }
+            .crm-topbar input[type="text"]:focus,
+            .crm-topbar .crm-search-input:focus {
+                border-color: #2563eb !important;
+                box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.28) !important;
+                outline: none !important;
             }
             html.dark .crm-topbar input[type="text"],
             html.dark .crm-topbar .crm-search-input {
                 background-color: #0b132b !important;
-                border-color: #334155 !important;
-                color: #ffffff !important;
+                border: 1px solid var(--input-border) !important;
+                color: var(--text-main) !important;
+                transition: border-color 0.15s ease, box-shadow 0.15s ease;
+            }
+            html.dark .crm-topbar input[type="text"]:focus,
+            html.dark .crm-topbar .crm-search-input:focus {
+                border-color: #3b82f6 !important;
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.35) !important;
+                outline: none !important;
             }
 
             .crm-topbar #header-theme-toggle-btn {
-                background-color: #ffffff !important;
-                border: 1px solid #cbd5e1 !important;
-                color: #1e293b !important;
+                background-color: var(--card-bg) !important;
+                border: 1px solid var(--card-border) !important;
+                color: var(--text-main) !important;
             }
             html.dark .crm-topbar #header-theme-toggle-btn {
-                background-color: #1e293b !important;
-                border-color: #334155 !important;
+                background-color: var(--table-header-bg) !important;
+                border: 1px solid var(--input-border) !important;
                 color: #e2e8f0 !important;
             }
 
             .crm-topbar #header-notification-btn {
-                background-color: #ffffff !important;
-                border: 1px solid #cbd5e1 !important;
-                color: #1e293b !important;
+                background-color: var(--card-bg) !important;
+                border: 1px solid var(--card-border) !important;
+                color: var(--text-main) !important;
             }
             html.dark .crm-topbar #header-notification-btn {
-                background-color: #1e293b !important;
-                border-color: #334155 !important;
+                background-color: var(--table-header-bg) !important;
+                border: 1px solid var(--input-border) !important;
                 color: #e2e8f0 !important;
             }
 
             .crm-topbar #header-user-profile-pill {
-                background-color: #ffffff !important;
-                border: 1px solid #cbd5e1 !important;
+                background-color: var(--card-bg) !important;
+                border: 1px solid var(--card-border) !important;
             }
             html.dark .crm-topbar #header-user-profile-pill {
-                background-color: #1e293b !important;
-                border-color: #334155 !important;
+                background-color: var(--table-header-bg) !important;
+                border: 1px solid var(--input-border) !important;
             }
 
-            /* Sidebar: Medium Matching Color Layout (#dbe6f6 / #cee0f4) */
-            .crm-sidebar-container,
-            aside {
-                background-color: #dbe6f6 !important;
+            /* Sidebar: Defined Dark Border Right and Dividers (Light Mode) */
+            html:not(.dark) .crm-sidebar-container,
+            html:not(.dark) aside {
+                background-color: var(--card-bg) !important;
+                border-right: 1px solid var(--table-border) !important;
             }
-            .crm-sidebar-header {
-                background-color: #cee0f4 !important;
-                border-bottom: 1px solid #b9d1ef !important;
+            html:not(.dark) .crm-sidebar-header {
+                background-color: var(--card-bg) !important;
+                border-bottom: 1px solid var(--table-border) !important;
             }
-            .crm-sidebar-footer {
-                background-color: #cee0f4 !important;
-                border-top: 1px solid #b9d1ef !important;
+            html:not(.dark) .crm-sidebar-footer {
+                background-color: var(--card-bg) !important;
+                border-top: 1px solid var(--card-border) !important;
             }
-
-            /* Sidebar Module Navigation Click & Active State: Cohesive #2563eb */
-            aside nav a.crm-active-link,
-            .crm-active-link,
-            aside nav a:active {
-                background-color: #2563eb !important;
+            html:not(.dark) aside nav a.crm-active-link,
+            html:not(.dark) .crm-active-link,
+            html:not(.dark) aside nav a:active {
+                background: var(--primary-btn-bg) !important;
+                background-color: var(--primary-btn-bg) !important;
                 border-radius: 8px !important;
-                color: #ffffff !important;
-                font-weight: 600 !important;
-                box-shadow: 0 1px 3px rgba(37, 99, 235, 0.25) !important;
+                color: var(--text-main) !important;
+                font-weight: 700 !important;
+                box-shadow: 0 1px 3px rgba(37, 99, 235, 0.3) !important;
             }
-            aside nav a.crm-active-link svg,
-            .crm-active-link svg,
-            aside nav a.crm-active-link svg *,
-            .crm-active-link svg *,
-            aside nav a:active svg,
-            aside nav a:active svg * {
-                color: #ffffff !important;
+            html:not(.dark) aside nav a.crm-active-link svg,
+            html:not(.dark) .crm-active-link svg,
+            html:not(.dark) aside nav a.crm-active-link svg *,
+            html:not(.dark) .crm-active-link svg * {
+                color: var(--text-main) !important;
                 stroke: #ffffff !important;
-                display: inline-block !important;
-                opacity: 1 !important;
-                visibility: visible !important;
             }
-            aside nav a:hover:not(.crm-active-link) {
-                background-color: #cee0f4 !important;
-                color: #1d4ed8 !important;
+            html:not(.dark) aside nav a:hover:not(.crm-active-link) {
+                background-color: #eff6ff !important;
+                color: #2563eb !important;
             }
-            aside nav a:hover:not(.crm-active-link) svg,
-            aside nav a:hover:not(.crm-active-link) svg * {
+            html:not(.dark) aside nav a:hover:not(.crm-active-link) svg,
+            html:not(.dark) aside nav a:hover:not(.crm-active-link) svg * {
                 color: #2563eb !important;
                 stroke: #2563eb !important;
             }
-            aside nav a:not(.crm-active-link):not(:hover) {
-                color: #334155 !important;
+            html:not(.dark) aside nav a:not(.crm-active-link):not(:hover) {
+                color: var(--text-main) !important;
+                font-weight: 600 !important;
             }
-            aside nav a:not(.crm-active-link):not(:hover) svg,
-            aside nav a:not(.crm-active-link):not(:hover) svg * {
+            html:not(.dark) aside nav a:not(.crm-active-link):not(:hover) svg,
+            html:not(.dark) aside nav a:not(.crm-active-link):not(:hover) svg * {
                 color: #475569 !important;
                 stroke: #475569 !important;
             }
-            aside div.uppercase {
-                color: #475569 !important;
+            html:not(.dark) aside div.uppercase {
+                color: var(--text-muted) !important;
                 font-weight: 700 !important;
             }
 
+            /* Sidebar: Defined High-Contrast Proper Dark Borders & Clean Readable Typography (Dark Mode) */
             html.dark .crm-sidebar-container,
             html.dark aside {
-                background-color: #0f172a !important;
+                background-color: var(--table-header-bg) !important;
+                border-right: 1px solid var(--table-border) !important;
             }
-            html.dark .crm-sidebar-header,
+            html.dark .crm-sidebar-header {
+                background-color: var(--card-bg) !important;
+                border-bottom: 1px solid var(--table-border) !important;
+            }
             html.dark .crm-sidebar-footer {
-                background-color: #0f172a !important;
-                border-color: #1e293b !important;
+                background-color: var(--card-bg) !important;
+                border-top: 1px solid var(--card-border) !important;
             }
             html.dark aside nav a.crm-active-link,
             html.dark .crm-active-link {
-                background-color: #2563eb !important;
-                color: #ffffff !important;
+                background-color: var(--primary-btn-bg) !important;
+                color: var(--text-main) !important;
+                font-weight: 700 !important;
+                box-shadow: 0 1px 3px rgba(37, 99, 235, 0.3) !important;
+            }
+            html.dark aside nav a.crm-active-link svg,
+            html.dark .crm-active-link svg,
+            html.dark aside nav a.crm-active-link svg *,
+            html.dark .crm-active-link svg * {
+                color: var(--text-main) !important;
+                stroke: #ffffff !important;
             }
             html.dark aside nav a:hover:not(.crm-active-link) {
-                background-color: #1e293b !important;
-                color: #f8fafc !important;
+                background-color: var(--table-header-bg) !important;
+                color: var(--text-main) !important;
+            }
+            html.dark aside nav a:hover:not(.crm-active-link) svg,
+            html.dark aside nav a:hover:not(.crm-active-link) svg * {
+                color: #60a5fa !important;
+                stroke: #60a5fa !important;
+            }
+            html.dark aside nav a:not(.crm-active-link):not(:hover) {
+                color: #e2e8f0 !important; /* Crisp, clearly readable text */
+                font-weight: 500 !important;
+            }
+            html.dark aside nav a:not(.crm-active-link):not(:hover) svg,
+            html.dark aside nav a:not(.crm-active-link):not(:hover) svg * {
+                color: var(--text-muted) !important; /* Visible clean icons */
+                stroke: #94a3b8 !important;
+            }
+            html.dark aside div.uppercase {
+                color: var(--text-muted) !important; /* Distinct readable category titles */
+                font-weight: 700 !important;
+                letter-spacing: 0.05em !important;
             }
 
             /* User Avatars & Brand Tiles: Perfect round circle, crisp white letter */
             .crm-user-avatar {
                 border-radius: 9999px !important;
-                color: #ffffff !important;
+                color: var(--text-main) !important;
                 display: inline-flex !important;
                 align-items: center !important;
                 justify-content: center !important;
@@ -270,8 +752,8 @@
             .crm-btn-primary {
                 background-color: var(--crm-accent, #2563eb);
                 border: 1px solid var(--crm-accent, #2563eb);
-                color: #ffffff !important;
-                border-radius: 8px;
+                color: var(--text-main) !important;
+                border-radius: 6px;
                 font-weight: 600;
                 display: inline-flex;
                 align-items: center;
@@ -283,63 +765,59 @@
             .crm-btn-primary:hover {
                 background-color: var(--crm-accent-hover, #1d4ed8);
                 border-color: var(--crm-accent-hover, #1d4ed8);
-                color: #ffffff !important;
+                color: var(--text-main) !important;
             }
 
             .btn-secondary,
             .crm-btn-secondary {
                 background-color: #ffffff;
-                border: 1px solid #cbd5e1;
-                color: #334155;
-                border-radius: 8px;
-                font-weight: 500;
+                border: 1px solid var(--card-border) !important;
+                color: var(--text-main) !important;
+                border-radius: 6px;
+                font-weight: 600;
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
                 text-decoration: none;
-                transition: background-color 0.15s ease;
+                transition: background-color 0.15s ease, border-color 0.15s ease;
             }
             html.dark .btn-secondary,
             html.dark .crm-btn-secondary {
                 background-color: #1e293b;
-                border-color: #334155;
-                color: #f1f5f9;
+                border: 1px solid var(--input-border) !important;
+                color: #f1f5f9 !important;
             }
             .btn-secondary:hover,
             .crm-btn-secondary:hover {
-                background-color: #f8fafc;
+                background-color: #f1f5f9;
+                border-color: var(--text-main) !important;
             }
             html.dark .btn-secondary:hover,
             html.dark .crm-btn-secondary:hover {
                 background-color: #334155;
+                border-color: var(--text-muted) !important;
             }
 
             /* ═══════════════════════════════════════════════════════════════════════
                PREMIUM CUSTOM SEARCHABLE DROPDOWN & SELECT DESIGN
-               Matches Reference (Select customer | ▲ with bottom blue line):
-               - Placeholder/text "Select customer" on the left
-               - Vertical divider line '|' on the right
-               - Caret arrow: down when closed, up when active/open
-               - Blue accent underline (border-bottom: 2px solid #2563eb)
-               - Search list data ALWAYS opens DOWN (below the search bar), NEVER UP
                ═══════════════════════════════════════════════════════════════════════ */
 
-            /* Native Select Elements - Uniform Proper Height Level (36px, matching Image 2 & 3) */
+            /* Native Select Elements - Crisp Single 1px Dark Border (Matching Image 4) */
             select,
             .crm-select,
             select.crm-select {
                 height: 36px !important;
                 min-height: 36px !important;
                 max-height: 36px !important;
-                border: 1px solid #cbd5e1 !important;
+                border: 1px solid var(--card-border) !important;
                 border-radius: 6px !important;
                 font-size: 12px !important;
-                font-weight: 500 !important;
-                background-color: #ffffff !important;
-                color: #0f172a !important;
+                font-weight: 600 !important;
+                background-color: var(--card-bg) !important;
+                color: var(--text-main) !important;
                 padding-left: 10px !important;
                 padding-right: 24px !important;
-                background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 20 20' fill='%2364748b'%3e%3cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3e%3c/svg%3e") !important;
+                background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 20 20' fill='%231e293b'%3e%3cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3e%3c/svg%3e") !important;
                 background-position: right 8px center !important;
                 background-repeat: no-repeat !important;
                 background-size: 12px 12px !important;
@@ -347,7 +825,14 @@
                 -webkit-appearance: none !important;
                 max-width: fit-content;
                 width: auto;
-                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02) !important;
+            }
+            html.dark select,
+            html.dark .crm-select,
+            html.dark select.crm-select {
+                border: 1px solid var(--input-border) !important;
+                background-color: var(--card-bg) !important;
+                color: var(--text-main) !important;
+                background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 20 20' fill='%2394a3b8'%3e%3cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3e%3c/svg%3e") !important;
             }
 
             /* Select elements inside flex horizontal toolbars and filter bars */
@@ -371,7 +856,7 @@
                 width: 100% !important;
             }
 
-            /* Universal Minimized Horizontal Filter Bar (Left-to-Right, 36px height level, clean 6px gap) */
+            /* Universal Minimized Horizontal Filter Bar with Crisp 1px Dark Border */
             .crm-filter-bar {
                 display: flex !important;
                 flex-direction: row !important;
@@ -380,10 +865,12 @@
                 gap: 6px !important;
                 padding: 6px 10px !important;
                 background-color: #ffffff;
+                border: 1px solid var(--card-border) !important;
                 border-radius: 8px;
             }
             html.dark .crm-filter-bar {
                 background-color: #0f172a;
+                border: 1px solid var(--card-border) !important;
             }
 
             .crm-search-box {
@@ -401,12 +888,12 @@
                 min-height: 32px !important;
                 max-height: 32px !important;
                 font-size: 11px !important;
-                padding-left: 28px !important; /* ensures search icon never collides */
+                padding-left: 28px !important;
                 padding-right: 8px !important;
-                border: 1px solid #cbd5e1 !important;
+                border: 1px solid var(--card-border) !important;
                 border-radius: 6px !important;
-                background-color: #ffffff !important;
-                color: #0f172a !important;
+                background-color: var(--card-bg) !important;
+                color: var(--text-main) !important;
                 outline: none !important;
             }
             html.dark .crm-search-input,
@@ -414,8 +901,8 @@
             html.dark .crm-filter-bar input[type="search"],
             html.dark .relative > input.crm-cal-input {
                 background-color: #0b132b !important;
-                border-color: #334155 !important;
-                color: #f8fafc !important;
+                border: 1px solid var(--input-border) !important;
+                color: var(--text-main) !important;
             }
 
             /* Standardized Minimized Button Size (32px compact height) */
@@ -448,22 +935,20 @@
             html.dark select,
             html.dark .crm-select,
             html.dark select.crm-select {
-                background-color: #0f172a !important;
-                border-color: #334155 !important;
-                border-bottom: 2px solid #3b82f6 !important;
-                color: #f8fafc !important;
+                background-color: var(--card-bg) !important;
+                border: 1px solid var(--input-border) !important;
+                color: var(--text-main) !important;
                 background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 20 20' fill='%2394a3b8'%3e%3cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3e%3c/svg%3e") !important;
             }
 
             select:focus,
             .crm-select:focus {
-                border-color: #cbd5e1 !important;
-                border-bottom: 2px solid #1d4ed8 !important;
+                border-color: #2563eb !important;
                 outline: none !important;
-                box-shadow: 0 2px 4px rgba(37, 99, 235, 0.12) !important;
+                box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.28) !important;
             }
 
-            /* TomSelect Searchable Dropdown Matching Reference */
+            /* TomSelect Searchable Dropdown Matching Image 4 */
             .ts-wrapper {
                 position: relative !important;
                 width: 100% !important;
@@ -473,10 +958,9 @@
                 height: 38px !important;
                 min-height: 38px !important;
                 max-height: 38px !important;
-                border: 1px solid #cbd5e1 !important;
-                border-bottom: 2px solid #2563eb !important;
-                border-radius: 4px !important;
-                background-color: #ffffff !important;
+                border: 1px solid var(--card-border) !important;
+                border-radius: 6px !important;
+                background-color: var(--card-bg) !important;
                 background-image: none !important;
                 box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03) !important;
                 display: flex !important;
@@ -488,10 +972,9 @@
             }
 
             html.dark .ts-wrapper.single .ts-control {
-                background-color: #0f172a !important;
-                border-color: #334155 !important;
-                border-bottom: 2px solid #3b82f6 !important;
-                color: #f8fafc !important;
+                background-color: var(--card-bg) !important;
+                border: 1px solid var(--input-border) !important;
+                color: var(--text-main) !important;
             }
 
             /* Right-side vertical divider line '|' */
@@ -502,12 +985,12 @@
                 top: 7px !important;
                 bottom: 7px !important;
                 width: 1px !important;
-                background-color: #cbd5e1 !important;
+                background-color: var(--table-header-bg) !important;
                 z-index: 3 !important;
             }
 
             html.dark .ts-wrapper.single .ts-control::before {
-                background-color: #334155 !important;
+                background-color: #475569 !important;
             }
 
             /* Right-side Caret Arrow: Points DOWN when closed */
@@ -531,7 +1014,7 @@
                 border-color: #94a3b8 transparent transparent transparent !important;
             }
 
-            /* Caret Arrow: Points UP when opened / active (matches user screenshot media_1791964586043.png) */
+            /* Caret Arrow: Points UP when opened / active */
             .ts-wrapper.single.dropdown-active .ts-control::after {
                 margin-top: -4px !important;
                 border-width: 0 5px 5px 5px !important;
@@ -558,7 +1041,7 @@
                 margin: 0 !important;
                 height: 100% !important;
                 font-size: 13px !important;
-                color: #0f172a !important;
+                color: var(--text-main) !important;
                 min-height: 0 !important;
                 max-height: none !important;
                 width: 100% !important;
@@ -590,12 +1073,9 @@
 
             html.dark .ts-control > input,
             html.dark .ts-wrapper .ts-control input {
-                color: #f8fafc !important;
+                color: var(--text-main) !important;
             }
 
-            /* REMOVE LABEL FROM SEARCH BAR:
-               Never show duplicate label/placeholder div inside the search bar.
-               When user focuses or types, hide any .item so only clean search input is active. */
             .ts-control .placeholder,
             .ts-control .item[data-value=""],
             .ts-control .item:empty {
@@ -610,7 +1090,7 @@
             /* Selected item when not actively searching */
             .ts-wrapper.single .ts-control .item {
                 font-size: 13px !important;
-                color: #0f172a !important;
+                color: var(--text-main) !important;
                 background: transparent !important;
                 border: none !important;
                 padding: 0 !important;
@@ -621,7 +1101,7 @@
             }
 
             html.dark .ts-wrapper.single .ts-control .item {
-                color: #f8fafc !important;
+                color: var(--text-main) !important;
             }
 
             /* Native input placeholder styling */
@@ -633,7 +1113,7 @@
 
             .ts-wrapper.single.input-active .ts-control input::placeholder,
             .ts-wrapper.single.focus .ts-control input::placeholder {
-                color: #94a3b8 !important;
+                color: var(--text-muted) !important;
                 opacity: 0.5 !important;
             }
 
@@ -647,7 +1127,7 @@
                 display: none !important;
             }
 
-            /* CRITICAL: List of search data MUST ALWAYS BE PLACED ON THE DOWN (below the search bar), NEVER UP */
+            /* Dropdown List */
             .ts-dropdown,
             .ts-dropdown.dropdown-up,
             .ts-dropdown.dropdown-down {
@@ -659,8 +1139,8 @@
                 width: 100% !important;
                 margin-top: 3px !important;
                 margin-bottom: 0 !important;
-                background: #ffffff !important;
-                border: 1px solid #cbd5e1 !important;
+                background: var(--card-bg) !important;
+                border: 1px solid var(--card-border) !important;
                 border-radius: 6px !important;
                 box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.05) !important;
                 z-index: 99999 !important;
@@ -671,8 +1151,8 @@
             html.dark .ts-dropdown,
             html.dark .ts-dropdown.dropdown-up,
             html.dark .ts-dropdown.dropdown-down {
-                background: #0f172a !important;
-                border-color: #334155 !important;
+                background: var(--card-bg) !important;
+                border: 1px solid var(--input-border) !important;
                 box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5) !important;
             }
 
@@ -685,7 +1165,7 @@
             .ts-dropdown .option {
                 padding: 8px 12px !important;
                 font-size: 13px !important;
-                color: #1e293b !important;
+                color: var(--text-main) !important;
                 cursor: pointer !important;
                 border-bottom: 1px solid #f1f5f9 !important;
                 transition: background-color 0.1s ease !important;
@@ -703,23 +1183,23 @@
 
             html.dark .ts-dropdown .option {
                 color: #f1f5f9 !important;
-                border-bottom-color: #1e293b !important;
+                border-bottom-color: var(--text-main) !important;
             }
 
             html.dark .ts-dropdown .option:hover,
             html.dark .ts-dropdown .option.active {
-                background-color: #1e293b !important;
+                background-color: var(--table-header-bg) !important;
                 color: #60a5fa !important;
             }
 
             .ts-dropdown .no-results {
                 padding: 10px 12px !important;
                 font-size: 13px !important;
-                color: #64748b !important;
+                color: var(--text-muted) !important;
                 background: transparent !important;
             }
 
-            /* Also style table search inputs to have the same sleek bottom accent */
+            /* Also style table search inputs to have the same crisp 1px dark border */
             .crm-search-bar,
             .search-input-box,
             input[type="search"],
@@ -727,12 +1207,11 @@
                 height: 38px !important;
                 min-height: 38px !important;
                 max-height: 38px !important;
-                border: 1px solid #cbd5e1 !important;
-                border-bottom: 2px solid #2563eb !important;
-                border-radius: 4px !important;
+                border: 1px solid var(--card-border) !important;
+                border-radius: 6px !important;
                 font-size: 13px !important;
-                background-color: #ffffff !important;
-                color: #0f172a !important;
+                background-color: var(--card-bg) !important;
+                color: var(--text-main) !important;
                 box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03) !important;
                 transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
             }
@@ -741,20 +1220,52 @@
             html.dark .search-input-box,
             html.dark input[type="search"],
             html.dark input[name="search"]:not([type="hidden"]) {
-                background-color: #0f172a !important;
-                border-color: #334155 !important;
-                border-bottom: 2px solid #3b82f6 !important;
-                color: #f8fafc !important;
+                background-color: var(--card-bg) !important;
+                border: 1px solid var(--input-border) !important;
+                color: var(--text-main) !important;
             }
 
             .crm-search-bar:focus,
             .search-input-box:focus,
             input[type="search"]:focus,
             input[name="search"]:not([type="hidden"]):focus {
-                border-color: #cbd5e1 !important;
-                border-bottom: 2px solid #1d4ed8 !important;
+                border-color: #2563eb !important;
                 outline: none !important;
-                box-shadow: 0 2px 4px rgba(37, 99, 235, 0.12) !important;
+                box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.28) !important;
+            }
+
+            /* Universal Badge, Label & Status Pill System with Crisp Single 1px Dark Border (Matching Image 4) */
+            .badge,
+            .status-badge,
+            .tech-tag,
+            .date-chip,
+            span.badge,
+            span[class*="rounded-full"][class*="border"],
+            span[class*="rounded-md"][class*="border"],
+            span[class*="rounded"][class*="border"],
+            .cell-sub span,
+            td > span[class*="rounded"],
+            .leads-table td span[class*="rounded"],
+            .jobs-table td span[class*="rounded"] {
+                border-width: 1px !important;
+                border-style: solid !important;
+                border-color: var(--card-border) !important;
+            }
+            html.dark .badge,
+            html.dark .status-badge,
+            html.dark .tech-tag,
+            html.dark .date-chip,
+            html.dark span.badge,
+            html.dark span[class*="rounded-full"][class*="border"],
+            html.dark span[class*="rounded-md"][class*="border"],
+            html.dark span[class*="rounded"][class*="border"],
+            html.dark .cell-sub span,
+            html.dark td > span[class*="rounded"],
+            html.dark .leads-table td span[class*="rounded"],
+            html.dark .jobs-table td span[class*="rounded"] {
+                border-width: 1px !important;
+                border-style: solid !important;
+                border-color: var(--input-border) !important;
             }
         </style>
 
@@ -911,7 +1422,7 @@
             {{-- ════════════════════════════════════════════════════════════════ --}}
             {{-- SECUREVISION UNIFIED ENTERPRISE SAAS CRM SUITE (ALL ROLES)        --}}
             {{-- ════════════════════════════════════════════════════════════════ --}}
-            <div class="crm-app-container min-h-screen flex bg-[#f8fafc] dark:bg-[#0b1120] text-slate-800 dark:text-slate-100 transition-colors duration-200">
+            <div class="crm-app-container min-h-screen flex bg-[var(--page-bg)] text-[var(--text-main)] transition-colors duration-200">
                 
                 {{-- Mobile Drawer Overlay --}}
                 <div x-show="sidebarOpen" 
@@ -926,19 +1437,19 @@
                      class="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-sm lg:hidden" 
                      style="display: none;"></div>
 
-                {{-- Sidebar Container: Fixed on mobile, sticky on desktop, 220px wide, white/slate-900, 1px solid border --}}
+                {{-- Sidebar Container: Fixed on mobile, sticky on desktop, 220px wide, 1px solid border --}}
                 <div :class="{
                         'translate-x-0': sidebarOpen,
                         '-translate-x-full lg:translate-x-0': !sidebarOpen,
                         'lg:w-20': sidebarCollapsed,
                         'lg:w-[220px]': !sidebarCollapsed
                      }"
-                     class="crm-sidebar-container fixed inset-y-0 left-0 z-50 lg:sticky lg:top-0 lg:h-screen lg:z-30 w-[220px] shrink-0 transition-[width,transform] duration-200 ease-in-out flex flex-col bg-[#dbe6f6] dark:bg-[#0f172a] border-r border-[#b9d1ef] dark:border-slate-800 overflow-hidden">
+                     class="crm-sidebar-container fixed inset-y-0 left-0 z-50 lg:sticky lg:top-0 lg:h-screen lg:z-30 w-[220px] shrink-0 transition-[width,transform] duration-200 ease-in-out flex flex-col bg-[var(--card-bg)] text-[var(--text-main)] border-r border-[var(--card-border)] overflow-hidden">
                     @include('layouts.navigation')
                 </div>
 
                 {{-- Main Application Wrapper --}}
-                <div class="flex-1 flex flex-col min-w-0 min-h-screen bg-[#f8fafc] dark:bg-[#0b1120] transition-colors duration-200">
+                <div class="flex-1 flex flex-col min-w-0 min-h-screen bg-[var(--page-bg)] text-[var(--text-main)] transition-colors duration-200">
                     
                     {{-- Modern SaaS Top Navigation Bar matching Image 3 --}}
                     <script>
@@ -1008,8 +1519,8 @@
                         }
                     </script>
 
-                    {{-- Fixed Top Bar: 56px high, standard white in day / #0f172a in night --}}
-                    <header class="crm-topbar h-[56px] min-h-[56px] max-h-[56px] bg-white dark:bg-[#0f172a] border-b border-slate-200 dark:border-slate-800 px-5 flex items-center justify-between sticky top-0 z-10"
+                    {{-- Fixed Top Bar: 56px high --}}
+                    <header class="crm-topbar h-[56px] min-h-[56px] max-h-[56px] bg-[var(--card-bg)] text-[var(--text-main)] border-b border-[var(--card-border)] px-5 flex items-center justify-between sticky top-0 z-10"
                             x-data="globalHeader()"
                             @theme-mode-changed.window="isDarkMode = $event.detail.isDark"
                             @theme-changed.window="if ($event.detail && typeof $event.detail.isDark === 'boolean') isDarkMode = $event.detail.isDark"
@@ -1028,7 +1539,7 @@
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
                             </button>
 
-                            <span class="crm-page-title text-sm font-bold text-slate-900 dark:text-white truncate">
+                            <span class="crm-page-title text-sm font-bold text-[var(--text-main)] truncate">
                                 @if(request()->routeIs('dashboard')) Dashboard
                                 @elseif(request()->routeIs('projects.*')) Projects
                                 @elseif(request()->routeIs('leads.*')) Leads
@@ -1061,9 +1572,9 @@
                                            @keydown.arrow-down.prevent="navigate(1)"
                                            @keydown.arrow-up.prevent="navigate(-1)"
                                            @keydown.enter.prevent="selectActive()"
-                                           placeholder="Search leads, jobs, quotes, equipment..." 
-                                           style="padding-left: 2.5rem !important; height: 38px !important; border-radius: 4px !important; box-shadow: none !important;"
-                                           class="crm-search-input w-full text-xs bg-white dark:bg-[#0b132b] border border-[#ccc] dark:border-slate-700 rounded text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none">
+                                           placeholder="Search leads, jobs, quotes, equipment..."
+                                           style="padding-left: 2.5rem !important; height: 38px !important; border-radius: 6px !important;"
+                                           class="crm-search-input w-full text-xs bg-[var(--card-bg)] border border-[var(--input-border)] rounded text-[var(--text-main)] placeholder-[var(--text-muted)] focus:outline-none">
                                     
                                     {{-- Clear button or loading spinner --}}
                                     <div class="absolute right-2.5 flex items-center">
@@ -1083,17 +1594,17 @@
 
                                 {{-- Search Dropdown Results --}}
                                 <div x-show="open && query.trim().length >= 2 && !mobileSearchOpen"
-                                     class="absolute left-0 right-0 mt-1 w-full max-h-96 overflow-y-auto bg-white dark:bg-[#0f172a] border border-[#ddd] dark:border-slate-700 rounded py-1 z-50 divide-y divide-slate-100 dark:divide-slate-800"
+                                     class="absolute left-0 right-0 mt-1 w-full max-h-96 overflow-y-auto bg-[var(--card-bg)] border border-[var(--card-border)] rounded-lg py-1 z-50 divide-y divide-[var(--card-border)]"
                                      style="display: none;">
                                     <template x-if="results.length > 0">
                                         <div class="py-1">
                                             <template x-for="(item, index) in results" :key="index">
                                                 <a :href="item.url" 
-                                                   :class="selectedIndex === index ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white' : 'hover:bg-slate-50 dark:hover:bg-slate-800/60'"
+                                                   :class="selectedIndex === index ? 'bg-slate-100 dark:bg-slate-800 text-[var(--text-main)]' : 'hover:bg-slate-50 dark:hover:bg-slate-800/60'"
                                                    class="flex items-start gap-3 px-3 py-2 transition text-left group block">
                                                     <div class="flex-1 min-w-0">
                                                         <div class="flex items-center justify-between gap-1">
-                                                            <p class="text-xs font-bold text-slate-900 dark:text-white truncate" x-text="item.title"></p>
+                                                            <p class="text-xs font-bold text-[var(--text-main)] truncate" x-text="item.title"></p>
                                                             <span class="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 shrink-0" x-text="item.badge"></span>
                                                         </div>
                                                         <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate" x-text="item.subtitle"></p>
@@ -1129,11 +1640,11 @@
                             <button @click="toggleThemeMode()" 
                                     type="button" 
                                     id="header-theme-toggle-btn"
-                                    class="inline-flex items-center justify-center w-8 h-8 rounded border border-[#ddd] dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 transition cursor-pointer shrink-0" 
+                                    class="inline-flex items-center justify-center w-8 h-8 rounded-[6px] border border-[var(--button-border)] bg-[var(--card-bg)] text-[var(--text-main)] hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer shrink-0 shadow-2xs" 
                                     :title="isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'" 
                                     aria-label="Toggle dark/light mode">
                                 {{-- Sun Icon (shown when dark mode is active) --}}
-                                <svg x-show="isDarkMode" x-cloak class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <svg x-show="isDarkMode" x-cloak class="w-4 h-4 text-amber-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                     <circle cx="12" cy="12" r="5" fill="currentColor"/>
                                     <line x1="12" y1="1" x2="12" y2="3"/>
                                     <line x1="12" y1="21" x2="12" y2="23"/>
@@ -1145,7 +1656,7 @@
                                     <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
                                 </svg>
                                 {{-- Moon Icon (shown when light mode is active) --}}
-                                <svg x-show="!isDarkMode" class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <svg x-show="!isDarkMode" class="w-4 h-4 text-slate-700 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
                                 </svg>
                             </button>
@@ -1162,15 +1673,15 @@
                                 <button @click="notifOpen = !notifOpen" 
                                         type="button" 
                                         id="header-notification-btn"
-                                        class="relative inline-flex items-center justify-center w-8 h-8 rounded border border-[#ddd] dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 transition cursor-pointer shrink-0" 
+                                        class="relative inline-flex items-center justify-center w-8 h-8 rounded-[6px] border border-[var(--button-border)] bg-[var(--card-bg)] text-[var(--text-main)] hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer shrink-0 shadow-2xs" 
                                         title="Notifications & System Alerts" 
                                         aria-label="View notifications">
-                                    <svg class="w-4 h-4 text-slate-600 dark:text-slate-200" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <svg class="w-4 h-4 text-[var(--text-main)]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                                     </svg>
                                     <span x-show="unreadCount > 0" 
                                           x-text="unreadCount" 
-                                          class="absolute -top-1 -right-1 flex items-center justify-center min-w-[17px] h-[17px] px-1 text-[9px] font-black text-white bg-rose-500 rounded-full ring-2 ring-white dark:ring-slate-900 leading-none">
+                                          class="absolute -top-1.5 -right-1.5 flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-black text-white bg-rose-500 rounded-[4px] leading-none shadow-xs">
                                     </span>
                                 </button>
 
@@ -1183,11 +1694,11 @@
                                      x-transition:leave="transition ease-in duration-75"
                                      x-transition:leave-start="transform opacity-100 scale-100"
                                      x-transition:leave-end="transform opacity-0 scale-95"
-                                     class="absolute right-0 mt-2 w-80 sm:w-96 bg-white dark:bg-[#0f172a] rounded-xl border border-[#ddd] dark:border-slate-700 shadow-xl py-0 z-50 overflow-hidden text-xs text-slate-700 dark:text-slate-200"
+                                     class="absolute right-0 mt-2 w-80 sm:w-96 bg-white dark:bg-[#0f172a] rounded-xl border border-[#1e293b] dark:border-slate-600 shadow-xl py-0 z-50 overflow-hidden text-xs text-slate-700 dark:text-slate-200"
                                      style="display: none;">
                                     
                                     {{-- Popover Header --}}
-                                    <div class="px-4 py-3 border-b border-[#ddd] dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/80 flex items-center justify-between">
+                                    <div class="px-4 py-3 border-b border-[#1e293b] dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/80 flex items-center justify-between">
                                         <div class="flex items-center gap-2">
                                             <span class="font-bold text-slate-900 dark:text-white">Notifications</span>
                                             <span x-show="unreadCount > 0" class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400" x-text="unreadCount + ' new'"></span>
@@ -1265,7 +1776,7 @@
                                 <button @click="userMenuOpen = !userMenuOpen" 
                                         type="button"
                                         id="header-user-profile-pill"
-                                        class="flex items-center gap-2 pl-1 pr-2.5 py-1 rounded-full border border-[#ddd] dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/60 transition cursor-pointer select-none shadow-2xs">
+                                        class="flex items-center gap-2 pl-1.5 pr-2.5 py-1 rounded-[6px] border border-[#1e293b] dark:border-slate-600 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/60 transition cursor-pointer select-none shadow-2xs">
                                     @if(Auth::user()->avatar_url)
                                         <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->name }}" class="w-7 h-7 rounded-full object-cover shrink-0 ring-1 ring-slate-200 dark:ring-slate-700">
                                     @else
@@ -1274,8 +1785,8 @@
                                         </div>
                                     @endif
                                     <div class="text-left hidden sm:block min-w-0 pr-0.5">
-                                        <span class="block text-xs font-bold text-slate-800 dark:text-slate-100 leading-tight truncate max-w-[120px]">{{ Auth::user()->name }}</span>
-                                        <span class="block text-[10px] text-slate-500 dark:text-slate-400 font-medium leading-tight truncate">{{ Auth::user()->role_title }}</span>
+                                        <span class="block text-xs font-bold text-slate-900 dark:text-slate-100 leading-tight truncate max-w-[120px]">{{ Auth::user()->name }}</span>
+                                        <span class="block text-[10px] text-blue-600 dark:text-blue-400 font-semibold leading-tight truncate">{{ Auth::user()->role_title }}</span>
                                     </div>
                                     <svg class="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 shrink-0 transition-transform duration-150" :class="{ 'rotate-180': userMenuOpen }" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
@@ -1291,11 +1802,11 @@
                                      x-transition:leave="transition ease-in duration-75"
                                      x-transition:leave-start="transform opacity-100 scale-100"
                                      x-transition:leave-end="transform opacity-0 scale-95"
-                                     class="absolute right-0 mt-2 w-60 bg-white dark:bg-[#0f172a] rounded-xl border border-[#ddd] dark:border-slate-700 shadow-xl py-1 z-50 text-xs font-medium text-slate-700 dark:text-slate-200 overflow-hidden"
+                                     class="absolute right-0 mt-2 w-60 bg-white dark:bg-[#0f172a] rounded-xl border border-[#1e293b] dark:border-slate-600 shadow-xl py-1 z-50 text-xs font-medium text-slate-700 dark:text-slate-200 overflow-hidden"
                                      style="display: none;">
                                     
                                     {{-- User identity card in menu --}}
-                                    <div class="px-3.5 py-2.5 border-b border-[#ddd] dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/60 flex items-center gap-3">
+                                    <div class="px-3.5 py-2.5 border-b border-[#1e293b] dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/60 flex items-center gap-3">
                                         @if(Auth::user()->avatar_url)
                                             <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->name }}" class="w-9 h-9 rounded-full object-cover shrink-0 ring-1 ring-slate-200 dark:ring-slate-700">
                                         @else
@@ -1360,9 +1871,9 @@
                                        @keydown.arrow-down.prevent="navigate(1)"
                                        @keydown.arrow-up.prevent="navigate(-1)"
                                        @keydown.enter.prevent="selectActive()"
-                                       placeholder="Search..." 
-                                       style="height: 38px !important; border: 1px solid #ccc !important; border-radius: 4px !important;"
-                                       class="w-full px-3 text-xs bg-white dark:bg-slate-900 border border-[#ccc] dark:border-slate-700 rounded text-slate-800 dark:text-white placeholder-slate-400">
+                                       placeholder="Search..."
+                                       style="height: 38px !important; border-radius: 6px !important;"
+                                       class="w-full px-3 text-xs bg-white dark:bg-slate-900 border border-[#1e293b] dark:border-slate-600 rounded text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none">
                             </div>
 
                             <button @click="mobileSearchOpen = false; open = false;" 

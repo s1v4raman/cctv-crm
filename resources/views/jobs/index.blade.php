@@ -15,13 +15,13 @@
     <style>
         .pg-card {
             background:#ffffff;
-            border-radius:4px;
-            border:1px solid #e2e8f0;
+            border-radius:8px;
+            border:1px solid var(--card-border);
             overflow:hidden;
         }
         html.dark .pg-card {
             background:#0f172a;
-            border-color:#1e293b;
+            border-color:var(--card-border);
         }
 
         /* Filter toolbar */
@@ -30,34 +30,34 @@
             align-items:center;
             gap:.75rem;
             padding:.75rem 1rem;
-            border-bottom:1px solid #e2e8f0;
+            border-bottom:1px solid var(--card-border);
             background:#ffffff;
             flex-wrap:wrap;
         }
         html.dark .filter-bar {
             background:#0b1120;
-            border-color:#1e293b;
+            border-color:var(--card-border);
         }
         .filter-bar input, .filter-bar select {
-            border:1px solid #cbd5e1;
-            border-radius:4px;
-            height:38px;
+            border:1px solid var(--card-border);
+            border-radius:6px;
+            height:36px;
             padding:0 .75rem;
             font-size:.85rem;
-            color:#0f172a;
+            color: var(--text-main);
             background:#ffffff;
             outline:none;
         }
         html.dark .filter-bar input, html.dark .filter-bar select {
             background:#0b1120;
-            border-color:#334155;
+            border-color:#475569;
             color:#ffffff;
         }
         .filter-bar input:focus, .filter-bar select:focus { border-color:#2563eb; }
         .filter-bar input { min-width:220px; }
 
         /* Table */
-        .jobs-table { width:100%; border-collapse:collapse; }
+        .jobs-table { width:100%; border-collapse:collapse; border:none !important; }
         .jobs-table thead { background:#f8fafc; }
         html.dark .jobs-table thead { background:#0b1120; }
         .jobs-table thead th {
@@ -67,42 +67,72 @@
             color:#475569;
             text-align:left;
             white-space:nowrap;
-            border-bottom:1px solid #e2e8f0;
+            border-top:none !important;
+            border-bottom:1px solid var(--card-border) !important;
+            border-right:1px solid var(--card-border) !important;
         }
         html.dark .jobs-table thead th {
-            color:#94a3b8;
-            border-bottom-color:#1e293b;
+            color: var(--text-muted);
+            border-top:none !important;
+            border-bottom:1px solid var(--card-border) !important;
+            border-right:1px solid var(--card-border) !important;
         }
         .jobs-table tbody tr {
-            border-bottom:1px solid #e2e8f0;
+            border-bottom:none !important;
             background:#ffffff;
         }
         html.dark .jobs-table tbody tr {
-            border-bottom-color:#1e293b;
+            border-bottom:none !important;
             background:#0f172a;
         }
-        .jobs-table tbody tr:last-child { border-bottom:none; }
         .jobs-table tbody tr:hover { background:#f8fafc; }
-        html.dark .jobs-table tbody tr:hover { background:#1e293b; }
-        .jobs-table tbody td { padding:.75rem 1rem; vertical-align:middle; font-size:.85rem; }
+        html.dark .jobs-table tbody tr:hover { background:var(--card-border); }
+        .jobs-table tbody td {
+            padding:.75rem 1rem;
+            vertical-align:middle;
+            font-size:.85rem;
+            border-bottom:1px solid var(--card-border) !important;
+            border-right:1px solid var(--card-border) !important;
+        }
+        html.dark .jobs-table tbody td {
+            border-bottom:1px solid var(--card-border) !important;
+            border-right:1px solid var(--card-border) !important;
+        }
+        .jobs-table th:first-child,
+        .jobs-table td:first-child {
+            border-left:none !important;
+        }
+        .jobs-table th:last-child,
+        .jobs-table td:last-child {
+            border-right:none !important;
+        }
+        .jobs-table tbody tr:last-child td {
+            border-bottom:none !important;
+        }
 
-        .cell-name { font-size:.85rem; font-weight:600; color:#0f172a; }
+        .cell-name { font-size:.85rem; font-weight:600; color: var(--text-main); }
         html.dark .cell-name { color:#ffffff; }
         .cell-name a { color:#2563eb; text-decoration:none; }
         .cell-name a:hover { text-decoration:underline; }
         .cell-sub  { font-size:.75rem; color:#64748b; margin-top:.15rem; }
-        html.dark .cell-sub { color:#94a3b8; }
+        html.dark .cell-sub { color: var(--text-muted); }
         .cell-text { font-size:.85rem; color:#475569; }
-        html.dark .cell-text { color:#cbd5e1; }
+        html.dark .cell-text { color: var(--text-muted); }
 
-        /* Status: plain bold colored text */
+        /* Status: Clean 1px single border pill matching Image 4 */
         .badge {
-            display:inline-block;
-            font-size:.85rem;
+            display:inline-flex;
+            align-items:center;
+            font-size:.75rem;
             font-weight:700;
-            background:transparent !important;
-            border:none !important;
-            padding:0 !important;
+            border-radius:4px;
+            padding:2px 8px !important;
+            border:1px solid var(--card-border) !important;
+            background:#ffffff;
+        }
+        html.dark .badge {
+            border-color:#475569 !important;
+            background:#0f172a;
         }
         .badge-pending     { color:#64748b !important; }
         .badge-scheduled   { color:#2563eb !important; }
@@ -111,13 +141,23 @@
         .badge-completed   { color:#16a34a !important; }
         .badge-cancelled   { color:#dc2626 !important; }
 
-        /* Technician text */
+        /* Technician text tag */
         .tech-tag {
-            font-size:.85rem;
-            font-weight:500;
-            color:#334155;
+            display:inline-flex;
+            align-items:center;
+            font-size:.75rem;
+            font-weight:600;
+            border-radius:4px;
+            padding:2px 8px;
+            border:1px solid var(--card-border);
+            background:#f8fafc;
+            color: var(--text-main);
         }
-        html.dark .tech-tag { color:#cbd5e1; }
+        html.dark .tech-tag {
+            border-color:#475569;
+            background:var(--card-border);
+            color: var(--text-muted);
+        }
 
         /* Date */
         .date-chip {
@@ -125,15 +165,15 @@
             color:#475569;
             white-space:nowrap;
         }
-        html.dark .date-chip { color:#94a3b8; }
+        html.dark .date-chip { color: var(--text-muted); }
 
         /* Pagination */
         .pg-links { padding:.75rem 1rem; border-top:1px solid #e2e8f0; }
-        html.dark .pg-links { border-top-color:#1e293b; }
+        html.dark .pg-links { border-top-color: var(--text-main); }
 
         /* Empty */
         .empty-state { text-align:center; padding:3rem 1rem; color:#64748b; font-size:.85rem; }
-        html.dark .empty-state { color:#94a3b8; }
+        html.dark .empty-state { color: var(--text-muted); }
     </style>
 
     <div class="pg-wrap">

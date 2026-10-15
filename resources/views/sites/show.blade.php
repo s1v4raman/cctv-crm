@@ -48,12 +48,12 @@
                 <table class="crm-table w-full">
                     <tbody>
                         <tr>
-                            <td style="width: 25%; color: #555; font-weight: 500;">Client / Organization</td>
-                            <td style="color: #222; font-weight: 500;">{{ $site->client_name ?? '—' }}</td>
+                            <td style="width: 25%; color: var(--text-muted); font-weight: 500;">Client / Organization</td>
+                            <td style="color: var(--text-main); font-weight: 500;">{{ $site->client_name ?? '—' }}</td>
                         </tr>
                         <tr>
-                            <td style="color: #555; font-weight: 500;">Contact Phone</td>
-                            <td style="color: #222; font-weight: 500;">
+                            <td style="color: var(--text-muted); font-weight: 500;">Contact Phone</td>
+                            <td style="color: var(--text-main); font-weight: 500;">
                                 @if($site->client_phone)
                                     <a href="tel:{{ $site->client_phone }}" class="action-link">
                                         {{ $site->client_phone }}
@@ -64,12 +64,12 @@
                             </td>
                         </tr>
                         <tr>
-                            <td style="color: #555; font-weight: 500;">Contact Person</td>
-                            <td style="color: #222; font-weight: 500;">{{ $site->contact_person ?? '—' }}</td>
+                            <td style="color: var(--text-muted); font-weight: 500;">Contact Person</td>
+                            <td style="color: var(--text-main); font-weight: 500;">{{ $site->contact_person ?? '—' }}</td>
                         </tr>
                         <tr>
-                            <td style="color: #555; font-weight: 500;">Email Address</td>
-                            <td style="color: #222; font-weight: 500;">
+                            <td style="color: var(--text-muted); font-weight: 500;">Email Address</td>
+                            <td style="color: var(--text-main); font-weight: 500;">
                                 @if($site->client_email)
                                     <a href="mailto:{{ $site->client_email }}" class="action-link">
                                         {{ $site->client_email }}
@@ -80,13 +80,13 @@
                             </td>
                         </tr>
                         <tr>
-                            <td style="color: #555; font-weight: 500;">Physical Address</td>
-                            <td style="color: #222; font-weight: 500;">{{ $site->address }}, {{ $site->city }} {{ $site->state }} {{ $site->pincode }}</td>
+                            <td style="color: var(--text-muted); font-weight: 500;">Physical Address</td>
+                            <td style="color: var(--text-main); font-weight: 500;">{{ $site->address }}, {{ $site->city }} {{ $site->state }} {{ $site->pincode }}</td>
                         </tr>
                         @if($site->notes)
                         <tr>
-                            <td style="color: #555; font-weight: 500;">Access Notes</td>
-                            <td style="color: #222; font-weight: 500;">{{ $site->notes }}</td>
+                            <td style="color: var(--text-muted); font-weight: 500;">Access Notes</td>
+                            <td style="color: var(--text-main); font-weight: 500;">{{ $site->notes }}</td>
                         </tr>
                         @endif
                     </tbody>

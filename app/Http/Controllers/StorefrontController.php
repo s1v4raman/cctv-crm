@@ -17,20 +17,6 @@ class StorefrontController extends Controller
      */
     public function index(Request $request): View|RedirectResponse
     {
-        // If accessed on port 8001, redirect directly to Login (or internal dashboard if already authenticated)
-        if ((int) $request->getPort() === 8001) {
-            if (Auth::check()) {
-                $user = Auth::user();
-                if ($user->role === 'technician') {
-                    return redirect()->route('technician.dashboard');
-                }
-                return redirect()->route('dashboard');
-            }
-
-            return redirect()->route('staff.login');
-        }
-
-
         $search = trim((string) $request->input('q', ''));
         $category = (string) $request->input('category', 'all');
         $sort = (string) $request->input('sort', 'featured');
