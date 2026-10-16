@@ -34,9 +34,9 @@
                             <div class="flex items-center justify-between mb-2">
                                 <label class="crm-label mb-0 text-sm font-semibold text-slate-800 dark:text-slate-200">Customer Site / Lead <span class="required-marker text-rose-500">*</span></label>
                                 <a href="{{ route('leads.create', ['return_to' => 'equipment']) }}" 
-                                   class="inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-white dark:text-blue-400 dark:hover:text-white bg-blue-50 hover:bg-blue-600 dark:bg-blue-950/60 dark:hover:bg-blue-600 border border-blue-200 dark:border-blue-800/80 px-3.5 py-1.5 rounded-lg transition shadow-xs cursor-pointer">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-                                    <span>+ Add New Customer</span>
+                                   class="btn-subtle text-white font-semibold"
+                                   style="color: #ffffff !important;">
+                                    <span class="text-white font-semibold" style="color: #ffffff !important;">Add New Customer</span>
                                 </a>
                             </div>
                             <select name="lead_id" data-no-tom="true" class="crm-select w-full h-[44px] text-sm rounded-lg" required>

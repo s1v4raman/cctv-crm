@@ -3,7 +3,7 @@
         <div class="flex items-center justify-between">
             <h2 class="text-xl font-bold text-[var(--text-main)]">Leads</h2>
             @if(auth()->user()->isAdmin() || auth()->user()->isStaff())
-            <a href="{{ route('leads.create') }}" class="btn-primary" style="background-color: var(--primary-btn-bg) !important; color: #ffffff !important;">
+            <a href="{{ route('leads.create') }}" class="btn-primary">
                 New Lead
             </a>
             @endif
@@ -88,17 +88,18 @@
 
             <div class="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl overflow-hidden shadow-xs">
 
-                {{-- Horizontal Filter bar - Uniform 36px Height Level --}}
-                <form method="GET" action="{{ route('leads.index') }}" class="p-2 border-b border-[var(--card-border)] bg-[var(--card-bg)] flex items-center gap-2 flex-wrap text-xs">
-                    <div class="relative w-60 min-w-[180px] shrink-0">
+                {{-- Horizontal Filter bar - Medium 38px Height Level --}}
+                <form method="GET" action="{{ route('leads.index') }}" class="p-2.5 border-b border-[var(--card-border)] bg-[var(--card-bg)] flex items-center gap-2.5 flex-wrap text-xs">
+                    <div class="relative w-72 min-w-[220px] flex items-center shrink-0">
+                        <svg class="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                         <input type="text" name="search" id="lead-search" value="{{ request('search') }}" 
                                 placeholder="Search customer, phone, address…" 
-                                style="height: 36px !important; min-height: 36px !important; max-height: 36px !important; border-radius: 6px !important; box-sizing: border-box; padding-left: 10px;"
+                                style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important; box-sizing: border-box; padding-left: 36px !important;"
                                 class="crm-input w-full text-xs border border-[var(--input-border)] bg-[var(--card-bg)] text-[var(--text-main)] placeholder-[var(--text-muted)] focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/30">
                     </div>
 
                     <select name="status" id="lead-status-filter" 
-                            style="height: 36px !important; min-height: 36px !important; max-height: 36px !important; border-radius: 6px !important; box-sizing: border-box;"
+                            style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important; box-sizing: border-box; min-width: 140px;"
                             class="crm-select text-xs border border-[var(--input-border)] bg-[var(--card-bg)] text-[var(--text-main)] focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/30 shrink-0">
                         <option value="">All Statuses</option>
                         <option value="new" @selected(request('status') === 'new')>New</option>
@@ -109,16 +110,15 @@
                     </select>
 
                     <button type="submit" 
-                            style="height: 36px !important; min-height: 36px !important; max-height: 36px !important; border-radius: 6px !important; box-sizing: border-box;"
-                            class="crm-btn-primary px-3 text-xs font-semibold bg-[var(--primary-btn-bg)] hover:bg-[var(--primary-btn-hover)] text-white transition shrink-0 inline-flex items-center gap-1.5 shadow-xs">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                        <span>Search</span>
+                            style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important; box-sizing: border-box;"
+                            class="crm-btn-primary px-4 text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white transition shrink-0 inline-flex items-center justify-center shadow-xs cursor-pointer">
+                        Filter
                     </button>
 
                     @if(request('search') || request('status'))
                         <a href="{{ route('leads.index') }}" 
-                           style="height: 36px !important; min-height: 36px !important; max-height: 36px !important; border-radius: 6px !important; box-sizing: border-box;"
-                           class="crm-btn-secondary px-3 text-xs font-medium border border-[var(--button-border)] bg-[var(--card-bg)] text-[var(--text-main)] hover:bg-[var(--page-bg)] transition inline-flex items-center shrink-0">
+                           style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important; box-sizing: border-box;"
+                           class="crm-btn-secondary px-3.5 text-xs font-medium border border-[var(--button-border)] bg-[var(--card-bg)] text-[var(--text-main)] hover:bg-[var(--page-bg)] transition inline-flex items-center shrink-0">
                             Reset
                         </a>
                     @endif

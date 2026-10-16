@@ -196,14 +196,8 @@ class WorkerPortalController extends Controller
         try {
             $todayDate = now()->toDateString();
 
-            // Find or create today's WorkDay for this project
-            $workDay = WorkDay::firstOrCreate(
-                ['project_id' => $project->id, 'work_date' => $todayDate],
-                [
-                    'logged_by' => Auth::id(),
-                    'notes' => "Worker self check-in by {$worker->name}",
-                ]
-            );
+            // Find or create today's WorkDay for this project (robust against date formats and race conditions)
+            $workDay = $this->getOrCreateTodayWorkDay($project, $worker, "Worker self check-in by {$worker->name}");
 
             $dailyRate = (float) ($worker->daily_rate > 0 ? $worker->daily_rate : 750.00);
             $multiplier = ($validated['attendance_type'] === 'half_day') ? 0.5 : 1.0;
@@ -292,11 +286,8 @@ class WorkerPortalController extends Controller
 
         DB::beginTransaction();
         try {
-            // Find or create today's WorkDay
-            $workDay = WorkDay::firstOrCreate(
-                ['project_id' => $project->id, 'work_date' => $todayDate],
-                ['logged_by' => Auth::id(), 'notes' => 'Logged via Worker Mobile Portal']
-            );
+            // Find or create today's WorkDay (robust against date formats and race conditions)
+            $workDay = $this->getOrCreateTodayWorkDay($project, $worker, 'Logged via Worker Mobile Portal');
 
             $dailyRate = (float) ($worker->daily_rate > 0 ? $worker->daily_rate : 750.00);
             $perMetreRate = (float) ($project->per_metre_rate ?? 8.00);
@@ -393,6 +384,49 @@ class WorkerPortalController extends Controller
             Log::error('Error logging worker work: ' . $e->getMessage());
 
             return back()->with('error', 'Failed to log work data: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Retrieve or safely create today's WorkDay for a given project,
+     * immune to SQLite date string format differences and duplicate key race conditions.
+     */
+    protected function getOrCreateTodayWorkDay(Project $project, Worker $worker, string $notes): WorkDay
+    {
+        $todayDate = now()->toDateString();
+
+        $workDay = WorkDay::withTrashed()
+            ->where('project_id', $project->id)
+            ->where(function ($q) use ($todayDate) {
+                $q->where('work_date', $todayDate)
+                  ->orWhereDate('work_date', $todayDate)
+                  ->orWhere('work_date', 'like', "{$todayDate}%");
+            })
+            ->first();
+
+        if ($workDay) {
+            if ($workDay->trashed()) {
+                $workDay->restore();
+            }
+            return $workDay;
+        }
+
+        try {
+            return WorkDay::create([
+                'project_id' => $project->id,
+                'work_date'  => $todayDate,
+                'logged_by'  => Auth::id(),
+                'notes'      => $notes,
+            ]);
+        } catch (\Illuminate\Database\QueryException $e) {
+            return WorkDay::withTrashed()
+                ->where('project_id', $project->id)
+                ->where(function ($q) use ($todayDate) {
+                    $q->where('work_date', $todayDate)
+                      ->orWhereDate('work_date', $todayDate)
+                      ->orWhere('work_date', 'like', "{$todayDate}%");
+                })
+                ->firstOrFail();
         }
     }
 }

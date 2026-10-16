@@ -37,6 +37,19 @@
                         <span :class="sidebarCollapsed ? 'lg:hidden' : ''">Field Work Orders</span>
                     </a>
 
+                    {{-- Calendar & Tasks Module (Calendar icon) --}}
+                    <a :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('calendar.index') }}" 
+                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('calendar.*') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
+                        <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('calendar.*') ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <rect width="18" height="18" x="3" y="4" rx="3" ry="3"/>
+                            <line stroke-linecap="round" stroke-linejoin="round" x1="16" x2="16" y1="2" y2="6"/>
+                            <line stroke-linecap="round" stroke-linejoin="round" x1="8" x2="8" y1="2" y2="6"/>
+                            <line stroke-linecap="round" stroke-linejoin="round" x1="3" x2="21" y1="10" y2="10"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 14h.01M12 14h.01M16 14h.01M8 17h.01M12 17h.01M16 17h.01"/>
+                        </svg>
+                        <span :class="sidebarCollapsed ? 'lg:hidden' : ''">Calendar &amp; Tasks</span>
+                    </a>
+
                     {{-- Projects & Sites (Briefcase icon) --}}
                     <a :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('projects.index') }}" 
                        class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('projects.*') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">

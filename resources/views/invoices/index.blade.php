@@ -101,9 +101,8 @@
                         <option value="paid" @selected(request('status') === 'paid')>Paid</option>
                         <option value="overdue" @selected(request('status') === 'overdue')>Overdue</option>
                     </select>
-                    <button type="submit" style="height: 36px !important; min-height: 36px !important; max-height: 36px !important;" class="px-3 rounded-md bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition inline-flex items-center gap-1.5 shrink-0 shadow-xs">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                        <span>Search</span>
+                    <button type="submit" style="height: 36px !important; min-height: 36px !important; max-height: 36px !important;" class="px-4 rounded-md bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition inline-flex items-center justify-center shrink-0 shadow-xs cursor-pointer">
+                        Search
                     </button>
                     @if(request('search') || request('status'))
                         <a href="{{ route('invoices.index') }}" style="height: 36px !important; min-height: 36px !important; max-height: 36px !important;" class="px-3 inline-flex items-center rounded-md border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition shrink-0">

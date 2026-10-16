@@ -187,11 +187,18 @@
 
             <div class="pg-card">
 
-                <form method="GET" action="{{ route('jobs.index') }}" class="filter-bar flex items-center gap-2 flex-wrap p-2 text-xs">
-                    <div class="relative w-60 min-w-[180px] shrink-0">
-                        <input type="text" name="search" id="job-search" value="{{ request('search') }}" placeholder="Search job no, customer, tech…" oninput="filterJobs()" class="w-full text-xs" style="height: 36px !important; min-height: 36px !important; max-height: 36px !important; border-radius: 6px !important; padding-left: 10px;">
+                <form method="GET" action="{{ route('jobs.index') }}" class="filter-bar flex items-center gap-2.5 flex-wrap p-2.5 text-xs">
+                    <div class="relative w-72 min-w-[220px] flex items-center shrink-0">
+                        <svg class="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        <input type="text" name="search" id="job-search" value="{{ request('search') }}" 
+                               placeholder="Search job no, customer, tech…" 
+                               oninput="filterJobs()" 
+                               class="w-full text-xs" 
+                               style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important; padding-left: 36px !important;">
                     </div>
-                    <select name="status" id="job-status-filter" onchange="this.form.submit()" class="text-xs shrink-0" style="height: 36px !important; min-height: 36px !important; max-height: 36px !important; border-radius: 6px !important;">
+                    <select name="status" id="job-status-filter" onchange="this.form.submit()" 
+                            class="text-xs shrink-0" 
+                            style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important; min-width: 140px;">
                         <option value="">All Statuses</option>
                         <option value="pending" @selected(request('status') === 'pending')>Pending</option>
                         <option value="scheduled" @selected(request('status') === 'scheduled')>Scheduled</option>
@@ -200,12 +207,15 @@
                         <option value="completed" @selected(request('status') === 'completed')>Completed</option>
                         <option value="cancelled" @selected(request('status') === 'cancelled')>Cancelled</option>
                     </select>
-                    <button type="submit" style="height: 36px !important; min-height: 36px !important; max-height: 36px !important; border-radius: 6px !important;" class="px-3 rounded-md bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition shrink-0 inline-flex items-center gap-1.5 shadow-xs">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                        <span>Search</span>
+                    <button type="submit" 
+                            style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important;" 
+                            class="px-4 rounded-md bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition shrink-0 inline-flex items-center justify-center shadow-xs cursor-pointer">
+                        Filter
                     </button>
                     @if(request('search') || request('status'))
-                        <a href="{{ route('jobs.index') }}" style="height: 36px !important; min-height: 36px !important; max-height: 36px !important; border-radius: 6px !important;" class="px-3 inline-flex items-center rounded-md border border-slate-300 dark:border-slate-700 bg-white hover:bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold transition shrink-0">
+                        <a href="{{ route('jobs.index') }}" 
+                           style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important;" 
+                           class="px-3.5 inline-flex items-center rounded-md border border-slate-300 dark:border-slate-700 bg-white hover:bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold transition shrink-0">
                             Clear
                         </a>
                     @endif

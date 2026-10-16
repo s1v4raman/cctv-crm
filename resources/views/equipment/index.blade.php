@@ -178,9 +178,8 @@
                         <option value="decommissioned" @selected(request('status') == 'decommissioned')>Decommissioned</option>
                     </select>
 
-                    <button type="submit" class="h-[42px] px-5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold shadow-xs transition inline-flex items-center gap-1.5 cursor-pointer">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
-                        <span>Search</span>
+                    <button type="submit" class="h-[42px] px-5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold shadow-xs transition inline-flex items-center justify-center cursor-pointer">
+                        Search
                     </button>
                     @if(request()->hasAny(['search', 'lead_id', 'warranty', 'status']))
                         <a href="{{ route('equipment.index') }}" class="h-[42px] px-4 inline-flex items-center rounded-lg border border-[var(--card-border)] dark:border-slate-600 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm font-semibold transition shadow-xs">Clear</a>

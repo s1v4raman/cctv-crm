@@ -6,7 +6,8 @@
             </div>
             <div class="flex items-center gap-2 flex-wrap">
                 <a href="{{ route('inventory.movements') }}" class="btn-secondary">
-                    Audit Log
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+                    <span>Audit Log</span>
                 </a>
                 @if(auth()->user()->isAdmin())
                 <a href="{{ route('products.create') }}" class="btn-primary">
@@ -130,12 +131,20 @@
             @endif
 
             <div class="pg-card">
-                {{-- Filter Bar --}}
-                <form method="GET" action="{{ route('inventory.index') }}" class="filter-bar">
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search product name, SKU..." style="min-width: 220px;" />
+                {{-- Filter Bar (Medium 38px Height Level) --}}
+                <form method="GET" action="{{ route('inventory.index') }}" class="filter-bar flex items-center gap-2.5 flex-wrap p-2.5 text-xs">
+                    <div class="relative w-72 min-w-[220px] flex items-center shrink-0">
+                        <svg class="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        <input type="text" name="search" value="{{ request('search') }}" 
+                               placeholder="Search product name, SKU..." 
+                               style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important; padding-left: 36px !important;"
+                               class="w-full text-xs" />
+                    </div>
 
                     @if(count($categories) > 0)
-                    <select name="category" onchange="this.form.submit()">
+                    <select name="category" onchange="this.form.submit()" 
+                            style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important; min-width: 140px;"
+                            class="text-xs shrink-0">
                         <option value="">All Categories</option>
                         @foreach($categories as $cat)
                             <option value="{{ $cat }}" @selected(request('category') == $cat)>{{ $cat }}</option>
@@ -143,19 +152,26 @@
                     </select>
                     @endif
 
-                    <select name="status" onchange="this.form.submit()">
+                    <select name="status" onchange="this.form.submit()" 
+                            style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important; min-width: 140px;"
+                            class="text-xs shrink-0">
                         <option value="">All Stock Levels</option>
                         <option value="in_stock" @selected(request('status') == 'in_stock')>In Stock</option>
                         <option value="low_stock" @selected(request('status') == 'low_stock')>Low Stock</option>
                         <option value="out_of_stock" @selected(request('status') == 'out_of_stock')>Out of Stock</option>
                     </select>
 
-                    <button type="submit" style="height:36px !important; min-height:36px !important; max-height:36px !important;" class="h-[36px] px-3.5 rounded-md bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition shadow-xs inline-flex items-center gap-1.5">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                        <span>Search</span>
+                    <button type="submit" 
+                            style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important;" 
+                            class="px-4 rounded-md bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition shadow-xs inline-flex items-center justify-center cursor-pointer">
+                        Filter
                     </button>
                     @if(request()->hasAny(['search', 'category', 'status']))
-                        <a href="{{ route('inventory.index') }}" style="height:36px !important; min-height:36px !important; max-height:36px !important;" class="h-[36px] px-3.5 inline-flex items-center rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 text-slate-700 dark:text-slate-200 text-xs font-medium transition">Clear</a>
+                        <a href="{{ route('inventory.index') }}" 
+                           style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important;" 
+                           class="px-3.5 inline-flex items-center rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 text-slate-700 dark:text-slate-200 text-xs font-medium transition">
+                            Clear
+                        </a>
                     @endif
                 </form>
 

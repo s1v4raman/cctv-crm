@@ -17,14 +17,12 @@
             
             <div class="flex items-center gap-2 flex-wrap">
                 @if($isAdmin)
-                    <button type="button" @click="openCreateTaskModal = true" 
-                            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition active:scale-95 cursor-pointer">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-                        <span>Create Task</span>
+                    <button type="button" @click="window.dispatchEvent(new CustomEvent('open-create-task-modal'))" 
+                            class="inline-flex items-center justify-center px-3.5 py-2 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition active:scale-95 cursor-pointer">
+                        Create Task
                     </button>
-                    <a href="{{ route('site-surveys.create') }}" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200/90 dark:border-slate-700 shadow-2xs transition active:scale-95">
-                        <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
-                        <span>Schedule Survey</span>
+                    <a href="{{ route('site-surveys.create') }}" class="inline-flex items-center justify-center px-3.5 py-2 rounded-lg text-xs font-semibold bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200/90 dark:border-slate-700 shadow-2xs transition active:scale-95">
+                        Schedule Survey
                     </a>
                 @endif
             </div>
@@ -52,9 +50,9 @@
             color: var(--text-main);
             border: 1px solid var(--card-border) !important;
             padding-left: 36px !important;
-            height: 36px !important;
-            font-size: 12px !important;
-            border-radius: 6px !important;
+            height: 38px !important;
+            font-size: 13px !important;
+            border-radius: 8px !important;
             transition: border-color 0.15s ease, box-shadow 0.15s ease;
         }
         .crm-cal-select {
@@ -62,10 +60,10 @@
             color: var(--text-main);
             border: 1px solid var(--card-border) !important;
             width: auto !important;
-            min-width: 135px !important;
-            height: 36px !important;
-            font-size: 12px !important;
-            border-radius: 6px !important;
+            min-width: 140px !important;
+            height: 38px !important;
+            font-size: 13px !important;
+            border-radius: 8px !important;
             display: inline-block !important;
             transition: border-color 0.15s ease, box-shadow 0.15s ease;
         }
@@ -89,9 +87,68 @@
             background-color: #0f172a !important;
             color: #f8fafc !important;
         }
+
+        /* ══════════════════════════════════════════════════════════════════════
+           FOUR PLAIN TEXT TABS (No pills, active tab: 2px #2563eb bottom border)
+           ══════════════════════════════════════════════════════════════════════ */
+        .crm-tab-container {
+            border-bottom: 1px solid var(--card-border, #cbd5e1);
+        }
+        html.dark .crm-tab-container {
+            border-bottom: 1px solid #334155;
+        }
+        .crm-plain-tab,
+        .crm-plain-tab.active,
+        .crm-plain-tab:hover,
+        .crm-plain-tab:focus,
+        .crm-plain-tab:focus-visible,
+        .crm-plain-tab:active {
+            outline: none !important;
+            outline-offset: 0 !important;
+            box-shadow: none !important;
+            background: transparent !important;
+            background-color: transparent !important;
+            border-top: none !important;
+            border-left: none !important;
+            border-right: none !important;
+            border-radius: 0 !important;
+        }
+        .crm-plain-tab {
+            position: relative;
+            border-bottom: 2px solid transparent !important;
+            padding: 8px 6px 12px 6px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #64748b;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: color 0.15s ease, border-color 0.15s ease;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .crm-plain-tab:hover {
+            color: #0f172a;
+        }
+        html.dark .crm-plain-tab {
+            color: #94a3b8;
+        }
+        html.dark .crm-plain-tab:hover {
+            color: #f8fafc;
+        }
+        .crm-plain-tab.active {
+            color: #2563eb !important;
+            font-weight: 600 !important;
+            border-bottom: 2px solid #2563eb !important;
+        }
+        html.dark .crm-plain-tab.active {
+            color: #3b82f6 !important;
+            border-bottom: 2px solid #2563eb !important;
+        }
     </style>
 
-    <div class="space-y-4" x-data="calendarHubApp(window.crmCalendarConfig)">
+    <div class="space-y-4" x-data="calendarHubApp(window.crmCalendarConfig)" @open-create-task-modal.window="openCreateTaskModal = true">
 
         {{-- Flash Notification Alerts --}}
         @if (session('status'))
@@ -125,15 +182,15 @@
              FOUR PLAIN TEXT TABS (No pills, active tab: 2px #2563eb bottom border)
              Workers must NOT see Overall tabs (server-side gated)
              ══════════════════════════════════════════════════════════════ --}}
-        <div class="border-b border-slate-200 dark:border-slate-800">
+        <div class="crm-tab-container">
             <div class="flex items-center gap-8 -mb-px overflow-x-auto scrollbar-none">
                 
                 {{-- 1. Overall Calendar --}}
                 @if(!$isWorker)
                     <button type="button" 
                             @click="switchTab('overall_calendar')" 
-                            :class="activeTab === 'overall_calendar' ? 'border-[#2563eb] text-[#2563eb] font-semibold' : 'border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 font-medium'"
-                            class="pb-3 text-sm border-b-[2px] transition-colors cursor-pointer whitespace-nowrap">
+                            class="crm-plain-tab"
+                            :class="activeTab === 'overall_calendar' ? 'active' : ''">
                         Overall Calendar
                     </button>
                 @endif
@@ -141,8 +198,8 @@
                 {{-- 2. My Calendar --}}
                 <button type="button" 
                         @click="switchTab('my_calendar')" 
-                        :class="activeTab === 'my_calendar' ? 'border-[#2563eb] text-[#2563eb] font-semibold' : 'border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 font-medium'"
-                        class="pb-3 text-sm border-b-[2px] transition-colors cursor-pointer whitespace-nowrap">
+                        class="crm-plain-tab"
+                        :class="activeTab === 'my_calendar' ? 'active' : ''">
                     My Calendar
                 </button>
 
@@ -150,8 +207,8 @@
                 @if(!$isWorker)
                     <button type="button" 
                             @click="switchTab('overall_tasks')" 
-                            :class="activeTab === 'overall_tasks' ? 'border-[#2563eb] text-[#2563eb] font-semibold' : 'border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 font-medium'"
-                            class="pb-3 text-sm border-b-[2px] transition-colors cursor-pointer whitespace-nowrap">
+                            class="crm-plain-tab"
+                            :class="activeTab === 'overall_tasks' ? 'active' : ''">
                         Overall Tasks
                     </button>
                 @endif
@@ -159,8 +216,8 @@
                 {{-- 4. My Tasks --}}
                 <button type="button" 
                         @click="switchTab('my_tasks')" 
-                        :class="activeTab === 'my_tasks' ? 'border-[#2563eb] text-[#2563eb] font-semibold' : 'border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 font-medium'"
-                        class="pb-3 text-sm border-b-[2px] transition-colors cursor-pointer whitespace-nowrap">
+                        class="crm-plain-tab"
+                        :class="activeTab === 'my_tasks' ? 'active' : ''">
                     My Tasks
                 </button>
 
@@ -434,15 +491,28 @@
              Grouped by Date: Overdue, Today, Tomorrow, This week, Later
              With filters for search, status, category, assignee, from & to date
              ══════════════════════════════════════════════════════════════ --}}
-        <div x-show="activeTab === 'overall_tasks' || activeTab === 'my_tasks'" class="space-y-5">
+        <div x-show="activeTab === 'overall_tasks' || activeTab === 'my_tasks'" class="space-y-4">
             
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-base font-bold text-slate-900 dark:text-white" x-text="activeTab === 'overall_tasks' ? 'Company Tasks Workflow' : 'My Assigned Tasks'"></h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400" x-text="activeTab === 'overall_tasks' ? 'Grouped by scheduled date with full operations filtering' : 'Tasks assigned directly to you — accept or reject work items'"></p>
+                </div>
+                @if($isAdmin)
+                    <button type="button" @click="openCreateTaskModal = true" 
+                            class="inline-flex items-center justify-center px-3.5 py-2 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition active:scale-95 cursor-pointer">
+                        Create Task
+                    </button>
+                @endif
+            </div>
+
             {{-- Tasks Filter Bar --}}
             <div class="bg-white dark:bg-[#0f172a] rounded-xl border border-[var(--card-border)] dark:border-slate-700 p-4 shadow-xs">
-                <form method="GET" action="{{ route('calendar.index') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
+                <form method="GET" action="{{ route('calendar.index') }}" class="flex items-end gap-3 flex-wrap">
                     <input type="hidden" name="tab" :value="activeTab">
 
                     {{-- Search filter --}}
-                    <div class="lg:col-span-2">
+                    <div class="flex-1 min-w-[220px]">
                         <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Search</label>
                         <div class="relative">
                             <input type="text" name="search" value="{{ $filters['search'] }}" placeholder="Task, scope, or location..."
@@ -453,7 +523,7 @@
                     </div>
 
                     {{-- Status filter --}}
-                    <div>
+                    <div class="w-36 shrink-0">
                         <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Status</label>
                         <select name="status" class="crm-cal-select w-full h-9 px-3 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500 transition">
                             <option value="">All Statuses</option>
@@ -464,7 +534,7 @@
                     </div>
 
                     {{-- Category / Phase filter --}}
-                    <div>
+                    <div class="w-36 shrink-0">
                         <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Category</label>
                         <select name="category" class="crm-cal-select w-full h-9 px-3 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500 transition">
                             <option value="">All Categories</option>
@@ -475,7 +545,7 @@
                     </div>
 
                     {{-- Assignee filter (hidden in My Tasks) --}}
-                    <div x-show="activeTab === 'overall_tasks'">
+                    <div x-show="activeTab === 'overall_tasks'" class="w-44 shrink-0">
                         <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Assignee</label>
                         <select name="assignee" class="crm-cal-select w-full h-9 px-3 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500 transition">
                             <option value="">All Team Members</option>
@@ -487,269 +557,49 @@
                         </select>
                     </div>
 
-                    {{-- Date range & actions --}}
-                    <div :class="activeTab === 'overall_tasks' ? 'lg:col-span-1' : 'lg:col-span-2'" class="flex items-end gap-2">
-                        <div class="flex-1">
-                            <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">From Date</label>
-                            <input type="date" name="from_date" value="{{ $filters['from_date'] }}" class="crm-cal-input w-full h-9 px-2 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-800 dark:text-white">
-                        </div>
-                        <div class="flex-1">
-                            <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">To Date</label>
-                            <input type="date" name="to_date" value="{{ $filters['to_date'] }}" class="crm-cal-input w-full h-9 px-2 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-800 dark:text-white">
-                        </div>
-                        <button type="submit" class="h-9 px-3.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition shadow-xs cursor-pointer">
+                    {{-- From Date --}}
+                    <div class="w-36 shrink-0">
+                        <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">From Date</label>
+                        <input type="date" name="from_date" value="{{ $filters['from_date'] }}" class="crm-cal-input w-full h-9 px-2 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-800 dark:text-white">
+                    </div>
+
+                    {{-- To Date --}}
+                    <div class="w-36 shrink-0">
+                        <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">To Date</label>
+                        <input type="date" name="to_date" value="{{ $filters['to_date'] }}" class="crm-cal-input w-full h-9 px-2 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-800 dark:text-white">
+                    </div>
+
+                    {{-- Action Buttons --}}
+                    <div class="flex items-center gap-2 shrink-0">
+                        <button type="submit" class="h-9 px-4 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition shadow-xs cursor-pointer inline-flex items-center justify-center">
                             Filter
                         </button>
-                        <a :href="'{{ route('calendar.index') }}?tab=' + activeTab" class="h-9 px-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-semibold hover:bg-slate-100 dark:hover:bg-slate-700 transition flex items-center justify-center">
+                        <a :href="'{{ route('calendar.index') }}?tab=' + activeTab" class="h-9 px-3.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition flex items-center justify-center">
                             Reset
                         </a>
                     </div>
                 </form>
             </div>
 
-            {{-- Task Groups Renderer --}}
-            @php
-                $currentGroupList = $activeTab === 'my_tasks' ? $myTasksGrouped : $overallTasksGrouped;
-                $groupMeta = [
-                    'Overdue' => [
-                        'badge'  => 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300 border-rose-300 dark:border-rose-800',
-                        'accent' => 'border-l-4 border-l-rose-500',
-                        'icon'   => '⚠️',
-                    ],
-                    'Today' => [
-                        'badge'  => 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 border-blue-300 dark:border-blue-800',
-                        'accent' => 'border-l-4 border-l-blue-500',
-                        'icon'   => '⚡',
-                    ],
-                    'Tomorrow' => [
-                        'badge'  => 'bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300 border-purple-300 dark:border-purple-800',
-                        'accent' => 'border-l-4 border-l-purple-500',
-                        'icon'   => '📅',
-                    ],
-                    'This week' => [
-                        'badge'  => 'bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300 border-sky-300 dark:border-sky-800',
-                        'accent' => 'border-l-4 border-l-sky-500',
-                        'icon'   => '🗓️',
-                    ],
-                    'Later' => [
-                        'badge'  => 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300 border-slate-300 dark:border-slate-700',
-                        'accent' => 'border-l-4 border-l-slate-400',
-                        'icon'   => '⏳',
-                    ],
-                ];
-            @endphp
+            {{-- Task Groups Renderer (Overall Tasks & My Tasks) --}}
+            @if(!$isWorker)
+                <div x-show="activeTab === 'overall_tasks'">
+                    @include('calendar.partials.task-group-list', [
+                        'groupList' => $overallTasksGrouped,
+                        'tabName'   => 'overall_tasks',
+                        'isAdmin'   => $isAdmin,
+                        'isWorker'  => false,
+                    ])
+                </div>
+            @endif
 
-            <div class="space-y-6">
-                @foreach(['Overdue', 'Today', 'Tomorrow', 'This week', 'Later'] as $groupName)
-                    @php
-                        $groupTasks = $currentGroupList[$groupName] ?? collect();
-                        $meta = $groupMeta[$groupName];
-                    @endphp
-
-                    <div class="bg-white dark:bg-[#0f172a] rounded-xl border border-[var(--card-border)] dark:border-slate-700 overflow-hidden shadow-xs">
-                        
-                        {{-- Group Header --}}
-                        <div class="px-5 py-3.5 bg-slate-50/80 dark:bg-slate-800/40 border-b border-slate-200/80 dark:border-slate-800 flex items-center justify-between">
-                            <div class="flex items-center gap-2.5">
-                                <span class="text-base">{{ $meta['icon'] }}</span>
-                                <h3 class="text-sm font-extrabold text-slate-900 dark:text-white tracking-tight">{{ $groupName }}</h3>
-                                <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full border {{ $meta['badge'] }}">
-                                    {{ $groupTasks->count() }} {{ Str::plural('Task', $groupTasks->count()) }}
-                                </span>
-                            </div>
-                        </div>
-
-                        {{-- Group Tasks List --}}
-                        <div class="divide-y divide-slate-100 dark:divide-slate-800">
-                            @forelse($groupTasks as $task)
-                                <div class="p-4 sm:p-5 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition {{ $meta['accent'] }}">
-                                    
-                                    {{-- Rejection Notice (if task was rejected) --}}
-                                    @if(!empty($task['rejection_reason']))
-                                        <div class="mb-3.5 p-3 rounded-lg bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800/80 text-rose-800 dark:text-rose-200 text-xs">
-                                            <div class="flex items-start justify-between gap-3">
-                                                <div class="flex items-start gap-2">
-                                                    <span class="text-base">⚠️</span>
-                                                    <div>
-                                                        <div class="font-bold">
-                                                            Rejected by {{ $task['rejected_user']['name'] ?? 'Assignee' }}
-                                                            @if(!empty($task['rejected_at']))
-                                                                <span class="font-normal text-rose-600 dark:text-rose-400">on {{ $task['rejected_at'] }}</span>
-                                                            @endif
-                                                        </div>
-                                                        <p class="mt-0.5 text-[11px] leading-relaxed italic">
-                                                            &ldquo;{{ $task['rejection_reason'] }}&rdquo;
-                                                        </p>
-                                                        <p class="mt-1 text-[10px] font-semibold text-rose-600 dark:text-rose-400 uppercase tracking-wider">
-                                                            Routed to Administrator for reassignment
-                                                        </p>
-                                                    </div>
-                                                </div>
-
-                                                @if($isAdmin)
-                                                    <button type="button" 
-                                                            @click="openReassignModal({{ json_encode($task) }})" 
-                                                            class="px-3 py-1.5 rounded-md bg-rose-600 text-white text-[11px] font-bold hover:bg-rose-700 transition shrink-0 cursor-pointer shadow-xs">
-                                                        Reassign Task
-                                                    </button>
-                                                @endif
-                                            </div>
-                                        </div>
-                                    @endif
-
-                                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3.5">
-                                        
-                                        {{-- Left: Task Details --}}
-                                        <div class="space-y-1.5 flex-1 min-w-0">
-                                            
-                                            {{-- Badges row --}}
-                                            <div class="flex flex-wrap items-center gap-2">
-                                                <span class="text-[11px] font-bold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-                                                    {{ $task['phase_name'] ?: 'General' }}
-                                                </span>
-
-                                                {{-- Priority Badge --}}
-                                                <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded
-                                                    {{ $task['priority'] === 'urgent' ? 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300' : 
-                                                       ($task['priority'] === 'high' ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300' : 
-                                                       ($task['priority'] === 'medium' ? 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300' : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300')) }}">
-                                                    {{ ucfirst($task['priority']) }}
-                                                </span>
-
-                                                {{-- Status Badge --}}
-                                                <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded
-                                                    {{ $task['status'] === 'completed' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' :
-                                                       ($task['status'] === 'in_progress' ? 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300' :
-                                                       ($task['status'] === 'rejected' ? 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300' : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300')) }}">
-                                                    {{ str_replace('_', ' ', ucfirst($task['status'])) }}
-                                                </span>
-
-                                                {{-- Shift badge --}}
-                                                <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-200/60 dark:border-amber-800/60 inline-flex items-center gap-1">
-                                                    <span>☀️</span>
-                                                    <span>{{ $task['shift'] }}</span>
-                                                </span>
-
-                                                {{-- Accepted indicator --}}
-                                                @if(!empty($task['accepted_at']))
-                                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 dark:bg-emerald-950/80 dark:text-emerald-300 inline-flex items-center gap-1">
-                                                        <span>✓ Accepted</span>
-                                                        <span class="font-normal">({{ $task['accepted_at'] }})</span>
-                                                    </span>
-                                                @endif
-                                            </div>
-
-                                            {{-- Title --}}
-                                            <h4 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
-                                                {{ $task['title'] }}
-                                            </h4>
-
-                                            {{-- Description / Work Scope --}}
-                                            @if(!empty($task['description']))
-                                                <p class="text-xs text-slate-600 dark:text-slate-300 line-clamp-2 leading-relaxed">
-                                                    {{ $task['description'] }}
-                                                </p>
-                                            @endif
-
-                                            {{-- Info row --}}
-                                            <div class="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-slate-500 dark:text-slate-400 pt-1">
-                                                
-                                                {{-- Project Name & Client (STRICTLY HIDDEN from Workers) --}}
-                                                @if(!$task['is_worker_view'] && !empty($task['project_name']))
-                                                    <div class="inline-flex items-center gap-1 font-medium text-slate-700 dark:text-slate-300">
-                                                        <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-                                                        <span>{{ $task['project_name'] }}</span>
-                                                        @if(!empty($task['client']))
-                                                            <span class="text-slate-400">({{ $task['client'] }})</span>
-                                                        @endif
-                                                    </div>
-                                                @endif
-
-                                                {{-- Date --}}
-                                                <div class="inline-flex items-center gap-1">
-                                                    <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
-                                                    <span>Due: {{ $task['due_date'] ?? ($task['start_date'] ?? 'No date') }}</span>
-                                                </div>
-
-                                                {{-- Location --}}
-                                                @if(!empty($task['location']))
-                                                    <div class="inline-flex items-center gap-1">
-                                                        <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                                                        <span class="truncate max-w-[220px]">{{ $task['location'] }}</span>
-                                                    </div>
-                                                @endif
-
-                                                {{-- Hours --}}
-                                                @if(!empty($task['estimated_hours']))
-                                                    <div class="inline-flex items-center gap-1 font-semibold text-slate-700 dark:text-slate-300">
-                                                        <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                                                        <span>{{ $task['estimated_hours'] }} hrs</span>
-                                                    </div>
-                                                @endif
-
-                                                {{-- Assignee (Non-workers only) --}}
-                                                @if(!$task['is_worker_view'] && !empty($task['assigned_user']))
-                                                    <div class="inline-flex items-center gap-1.5 font-medium">
-                                                        <div class="w-5 h-5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/60 dark:text-blue-300 font-bold flex items-center justify-center text-[10px]">
-                                                            {{ substr($task['assigned_user']['name'], 0, 1) }}
-                                                        </div>
-                                                        <span>{{ $task['assigned_user']['name'] }}</span>
-                                                    </div>
-                                                @endif
-                                            </div>
-
-                                        </div>
-
-                                        {{-- Right Actions: Accept, Reject, Assign/Reassign --}}
-                                        <div class="flex items-center gap-2 shrink-0 pt-2 lg:pt-0">
-                                            
-                                            {{-- Accept & Reject Buttons for Assignee (Technician, Employee, Worker) --}}
-                                            @if((int)$task['assigned_to'] === (int)auth()->id() || $isAdmin)
-                                                @if(empty($task['accepted_at']) && $task['status'] !== 'completed')
-                                                    
-                                                    {{-- Accept Button --}}
-                                                    <form method="POST" action="{{ route('calendar.tasks.accept', $task['id']) }}">
-                                                        @csrf
-                                                        <button type="submit" 
-                                                                class="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition shadow-xs flex items-center gap-1 cursor-pointer">
-                                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                                                            <span>Accept</span>
-                                                        </button>
-                                                    </form>
-
-                                                    {{-- Reject Button (Opens Modal requiring reason) --}}
-                                                    <button type="button" 
-                                                            @click="openRejectModal({{ json_encode($task) }})"
-                                                            class="px-3 py-1.5 rounded-lg border border-rose-300 dark:border-rose-800/80 text-rose-700 dark:text-rose-300 bg-rose-50/60 dark:bg-rose-950/40 hover:bg-rose-100 text-xs font-bold transition flex items-center gap-1 cursor-pointer">
-                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                                                        <span>Reject</span>
-                                                    </button>
-                                                @endif
-                                            @endif
-
-                                            {{-- Admin-only Assign / Reassign Button --}}
-                                            @if($isAdmin)
-                                                <button type="button" 
-                                                        @click="openReassignModal({{ json_encode($task) }})"
-                                                        class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold shadow-2xs transition flex items-center gap-1 cursor-pointer">
-                                                    <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                                                    <span>{{ empty($task['assigned_to']) ? 'Assign' : 'Reassign' }}</span>
-                                                </button>
-                                            @endif
-
-                                        </div>
-
-                                    </div>
-                                </div>
-                            @empty
-                                <div class="p-6 text-center text-slate-400 text-xs font-medium">
-                                    No tasks in {{ $groupName }}.
-                                </div>
-                            @endforelse
-                        </div>
-
-                    </div>
-                @endforeach
+            <div x-show="activeTab === 'my_tasks'">
+                @include('calendar.partials.task-group-list', [
+                    'groupList' => $myTasksGrouped,
+                    'tabName'   => 'my_tasks',
+                    'isAdmin'   => $isAdmin,
+                    'isWorker'  => $isWorker,
+                ])
             </div>
 
         </div>

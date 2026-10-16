@@ -802,29 +802,28 @@
                PREMIUM CUSTOM SEARCHABLE DROPDOWN & SELECT DESIGN
                ═══════════════════════════════════════════════════════════════════════ */
 
-            /* Native Select Elements - Crisp Single 1px Dark Border (Matching Image 4) */
+            /* Native Select Elements - Ergonomic Medium Height (38px) with Clean 1px Border */
             select,
             .crm-select,
             select.crm-select {
-                height: 36px !important;
-                min-height: 36px !important;
-                max-height: 36px !important;
+                height: 38px !important;
+                min-height: 38px !important;
+                max-height: 38px !important;
                 border: 1px solid var(--card-border) !important;
-                border-radius: 6px !important;
-                font-size: 12px !important;
-                font-weight: 600 !important;
+                border-radius: 8px !important;
+                font-size: 13px !important;
+                font-weight: 500 !important;
                 background-color: var(--card-bg) !important;
                 color: var(--text-main) !important;
-                padding-left: 10px !important;
-                padding-right: 24px !important;
+                padding-left: 12px !important;
+                padding-right: 32px !important;
                 background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 20 20' fill='%231e293b'%3e%3cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3e%3c/svg%3e") !important;
-                background-position: right 8px center !important;
+                background-position: right 10px center !important;
                 background-repeat: no-repeat !important;
                 background-size: 12px 12px !important;
                 appearance: none !important;
                 -webkit-appearance: none !important;
-                max-width: fit-content;
-                width: auto;
+                width: 100%;
             }
             html.dark select,
             html.dark .crm-select,
@@ -835,66 +834,71 @@
                 background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 20 20' fill='%2394a3b8'%3e%3cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3e%3c/svg%3e") !important;
             }
 
-            /* Select elements inside flex horizontal toolbars and filter bars */
+            /* Select elements inside flex horizontal toolbars and filter bars: Medium Width */
             .flex select,
             .inline-flex select,
             form.flex select,
             .crm-filter-bar select,
             .crm-filter-select,
             .crm-cal-select,
-            select.crm-filter-select,
-            select:not(.w-full) {
+            select.crm-filter-select {
                 width: auto !important;
-                min-width: 0 !important;
-                max-width: fit-content !important;
+                min-width: 140px !important;
+                max-width: 220px !important;
             }
 
             /* Full-width selects inside standard vertical forms */
             select.w-full,
             .form-group select,
-            .grid > div > select.w-full {
+            .grid > div > select,
+            .crm-section select {
                 width: 100% !important;
+                max-width: 100% !important;
             }
 
-            /* Universal Minimized Horizontal Filter Bar with Crisp 1px Dark Border */
+            /* Universal Horizontal Filter Bar with Crisp 1px Border */
             .crm-filter-bar {
                 display: flex !important;
                 flex-direction: row !important;
                 flex-wrap: wrap !important;
                 align-items: center !important;
-                gap: 6px !important;
-                padding: 6px 10px !important;
-                background-color: #ffffff;
+                gap: 8px !important;
+                padding: 10px 14px !important;
+                background-color: var(--card-bg);
                 border: 1px solid var(--card-border) !important;
-                border-radius: 8px;
+                border-radius: 10px;
             }
             html.dark .crm-filter-bar {
-                background-color: #0f172a;
+                background-color: var(--card-bg);
                 border: 1px solid var(--card-border) !important;
             }
 
+            /* Search Box with Medium Width and Clean Dimensions */
             .crm-search-box {
                 position: relative !important;
-                width: auto !important;
-                max-width: 220px !important;
-                min-width: 150px !important;
+                width: 280px !important;
+                min-width: 240px !important;
+                max-width: 360px !important;
+                display: flex !important;
+                align-items: center !important;
             }
 
             .crm-search-input,
             .crm-filter-bar input[type="text"],
             .crm-filter-bar input[type="search"],
             .relative > input.crm-cal-input {
-                height: 32px !important;
-                min-height: 32px !important;
-                max-height: 32px !important;
-                font-size: 11px !important;
-                padding-left: 28px !important;
-                padding-right: 8px !important;
+                height: 38px !important;
+                min-height: 38px !important;
+                max-height: 38px !important;
+                font-size: 13px !important;
+                padding-left: 36px !important;
+                padding-right: 12px !important;
                 border: 1px solid var(--card-border) !important;
-                border-radius: 6px !important;
+                border-radius: 8px !important;
                 background-color: var(--card-bg) !important;
                 color: var(--text-main) !important;
                 outline: none !important;
+                width: 100% !important;
             }
             html.dark .crm-search-input,
             html.dark .crm-filter-bar input[type="text"],
@@ -905,26 +909,139 @@
                 color: var(--text-main) !important;
             }
 
-            /* Standardized Minimized Button Size (32px compact height) */
+            /* Standardized Ergonomic Medium Button Size (38px medium height) */
             .crm-filter-btn,
             .crm-btn-primary,
             .crm-btn-secondary,
             .btn-primary,
             .btn-secondary {
-                height: 32px !important;
-                min-height: 32px !important;
-                max-height: 32px !important;
-                padding: 0 10px !important;
-                font-size: 11px !important;
+                height: 38px !important;
+                min-height: 38px !important;
+                max-height: 38px !important;
+                padding: 0 16px !important;
+                font-size: 13px !important;
                 font-weight: 600 !important;
-                border-radius: 6px !important;
+                border-radius: 8px !important;
                 display: inline-flex !important;
                 align-items: center !important;
                 justify-content: center !important;
-                gap: 4px !important;
+                gap: 6px !important;
                 white-space: nowrap !important;
                 line-height: 1 !important;
                 cursor: pointer;
+                transition: all 0.15s ease !important;
+            }
+
+            .btn-primary,
+            .crm-btn-primary,
+            .crm-filter-btn {
+                background-color: #2563eb !important;
+                border: 1px solid #2563eb !important;
+                color: #ffffff !important;
+            }
+            .btn-primary:hover,
+            .crm-btn-primary:hover,
+            .crm-filter-btn:hover {
+                background-color: #1d4ed8 !important;
+                border-color: #1d4ed8 !important;
+            }
+            .btn-primary *,
+            .crm-btn-primary *,
+            .crm-filter-btn * {
+                color: #ffffff !important;
+            }
+            .btn-primary svg,
+            .crm-btn-primary svg,
+            .crm-filter-btn svg {
+                stroke: #ffffff !important;
+            }
+
+            .btn-secondary,
+            .crm-btn-secondary {
+                background-color: var(--card-bg) !important;
+                border: 1px solid var(--button-border) !important;
+                color: var(--text-main) !important;
+            }
+            .btn-secondary:hover,
+            .crm-btn-secondary:hover {
+                background-color: var(--table-header-bg) !important;
+            }
+
+            /* Dedicated Clean Helper & Module Navigation Buttons (Add New Customer, Add New Technician) */
+            .btn-subtle,
+            .btn-inline-add,
+            a.btn-subtle,
+            button.btn-subtle,
+            a[class*="btn-subtle"],
+            button[class*="btn-subtle"],
+            a.btn-inline-add,
+            button.btn-inline-add {
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                padding: 0 14px !important;
+                height: 32px !important;
+                min-height: 32px !important;
+                max-height: 32px !important;
+                font-size: 12px !important;
+                font-weight: 600 !important;
+                border-radius: 8px !important;
+                background-color: #2563eb !important;
+                border: 1px solid #2563eb !important;
+                color: #ffffff !important;
+                cursor: pointer !important;
+                text-decoration: none !important;
+                white-space: nowrap !important;
+                transition: all 0.15s ease !important;
+                box-shadow: 0 1px 2px rgba(37, 99, 235, 0.25) !important;
+            }
+            .btn-subtle:hover,
+            .btn-inline-add:hover,
+            a.btn-subtle:hover,
+            button.btn-subtle:hover,
+            a[class*="btn-subtle"]:hover,
+            button[class*="btn-subtle"]:hover {
+                background-color: #1d4ed8 !important;
+                border-color: #1d4ed8 !important;
+                color: #ffffff !important;
+            }
+            .btn-subtle *,
+            .btn-inline-add *,
+            a.btn-subtle *,
+            button.btn-subtle *,
+            a[class*="btn-subtle"] *,
+            button[class*="btn-subtle"] * {
+                color: #ffffff !important;
+                font-weight: 600 !important;
+            }
+            html.dark .btn-subtle,
+            html.dark .btn-inline-add,
+            html.dark a.btn-subtle,
+            html.dark button.btn-subtle,
+            html.dark a[class*="btn-subtle"],
+            html.dark button[class*="btn-subtle"] {
+                background-color: #2563eb !important;
+                border: 1px solid #3b82f6 !important;
+                color: #ffffff !important;
+            }
+            html.dark .btn-subtle:hover,
+            html.dark .btn-inline-add:hover,
+            html.dark a.btn-subtle:hover,
+            html.dark button.btn-subtle:hover,
+            html.dark a[class*="btn-subtle"]:hover,
+            html.dark button[class*="btn-subtle"]:hover {
+                background-color: #1d4ed8 !important;
+                border-color: #2563eb !important;
+                color: #ffffff !important;
+            }
+            html.dark .btn-subtle *,
+            html.dark .btn-inline-add *,
+            html.dark a.btn-subtle *,
+            html.dark button.btn-subtle *,
+            html.dark a[class*="btn-subtle"] *,
+            html.dark button[class*="btn-subtle"] * {
+                color: #ffffff !important;
+                font-weight: 600 !important;
             }
 
             select.crm-select:invalid,
@@ -948,25 +1065,29 @@
                 box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.28) !important;
             }
 
-            /* TomSelect Searchable Dropdown Matching Image 4 */
-            .ts-wrapper {
+            /* TomSelect Searchable Dropdown Medium Sizing */
+            .ts-wrapper,
+            .ts-wrapper.single {
                 position: relative !important;
                 width: 100% !important;
+                min-width: 100% !important;
             }
 
-            .ts-wrapper.single .ts-control {
+            .ts-wrapper.single .ts-control,
+            .ts-control {
                 height: 38px !important;
                 min-height: 38px !important;
                 max-height: 38px !important;
+                width: 100% !important;
                 border: 1px solid var(--card-border) !important;
-                border-radius: 6px !important;
+                border-radius: 8px !important;
                 background-color: var(--card-bg) !important;
                 background-image: none !important;
                 box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03) !important;
                 display: flex !important;
                 align-items: center !important;
                 padding-left: 12px !important;
-                padding-right: 44px !important;
+                padding-right: 36px !important;
                 cursor: text !important;
                 position: relative !important;
             }
@@ -977,20 +1098,13 @@
                 color: var(--text-main) !important;
             }
 
-            /* Right-side vertical divider line '|' */
+            /* Right-side vertical divider line disabled for clean modern select appearance */
             .ts-wrapper.single .ts-control::before {
-                content: "" !important;
-                position: absolute !important;
-                right: 32px !important;
-                top: 7px !important;
-                bottom: 7px !important;
-                width: 1px !important;
-                background-color: var(--table-header-bg) !important;
-                z-index: 3 !important;
+                display: none !important;
             }
 
             html.dark .ts-wrapper.single .ts-control::before {
-                background-color: #475569 !important;
+                display: none !important;
             }
 
             /* Right-side Caret Arrow: Points DOWN when closed */

@@ -794,10 +794,10 @@
                             </h3>
                             <div class="flex items-center gap-2">
                                 <a href="{{ route('admin.users.create', ['role' => 'technician', 'return_to' => route('projects.show', [$project->id, 'tab' => 'overview'])]) }}" 
-                                   class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/40 border border-blue-200 dark:border-blue-800 transition shadow-xs"
+                                   class="btn-subtle text-white font-semibold"
+                                   style="color: #ffffff !important;"
                                    title="Add and register a new technician for this project">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-                                    <span>+ Add New Technician</span>
+                                    <span class="text-white font-semibold" style="color: #ffffff !important;">Add New Technician</span>
                                 </a>
                                 @if(auth()->user()->isAdmin() || ($project->created_by === auth()->id() && in_array($project->status, ['draft', 'pending_approval'])))
                                     <a href="{{ route('projects.edit', $project) }}" class="text-xs text-blue-600 dark:text-blue-400 font-semibold hover:underline">
@@ -856,8 +856,9 @@
                                         <div class="flex items-center justify-between pt-1">
                                             <span class="text-slate-400 italic">No Lead Technician Assigned</span>
                                             <a href="{{ route('admin.users.create', ['role' => 'technician', 'return_to' => route('projects.show', [$project->id, 'tab' => 'overview'])]) }}" 
-                                               class="text-xs font-bold text-blue-600 hover:underline">
-                                                + Add New Technician
+                                               class="btn-subtle text-white font-semibold"
+                                               style="color: #ffffff !important;">
+                                                <span class="text-white font-semibold" style="color: #ffffff !important;">Add New Technician</span>
                                             </a>
                                         </div>
                                     @endif
@@ -880,7 +881,7 @@
                                         <div class="flex items-center justify-between pt-1">
                                             <a href="{{ route('admin.users.create', ['role' => 'technician', 'return_to' => route('projects.show', [$project->id, 'tab' => 'overview'])]) }}" 
                                                class="text-[11px] text-blue-600 dark:text-blue-400 font-semibold hover:underline flex items-center gap-1">
-                                                <span>+ Create New Technician</span>
+                                                <span>Create New Technician</span>
                                             </a>
                                             <div class="flex gap-2">
                                                 <button type="button" @click="showAssignForm = false" class="px-2.5 py-1 text-xs text-slate-500 hover:text-slate-700">
@@ -1063,10 +1064,10 @@
 
                     <div class="flex items-center gap-2.5 flex-wrap">
                         <button type="button" @click="openConsumeModal()" class="btn-primary text-xs shadow-md">
-                            + Log Material / Cable Used
+                            Log Material / Cable Used
                         </button>
                         <button type="button" @click="materialModalOpen = true" class="btn-secondary text-xs">
-                            + Add BOM Item
+                            Add BOM Item
                         </button>
                     </div>
                 </div>
@@ -1409,7 +1410,7 @@
                 <h3 class="font-extrabold text-slate-900 dark:text-white text-base">Work Day Logs &amp; Attendance Records</h3>
                 @if(!auth()->user()->isStaff())
                     <button type="button" @click="workDayModalOpen = true" class="btn-primary text-xs shadow-md">
-                        + Log Daily Work Day
+                        Log Daily Work Day
                     </button>
                 @endif
             </div>
@@ -1717,8 +1718,7 @@
                             <span>🚩 Flag Blocker</span>
                         </button>
 
-                        <button type="button" @click="taskModalOpen = true" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                        <button type="button" @click="taskModalOpen = true" class="inline-flex items-center justify-center px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition cursor-pointer">
                             <span>Add Custom Task</span>
                         </button>
                     </div>
@@ -1919,15 +1919,19 @@
                         </button>
                     </div>
 
-                    {{-- Search & Phase Filter --}}
-                    <div class="flex items-center gap-2 flex-wrap">
-                        <div class="relative">
-                            <input type="text" x-model="taskSearchQuery" placeholder="Filter tasks or assignee..." class="text-xs pl-8 pr-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200 outline-none w-48 sm:w-56 focus:ring-2 focus:ring-blue-500">
-                            <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    {{-- Search & Phase Filter (Medium 38px Height Level) --}}
+                    <div class="flex items-center gap-2.5 flex-wrap">
+                        <div class="relative flex items-center">
+                            <svg class="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                            <input type="text" x-model="taskSearchQuery" placeholder="Filter tasks or assignee..." 
+                                   style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; padding-left: 36px !important; border-radius: 8px !important;"
+                                   class="text-xs border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200 outline-none w-56 sm:w-64 focus:ring-2 focus:ring-blue-500">
                         </div>
 
                         {{-- Phase Pill Dropdown / Selector --}}
-                        <select x-model="activePhaseFilter" class="text-xs font-semibold py-1.5 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 outline-none">
+                        <select x-model="activePhaseFilter" 
+                                style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important;"
+                                class="text-xs font-semibold px-3 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 outline-none">
                             <option value="all">All Phases ({{ $tasksCount }})</option>
                             @foreach($tasksByPhase as $phaseName => $phaseTasks)
                                 <option value="{{ md5($phaseName) }}">{{ $phaseName }} ({{ $phaseTasks->count() }})</option>
@@ -1948,8 +1952,8 @@
                         <span>Showing {{ $tasksCount }} tasks</span>
                     </div>
 
-                    {{-- 5 Columns Grid (Backlog -> In Progress -> Under Review -> Completed -> Blocked) --}}
-                    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 items-start overflow-x-auto pb-4">
+                    {{-- 5 Columns Flex Row (Backlog -> In Progress -> Under Review -> Completed -> Blocked) - No overlap --}}
+                    <div class="flex gap-4 items-start overflow-x-auto pb-4 scrollbar-thin">
                         @php
                             $columnsList = [
                                 'pending' => [
@@ -1999,7 +2003,7 @@
                         @php
                             $colTasks = $project->tasks->where('status', $colKey)->sortBy('order_column');
                         @endphp
-                        <div class="rounded-2xl border-t-4 {{ $colDef['border_top'] }} bg-white dark:bg-[#0f172a] border-x border-b border-slate-200/80 dark:border-slate-800 shadow-xs flex flex-col min-w-[270px]">
+                        <div class="rounded-2xl border-t-4 {{ $colDef['border_top'] }} bg-white dark:bg-[#0f172a] border-x border-b border-slate-200/80 dark:border-slate-800 shadow-xs flex flex-col w-[285px] min-w-[285px] shrink-0">
                             {{-- Column Header --}}
                             <div class="p-3.5 border-b border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
                                 <div class="flex items-center gap-2">

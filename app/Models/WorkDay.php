@@ -23,6 +23,17 @@ class WorkDay extends Model
         'work_date' => 'date',
     ];
 
+    public function setWorkDateAttribute($value): void
+    {
+        if ($value instanceof \DateTimeInterface) {
+            $this->attributes['work_date'] = $value->format('Y-m-d');
+        } elseif (is_string($value)) {
+            $this->attributes['work_date'] = substr($value, 0, 10);
+        } else {
+            $this->attributes['work_date'] = $value;
+        }
+    }
+
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);

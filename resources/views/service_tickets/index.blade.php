@@ -6,10 +6,12 @@
             </div>
             <div class="flex items-center gap-2 flex-wrap">
                 <button type="button" @click="$dispatch('open-email-modal')" class="btn-secondary">
-                    Email Gateway
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    <span>Email Gateway</span>
                 </button>
                 <a href="{{ route('service-tickets.export-pdf', request()->query()) }}" class="btn-secondary">
-                    PDF Export
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    <span>PDF Export</span>
                 </a>
                 <a href="{{ route('service-tickets.create') }}" class="btn-primary">
                     Log Ticket
@@ -96,17 +98,18 @@
                 </div>
             @endif
 
-            <!-- Filters Bar (Uniform 36px Height Level) -->
-            <div class="mb-3 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-2 shadow-xs">
-                <form method="GET" action="{{ route('service-tickets.index') }}" class="flex flex-wrap items-center gap-2 text-xs">
-                    <div class="relative w-60 min-w-[180px] shrink-0">
+            <!-- Filters Bar (Medium 38px Height Level) -->
+            <div class="mb-3 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-2.5 shadow-xs">
+                <form method="GET" action="{{ route('service-tickets.index') }}" class="flex flex-wrap items-center gap-2.5 text-xs">
+                    <div class="relative w-72 min-w-[220px] flex items-center shrink-0">
+                        <svg class="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                         <input type="text" name="search" value="{{ request('search') }}" 
                             placeholder="Search ticket #, issue, customer, phone..."
-                            style="height: 36px !important; min-height: 36px !important; max-height: 36px !important; border-radius: 6px !important;"
-                            class="w-full text-xs h-[36px] px-3 rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-blue-600">
+                            style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important; padding-left: 36px !important;"
+                            class="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-blue-600">
                     </div>
 
-                    <select name="status" style="height: 36px !important; min-height: 36px !important; max-height: 36px !important; border-radius: 6px !important;" class="text-xs h-[36px] px-3 rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 shrink-0">
+                    <select name="status" style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important; min-width: 140px;" class="text-xs px-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 shrink-0">
                         <option value="">All Statuses</option>
                         <option value="open" @selected(request('status') === 'open')>Open</option>
                         <option value="assigned" @selected(request('status') === 'assigned')>Assigned</option>
@@ -116,16 +119,15 @@
                     </select>
                     
                     <button type="submit"
-                            style="height: 36px !important; min-height: 36px !important; max-height: 36px !important; border-radius: 6px !important;"
-                            class="px-3 rounded-md bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition inline-flex items-center gap-1.5 shrink-0 shadow-xs">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                        <span>Search</span>
+                            style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important;"
+                            class="px-4 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition inline-flex items-center justify-center shrink-0 shadow-xs cursor-pointer">
+                        Filter
                     </button>
 
                     @if(request()->hasAny(['search', 'status', 'priority', 'technician_id', 'issue_type']))
                         <a href="{{ route('service-tickets.index', ['tab' => $activeTab]) }}"
-                           style="height: 36px !important; min-height: 36px !important; max-height: 36px !important; border-radius: 6px !important;"
-                           class="px-3 inline-flex items-center rounded-md border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition shrink-0">
+                           style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important;"
+                           class="px-3.5 inline-flex items-center rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-medium transition shrink-0">
                             Reset
                         </a>
                     @endif

@@ -162,9 +162,8 @@
                                 <p class="text-xs text-slate-400 font-mono">Configure camera resolutions, codecs & locations</p>
                             </div>
                             <button type="button" @click="addCameraZone()" 
-                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer"
+                                    class="inline-flex items-center justify-center px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer"
                                     style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.12); color: var(--crm-accent, #2563eb); border: 1px solid rgba(var(--crm-accent-rgb, 37, 99, 235), 0.3);">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
                                 <span>Add Camera Group</span>
                             </button>
                         </div>
@@ -390,8 +389,7 @@
 
                     <div class="flex items-center gap-2 print:hidden">
                         <button type="button" @click="addCustomBomItem()" 
-                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-700 bg-slate-800 text-slate-200 hover:bg-slate-700 text-xs font-bold transition">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                                class="inline-flex items-center justify-center px-3 py-1.5 rounded-xl border border-slate-700 bg-slate-800 text-slate-200 hover:bg-slate-700 text-xs font-bold transition">
                             <span>Add Custom Item</span>
                         </button>
                         <button type="button" @click="syncBomFromCalculations()" 

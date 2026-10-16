@@ -18,29 +18,30 @@
             @endif
 
             {{-- Search & filter bar in one simple row without outer box --}}
-            <form method="GET" action="{{ route('site-surveys.index') }}" class="mb-4 flex items-center gap-2 flex-wrap">
-                <div class="relative flex-1 min-w-[220px]">
+            <form method="GET" action="{{ route('site-surveys.index') }}" class="mb-4 flex items-center gap-2.5 flex-wrap text-xs">
+                <div class="relative flex-1 min-w-[220px] max-w-md flex items-center">
+                    <svg class="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Search customer, address, contact, technician…" 
-                           style="height: 38px; min-height: 38px; max-height: 38px; border-radius: 4px; box-sizing: border-box;"
-                           class="crm-input w-full text-sm border border-[#ddd] dark:border-slate-700 bg-white dark:bg-[#0f172a] text-slate-800 dark:text-white px-3 focus:outline-none focus:border-slate-400">
+                           style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important; padding-left: 36px !important; box-sizing: border-box;"
+                           class="crm-input w-full text-xs border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0f172a] text-slate-800 dark:text-white focus:outline-none focus:border-blue-500">
                 </div>
                 <select name="status" onchange="this.form.submit()" 
-                        style="height: 38px; min-height: 38px; max-height: 38px; border-radius: 4px; box-sizing: border-box;"
-                        class="crm-select text-sm border border-[#ddd] dark:border-slate-700 bg-white dark:bg-[#0f172a] text-slate-800 dark:text-white px-3 focus:outline-none focus:border-slate-400">
+                        style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important; min-width: 140px; box-sizing: border-box;"
+                        class="crm-select text-xs border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0f172a] text-slate-800 dark:text-white px-3 focus:outline-none focus:border-blue-500">
                     <option value="">All Statuses</option>
                     <option value="scheduled" @selected(request('status') === 'scheduled')>Scheduled</option>
                     <option value="completed" @selected(request('status') === 'completed')>Completed</option>
                     <option value="cancelled" @selected(request('status') === 'cancelled')>Cancelled</option>
                 </select>
                 <button type="submit" 
-                        style="height: 38px; min-height: 38px; max-height: 38px; border-radius: 4px; box-sizing: border-box;"
-                        class="crm-btn-primary px-4 text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white transition">
-                    Search
+                        style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important; box-sizing: border-box;"
+                        class="crm-btn-primary px-4 text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white transition inline-flex items-center justify-center cursor-pointer">
+                    Filter
                 </button>
                 @if(request('search') || request('status'))
                     <a href="{{ route('site-surveys.index') }}" 
-                       style="height: 38px; min-height: 38px; max-height: 38px; border-radius: 4px; box-sizing: border-box;"
-                       class="crm-btn-secondary px-3 border border-[#ddd] dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition inline-flex items-center">
+                       style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important; box-sizing: border-box;"
+                       class="crm-btn-secondary px-3.5 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition inline-flex items-center">
                         Clear
                     </a>
                 @endif

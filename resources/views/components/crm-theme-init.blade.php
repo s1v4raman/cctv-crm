@@ -332,9 +332,9 @@
             a.crm-hub-primary-btn,
             .modal-confirm-btn,
             button.btn-confirm,
-            a[href*="export-pdf"],
-            a[href*="/create"]:not(.btn-secondary):not([class*="bg-white"]):not([class*="bg-slate"]),
-            a[href*=".create"]:not(.btn-secondary):not([class*="bg-white"]):not([class*="bg-slate"]),
+            a[href*="export-pdf"].btn-primary,
+            a.btn-primary,
+            a.crm-btn-primary,
             a[href*="payment/checkout"],
             button[onclick*="siteSurveyBookingModal"],
             button[onclick*="amcRenewalModal"] {
@@ -351,9 +351,17 @@
             .btn-amber *,
             button.bg-blue-600 *,
             a.bg-blue-600 *,
-            button[class*="bg-blue-600"] * {
+            button[class*="bg-blue-600"] *,
+            a[class*="bg-blue-600"] * {
                 color: #ffffff !important;
                 fill: currentColor;
+            }
+
+            .btn-primary svg,
+            .crm-btn-primary svg,
+            button.bg-blue-600 svg,
+            a.bg-blue-600 svg {
+                stroke: #ffffff !important;
             }
 
             button.bg-blue-600:hover,
@@ -382,9 +390,6 @@
             a.crm-hub-primary-btn:hover,
             .modal-confirm-btn:hover,
             button.btn-confirm:hover,
-            a[href*="export-pdf"]:hover,
-            a[href*="/create"]:hover,
-            a[href*=".create"]:hover,
             a[href*="payment/checkout"]:hover {
                 background: ${hoverHex} !important;
                 background-color: ${hoverHex} !important;
@@ -393,6 +398,63 @@
                 color: #ffffff !important;
                 box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
             }
+
+            /* Dedicated Clean Helper & Module Navigation Buttons (Add New Customer, Add New Technician) */
+            .btn-subtle,
+            a.btn-subtle,
+            button.btn-subtle,
+            a[class*="btn-subtle"],
+            button[class*="btn-subtle"],
+            .btn-inline-add,
+            a.btn-inline-add,
+            button.btn-inline-add {
+                background: ${hex} !important;
+                background-color: ${hex} !important;
+                background-image: none !important;
+                border: 1px solid ${hex} !important;
+                color: #ffffff !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                padding: 0 14px !important;
+                height: 32px !important;
+                min-height: 32px !important;
+                max-height: 32px !important;
+                border-radius: 8px !important;
+                font-size: 12px !important;
+                font-weight: 600 !important;
+                line-height: 1 !important;
+                text-decoration: none !important;
+                white-space: nowrap !important;
+                transition: all 0.15s ease !important;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08) !important;
+                cursor: pointer !important;
+            }
+            .btn-subtle:hover,
+            a.btn-subtle:hover,
+            button.btn-subtle:hover,
+            a[class*="btn-subtle"]:hover,
+            button[class*="btn-subtle"]:hover,
+            .btn-inline-add:hover,
+            a.btn-inline-add:hover,
+            button.btn-inline-add:hover {
+                background: ${hoverHex} !important;
+                background-color: ${hoverHex} !important;
+                color: #ffffff !important;
+                border-color: ${hoverHex} !important;
+            }
+            .btn-subtle *,
+            a.btn-subtle *,
+            button.btn-subtle *,
+            a[class*="btn-subtle"] *,
+            button[class*="btn-subtle"] *,
+            .btn-inline-add *,
+            a.btn-inline-add *,
+            button.btn-inline-add * {
+                color: #ffffff !important;
+                font-weight: 600 !important;
+            }
+
 
             /* 5. ALL MODULE SEARCH & FILTER BUTTONS */
             .btn-search,
@@ -524,9 +586,7 @@
             .tab-active,
             .crm-tab-active,
             .crm-pill-active,
-            button[role="tab"][aria-selected="true"],
-            div.flex > a[href*="analytics"][class*="bg-"],
-            a[href*="analytics"][href*="range="][class*="bg-"] {
+            button[role="tab"][aria-selected="true"] {
                 background: ${hex} !important;
                 background-color: ${hex} !important;
                 background-image: none !important;
@@ -581,15 +641,15 @@
                 outline-color: ${hex} !important;
             }
 
-            /* 12. TEXT ACCENTS */
-            .text-blue-600,
-            .text-blue-500,
-            .text-blue-700,
+            /* 12. TEXT ACCENTS (Excluding buttons and white text) */
+            .text-blue-600:not(.btn-primary):not([class*="bg-blue"]):not([class*="bg-[#2563eb]"]):not(.btn-search):not(.btn-filter):not(.text-white),
+            .text-blue-500:not(.btn-primary):not([class*="bg-blue"]):not([class*="bg-[#2563eb]"]):not(.btn-search):not(.btn-filter):not(.text-white),
+            .text-blue-700:not(.btn-primary):not([class*="bg-blue"]):not([class*="bg-[#2563eb]"]):not(.btn-search):not(.btn-filter):not(.text-white),
             .cell-name a,
             .cell-no a,
             .leads-table .cell-name a,
-            .dark .dark\\:text-blue-400,
-            .dark .dark\\:text-blue-300 {
+            .dark .dark\\:text-blue-400:not(.btn-primary):not([class*="bg-blue"]):not(.text-white),
+            .dark .dark\\:text-blue-300:not(.btn-primary):not([class*="bg-blue"]):not(.text-white) {
                 color: ${hex} !important;
             }
             .cell-name a:hover,

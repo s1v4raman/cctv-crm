@@ -23,12 +23,12 @@
                             <button type="button" 
                                     @click="newCustomerModalOpen = true"
                                     id="btn-add-new-customer"
-                                    class="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200/80 px-2.5 py-1 rounded-md transition cursor-pointer shadow-sm">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-                                <span>Add New Customer</span>
+                                    class="btn-subtle text-white font-semibold"
+                                    style="color: #ffffff !important;">
+                                <span class="text-white font-semibold" style="color: #ffffff !important;">Add New Customer</span>
                             </button>
                         </div>
-                        <select name="lead_id" id="lead-select" class="crm-select" required>
+                        <select name="lead_id" id="lead-select" class="crm-select w-full" required>
                             <option value="">Select customer</option>
                             @foreach($leads as $lead)
                                 <option value="{{ $lead->id }}"

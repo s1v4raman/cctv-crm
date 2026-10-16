@@ -295,7 +295,7 @@
                             <p class="text-xs text-slate-500 mt-0.5">Every project must be anchored to an installation site location</p>
                         </div>
                         <button type="button" @click="siteModalOpen = true" class="btn-secondary text-xs flex items-center gap-1.5 shadow-2xs">
-                            <span>+ Quick-Register New Site</span>
+                            <span>Quick-Register New Site</span>
                         </button>
                     </div>
 
@@ -384,9 +384,9 @@
                             <div class="flex items-center justify-between mb-1.5">
                                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-500">Lead Technician In-Charge</label>
                                 <a href="{{ route('admin.users.create', ['role' => 'technician', 'return_to' => route('projects.create', ['step' => 2])]) }}" 
-                                   class="text-xs font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 inline-flex items-center gap-1 hover:underline cursor-pointer">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-                                    + Add New Technician
+                                   class="btn-subtle text-white font-semibold"
+                                   style="color: #ffffff !important;">
+                                    <span class="text-white font-semibold" style="color: #ffffff !important;">Add New Technician</span>
                                 </a>
                             </div>
                             <select name="lead_technician_id" x-model="lead_technician_id" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
