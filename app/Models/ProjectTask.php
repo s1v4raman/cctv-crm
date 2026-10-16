@@ -22,6 +22,8 @@ class ProjectTask extends Model
         'assigned_to',
         'priority',
         'status',
+        'shift',
+        'location',
         'start_date',
         'due_date',
         'estimated_hours',
@@ -31,6 +33,10 @@ class ProjectTask extends Model
         'completed_by',
         'blocked_at',
         'blocked_by',
+        'accepted_at',
+        'rejected_at',
+        'rejected_by',
+        'rejection_reason',
         'depends_on_task_id',
     ];
 
@@ -39,6 +45,8 @@ class ProjectTask extends Model
         'due_date' => 'date',
         'completed_at' => 'datetime',
         'blocked_at' => 'datetime',
+        'accepted_at' => 'datetime',
+        'rejected_at' => 'datetime',
         'estimated_hours' => 'decimal:2',
         'actual_hours' => 'decimal:2',
         'order_column' => 'integer',
@@ -54,6 +62,17 @@ class ProjectTask extends Model
         ];
     }
 
+    public static function shiftOptions(): array
+    {
+        return [
+            'Morning Shift' => 'Morning Shift (08:00 AM - 02:00 PM)',
+            'Day Shift'     => 'Day / General Shift (09:00 AM - 06:00 PM)',
+            'Evening Shift' => 'Evening Shift (02:00 PM - 09:00 PM)',
+            'Night Shift'   => 'Night Shift (09:00 PM - 06:00 AM)',
+            'Full Day'      => 'Full Day Site Work',
+        ];
+    }
+
     public static function statusOptions(): array
     {
         return [
@@ -62,6 +81,7 @@ class ProjectTask extends Model
             'under_review' => 'Under Review / QA',
             'completed' => 'Completed',
             'blocked' => 'Blocked',
+            'rejected' => 'Rejected (Needs Reassignment)',
         ];
     }
 
@@ -125,6 +145,21 @@ class ProjectTask extends Model
     public function blockedByUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'blocked_by');
+    }
+
+    public function rejectedByUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'rejected_by');
+    }
+
+    public function isAccepted(): bool
+    {
+        return !is_null($this->accepted_at);
+    }
+
+    public function isRejected(): bool
+    {
+        return $this->status === 'rejected' || !is_null($this->rejected_at);
     }
 
     public function dependsOnTask(): BelongsTo

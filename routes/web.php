@@ -285,9 +285,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/employee-workforce', [ModuleHubController::class, 'employeeHub'])->name('employee.hub');
         Route::get('/finance-accounting', [ModuleHubController::class, 'financeHub'])->name('finance.hub');
 
-        // Operations Calendar & Dispatch
+        // Operations Calendar & Unified Tasks Hub
         Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
         Route::get('/calendar/events', [CalendarController::class, 'events'])->name('calendar.events');
+        Route::post('/calendar/tasks', [CalendarController::class, 'storeTask'])->name('calendar.tasks.store');
+        Route::put('/calendar/tasks/{task}/assign', [CalendarController::class, 'assignTask'])->name('calendar.tasks.assign');
+        Route::post('/calendar/tasks/{task}/accept', [CalendarController::class, 'acceptTask'])->name('calendar.tasks.accept');
+        Route::post('/calendar/tasks/{task}/reject', [CalendarController::class, 'rejectTask'])->name('calendar.tasks.reject');
 
         // SecureVision Projects Module Redesign
         Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
