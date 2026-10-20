@@ -16,7 +16,7 @@
                 <p class="text-sm text-slate-500 my-4">You must create a customer lead first before making a quotation.</p>
                 <div class="mt-4">
                     <a href="{{ route('leads.create', ['return_to' => 'quotation', 'for_quote' => 1]) }}" class="btn-primary">
-                        Add New Customer
+                        + Add New Customer
                     </a>
                 </div>
             @else
@@ -29,7 +29,7 @@
                             <a href="{{ route('leads.create', ['return_to' => 'quotation', 'for_quote' => 1]) }}" 
                                class="btn-subtle text-white font-semibold"
                                style="color: #ffffff !important;">
-                                <span class="text-white font-semibold" style="color: #ffffff !important;">Add New Customer</span>
+                                <span class="text-white font-semibold" style="color: #ffffff !important;">+ Add New Customer</span>
                             </a>
                         </div>
                         <select id="lead_id" name="lead_id" class="crm-select w-full" required>

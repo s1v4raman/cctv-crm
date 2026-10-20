@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="scroll-smooth">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="scroll-smooth overflow-x-hidden max-w-full">
 
 <head>
     <meta charset="utf-8">
@@ -115,20 +115,19 @@
     </style>
 </head>
 
-<body class="bg-white dark:bg-[#060913] text-slate-700 dark:text-slate-200 antialiased min-h-screen flex flex-col selection:bg-blue-600 selection:text-white transition-colors duration-200">
+<body class="bg-white dark:bg-[#060913] text-slate-700 dark:text-slate-200 antialiased min-h-screen flex flex-col selection:bg-blue-600 selection:text-white transition-colors duration-200 overflow-x-hidden max-w-full w-full">
 
 
 
-    <!-- 2. MAIN NAVBAR (PathSoft Layout) -->
     <!-- 2. MAIN NAVBAR -->
     <header class="sticky top-0 z-50 bg-white/95 dark:bg-[#060913]/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 transition-colors">
-        <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-3 xl:gap-6">
+        <div class="max-w-[1400px] mx-auto px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3 flex items-center justify-between gap-2 sm:gap-3 xl:gap-6">
             
             <!-- Brand Logo & Company Name (Maximized Logo & Clean Responsive Lockup) -->
-            <a href="{{ route('home') }}" class="flex items-center gap-3 sm:gap-3.5 group shrink-0">
-                <img src="{{ asset('logo.png') }}" alt="Precision IT Systems" class="crm-brand-logo h-14 w-14 sm:h-16 sm:w-16 md:h-[68px] md:w-[68px] lg:h-[72px] lg:w-[72px] object-contain group-hover:scale-105 transition-transform shrink-0 drop-shadow-xs">
+            <a href="{{ route('home') }}" class="flex items-center gap-2 sm:gap-3.5 group min-w-0 shrink">
+                <img src="{{ asset('logo.png') }}" alt="Precision IT Systems" class="crm-brand-logo h-10 w-10 sm:h-14 sm:w-14 md:h-[68px] md:w-[68px] lg:h-[72px] lg:w-[72px] object-contain group-hover:scale-105 transition-transform shrink-0 drop-shadow-xs">
                 <div class="flex flex-col min-w-0">
-                    <span class="text-lg sm:text-2xl lg:text-[26px] font-black font-heading tracking-tight text-slate-900 dark:text-white leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                    <span class="text-base sm:text-2xl lg:text-[26px] font-black font-heading tracking-tight text-slate-900 dark:text-white leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate">
                         Precision IT <span class="crm-brand-accent-text text-blue-600 dark:text-blue-400">Systems</span>
                     </span>
                     <span class="hidden sm:block text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 font-mono mt-0.5">
@@ -159,11 +158,11 @@
             </nav>
 
             <!-- Actions (Search, Theme Toggle, Profile/Register-Login, CTA, Mobile Menu) -->
-            <div class="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+            <div class="flex items-center gap-1 sm:gap-2 shrink-0">
                 
                 <!-- 1. Search Button -->
                 <button type="button" onclick="openSearchModal()"
-                    class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 flex items-center justify-center transition-all cursor-pointer shrink-0"
+                    class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 flex items-center justify-center transition-all cursor-pointer shrink-0"
                     title="Search Solutions & Services">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
@@ -172,7 +171,7 @@
 
                 <!-- 2. Theme Toggle Button -->
                 <button type="button" id="theme-toggle" onclick="toggleTheme()"
-                    class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center transition-all cursor-pointer shrink-0"
+                    class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center transition-all cursor-pointer shrink-0"
                     title="Toggle Dark / White Mode">
                     <!-- Sun Icon (visible in dark mode) -->
                     <svg id="theme-toggle-light-icon" class="w-4 h-4 hidden text-amber-400" fill="currentColor" viewBox="0 0 20 20">
@@ -189,7 +188,7 @@
                     @auth
                         <!-- Authenticated User Profile Initial Badge -->
                         <button type="button"
-                            class="w-10 h-10 rounded-2xl flex items-center justify-center font-black text-base text-white shadow-md transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none ring-2 ring-slate-200/90 dark:ring-slate-700/80 hover:ring-blue-500/50 cursor-pointer select-none shrink-0"
+                            class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl flex items-center justify-center font-black text-xs sm:text-base text-white shadow-md transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none ring-2 ring-slate-200/90 dark:ring-slate-700/80 hover:ring-blue-500/50 cursor-pointer select-none shrink-0"
                             style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);"
                             title="My Account: {{ Auth::user()->name }} (Click to view profile)">
                             <span class="drop-shadow-xs">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
@@ -197,13 +196,13 @@
                     @else
                         <!-- Guest Portal / Profile Access Button -->
                         <button type="button"
-                            class="flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 border border-slate-200/80 dark:border-slate-700 transition-all cursor-pointer shrink-0"
+                            class="flex items-center justify-center w-8 h-8 sm:w-auto sm:px-3 sm:py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 border border-slate-200/80 dark:border-slate-700 transition-all cursor-pointer shrink-0"
                             title="Sign in / Register">
                             <svg class="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                             </svg>
-                            <span class="text-xs font-bold hidden sm:inline">Profile</span>
-                            <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            <span class="text-xs font-bold hidden sm:inline ml-1.5">Profile</span>
+                            <svg class="w-3.5 h-3.5 text-slate-400 shrink-0 hidden sm:inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                         </button>
                     @endauth
 
@@ -262,9 +261,9 @@
                 <!-- 5. Mobile Navigation Menu Toggle Button (Strictly lg:hidden so desktop doesn't clutter!) -->
                 <div class="relative lg:hidden" id="navMenuDropdownContainer">
                     <button type="button" onclick="toggleNavMenuDropdown()"
-                        class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 flex items-center justify-center transition-all cursor-pointer shrink-0"
+                        class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 flex items-center justify-center transition-all cursor-pointer shrink-0"
                         title="Menu Options">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 6h16M4 12h16M4 18h16"/>
                         </svg>
                     </button>
@@ -309,11 +308,11 @@
         </div>
     </header>
 
-    <main class="flex-grow">
+    <main class="flex-grow overflow-x-hidden max-w-full w-full">
         <!-- 3. HERO SECTION (Exact PathSoft Alignment & Style) -->
-        <section id="home" class="relative overflow-hidden pt-12 pb-20 lg:pt-16 lg:pb-24 bg-gradient-to-b from-blue-50/50 via-white to-white dark:from-slate-900/40 dark:via-[#060913] dark:to-[#060913]">
+        <section id="home" class="relative overflow-hidden pt-8 pb-14 sm:pt-12 sm:pb-20 lg:pt-16 lg:pb-24 bg-gradient-to-b from-blue-50/50 via-white to-white dark:from-slate-900/40 dark:via-[#060913] dark:to-[#060913]">
             <div class="max-w-7xl mx-auto px-4 sm:px-8">
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
                     <!-- Hero Content (Left) -->
                     <div class="lg:col-span-6 space-y-6">
                         <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-blue-100/70 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-semibold">
@@ -321,7 +320,7 @@
                             <span>Next-Gen Security Engineering</span>
                         </div>
 
-                        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold font-heading text-slate-900 dark:text-white tracking-tight leading-[1.15]">
+                        <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold font-heading text-slate-900 dark:text-white tracking-tight leading-tight sm:leading-[1.15]">
                             Innovative IT <br class="hidden sm:block">
                             <span class="text-blue-600">Solutions for</span> <br class="hidden sm:block">
                             Your Business

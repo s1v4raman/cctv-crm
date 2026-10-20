@@ -21,10 +21,10 @@
     $isDarkServer = ($activeMode === 'night');
 @endphp
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full {{ $isDarkServer ? 'dark' : '' }}" data-theme="{{ $isDarkServer ? 'dark' : 'light' }}" style="background-color: var(--page-bg); color: var(--text-main);">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full overflow-x-hidden max-w-full {{ $isDarkServer ? 'dark' : '' }}" data-theme="{{ $isDarkServer ? 'dark' : 'light' }}" style="background-color: var(--page-bg); color: var(--text-main);">
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <title>{{ config('app.name', 'Precision IT Systems CRM') }} | Smart Operations</title>
@@ -1998,8 +1998,8 @@
                         </div>
                     </header>
 
-                    {{-- Main Content Area: Background #f8fafc (Clean light SaaS canvas) --}}
-                    <main class="flex-1 overflow-y-auto bg-[#f8fafc] dark:bg-[#060913] p-[20px] transition-colors duration-200 pb-24 lg:pb-8">
+                    {{-- Main Content Area: Responsive padding p-3 on mobile, p-5 on desktop --}}
+                    <main class="flex-1 overflow-y-auto overflow-x-hidden bg-[#f8fafc] dark:bg-[#060913] p-3 sm:p-5 transition-colors duration-200 pb-28 lg:pb-8">
                         <div class="max-w-[1200px] mx-auto w-full">
                             {{-- Page Heading (One h2 at top of content area, with main action button on right) --}}
                             @isset($header)

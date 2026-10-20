@@ -288,13 +288,13 @@
             {{-- STEP 1: SITE SELECTION                                            --}}
             {{-- ════════════════════════════════════════════════════════════════ --}}
             <div x-show="step === 1" class="space-y-6">
-                <div class="p-6 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-5">
-                    <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                <div class="p-4 sm:p-6 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-5">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
                         <div>
                             <h3 class="font-extrabold text-slate-900 dark:text-white text-base">Step 1: Select Client Installation Site</h3>
                             <p class="text-xs text-slate-500 mt-0.5">Every project must be anchored to an installation site location</p>
                         </div>
-                        <button type="button" @click="siteModalOpen = true" class="btn-secondary text-xs flex items-center gap-1.5 shadow-2xs">
+                        <button type="button" @click="siteModalOpen = true" class="btn-secondary text-xs flex items-center justify-center gap-1.5 shadow-2xs self-start sm:self-auto shrink-0">
                             <span>Quick-Register New Site</span>
                         </button>
                     </div>
@@ -682,13 +682,13 @@
             {{-- STEP 4: MATERIALS BILL OF MATERIALS (BOM) & SUBMISSION            --}}
             {{-- ════════════════════════════════════════════════════════════════ --}}
             <div x-show="step === 4" x-cloak class="space-y-6">
-                <div class="p-6 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
-                    <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                <div class="p-4 sm:p-6 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
                         <div>
                             <h3 class="font-extrabold text-slate-900 dark:text-white text-base">Step 4: Bill of Materials (BOM)</h3>
                             <p class="text-xs text-slate-500 mt-0.5">Specify hardware line items and whether sourced from warehouse or local purchase</p>
                         </div>
-                        <button type="button" @click="addMaterialRow()" class="btn-secondary text-xs">
+                        <button type="button" @click="addMaterialRow()" class="btn-secondary text-xs self-start sm:self-auto shrink-0">
                             Add Item
                         </button>
                     </div>

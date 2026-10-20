@@ -143,36 +143,38 @@
             {{-- 1. Specifications & Overview: Two-column table inside standard section --}}
             <div class="crm-section">
                 <h3>Specifications &amp; Overview</h3>
-                <table class="crm-table w-full">
-                    <tbody>
-                        <tr>
-                            <td style="width: 25%; color: var(--text-muted); font-weight: 500;">Quotation Identifier</td>
-                            <td style="color: var(--text-main); font-weight: 500;">{{ $quotation->quotation_no }}</td>
-                        </tr>
-                        <tr>
-                            <td style="color: var(--text-muted); font-weight: 500;">Date Issued</td>
-                            <td style="color: var(--text-main); font-weight: 500;">{{ $quotation->quotation_date?->format('d M Y') ?? '—' }}</td>
-                        </tr>
-                        <tr>
-                            <td style="color: var(--text-muted); font-weight: 500;">Valid Until</td>
-                            <td style="color: var(--text-main); font-weight: 500;">{{ $quotation->valid_until?->format('d M Y') ?? '—' }}</td>
-                        </tr>
-                        <tr>
-                            <td style="color: var(--text-muted); font-weight: 500;">Customer</td>
-                            <td style="color: var(--text-main); font-weight: 500;">
-                                <a href="{{ route('leads.show', $quotation->lead) }}" class="action-link">
-                                    {{ $quotation->lead->customer_name }}
-                                </a>
-                            </td>
-                        </tr>
-                        @if($quotation->lead->site_address)
-                        <tr>
-                            <td style="color: var(--text-muted); font-weight: 500;">Installation Facility Address</td>
-                            <td style="color: var(--text-main); font-weight: 500;">{{ $quotation->lead->site_address }}</td>
-                        </tr>
-                        @endif
-                    </tbody>
-                </table>
+                <div class="overflow-x-auto">
+                    <table class="crm-table w-full">
+                        <tbody>
+                            <tr>
+                                <td class="w-2/5 sm:w-1/4" style="color: var(--text-muted); font-weight: 500;">Quotation Identifier</td>
+                                <td style="color: var(--text-main); font-weight: 500;" class="break-words">{{ $quotation->quotation_no }}</td>
+                            </tr>
+                            <tr>
+                                <td class="w-2/5 sm:w-1/4" style="color: var(--text-muted); font-weight: 500;">Date Issued</td>
+                                <td style="color: var(--text-main); font-weight: 500;">{{ $quotation->quotation_date?->format('d M Y') ?? '—' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="w-2/5 sm:w-1/4" style="color: var(--text-muted); font-weight: 500;">Valid Until</td>
+                                <td style="color: var(--text-main); font-weight: 500;">{{ $quotation->valid_until?->format('d M Y') ?? '—' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="w-2/5 sm:w-1/4" style="color: var(--text-muted); font-weight: 500;">Customer</td>
+                                <td style="color: var(--text-main); font-weight: 500;" class="break-words">
+                                    <a href="{{ route('leads.show', $quotation->lead) }}" class="action-link">
+                                        {{ $quotation->lead->customer_name }}
+                                    </a>
+                                </td>
+                            </tr>
+                            @if($quotation->lead->site_address)
+                            <tr>
+                                <td class="w-2/5 sm:w-1/4" style="color: var(--text-muted); font-weight: 500;">Installation Facility Address</td>
+                                <td style="color: var(--text-main); font-weight: 500;" class="break-words">{{ $quotation->lead->site_address }}</td>
+                            </tr>
+                            @endif
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             {{-- 2. Line Items Table --}}
