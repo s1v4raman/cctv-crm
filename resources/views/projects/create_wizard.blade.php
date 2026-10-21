@@ -14,25 +14,37 @@
         </div>
     </x-slot>
 
+    <script>
+        window.SAVED_PRODUCTS_MAP = @json($savedProductsMap ?? []);
+        window.SAVED_VENDORS_SET = @json($savedVendorsSet ?? []);
+    </script>
+
     <div class="py-6 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto"
          x-data="{
-             step: {{ request('step', session('new_technician_id') ? 2 : 1) }},
+             step: {{ (int) request('step', session('new_technician_id') ? 2 : 1) }},
              selectedSite: null,
              siteSearch: '',
              siteResults: [],
              siteModalOpen: false,
              newSite: { name: '', client_name: '', client_phone: '', address: '', city: 'Coimbatore', latitude: '', longitude: '' },
              
+             goStep(targetStep) {
+                 const s = parseInt(targetStep, 10);
+                 if (!isNaN(s) && s >= 1 && s <= 4) {
+                     this.step = s;
+                 }
+             },
+
              // Step 2 Info
-             title: '{{ old('title') }}',
+             title: @js(old('title', '')),
              project_type: '{{ old('project_type', 'hardware_cctv') }}',
              lead_technician_id: '{{ session('new_technician_id', old('lead_technician_id', '')) }}',
-             budget: '{{ old('budget') }}',
-             po_number: '{{ old('po_number') }}',
+             budget: @js(old('budget', '')),
+             po_number: @js(old('po_number', '')),
              start_date: '{{ old('start_date', now()->toDateString()) }}',
-             deadline: '{{ old('deadline') }}',
+             deadline: '{{ old('deadline', '') }}',
              priority: '{{ old('priority', 'medium') }}',
-             description: '{{ old('description') }}',
+             description: @js(old('description', '')),
 
              // Dynamic Templates by Project Type
              templates: {
@@ -216,6 +228,29 @@
              removeMaterialRow(index) {
                  this.materials.splice(index, 1);
              },
+             normalizeKey(str) {
+                 return (str || '').toString().trim().toLowerCase().replace(/\s+/g, ' ');
+             },
+             isNewProduct(name) {
+                 const key = this.normalizeKey(name);
+                 if (!key) return false;
+                 return !window.SAVED_PRODUCTS_MAP || !(key in window.SAVED_PRODUCTS_MAP);
+             },
+             isNewVendor(name) {
+                 const key = this.normalizeKey(name);
+                 if (!key) return false;
+                 return !window.SAVED_VENDORS_SET || !window.SAVED_VENDORS_SET.includes(key);
+             },
+             onProductSelect(mat) {
+                 const key = this.normalizeKey(mat.item_name);
+                 const match = window.SAVED_PRODUCTS_MAP ? window.SAVED_PRODUCTS_MAP[key] : null;
+                 if (match && match.unit) {
+                     const u = match.unit.toLowerCase();
+                     if (['nos','mtr','box','pkt','roll','set'].includes(u)) {
+                         mat.unit = u;
+                     }
+                 }
+             },
 
              async searchSites() {
                  if (this.siteSearch.length < 1) {
@@ -261,8 +296,19 @@
              },
              draftSaved: false,
              saveDraft() {
-                 this.draftSaved = true;
-                 setTimeout(() => { this.draftSaved = false; }, 3000);
+                 const form = document.getElementById('projectWizardForm');
+                 if (form) {
+                     let actionInput = document.getElementById('wizardActionInput');
+                     if (!actionInput) {
+                         actionInput = document.createElement('input');
+                         actionInput.type = 'hidden';
+                         actionInput.name = 'action';
+                         actionInput.id = 'wizardActionInput';
+                         form.appendChild(actionInput);
+                     }
+                     actionInput.value = 'save_draft';
+                     form.submit();
+                 }
              }
          }">
 
@@ -279,8 +325,9 @@
             <span x-show="step === 4">Step 4 of 4: Materials BOM</span>
         </div>
 
-        <form method="POST" action="{{ route('projects.store') }}">
+        <form id="projectWizardForm" method="POST" action="{{ route('projects.store') }}">
             @csrf
+            <input type="hidden" name="action" id="wizardActionInput" value="submit">
             <input type="hidden" name="project_code" value="{{ $nextCode }}">
             <input type="hidden" name="site_id" :value="selectedSite?.id">
 
@@ -386,7 +433,7 @@
                                 <a href="{{ route('admin.users.create', ['role' => 'technician', 'return_to' => route('projects.create', ['step' => 2])]) }}" 
                                    class="btn-subtle text-white font-semibold"
                                    style="color: #ffffff !important;">
-                                    <span class="text-white font-semibold" style="color: #ffffff !important;">Add New Technician</span>
+                                    <span class="text-white font-semibold" style="color: #ffffff !important;">+ Add New Technician</span>
                                 </a>
                             </div>
                             <select name="lead_technician_id" x-model="lead_technician_id" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
@@ -693,6 +740,19 @@
                         </button>
                     </div>
 
+                    {{-- Datalists for auto-suggestions --}}
+                    <datalist id="bom-products-list">
+                        @foreach($products as $p)
+                            <option value="{{ $p->name }}"></option>
+                        @endforeach
+                    </datalist>
+
+                    <datalist id="bom-vendors-list">
+                        @foreach($vendors as $v)
+                            <option value="{{ $v->name }}"></option>
+                        @endforeach
+                    </datalist>
+
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-sm">
                             <thead class="text-xs uppercase font-bold text-slate-400 border-b border-slate-100 dark:border-slate-800">
@@ -708,13 +768,23 @@
                             <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
                                 <template x-for="(mat, idx) in materials" :key="idx">
                                     <tr>
-                                        <td class="py-2 pr-2">
-                                            <input type="text" :name="`materials[${idx}][item_name]`" x-model="mat.item_name" required placeholder="Item description" class="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none">
+                                        <td class="py-2 pr-2 align-top">
+                                            <input type="text"
+                                                   :name="`materials[${idx}][item_name]`"
+                                                   x-model="mat.item_name"
+                                                   list="bom-products-list"
+                                                   @input="onProductSelect(mat)"
+                                                   required
+                                                   placeholder="Item description"
+                                                   class="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none">
+                                            <div x-show="isNewProduct(mat.item_name)" x-cloak class="text-[11px] text-slate-400 dark:text-slate-500 mt-1 font-medium">
+                                                New item. Will be saved for next time.
+                                            </div>
                                         </td>
-                                        <td class="py-2 pr-2">
+                                        <td class="py-2 pr-2 align-top">
                                             <input type="number" step="any" min="0.01" :name="`materials[${idx}][quantity]`" x-model="mat.quantity" required class="w-full px-2 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg font-mono font-bold outline-none">
                                         </td>
-                                        <td class="py-2 pr-2">
+                                        <td class="py-2 pr-2 align-top">
                                             <select :name="`materials[${idx}][unit]`" x-model="mat.unit" class="w-full px-2 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none">
                                                 <option value="nos">nos</option>
                                                 <option value="mtr">mtr</option>
@@ -724,17 +794,25 @@
                                                 <option value="set">set</option>
                                             </select>
                                         </td>
-                                        <td class="py-2 pr-2">
+                                        <td class="py-2 pr-2 align-top">
                                             <select :name="`materials[${idx}][source]`" x-model="mat.source" class="w-full px-2 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none font-semibold">
                                                 <option value="warehouse">Warehouse</option>
                                                 <option value="local_purchase">Local Purchase</option>
                                             </select>
                                         </td>
-                                        <td class="py-2 pr-2">
-                                            <input type="text" :name="`materials[${idx}][shop_name]`" x-model="mat.shop_name" placeholder="Shop name if local" class="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none">
+                                        <td class="py-2 pr-2 align-top">
+                                            <input type="text"
+                                                   :name="`materials[${idx}][shop_name]`"
+                                                   x-model="mat.shop_name"
+                                                   list="bom-vendors-list"
+                                                   placeholder="Shop name if local"
+                                                   class="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none">
+                                            <div x-show="mat.source === 'local_purchase' && isNewVendor(mat.shop_name)" x-cloak class="text-[11px] text-slate-400 dark:text-slate-500 mt-1 font-medium">
+                                                New item. Will be saved for next time.
+                                            </div>
                                         </td>
-                                        <td class="py-2 text-center">
-                                            <button type="button" @click="removeMaterialRow(idx)" class="text-rose-500 hover:text-rose-700 text-lg leading-none">&times;</button>
+                                        <td class="py-2 text-center align-top">
+                                            <button type="button" @click="removeMaterialRow(idx)" class="text-rose-500 hover:text-rose-700 text-lg leading-none pt-1.5">&times;</button>
                                         </td>
                                     </tr>
                                 </template>

@@ -450,8 +450,8 @@
 
                     <span class="text-[11px] font-semibold px-2.5 py-1 rounded-md transition-colors duration-200"
                           :class="portal === 'worker' ? 'portal-badge-worker' : 'portal-badge-staff'" 
-                          x-text="portal === 'worker' ? '⚡ Daily Wages' : '🔐 Staff & Admin'">
-                        Staff &amp; Admin
+                          x-text="portal === 'worker' ? '⚡ Daily Wage Worker' : '🔐 Staff & Admin ERP'">
+                        Staff &amp; Admin ERP
                     </span>
                 </div>
             </div>
@@ -463,8 +463,8 @@
                     <!-- Heading -->
                     <div class="mb-7 anim">
                         <h1 class="text-2xl font-extrabold fp-heading tracking-tight" 
-                            x-text="portal === 'worker' ? 'Worker Sign In' : 'Welcome back'">
-                            Welcome back
+                            x-text="portal === 'worker' ? 'Daily Wage Worker Sign In' : 'Operations Sign In'">
+                            Operations Sign In
                         </h1>
                         <p class="text-sm fp-subtext mt-1.5" 
                            x-text="portal === 'worker' ? 'Sign in to punch attendance & log field work' : 'Sign in to your Operations ERP account'">
@@ -515,9 +515,10 @@
                             <button type="button" 
                                     class="tab-btn py-2 px-2 rounded-lg text-xs font-semibold text-center cursor-pointer flex items-center justify-center gap-1"
                                     :class="portal === 'worker' ? 'worker-tab-active' : ''"
-                                    @click="setRole('worker')">
-                                <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                                <span class="truncate">Worker</span>
+                                    @click="setRole('worker')"
+                                    title="Daily Worker">
+                                <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                <span class="truncate">Daily Worker</span>
                             </button>
                         </div>
                     </div>
@@ -537,19 +538,19 @@
                                     <svg class="ib-icon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                                 </div>
                                 <div>
-                                    <div class="ib-title text-xs font-bold">No Password Required</div>
+                                    <div class="ib-title text-xs font-bold">Daily Wage Worker Portal</div>
                                     <p class="ib-text text-[11px] leading-relaxed mt-0.5">
-                                        Sign in with your <strong>Full Name</strong> and <strong>Mobile Number</strong> to punch photo attendance & log field work.
+                                        Sign in with your <strong>Worker Full Name</strong> and <strong>Mobile Phone Number</strong> to punch photo attendance & log field work.
                                     </p>
                                 </div>
                             </div>
                         </div>
 
-                        <form id="workerLoginForm" method="POST" action="{{ route('login.worker') }}" class="space-y-4">
+                        <form id="workerLoginForm" method="POST" action="/login/worker" class="space-y-4">
                             @csrf
                             <div>
                                 <label for="worker_name" class="fp-label block text-xs font-semibold mb-1.5">
-                                    Full Name <span class="text-rose-500">*</span>
+                                    Worker Full Name <span class="text-rose-500">*</span>
                                 </label>
                                 <div class="relative">
                                     <div class="absolute left-3.5 top-1/2 -translate-y-1/2 flex items-center pointer-events-none z-10">
@@ -563,7 +564,7 @@
                             </div>
                             <div>
                                 <label for="worker_phone" class="fp-label block text-xs font-semibold mb-1.5">
-                                    Mobile Number <span class="text-rose-500">*</span>
+                                    Mobile Phone Number <span class="text-rose-500">*</span>
                                 </label>
                                 <div class="relative">
                                     <div class="absolute left-3.5 top-1/2 -translate-y-1/2 flex items-center pointer-events-none z-10">

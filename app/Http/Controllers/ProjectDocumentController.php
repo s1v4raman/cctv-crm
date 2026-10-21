@@ -20,9 +20,9 @@ class ProjectDocumentController extends Controller
     {
         $validated = $request->validate([
             'document_type' => 'required|in:delivery_challan,purchase_order,site_drawing,completion_signoff,invoice,other',
-            'title' => 'required|string|max:255',
+            'title' => 'nullable|string|max:255',
             'file' => 'required|file|max:51200', // max 50MB
-            'dc_number' => 'nullable|string|max:100',
+            'dc_number' => 'required_if:document_type,delivery_challan|nullable|string|max:100',
             'dc_date' => 'nullable|date',
             'items_summary' => 'nullable|string',
             'notes' => 'nullable|string',
@@ -54,9 +54,18 @@ class ProjectDocumentController extends Controller
         $storagePath = "projects/{$project->id}/documents";
         $filePath = $uploadedFile->store($storagePath, $disk);
 
+        $title = !empty($validated['title']) ? trim($validated['title']) : null;
+        if (!$title) {
+            if ($validated['document_type'] === 'delivery_challan' && !empty($validated['dc_number'])) {
+                $title = "Delivery Challan #{$validated['dc_number']}";
+            } else {
+                $title = pathinfo($fileName, PATHINFO_FILENAME);
+            }
+        }
+
         $document = ProjectDocument::create([
             'project_id' => $project->id,
-            'title' => $validated['title'],
+            'title' => $title,
             'document_type' => $validated['document_type'],
             'dc_number' => $validated['dc_number'] ?? null,
             'dc_date' => $validated['dc_date'] ?? null,

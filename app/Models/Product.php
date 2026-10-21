@@ -10,6 +10,9 @@ class Product extends Model
     protected $fillable = [
         'sku',
         'name',
+        'name_key',
+        'status',
+        'created_by',
         'category',
         'brand',
         'model_no',
@@ -24,6 +27,43 @@ class Product extends Model
         'default_warranty_months',
         'is_active',
     ];
+
+    protected static function booted(): void
+    {
+        static::saving(function (Product $product) {
+            if (!empty($product->name)) {
+                $product->name = self::cleanName($product->name);
+                if (empty($product->name_key)) {
+                    $product->name_key = self::normalizeNameKey($product->name);
+                }
+            }
+        });
+    }
+
+    public static function normalizeNameKey(?string $name): string
+    {
+        return strtolower(trim(preg_replace('/\s+/', ' ', $name ?? '')));
+    }
+
+    public static function cleanName(?string $name): string
+    {
+        return trim(preg_replace('/\s+/', ' ', $name ?? ''));
+    }
+
+    public function isPending(): bool
+    {
+        return $this->status === 'pending';
+    }
+
+    public function creator(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function projectMaterials(): HasMany
+    {
+        return $this->hasMany(ProjectMaterial::class);
+    }
 
     protected function casts(): array
     {

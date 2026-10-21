@@ -151,23 +151,26 @@ class UserController extends Controller
 
         $user->update($data);
 
-        return redirect()->route('admin.users.index')
-            ->with('status', 'Account updated successfully.');
+        $redirectTo = $request->input('return_to', route('admin.users.index'));
+        return redirect($redirectTo)
+            ->with('status', 'Employee account updated successfully.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(User $user): RedirectResponse
+    public function destroy(Request $request, User $user): RedirectResponse
     {
+        $redirectTo = $request->input('return_to', route('admin.users.index'));
+
         if ($user->id === auth()->id()) {
-            return redirect()->route('admin.users.index')
+            return redirect($redirectTo)
                 ->withErrors(['delete' => 'You cannot delete your own admin account.']);
         }
 
         $user->delete();
 
-        return redirect()->route('admin.users.index')
-            ->with('status', 'Account deleted successfully.');
+        return redirect($redirectTo)
+            ->with('status', 'Employee account deleted successfully.');
     }
 }

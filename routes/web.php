@@ -138,6 +138,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/products', [ProductController::class, 'store'])->name('products.store');
         Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
         Route::put('/products/{product}', [ProductController::class, 'update'])->name('products.update');
+        Route::post('/products/{product}/approve', [ProductController::class, 'approve'])->name('products.approve');
+        Route::post('/products/{product}/merge', [ProductController::class, 'merge'])->name('products.merge');
         Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
 
         // Inventory Stock Adjustments

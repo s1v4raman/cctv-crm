@@ -81,7 +81,12 @@ class DemoAnalyticsSeeder extends Seeder
         $this->call(ProductSeeder::class);
         $productsBySku = Product::all()->keyBy('sku');
 
-        // Clean up previous demo transaction/attendance tables to ensure pristine seeding
+        // Safety Guard: NEVER truncate if existing customer leads, quotations, or projects exist!
+        if (Lead::count() > 0 || Quotation::count() > 0 || InstallationJob::count() > 0) {
+            return;
+        }
+
+        // Clean up previous demo transaction/attendance tables to ensure pristine initial seeding
         EmployeeAttendance::where('date', '>=', $thirtyDaysAgo->toDateString())->delete();
         LeaveRequest::truncate();
         Payroll::truncate();

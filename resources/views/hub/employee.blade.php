@@ -16,6 +16,9 @@
                 </div>
             </div>
             <div class="flex items-center gap-2 flex-wrap">
+                <a href="{{ route('admin.users.create', ['return_to' => route('employee.hub')]) }}" class="btn-primary">
+                    Add New Employee
+                </a>
                 <a href="{{ route('attendance.index') }}" 
                    class="crm-hub-action-btn inline-flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all duration-200 shadow-xs cursor-pointer"
                    style="background-color: rgba(var(--crm-accent-rgb, 190, 18, 60), 0.1); color: var(--crm-accent, #be123c); border: 1px solid rgba(var(--crm-accent-rgb, 190, 18, 60), 0.3);">
@@ -269,12 +272,15 @@
 
         {{-- ═══════════════════ ROW 4: EMPLOYEE ROSTER TABLE ═══════════════════ --}}
         <div class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm overflow-hidden">
-            <div class="flex items-center justify-between p-5 border-b border-slate-100 dark:border-slate-800">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-5 border-b border-slate-100 dark:border-slate-800">
                 <div>
                     <h3 class="text-sm font-bold text-slate-900 dark:text-white">Employee Directory & Today's Status</h3>
                     <p class="text-[11px] text-slate-400">{{ $totalEmployees }} employees · attendance as of {{ now()->format('d M Y') }}</p>
                 </div>
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2 flex-wrap">
+                    <a href="{{ route('admin.users.create', ['return_to' => route('employee.hub')]) }}" class="btn-primary" style="height: 32px !important; min-height: 32px !important; font-size: 13px !important; padding: 0 14px !important;">
+                        Add New Employee
+                    </a>
                     <a href="{{ route('attendance.index') }}" class="text-[10px] font-bold text-emerald-600 hover:underline">Mark Attendance →</a>
                 </div>
             </div>
@@ -288,7 +294,8 @@
                             <th class="text-left px-4 py-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Today</th>
                             <th class="text-left px-4 py-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Clock In</th>
                             <th class="text-left px-4 py-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Clock Out</th>
-                            <th class="text-right px-5 py-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Salary/mo</th>
+                            <th class="text-right px-4 py-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Salary/mo</th>
+                            <th class="text-right px-5 py-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
@@ -334,12 +341,44 @@
                             </td>
                             <td class="px-4 py-3 text-slate-600 dark:text-slate-300 font-mono text-[11px]">{{ $emp['clock_in'] }}</td>
                             <td class="px-4 py-3 text-slate-600 dark:text-slate-300 font-mono text-[11px]">{{ $emp['clock_out'] }}</td>
-                            <td class="px-5 py-3 text-right">
+                            <td class="px-4 py-3 text-right">
                                 @if($emp['salary'] > 0)
                                     <span class="font-bold text-slate-900 dark:text-white">₹{{ number_format($emp['salary'], 0) }}</span>
                                 @else
                                     <span class="text-slate-400 italic">—</span>
                                 @endif
+                            </td>
+                            <td class="px-5 py-3 text-right whitespace-nowrap">
+                                <div class="flex items-center justify-end gap-1">
+                                    {{-- View Profile --}}
+                                    <a href="{{ route('admin.users.show', $emp['id']) }}" 
+                                       class="p-1.5 rounded-lg text-slate-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-slate-800 transition" 
+                                       title="View Employee Profile">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                    </a>
+                                    
+                                    {{-- Edit Account --}}
+                                    <a href="{{ route('admin.users.edit', ['user' => $emp['id'], 'return_to' => route('employee.hub')]) }}" 
+                                       class="p-1.5 rounded-lg text-slate-500 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-slate-800 transition" 
+                                       title="Edit Employee">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                    </a>
+
+                                    {{-- Delete Account (blocked for self) --}}
+                                    @if($emp['id'] !== auth()->id())
+                                        <form method="POST" action="{{ route('admin.users.destroy', ['user' => $emp['id'], 'return_to' => route('employee.hub')]) }}" 
+                                              onsubmit="return confirm('Are you sure you want to delete employee {{ addslashes($emp['name']) }}? This action is permanent.')" 
+                                              class="inline-block">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" 
+                                                    class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-slate-800 transition cursor-pointer" 
+                                                    title="Delete Employee">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                            </button>
+                                        </form>
+                                    @endif
+                                </div>
                             </td>
                         </tr>
                         @endforeach
@@ -401,6 +440,19 @@
                     <p class="text-[11px] text-slate-400">Workforce management shortcuts</p>
                 </div>
                 <div class="p-4 space-y-2">
+                    <a href="{{ route('admin.users.create', ['return_to' => route('employee.hub')]) }}" class="flex items-center gap-3 p-3 rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-950/30 group transition-colors border border-emerald-100 dark:border-emerald-900/40">
+                        <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center group-hover:scale-110 shadow-xs transition-transform">
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
+                        </div>
+                        <div>
+                            <div class="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                                <span>Add New Employee</span>
+                                <span class="px-1.5 py-0.2 bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 rounded text-[9px] font-extrabold uppercase tracking-wide">New</span>
+                            </div>
+                            <div class="text-[10px] text-slate-400">Onboard staff, admin or technician</div>
+                        </div>
+                        <svg class="w-4 h-4 text-slate-300 ml-auto" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                    </a>
                     <a href="{{ route('attendance.index') }}" class="flex items-center gap-3 p-3 rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-950/30 group transition-colors">
                         <div class="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-950/50 text-emerald-600 flex items-center justify-center group-hover:scale-110 transition-transform">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>

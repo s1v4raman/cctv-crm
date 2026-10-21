@@ -5,9 +5,9 @@
                 <h2 class="text-2xl font-black tracking-wider text-white uppercase font-['Outfit']">Edit User Account: {{ $user->name }}</h2>
                 <p class="mt-1 text-xs text-slate-400 font-mono">Update account details, role and security options for this user.</p>
             </div>
-            <a href="{{ route('admin.users.index') }}"
+            <a href="{{ request('return_to', route('admin.users.index')) }}"
                class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-700/60 bg-slate-800/40 text-slate-400 hover:text-white text-xs font-semibold transition">
-                &larr; Back to Accounts
+                &larr; {{ request('return_to') && str_contains(request('return_to'), 'employee') ? 'Back to Employee Hub' : 'Back to Accounts' }}
             </a>
         </div>
     </x-slot>
@@ -18,6 +18,9 @@
                 <form method="POST" action="{{ route('admin.users.update', $user) }}" class="space-y-5">
                     @csrf
                     @method('PUT')
+                    @if(request('return_to', old('return_to')))
+                        <input type="hidden" name="return_to" value="{{ request('return_to', old('return_to')) }}">
+                    @endif
 
                     <div>
                         <label class="block text-sm font-semibold text-slate-300 mb-1.5">Full Name</label>

@@ -1,75 +1,15 @@
 import Alpine from 'alpinejs';
-import TomSelect from 'tom-select';
 
 window.Alpine = Alpine;
-window.TomSelect = TomSelect;
 
-// Standard clean dropdowns and search inputs across all modules
+// Clean dropdown design: Native .crm-select is used across all modules,
+// avoiding nested box-in-box wrappers that clip text.
 window.initSearchableSelect = function(element, options = {}) {
-    if (!element || element.tomselect) return element.tomselect;
-    if (element.hasAttribute('data-no-tom')) return null;
-
-    try {
-        const firstEmptyOpt = element.querySelector('option[value=""]');
-        const placeholder = element.getAttribute('data-placeholder') || 
-                            (firstEmptyOpt ? firstEmptyOpt.textContent.trim() : '') || 
-                            'Select customer';
-
-        const hasSelectedVal = Boolean(element.value && element.value !== '');
-
-        const ts = new TomSelect(element, {
-            create: false,
-            maxOptions: 250,
-            allowEmptyOption: true,
-            placeholder: placeholder,
-            dropdownDirection: 'down',
-            plugins: [],
-            items: hasSelectedVal ? [element.value] : [],
-            onFocus: function() {
-                if (!this.getValue()) {
-                    this.clear(true);
-                }
-            },
-            onChange: function(val) {
-                element.dispatchEvent(new Event('input', { bubbles: true }));
-                element.dispatchEvent(new Event('change', { bubbles: true }));
-            },
-            ...options
-        });
-
-        // Ensure no empty item or label is rendered inside the search bar
-        if (!hasSelectedVal) {
-            ts.clear(true);
-        }
-
-        // Strictly guarantee the list of search data is displayed DOWNWARDS beneath the search bar
-        ts.on('dropdown_open', (dropdown) => {
-            if (dropdown) {
-                dropdown.style.setProperty('top', '100%', 'important');
-                dropdown.style.setProperty('bottom', 'auto', 'important');
-                dropdown.style.setProperty('margin-top', '3px', 'important');
-            }
-        });
-
-        return ts;
-    } catch (e) {
-        console.warn('TomSelect init failed on', element, e);
-        return null;
-    }
+    return null;
 };
 
 window.initAllSearchableSelects = function(root = document) {
-    const selectors = [
-        'select.searchable-select',
-        'select[data-searchable]',
-        'select[name="lead_id"]:not([data-no-tom])',
-        'select[name="installation_job_id"]:not([data-no-tom])',
-        'select[name="product_id"]:not([data-no-tom])'
-    ];
-
-    root.querySelectorAll(selectors.join(', ')).forEach(el => {
-        window.initSearchableSelect(el);
-    });
+    // Native .crm-select handles dropdown presentation cleanly
 };
 
 document.addEventListener('DOMContentLoaded', () => {

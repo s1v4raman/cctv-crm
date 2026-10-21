@@ -13,6 +13,7 @@ class ProjectMaterial extends Model
     protected $fillable = [
         'project_id',
         'product_id',
+        'vendor_id',
         'item_name',
         'quantity',
         'unit',
@@ -35,6 +36,11 @@ class ProjectMaterial extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function vendor(): BelongsTo
+    {
+        return $this->belongsTo(Vendor::class);
     }
 
     public function consumptions(): \Illuminate\Database\Eloquent\Relations\HasMany

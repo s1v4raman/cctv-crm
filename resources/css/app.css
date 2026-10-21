@@ -1,4 +1,3 @@
-@import "tom-select/dist/css/tom-select.default.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -3299,8 +3298,8 @@ table td span[class*="bg-"][class*="text-"] {
 .status-won,
 .status-accepted,
 .status-paid,
-table td [class*="emerald"],
-table td [class*="green"] {
+table td [class*="emerald"]:not(button):not(a.btn):not([class*="bg-"]):not([class*="text-white"]),
+table td [class*="green"]:not(button):not(a.btn):not([class*="bg-"]):not([class*="text-white"]) {
     color: var(--status-green) !important;
     font-weight: bold !important;
 }
@@ -3311,9 +3310,9 @@ table td [class*="green"] {
 .status-scheduled,
 .status-in-progress,
 .status-in_progress,
-table td [class*="amber"],
-table td [class*="orange"],
-table td [class*="yellow"] {
+table td [class*="amber"]:not(button):not(a.btn):not([class*="bg-"]):not([class*="text-white"]),
+table td [class*="orange"]:not(button):not(a.btn):not([class*="bg-"]):not([class*="text-white"]),
+table td [class*="yellow"]:not(button):not(a.btn):not([class*="bg-"]):not([class*="text-white"]) {
     color: var(--status-orange) !important;
     font-weight: bold !important;
 }
@@ -3321,8 +3320,8 @@ table td [class*="yellow"] {
 /* New, Contacted -> Blue #2563eb */
 .status-new,
 .status-contacted,
-table td [class*="blue"],
-table td [class*="sky"] {
+table td [class*="blue"]:not(button):not(a.btn):not([class*="bg-"]):not([class*="text-white"]),
+table td [class*="sky"]:not(button):not(a.btn):not([class*="bg-"]):not([class*="text-white"]) {
     color: #2563eb !important;
     font-weight: bold !important;
 }
@@ -3334,10 +3333,19 @@ table td [class*="sky"] {
 .status-canceled,
 .status-overdue,
 .status-failed,
-table td [class*="rose"],
-table td [class*="red"] {
+table td [class*="rose"]:not(button):not(a.btn):not([class*="bg-"]):not([class*="text-white"]),
+table td [class*="red"]:not(button):not(a.btn):not([class*="bg-"]):not([class*="text-white"]) {
     color: var(--status-red) !important;
     font-weight: bold !important;
+}
+
+/* Ensure explicit white text on primary buttons and badges */
+button.text-white,
+button[class~="text-white"],
+.btn-primary,
+button.btn-primary,
+a.btn-primary {
+    color: #ffffff !important;
 }
 
 /* 5.5 SECTIONS AND CARDS */

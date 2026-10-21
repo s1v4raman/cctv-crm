@@ -396,35 +396,35 @@
         @endif
 
         {{-- 6-Tab Navigation Bar --}}
-        <div class="bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200/80 dark:border-slate-800 px-6 pt-3.5 shadow-xs">
-            <nav class="flex space-x-6 text-sm font-bold overflow-x-auto">
-                <button type="button" @click="currentTab = 'overview'" :class="currentTab === 'overview' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'">
-                    1. Overview
+        <div class="bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200/80 dark:border-slate-800 px-6 pt-3 shadow-xs overflow-hidden">
+            <nav class="flex items-center space-x-6 text-sm font-bold overflow-x-auto whitespace-nowrap scrollbar-none">
+                <button type="button" @click="currentTab = 'overview'" :class="currentTab === 'overview' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 dark:text-slate-400 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'" class="inline-flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
+                    <span>1. Overview</span>
                 </button>
-                <button type="button" @click="currentTab = 'materials'" :class="currentTab === 'materials' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'">
-                    2. Materials &bull; BOM ({{ $project->materials->count() }})
+                <button type="button" @click="currentTab = 'materials'" :class="currentTab === 'materials' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 dark:text-slate-400 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'" class="inline-flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
+                    <span>2. Materials &bull; BOM ({{ $project->materials->count() }})</span>
                     @if($totalCableMeters > 0)
-                        <span class="ml-1 px-1.5 py-0.5 text-[10px] rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 font-bold">{{ number_format($totalCableMeters, 0) }}m</span>
+                        <span class="px-1.5 py-0.5 text-[10px] rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 font-bold">{{ number_format($totalCableMeters, 0) }}m</span>
                     @endif
                 </button>
-                <button type="button" @click="currentTab = 'documents'" :class="currentTab === 'documents' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'">
-                    3. Documents &bull; DCs ({{ $project->documents->count() }})
+                <button type="button" @click="currentTab = 'documents'" :class="currentTab === 'documents' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 dark:text-slate-400 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'" class="inline-flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
+                    <span>3. Documents &bull; DCs ({{ $project->documents->count() }})</span>
                     @if($uninvoicedDcCount > 0)
-                        <span class="ml-1 px-1.5 py-0.5 text-[10px] rounded-full bg-amber-100 text-amber-700 font-bold">{{ $uninvoicedDcCount }} unbilled</span>
+                        <span class="px-1.5 py-0.5 text-[10px] rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300 font-bold">{{ $uninvoicedDcCount }} unbilled</span>
                     @endif
                 </button>
-                <button type="button" @click="currentTab = 'work_days'" :class="currentTab === 'work_days' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'">
-                    4. Work Days &bull; Wages ({{ $project->workDays->count() }})
+                <button type="button" @click="currentTab = 'work_days'" :class="currentTab === 'work_days' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 dark:text-slate-400 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'" class="inline-flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
+                    <span>4. Work Days &bull; Wages ({{ $project->workDays->count() }})</span>
                 </button>
-                <button type="button" @click="currentTab = 'ip_devices'" :class="currentTab === 'ip_devices' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'">
-                    5. IP Devices ({{ $project->ipDevices->count() }})
+                <button type="button" @click="currentTab = 'ip_devices'" :class="currentTab === 'ip_devices' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 dark:text-slate-400 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'" class="inline-flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
+                    <span>5. IP Devices ({{ $project->ipDevices->count() }})</span>
                 </button>
-                <button type="button" @click="currentTab = 'tasks'" :class="currentTab === 'tasks' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'">
-                    6. Tasks &bull; Workflow ({{ $tasksCount }})
+                <button type="button" @click="currentTab = 'tasks'" :class="currentTab === 'tasks' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 dark:text-slate-400 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'" class="inline-flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
+                    <span>6. Tasks &bull; Workflow ({{ $tasksCount }})</span>
                     @if($tasksCount > 0)
-                        <span class="ml-1 px-1.5 py-0.5 text-[10px] rounded-full {{ $taskCompletionPercentage === 100 ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300' }} font-bold">{{ $taskCompletionPercentage }}%</span>
+                        <span class="px-1.5 py-0.5 text-[10px] rounded-full {{ $taskCompletionPercentage === 100 ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300' }} font-bold">{{ $taskCompletionPercentage }}%</span>
                     @else
-                        <span class="ml-1 px-1.5 py-0.5 text-[10px] rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300 font-bold">Templates</span>
+                        <span class="px-1.5 py-0.5 text-[10px] rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300 font-bold">Templates</span>
                     @endif
                 </button>
             </nav>
@@ -790,18 +790,17 @@
                         <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                             <h3 class="font-extrabold text-slate-900 dark:text-white text-sm flex items-center gap-2">
                                 <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
-                                Project Team &amp; Assignment
+                                Project Team
                             </h3>
-                            <div class="flex items-center gap-2">
+                            <div class="flex items-center gap-1.5">
                                 <a href="{{ route('admin.users.create', ['role' => 'technician', 'return_to' => route('projects.show', [$project->id, 'tab' => 'overview'])]) }}" 
-                                   class="btn-subtle text-white font-semibold"
-                                   style="color: #ffffff !important;"
+                                   class="inline-flex items-center px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs transition"
                                    title="Add and register a new technician for this project">
-                                    <span class="text-white font-semibold" style="color: #ffffff !important;">Add New Technician</span>
+                                    Add Technician
                                 </a>
                                 @if(auth()->user()->isAdmin() || ($project->created_by === auth()->id() && in_array($project->status, ['draft', 'pending_approval'])))
-                                    <a href="{{ route('projects.edit', $project) }}" class="text-xs text-blue-600 dark:text-blue-400 font-semibold hover:underline">
-                                        Edit &rarr;
+                                    <a href="{{ route('projects.edit', $project) }}" class="text-xs text-blue-600 dark:text-blue-400 font-semibold hover:underline px-1 py-0.5">
+                                        Edit
                                     </a>
                                 @endif
                             </div>
@@ -858,7 +857,7 @@
                                             <a href="{{ route('admin.users.create', ['role' => 'technician', 'return_to' => route('projects.show', [$project->id, 'tab' => 'overview'])]) }}" 
                                                class="btn-subtle text-white font-semibold"
                                                style="color: #ffffff !important;">
-                                                <span class="text-white font-semibold" style="color: #ffffff !important;">Add New Technician</span>
+                                                <span class="text-white font-semibold" style="color: #ffffff !important;">+ Add New Technician</span>
                                             </a>
                                         </div>
                                     @endif
@@ -2545,12 +2544,17 @@
                     @csrf
                     <div>
                         <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Select Executing Company *</label>
-                        <select name="company_id" required class="w-full px-3.5 py-2.5 text-sm font-bold bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
-                            @foreach($companies as $comp)
-                                <option value="{{ $comp->id }}" {{ $project->company_id == $comp->id ? 'selected' : '' }}>
+                        <select name="company_id" required class="crm-select w-full font-bold">
+                            <option value="">-- Select Executing Company --</option>
+                            @forelse($companies as $comp)
+                                <option value="{{ $comp->id }}" {{ (old('company_id', $project->company_id) == $comp->id) ? 'selected' : '' }}>
                                     {{ $comp->name }}
                                 </option>
-                            @endforeach
+                            @empty
+                                <option value="1">Precision IT Systems</option>
+                                <option value="2">NP Solutions</option>
+                                <option value="3">Linepix</option>
+                            @endforelse
                         </select>
                     </div>
 
@@ -2561,7 +2565,7 @@
 
                     <div>
                         <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Approved Project Value (₹)</label>
-                        <input type="number" step="0.5" name="approved_value" value="{{ old('approved_value', $project->budget) }}" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold font-mono outline-none">
+                        <input type="number" step="0.5" name="approved_value" value="{{ old('approved_value', $project->budget ?? $project->approved_value ?? 0) }}" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold font-mono outline-none">
                     </div>
 
                     <div>
@@ -2698,14 +2702,48 @@
 
                     {{-- Target Task --}}
                     <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Associated Project Task *</label>
-                        <select name="project_task_id" x-model="consumeTaskId" required class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-semibold">
-                            @foreach($project->tasks as $tItem)
-                                <option value="{{ $tItem->id }}">
-                                    [{{ $tItem->phase_name }}] {{ $tItem->title }} ({{ ucfirst($tItem->status) }})
-                                </option>
-                            @endforeach
-                        </select>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Associated Project Task *</label>
+                            <button type="button" 
+                                    @click="consumeModalOpen = false; taskModalOpen = true" 
+                                    class="text-xs font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 cursor-pointer">
+                                + Add New Task
+                            </button>
+                        </div>
+
+                        @if($project->tasks->isEmpty())
+                            <div class="p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300 text-xs space-y-2">
+                                <div class="flex items-center gap-1.5 font-bold">
+                                    <svg class="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                    <span>No project tasks exist yet!</span>
+                                </div>
+                                <p class="text-[11px] leading-relaxed">
+                                    Materials and cable meters must be allocated against a specific project milestone or task.
+                                </p>
+                                <div class="flex items-center gap-2 pt-1">
+                                    <button type="button" 
+                                            @click="consumeModalOpen = false; taskModalOpen = true" 
+                                            class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs transition inline-flex items-center gap-1 cursor-pointer">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                        <span>Create First Task</span>
+                                    </button>
+                                    <button type="button" 
+                                            @click="consumeModalOpen = false; templateModalOpen = true" 
+                                            class="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition cursor-pointer">
+                                        Apply Workflow Template
+                                    </button>
+                                </div>
+                            </div>
+                        @else
+                            <select name="project_task_id" x-model="consumeTaskId" required class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl outline-none font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+                                <option value="">-- Select Project Task --</option>
+                                @foreach($project->tasks as $tItem)
+                                    <option value="{{ $tItem->id }}">
+                                        [{{ $tItem->phase_name }}] {{ $tItem->title }} ({{ ucfirst($tItem->status) }})
+                                    </option>
+                                @endforeach
+                            </select>
+                        @endif
                     </div>
 
                     {{-- BOM Item Link (Optional) --}}
@@ -2818,24 +2856,38 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Document Title *</label>
-                        <input type="text" name="title" required placeholder="e.g. Delivery Challan #DC-892 (Camera &amp; Cables)" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
+                            Document Title <span class="text-slate-400 font-normal lowercase">(optional)</span>
+                        </label>
+                        <input type="text" 
+                               name="title" 
+                               placeholder="e.g. Delivery Challan (Optional - will default to DC Number or File Name)" 
+                               class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl outline-none text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
                     </div>
 
                     <div x-show="docType === 'delivery_challan'" class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">DC Number</label>
-                            <input type="text" name="dc_number" placeholder="DC-2026-0042" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono outline-none">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
+                                DC Number <span class="text-rose-500 font-bold">*</span>
+                            </label>
+                            <input type="text" 
+                                   name="dc_number" 
+                                   :required="docType === 'delivery_challan'" 
+                                   placeholder="DC-2026-0042" 
+                                   class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl font-mono font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">DC Date</label>
-                            <input type="date" name="dc_date" value="{{ now()->toDateString() }}" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">DC Date</label>
+                            <input type="date" 
+                                   name="dc_date" 
+                                   value="{{ now()->toDateString() }}" 
+                                   class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl outline-none text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
                         </div>
                     </div>
 
                     <div x-show="docType === 'delivery_challan'">
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Items Summary in Challan</label>
-                        <textarea name="items_summary" rows="2" placeholder="e.g. 4x Dome Camera, 1x NVR, 150m CAT6 Cable" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none"></textarea>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Items Summary in Challan</label>
+                        <textarea name="items_summary" rows="2" placeholder="e.g. 4x Dome Camera, 1x NVR, 150m CAT6 Cable" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl outline-none text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"></textarea>
                     </div>
 
                     <div>

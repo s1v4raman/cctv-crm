@@ -12,12 +12,14 @@ use App\Models\ProjectMaterial;
 use App\Models\Site;
 use App\Models\TaskMaterialConsumption;
 use App\Models\User;
+use App\Models\Vendor;
 use App\Models\Worker;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ProjectController extends Controller
@@ -97,7 +99,7 @@ class ProjectController extends Controller
           ->paginate(12)
           ->withQueryString();
 
-        $companies = Company::where('is_active', true)->get();
+        $companies = $this->getExecutingCompanies();
         $teamMembers = User::whereIn('role', ['admin', 'staff', 'technician'])->orderBy('name')->get();
         $leads = Lead::orderBy('customer_name')->limit(60)->get();
         $projectTypes = Project::projectTypeOptions();
@@ -137,10 +139,21 @@ class ProjectController extends Controller
     {
         $teamMembers = User::whereIn('role', ['admin', 'staff', 'technician'])->orderBy('name')->get();
         $technicians = User::where('role', 'technician')->orWhere('role', 'admin')->orderBy('name')->get();
-        $companies = Company::where('is_active', true)->get();
+        $companies = $this->getExecutingCompanies();
         $sites = Site::latest()->limit(50)->get();
         $leads = Lead::orderBy('customer_name')->get();
         $projectTypes = Project::projectTypeOptions();
+        $products = Product::select('id', 'name', 'name_key', 'unit', 'cost_price', 'unit_price')->orderBy('name')->get();
+        $vendors = Vendor::select('id', 'name', 'name_key')->orderBy('name')->get();
+
+        $savedProductsMap = $products->mapWithKeys(function ($p) {
+            $key = $p->name_key ?: Product::normalizeNameKey($p->name);
+            return [$key => ['id' => $p->id, 'name' => $p->name, 'unit' => $p->unit]];
+        })->all();
+
+        $savedVendorsSet = $vendors->map(function ($v) {
+            return $v->name_key ?: Vendor::normalizeNameKey($v->name);
+        })->filter()->unique()->values()->all();
 
         // Auto-suggest next project code
         $nextCode = 'PRJ-' . date('Y') . '-' . str_pad(Project::count() + 1, 4, '0', STR_PAD_LEFT);
@@ -152,7 +165,11 @@ class ProjectController extends Controller
             'sites',
             'leads',
             'nextCode',
-            'projectTypes'
+            'projectTypes',
+            'products',
+            'vendors',
+            'savedProductsMap',
+            'savedVendorsSet'
         ));
     }
 
@@ -166,13 +183,13 @@ class ProjectController extends Controller
         $rules = [
             'site_id' => 'nullable|exists:sites,id',
             'project_code' => 'nullable|string|max:100',
-            'title' => 'required|string|max:255',
-            'project_type' => 'required|in:hardware_cctv,hardware_attendance,networking,access_control,software_web,hybrid',
+            'title' => $isDraft ? 'nullable|string|max:255' : 'required|string|max:255',
+            'project_type' => $isDraft ? 'nullable|string' : 'required|in:hardware_cctv,hardware_attendance,networking,access_control,software_web,hybrid',
             'lead_technician_id' => 'nullable|exists:users,id',
             'budget' => 'nullable|numeric|min:0',
             'start_date' => 'nullable|date',
             'deadline' => 'nullable|date',
-            'priority' => 'required|in:low,medium,high,urgent',
+            'priority' => $isDraft ? 'nullable|string' : 'required|in:low,medium,high,urgent',
             'status' => 'nullable|string|max:50',
             'progress_percentage' => 'nullable|integer|min:0|max:100',
             'company_name' => 'nullable|string|max:255',
@@ -182,10 +199,10 @@ class ProjectController extends Controller
             'hardware_specs' => 'nullable|array',
             'software_specs' => 'nullable|array',
             'materials' => 'nullable|array',
-            'materials.*.item_name' => 'required|string|max:255',
-            'materials.*.quantity' => 'required|numeric|min:0.01',
-            'materials.*.unit' => 'required|string|max:50',
-            'materials.*.source' => 'required|in:warehouse,local_purchase',
+            'materials.*.item_name' => $isDraft ? 'nullable|string|max:255' : 'required|string|max:255',
+            'materials.*.quantity' => $isDraft ? 'nullable|numeric|min:0' : 'required|numeric|min:0.01',
+            'materials.*.unit' => $isDraft ? 'nullable|string|max:50' : 'required|string|max:50',
+            'materials.*.source' => $isDraft ? 'nullable|string' : 'required|in:warehouse,local_purchase',
             'materials.*.shop_name' => 'nullable|string|max:255',
             'materials.*.notes' => 'nullable|string|max:255',
         ];
@@ -195,6 +212,16 @@ class ProjectController extends Controller
         $site = null;
         if (!empty($validated['site_id'])) {
             $site = Site::find($validated['site_id']);
+        }
+
+        if ($isDraft) {
+            $validated['title'] = $validated['title'] ?: ($site ? $site->name . ' - Draft Project' : 'Draft Project (' . date('d M Y') . ')');
+            $validated['project_type'] = in_array($validated['project_type'] ?? null, ['hardware_cctv','hardware_attendance','networking','access_control','software_web','hybrid']) 
+                ? $validated['project_type'] 
+                : 'hardware_cctv';
+            $validated['priority'] = in_array($validated['priority'] ?? null, ['low','medium','high','urgent']) 
+                ? $validated['priority'] 
+                : 'medium';
         }
 
         $validated['company_name'] = $validated['company_name'] ?? ($site?->client_name ?? $site?->name ?? 'Direct Client');
@@ -218,7 +245,7 @@ class ProjectController extends Controller
                 $validated['company_id'] = $request->input('company_id');
                 $validated['approved_by'] = Auth::id();
                 $validated['approved_on'] = now();
-                $validated['approved_value'] = $validated['budget'] ?? null;
+                $validated['approved_value'] = $validated['budget'] ?? 0.00;
                 $validated['status'] = 'in_progress';
             } else {
                 $validated['status'] = 'pending_approval';
@@ -229,19 +256,64 @@ class ProjectController extends Controller
         try {
             $project = Project::create($validated);
 
-            // Store BOM Materials if any
+            // Store BOM Materials if any with auto-learning for products and vendors
             if (!empty($validated['materials'])) {
                 foreach ($validated['materials'] as $mat) {
-                    ProjectMaterial::create([
-                        'project_id' => $project->id,
-                        'item_name' => $mat['item_name'],
-                        'quantity' => $mat['quantity'],
-                        'unit' => $mat['unit'],
-                        'source' => $mat['source'],
-                        'shop_name' => $mat['shop_name'] ?? null,
-                        'notes' => $mat['notes'] ?? null,
-                        'status' => 'pending',
-                    ]);
+                    if (!empty($mat['item_name'])) {
+                        $rawName = trim($mat['item_name']);
+                        $cleanName = Product::cleanName($rawName);
+                        $productKey = Product::normalizeNameKey($rawName);
+
+                        if ($cleanName !== '') {
+                            // Find or create product by normalized name_key
+                            $product = Product::firstOrCreate(
+                                ['name_key' => $productKey],
+                                [
+                                    'name' => $cleanName,
+                                    'sku' => 'PRD-' . strtoupper(Str::random(6)),
+                                    'status' => 'pending',
+                                    'unit' => $mat['unit'] ?? 'nos',
+                                    'created_by' => Auth::id(),
+                                    'is_active' => true,
+                                ]
+                            );
+
+                            $vendorId = null;
+                            $source = $mat['source'] ?? 'warehouse';
+
+                            // For local purchase with shop name, auto-learn vendor by normalized name_key
+                            if ($source === 'local_purchase' && !empty($mat['shop_name'])) {
+                                $rawShop = trim($mat['shop_name']);
+                                $cleanShop = Vendor::cleanName($rawShop);
+                                $vendorKey = Vendor::normalizeNameKey($rawShop);
+
+                                if ($cleanShop !== '') {
+                                    $vendor = Vendor::firstOrCreate(
+                                        ['name_key' => $vendorKey],
+                                        [
+                                            'name' => $cleanShop,
+                                            'status' => 'pending',
+                                            'created_by' => Auth::id(),
+                                        ]
+                                    );
+                                    $vendorId = $vendor->id;
+                                }
+                            }
+
+                            ProjectMaterial::create([
+                                'project_id' => $project->id,
+                                'product_id' => $product->id,
+                                'vendor_id' => $vendorId,
+                                'item_name' => $cleanName,
+                                'quantity' => $mat['quantity'] ?? 1,
+                                'unit' => $mat['unit'] ?? 'nos',
+                                'source' => $source,
+                                'shop_name' => $mat['shop_name'] ?? null,
+                                'notes' => $mat['notes'] ?? null,
+                                'status' => 'pending',
+                            ]);
+                        }
+                    }
                 }
             }
 
@@ -305,7 +377,7 @@ class ProjectController extends Controller
 
         $activeTab = $request->input('tab', 'overview');
         $activeTaskView = $request->input('view', 'kanban');
-        $companies = Company::where('is_active', true)->get();
+        $companies = $this->getExecutingCompanies();
         $workers = Worker::where('is_active', true)->orderBy('name')->get();
         $technicians = User::whereIn('role', ['admin', 'technician', 'staff'])->orderBy('name')->get();
         $availableProducts = Product::where('is_active', true)->orderBy('name')->get();
@@ -400,7 +472,7 @@ class ProjectController extends Controller
         $project->update([
             'company_id' => $company->id,
             'per_metre_rate' => $validated['per_metre_rate'],
-            'approved_value' => $validated['approved_value'] ?? $project->budget,
+            'approved_value' => !is_null($validated['approved_value'] ?? null) && $validated['approved_value'] !== '' ? (float) $validated['approved_value'] : (float) ($project->budget ?? 0.0),
             'po_number' => $validated['po_number'] ?? $project->po_number,
             'approved_by' => Auth::id(),
             'approved_on' => now(),
@@ -778,6 +850,21 @@ class ProjectController extends Controller
         };
 
         return new StreamedResponse($callback, 200, $headers);
+    }
+
+    /**
+     * Retrieve active executing companies with fallback auto-seeding.
+     */
+    protected function getExecutingCompanies()
+    {
+        $companies = Company::where('is_active', true)->get();
+        if ($companies->isEmpty()) {
+            Company::firstOrCreate(['name' => 'Precision IT Systems'], ['code' => 'PRECISION', 'is_active' => true]);
+            Company::firstOrCreate(['name' => 'NP Solutions'], ['code' => 'NPSOL', 'is_active' => true]);
+            Company::firstOrCreate(['name' => 'Linepix'], ['code' => 'LINEPIX', 'is_active' => true]);
+            $companies = Company::where('is_active', true)->get();
+        }
+        return $companies;
     }
 
     /**

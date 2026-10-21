@@ -21,19 +21,21 @@ services:
       - key: LOG_CHANNEL
         value: stderr
       - key: DB_CONNECTION
-        value: sqlite
+        value: pgsql
       - key: DB_HOST
-        sync: false
+        value: ep-odd-sky-b55wmpnc-pooler.c-7.us-east-2.aws.neon.tech
       - key: DB_PORT
         value: "5432"
       - key: DB_DATABASE
-        sync: false
+        value: neondb
       - key: DB_USERNAME
-        sync: false
+        value: neondb_owner
       - key: DB_PASSWORD
-        sync: false
+        value: npg_hb9lqafutc2E
       - key: DB_SSLMODE
         value: require
+      - key: DATABASE_URL
+        value: postgresql://neondb_owner:npg_hb9lqafutc2E@ep-odd-sky-b55wmpnc-pooler.c-7.us-east-2.aws.neon.tech/neondb?sslmode=require
       - key: AUTO_MIGRATE
         value: "true"
       - key: SESSION_DRIVER

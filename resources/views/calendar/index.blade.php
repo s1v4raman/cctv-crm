@@ -11,7 +11,7 @@
                 <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-medium">
                     {{ $isWorker 
                         ? 'View assigned shifts, work orders, site locations, and manage task acceptance' 
-                        : 'Unified schedule & dispatch for site surveys, CCTV installations, project tasks, and field maintenance' }}
+                        : 'Unified Schedule & dispatch for site surveys, CCTV installations, project tasks, and field maintenance' }}
                 </p>
             </div>
             

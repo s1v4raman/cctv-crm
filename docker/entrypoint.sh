@@ -31,9 +31,15 @@ if [ -z "$APP_KEY" ] || ! echo "$APP_KEY" | grep -q "base64:"; then
     export APP_KEY=$(php artisan key:generate --show)
 fi
 
-# Smart Database fallback: If DB_HOST is not set or set to local/empty, fall back to SQLite
-if [ -z "$DB_HOST" ] || [ "$DB_HOST" = "127.0.0.1" ] || [ "$DB_HOST" = "localhost" ]; then
-    echo "=> DB_HOST is not set. Defaulting to local SQLite database..."
+# Smart Database fallback: If DATABASE_URL is set, use pgsql directly
+if [ -n "$DATABASE_URL" ]; then
+    echo "=> Persistent DATABASE_URL detected. Using PostgreSQL..."
+    export DB_CONNECTION=pgsql
+elif [ -n "$DB_HOST" ] && [ "$DB_HOST" != "127.0.0.1" ] && [ "$DB_HOST" != "localhost" ]; then
+    echo "=> External DB_HOST ($DB_HOST) detected. Using persistent database..."
+    export DB_CONNECTION=${DB_CONNECTION:-pgsql}
+else
+    echo "=> Notice: Running on local SQLite database..."
     export DB_CONNECTION=sqlite
     export DB_DATABASE=/var/www/html/database/database.sqlite
     touch /var/www/html/database/database.sqlite

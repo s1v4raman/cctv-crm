@@ -112,6 +112,18 @@
         .dark ::-webkit-scrollbar-thumb {
             background: #334155;
         }
+
+        /* User Account Click-To-Open Dropdown */
+        #userAccountDropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: calc(100% + 4px);
+            z-index: 50;
+        }
+        #userAccountDropdown.open {
+            display: block !important;
+        }
     </style>
 </head>
 
@@ -184,10 +196,10 @@
                 </button>
 
                 <!-- 3. PROPER PROFILE / ACCOUNT VIEW (Always visible, protected from overflow) -->
-                <div class="relative group shrink-0">
+                <div class="relative shrink-0" id="userDropdownContainer">
                     @auth
                         <!-- Authenticated User Profile Initial Badge -->
-                        <button type="button"
+                        <button type="button" id="userDropdownBtn" onclick="toggleUserDropdown(event)"
                             class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl flex items-center justify-center font-black text-xs sm:text-base text-white shadow-md transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none ring-2 ring-slate-200/90 dark:ring-slate-700/80 hover:ring-blue-500/50 cursor-pointer select-none shrink-0"
                             style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);"
                             title="My Account: {{ Auth::user()->name }} (Click to view profile)">
@@ -195,7 +207,7 @@
                         </button>
                     @else
                         <!-- Guest Portal / Profile Access Button -->
-                        <button type="button"
+                        <button type="button" id="userDropdownGuestBtn" onclick="toggleUserDropdown(event)"
                             class="flex items-center justify-center w-8 h-8 sm:w-auto sm:px-3 sm:py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 border border-slate-200/80 dark:border-slate-700 transition-all cursor-pointer shrink-0"
                             title="Sign in / Register">
                             <svg class="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -206,49 +218,88 @@
                         </button>
                     @endauth
 
-                    <!-- Auth Dropdown Menu -->
-                    <div class="absolute right-0 top-full mt-2 hidden group-hover:block w-64 bg-white dark:bg-slate-900 shadow-2xl rounded-2xl border border-slate-100 dark:border-slate-800 py-2.5 z-50 transition-all">
+                    <!-- Auth Dropdown Menu (Click-to-open, right:0, top:calc(100%+4px)) -->
+                    <div id="userAccountDropdown" 
+                         class="user-account-dropdown w-72 bg-white dark:bg-slate-900 shadow-2xl shadow-blue-500/15 rounded-2xl border-2 border-blue-600 dark:border-blue-500 ring-4 ring-blue-500/10 overflow-hidden z-50 transition-all"
+                         style="display: none; position: absolute; right: 0; top: calc(100% + 6px);">
                         @auth
-                            <div class="px-4 py-2 border-b border-slate-100 dark:border-slate-800 mb-1">
-                                <span class="text-[10px] text-blue-600 font-bold block uppercase tracking-wider">Hello, {{ explode(' ', Auth::user()->name)[0] }}</span>
-                                <p class="text-xs font-bold text-slate-900 dark:text-white truncate">{{ Auth::user()->name }}</p>
-                                <p class="text-[10px] text-slate-500 dark:text-slate-400 truncate">{{ Auth::user()->email }}</p>
+                            <div class="px-4 py-3 bg-gradient-to-r from-blue-50/80 to-slate-50 dark:from-blue-950/40 dark:to-slate-900/60 border-b border-blue-100 dark:border-blue-900/50 flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-xl flex items-center justify-center font-black text-sm text-white shrink-0 shadow-sm"
+                                     style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);">
+                                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <span class="text-[10px] text-blue-600 dark:text-blue-400 font-bold block uppercase tracking-wider">Hello, {{ explode(' ', Auth::user()->name)[0] }}</span>
+                                    <p class="text-xs font-bold text-slate-900 dark:text-white truncate">{{ Auth::user()->name }}</p>
+                                    <p class="text-[10px] text-slate-500 dark:text-slate-400 truncate">{{ Auth::user()->email }}</p>
+                                </div>
                             </div>
-                            @if(Auth::user()->role === 'technician')
-                                <a href="{{ route('technician.dashboard') }}" class="flex items-center space-x-2.5 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-800 hover:text-blue-600 transition-colors">
-                                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"/></svg>
-                                    <span>Technician Station</span>
+                            <div class="p-2 space-y-1">
+                                @if(Auth::user()->role === 'technician')
+                                    <a href="{{ route('technician.dashboard') }}" class="flex items-center space-x-2.5 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-800 hover:text-blue-600 rounded-xl transition-colors">
+                                        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"/></svg>
+                                        <span>Technician Station</span>
+                                    </a>
+                                @else
+                                    <a href="{{ route('dashboard') }}" class="flex items-center space-x-2.5 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-800 hover:text-blue-600 rounded-xl transition-colors">
+                                        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                                        <span>ERP Dashboard</span>
+                                    </a>
+                                @endif
+                                <a href="{{ route('profile.edit') }}" class="flex items-center space-x-2.5 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-800 hover:text-blue-600 rounded-xl transition-colors">
+                                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                    <span>Profile Settings</span>
                                 </a>
-                            @else
-                                <a href="{{ route('dashboard') }}" class="flex items-center space-x-2.5 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-800 hover:text-blue-600 transition-colors">
-                                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-                                    <span>ERP Dashboard</span>
-                                </a>
-                            @endif
-                            <a href="{{ route('profile.edit') }}" class="flex items-center space-x-2.5 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-800 hover:text-blue-600 transition-colors">
-                                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                                <span>Profile Settings</span>
-                            </a>
-                            <form method="POST" action="{{ route('logout') }}" class="mt-1 pt-1 border-t border-slate-100 dark:border-slate-800">
-                                @csrf
-                                <button type="submit" class="w-full text-left flex items-center space-x-2.5 px-4 py-2.5 text-sm font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-                                    <span>Log Out</span>
-                                </button>
-                            </form>
+                                <form method="POST" action="{{ route('logout') }}" class="pt-1 border-t border-slate-100 dark:border-slate-800">
+                                    @csrf
+                                    <button type="submit" class="w-full text-left flex items-center space-x-2.5 px-3 py-2 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-xl transition-colors cursor-pointer">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                                        <span>Log Out</span>
+                                    </button>
+                                </form>
+                            </div>
                         @else
-                            <div class="px-4 pb-2 border-b border-slate-100 dark:border-slate-800 mb-1">
-                                <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Internal Access</span>
+                            <!-- Header with prominent blue border line and badge -->
+                            <div class="px-4 py-2.5 bg-gradient-to-r from-blue-50/90 to-slate-50/80 dark:from-blue-950/40 dark:to-slate-900/60 border-b-2 border-blue-600/30 dark:border-blue-500/40 flex items-center justify-between">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
+                                    <span class="text-[10px] font-extrabold text-blue-700 dark:text-blue-300 uppercase tracking-wider">Internal Access</span>
+                                </div>
+                                <span class="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-300 border border-blue-200 dark:border-blue-800 shadow-2xs">Authorized Only</span>
                             </div>
-                            <a href="{{ route('login') }}" class="flex items-center space-x-3 px-4 py-2.5 text-xs font-semibold text-slate-800 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-800 hover:text-blue-600 transition-colors">
-                                <div class="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/40 text-blue-600 flex items-center justify-center">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
-                                </div>
-                                <div>
-                                    <span class="block font-bold">Staff &amp; Admin ERP</span>
-                                    <span class="block text-[10px] text-slate-400 font-normal">Internal operations login</span>
-                                </div>
-                            </a>
+
+                            <!-- Interactive Login Item -->
+                            <div class="p-2.5">
+                                <a href="{{ route('login') }}" class="group flex items-center gap-3 p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/60 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50/70 dark:hover:from-blue-950/50 dark:hover:to-slate-800 border border-slate-200/80 dark:border-slate-700/80 hover:border-blue-400 dark:hover:border-blue-500 transition-all duration-200 shadow-xs hover:shadow-md hover:shadow-blue-500/15">
+                                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white flex items-center justify-center shadow-md shadow-blue-500/30 group-hover:scale-105 transition-transform shrink-0">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                                        </svg>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-center justify-between">
+                                            <span class="block text-sm font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Staff &amp; Admin ERP</span>
+                                        </div>
+                                        <span class="block text-[11px] text-slate-500 dark:text-slate-400 font-medium leading-tight mt-0.5">Internal operations login</span>
+                                    </div>
+                                    <svg class="w-4 h-4 text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:translate-x-1 transition-all shrink-0 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+                                    </svg>
+                                </a>
+                            </div>
+
+                            <!-- Footer Security Assurance Note -->
+                            <div class="px-4 py-2 bg-slate-50/80 dark:bg-slate-900/80 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[10px] text-slate-400 dark:text-slate-500">
+                                <span class="flex items-center gap-1 font-medium">
+                                    <svg class="w-3 h-3 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clip-rule="evenodd"/>
+                                    </svg>
+                                    256-Bit SSL Secured
+                                </span>
+                                <a href="{{ route('login') }}" class="font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-0.5">
+                                    Sign In &rarr;
+                                </a>
+                            </div>
                         @endauth
                     </div>
                 </div>
@@ -1297,6 +1348,31 @@
             }
         }
 
+        // User Account Profile Dropdown Handler (Click-to-open, zero-gap)
+        function toggleUserDropdown(event) {
+            if (event) {
+                event.stopPropagation();
+            }
+            const dropdown = document.getElementById('userAccountDropdown');
+            if (dropdown) {
+                dropdown.classList.toggle('open');
+                const isOpen = dropdown.classList.contains('open');
+                dropdown.style.display = isOpen ? 'block' : 'none';
+                const btn = document.getElementById('userDropdownBtn') || document.getElementById('userDropdownGuestBtn');
+                if (btn) btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+            }
+        }
+
+        function closeUserDropdown() {
+            const dropdown = document.getElementById('userAccountDropdown');
+            if (dropdown && dropdown.classList.contains('open')) {
+                dropdown.classList.remove('open');
+                dropdown.style.display = 'none';
+                const btn = document.getElementById('userDropdownBtn') || document.getElementById('userDropdownGuestBtn');
+                if (btn) btn.setAttribute('aria-expanded', 'false');
+            }
+        }
+
         // Multi-Step Proposal & Audit Form Flow
         function startAuditFlow() {
             const initialView = document.getElementById('auditInitialButtonView');
@@ -1793,12 +1869,13 @@
         // -------------------------------------------------------------
         // GLOBAL LISTENERS & MODALS
         // -------------------------------------------------------------
-        // Override the window.onclick to also handle lightbox
+        // Override the window.onclick to also handle lightbox and dropdowns
         window.onclick = function(event) {
             const inquireModal = document.getElementById('inquireModal');
             const searchModal = document.getElementById('searchModal');
             const lightboxModal = document.getElementById('pictureLightboxModal');
             const menuDropdownContainer = document.getElementById('navMenuDropdownContainer');
+            const userDropdownContainer = document.getElementById('userDropdownContainer');
 
             if (event.target === inquireModal) closeInquireModal();
             if (event.target === searchModal) closeSearchModal();
@@ -1806,6 +1883,10 @@
 
             if (menuDropdownContainer && !menuDropdownContainer.contains(event.target)) {
                 closeNavMenuDropdown();
+            }
+
+            if (userDropdownContainer && !userDropdownContainer.contains(event.target)) {
+                closeUserDropdown();
             }
         };
 
@@ -1815,6 +1896,7 @@
             const isLightboxOpen = lightboxModal && !lightboxModal.classList.contains('hidden');
 
             if (event.key === 'Escape') {
+                closeUserDropdown();
                 if (isLightboxOpen) {
                     closePictureLightbox();
                 } else {
