@@ -90,15 +90,18 @@ class ModuleHubController extends Controller
         $pendingExpensesAmount = (float) ExpenseClaim::where('status', 'pending')->sum('amount');
 
         // ── Payroll (current month + last 6 months trend) ─────────────────────
-        $currentMonthPayrolls = Payroll::where('payroll_month', $currentMonth)->get();
+        $currentMonthStart    = now()->startOfMonth()->toDateString();
+        $currentMonthEnd      = now()->endOfMonth()->toDateString();
+        $currentMonthPayrolls = Payroll::whereBetween('period_start', [$currentMonthStart, $currentMonthEnd])->get();
         $isPayrollGenerated   = $currentMonthPayrolls->isNotEmpty();
-        $payrollPaidCount     = $currentMonthPayrolls->where('payment_status', 'paid')->count();
+        $payrollPaidCount     = $currentMonthPayrolls->where('status', 'paid')->count();
         $payrollTotalAmount   = (float) $currentMonthPayrolls->sum('net_salary');
 
         $payrollHistory = collect(range(5, 0))->map(function ($m) {
-            $month = now()->subMonths($m)->format('Y-m');
+            $start = now()->subMonths($m)->startOfMonth()->toDateString();
+            $end   = now()->subMonths($m)->endOfMonth()->toDateString();
             $label = now()->subMonths($m)->format('M y');
-            $total = (float) Payroll::where('payroll_month', $month)->sum('net_salary');
+            $total = (float) Payroll::whereBetween('period_start', [$start, $end])->sum('net_salary');
             return ['month' => $label, 'total' => $total];
         });
 
@@ -131,7 +134,7 @@ class ModuleHubController extends Controller
         $totalInvoicesCount   = Invoice::count();
         $totalInvoicedAmount  = (float) Invoice::sum('total');
         $totalPaidAmount      = (float) Invoice::sum('amount_paid');
-        $totalOutstandingAR   = (float) Invoice::whereIn('status', ['unpaid', 'partially_paid'])->sum('balance_due');
+        $totalOutstandingAR   = max(0.0, $totalInvoicedAmount - $totalPaidAmount);
         $overdueInvoicesCount = Invoice::whereIn('status', ['unpaid', 'partially_paid'])
             ->where('due_date', '<', $today)->count();
 
@@ -158,23 +161,42 @@ class ModuleHubController extends Controller
         });
 
         // ── AR Aging Buckets (0-30, 31-60, 61-90, 90+) ───────────────────────
+        $unpaidInvoices = Invoice::whereIn('status', ['unpaid', 'partially_paid', 'overdue'])->get();
+        $now = now();
+        $ar0_30 = 0.0;
+        $ar31_60 = 0.0;
+        $ar61_90 = 0.0;
+        $ar90_plus = 0.0;
+
+        foreach ($unpaidInvoices as $inv) {
+            $balance = (float) $inv->balance_due;
+            if ($balance <= 0) {
+                continue;
+            }
+
+            $dueDate = $inv->due_date ? Carbon::parse($inv->due_date) : Carbon::parse($inv->invoice_date);
+            $daysPast = $dueDate->isPast() ? $dueDate->diffInDays($now) : 0;
+
+            if ($daysPast <= 30) {
+                $ar0_30 += $balance;
+            } elseif ($daysPast <= 60) {
+                $ar31_60 += $balance;
+            } elseif ($daysPast <= 90) {
+                $ar61_90 += $balance;
+            } else {
+                $ar90_plus += $balance;
+            }
+        }
+
         $arAging = [
-            '0-30'  => (float) Invoice::whereIn('status', ['unpaid', 'partially_paid'])
-                            ->where('due_date', '>=', now()->subDays(30)->toDateString())
-                            ->sum('balance_due'),
-            '31-60' => (float) Invoice::whereIn('status', ['unpaid', 'partially_paid'])
-                            ->whereBetween('due_date', [now()->subDays(60)->toDateString(), now()->subDays(31)->toDateString()])
-                            ->sum('balance_due'),
-            '61-90' => (float) Invoice::whereIn('status', ['unpaid', 'partially_paid'])
-                            ->whereBetween('due_date', [now()->subDays(90)->toDateString(), now()->subDays(61)->toDateString()])
-                            ->sum('balance_due'),
-            '90+'   => (float) Invoice::whereIn('status', ['unpaid', 'partially_paid'])
-                            ->where('due_date', '<', now()->subDays(90)->toDateString())
-                            ->sum('balance_due'),
+            '0-30'  => $ar0_30,
+            '31-60' => $ar31_60,
+            '61-90' => $ar61_90,
+            '90+'   => $ar90_plus,
         ];
 
         // ── Accounts Payable ─────────────────────────────────────────────────
-        $totalPayablesAmount  = (float) PurchaseOrder::whereIn('payment_status', ['unpaid', 'partially_paid'])->sum('total_amount');
+        $totalPayablesAmount  = (float) PurchaseOrder::whereIn('payment_status', ['unpaid', 'partially_paid'])->sum('total');
         $unpaidPoCount        = PurchaseOrder::whereIn('payment_status', ['unpaid', 'partially_paid'])->count();
         $threeWayMatchedCount = PurchaseOrder::where('status', 'received')->where('payment_status', 'paid')->count();
 
@@ -200,10 +222,11 @@ class ModuleHubController extends Controller
 
         // ── Top Unpaid Receivables ────────────────────────────────────────────
         $topUnpaid = Invoice::with(['installationJob.quotation.lead', 'quotation.lead'])
-            ->whereIn('status', ['unpaid', 'partially_paid'])
-            ->orderByRaw('(total - amount_paid) DESC')
-            ->limit(5)
-            ->get();
+            ->whereIn('status', ['unpaid', 'partially_paid', 'overdue'])
+            ->get()
+            ->filter(fn($inv) => $inv->balance_due > 0)
+            ->sortByDesc(fn($inv) => $inv->balance_due)
+            ->take(5);
 
         return view('hub.finance', compact(
             'totalInvoicesCount', 'totalInvoicedAmount', 'totalPaidAmount',
