@@ -2,25 +2,25 @@
     <x-slot name="header">
         <div class="flex flex-wrap items-center justify-between gap-4">
             <div>
-                <h2 class="text-2xl font-bold leading-tight text-white tracking-tight flex items-center gap-2">
+                <h2 class="text-2xl font-bold leading-tight text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
                     <span class="w-2.5 h-2.5 rounded-full bg-amber-400 shadow-[0_0_10px_#f59e0b]"></span>
                     Automated Alerts & Notification Hub
                 </h2>
-                <p class="mt-1 text-sm text-slate-400 font-medium">Multi-channel WhatsApp, SMS & Email communication telemetry, dispatch logs & triggers</p>
+                <p class="mt-1 text-sm text-slate-500 dark:text-slate-400 font-medium">Multi-channel WhatsApp, SMS & Email communication telemetry, dispatch logs & triggers</p>
             </div>
             <div class="flex items-center gap-2">
                 <a href="{{ route('alerts.gateways') }}"
-                   class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-white/10 bg-[#0f172a] hover:bg-slate-800 text-slate-300 text-xs font-bold shadow-sm transition">
+                   class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-300 dark:border-white/10 bg-white dark:bg-[#0f172a] hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold shadow-xs transition">
                     🔌 SMS & Webhook Gateways
                 </a>
                 <a href="{{ route('alerts.templates') }}"
-                   class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-white/10 bg-[#0f172a] hover:bg-slate-800 text-slate-300 text-xs font-bold shadow-sm transition">
+                   class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-300 dark:border-white/10 bg-white dark:bg-[#0f172a] hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold shadow-xs transition">
                     ⚙️ Templates
                 </a>
                 <form method="POST" action="{{ route('alerts.run-sweep') }}">
                     @csrf
                     <button type="submit"
-                            class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-white text-xs font-bold shadow-xs transition"
+                            class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-white text-xs font-bold shadow-xs transition cursor-pointer"
                             style="background-color: var(--crm-accent, #2563eb);">
                         ⚡ Run Reminder Sweep
                     </button>
@@ -29,66 +29,66 @@
         </div>
     </x-slot>
 
-    <div class="py-8 bg-[#060913] min-h-screen font-['Plus_Jakarta_Sans']">
+    <div class="py-8 bg-slate-50 dark:bg-[#060913] min-h-screen font-['Plus_Jakarta_Sans']">
         <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
 
             @if (session('status'))
-                <div class="mb-5 p-4 rounded-xl bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 text-sm font-medium flex items-center gap-2">
+                <div class="mb-5 p-4 rounded-xl bg-emerald-100 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-500/30 text-emerald-900 dark:text-emerald-300 text-sm font-medium flex items-center gap-2">
                     <span>{{ session('status') }}</span>
                 </div>
             @endif
 
             {{-- Summary Cards --}}
             <div class="grid grid-cols-1 sm:grid-cols-5 gap-4 mb-6">
-                <div class="bg-[#0f172a] p-4 rounded-2xl border border-white/5 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.5)]">
-                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Alerts Sent</span>
-                    <div class="text-2xl font-extrabold text-white mt-1 font-['Outfit']">{{ $stats['total'] }}</div>
-                    <span class="text-[11px] text-slate-500">All channels combined</span>
+                <div class="bg-white dark:bg-[#0f172a] p-4 rounded-2xl border border-slate-200 dark:border-white/5 shadow-xs">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Alerts Sent</span>
+                    <div class="text-2xl font-extrabold text-slate-900 dark:text-white mt-1 font-['Outfit']">{{ $stats['total'] }}</div>
+                    <span class="text-[11px] text-slate-400 dark:text-slate-500">All channels combined</span>
                 </div>
-                <div class="bg-[#0f172a] p-4 rounded-2xl border border-white/5 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.5)]">
-                    <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">WhatsApp Messages</span>
-                    <div class="text-2xl font-extrabold text-emerald-400 mt-1 font-['Outfit']">{{ $stats['whatsapp'] }}</div>
-                    <span class="text-[11px] text-slate-500">Chat dispatches</span>
+                <div class="bg-white dark:bg-[#0f172a] p-4 rounded-2xl border border-slate-200 dark:border-white/5 shadow-xs">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">WhatsApp Messages</span>
+                    <div class="text-2xl font-extrabold text-emerald-700 dark:text-emerald-400 mt-1 font-['Outfit']">{{ $stats['whatsapp'] }}</div>
+                    <span class="text-[11px] text-slate-400 dark:text-slate-500">Chat dispatches</span>
                 </div>
-                <div class="bg-[#0f172a] p-4 rounded-2xl border border-white/5 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.5)]">
-                    <span class="text-[11px] font-bold uppercase tracking-wider text-amber-400">SMS Alerts</span>
-                    <div class="text-2xl font-extrabold text-amber-400 mt-1 font-['Outfit']">{{ $stats['sms'] }}</div>
-                    <span class="text-[11px] text-slate-500">SMS gateway logs</span>
+                <div class="bg-white dark:bg-[#0f172a] p-4 rounded-2xl border border-slate-200 dark:border-white/5 shadow-xs">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400">SMS Alerts</span>
+                    <div class="text-2xl font-extrabold text-amber-700 dark:text-amber-400 mt-1 font-['Outfit']">{{ $stats['sms'] }}</div>
+                    <span class="text-[11px] text-slate-400 dark:text-slate-500">SMS gateway logs</span>
                 </div>
-                <div class="bg-[#0f172a] p-4 rounded-2xl border border-white/5 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.5)]">
-                    <span class="text-[11px] font-bold uppercase tracking-wider text-sky-400">Email Notifications</span>
-                    <div class="text-2xl font-extrabold text-sky-400 mt-1 font-['Outfit']">{{ $stats['email'] }}</div>
-                    <span class="text-[11px] text-slate-500">HTML emails delivered</span>
+                <div class="bg-white dark:bg-[#0f172a] p-4 rounded-2xl border border-slate-200 dark:border-white/5 shadow-xs">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-sky-700 dark:text-sky-400">Email Notifications</span>
+                    <div class="text-2xl font-extrabold text-sky-700 dark:text-sky-400 mt-1 font-['Outfit']">{{ $stats['email'] }}</div>
+                    <span class="text-[11px] text-slate-400 dark:text-slate-500">HTML emails delivered</span>
                 </div>
-                <div class="bg-[#0f172a] p-4 rounded-2xl border border-white/5 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.5)]">
-                    <span class="text-[11px] font-bold uppercase tracking-wider text-rose-400">Delivery Failures</span>
-                    <div class="text-2xl font-extrabold {{ $stats['failed'] > 0 ? 'text-rose-400' : 'text-slate-500' }} mt-1 font-['Outfit']">{{ $stats['failed'] }}</div>
-                    <span class="text-[11px] text-slate-500">Unreachable recipients</span>
+                <div class="bg-white dark:bg-[#0f172a] p-4 rounded-2xl border border-slate-200 dark:border-white/5 shadow-xs">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-rose-700 dark:text-rose-400">Delivery Failures</span>
+                    <div class="text-2xl font-extrabold {{ $stats['failed'] > 0 ? 'text-rose-700 dark:text-rose-400' : 'text-slate-400 dark:text-slate-500' }} mt-1 font-['Outfit']">{{ $stats['failed'] }}</div>
+                    <span class="text-[11px] text-slate-400 dark:text-slate-500">Unreachable recipients</span>
                 </div>
             </div>
 
             {{-- Quick Send Ad-hoc Alert Card --}}
-            <div class="bg-[#0f172a] rounded-2xl p-5 mb-6 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.5)] border border-white/5" x-data="{ open: false }">
+            <div class="bg-white dark:bg-[#0f172a] rounded-2xl p-5 mb-6 shadow-xs border border-slate-200 dark:border-white/5" x-data="{ open: false }">
                 <div class="flex items-center justify-between cursor-pointer" @click="open = !open">
                     <div class="flex items-center gap-2">
-                        <span class="w-7 h-7 rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/20 flex items-center justify-center text-sm font-bold">📢</span>
+                        <span class="w-7 h-7 rounded-lg bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-500/20 flex items-center justify-center text-sm font-bold">📢</span>
                         <div>
-                            <h3 class="text-sm font-bold text-white">Send Instant Ad-hoc Notification / Broadcast</h3>
-                            <p class="text-xs text-slate-400">Dispatch a custom WhatsApp message, SMS, or Email directly to a client or technician.</p>
+                            <h3 class="text-sm font-bold text-slate-900 dark:text-white">Send Instant Ad-hoc Notification / Broadcast</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Dispatch a custom WhatsApp message, SMS, or Email directly to a client or technician.</p>
                         </div>
                     </div>
-                    <button type="button" class="text-xs font-bold hover:underline" style="color: var(--crm-accent, #2563eb);">
+                    <button type="button" class="text-xs font-bold hover:underline cursor-pointer" style="color: var(--crm-accent, #2563eb);">
                         <span x-show="!open">+ Open Composer</span>
                         <span x-show="open">&minus; Hide Composer</span>
                     </button>
                 </div>
 
-                <div x-show="open" x-cloak class="mt-4 pt-4 border-t border-white/5">
+                <div x-show="open" x-cloak class="mt-4 pt-4 border-t border-slate-200 dark:border-white/5">
                     <form method="POST" action="{{ route('alerts.broadcast') }}" class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
                         @csrf
                         <div>
-                            <label class="block font-bold text-slate-400 mb-1">Dispatch Channel <span class="text-rose-400">*</span></label>
-                            <select name="channel" required class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-[#060913] border border-slate-700 text-slate-200 focus:border-blue-400 focus:ring-blue-400 font-semibold">
+                            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Dispatch Channel <span class="text-rose-500">*</span></label>
+                            <select name="channel" required class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#060913] border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-200 focus:border-blue-500 focus:ring-blue-500 font-semibold">
                                 <option value="whatsapp">💬 WhatsApp Direct</option>
                                 <option value="email">✉️ Email Notification</option>
                                 <option value="sms">📱 SMS Text</option>
@@ -96,32 +96,32 @@
                         </div>
 
                         <div>
-                            <label class="block font-bold text-slate-400 mb-1">Recipient Name <span class="text-rose-400">*</span></label>
-                            <input type="text" name="recipient_name" required placeholder="e.g. John Doe" class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-[#060913] border border-slate-700 text-slate-200 focus:border-blue-400 focus:ring-blue-400">
+                            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Recipient Name <span class="text-rose-500">*</span></label>
+                            <input type="text" name="recipient_name" required placeholder="e.g. John Doe" class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#060913] border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-200 focus:border-blue-500 focus:ring-blue-500">
                         </div>
 
                         <div>
-                            <label class="block font-bold text-slate-400 mb-1">Recipient Phone / Mobile</label>
-                            <input type="text" name="phone" placeholder="e.g. 9876543210" class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-[#060913] border border-slate-700 text-slate-200 focus:border-blue-400 focus:ring-blue-400">
+                            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Recipient Phone / Mobile</label>
+                            <input type="text" name="phone" placeholder="e.g. 9876543210" class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#060913] border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-200 focus:border-blue-500 focus:ring-blue-500">
                         </div>
 
                         <div class="sm:col-span-2">
-                            <label class="block font-bold text-slate-400 mb-1">Email Subject (If sending email)</label>
-                            <input type="text" name="subject" placeholder="e.g. Important Service Notification regarding your CCTV setup" class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-[#060913] border border-slate-700 text-slate-200 focus:border-blue-400 focus:ring-blue-400">
+                            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Email Subject (If sending email)</label>
+                            <input type="text" name="subject" placeholder="e.g. Important Service Notification regarding your CCTV setup" class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#060913] border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-200 focus:border-blue-500 focus:ring-blue-500">
                         </div>
 
                         <div>
-                            <label class="block font-bold text-slate-400 mb-1">Recipient Email (If sending email)</label>
-                            <input type="email" name="email" placeholder="e.g. customer@example.com" class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-[#060913] border border-slate-700 text-slate-200 focus:border-blue-400 focus:ring-blue-400">
+                            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Recipient Email (If sending email)</label>
+                            <input type="email" name="email" placeholder="e.g. customer@example.com" class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#060913] border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-200 focus:border-blue-500 focus:ring-blue-500">
                         </div>
 
                         <div class="sm:col-span-3">
-                            <label class="block font-bold text-slate-400 mb-1">Message Body <span class="text-rose-400">*</span></label>
-                            <textarea name="message" rows="3" required placeholder="Type your message content here..." class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-[#060913] border border-slate-700 text-slate-200 focus:border-blue-400 focus:ring-blue-400"></textarea>
+                            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Message Body <span class="text-rose-500">*</span></label>
+                            <textarea name="message" rows="3" required placeholder="Type your message content here..." class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#060913] border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-200 focus:border-blue-500 focus:ring-blue-500"></textarea>
                         </div>
 
                         <div class="sm:col-span-3 flex justify-end">
-                            <button type="submit" class="btn-amber min-h-[44px] px-6 py-2.5 text-sm font-bold rounded-xl shadow-xs transition">
+                            <button type="submit" class="btn-amber min-h-[44px] px-6 py-2.5 text-sm font-bold rounded-xl shadow-xs transition cursor-pointer">
                                 Dispatch Message Now &rarr;
                             </button>
                         </div>
@@ -130,15 +130,15 @@
             </div>
 
             {{-- Filter Bar --}}
-            <div class="bg-[#0f172a] rounded-2xl p-4 mb-6 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.5)] border border-white/5">
+            <div class="bg-white dark:bg-[#0f172a] rounded-2xl p-4 mb-6 shadow-xs border border-slate-200 dark:border-white/5">
                 <form method="GET" action="{{ route('alerts.index') }}" class="grid grid-cols-1 sm:grid-cols-4 gap-3">
                     <div>
-                        <label class="block text-sm font-semibold text-slate-300 mb-1.5">Search Logs</label>
-                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Recipient, Phone, Message text..." class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-[#060913] border border-slate-700 text-slate-200 focus:border-amber-400 focus:ring-amber-400">
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Search Logs</label>
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Recipient, Phone, Message text..." class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#060913] border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-200 focus:border-amber-500 focus:ring-amber-500">
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold text-slate-300 mb-1.5">Channel</label>
-                        <select name="channel" class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-[#060913] border border-slate-700 text-slate-200 focus:border-amber-400 focus:ring-amber-400">
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Channel</label>
+                        <select name="channel" class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#060913] border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-200 focus:border-amber-500 focus:ring-amber-500">
                             <option value="">All Channels</option>
                             <option value="whatsapp" @selected(request('channel') === 'whatsapp')>💬 WhatsApp</option>
                             <option value="sms" @selected(request('channel') === 'sms')>📱 SMS</option>
@@ -146,8 +146,8 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold text-slate-300 mb-1.5">Status</label>
-                        <select name="status" class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-[#060913] border border-slate-700 text-slate-200 focus:border-amber-400 focus:ring-amber-400">
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Status</label>
+                        <select name="status" class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#060913] border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-200 focus:border-amber-500 focus:ring-amber-500">
                             <option value="">All Statuses</option>
                             <option value="sent" @selected(request('status') === 'sent')>Sent</option>
                             <option value="delivered" @selected(request('status') === 'delivered')>Delivered</option>
@@ -155,11 +155,11 @@
                         </select>
                     </div>
                     <div class="flex items-end gap-2">
-                        <button type="submit" class="btn-amber min-h-[44px] flex-1 px-5 py-2.5 text-sm font-bold rounded-xl transition shadow-xs">
+                        <button type="submit" class="btn-amber min-h-[44px] flex-1 px-5 py-2.5 text-sm font-bold rounded-xl transition shadow-xs cursor-pointer">
                             Filter
                         </button>
                         @if(request()->anyFilled(['search', 'channel', 'status', 'event']))
-                            <a href="{{ route('alerts.index') }}" class="btn-secondary min-h-[44px] px-4 py-2.5 text-sm font-semibold rounded-xl">
+                            <a href="{{ route('alerts.index') }}" class="btn-secondary min-h-[44px] px-4 py-2.5 text-sm font-semibold rounded-xl flex items-center justify-center">
                                 Reset
                             </a>
                         @endif
@@ -168,21 +168,21 @@
             </div>
 
             {{-- Table --}}
-            <div class="bg-[#0f172a] rounded-2xl shadow-[0_10px_25px_-5px_rgba(0,0,0,0.5)] border border-white/5 overflow-hidden">
-                <table class="min-w-full divide-y divide-white/5 text-xs">
-                    <thead class="bg-[#0b1120]">
+            <div class="bg-white dark:bg-[#0f172a] rounded-2xl shadow-xs border border-slate-200 dark:border-white/5 overflow-hidden">
+                <table class="min-w-full divide-y divide-slate-200 dark:divide-white/5 text-xs">
+                    <thead class="bg-slate-100 dark:bg-[#0b1120]">
                         <tr>
-                            <th class="px-4 py-3.5 text-left font-bold text-slate-400 uppercase tracking-wider text-[11px]">Channel & Event</th>
-                            <th class="px-4 py-3.5 text-left font-bold text-slate-400 uppercase tracking-wider text-[11px]">Recipient</th>
-                            <th class="px-4 py-3.5 text-left font-bold text-slate-400 uppercase tracking-wider text-[11px]">Message Content</th>
-                            <th class="px-4 py-3.5 text-left font-bold text-slate-400 uppercase tracking-wider text-[11px]">Status</th>
-                            <th class="px-4 py-3.5 text-left font-bold text-slate-400 uppercase tracking-wider text-[11px]">Sent At</th>
-                            <th class="px-4 py-3.5 text-right font-bold text-slate-400 uppercase tracking-wider text-[11px]">Action</th>
+                            <th class="px-4 py-3.5 text-left font-bold text-slate-700 dark:text-slate-400 uppercase tracking-wider text-[11px]">Channel & Event</th>
+                            <th class="px-4 py-3.5 text-left font-bold text-slate-700 dark:text-slate-400 uppercase tracking-wider text-[11px]">Recipient</th>
+                            <th class="px-4 py-3.5 text-left font-bold text-slate-700 dark:text-slate-400 uppercase tracking-wider text-[11px]">Message Content</th>
+                            <th class="px-4 py-3.5 text-left font-bold text-slate-700 dark:text-slate-400 uppercase tracking-wider text-[11px]">Status</th>
+                            <th class="px-4 py-3.5 text-left font-bold text-slate-700 dark:text-slate-400 uppercase tracking-wider text-[11px]">Sent At</th>
+                            <th class="px-4 py-3.5 text-right font-bold text-slate-700 dark:text-slate-400 uppercase tracking-wider text-[11px]">Action</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-white/5 bg-[#0f172a]">
+                    <tbody class="divide-y divide-slate-100 dark:divide-white/5 bg-white dark:bg-[#0f172a]">
                         @forelse($logs as $log)
-                            <tr class="hover:bg-slate-800/50 transition">
+                            <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
                                 <td class="px-4 py-3.5 whitespace-nowrap">
                                     <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border {{ $log->channel_badge_class }} mb-1">
                                         @if($log->channel === 'whatsapp') 💬 WhatsApp
@@ -190,40 +190,50 @@
                                         @else ✉️ Email
                                         @endif
                                     </span>
-                                    <div class="text-[11px] font-semibold text-slate-300 capitalize">
+                                    <div class="text-[11px] font-semibold text-slate-700 dark:text-slate-300 capitalize">
                                         {{ str_replace('_', ' ', $log->event_type) }}
                                     </div>
                                 </td>
                                 <td class="px-4 py-3.5">
-                                    <div class="font-bold text-slate-200">{{ $log->recipient_name }}</div>
-                                    <div class="text-[11px] text-slate-400 font-mono">
+                                    <div class="font-bold text-slate-900 dark:text-slate-100">{{ $log->recipient_name }}</div>
+                                    <div class="text-[11px] text-slate-600 dark:text-slate-400 font-mono">
                                         {{ $log->recipient_phone ?: $log->recipient_email }}
                                     </div>
                                 </td>
                                 <td class="px-4 py-3.5 max-w-md">
-                                    <div class="text-slate-300 line-clamp-2 leading-relaxed whitespace-pre-line text-[11px]">{{ $log->message_body }}</div>
+                                    <div class="text-slate-800 dark:text-slate-300 line-clamp-2 leading-relaxed whitespace-pre-line text-[11px]">{{ $log->message_body }}</div>
                                     @if($log->error_message)
-                                        <div class="text-[10px] text-rose-400 font-medium mt-1">⚠️ {{ $log->error_message }}</div>
+                                        <div class="text-[10px] text-rose-600 dark:text-rose-400 font-medium mt-1">⚠️ {{ $log->error_message }}</div>
                                     @endif
                                 </td>
                                 <td class="px-4 py-3.5 whitespace-nowrap">
-                                    <span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold {{ $log->status_badge_class }}">
+                                    @php
+                                        $st = strtolower($log->status ?? 'sent');
+                                        $badgeStyles = match($st) {
+                                            'sent'      => 'background-color: #d1fae5; color: #065f46; border: 1px solid #6ee7b7;',
+                                            'delivered' => 'background-color: #dbeafe; color: #1e40af; border: 1px solid #93c5fd;',
+                                            'queued'    => 'background-color: #e0f2fe; color: #0369a1; border: 1px solid #7dd3fc;',
+                                            'failed'    => 'background-color: #ffe4e6; color: #9f1239; border: 1px solid #fda4af;',
+                                            default     => 'background-color: #f1f5f9; color: #334155; border: 1px solid #cbd5e1;',
+                                        };
+                                    @endphp
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-extrabold uppercase tracking-wider" style="{{ $badgeStyles }}">
                                         {{ strtoupper($log->status) }}
                                     </span>
                                 </td>
-                                <td class="px-4 py-3.5 whitespace-nowrap text-slate-400">
-                                    <div class="font-semibold text-slate-200">{{ $log->sent_at?->format('d M Y') ?? $log->created_at->format('d M Y') }}</div>
-                                    <div class="text-[10px] text-slate-500">{{ $log->sent_at?->format('h:i A') ?? $log->created_at->format('h:i A') }}</div>
+                                <td class="px-4 py-3.5 whitespace-nowrap">
+                                    <div class="font-semibold text-slate-900 dark:text-slate-100">{{ $log->sent_at?->format('d M Y') ?? $log->created_at->format('d M Y') }}</div>
+                                    <div class="text-[10px] text-slate-500 dark:text-slate-400">{{ $log->sent_at?->format('h:i A') ?? $log->created_at->format('h:i A') }}</div>
                                 </td>
                                 <td class="px-4 py-3.5 whitespace-nowrap text-right font-medium">
                                     <div class="flex items-center justify-end gap-1.5">
                                         @if($log->action_url)
-                                            <a href="{{ $log->action_url }}" target="_blank" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border border-sky-500/30 text-[11px] font-bold transition" title="View Proposal PDF">
+                                            <a href="{{ $log->action_url }}" target="_blank" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-sky-100 dark:bg-sky-500/10 hover:bg-sky-200 dark:hover:bg-sky-500/20 text-sky-800 dark:text-sky-400 border border-sky-300 dark:border-sky-500/30 text-[11px] font-bold transition" title="View Proposal PDF">
                                                 📄 PDF
                                             </a>
                                         @endif
                                         @if($log->channel === 'whatsapp' && $log->whats_app_web_url)
-                                            <a href="{{ $log->whats_app_web_url }}" target="_blank" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[11px] font-bold transition" title="Open in WhatsApp Web / App">
+                                            <a href="{{ $log->whats_app_web_url }}" target="_blank" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-100 dark:bg-emerald-500/10 hover:bg-emerald-200 dark:hover:bg-emerald-500/20 text-emerald-800 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-500/30 text-[11px] font-bold transition" title="Open in WhatsApp Web / App">
                                                 💬 Chat
                                             </a>
                                         @endif
