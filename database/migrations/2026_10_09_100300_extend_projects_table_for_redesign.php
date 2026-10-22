@@ -8,6 +8,10 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::getConnection()->getDriverName() === 'pgsql') {
+            \Illuminate\Support\Facades\DB::statement('ALTER TABLE projects DROP CONSTRAINT IF EXISTS projects_status_check');
+        }
+
         Schema::table('projects', function (Blueprint $table) {
             $table->foreignId('site_id')->nullable()->after('lead_id')->constrained('sites')->nullOnDelete();
             $table->foreignId('company_id')->nullable()->after('company_name')->constrained('companies')->nullOnDelete();

@@ -11,6 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (Schema::getConnection()->getDriverName() === 'pgsql') {
+            \Illuminate\Support\Facades\DB::statement('ALTER TABLE installation_jobs DROP CONSTRAINT IF EXISTS installation_jobs_status_check');
+        }
+
         Schema::table('installation_jobs', function (Blueprint $table) {
             $table->string('status', 50)->default('pending')->change();
         });
