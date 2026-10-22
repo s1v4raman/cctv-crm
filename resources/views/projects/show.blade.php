@@ -50,6 +50,8 @@
              rejectModalOpen: false,
              materialModalOpen: false,
              consumeModalOpen: false,
+             consumeStep: 1,
+             consumeStep1Error: '',
              consumeTaskId: '',
              consumeTaskTitle: '',
              consumeMaterialId: '',
@@ -183,6 +185,8 @@
              },
 
              openConsumeModal(taskId = null, taskTitle = '', materialId = null, itemName = '', unit = 'meters', productId = '') {
+                 this.consumeStep = 1;
+                 this.consumeStep1Error = '';
                  this.consumeTaskId = taskId || '{{ $project->tasks->isNotEmpty() ? $project->tasks->first()->id : '' }}';
                  this.consumeTaskTitle = taskTitle || '';
                  this.consumeMaterialId = materialId || '';
@@ -195,6 +199,25 @@
                  this.consumeDeductStock = true;
                  this.consumeNotes = '';
                  this.consumeModalOpen = true;
+             },
+
+             nextConsumeStep() {
+                 this.consumeStep1Error = '';
+                 @if($project->tasks->isNotEmpty())
+                     if (!this.consumeTaskId) {
+                         this.consumeStep1Error = 'Please select an associated project task.';
+                         return;
+                     }
+                 @endif
+                 if (!this.consumeItemName || !this.consumeItemName.trim()) {
+                     this.consumeStep1Error = 'Please enter a material / cable description.';
+                     return;
+                 }
+                 if (!this.consumeQty || parseFloat(this.consumeQty) <= 0) {
+                     this.consumeStep1Error = 'Please enter a valid quantity used (greater than 0).';
+                     return;
+                 }
+                 this.consumeStep = 2;
              },
 
              onBomSelectChange(evt) {
@@ -2683,150 +2706,212 @@
         </div>
 
         {{-- Log Material & Cable Consumption Modal --}}
-        <div x-show="consumeModalOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-            <div @click.away="consumeModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
-                <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+        <div x-show="consumeModalOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto">
+            <div @click.away="consumeModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col max-h-[90vh] overflow-hidden my-auto">
+                <div class="px-6 pt-5 pb-3 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between shrink-0">
                     <div>
                         <h3 class="font-bold text-slate-900 dark:text-white text-base flex items-center gap-2">
                             <span>📦</span>
                             <span>Log Material / Cable Used</span>
                         </h3>
-                        <p class="text-xs text-slate-500 mt-0.5">Record actual meters laid or hardware installed for a specific task</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Record actual meters laid or hardware installed for a specific task</p>
                     </div>
-                    <button type="button" @click="consumeModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+                    <button type="button" @click="consumeModalOpen = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 text-lg leading-none p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition">&times;</button>
                 </div>
 
-                <form method="POST" action="{{ route('projects.material-consumptions.store', $project) }}" class="space-y-4">
+                {{-- Two-Step Navigation Tabs --}}
+                <div class="px-6 py-2.5 bg-slate-50/80 dark:bg-slate-900/60 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2 shrink-0">
+                    <button type="button" @click="consumeStep = 1" 
+                            class="flex-1 flex items-center justify-center gap-2 py-1.5 px-3 rounded-xl text-xs font-semibold transition border cursor-pointer"
+                            :class="consumeStep === 1 
+                                ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-700 shadow-xs ring-1 ring-blue-500/20' 
+                                : 'text-slate-500 dark:text-slate-400 border-transparent hover:bg-slate-100 dark:hover:bg-slate-800/60'">
+                        <span class="w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold"
+                              :class="consumeStep === 1 ? 'bg-blue-600 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'">
+                            1
+                        </span>
+                        <span class="truncate">Step 1: Task & Material</span>
+                    </button>
+
+                    <div class="w-3 h-px bg-slate-200 dark:bg-slate-700 shrink-0"></div>
+
+                    <button type="button" @click="nextConsumeStep()" 
+                            class="flex-1 flex items-center justify-center gap-2 py-1.5 px-3 rounded-xl text-xs font-semibold transition border cursor-pointer"
+                            :class="consumeStep === 2 
+                                ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-700 shadow-xs ring-1 ring-blue-500/20' 
+                                : 'text-slate-500 dark:text-slate-400 border-transparent hover:bg-slate-100 dark:hover:bg-slate-800/60'">
+                        <span class="w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold"
+                              :class="consumeStep === 2 ? 'bg-blue-600 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'">
+                            2
+                        </span>
+                        <span class="truncate">Step 2: Notes & Stock</span>
+                    </button>
+                </div>
+
+                <form method="POST" action="{{ route('projects.material-consumptions.store', $project) }}" class="flex flex-col flex-1 overflow-hidden m-0">
                     @csrf
                     <input type="hidden" name="redirect_tab" :value="currentTab === 'tasks' ? 'tasks' : 'materials'">
 
-                    {{-- Target Task --}}
-                    <div>
-                        <div class="flex items-center justify-between mb-1.5">
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Associated Project Task *</label>
-                            <button type="button" 
-                                    @click="consumeModalOpen = false; taskModalOpen = true" 
-                                    class="text-xs font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 cursor-pointer">
-                                + Add New Task
+                    <div class="p-6 overflow-y-auto space-y-4 flex-1">
+                        {{-- Step 1 Error Alert --}}
+                        <div x-show="consumeStep1Error" x-text="consumeStep1Error" class="p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs font-medium"></div>
+
+                        {{-- STEP 1: Task & Material Information --}}
+                        <div x-show="consumeStep === 1" class="space-y-4">
+                            {{-- Target Task --}}
+                            <div>
+                                <div class="flex items-center justify-between mb-1.5">
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Associated Project Task *</label>
+                                    <button type="button" 
+                                            @click="consumeModalOpen = false; taskModalOpen = true" 
+                                            class="text-xs font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 cursor-pointer">
+                                        + Add New Task
+                                    </button>
+                                </div>
+
+                                @if($project->tasks->isEmpty())
+                                    <div class="p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300 text-xs space-y-2">
+                                        <div class="flex items-center gap-1.5 font-bold">
+                                            <svg class="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                            <span>No project tasks exist yet!</span>
+                                        </div>
+                                        <p class="text-[11px] leading-relaxed">
+                                            Materials and cable meters must be allocated against a specific project milestone or task.
+                                        </p>
+                                        <div class="flex items-center gap-2 pt-1">
+                                            <button type="button" 
+                                                    @click="consumeModalOpen = false; taskModalOpen = true" 
+                                                    class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs transition inline-flex items-center gap-1 cursor-pointer">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                                <span>Create First Task</span>
+                                            </button>
+                                            <button type="button" 
+                                                    @click="consumeModalOpen = false; templateModalOpen = true" 
+                                                    class="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition cursor-pointer">
+                                                Apply Workflow Template
+                                            </button>
+                                        </div>
+                                    </div>
+                                @else
+                                    <select name="project_task_id" x-model="consumeTaskId" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl outline-none font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+                                        <option value="">-- Select Project Task --</option>
+                                        @foreach($project->tasks as $tItem)
+                                            <option value="{{ $tItem->id }}">
+                                                [{{ $tItem->phase_name }}] {{ $tItem->title }} ({{ ucfirst($tItem->status) }})
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                @endif
+                            </div>
+
+                            {{-- BOM Item Link (Optional) --}}
+                            @if($project->materials->isNotEmpty())
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Link to Planned BOM Item (Optional)</label>
+                                <select name="project_material_id" x-model="consumeMaterialId" @change="onBomSelectChange($event)" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                                    <option value="" data-item-name="" data-unit="meters" data-product-id="">-- Direct Entry / Unplanned Item --</option>
+                                    @foreach($project->materials as $bItem)
+                                        <option value="{{ $bItem->id }}" data-item-name="{{ $bItem->item_name }}" data-unit="{{ $bItem->unit }}" data-product-id="{{ $bItem->product_id }}">
+                                            {{ $bItem->item_name }} (Allocated: {{ $bItem->quantity }} {{ $bItem->unit }} &bull; Remaining: {{ $bItem->remaining_quantity }} {{ $bItem->unit }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            @endif
+
+                            {{-- Item Description --}}
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Material / Cable Description *</label>
+                                <input type="text" name="item_name" x-model="consumeItemName" placeholder="e.g. D-Link Cat6 UTP Solid Cable" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-medium">
+                            </div>
+
+                            {{-- Quantity and Unit --}}
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Quantity Used *</label>
+                                    <input type="number" step="any" min="0.01" name="quantity_used" x-model="consumeQty" placeholder="e.g. 125" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-bold font-mono text-indigo-600 dark:text-indigo-400">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Unit of Measure *</label>
+                                    <select name="unit" x-model="consumeUnit" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-semibold">
+                                        <option value="meters">meters (mtr)</option>
+                                        <option value="nos">nos (units)</option>
+                                        <option value="rolls">rolls</option>
+                                        <option value="coils">coils</option>
+                                        <option value="box">box</option>
+                                        <option value="pkt">pkt</option>
+                                        <option value="feet">feet</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- STEP 2: Execution Notes, Reel & Warehouse Stock --}}
+                        <div x-show="consumeStep === 2" class="space-y-4">
+                            {{-- Execution Notes / Location (Prominent & Clear) --}}
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1 flex items-center justify-between">
+                                    <span>Execution Notes / Location</span>
+                                    <span class="text-[11px] font-normal text-slate-400">(Where installed / cable routing)</span>
+                                </label>
+                                <textarea name="notes" x-model="consumeNotes" rows="3" placeholder="e.g. Pulled from server rack on 1st floor to Reception desk and front gate camera." class="w-full px-3.5 py-2.5 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-medium text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none"></textarea>
+                            </div>
+
+                            {{-- Wastage & Drum / Reel # --}}
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Scrap / Cut Wastage</label>
+                                    <input type="number" step="any" min="0" name="wastage_quantity" x-model="consumeWastage" placeholder="0" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-mono">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Cable Drum / Reel #</label>
+                                    <input type="text" name="drum_or_batch_no" x-model="consumeDrumNo" placeholder="e.g. Drum #2 (140m-265m)" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-mono">
+                                </div>
+                            </div>
+
+                            {{-- Warehouse Catalog Item Link & Stock Deduction --}}
+                            <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 space-y-2.5">
+                                <div class="flex items-center justify-between">
+                                    <label class="text-xs font-bold text-slate-700 dark:text-slate-300">Warehouse Inventory Integration</label>
+                                    <label class="inline-flex items-center gap-1.5 cursor-pointer text-xs font-semibold text-slate-600 dark:text-slate-400">
+                                        <input type="checkbox" name="deduct_from_stock" value="1" x-model="consumeDeductStock" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                                        <span>Auto-deduct stock</span>
+                                    </label>
+                                </div>
+                                <select name="product_id" x-model="consumeProductId" class="w-full px-3 py-2 text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg outline-none">
+                                    <option value="">-- Match Catalog Product (Optional) --</option>
+                                    @foreach($availableProducts as $pItem)
+                                        <option value="{{ $pItem->id }}">
+                                            [{{ $pItem->sku }}] {{ $pItem->name }} (In Stock: {{ $pItem->stock_quantity }} {{ $pItem->unit }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Sticky Modal Footer with Step Navigation Buttons --}}
+                    <div class="px-6 py-3.5 bg-slate-50 dark:bg-slate-900/60 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between shrink-0">
+                        <div x-show="consumeStep === 1" class="w-full flex items-center justify-between">
+                            <button type="button" @click="consumeModalOpen = false" class="btn-secondary text-xs">
+                                Cancel
+                            </button>
+                            <button type="button" @click="nextConsumeStep()" class="btn-primary text-xs shadow-md inline-flex items-center gap-1.5 cursor-pointer">
+                                <span>Next: Notes & Stock</span>
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                             </button>
                         </div>
 
-                        @if($project->tasks->isEmpty())
-                            <div class="p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300 text-xs space-y-2">
-                                <div class="flex items-center gap-1.5 font-bold">
-                                    <svg class="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                                    <span>No project tasks exist yet!</span>
-                                </div>
-                                <p class="text-[11px] leading-relaxed">
-                                    Materials and cable meters must be allocated against a specific project milestone or task.
-                                </p>
-                                <div class="flex items-center gap-2 pt-1">
-                                    <button type="button" 
-                                            @click="consumeModalOpen = false; taskModalOpen = true" 
-                                            class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs transition inline-flex items-center gap-1 cursor-pointer">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                                        <span>Create First Task</span>
-                                    </button>
-                                    <button type="button" 
-                                            @click="consumeModalOpen = false; templateModalOpen = true" 
-                                            class="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition cursor-pointer">
-                                        Apply Workflow Template
-                                    </button>
-                                </div>
-                            </div>
-                        @else
-                            <select name="project_task_id" x-model="consumeTaskId" required class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl outline-none font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
-                                <option value="">-- Select Project Task --</option>
-                                @foreach($project->tasks as $tItem)
-                                    <option value="{{ $tItem->id }}">
-                                        [{{ $tItem->phase_name }}] {{ $tItem->title }} ({{ ucfirst($tItem->status) }})
-                                    </option>
-                                @endforeach
-                            </select>
-                        @endif
-                    </div>
-
-                    {{-- BOM Item Link (Optional) --}}
-                    @if($project->materials->isNotEmpty())
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Link to Planned BOM Item (Optional)</label>
-                        <select name="project_material_id" x-model="consumeMaterialId" @change="onBomSelectChange($event)" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
-                            <option value="" data-item-name="" data-unit="meters" data-product-id="">-- Direct Entry / Unplanned Item --</option>
-                            @foreach($project->materials as $bItem)
-                                <option value="{{ $bItem->id }}" data-item-name="{{ $bItem->item_name }}" data-unit="{{ $bItem->unit }}" data-product-id="{{ $bItem->product_id }}">
-                                    {{ $bItem->item_name }} (Allocated: {{ $bItem->quantity }} {{ $bItem->unit }} &bull; Remaining: {{ $bItem->remaining_quantity }} {{ $bItem->unit }})
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                    @endif
-
-                    {{-- Item Description --}}
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Material / Cable Description *</label>
-                        <input type="text" name="item_name" x-model="consumeItemName" required placeholder="e.g. D-Link Cat6 UTP Solid Cable" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-medium">
-                    </div>
-
-                    {{-- Quantity and Unit --}}
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Quantity Used *</label>
-                            <input type="number" step="any" min="0.01" name="quantity_used" x-model="consumeQty" required placeholder="e.g. 125" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-bold font-mono text-indigo-600 dark:text-indigo-400">
+                        <div x-show="consumeStep === 2" class="w-full flex items-center justify-between">
+                            <button type="button" @click="consumeStep = 1" class="btn-secondary text-xs inline-flex items-center gap-1.5 cursor-pointer">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                                <span>Back to Step 1</span>
+                            </button>
+                            <button type="submit" class="btn-primary text-xs shadow-md inline-flex items-center gap-1.5 cursor-pointer">
+                                <span>📦</span>
+                                <span>Record Consumption</span>
+                            </button>
                         </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Unit of Measure *</label>
-                            <select name="unit" x-model="consumeUnit" required class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-semibold">
-                                <option value="meters">meters (mtr)</option>
-                                <option value="nos">nos (units)</option>
-                                <option value="rolls">rolls</option>
-                                <option value="coils">coils</option>
-                                <option value="box">box</option>
-                                <option value="pkt">pkt</option>
-                                <option value="feet">feet</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    {{-- Wastage & Drum / Reel # --}}
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Scrap / Cut Wastage</label>
-                            <input type="number" step="any" min="0" name="wastage_quantity" x-model="consumeWastage" placeholder="0" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-mono">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Cable Drum / Reel #</label>
-                            <input type="text" name="drum_or_batch_no" x-model="consumeDrumNo" placeholder="e.g. Drum #2 (140m-265m)" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-mono">
-                        </div>
-                    </div>
-
-                    {{-- Warehouse Catalog Item Link & Stock Deduction --}}
-                    <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 space-y-2">
-                        <div class="flex items-center justify-between">
-                            <label class="text-xs font-bold text-slate-700 dark:text-slate-300">Warehouse Inventory Integration</label>
-                            <label class="inline-flex items-center gap-1.5 cursor-pointer text-xs font-semibold text-slate-600 dark:text-slate-400">
-                                <input type="checkbox" name="deduct_from_stock" value="1" x-model="consumeDeductStock" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500">
-                                <span>Auto-deduct stock</span>
-                            </label>
-                        </div>
-                        <select name="product_id" x-model="consumeProductId" class="w-full px-3 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg outline-none">
-                            <option value="">-- Match Catalog Product (Optional) --</option>
-                            @foreach($availableProducts as $pItem)
-                                <option value="{{ $pItem->id }}">
-                                    [{{ $pItem->sku }}] {{ $pItem->name }} (In Stock: {{ $pItem->stock_quantity }} {{ $pItem->unit }})
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    {{-- Notes --}}
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Execution Notes / Location</label>
-                        <input type="text" name="notes" x-model="consumeNotes" placeholder="e.g. Pulled from server rack to Reception desk" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
-                    </div>
-
-                    <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-                        <button type="button" @click="consumeModalOpen = false" class="btn-secondary text-xs">Cancel</button>
-                        <button type="submit" class="btn-primary text-xs shadow-md">Record Consumption</button>
                     </div>
                 </form>
             </div>
