@@ -19,10 +19,18 @@
         window.SAVED_VENDORS_SET = @json($savedVendorsSet ?? []);
     </script>
 
+    @php
+        $preselectedSite = null;
+        $siteIdToLoad = old('site_id', request('site_id'));
+        if ($siteIdToLoad) {
+            $preselectedSite = \App\Models\Site::find($siteIdToLoad);
+        }
+    @endphp
+
     <div class="py-6 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto"
          x-data="{
-             step: {{ (int) request('step', session('new_technician_id') ? 2 : 1) }},
-             selectedSite: null,
+             step: {{ (int) old('current_step', request('step', session('new_technician_id') ? 2 : ($errors->any() ? 4 : ($preselectedSite ? 2 : 1)))) }},
+             selectedSite: @json($preselectedSite),
              siteSearch: '',
              siteResults: [],
              siteModalOpen: false,
@@ -196,10 +204,22 @@
                  attendance_sync_mode: 'face_recognition'
              },
 
-             materials: [],
+             materials: @json(old('materials', [])),
+             oldRequirements: @json(old('requirements', [])),
+             oldHardwareSpecs: @json(old('hardware_specs', [])),
 
              init() {
-                 this.applyTemplate(this.project_type, false);
+                 if (this.materials && this.materials.length > 0) {
+                     // Materials were already restored from previous submission
+                     if (this.oldRequirements && Object.keys(this.oldRequirements).length > 0) {
+                         this.req = Object.assign({}, this.req, this.oldRequirements);
+                     }
+                     if (this.oldHardwareSpecs && Object.keys(this.oldHardwareSpecs).length > 0) {
+                         this.hardware_specs = Object.assign({}, this.hardware_specs, this.oldHardwareSpecs);
+                     }
+                 } else {
+                     this.applyTemplate(this.project_type, false);
+                 }
              },
 
              applyTemplate(type, forceTitle = false) {
@@ -312,6 +332,30 @@
              }
          }">
 
+        {{-- Validation / Session Errors Alert --}}
+        @if(session('error') || $errors->any())
+            <div class="p-4 mb-5 rounded-2xl border border-rose-200 dark:border-rose-900 bg-rose-50 dark:bg-rose-950/50 text-rose-800 dark:text-rose-200 text-sm">
+                <div class="flex items-start gap-3">
+                    <svg class="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                    <div>
+                        <div class="font-bold text-sm">Action could not be completed:</div>
+                        @if(session('error'))
+                            <div class="mt-1 text-xs">{{ session('error') }}</div>
+                        @endif
+                        @if($errors->any())
+                            <ul class="mt-1.5 list-disc list-inside text-xs space-y-0.5">
+                                @foreach($errors->all() as $err)
+                                    <li>{{ $err }}</li>
+                                @endforeach
+                            </ul>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        @endif
+
         {{-- Draft Saved Alert (stays on page) --}}
         <div x-show="draftSaved" x-cloak class="p-3 mb-4 rounded border border-emerald-300 bg-emerald-50 text-emerald-800 text-xs font-semibold">
             Draft saved successfully.
@@ -328,6 +372,7 @@
         <form id="projectWizardForm" method="POST" action="{{ route('projects.store') }}">
             @csrf
             <input type="hidden" name="action" id="wizardActionInput" value="submit">
+            <input type="hidden" name="current_step" :value="step">
             <input type="hidden" name="project_code" value="{{ $nextCode }}">
             <input type="hidden" name="site_id" :value="selectedSite?.id">
 

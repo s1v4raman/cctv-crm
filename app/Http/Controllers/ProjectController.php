@@ -155,8 +155,20 @@ class ProjectController extends Controller
             return $v->name_key ?: Vendor::normalizeNameKey($v->name);
         })->filter()->unique()->values()->all();
 
-        // Auto-suggest next project code
-        $nextCode = 'PRJ-' . date('Y') . '-' . str_pad(Project::count() + 1, 4, '0', STR_PAD_LEFT);
+        // Auto-suggest next project code safely
+        $year = date('Y');
+        $lastProject = Project::withTrashed()
+            ->where('project_code', 'like', "PRJ-{$year}-%")
+            ->orderByDesc('id')
+            ->first();
+        $nextSeq = 1;
+        if ($lastProject && preg_match('/PRJ-\d{4}-(\d+)/', $lastProject->project_code, $matches)) {
+            $nextSeq = ((int) $matches[1]) + 1;
+        }
+        do {
+            $nextCode = 'PRJ-' . $year . '-' . str_pad($nextSeq, 4, '0', STR_PAD_LEFT);
+            $nextSeq++;
+        } while (Project::withTrashed()->where('project_code', $nextCode)->exists());
 
         return view('projects.create_wizard', compact(
             'teamMembers',
@@ -230,7 +242,23 @@ class ProjectController extends Controller
         $validated['contact_phone'] = $site?->contact_phone ?? $site?->client_phone;
         $validated['contact_email'] = $site?->client_email;
 
-        $validated['project_code'] = $request->input('project_code') ?: ('PRJ-' . date('Y') . '-' . str_pad(Project::count() + 1, 4, '0', STR_PAD_LEFT));
+        $proposedCode = $request->input('project_code');
+        if (!$proposedCode || Project::withTrashed()->where('project_code', $proposedCode)->exists()) {
+            $year = date('Y');
+            $lastProject = Project::withTrashed()
+                ->where('project_code', 'like', "PRJ-{$year}-%")
+                ->orderByDesc('id')
+                ->first();
+            $nextSeq = 1;
+            if ($lastProject && preg_match('/PRJ-\d{4}-(\d+)/', $lastProject->project_code, $matches)) {
+                $nextSeq = ((int) $matches[1]) + 1;
+            }
+            do {
+                $proposedCode = 'PRJ-' . $year . '-' . str_pad($nextSeq, 4, '0', STR_PAD_LEFT);
+                $nextSeq++;
+            } while (Project::withTrashed()->where('project_code', $proposedCode)->exists());
+        }
+        $validated['project_code'] = $proposedCode;
         $validated['created_by'] = Auth::id();
         $validated['assigned_to'] = $validated['lead_technician_id'] ?? Auth::id();
 
