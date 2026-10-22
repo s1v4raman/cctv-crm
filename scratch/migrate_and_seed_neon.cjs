@@ -39,7 +39,22 @@ async function main() {
         try {
             for (const q of queries) {
                 if (!q || !q.trim()) continue;
-                await client.query(q);
+                let sql = q;
+                if (/alter\s+table\s+.*add\s+column\s+/i.test(sql)) {
+                    sql = sql.replace(/add\s+column\s+(?!if\s+not\s+exists\s+)/gi, 'add column if not exists ');
+                }
+                await client.query('SAVEPOINT migration_stmt');
+                try {
+                    await client.query(sql);
+                    await client.query('RELEASE SAVEPOINT migration_stmt');
+                } catch (colErr) {
+                    if (colErr.code === '42701' || colErr.code === '42P07' || colErr.code === '42710' || colErr.message.includes('already exists')) {
+                        await client.query('ROLLBACK TO SAVEPOINT migration_stmt');
+                        console.log(`    [Notice] Already exists, skipping: ${colErr.message}`);
+                    } else {
+                        throw colErr;
+                    }
+                }
             }
             await client.query('INSERT INTO migrations (migration, batch) VALUES ($1, $2)', [migrationName, batch]);
             await client.query('COMMIT');
@@ -87,14 +102,14 @@ async function main() {
         await client.query(`
             INSERT INTO products (
                 sku, name, category, brand, model_no, description, unit_price, cost_price,
-                stock_quantity, min_stock_alert, is_active, default_warranty_months, gst_rate,
+                stock_quantity, min_stock_alert, is_active, default_warranty_months, tax_rate,
                 hsn_code, created_at, updated_at
             ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
             ON CONFLICT (sku) DO NOTHING;
         `, [
             p.sku, p.name, p.category || 'camera', p.brand, p.model_no, p.description,
             p.unit_price, p.cost_price, p.stock_quantity ?? 10, p.min_stock_alert ?? 2,
-            p.is_active ?? true, p.default_warranty_months ?? 12, p.gst_rate ?? 18,
+            p.is_active ?? true, p.default_warranty_months ?? 12, p.tax_rate ?? p.gst_rate ?? 18,
             p.hsn_code, p.created_at || new Date(), p.updated_at || new Date()
         ]);
     }
