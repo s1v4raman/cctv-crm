@@ -2989,23 +2989,112 @@
         </div>
 
         {{-- Log Daily Work Day Modal --}}
-        <div x-show="workDayModalOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-            <div @click.away="workDayModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-2xl w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 max-h-[90vh] overflow-y-auto"
+        <div x-show="workDayModalOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto">
+            <div @click.away="workDayModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-xl w-full shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col max-h-[90vh] overflow-hidden my-auto"
                  x-data="{
                      workersList: {{ $workers->toJson() }},
                      rows: [
                          { worker_id: '', attendance_type: 'full_day', daily_rate: 0, cabling_metres: 0, extra_amount: 0, extra_description: '', row_total: 0 }
                      ],
+                     showNewWorkerModal: false,
+                     newWorkerName: '',
+                     newWorkerPhone: '',
+                     newWorkerDailyRate: '750',
+                     newWorkerNotes: '',
+                     newWorkerSaving: false,
+                     newWorkerError: '',
+                     newWorkerSuccess: '',
+                     targetRowIndexForNewWorker: null,
+                     
+                     openNewWorkerModal(targetIdx = null) {
+                         this.targetRowIndexForNewWorker = targetIdx;
+                         this.newWorkerName = '';
+                         this.newWorkerPhone = '';
+                         this.newWorkerDailyRate = '750';
+                         this.newWorkerNotes = '';
+                         this.newWorkerError = '';
+                         this.newWorkerSuccess = '';
+                         this.showNewWorkerModal = true;
+                     },
+
+                     async saveNewWorker() {
+                         if (!this.newWorkerName || !this.newWorkerName.trim()) {
+                             this.newWorkerError = 'Please enter the worker full name.';
+                             return;
+                         }
+                         if (!this.newWorkerDailyRate || parseFloat(this.newWorkerDailyRate) <= 0) {
+                             this.newWorkerError = 'Please enter a valid daily wage rate.';
+                             return;
+                         }
+                         this.newWorkerSaving = true;
+                         this.newWorkerError = '';
+                         try {
+                             const res = await fetch('{{ route('workers.store') }}', {
+                                 method: 'POST',
+                                 headers: {
+                                     'Content-Type': 'application/json',
+                                     'Accept': 'application/json',
+                                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                 },
+                                 body: JSON.stringify({
+                                     name: this.newWorkerName.trim(),
+                                     phone: this.newWorkerPhone ? this.newWorkerPhone.trim() : null,
+                                     daily_rate: parseFloat(this.newWorkerDailyRate),
+                                     notes: this.newWorkerNotes ? this.newWorkerNotes.trim() : null,
+                                     is_active: 1
+                                 })
+                             });
+                             const data = await res.json();
+                             if (!res.ok || !data.success) {
+                                 throw new Error(data.message || 'Failed to save worker.');
+                             }
+                             
+                             this.workersList.push(data.worker);
+                             
+                             if (this.targetRowIndexForNewWorker !== null && this.rows[this.targetRowIndexForNewWorker]) {
+                                 this.rows[this.targetRowIndexForNewWorker].worker_id = data.worker.id;
+                                 this.updateRate(this.rows[this.targetRowIndexForNewWorker]);
+                             } else {
+                                 if (this.rows.length === 1 && !this.rows[0].worker_id) {
+                                     this.rows[0].worker_id = data.worker.id;
+                                     this.updateRate(this.rows[0]);
+                                 } else {
+                                     this.rows.push({
+                                         worker_id: data.worker.id,
+                                         attendance_type: 'full_day',
+                                         daily_rate: parseFloat(data.worker.daily_rate),
+                                         cabling_metres: 0,
+                                         extra_amount: 0,
+                                         extra_description: '',
+                                         row_total: parseFloat(data.worker.daily_rate)
+                                     });
+                                 }
+                             }
+                             
+                             this.newWorkerSuccess = `Worker '${data.worker.name}' (₹${data.worker.daily_rate}/day) registered successfully!`;
+                             setTimeout(() => {
+                                 this.showNewWorkerModal = false;
+                                 this.newWorkerSuccess = '';
+                             }, 1000);
+                         } catch (err) {
+                             this.newWorkerError = err.message || 'Error creating worker.';
+                         } finally {
+                             this.newWorkerSaving = false;
+                         }
+                     },
+
                      addRow() {
                          this.rows.push({ worker_id: '', attendance_type: 'full_day', daily_rate: 0, cabling_metres: 0, extra_amount: 0, extra_description: '', row_total: 0 });
                      },
                      removeRow(i) {
-                         this.rows.splice(i, 1);
+                         if (this.rows.length > 1) {
+                             this.rows.splice(i, 1);
+                         }
                      },
                      updateRate(row) {
                          const found = this.workersList.find(w => w.id == row.worker_id);
                          if (found) {
-                             row.daily_rate = found.daily_rate;
+                             row.daily_rate = parseFloat(found.daily_rate) || 0;
                              this.calcRow(row);
                          }
                      },
@@ -3014,89 +3103,223 @@
                          const cabling = (parseFloat(row.cabling_metres) || 0) * {{ (float) ($project->per_metre_rate ?? 8.0) }};
                          const extra = parseFloat(row.extra_amount) || 0;
                          row.row_total = base + cabling + extra;
+                     },
+                     get totalManDays() {
+                         return this.rows.reduce((sum, r) => sum + (r.worker_id ? (r.attendance_type === 'half_day' ? 0.5 : 1.0) : 0), 0);
+                     },
+                     get totalCablingMtrs() {
+                         return this.rows.reduce((sum, r) => sum + (parseFloat(r.cabling_metres) || 0), 0);
+                     },
+                     get totalWagePayout() {
+                         return this.rows.reduce((sum, r) => sum + (r.row_total || 0), 0);
                      }
                  }">
-                <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
-                    <div>
-                        <h3 class="font-bold text-slate-900 dark:text-white text-base">Log Daily Labor Work Day</h3>
-                        <p class="text-xs text-slate-400">Snapshot worker rates &amp; calculate cabling metres extras (₹{{ $project->per_metre_rate ?? 8.0 }}/m)</p>
+                
+                {{-- Sticky Modal Header --}}
+                <div class="px-5 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between shrink-0 bg-white dark:bg-[#0f172a]">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-slate-900 dark:text-white text-sm">Log Daily Labor Shift &amp; Wages</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Worker attendance &amp; cabling incentives (₹{{ number_format((float)($project->per_metre_rate ?? 8.0), 2) }}/m)</p>
+                        </div>
                     </div>
-                    <button type="button" @click="workDayModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+                    <button type="button" @click="workDayModalOpen = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 text-lg leading-none p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition">&times;</button>
                 </div>
 
-                <form method="POST" action="{{ route('projects.work-days.store', $project) }}" class="space-y-4">
+                {{-- Scrollable Form Body --}}
+                <form method="POST" action="{{ route('projects.work-days.store', $project) }}" class="flex flex-col flex-1 overflow-hidden m-0">
                     @csrf
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Work Shift Date *</label>
-                            <input type="date" name="work_date" value="{{ now()->toDateString() }}" required class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-bold">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">General Shift Notes</label>
-                            <input type="text" name="notes" placeholder="e.g. Ground floor cabling completed" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
-                        </div>
-                    </div>
-
-                    <div class="space-y-3 pt-2">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-bold uppercase text-slate-400">Worker Attendance Rows</span>
-                            <button type="button" @click="addRow()" class="btn-secondary text-xs">Add Worker</button>
+                    <div class="p-5 overflow-y-auto space-y-4 flex-1">
+                        
+                        {{-- Shift Date & General Notes (Compact) --}}
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3.5 rounded-xl bg-slate-50/80 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800">
+                            <div class="sm:col-span-1">
+                                <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Shift Date *</label>
+                                <input type="date" name="work_date" value="{{ now()->toDateString() }}" required class="w-full px-2.5 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg outline-none font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+                            </div>
+                            <div class="sm:col-span-2">
+                                <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">General Shift Notes</label>
+                                <input type="text" name="notes" placeholder="e.g. Ground floor cabling &amp; camera mounting" class="w-full px-2.5 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg outline-none text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+                            </div>
                         </div>
 
-                        <template x-for="(r, idx) in rows" :key="idx">
-                            <div class="p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/40 space-y-2">
-                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                                    <div>
-                                        <label class="block text-[10px] font-bold uppercase text-slate-400 mb-0.5">Worker *</label>
-                                        <select :name="`attendances[${idx}][worker_id]`" x-model="r.worker_id" @change="updateRate(r)" required class="w-full px-2 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none font-bold">
-                                            <option value="">Select Worker...</option>
-                                            <template x-for="w in workersList" :key="w.id">
-                                                <option :value="w.id" x-text="`${w.name} (₹${w.daily_rate}/d)`"></option>
-                                            </template>
-                                        </select>
-                                    </div>
-
-                                    <div>
-                                        <label class="block text-[10px] font-bold uppercase text-slate-400 mb-0.5">Shift *</label>
-                                        <select :name="`attendances[${idx}][attendance_type]`" x-model="r.attendance_type" @change="calcRow(r)" class="w-full px-2 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none">
-                                            <option value="full_day">Full Day</option>
-                                            <option value="half_day">Half Day</option>
-                                        </select>
-                                    </div>
-
-                                    <div>
-                                        <label class="block text-[10px] font-bold uppercase text-slate-400 mb-0.5">Cabling Metres</label>
-                                        <input type="number" step="1" min="0" :name="`attendances[${idx}][cabling_metres]`" x-model="r.cabling_metres" @input="calcRow(r)" placeholder="0" class="w-full px-2 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg font-mono outline-none">
-                                    </div>
+                        {{-- Quick Register New Worker Drawer --}}
+                        <div x-show="showNewWorkerModal" x-transition class="p-3.5 rounded-xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800/80 space-y-3">
+                            <div class="flex items-center justify-between pb-1.5 border-b border-blue-200/60 dark:border-blue-800/60">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="w-4 h-4 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] font-bold">+</span>
+                                    <h4 class="text-xs font-bold text-blue-950 dark:text-blue-200 uppercase tracking-wide">Register New Daily Worker</h4>
                                 </div>
+                                <button type="button" @click="showNewWorkerModal = false" class="text-slate-400 hover:text-slate-600 text-xs font-bold">&times; Close</button>
+                            </div>
 
-                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 items-end">
-                                    <div>
-                                        <label class="block text-[10px] font-bold uppercase text-slate-400 mb-0.5">Extra Amount (₹)</label>
-                                        <input type="number" step="0.5" min="0" :name="`attendances[${idx}][extra_amount]`" x-model="r.extra_amount" @input="calcRow(r)" placeholder="0" class="w-full px-2 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg font-mono outline-none">
-                                    </div>
+                            <div x-show="newWorkerError" x-text="newWorkerError" class="p-2 rounded-lg bg-rose-100 text-rose-800 border border-rose-300 text-xs"></div>
+                            <div x-show="newWorkerSuccess" x-text="newWorkerSuccess" class="p-2 rounded-lg bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs"></div>
 
-                                    <div>
-                                        <label class="block text-[10px] font-bold uppercase text-slate-400 mb-0.5">Extra Reason</label>
-                                        <input type="text" :name="`attendances[${idx}][extra_description]`" x-model="r.extra_description" placeholder="Travel / overtime..." class="w-full px-2 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none">
-                                    </div>
-
-                                    <div class="flex items-center justify-between">
-                                        <div class="text-xs font-mono">
-                                            Total: <strong class="text-slate-900 dark:text-white" x-text="`₹${r.row_total.toFixed(2)}`"></strong>
-                                        </div>
-                                        <button type="button" @click="removeRow(idx)" class="text-rose-500 hover:text-rose-700 text-xs font-bold" x-show="rows.length > 1">
-                                            Remove
-                                        </button>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                <div>
+                                    <label class="block text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Full Name *</label>
+                                    <input type="text" x-model="newWorkerName" placeholder="e.g. Ramesh Kumar" class="w-full px-2.5 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg outline-none font-semibold text-slate-900 dark:text-white">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Daily Wage Rate (₹) *</label>
+                                    <div class="flex items-center rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 overflow-hidden">
+                                        <span class="px-2.5 py-1.5 text-xs font-bold text-slate-500 bg-slate-100 dark:bg-slate-800 border-r border-slate-300 dark:border-slate-700 select-none">₹</span>
+                                        <input type="number" step="10" min="0" x-model="newWorkerDailyRate" placeholder="750" class="w-full px-2 py-1.5 text-xs bg-transparent outline-none font-mono font-bold text-blue-600 dark:text-blue-400">
                                     </div>
                                 </div>
                             </div>
-                        </template>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                <div>
+                                    <label class="block text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Phone Number</label>
+                                    <input type="text" x-model="newWorkerPhone" placeholder="e.g. 9876543210" class="w-full px-2.5 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg outline-none font-mono text-slate-900 dark:text-white">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Role / Notes</label>
+                                    <input type="text" x-model="newWorkerNotes" placeholder="e.g. Cable puller" class="w-full px-2.5 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg outline-none text-slate-900 dark:text-white">
+                                </div>
+                            </div>
+
+                            <div class="flex justify-end gap-2 pt-1">
+                                <button type="button" @click="showNewWorkerModal = false" class="px-2.5 py-1 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                                    Cancel
+                                </button>
+                                <button type="button" @click="saveNewWorker()" :disabled="newWorkerSaving" class="px-3 py-1 text-xs font-semibold rounded-lg bg-blue-600 hover:bg-blue-700 text-white shadow-xs inline-flex items-center gap-1 cursor-pointer disabled:opacity-50">
+                                    <span x-show="newWorkerSaving">Saving...</span>
+                                    <span x-show="!newWorkerSaving">Save Worker</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        {{-- Worker Attendance Rows Header --}}
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between pb-0.5">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Workers on Shift</span>
+                                    <span class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-slate-100 dark:bg-slate-800 text-slate-500" x-text="`${workersList.length} saved`"></span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button type="button" @click="openNewWorkerModal(null)" class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 hover:bg-blue-100 transition inline-flex items-center gap-1 cursor-pointer">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                        <span>Add New Worker</span>
+                                    </button>
+                                    <button type="button" @click="addRow()" class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition inline-flex items-center gap-1 cursor-pointer">
+                                        <span>+ Row</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            {{-- Rows Cards --}}
+                            <template x-for="(r, idx) in rows" :key="idx">
+                                <div class="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs space-y-2.5">
+                                    {{-- Row Subheader --}}
+                                    <div class="flex items-center justify-between pb-1.5 border-b border-slate-100 dark:border-slate-800">
+                                        <div class="flex items-center gap-2">
+                                            <span class="w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[10px] font-bold flex items-center justify-center" x-text="idx + 1"></span>
+                                            <span class="text-xs font-bold text-slate-800 dark:text-slate-200" x-text="r.worker_id ? (workersList.find(w => w.id == r.worker_id)?.name || 'Worker') : `Worker #${idx + 1}`"></span>
+                                            <template x-if="r.daily_rate > 0">
+                                                <span class="text-[10px] font-mono font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-1.5 py-0.5 rounded border border-emerald-200 dark:border-emerald-800" x-text="`₹${r.daily_rate}/day`"></span>
+                                            </template>
+                                        </div>
+                                        <div class="flex items-center gap-2.5">
+                                            <button type="button" @click="openNewWorkerModal(idx)" class="text-[11px] font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 cursor-pointer">
+                                                + New Person
+                                            </button>
+                                            <button type="button" @click="removeRow(idx)" class="text-rose-500 hover:text-rose-700 text-xs font-semibold cursor-pointer" x-show="rows.length > 1">
+                                                &times; Remove
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {{-- Row Fields Grid --}}
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                        <div>
+                                            <label class="block text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Worker *</label>
+                                            <select :name="`attendances[${idx}][worker_id]`" x-model="r.worker_id" @change="updateRate(r)" required class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg outline-none font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+                                                <option value="">-- Select Worker --</option>
+                                                <template x-for="w in workersList" :key="w.id">
+                                                    <option :value="w.id" x-text="`${w.name} (₹${w.daily_rate}/d)`"></option>
+                                                </template>
+                                            </select>
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Shift Duration *</label>
+                                            <select :name="`attendances[${idx}][attendance_type]`" x-model="r.attendance_type" @change="calcRow(r)" class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg outline-none font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+                                                <option value="full_day">Full Day (1.0 Shift • 100%)</option>
+                                                <option value="half_day">Half Day (0.5 Shift • 50%)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                                        <div>
+                                            <label class="block text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">
+                                                Cabling (Metres)
+                                            </label>
+                                            <input type="number" step="1" min="0" :name="`attendances[${idx}][cabling_metres]`" x-model="r.cabling_metres" @input="calcRow(r)" placeholder="0" class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg font-mono font-bold outline-none text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Extra Allowance</label>
+                                            <div class="flex items-center rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 overflow-hidden focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500">
+                                                <span class="px-2 py-1 text-xs font-bold text-slate-500 bg-slate-100 dark:bg-slate-700/60 border-r border-slate-300 dark:border-slate-700 select-none">₹</span>
+                                                <input type="number" step="0.5" min="0" :name="`attendances[${idx}][extra_amount]`" x-model="r.extra_amount" @input="calcRow(r)" placeholder="0" class="w-full px-2 py-1 text-xs bg-transparent outline-none font-mono text-slate-900 dark:text-white">
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Reason for Extra</label>
+                                            <input type="text" :name="`attendances[${idx}][extra_description]`" x-model="r.extra_description" placeholder="Overtime / travel" class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg outline-none text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+                                        </div>
+                                    </div>
+
+                                    {{-- Row Subtotal Summary --}}
+                                    <div class="px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 flex items-center justify-between text-xs">
+                                        <div class="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                                            <span>Base: ₹<span x-text="r.attendance_type === 'half_day' ? (r.daily_rate / 2).toFixed(0) : r.daily_rate"></span></span>
+                                            <span x-show="parseFloat(r.cabling_metres) > 0" x-text="`+ ₹${((parseFloat(r.cabling_metres) || 0) * {{ (float) ($project->per_metre_rate ?? 8.0) }}).toFixed(0)} cable`"></span>
+                                            <span x-show="parseFloat(r.extra_amount) > 0" x-text="`+ ₹${(parseFloat(r.extra_amount) || 0).toFixed(0)} extra`"></span>
+                                        </div>
+                                        <div class="font-mono font-bold text-emerald-600 dark:text-emerald-400">
+                                            Subtotal: ₹<span x-text="r.row_total.toFixed(2)"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+
+                        {{-- Real-time Shift Summary Bar (Compact) --}}
+                        <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 grid grid-cols-4 gap-2 text-center">
+                            <div>
+                                <span class="text-[10px] font-bold uppercase text-slate-400 block">Workers</span>
+                                <span class="text-sm font-bold font-mono text-slate-800 dark:text-slate-200" x-text="rows.filter(r => r.worker_id).length"></span>
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-bold uppercase text-slate-400 block">Man-Days</span>
+                                <span class="text-sm font-bold font-mono text-slate-800 dark:text-slate-200" x-text="totalManDays.toFixed(1)"></span>
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-bold uppercase text-slate-400 block">Cabling</span>
+                                <span class="text-sm font-bold font-mono text-slate-800 dark:text-slate-200" x-text="`${totalCablingMtrs}m`"></span>
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-bold uppercase text-emerald-600 dark:text-emerald-400 block">Total Wages</span>
+                                <span class="text-sm font-bold font-mono text-emerald-600 dark:text-emerald-400" x-text="`₹${totalWagePayout.toFixed(2)}`"></span>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
+                    {{-- Sticky Modal Footer --}}
+                    <div class="px-5 py-3 bg-slate-50 dark:bg-slate-900/60 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between shrink-0">
                         <button type="button" @click="workDayModalOpen = false" class="btn-secondary text-xs">Cancel</button>
-                        <button type="submit" class="btn-primary text-xs shadow-md">Save Work Day Log</button>
+                        <button type="submit" class="btn-primary text-xs shadow-md inline-flex items-center gap-1.5 cursor-pointer">
+                            <span>Save Work Day Log</span>
+                        </button>
                     </div>
                 </form>
             </div>

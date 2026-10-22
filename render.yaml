@@ -13,7 +13,7 @@ services:
       - key: APP_ENV
         value: production
       - key: APP_DEBUG
-        value: "true"
+        value: "false"
       - key: APP_KEY
         generateValue: true
       - key: APP_URL
@@ -39,7 +39,9 @@ services:
       - key: AUTO_MIGRATE
         value: "true"
       - key: SESSION_DRIVER
-        value: file
+        value: database
+      - key: SESSION_LIFETIME
+        value: "4320"
       - key: CACHE_STORE
         value: file
       - key: QUEUE_CONNECTION

@@ -76,8 +76,8 @@ class WorkerController extends Controller
      */
     public function store(Request $request)
     {
-        if (!Auth::user()->isAdmin()) {
-            abort(403, 'Only administrators can define worker wage rates and register workers.');
+        if (!Auth::user()->isInternal()) {
+            abort(403, 'Only authorized team members can register daily workers.');
         }
 
         $validated = $request->validate([
@@ -91,6 +91,7 @@ class WorkerController extends Controller
         ]);
 
         $validated['is_active'] = $request->has('is_active') ? (bool) $request->input('is_active') : true;
+        $validated['created_by'] = Auth::id();
 
         $worker = Worker::create($validated);
 
@@ -102,7 +103,7 @@ class WorkerController extends Controller
             "Worker {$worker->name} registered with daily rate ₹{$worker->daily_rate}"
         );
 
-        if ($request->wantsJson()) {
+        if ($request->wantsJson() || $request->ajax()) {
             return response()->json([
                 'success' => true,
                 'worker' => $worker,

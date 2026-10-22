@@ -19,8 +19,8 @@ class WorkDayController extends Controller
      */
     public function store(Request $request, Project $project)
     {
-        if (!Auth::user()->isAdmin() && !Auth::user()->isTechnician()) {
-            abort(403, 'Employees cannot log daily-wage work days. Only technicians and administrators have permission.');
+        if (!Auth::user()->isAdmin() && !Auth::user()->isTechnician() && !Auth::user()->isStaff()) {
+            abort(403, 'Only technicians, staff, and administrators have permission to log daily-wage work days.');
         }
 
         $validated = $request->validate([
