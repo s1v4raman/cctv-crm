@@ -42,6 +42,7 @@ class ProjectWorkflowAndTasksTest extends TestCase
         $response->assertRedirect(route('projects.show', [$project, 'tab' => 'tasks']));
         $this->assertGreaterThan(0, $project->tasks()->count());
 
+        /** @var ProjectTask $firstTask */
         $firstTask = $project->tasks()->first();
         $this->assertNotNull($firstTask);
         $this->assertNotEmpty($firstTask->phase_name);

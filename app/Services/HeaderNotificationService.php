@@ -63,7 +63,7 @@ class HeaderNotificationService
                 $items->push([
                     'id'          => 'job-' . $job->id,
                     'title'       => "Field Job Scheduled: {$job->job_no}",
-                    'description' => "Scheduled: " . ($job->scheduled_date ? $job->scheduled_date->format('M d, Y') : 'Pending date'),
+                    'description' => "Scheduled: " . ($job->scheduled_date ? Carbon::parse($job->scheduled_date)->format('M d, Y') : 'Pending date'),
                     'time'        => $job->created_at ? $job->created_at->diffForHumans(null, true) . ' ago' : 'Recently',
                     'timestamp'   => $job->created_at ? $job->created_at->timestamp : time(),
                     'icon'        => 'job',
@@ -82,7 +82,7 @@ class HeaderNotificationService
                 $items->push([
                     'id'          => 'survey-' . $survey->id,
                     'title'       => "Pending Site Survey",
-                    'description' => "Date: " . ($survey->survey_date ? $survey->survey_date->format('M d, Y') : 'Pending'),
+                    'description' => "Date: " . ($survey->survey_date ? Carbon::parse($survey->survey_date)->format('M d, Y') : 'Pending'),
                     'time'        => 'Survey Alert',
                     'timestamp'   => time(),
                     'icon'        => 'survey',
@@ -102,7 +102,7 @@ class HeaderNotificationService
                 $items->push([
                     'id'          => 'job-' . $job->id,
                     'title'       => "Assigned Field Work Order",
-                    'description' => "Scheduled: " . ($job->scheduled_date ? $job->scheduled_date->format('M d, Y') : 'Pending date'),
+                    'description' => "Scheduled: " . ($job->scheduled_date ? Carbon::parse($job->scheduled_date)->format('M d, Y') : 'Pending date'),
                     'time'        => 'Work Order',
                     'timestamp'   => time(),
                     'icon'        => 'job',

@@ -31,11 +31,15 @@ if [ -z "$APP_KEY" ] || ! echo "$APP_KEY" | grep -q "base64:"; then
     export APP_KEY=$(php artisan key:generate --show)
 fi
 
-# Smart Database fallback: If DATABASE_URL is set, use pgsql directly
+# Smart Database fallback: Normalize pooler to direct connection for migrations & CLI stability
 if [ -n "$DATABASE_URL" ]; then
+    DATABASE_URL=$(echo "$DATABASE_URL" | sed 's/-pooler\././g')
+    export DATABASE_URL
     echo "=> Persistent DATABASE_URL detected. Using PostgreSQL..."
     export DB_CONNECTION=pgsql
 elif [ -n "$DB_HOST" ] && [ "$DB_HOST" != "127.0.0.1" ] && [ "$DB_HOST" != "localhost" ]; then
+    DB_HOST=$(echo "$DB_HOST" | sed 's/-pooler\././g')
+    export DB_HOST
     echo "=> External DB_HOST ($DB_HOST) detected. Using persistent database..."
     export DB_CONNECTION=${DB_CONNECTION:-pgsql}
 else
@@ -45,6 +49,25 @@ else
     touch /var/www/html/database/database.sqlite
     chmod 666 /var/www/html/database/database.sqlite
     chmod 777 /var/www/html/database
+fi
+
+# Ensure .env reflects runtime environment for web worker processes
+if grep -q "^APP_KEY=" /var/www/html/.env; then
+    sed -i "s|^APP_KEY=.*|APP_KEY=${APP_KEY}|g" /var/www/html/.env 2>/dev/null || true
+else
+    echo "APP_KEY=${APP_KEY}" >> /var/www/html/.env
+fi
+if [ -n "$DATABASE_URL" ]; then
+    if grep -q "^DATABASE_URL=" /var/www/html/.env; then
+        sed -i "s|^DATABASE_URL=.*|DATABASE_URL=${DATABASE_URL}|g" /var/www/html/.env 2>/dev/null || true
+    else
+        echo "DATABASE_URL=${DATABASE_URL}" >> /var/www/html/.env
+    fi
+    if grep -q "^DB_CONNECTION=" /var/www/html/.env; then
+        sed -i "s|^DB_CONNECTION=.*|DB_CONNECTION=pgsql|g" /var/www/html/.env 2>/dev/null || true
+    else
+        echo "DB_CONNECTION=pgsql" >> /var/www/html/.env
+    fi
 fi
 
 # Discover Laravel packages

@@ -12,13 +12,23 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (Schema::getConnection()->getDriverName() === 'sqlite') {
+        $driver = Schema::getConnection()->getDriverName();
+
+        if ($driver === 'sqlite') {
             return;
         }
 
-        Schema::table('quotations', function (Blueprint $table) {
-            DB::statement("ALTER TABLE quotations MODIFY COLUMN status ENUM('draft','sent','accepted','rejected','expired') DEFAULT 'draft'");
-        });
+        if ($driver === 'pgsql' || config('database.default') === 'pgsql') {
+            DB::statement("ALTER TABLE quotations DROP CONSTRAINT IF EXISTS quotations_status_check");
+            DB::statement("ALTER TABLE quotations ADD CONSTRAINT quotations_status_check CHECK (status::text IN ('draft', 'sent', 'accepted', 'rejected', 'expired'))");
+            return;
+        }
+
+        if ($driver === 'mysql') {
+            Schema::table('quotations', function (Blueprint $table) {
+                DB::statement("ALTER TABLE quotations MODIFY COLUMN status ENUM('draft','sent','accepted','rejected','expired') DEFAULT 'draft'");
+            });
+        }
     }
 
     /**
@@ -26,13 +36,23 @@ return new class extends Migration
      */
     public function down(): void
     {
-        if (Schema::getConnection()->getDriverName() === 'sqlite') {
+        $driver = Schema::getConnection()->getDriverName();
+
+        if ($driver === 'sqlite') {
             return;
         }
 
-        Schema::table('quotations', function (Blueprint $table) {
-            DB::statement("ALTER TABLE quotations MODIFY COLUMN status ENUM('draft','sent','accepted','rejected') DEFAULT 'draft'");
-        });
+        if ($driver === 'pgsql' || config('database.default') === 'pgsql') {
+            DB::statement("ALTER TABLE quotations DROP CONSTRAINT IF EXISTS quotations_status_check");
+            DB::statement("ALTER TABLE quotations ADD CONSTRAINT quotations_status_check CHECK (status::text IN ('draft', 'sent', 'accepted', 'rejected'))");
+            return;
+        }
+
+        if ($driver === 'mysql') {
+            Schema::table('quotations', function (Blueprint $table) {
+                DB::statement("ALTER TABLE quotations MODIFY COLUMN status ENUM('draft','sent','accepted','rejected') DEFAULT 'draft'");
+            });
+        }
     }
 };
 
