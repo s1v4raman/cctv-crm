@@ -54,7 +54,8 @@ class SiteSurveyController extends Controller
         }
         $leads = Lead::orderBy('customer_name')->get();
         $technicians = User::whereIn('role', ['technician', 'staff', 'admin'])->orderBy('name')->get();
-        return view('site_surveys.create', compact('leads', 'technicians'));
+        $selectedLead = request('lead_id') ? Lead::find(request('lead_id')) : null;
+        return view('site_surveys.create', compact('leads', 'technicians', 'selectedLead'));
     }
 
     public function store(Request $request, \App\Services\AlertNotificationService $alertService)

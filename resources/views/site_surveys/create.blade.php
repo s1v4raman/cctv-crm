@@ -86,7 +86,7 @@
                         </label>
                         <textarea name="site_address" id="site_address" rows="2"
                                   placeholder="e.g. Plot 42, Electronics City Phase 1, Bangalore"
-                                  class="crm-input h-auto py-2" required>{{ old('site_address') }}</textarea>
+                                  class="crm-input h-auto py-2" required>{{ old('site_address', $selectedLead?->site_address) }}</textarea>
                         @error('site_address')
                             <p class="error-text">{{ $message }}</p>
                         @enderror
@@ -99,7 +99,7 @@
                                 Contact Person
                             </label>
                             <input type="text" name="contact_person" id="contact_person"
-                                   value="{{ old('contact_person') }}"
+                                   value="{{ old('contact_person', $selectedLead?->customer_name) }}"
                                    placeholder="e.g. Raman Kumar"
                                    class="crm-input">
                             @error('contact_person')
@@ -112,7 +112,7 @@
                                 Contact Phone
                             </label>
                             <input type="text" name="contact_phone" id="contact_phone"
-                                   value="{{ old('contact_phone') }}"
+                                   value="{{ old('contact_phone', $selectedLead?->phone) }}"
                                    placeholder="e.g. +91 98765 43210"
                                    class="crm-input">
                             @error('contact_phone')
@@ -128,7 +128,7 @@
                         </label>
                         <textarea name="visit_notes" id="visit_notes" rows="2"
                                   placeholder="e.g. Check perimeter wall, gate entry and server room location"
-                                  class="crm-input h-auto py-2">{{ old('visit_notes') }}</textarea>
+                                  class="crm-input h-auto py-2">{{ old('visit_notes', $selectedLead?->notes) }}</textarea>
                         @error('visit_notes')
                             <p class="error-text">{{ $message }}</p>
                         @enderror
@@ -299,7 +299,7 @@
             const phoneInput = document.getElementById('contact_phone');
             const notesInput = document.getElementById('visit_notes');
 
-            function updateCustomerFields(autoFill = false) {
+            function updateCustomerFields(forceOverwrite = false) {
                 if (!leadSelect) return;
                 const opt = leadSelect.options[leadSelect.selectedIndex];
                 if (!opt || !opt.value) return;
@@ -309,17 +309,27 @@
                 const address = opt.getAttribute('data-address') || '';
                 const notes = opt.getAttribute('data-notes') || '';
 
-                if (autoFill) {
-                    if (address && !addrInput.value) addrInput.value = address;
-                    if (name && !contactInput.value) contactInput.value = name;
-                    if (phone && !phoneInput.value) phoneInput.value = phone;
-                    if (notes && !notesInput.value) notesInput.value = notes;
+                if (forceOverwrite) {
+                    if (address && addrInput) addrInput.value = address;
+                    if (name && contactInput) contactInput.value = name;
+                    if (phone && phoneInput) phoneInput.value = phone;
+                    if (notes && notesInput && !notesInput.value) notesInput.value = notes;
+                } else {
+                    if (address && addrInput && !addrInput.value) addrInput.value = address;
+                    if (name && contactInput && !contactInput.value) contactInput.value = name;
+                    if (phone && phoneInput && !phoneInput.value) phoneInput.value = phone;
+                    if (notes && notesInput && !notesInput.value) notesInput.value = notes;
                 }
             }
 
             leadSelect?.addEventListener('change', function() {
                 updateCustomerFields(true);
             });
+
+            // If a lead is already selected on page load, populate any blank fields
+            if (leadSelect && leadSelect.value) {
+                updateCustomerFields(false);
+            }
         });
     </script>
 </x-app-layout>

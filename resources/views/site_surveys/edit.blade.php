@@ -135,4 +135,29 @@
             </div>
         </form>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const leadSelect = document.getElementById('lead_id');
+            const addrInput = document.getElementById('site_address');
+            const contactInput = document.getElementById('contact_person');
+            const phoneInput = document.getElementById('contact_phone');
+            const notesInput = document.getElementById('visit_notes');
+
+            leadSelect?.addEventListener('change', function() {
+                const opt = leadSelect.options[leadSelect.selectedIndex];
+                if (!opt || !opt.value) return;
+
+                const name = opt.getAttribute('data-name') || '';
+                const phone = opt.getAttribute('data-phone') || '';
+                const address = opt.getAttribute('data-address') || '';
+                const notes = opt.getAttribute('data-notes') || '';
+
+                if (address && addrInput) addrInput.value = address;
+                if (name && contactInput) contactInput.value = name;
+                if (phone && phoneInput) phoneInput.value = phone;
+                if (notes && notesInput && !notesInput.value) notesInput.value = notes;
+            });
+        });
+    </script>
 </x-app-layout>
