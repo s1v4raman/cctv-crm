@@ -53,7 +53,7 @@ class SiteSurveyController extends Controller
             abort(403, 'Technicians are not authorized to create site surveys.');
         }
         $leads = Lead::orderBy('customer_name')->get();
-        $technicians = User::whereIn('role', ['technician', 'staff', 'admin'])->orderBy('name')->get();
+        $technicians = User::where('role', 'technician')->orderBy('name')->get();
         $selectedLead = request('lead_id') ? Lead::find(request('lead_id')) : null;
         return view('site_surveys.create', compact('leads', 'technicians', 'selectedLead'));
     }
@@ -112,7 +112,10 @@ class SiteSurveyController extends Controller
     public function edit(SiteSurvey $siteSurvey)
     {
         $leads = Lead::orderBy('customer_name')->get();
-        $technicians = User::whereIn('role', ['technician', 'staff', 'admin'])->orderBy('name')->get();
+        $technicians = User::where('role', 'technician')
+            ->when($siteSurvey->surveyed_by, fn($q) => $q->orWhere('id', $siteSurvey->surveyed_by))
+            ->orderBy('name')
+            ->get();
         $siteSurvey->load('lead', 'photos');
         return view('site_surveys.edit', compact('siteSurvey', 'leads', 'technicians'));
     }

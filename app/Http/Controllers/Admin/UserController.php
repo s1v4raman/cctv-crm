@@ -43,21 +43,37 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
+        // Provide graceful defaults for quick modal creation
+        $rawPassword = $request->input('password') ?: 'password';
+        $request->merge([
+            'password'              => $rawPassword,
+            'password_confirmation' => $request->input('password_confirmation') ?: $rawPassword,
+            'role'                  => $request->input('role') ?: 'technician',
+        ]);
+
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'name'     => ['required', 'string', 'max:255'],
+            'email'    => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role' => ['required', 'string', Rule::in(['admin', 'staff', 'technician'])],
+            'role'     => ['required', 'string', Rule::in(['admin', 'staff', 'technician'])],
         ]);
 
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
+            'name'     => $request->name,
+            'email'    => $request->email,
             'password' => Hash::make($request->password),
-            'role' => $request->role,
+            'role'     => $request->role,
         ]);
+
+        if ($request->expectsJson() || $request->ajax() || $request->isJson()) {
+            return response()->json([
+                'success' => true,
+                'user'    => $user,
+                'message' => 'Technician account registered successfully.',
+            ]);
+        }
 
         if ($request->filled('return_to')) {
             return redirect($request->return_to)

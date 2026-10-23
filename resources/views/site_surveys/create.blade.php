@@ -50,10 +50,19 @@
                     {{-- Technician and Date in a row --}}
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label for="surveyed_by" class="crm-label">
-                                Technician <span class="required-marker">*</span>
-                            </label>
-                            <select name="surveyed_by" id="surveyed_by" class="crm-select" required>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <label for="surveyed_by" class="crm-label mb-0">
+                                    Technician <span class="required-marker">*</span>
+                                </label>
+                                <button type="button" 
+                                        @click="newTechModalOpen = true"
+                                        id="btn-add-new-technician"
+                                        class="btn-subtle text-white font-semibold"
+                                        style="color: #ffffff !important;">
+                                    <span class="text-white font-semibold" style="color: #ffffff !important;">Add New Technician</span>
+                                </button>
+                            </div>
+                            <select name="surveyed_by" id="surveyed_by" class="crm-select w-full" required>
                                 <option value="">Select technician</option>
                                 @foreach($technicians as $tech)
                                     <option value="{{ $tech->id }}" @selected(old('surveyed_by') == $tech->id)>
@@ -220,6 +229,65 @@
                 </div>
             </div>
         </div>
+
+        {{-- Quick Add Technician Modal Dialog --}}
+        <div x-show="newTechModalOpen" 
+             x-cloak 
+             class="fixed inset-0 z-50 overflow-y-auto" 
+             style="display: none;"
+             @keydown.escape.window="newTechModalOpen = false">
+            {{-- Backdrop --}}
+            <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity" 
+                 @click="newTechModalOpen = false"></div>
+
+            <div class="flex min-h-full items-center justify-center p-4">
+                <div class="relative w-full max-w-md rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 shadow-2xl transition-all"
+                     @click.stop>
+                    <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-100 dark:border-slate-800">
+                        <div>
+                            <h3 class="text-sm font-bold text-slate-900 dark:text-white">Add New Technician</h3>
+                            <p class="text-[11px] text-slate-500">Register new field technician account</p>
+                        </div>
+                        <button type="button" @click="newTechModalOpen = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg leading-none p-1">
+                            &times;
+                        </button>
+                    </div>
+
+                    <div x-show="techErrorMessage" class="mb-3 p-2.5 rounded-lg bg-rose-50 text-rose-600 border border-rose-200 text-xs" x-text="techErrorMessage"></div>
+
+                    <form @submit.prevent="submitQuickTechnician()" class="space-y-3.5">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Technician Full Name <span class="text-rose-500">*</span></label>
+                            <input type="text" x-model="newTech.name" required placeholder="e.g. Anand Sharma"
+                                   class="w-full text-xs h-9 px-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-blue-500 focus:outline-none">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Email Address / Login ID <span class="text-rose-500">*</span></label>
+                            <input type="email" x-model="newTech.email" required placeholder="e.g. anand@precisionit.com"
+                                   class="w-full text-xs h-9 px-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-blue-500 focus:outline-none">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Password (Optional)</label>
+                            <input type="password" x-model="newTech.password" placeholder="Default: password"
+                                   class="w-full text-xs h-9 px-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-blue-500 focus:outline-none">
+                            <p class="text-[10px] text-slate-400 mt-0.5">Leave blank to use default password: <code class="font-mono">password</code></p>
+                        </div>
+
+                        <div class="flex items-center justify-end gap-2 pt-2">
+                            <button type="button" @click="newTechModalOpen = false" class="px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 rounded-lg">
+                                Cancel
+                            </button>
+                            <button type="submit" :disabled="isTechSubmitting" class="px-4 py-1.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm disabled:opacity-50 inline-flex items-center gap-1.5 cursor-pointer">
+                                <span x-show="!isTechSubmitting">Save &amp; Select</span>
+                                <span x-show="isTechSubmitting">Saving...</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -233,6 +301,61 @@
                     phone: '',
                     email: '',
                     site_address: ''
+                },
+                newTechModalOpen: false,
+                isTechSubmitting: false,
+                techErrorMessage: '',
+                newTech: {
+                    name: '',
+                    email: '',
+                    password: ''
+                },
+                async submitQuickTechnician() {
+                    if (!this.newTech.name || !this.newTech.email) {
+                        this.techErrorMessage = 'Please provide technician name and email.';
+                        return;
+                    }
+                    this.isTechSubmitting = true;
+                    this.techErrorMessage = '';
+                    try {
+                        const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                        const res = await fetch('{{ route("admin.users.store") }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': token
+                            },
+                            body: JSON.stringify({
+                                name: this.newTech.name,
+                                email: this.newTech.email,
+                                password: this.newTech.password || 'password',
+                                password_confirmation: this.newTech.password || 'password',
+                                role: 'technician'
+                            })
+                        });
+
+                        const data = await res.json();
+                        if (res.ok && data.success && data.user) {
+                            const tech = data.user;
+                            const select = document.getElementById('surveyed_by');
+                            if (select) {
+                                const newOpt = document.createElement('option');
+                                newOpt.value = tech.id;
+                                newOpt.textContent = tech.name;
+                                newOpt.selected = true;
+                                select.appendChild(newOpt);
+                            }
+                            this.newTech = { name: '', email: '', password: '' };
+                            this.newTechModalOpen = false;
+                        } else {
+                            this.techErrorMessage = data.message || 'Error saving technician. Please check fields.';
+                        }
+                    } catch (err) {
+                        this.techErrorMessage = 'Network error while creating technician.';
+                    } finally {
+                        this.isTechSubmitting = false;
+                    }
                 },
                 async submitQuickCustomer() {
                     if (!this.newCustomer.customer_name || !this.newCustomer.phone) {

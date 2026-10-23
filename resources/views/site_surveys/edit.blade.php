@@ -41,10 +41,19 @@
                     {{-- Technician and Date in a row --}}
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label for="surveyed_by" class="crm-label">
-                                Technician <span class="required-marker">*</span>
-                            </label>
-                            <select name="surveyed_by" id="surveyed_by" class="crm-select" required>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <label for="surveyed_by" class="crm-label mb-0">
+                                    Technician <span class="required-marker">*</span>
+                                </label>
+                                <a href="{{ route('admin.users.create', ['return_to' => url()->current(), 'role' => 'technician']) }}"
+                                   id="btn-add-new-technician"
+                                   class="btn-subtle text-white font-semibold"
+                                   style="color: #ffffff !important;">
+                                    <span class="text-white font-semibold" style="color: #ffffff !important;">Add New Technician</span>
+                                </a>
+                            </div>
+                            <select name="surveyed_by" id="surveyed_by" class="crm-select w-full" required>
+                                <option value="">Select technician</option>
                                 @foreach($technicians as $tech)
                                     <option value="{{ $tech->id }}" @selected(old('surveyed_by', $siteSurvey->surveyed_by) == $tech->id)>
                                         {{ $tech->name }}
