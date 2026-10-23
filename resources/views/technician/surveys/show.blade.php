@@ -194,7 +194,6 @@
                     <div class="bg-[#0f172a] rounded-2xl border border-slate-800 shadow-2xl p-6 space-y-4" x-data="photoUploader()" style="background-color: #0f172a;">
                         <div class="flex items-center justify-between pb-3 border-b border-slate-800">
                             <div class="flex items-center gap-2">
-                                
                                 <div>
                                     <h2 class="text-base font-extrabold text-white font-heading">Upload Site Photos & Camera Angles</h2>
                                     <p class="text-xs text-slate-400">Capture premises, entrance blind spots, server rack, and cable pathways</p>
@@ -202,28 +201,86 @@
                             </div>
                         </div>
 
-                        <div class="border-2 border-dashed border-slate-700 hover:border-amber-500/50 rounded-2xl p-6 text-center bg-[#060913] transition cursor-pointer"
-                             @click="$refs.photoInput.click()">
-                            <input type="file" x-ref="photoInput" name="photos[]" multiple accept="image/*" class="hidden" @change="handleFiles($event)">
-                            <div class="w-10 h-10 rounded-[4px] bg-blue-600 text-white flex items-center justify-center mx-auto mb-2">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        {{-- Final form input that holds all accumulated photos (camera + gallery) --}}
+                        <input type="file" x-ref="finalInput" name="photos[]" multiple accept="image/*" class="hidden">
+
+                        {{-- Hidden inputs for camera capture & gallery selection --}}
+                        <input type="file" x-ref="cameraInput" accept="image/*" capture="environment" class="hidden" @change="handleFiles($event)">
+                        <input type="file" x-ref="galleryInput" multiple accept="image/*" class="hidden" @change="handleFiles($event)">
+
+                        {{-- Interactive Upload & Camera Zone --}}
+                        <div class="border-2 border-dashed border-slate-700 hover:border-blue-500/50 rounded-2xl p-6 text-center bg-[#060913] transition">
+                            <div class="w-12 h-12 rounded-xl bg-blue-600/20 text-blue-400 flex items-center justify-center mx-auto mb-3 border border-blue-500/30">
+                                <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                             </div>
-                            <p class="text-xs font-bold text-white">Click or Tap to Take/Upload Site Photos</p>
-                            <p class="text-[11px] text-slate-400 mt-0.5">Supports PNG, JPG, JPEG up to 5MB each (Multiple photos allowed)</p>
+                            
+                            <p class="text-xs font-bold text-white mb-1">Take Photos or Choose from Gallery</p>
+                            <p class="text-[11px] text-slate-400 mb-4">Supports PNG, JPG, JPEG up to 5MB each (Multiple photos allowed)</p>
+
+                            {{-- Dual Action Buttons: Take Photo & Select Images --}}
+                            <div class="flex flex-wrap items-center justify-center gap-3">
+                                <button type="button" @click="openCamera()"
+                                        class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md transition transform active:scale-95 cursor-pointer">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                    <span>Take Photo (Camera)</span>
+                                </button>
+
+                                <button type="button" @click="$refs.galleryInput.click()"
+                                        class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-bold text-xs shadow-sm transition transform active:scale-95 cursor-pointer">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                    <span>Select from Gallery / Files</span>
+                                </button>
+                            </div>
                         </div>
 
                         {{-- Preview Grid --}}
                         <template x-if="previews.length > 0">
-                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
-                                <template x-for="(item, index) in previews" :key="index">
-                                    <div class="rounded-xl overflow-hidden border border-slate-700 shadow-sm bg-[#060913] relative">
-                                        <img :src="item.url" class="w-full h-28 object-cover">
-                                        <input type="text" :name="'captions[' + index + ']'" placeholder="Photo caption..." class="w-full text-[10px] p-1.5 bg-[#0b1120] text-white border-t border-slate-700 focus:outline-none">
-                                        <button type="button" @click="removePhoto(index)" class="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-rose-600 text-white text-xs font-bold flex items-center justify-center shadow">✕</button>
-                                    </div>
-                                </template>
+                            <div class="space-y-2 pt-2">
+                                <div class="flex items-center justify-between">
+                                    <p class="text-xs font-bold text-slate-300">Ready to Upload (<span x-text="previews.length"></span> photos)</p>
+                                    <button type="button" @click="clearAll()" class="text-[11px] text-rose-400 hover:underline">Clear all</button>
+                                </div>
+                                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                    <template x-for="(item, index) in previews" :key="index">
+                                        <div class="rounded-xl overflow-hidden border border-slate-700 shadow-sm bg-[#060913] relative">
+                                            <img :src="item.url" class="w-full h-28 object-cover">
+                                            <input type="text" :name="'captions[' + index + ']'" placeholder="Photo caption..." class="w-full text-[10px] p-1.5 bg-[#0b1120] text-white border-t border-slate-700 focus:outline-none">
+                                            <button type="button" @click="removePhoto(index)" class="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-rose-600 text-white text-xs font-bold flex items-center justify-center shadow">✕</button>
+                                        </div>
+                                    </template>
+                                </div>
                             </div>
                         </template>
+
+                        {{-- In-Browser Live Webcam / Camera Modal (Desktop & Fallback) --}}
+                        <div x-show="cameraModalOpen" x-cloak
+                             class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+                            <div class="bg-[#0f172a] border border-slate-700 rounded-2xl w-full max-w-lg p-5 space-y-4 shadow-2xl relative"
+                                 @click.away="closeCamera()">
+                                <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+                                    <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                        Live Camera Viewfinder
+                                    </h3>
+                                    <button type="button" @click="closeCamera()" class="text-slate-400 hover:text-white text-sm font-bold p-1">✕</button>
+                                </div>
+
+                                <div class="relative bg-black rounded-xl overflow-hidden aspect-video flex items-center justify-center border border-slate-800">
+                                    <video x-ref="videoElement" autoplay playsinline class="w-full h-full object-cover"></video>
+                                    <canvas x-ref="canvasElement" class="hidden"></canvas>
+                                </div>
+
+                                <div class="flex items-center justify-between pt-2">
+                                    <button type="button" @click="closeCamera()" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800">
+                                        Close
+                                    </button>
+                                    <button type="button" @click="snapFromWebcam()" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-lg inline-flex items-center gap-2 cursor-pointer">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                        <span>Capture & Add Photo</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="flex items-center justify-end gap-3 pt-2">
@@ -244,22 +301,114 @@
         function photoUploader() {
             return {
                 previews: [],
-                handleFiles(event) {
-                    const files = event.target.files;
-                    for (let i = 0; i < files.length; i++) {
-                        const file = files[i];
-                        const reader = new FileReader();
-                        reader.onload = (e) => {
-                            this.previews.push({
-                                url: e.target.result,
-                                name: file.name
-                            });
-                        };
-                        reader.readAsDataURL(file);
+                dataTransfer: new DataTransfer(),
+                cameraModalOpen: false,
+                stream: null,
+
+                init() {
+                    this.syncInput();
+                },
+
+                syncInput() {
+                    if (this.$refs.finalInput) {
+                        this.$refs.finalInput.files = this.dataTransfer.files;
                     }
                 },
+
+                openCamera() {
+                    const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                    if (isMobile && this.$refs.cameraInput) {
+                        this.$refs.cameraInput.click();
+                        return;
+                    }
+
+                    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                        navigator.mediaDevices.getUserMedia({ 
+                            video: { facingMode: { ideal: 'environment' } } 
+                        }).then(s => {
+                            this.stream = s;
+                            this.cameraModalOpen = true;
+                            this.$nextTick(() => {
+                                if (this.$refs.videoElement) {
+                                    this.$refs.videoElement.srcObject = s;
+                                }
+                            });
+                        }).catch(err => {
+                            if (this.$refs.cameraInput) {
+                                this.$refs.cameraInput.click();
+                            }
+                        });
+                    } else if (this.$refs.cameraInput) {
+                        this.$refs.cameraInput.click();
+                    }
+                },
+
+                closeCamera() {
+                    if (this.stream) {
+                        this.stream.getTracks().forEach(t => t.stop());
+                        this.stream = null;
+                    }
+                    this.cameraModalOpen = false;
+                },
+
+                snapFromWebcam() {
+                    const video = this.$refs.videoElement;
+                    const canvas = this.$refs.canvasElement;
+                    if (!video || !canvas) return;
+
+                    canvas.width = video.videoWidth || 1280;
+                    canvas.height = video.videoHeight || 720;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                    canvas.toBlob((blob) => {
+                        if (!blob) return;
+                        const file = new File([blob], 'site_photo_' + Date.now() + '.jpg', { type: 'image/jpeg' });
+                        this.addFile(file);
+                        this.closeCamera();
+                    }, 'image/jpeg', 0.92);
+                },
+
+                handleFiles(event) {
+                    const files = event.target.files;
+                    if (!files || files.length === 0) return;
+                    for (let i = 0; i < files.length; i++) {
+                        this.addFile(files[i]);
+                    }
+                    event.target.value = '';
+                },
+
+                addFile(file) {
+                    this.dataTransfer.items.add(file);
+                    this.syncInput();
+
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        this.previews.push({
+                            url: e.target.result,
+                            name: file.name
+                        });
+                    };
+                    reader.readAsDataURL(file);
+                },
+
                 removePhoto(index) {
                     this.previews.splice(index, 1);
+                    const newDt = new DataTransfer();
+                    const allFiles = this.dataTransfer.files;
+                    for (let i = 0; i < allFiles.length; i++) {
+                        if (i !== index) {
+                            newDt.items.add(allFiles[i]);
+                        }
+                    }
+                    this.dataTransfer = newDt;
+                    this.syncInput();
+                },
+
+                clearAll() {
+                    this.previews = [];
+                    this.dataTransfer = new DataTransfer();
+                    this.syncInput();
                 }
             };
         }
