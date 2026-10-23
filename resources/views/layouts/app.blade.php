@@ -29,6 +29,11 @@
 
         <title>{{ config('app.name', 'Precision IT Systems CRM') }} | Smart Operations</title>
 
+        <!-- Favicon / App Icon -->
+        <link rel="icon" type="image/png" href="{{ asset('logo.png') }}?v={{ filemtime(public_path('logo.png')) }}">
+        <link rel="shortcut icon" href="{{ asset('favicon.ico') }}?v={{ filemtime(public_path('favicon.ico')) }}">
+        <link rel="apple-touch-icon" href="{{ asset('logo.png') }}">
+
         <!-- Dynamic Logo Engine -->
         <x-crm-theme-init :userId="auth()->id()" :userAccent="auth()->user()->theme_accent" :userMode="$activeMode" :userStyle="auth()->user()->theme_style" />
 

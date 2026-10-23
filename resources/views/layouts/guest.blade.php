@@ -7,6 +7,11 @@
 
         <title>{{ config('app.name', 'Precision IT Systems') }}</title>
 
+        <!-- Favicon / App Icon -->
+        <link rel="icon" type="image/png" href="{{ asset('logo.png') }}?v={{ filemtime(public_path('logo.png')) }}">
+        <link rel="shortcut icon" href="{{ asset('favicon.ico') }}?v={{ filemtime(public_path('favicon.ico')) }}">
+        <link rel="apple-touch-icon" href="{{ asset('logo.png') }}">
+
         <style>
             :root {
                 --crm-accent: #2563eb !important;

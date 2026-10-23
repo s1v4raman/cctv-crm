@@ -11,6 +11,11 @@
 
     <title>Sign In - Precision IT Systems ERP Operations</title>
 
+    <!-- Favicon / App Icon -->
+    <link rel="icon" type="image/png" href="{{ asset('logo.png') }}?v={{ filemtime(public_path('logo.png')) }}">
+    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}?v={{ filemtime(public_path('favicon.ico')) }}">
+    <link rel="apple-touch-icon" href="{{ asset('logo.png') }}">
+
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

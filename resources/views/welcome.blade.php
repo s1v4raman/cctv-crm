@@ -8,6 +8,11 @@
         content="Precision IT Systems - Innovative AI CCTV Cameras & Smart Security Solutions. 4K Color Night Vision, Enterprise Surveillance, Cloud VMS, and 24/7 Support.">
     <title>Precision IT Systems | Smart AI CCTV Cameras & Security Solutions</title>
 
+    <!-- Favicon / App Icon -->
+    <link rel="icon" type="image/png" href="{{ asset('logo.png') }}?v={{ filemtime(public_path('logo.png')) }}">
+    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}?v={{ filemtime(public_path('favicon.ico')) }}">
+    <link rel="apple-touch-icon" href="{{ asset('logo.png') }}">
+
     <!-- Signature Brand Colors Permanently Locked (Independent from CRM user themes) -->
     <style>
         :root {
