@@ -381,12 +381,18 @@
             {{-- ════════════════════════════════════════════════════════════════ --}}
             <div x-show="step === 1" class="space-y-6">
                 <div class="p-4 sm:p-6 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-5">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
-                        <div>
-                            <h3 class="font-extrabold text-slate-900 dark:text-white text-base">Step 1: Select Client Installation Site</h3>
-                            <p class="text-xs text-slate-500 mt-0.5">Every project must be anchored to an installation site location</p>
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200/80 dark:border-slate-800">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/80 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            </div>
+                            <div>
+                                <h3 class="font-extrabold text-slate-900 dark:text-white text-base leading-tight">Step 1: Select Client Installation Site</h3>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Every project must be anchored to an installation site location</p>
+                            </div>
                         </div>
-                        <button type="button" @click="siteModalOpen = true" class="btn-secondary text-xs flex items-center justify-center gap-1.5 shadow-2xs self-start sm:self-auto shrink-0">
+                        <button type="button" @click="siteModalOpen = true" class="btn-secondary text-xs py-2 px-3.5 flex items-center justify-center gap-2 shadow-2xs self-start sm:self-auto shrink-0">
+                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
                             <span>Quick-Register New Site</span>
                         </button>
                     </div>
@@ -453,9 +459,15 @@
             {{-- ════════════════════════════════════════════════════════════════ --}}
             <div x-show="step === 2" x-cloak class="space-y-6">
                 <div class="p-6 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
-                    <h3 class="font-extrabold text-slate-900 dark:text-white text-base pb-3 border-b border-slate-100 dark:border-slate-800">
-                        Step 2: Core Project Specification
-                    </h3>
+                    <div class="flex items-center gap-3 pb-4 border-b border-slate-200/80 dark:border-slate-800">
+                        <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/80 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        </div>
+                        <div>
+                            <h3 class="font-extrabold text-slate-900 dark:text-white text-base leading-tight">Step 2: Core Project Specification</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Define project title, type, budget, and assigned lead technician</p>
+                        </div>
+                    </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div class="sm:col-span-2">
@@ -542,10 +554,15 @@
             {{-- ════════════════════════════════════════════════════════════════ --}}
             <div x-show="step === 3" x-cloak class="space-y-6">
                 <div class="p-6 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-5">
-                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-3 border-b border-slate-100 dark:border-slate-800">
-                        <div>
-                            <h3 class="font-extrabold text-slate-900 dark:text-white text-base">Step 3: Technical Requirements &amp; Scope</h3>
-                            <p class="text-xs text-slate-400">Customized fields tailored for this specific project type</p>
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-slate-200/80 dark:border-slate-800">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/80 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                            </div>
+                            <div>
+                                <h3 class="font-extrabold text-slate-900 dark:text-white text-base leading-tight">Step 3: Technical Requirements &amp; Scope</h3>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Customized technical fields tailored for this project specification</p>
+                            </div>
                         </div>
                         <div class="flex items-center gap-2">
                             <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800">
@@ -775,13 +792,19 @@
             {{-- ════════════════════════════════════════════════════════════════ --}}
             <div x-show="step === 4" x-cloak class="space-y-6">
                 <div class="p-4 sm:p-6 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
-                        <div>
-                            <h3 class="font-extrabold text-slate-900 dark:text-white text-base">Step 4: Bill of Materials (BOM)</h3>
-                            <p class="text-xs text-slate-500 mt-0.5">Specify hardware line items and whether sourced from warehouse or local purchase</p>
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200/80 dark:border-slate-800">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/80 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                            </div>
+                            <div>
+                                <h3 class="font-extrabold text-slate-900 dark:text-white text-base leading-tight">Step 4: Bill of Materials (BOM)</h3>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Specify hardware line items and whether sourced from warehouse or local purchase</p>
+                            </div>
                         </div>
-                        <button type="button" @click="addMaterialRow()" class="btn-secondary text-xs self-start sm:self-auto shrink-0">
-                            Add Item
+                        <button type="button" @click="addMaterialRow()" class="btn-secondary text-xs py-2 px-3.5 flex items-center justify-center gap-2 shadow-2xs self-start sm:self-auto shrink-0">
+                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                            <span>Add Item</span>
                         </button>
                     </div>
 

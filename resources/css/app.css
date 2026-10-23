@@ -141,7 +141,7 @@ html.dark h1, html.dark h2, html.dark h3, html.dark h4, html.dark h5, html.dark 
 .rounded-\[4px\].border,
 .p-5.rounded-2xl,
 .p-6.rounded-2xl,
-div[class*="rounded-"][class*="border"]:not([class*="border-transparent"]):not([class*="border-blue"]):not([class*="border-emerald"]):not([class*="border-rose"]):not([class*="border-amber"]):not([class*="crm-active-link"]):not(nav a) {
+div[class*="rounded-"][class*="border"]:not([class*="border-transparent"]):not([class*="border-blue"]):not([class*="border-emerald"]):not([class*="border-rose"]):not([class*="border-amber"]):not([class*="crm-active-link"]):not(nav a):not([class*="border-b"]):not([class*="border-t"]):not([class*="border-l"]):not([class*="border-r"]) {
     border-width: 1px !important;
     border-color: var(--card-border) !important;
 }
@@ -158,7 +158,7 @@ html.dark .rounded-lg.border,
 html.dark .rounded-\[4px\].border,
 html.dark .p-5.rounded-2xl,
 html.dark .p-6.rounded-2xl,
-html.dark div[class*="rounded-"][class*="border"]:not([class*="border-transparent"]):not([class*="border-blue"]):not([class*="border-emerald"]):not([class*="border-rose"]):not([class*="border-amber"]):not([class*="crm-active-link"]):not(nav a) {
+html.dark div[class*="rounded-"][class*="border"]:not([class*="border-transparent"]):not([class*="border-blue"]):not([class*="border-emerald"]):not([class*="border-rose"]):not([class*="border-amber"]):not([class*="crm-active-link"]):not(nav a):not([class*="border-b"]):not([class*="border-t"]):not([class*="border-l"]):not([class*="border-r"]) {
     border-width: 1px !important;
     border-color: var(--card-border) !important;
 }
@@ -171,7 +171,7 @@ html.dark div[class*="rounded-"][class*="border"]:not([class*="border-transparen
     justify-content: space-between;
 }
 
-/* 2. Universal Tailwind Border Utility Remappings */
+/* 2. Universal Tailwind Border Utility Remappings (Only remap color, NEVER force border-width on all 4 sides!) */
 .border-slate-100,
 .border-slate-200,
 .border-slate-300,
@@ -183,7 +183,6 @@ html.dark div[class*="rounded-"][class*="border"]:not([class*="border-transparen
 .border-\[\#ccc\],
 .border-\[\#e2e8f0\],
 .border-\[\#cbd5e1\] {
-    border-width: 1px !important;
     border-color: var(--card-border) !important;
 }
 html.dark .border-slate-100,
@@ -200,9 +199,15 @@ html.dark .border-\[\#cbd5e1\],
 html.dark .dark\:border-slate-800,
 html.dark .dark\:border-slate-700,
 html.dark .dark\:border-slate-900 {
-    border-width: 1px !important;
     border-color: var(--card-border) !important;
 }
+
+/* Explicit Directional Border Preservations (Guarantees headers & dividers don't turn into tight 4-sided cages) */
+.border-b { border-bottom-width: 1px !important; border-top-width: 0 !important; border-left-width: 0 !important; border-right-width: 0 !important; }
+.border-t { border-top-width: 1px !important; border-bottom-width: 0 !important; border-left-width: 0 !important; border-right-width: 0 !important; }
+.border-l { border-left-width: 1px !important; border-top-width: 0 !important; border-bottom-width: 0 !important; border-right-width: 0 !important; }
+.border-r { border-right-width: 1px !important; border-top-width: 0 !important; border-bottom-width: 0 !important; border-left-width: 0 !important; }
+.border-0, .border-none { border-width: 0 !important; }
 
 hr {
     border-color: var(--card-border) !important;
@@ -2632,17 +2637,53 @@ html.dark .crm-card {
 }
 
 .crm-label {
-    display: block !important;
-    font-size: 0.875rem !important;
-    font-weight: 500 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.45rem !important;
+    font-size: 0.8125rem !important;
+    font-weight: 600 !important;
     text-transform: none !important;
     letter-spacing: normal !important;
     color: #334155 !important;
-    margin-bottom: 0.375rem !important;
+    margin-bottom: 0.45rem !important;
+    line-height: 1.25rem !important;
+}
+
+.crm-label svg {
+    width: 14px !important;
+    height: 14px !important;
+    flex-shrink: 0 !important;
+    stroke-width: 1.8 !important;
+}
+
+html:not(.dark) .crm-label svg {
+    stroke: #000000 !important;
+    color: #000000 !important;
+    fill: none !important;
 }
 
 html.dark .crm-label {
-    color: var(--text-muted) !important;
+    color: #cbd5e1 !important;
+}
+
+html.dark .crm-label svg {
+    stroke: #94a3b8 !important;
+    color: #94a3b8 !important;
+    fill: none !important;
+}
+
+/* Centered font and button layout with proper spacing */
+.btn-secondary,
+.crm-btn-secondary,
+a.btn-secondary,
+.btn-primary,
+.crm-btn-primary,
+a.btn-primary {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    gap: 0.45rem !important;
 }
 
 .crm-back-link {

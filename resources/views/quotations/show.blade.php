@@ -324,56 +324,79 @@
     </div>
 
     {{-- Send PDF via Email & Outlook Modal --}}
-    <div id="email-pdf-modal" style="display:none;position:fixed;inset:0;z-index:50;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;padding:1rem;">
-        <div class="bg-white dark:bg-[#0F172A] border border-[#ccc] dark:border-slate-700 rounded p-6 max-w-xl w-full max-h-[90vh] overflow-y-auto text-slate-800 dark:text-slate-200">
-            <div class="flex items-center justify-between pb-3 border-b border-[#ddd] mb-4">
-                <div>
-                    <h3 class="text-base font-bold text-slate-900 dark:text-white">Email Quotation</h3>
-                    <p class="text-xs text-[#555]">Server SMTP Delivery or Outlook Compose</p>
+    <div id="email-pdf-modal" style="display:none;position:fixed;inset:0;z-index:50;background:rgba(15,23,42,0.65);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:1.25rem;">
+        <div class="bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl p-6 sm:p-7 max-w-xl w-full max-h-[90vh] overflow-y-auto text-slate-800 dark:text-slate-200">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800 mb-5">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/80 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-slate-900 dark:text-white leading-tight">Email Quotation</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Server SMTP Delivery or Outlook Desktop Compose</p>
+                    </div>
                 </div>
-                <button type="button" onclick="closeEmailModal()" class="text-slate-500 hover:text-slate-800 dark:hover:text-white text-lg">✕</button>
-            </div>
-
-            {{-- 1-Click External Email Clients --}}
-            <div class="mb-4">
-                <label class="crm-label font-bold mb-2 block">External Email Clients</label>
-                <div class="grid grid-cols-2 gap-2 mb-2">
-                    <a href="{{ $quotation->getOutlookComposeUrl() }}" target="_blank" class="btn-secondary text-xs text-center py-2">
-                        Outlook 365
-                    </a>
-                    <a href="{{ $quotation->getMailtoUrl() }}" class="btn-secondary text-xs text-center py-2">
-                        Default Mail App
-                    </a>
-                </div>
-                <button type="button" onclick="copyQuotationEmailText()" id="btn-copy-email-text" class="btn-secondary text-xs w-full py-2">
-                    Copy Email Message &amp; PDF Link
+                <button type="button" onclick="closeEmailModal()" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer" aria-label="Close modal">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
             </div>
 
-            <div class="border-t border-[#ddd] pt-3 mb-3 text-xs font-semibold text-[#555]">
-                Or Send via Direct SMTP
+            {{-- 1-Click External Email Clients --}}
+            <div class="mb-5">
+                <label class="crm-label">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    External Email Clients
+                </label>
+                <div class="grid grid-cols-2 gap-2.5 mb-2.5">
+                    <a href="{{ $quotation->getOutlookComposeUrl() }}" target="_blank" class="btn-secondary text-xs text-center py-2.5 px-3 flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                        <span>Outlook 365</span>
+                    </a>
+                    <a href="{{ $quotation->getMailtoUrl() }}" class="btn-secondary text-xs text-center py-2.5 px-3 flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/></svg>
+                        <span>Default Mail App</span>
+                    </a>
+                </div>
+                <button type="button" onclick="copyQuotationEmailText()" id="btn-copy-email-text" class="btn-secondary text-xs w-full py-2.5 px-4 flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+                    <span>Copy Email Message &amp; PDF Link</span>
+                </button>
             </div>
 
-            <form method="POST" action="{{ route('quotations.send-email', $quotation) }}">
+            <div class="relative flex items-center my-5">
+                <div class="flex-grow border-t border-slate-200 dark:border-slate-800"></div>
+                <span class="flex-shrink mx-3 text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    Or Send via Direct SMTP
+                </span>
+                <div class="flex-grow border-t border-slate-200 dark:border-slate-800"></div>
+            </div>
+
+            <form method="POST" action="{{ route('quotations.send-email', $quotation) }}" class="space-y-4">
                 @csrf
 
-                <div class="mb-3">
+                <div>
                     <label class="crm-label">
-                        Recipient Email <span class="required-marker">*</span>
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.206"/></svg>
+                        Recipient Email <span class="required-marker text-rose-500">*</span>
                     </label>
                     <input type="email" name="email" required value="{{ old('email', $quotation->lead->email) }}" placeholder="client@example.com" class="crm-input">
                 </div>
 
-                <div class="mb-3">
+                <div>
                     <label class="crm-label">
-                        Subject <span class="required-marker">*</span>
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/></svg>
+                        Subject <span class="required-marker text-rose-500">*</span>
                     </label>
                     <input type="text" name="subject" required value="{{ $quotation->getEmailSubject() }}" class="crm-input">
                 </div>
 
-                <div class="grid grid-cols-2 gap-3 mb-3">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label class="crm-label">PDF Template Style</label>
+                        <label class="crm-label">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                            PDF Template Style
+                        </label>
                         <select name="pdf_format" class="crm-select">
                             <option value="1">Executive Modern (Format 1)</option>
                             <option value="2">Technical Detailed (Format 2)</option>
@@ -381,26 +404,35 @@
                         </select>
                     </div>
                     <div>
-                        <label class="crm-label">Attachment</label>
-                        <div class="crm-input flex items-center text-xs text-slate-600 bg-slate-50 dark:bg-slate-800">
-                            Quotation-{{ $quotation->quotation_no }}.pdf
+                        <label class="crm-label">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+                            Attachment
+                        </label>
+                        <div class="crm-input flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/80">
+                            <svg class="w-4 h-4 text-rose-500 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M7 2v20h10V8l-6-6H7zm8 7V3.5L18.5 7H15z"/></svg>
+                            <span class="truncate">Quotation-{{ $quotation->quotation_no }}.pdf</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="mb-4">
-                    <label class="crm-label">Custom Notes for Customer</label>
-                    <textarea name="custom_message" rows="2" placeholder="e.g. As discussed during our survey, includes 2-year AMC..." class="crm-input h-auto py-2"></textarea>
+                <div>
+                    <label class="crm-label">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                        Custom Notes for Customer
+                    </label>
+                    <textarea name="custom_message" rows="2" placeholder="e.g. As discussed during our survey, includes 2-year AMC..." class="crm-input h-auto py-2.5"></textarea>
                 </div>
 
-                <div class="flex items-center justify-between pt-3">
-                    <a href="{{ route('alerts.gateways') }}" target="_blank" class="action-link text-xs">
-                        SMTP Settings
+                <div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800">
+                    <a href="{{ route('alerts.gateways') }}" target="_blank" class="action-link text-xs inline-flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        <span>SMTP Settings</span>
                     </a>
-                    <div class="flex gap-2">
-                        <button type="button" onclick="closeEmailModal()" class="btn-secondary">Cancel</button>
-                        <button type="submit" class="btn-primary">
-                            Send Email
+                    <div class="flex items-center gap-2.5">
+                        <button type="button" onclick="closeEmailModal()" class="btn-secondary text-xs py-2 px-4">Cancel</button>
+                        <button type="submit" class="btn-primary text-xs py-2 px-5 flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                            <span>Send Email</span>
                         </button>
                     </div>
                 </div>
@@ -409,93 +441,112 @@
     </div>
 
     {{-- Send Quotation via WhatsApp & Multi-Channel Modal --}}
-    <div id="whatsapp-share-modal" style="display:none;position:fixed;inset:0;z-index:50;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;padding:1rem;">
-        <div class="bg-white dark:bg-[#0F172A] border border-[#ccc] dark:border-slate-700 rounded p-6 max-w-2xl w-full max-h-[94vh] overflow-y-auto text-slate-900 dark:text-slate-100">
+    <div id="whatsapp-share-modal" style="display:none;position:fixed;inset:0;z-index:50;background:rgba(15,23,42,0.65);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:1.25rem;">
+        <div class="bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl p-6 sm:p-7 max-w-2xl w-full max-h-[94vh] overflow-y-auto text-slate-900 dark:text-slate-100">
             
             {{-- Modal Header --}}
-            <div class="flex items-center justify-between pb-3 border-b border-[#ddd] mb-4">
-                <div>
-                    <h3 class="text-base font-bold text-slate-900 dark:text-white">WhatsApp Proposal Dispatcher</h3>
-                    <span class="text-xs text-[#555]">Quotation #{{ $quotation->quotation_no }} &bull; Total: <strong>₹{{ number_format((float)$quotation->total, 2) }}</strong></span>
+            <div class="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800 mb-5">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/80 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-slate-900 dark:text-white leading-tight">WhatsApp Proposal Dispatcher</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Quotation #{{ $quotation->quotation_no }} &bull; Total: <strong>₹{{ number_format((float)$quotation->total, 2) }}</strong></p>
+                    </div>
                 </div>
-                <button type="button" onclick="closeWhatsAppModal()" class="text-slate-500 hover:text-slate-800 dark:hover:text-white text-lg">✕</button>
+                <button type="button" onclick="closeWhatsAppModal()" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer" aria-label="Close modal">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
             </div>
 
             {{-- Condition Status --}}
             @php
                 $hasStoredPhone = !empty($quotation->getWhatsAppPhone());
             @endphp
-            <div id="wa-customer-status-banner" class="mb-4 text-xs flex items-center justify-between gap-3 pb-3 border-b border-[#eee]">
-                <div>
-                    <span class="font-bold">Status:</span>
-                    <span id="wa-status-title" class="{{ $hasStoredPhone ? 'status-won' : 'status-lost' }} font-bold">
-                        {{ $hasStoredPhone ? 'Customer Contact Ready & Verified' : 'Customer Phone Number Not Stored' }}
-                    </span>
-                    <span id="wa-status-desc" class="text-[#555] block mt-0.5">
-                        {{ $hasStoredPhone 
-                            ? 'Target WhatsApp chat will open for ' . ($quotation->lead?->customer_name ?? 'Customer') . ' (' . $quotation->getWhatsAppPhone() . ').' 
-                            : 'Enter mobile number below. Saving will update the CRM customer record.' }}
-                    </span>
+            <div id="wa-customer-status-banner" class="mb-5 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 text-xs flex items-center justify-between gap-3">
+                <div class="flex items-start gap-2.5">
+                    <span class="w-2 h-2 rounded-full {{ $hasStoredPhone ? 'bg-emerald-500 ring-4 ring-emerald-100 dark:ring-emerald-950' : 'bg-rose-500 ring-4 ring-rose-100 dark:ring-rose-950' }} mt-1 shrink-0"></span>
+                    <div>
+                        <div class="flex items-center gap-1.5 font-bold {{ $hasStoredPhone ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400' }}">
+                            <span id="wa-status-title">{{ $hasStoredPhone ? 'Customer Contact Ready & Verified' : 'Customer Phone Number Not Stored' }}</span>
+                        </div>
+                        <span id="wa-status-desc" class="text-slate-500 dark:text-slate-400 block mt-0.5 leading-relaxed">
+                            {{ $hasStoredPhone 
+                                ? 'Target WhatsApp chat will open for ' . ($quotation->lead?->customer_name ?? 'Customer') . ' (' . $quotation->getWhatsAppPhone() . ').' 
+                                : 'Enter mobile number below. Saving will update the CRM customer record.' }}
+                        </span>
+                    </div>
                 </div>
-                <a href="{{ route('quotations.vcard', $quotation) }}" id="btn-header-vcard" class="btn-secondary text-xs">
-                    vCard
+                <a href="{{ route('quotations.vcard', $quotation) }}" id="btn-header-vcard" class="btn-secondary text-xs py-2 px-3 flex items-center justify-center gap-1.5 shrink-0">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"/></svg>
+                    <span>Download vCard</span>
                 </a>
             </div>
 
             {{-- Step 1: Format Selection --}}
-            <div class="mb-4">
-                <div class="flex items-center justify-between mb-2">
+            <div class="mb-5">
+                <div class="flex items-center justify-between mb-2.5">
                     <label class="crm-label font-bold">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/></svg>
                         1. Choose Quotation PDF Format &amp; Style
                     </label>
-                    <a id="btn-preview-selected-pdf" href="{{ route('quotations.public-pdf', ['quotation' => $quotation, 'format' => '1']) }}" target="_blank" class="action-link text-xs">
-                        Preview Live PDF
+                    <a id="btn-preview-selected-pdf" href="{{ route('quotations.public-pdf', ['quotation' => $quotation, 'format' => '1']) }}" target="_blank" class="action-link text-xs inline-flex items-center gap-1">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                        <span>Preview Live PDF</span>
                     </a>
                 </div>
 
-                <div class="grid grid-cols-3 gap-3" id="wa-format-selector-grid">
-                    <label class="flex items-center gap-2 p-2.5 rounded border border-[#ccc] dark:border-slate-700 bg-white dark:bg-slate-800 cursor-pointer text-xs">
-                        <input type="radio" name="wa_pdf_format" value="1" checked class="accent-blue-600" onchange="onWhatsAppFormatChange('1')">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" id="wa-format-selector-grid">
+                    <label class="flex items-start gap-3 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 hover:border-blue-500 transition cursor-pointer text-xs">
+                        <input type="radio" name="wa_pdf_format" value="1" checked class="accent-blue-600 mt-0.5 shrink-0" onchange="onWhatsAppFormatChange('1')">
                         <div>
-                            <div class="font-bold text-slate-900 dark:text-white">Executive Modern</div>
-                            <div class="text-[11px] text-[#555]">Format 1 (Standard)</div>
+                            <div class="font-bold text-slate-900 dark:text-white leading-tight">Executive Modern</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Format 1 (Standard)</div>
                         </div>
                     </label>
 
-                    <label class="flex items-center gap-2 p-2.5 rounded border border-[#ccc] dark:border-slate-700 bg-white dark:bg-slate-800 cursor-pointer text-xs">
-                        <input type="radio" name="wa_pdf_format" value="2" class="accent-blue-600" onchange="onWhatsAppFormatChange('2')">
+                    <label class="flex items-start gap-3 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 hover:border-blue-500 transition cursor-pointer text-xs">
+                        <input type="radio" name="wa_pdf_format" value="2" class="accent-blue-600 mt-0.5 shrink-0" onchange="onWhatsAppFormatChange('2')">
                         <div>
-                            <div class="font-bold text-slate-900 dark:text-white">Technical Detailed</div>
-                            <div class="text-[11px] text-[#555]">Format 2</div>
+                            <div class="font-bold text-slate-900 dark:text-white leading-tight">Technical Detailed</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Format 2</div>
                         </div>
                     </label>
 
-                    <label class="flex items-center gap-2 p-2.5 rounded border border-[#ccc] dark:border-slate-700 bg-white dark:bg-slate-800 cursor-pointer text-xs">
-                        <input type="radio" name="wa_pdf_format" value="3" class="accent-blue-600" onchange="onWhatsAppFormatChange('3')">
+                    <label class="flex items-start gap-3 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 hover:border-blue-500 transition cursor-pointer text-xs">
+                        <input type="radio" name="wa_pdf_format" value="3" class="accent-blue-600 mt-0.5 shrink-0" onchange="onWhatsAppFormatChange('3')">
                         <div>
-                            <div class="font-bold text-slate-900 dark:text-white">Classic Formal</div>
-                            <div class="text-[11px] text-[#555]">Format 3</div>
+                            <div class="font-bold text-slate-900 dark:text-white leading-tight">Classic Formal</div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Format 3</div>
                         </div>
                     </label>
                 </div>
             </div>
 
             {{-- Step 2: Contact Details --}}
-            <div class="mb-4">
-                <label class="crm-label font-bold mb-2 block">
+            <div class="mb-5">
+                <label class="crm-label font-bold mb-2">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                     2. Customer Contact &amp; Target Mobile
                 </label>
 
-                <div class="grid grid-cols-2 gap-3 mb-2">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-2.5">
                     <div>
-                        <label class="crm-label">Customer Name</label>
+                        <label class="crm-label">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                            Customer Name
+                        </label>
                         <input type="text" id="wa-customer-name" value="{{ $quotation->lead?->customer_name ?? 'Valued Customer' }}"
                                placeholder="e.g. John Doe"
                                oninput="onWhatsAppNameInput(this.value)"
                                class="crm-input">
                     </div>
                     <div>
-                        <label class="crm-label">WhatsApp Phone <span class="required-marker">*</span></label>
+                        <label class="crm-label">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                            WhatsApp Phone <span class="required-marker text-rose-500">*</span>
+                        </label>
                         <input type="tel" id="wa-customer-phone" value="{{ $quotation->getWhatsAppPhone() ?: $quotation->lead?->phone }}" placeholder="e.g. 9876543210"
                                oninput="onWhatsAppPhoneInput(this.value)"
                                class="crm-input">
@@ -503,43 +554,50 @@
                 </div>
 
                 <div class="flex items-center justify-between text-xs pt-1">
-                    <span class="text-[#555]">Target: <strong><span id="wa-phone-preview-badge">{{ $quotation->getWhatsAppPhone() ?: 'Customer Number' }}</span></strong></span>
-                    <button type="button" onclick="quickSaveCustomerContact()" id="btn-quick-save-contact" class="btn-secondary text-xs">
-                        Save Contact
+                    <span class="text-slate-500 dark:text-slate-400">Target Chat: <strong class="text-slate-800 dark:text-slate-200"><span id="wa-phone-preview-badge">{{ $quotation->getWhatsAppPhone() ?: 'Customer Number' }}</span></strong></span>
+                    <button type="button" onclick="quickSaveCustomerContact()" id="btn-quick-save-contact" class="btn-secondary text-xs py-1.5 px-3 flex items-center justify-center gap-1.5">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
+                        <span>Save Contact</span>
                     </button>
                 </div>
             </div>
 
             {{-- Step 3: Message Text --}}
-            <div class="mb-4">
-                <div class="flex items-center justify-between mb-1">
+            <div class="mb-5">
+                <div class="flex items-center justify-between mb-2">
                     <label class="crm-label font-bold">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
                         3. WhatsApp Proposal Message Preview
                     </label>
-                    <button type="button" onclick="copyWhatsAppCustomText()" id="btn-copy-wa-text" class="action-link text-xs">
-                        Copy Message
+                    <button type="button" onclick="copyWhatsAppCustomText()" id="btn-copy-wa-text" class="action-link text-xs inline-flex items-center gap-1">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                        <span>Copy Message</span>
                     </button>
                 </div>
-                <textarea id="wa-custom-message" rows="4" class="crm-input h-auto py-2">{{ $quotation->getWhatsAppFormattedMessage('1') }}</textarea>
+                <textarea id="wa-custom-message" rows="4" class="crm-input h-auto py-2.5 font-mono text-xs leading-relaxed">{{ $quotation->getWhatsAppFormattedMessage('1') }}</textarea>
             </div>
 
             {{-- Action Buttons --}}
-            <div class="pt-3 flex items-center justify-between flex-wrap gap-2">
-                <div class="flex gap-2">
-                    <button type="button" onclick="openWhatsAppDirect('web')" class="btn-secondary text-xs">
-                        Web WhatsApp
+            <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between flex-wrap gap-2.5">
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="openWhatsAppDirect('web')" class="btn-secondary text-xs py-2 px-3 flex items-center justify-center gap-1.5">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>
+                        <span>Web WhatsApp</span>
                     </button>
-                    <button type="button" onclick="openWhatsAppDirect('app')" class="btn-secondary text-xs">
-                        Desktop App
+                    <button type="button" onclick="openWhatsAppDirect('app')" class="btn-secondary text-xs py-2 px-3 flex items-center justify-center gap-1.5">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                        <span>Desktop App</span>
                     </button>
-                    <button type="button" onclick="downloadSelectedPdfOnly()" class="btn-secondary text-xs">
-                        Download PDF
+                    <button type="button" onclick="downloadSelectedPdfOnly()" class="btn-secondary text-xs py-2 px-3 flex items-center justify-center gap-1.5">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                        <span>Download PDF</span>
                     </button>
                 </div>
 
-                <div class="flex gap-2">
-                    <button type="button" onclick="closeWhatsAppModal()" class="btn-secondary">Cancel</button>
-                    <button type="button" id="btn-do-whatsapp-dispatch" onclick="executeWhatsAppShareWithPdf()" class="btn-primary">
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="closeWhatsAppModal()" class="btn-secondary text-xs py-2 px-4">Cancel</button>
+                    <button type="button" id="btn-do-whatsapp-dispatch" onclick="executeWhatsAppShareWithPdf()" class="btn-primary text-xs py-2 px-5 flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
                         <span id="btn-wa-dispatch-text">Send on WhatsApp</span>
                     </button>
                 </div>

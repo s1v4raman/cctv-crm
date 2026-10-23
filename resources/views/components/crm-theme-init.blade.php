@@ -370,7 +370,9 @@
             html:not(.dark) button[class*="bg-blue-600"] svg,
             html:not(.dark) a[class*="bg-blue-600"] svg,
             html:not(.dark) .tech-card a svg,
-            html:not(.dark) .tech-card button svg {
+            html:not(.dark) .tech-card button svg,
+            html:not(.dark) .crm-label svg,
+            html:not(.dark) label svg {
                 stroke: #000000 !important;
                 color: #000000 !important;
                 fill: none !important;
@@ -385,7 +387,13 @@
             html:not(.dark) a.btn-secondary svg path,
             html:not(.dark) a[class*="btn-"] svg path,
             html:not(.dark) .tech-card a svg path,
-            html:not(.dark) .tech-card button svg path {
+            html:not(.dark) .tech-card button svg path,
+            html:not(.dark) .crm-label svg path,
+            html:not(.dark) .crm-label svg circle,
+            html:not(.dark) .crm-label svg rect,
+            html:not(.dark) .crm-label svg line,
+            html:not(.dark) label svg path,
+            html:not(.dark) label svg circle {
                 fill: none !important;
                 stroke: #000000 !important;
             }
@@ -414,7 +422,9 @@
             html.dark .tab-btn svg,
             html.dark .tech-card a svg,
             html.dark .tech-card button svg,
-            html.dark a.btn-secondary svg {
+            html.dark a.btn-secondary svg,
+            html.dark .crm-label svg,
+            html.dark label svg {
                 stroke: #cbd5e1 !important;
                 color: #cbd5e1 !important;
                 fill: none !important;
@@ -422,7 +432,9 @@
             html.dark .btn-secondary svg *,
             html.dark .tab-btn svg *,
             html.dark .tech-card a svg *,
-            html.dark .tech-card button svg * {
+            html.dark .tech-card button svg *,
+            html.dark .crm-label svg *,
+            html.dark label svg * {
                 stroke: #cbd5e1 !important;
                 fill: none !important;
             }
@@ -435,6 +447,25 @@
                 fill: #fbbf24 !important;
                 stroke: #fbbf24 !important;
             }
+
+            /* Universal Center-Aligned Button Fonts & Directional Border Guards */
+            .btn-secondary,
+            .crm-btn-secondary,
+            a.btn-secondary,
+            .btn-primary,
+            .crm-btn-primary,
+            a.btn-primary {
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                text-align: center !important;
+                gap: 0.5rem !important;
+            }
+            .border-b { border-bottom-width: 1px !important; border-top-width: 0 !important; border-left-width: 0 !important; border-right-width: 0 !important; }
+            .border-t { border-top-width: 1px !important; border-bottom-width: 0 !important; border-left-width: 0 !important; border-right-width: 0 !important; }
+            .border-l { border-left-width: 1px !important; border-top-width: 0 !important; border-bottom-width: 0 !important; border-right-width: 0 !important; }
+            .border-r { border-right-width: 1px !important; border-top-width: 0 !important; border-bottom-width: 0 !important; border-left-width: 0 !important; }
+            .border-0, .border-none { border-width: 0 !important; }
 
             button.bg-blue-600:hover,
             button[class*="bg-blue-600"]:hover,
