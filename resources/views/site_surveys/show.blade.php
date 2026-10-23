@@ -119,17 +119,33 @@
 
         {{-- Photos Section --}}
         <div class="crm-section">
-            <h3>Site Photos ({{ $siteSurvey->photos->count() }})</h3>
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="m-0">Site Photos ({{ $siteSurvey->photos->count() }})</h3>
+                <button type="button" onclick="openUploadModal()" class="btn-secondary text-xs">
+                    + Upload Photo
+                </button>
+            </div>
+
             @if($siteSurvey->photos->count())
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-2">
                     @foreach($siteSurvey->photos as $photo)
-                        <div class="border border-slate-300 dark:border-slate-700 rounded p-1 bg-white dark:bg-slate-800">
-                            <img src="{{ $photo->url() }}" alt="{{ $photo->original_name }}"
-                                 class="w-full h-32 object-cover cursor-pointer"
-                                 onclick="openLightbox('{{ $photo->url() }}')">
-                            @if($photo->caption)
-                                <div class="p-1 text-xs text-slate-700 dark:text-slate-300 truncate">{{ $photo->caption }}</div>
-                            @endif
+                        <div class="border border-slate-300 dark:border-slate-700 rounded p-1.5 bg-white dark:bg-slate-800 flex flex-col justify-between">
+                            <div class="relative overflow-hidden rounded bg-slate-100 dark:bg-slate-900 h-32 flex items-center justify-center">
+                                <img src="{{ $photo->url() }}" alt="{{ $photo->original_name }}"
+                                     class="w-full h-full object-cover cursor-pointer hover:opacity-90 transition"
+                                     loading="lazy"
+                                     onclick="openLightbox('{{ $photo->url() }}')">
+                            </div>
+                            <div class="mt-2 flex items-center justify-between gap-1 text-xs">
+                                <span class="text-slate-600 dark:text-slate-400 truncate flex-1" title="{{ $photo->caption ?: $photo->original_name }}">
+                                    {{ $photo->caption ?: $photo->original_name }}
+                                </span>
+                                <form method="POST" action="{{ route('site-surveys.photos.destroy', $photo) }}" onsubmit="return confirm('Remove this photo?');" class="inline m-0">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-red-500 hover:text-red-700 font-bold px-1.5 py-0.5 bg-transparent border-0 cursor-pointer text-sm" title="Delete photo">&times;</button>
+                                </form>
+                            </div>
                         </div>
                     @endforeach
                 </div>
@@ -145,6 +161,35 @@
         <img id="lightbox-img" src="" alt="Site photo" class="max-w-[90vw] max-h-[85vh] rounded border border-white/20">
     </div>
 
+    {{-- Upload Photo Modal --}}
+    <div id="upload-modal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-300 dark:border-slate-700 shadow-2xl max-w-md w-full p-6 space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+                <h3 class="text-base font-bold text-slate-900 dark:text-white m-0">Upload Site Photos</h3>
+                <button type="button" onclick="closeUploadModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white text-xl cursor-pointer">&times;</button>
+            </div>
+
+            <form method="POST" action="{{ route('site-surveys.photos.upload', $siteSurvey) }}" enctype="multipart/form-data" class="space-y-4">
+                @csrf
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Select Photos or Capture with Camera *</label>
+                    <input type="file" name="photos[]" multiple accept="image/*" required class="crm-input text-xs file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                    <p class="text-[11px] text-slate-500 mt-1">Accepts multiple images (JPG, PNG). Stored securely across cloud and local servers.</p>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Caption (Optional)</label>
+                    <input type="text" name="captions[]" placeholder="e.g. Main Entrance Camera Position" class="crm-input text-xs">
+                </div>
+
+                <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-200 dark:border-slate-800">
+                    <button type="button" onclick="closeUploadModal()" class="btn-secondary text-xs">Cancel</button>
+                    <button type="submit" class="btn-primary text-xs">Upload Now</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         function openLightbox(src) {
             document.getElementById('lightbox-img').src = src;
@@ -155,6 +200,16 @@
         }
         document.getElementById('lightbox').addEventListener('click', function(e) {
             if (e.target === this) closeLightbox();
+        });
+
+        function openUploadModal() {
+            document.getElementById('upload-modal').classList.remove('hidden');
+        }
+        function closeUploadModal() {
+            document.getElementById('upload-modal').classList.add('hidden');
+        }
+        document.getElementById('upload-modal').addEventListener('click', function(e) {
+            if (e.target === this) closeUploadModal();
         });
     </script>
 </x-app-layout>

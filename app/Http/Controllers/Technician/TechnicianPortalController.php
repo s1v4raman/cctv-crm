@@ -140,10 +140,15 @@ class TechnicianPortalController extends Controller
                     $filename = basename($path);
                     $caption  = $captions[$i] ?? null;
 
+                    $imageData = base64_encode(file_get_contents($file->getRealPath()));
+                    $mimeType  = $file->getMimeType() ?: 'image/jpeg';
+
                     $siteSurvey->photos()->create([
                         'filename'      => $filename,
                         'original_name' => $file->getClientOriginalName(),
                         'caption'       => $caption,
+                        'image_data'    => $imageData,
+                        'mime_type'     => $mimeType,
                     ]);
                 }
             }

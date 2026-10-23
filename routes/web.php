@@ -58,6 +58,9 @@ Route::get('/api/mobile-scanner/lan-info', [MobileScannerSyncController::class, 
 // Universal Global Omnisearch API
 Route::get('/api/global-search', [GlobalSearchController::class, 'search'])->name('api.global-search');
 
+// Public Photo Stream Endpoint (allows <img> rendering, PDF generation, and lightbox without auth redirect)
+Route::get('/site-surveys/photos/{photo}', [SiteSurveyController::class, 'showPhoto'])->name('site-surveys.photos.show');
+
 // Public Amazon-style CCTV Storefront Homepage & Inquiry Engine
 Route::get('/', [StorefrontController::class, 'index'])->name('home');
 Route::post('/public/inquire', [StorefrontController::class, 'inquire'])->name('public.inquire');
@@ -419,6 +422,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/site-surveys/{site_survey}/edit', [SiteSurveyController::class, 'edit'])->name('site-surveys.edit');
         Route::put('/site-surveys/{site_survey}', [SiteSurveyController::class, 'update'])->name('site-surveys.update');
         Route::delete('/site-surveys/{site_survey}', [SiteSurveyController::class, 'destroy'])->name('site-surveys.destroy');
+        Route::post('/site-surveys/{site_survey}/photos', [SiteSurveyController::class, 'uploadPhotos'])->name('site-surveys.photos.upload');
         Route::delete('/site-surveys/photos/{photo}', [SiteSurveyController::class, 'destroyPhoto'])->name('site-surveys.photos.destroy');
 
         // Service Tickets Write

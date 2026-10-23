@@ -168,9 +168,86 @@ class SiteSurveyController extends Controller
             ->with('status', 'Site survey deleted.');
     }
 
+    public function showPhoto(SiteSurveyPhoto $photo)
+    {
+        // 1. Check if physical file exists on local public storage disk
+        if (!empty($photo->filename) && Storage::disk('public')->exists('site-surveys/' . $photo->filename)) {
+            $path = Storage::disk('public')->path('site-surveys/' . $photo->filename);
+            return response()->file($path, [
+                'Content-Type'  => $photo->mime_type ?: 'image/jpeg',
+                'Cache-Control' => 'public, max-age=86400',
+            ]);
+        }
+
+        // 2. Check if image data is saved in database (Base64)
+        if (!empty($photo->image_data)) {
+            $data = $photo->image_data;
+            if (str_contains($data, ',')) {
+                $data = explode(',', $data)[1];
+            }
+            $binary = base64_decode($data);
+            return response($binary, 200, [
+                'Content-Type'   => $photo->mime_type ?: 'image/jpeg',
+                'Cache-Control'  => 'public, max-age=86400',
+                'Content-Length' => strlen($binary),
+            ]);
+        }
+
+        // 3. Clean SVG Fallback placeholder (prevents broken icon in browser)
+        $name = htmlspecialchars($photo->original_name ?: 'Photo #' . $photo->id);
+        $svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" width="100%" height="100%">
+            <rect width="320" height="200" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="4 4" rx="8"/>
+            <circle cx="160" cy="80" r="28" fill="#e2e8f0"/>
+            <path d="M150 74h4l2-3h8l2 3h4c1.1 0 2 .9 2 2v14c0 1.1-.9 2-2 2h-20c-1.1 0-2-.9-2-2V76c0-1.1.9-2 2-2zm10 15c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5z" fill="#64748b"/>
+            <text x="160" y="126" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600" fill="#475569">Photo File Missing</text>
+            <text x="160" y="145" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#94a3b8">' . substr($name, 0, 30) . '</text>
+        </svg>';
+
+        return response($svg, 200, [
+            'Content-Type'  => 'image/svg+xml',
+            'Cache-Control' => 'no-cache',
+        ]);
+    }
+
+    public function uploadPhotos(Request $request, SiteSurvey $siteSurvey)
+    {
+        $request->validate([
+            'photos'   => 'required|array',
+            'photos.*' => 'image|max:15360',
+            'captions' => 'nullable|array',
+        ]);
+
+        $photos   = $request->file('photos');
+        $captions = $request->input('captions', []);
+
+        foreach ($photos as $i => $file) {
+            if ($file && $file->isValid()) {
+                $path     = $file->store('site-surveys', 'public');
+                $filename = basename($path);
+                $caption  = $captions[$i] ?? null;
+
+                $imageData = base64_encode(file_get_contents($file->getRealPath()));
+                $mimeType  = $file->getMimeType() ?: 'image/jpeg';
+
+                $siteSurvey->photos()->create([
+                    'filename'      => $filename,
+                    'original_name' => $file->getClientOriginalName(),
+                    'caption'       => $caption,
+                    'image_data'    => $imageData,
+                    'mime_type'     => $mimeType,
+                ]);
+            }
+        }
+
+        return redirect()->route('site-surveys.show', $siteSurvey)
+            ->with('status', 'Site photos uploaded successfully.');
+    }
+
     public function destroyPhoto(SiteSurveyPhoto $photo)
     {
-        Storage::disk('public')->delete('site-surveys/' . $photo->filename);
+        if (!empty($photo->filename)) {
+            Storage::disk('public')->delete('site-surveys/' . $photo->filename);
+        }
         $surveyId = $photo->site_survey_id;
         $photo->delete();
 

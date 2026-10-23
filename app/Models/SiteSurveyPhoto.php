@@ -12,6 +12,8 @@ class SiteSurveyPhoto extends Model
         'filename',
         'original_name',
         'caption',
+        'image_data',
+        'mime_type',
     ];
 
     public function survey(): BelongsTo
@@ -21,6 +23,6 @@ class SiteSurveyPhoto extends Model
 
     public function url(): string
     {
-        return asset('storage/site-surveys/' . $this->filename);
+        return route('site-surveys.photos.show', $this);
     }
 }
