@@ -141,13 +141,35 @@
         }
         html:not(.dark) .login-input::placeholder { color: #94a3b8 !important; }
 
-        html:not(.dark) .tab-bar { background: #f1f5f9 !important; border: 1px solid #e2e8f0 !important; }
-        html:not(.dark) .tab-btn { color: #64748b !important; }
-        html:not(.dark) .tab-btn:hover { color: #334155 !important; }
-        html:not(.dark) .tab-btn-active { background: #ffffff !important; color: #2563eb !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important; }
+        html:not(.dark) .tab-bar { background: #f1f5f9 !important; border: 1.5px solid #e2e8f0 !important; }
+        html:not(.dark) .tab-btn { color: #64748b !important; font-weight: 600 !important; }
+        html:not(.dark) .tab-btn:hover { color: #0f172a !important; background: rgba(255,255,255,0.7) !important; }
+        html:not(.dark) .tab-btn.tab-btn-active,
+        html:not(.dark) .tab-btn.worker-tab-active { 
+            background: #2563eb !important; 
+            color: #ffffff !important; 
+            font-weight: 700 !important; 
+            border: 1px solid #1d4ed8 !important; 
+            box-shadow: 0 1px 4px rgba(37,99,235,0.3) !important; 
+        }
+        html:not(.dark) .tab-btn.tab-btn-active svg,
+        html:not(.dark) .tab-btn.worker-tab-active svg {
+            stroke: #ffffff !important;
+            color: #ffffff !important;
+        }
 
-        html:not(.dark) .google-btn { background: #ffffff !important; border: 1.5px solid #e2e8f0 !important; color: #334155 !important; }
-        html:not(.dark) .google-btn:hover { background: #f8fafc !important; border-color: #cbd5e1 !important; box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important; }
+        html:not(.dark) .google-btn,
+        html:not(.dark) .google-btn span { 
+            background: #ffffff !important; 
+            border: 1.5px solid #cbd5e1 !important; 
+            color: #0f172a !important; 
+            font-weight: 600 !important; 
+        }
+        html:not(.dark) .google-btn:hover { 
+            background: #f8fafc !important; 
+            border-color: #94a3b8 !important; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important; 
+        }
 
         html:not(.dark) .divider-line { border-color: #e2e8f0 !important; }
         html:not(.dark) .divider-text { color: #94a3b8 !important; background: #f8fafc !important; }
@@ -169,14 +191,15 @@
         html:not(.dark) .info-banner .ib-title { color: #1e3a8a !important; }
         html:not(.dark) .info-banner .ib-text { color: #475569 !important; }
 
-        html:not(.dark) .theme-toggle { background: #ffffff !important; border: 1.5px solid #e2e8f0 !important; color: #475569 !important; }
-        html:not(.dark) .theme-toggle:hover { background: #f1f5f9 !important; }
-        html:not(.dark) .portal-badge-staff { background: #eff6ff !important; border: 1px solid #bfdbfe !important; color: #1d4ed8 !important; }
-        html:not(.dark) .portal-badge-worker { background: #fffbeb !important; border: 1px solid #fde68a !important; color: #92400e !important; }
+        html:not(.dark) .theme-toggle { background: #ffffff !important; border: 1.5px solid #cbd5e1 !important; color: #0f172a !important; }
+        html:not(.dark) .theme-toggle:hover { background: #f1f5f9 !important; border-color: #94a3b8 !important; }
+        html:not(.dark) .theme-toggle svg { color: #0f172a !important; stroke: #0f172a !important; }
+        html:not(.dark) .portal-badge-staff { background: #eff6ff !important; border: 1.5px solid #bfdbfe !important; color: #1d4ed8 !important; font-weight: 700 !important; }
+        html:not(.dark) .portal-badge-worker { background: #fffbeb !important; border: 1.5px solid #fde68a !important; color: #92400e !important; font-weight: 700 !important; }
 
         html:not(.dark) .chk-label { color: #64748b !important; }
-        html:not(.dark) .forgot-link { color: #2563eb !important; }
-        html:not(.dark) .forgot-link:hover { color: #1d4ed8 !important; }
+        html:not(.dark) .forgot-link { color: #2563eb !important; font-weight: 600 !important; }
+        html:not(.dark) .forgot-link:hover { color: #1d4ed8 !important; text-decoration: underline !important; }
         html:not(.dark) .login-alert-error { background: #fef2f2 !important; border: 1px solid #fecaca !important; color: #b91c1c !important; }
         html:not(.dark) .login-alert-success { background: #f0fdf4 !important; border: 1px solid #bbf7d0 !important; color: #15803d !important; }
 
@@ -186,77 +209,110 @@
         html:not(.dark) .demo-card:hover .dc-icon-wrap { background: #cbd5e1 !important; border-color: #94a3b8 !important; }
         html:not(.dark) .input-icon { color: #000000 !important; stroke: #000000 !important; }
         html:not(.dark) .pwd-toggle { color: #000000 !important; stroke: #000000 !important; }
-        html:not(.dark) .theme-toggle svg { color: #000000 !important; stroke: #000000 !important; }
         html:not(.dark) .tab-btn svg { color: #000000 !important; stroke: #000000 !important; }
 
 
         /* --- DARK MODE --- */
         html.dark .form-panel { background: #0f172a !important; }
-        html.dark .form-panel .fp-heading  { color: #f1f5f9 !important; }
+        html.dark .form-panel .fp-heading  { color: #ffffff !important; }
         html.dark .form-panel .fp-subtext  { color: #94a3b8 !important; }
-        html.dark .form-panel .fp-label    { color: #cbd5e1 !important; }
-        html.dark .form-panel .fp-muted    { color: #64748b !important; }
-        html.dark .form-panel .fp-footer   { color: #475569 !important; }
+        html.dark .form-panel .fp-label    { color: #e2e8f0 !important; }
+        html.dark .form-panel .fp-muted    { color: #94a3b8 !important; }
+        html.dark .form-panel .fp-footer   { color: #64748b !important; }
 
         html.dark .login-input {
             background: #1e293b !important;
             border: 1.5px solid #334155 !important;
-            color: #f1f5f9 !important;
+            color: #ffffff !important;
         }
         html.dark .login-input:focus {
             border-color: #3b82f6 !important;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18) !important;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25) !important;
             background: #1e293b !important;
         }
-        html.dark .login-input::placeholder { color: #475569 !important; }
+        html.dark .login-input::placeholder { color: #64748b !important; }
 
-        html.dark .tab-bar { background: #1e293b !important; border: 1px solid #334155 !important; }
-        html.dark .tab-btn { color: #94a3b8 !important; }
-        html.dark .tab-btn:hover { color: #cbd5e1 !important; }
-        html.dark .tab-btn-active { background: #334155 !important; color: #60a5fa !important; border: 1px solid #475569 !important; box-shadow: 0 1px 3px rgba(0,0,0,0.2) !important; }
+        /* Role Navigation Tabs in Dark Mode: Crisp, high-contrast, beautiful */
+        html.dark .tab-bar { background: #0b1329 !important; border: 1.5px solid #1e293b !important; }
+        html.dark .tab-btn { color: #cbd5e1 !important; font-weight: 600 !important; }
+        html.dark .tab-btn:hover { color: #ffffff !important; background: #1e293b !important; }
+        html.dark .tab-btn.tab-btn-active,
+        html.dark .tab-btn.worker-tab-active { 
+            background: #2563eb !important; 
+            color: #ffffff !important; 
+            font-weight: 700 !important; 
+            border: 1px solid #3b82f6 !important; 
+            box-shadow: 0 2px 10px rgba(37,99,235,0.45) !important; 
+        }
+        html.dark .tab-btn.tab-btn-active svg,
+        html.dark .tab-btn.worker-tab-active svg {
+            stroke: #ffffff !important;
+            color: #ffffff !important;
+        }
 
-        html.dark .google-btn { background: #1e293b !important; border: 1.5px solid #334155 !important; color: #cbd5e1 !important; }
-        html.dark .google-btn:hover { background: #263450 !important; border-color: #475569 !important; box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important; }
+        /* Google Workspace button in Dark Mode */
+        html.dark .google-btn { background: #1e293b !important; border: 1.5px solid #3b4b68 !important; }
+        html.dark .google-btn,
+        html.dark .google-btn span { color: #ffffff !important; font-weight: 600 !important; }
+        html.dark .google-btn:hover { background: #28374f !important; border-color: #60a5fa !important; box-shadow: 0 2px 10px rgba(0,0,0,0.3) !important; }
 
-        html.dark .divider-line { border-color: #1e293b !important; }
-        html.dark .divider-text { color: #475569 !important; background: #0f172a !important; }
+        html.dark .divider-line { border-color: #334155 !important; }
+        html.dark .divider-text { color: #94a3b8 !important; background: #0f172a !important; }
 
         html.dark .demo-wrapper { background: #1e293b !important; border: 1.5px solid #334155 !important; }
         html.dark .demo-header { background: #162032 !important; border-bottom: 1px solid #334155 !important; }
         html.dark .demo-card { border-right: 1px solid #293548 !important; }
         html.dark .demo-card:last-child { border-right: none !important; }
-        html.dark .demo-card:hover { background: rgba(37, 99, 235, 0.08) !important; }
-        html.dark .demo-card .dc-name { color: #e2e8f0 !important; }
-        html.dark .demo-card .dc-email { color: #64748b !important; }
-        html.dark .demo-card-worker:hover { background: rgba(217, 119, 6, 0.08) !important; }
+        html.dark .demo-card:hover { background: rgba(37, 99, 235, 0.15) !important; }
+        html.dark .demo-card .dc-name { color: #f8fafc !important; }
+        html.dark .demo-card .dc-email { color: #94a3b8 !important; }
+        html.dark .demo-card-worker:hover { background: rgba(217, 119, 6, 0.15) !important; }
         html.dark .demo-card-worker .dc-name { color: #fcd34d !important; }
-        html.dark .demo-card-worker .dc-email { color: #b45309 !important; }
+        html.dark .demo-card-worker .dc-email { color: #f59e0b !important; }
 
-        html.dark .info-banner { background: linear-gradient(135deg, rgba(30,58,138,0.2) 0%, rgba(49,46,129,0.15) 100%) !important; border: 1px solid rgba(59,130,246,0.2) !important; }
-        html.dark .info-banner .ib-icon-wrap { background: rgba(37, 99, 235, 0.15) !important; }
-        html.dark .info-banner .ib-icon { color: #60a5fa !important; }
-        html.dark .info-banner .ib-title { color: #93c5fd !important; }
-        html.dark .info-banner .ib-text { color: #94a3b8 !important; }
+        html.dark .info-banner { background: linear-gradient(135deg, rgba(30,58,138,0.25) 0%, rgba(49,46,129,0.2) 100%) !important; border: 1px solid rgba(59,130,246,0.35) !important; }
+        html.dark .info-banner .ib-icon-wrap { background: rgba(37, 99, 235, 0.25) !important; }
+        html.dark .info-banner .ib-icon { color: #93c5fd !important; }
+        html.dark .info-banner .ib-title { color: #bfdbfe !important; }
+        html.dark .info-banner .ib-text { color: #cbd5e1 !important; }
 
-        html.dark .theme-toggle { background: #1e293b !important; border: 1.5px solid #334155 !important; color: #94a3b8 !important; }
-        html.dark .theme-toggle:hover { background: #263450 !important; }
-        html.dark .portal-badge-staff { background: rgba(37,99,235,0.12) !important; border: 1px solid rgba(59,130,246,0.25) !important; color: #60a5fa !important; }
-        html.dark .portal-badge-worker { background: rgba(217,119,6,0.12) !important; border: 1px solid rgba(217,119,6,0.25) !important; color: #fbbf24 !important; }
+        /* Theme Toggle & Badges in Dark Mode */
+        html.dark .theme-toggle { background: #1e293b !important; border: 1.5px solid #475569 !important; color: #fbbf24 !important; }
+        html.dark .theme-toggle:hover { background: #263450 !important; border-color: #fbbf24 !important; }
+        html.dark .theme-toggle svg { color: #fbbf24 !important; stroke: #fbbf24 !important; }
+        html.dark .theme-toggle svg circle { fill: #fbbf24 !important; stroke: #fbbf24 !important; }
 
-        html.dark .chk-label { color: #94a3b8 !important; }
-        html.dark .forgot-link { color: #60a5fa !important; }
-        html.dark .forgot-link:hover { color: #93c5fd !important; }
+        html.dark .portal-badge-staff { 
+            background: rgba(30, 58, 138, 0.45) !important; 
+            border: 1.5px solid #3b82f6 !important; 
+            color: #bfdbfe !important; 
+            font-weight: 700 !important; 
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.25) !important; 
+        }
+        html.dark .portal-badge-worker { 
+            background: rgba(146, 64, 14, 0.45) !important; 
+            border: 1.5px solid #f59e0b !important; 
+            color: #fde68a !important; 
+            font-weight: 700 !important; 
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.25) !important; 
+        }
+
+        html.dark .chk-label { color: #cbd5e1 !important; }
+        html.dark .forgot-link { color: #93c5fd !important; font-weight: 600 !important; }
+        html.dark .forgot-link:hover { color: #bfdbfe !important; text-decoration: underline !important; }
         html.dark .login-alert-error { background: rgba(153, 27, 27, 0.25) !important; border: 1px solid rgba(248, 113, 113, 0.3) !important; color: #fca5a5 !important; }
         html.dark .login-alert-success { background: rgba(22, 101, 52, 0.25) !important; border: 1px solid rgba(74, 222, 128, 0.3) !important; color: #86efac !important; }
 
-        /* Icons in Dark Mode — White */
+        /* Icons in Dark Mode — White / Light Slate */
         html.dark .demo-card .dc-icon { color: #ffffff !important; stroke: #ffffff !important; }
         html.dark .demo-card .dc-icon-wrap { background: #334155 !important; border: 1px solid #475569 !important; }
         html.dark .demo-card:hover .dc-icon-wrap { background: #475569 !important; border-color: #64748b !important; }
-        html.dark .input-icon { color: #ffffff !important; stroke: #ffffff !important; }
-        html.dark .pwd-toggle { color: #ffffff !important; stroke: #ffffff !important; }
-        html.dark .theme-toggle svg { color: #ffffff !important; stroke: #ffffff !important; }
-        html.dark .tab-btn svg { color: #ffffff !important; stroke: #ffffff !important; }
+        html.dark .input-icon { color: #94a3b8 !important; stroke: #94a3b8 !important; }
+        html.dark .pwd-toggle { color: #94a3b8 !important; stroke: #94a3b8 !important; }
+        html.dark .pwd-toggle:hover { color: #ffffff !important; stroke: #ffffff !important; }
+        html.dark .pwd-toggle svg { stroke: #94a3b8 !important; color: #94a3b8 !important; }
+        html.dark .pwd-toggle:hover svg { stroke: #ffffff !important; color: #ffffff !important; }
+        html.dark .tab-btn svg { color: #cbd5e1 !important; stroke: #cbd5e1 !important; }
 
 
         /* ══════════════════════════════════════════════════════════════

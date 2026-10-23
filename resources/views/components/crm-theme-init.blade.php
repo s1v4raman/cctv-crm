@@ -356,46 +356,84 @@
                 color: #ffffff !important;
             }
 
-            /* Action button icons: strictly black color icons with fill: none */
-            button svg,
-            a.btn-primary svg,
-            a.btn-secondary svg,
-            a.btn svg,
-            a[class*="btn-"] svg,
-            .btn-primary svg,
-            .btn-secondary svg,
-            .crm-btn-primary svg,
-            button.bg-blue-600 svg,
-            a.bg-blue-600 svg,
-            button[class*="bg-blue-600"] svg,
-            a[class*="bg-blue-600"] svg,
-            .tech-card a svg,
-            .tech-card button svg {
+            /* Action button icons: strictly black color icons with fill: none in LIGHT MODE */
+            html:not(.dark) button svg,
+            html:not(.dark) a.btn-primary svg,
+            html:not(.dark) a.btn-secondary svg,
+            html:not(.dark) a.btn svg,
+            html:not(.dark) a[class*="btn-"] svg,
+            html:not(.dark) .btn-primary svg,
+            html:not(.dark) .btn-secondary svg,
+            html:not(.dark) .crm-btn-primary svg,
+            html:not(.dark) button.bg-blue-600 svg,
+            html:not(.dark) a.bg-blue-600 svg,
+            html:not(.dark) button[class*="bg-blue-600"] svg,
+            html:not(.dark) a[class*="bg-blue-600"] svg,
+            html:not(.dark) .tech-card a svg,
+            html:not(.dark) .tech-card button svg {
                 stroke: #000000 !important;
                 color: #000000 !important;
                 fill: none !important;
             }
-            button svg path,
-            button svg circle,
-            button svg rect,
-            button svg line,
-            button svg polyline,
-            button svg polygon,
-            a.btn-primary svg path,
-            a.btn-primary svg circle,
-            a.btn-primary svg rect,
-            a.btn-primary svg line,
-            a.btn-primary svg polyline,
-            a.btn-secondary svg path,
-            a.btn-secondary svg circle,
-            a.btn-secondary svg rect,
-            a.btn-secondary svg line,
-            a.btn-secondary svg polyline,
-            a[class*="btn-"] svg path,
-            .tech-card a svg path,
-            .tech-card button svg path {
+            html:not(.dark) button svg path,
+            html:not(.dark) button svg circle,
+            html:not(.dark) button svg rect,
+            html:not(.dark) button svg line,
+            html:not(.dark) button svg polyline,
+            html:not(.dark) button svg polygon,
+            html:not(.dark) a.btn-primary svg path,
+            html:not(.dark) a.btn-secondary svg path,
+            html:not(.dark) a[class*="btn-"] svg path,
+            html:not(.dark) .tech-card a svg path,
+            html:not(.dark) .tech-card button svg path {
                 fill: none !important;
                 stroke: #000000 !important;
+            }
+
+            /* Dark Mode Button Icons: Clean Luminous White & Light Slate (Never invisible black) */
+            html.dark .btn-primary svg,
+            html.dark button.bg-blue-600 svg,
+            html.dark a.bg-blue-600 svg,
+            html.dark button[class*="bg-blue-600"] svg,
+            html.dark a[class*="bg-blue-600"] svg,
+            html.dark .btn-primary-login svg,
+            html.dark button[type="submit"] svg {
+                stroke: #ffffff !important;
+                color: #ffffff !important;
+                fill: none !important;
+            }
+            html.dark .btn-primary svg *,
+            html.dark button.bg-blue-600 svg *,
+            html.dark a.bg-blue-600 svg *,
+            html.dark .btn-primary-login svg * {
+                stroke: #ffffff !important;
+                fill: none !important;
+            }
+
+            html.dark .btn-secondary svg,
+            html.dark .tab-btn svg,
+            html.dark .tech-card a svg,
+            html.dark .tech-card button svg,
+            html.dark a.btn-secondary svg {
+                stroke: #cbd5e1 !important;
+                color: #cbd5e1 !important;
+                fill: none !important;
+            }
+            html.dark .btn-secondary svg *,
+            html.dark .tab-btn svg *,
+            html.dark .tech-card a svg *,
+            html.dark .tech-card button svg * {
+                stroke: #cbd5e1 !important;
+                fill: none !important;
+            }
+
+            html.dark .theme-toggle svg {
+                stroke: #fbbf24 !important;
+                color: #fbbf24 !important;
+            }
+            html.dark .theme-toggle svg circle {
+                fill: #fbbf24 !important;
+                stroke: #fbbf24 !important;
             }
 
             button.bg-blue-600:hover,
