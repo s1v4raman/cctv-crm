@@ -17,5 +17,6 @@ echo.
 echo Opening browser to http://127.0.0.1:8001 ...
 start http://127.0.0.1:8001
 echo.
-wsl bash -c "export PHP_CLI_SERVER_WORKERS=6 && cd /mnt/c/Users/ADMIN/Projects/cctv-crm && php artisan serve --host=0.0.0.0 --port=8001 --no-reload"
+echo Starting Laravel Server...
+wsl bash -c "pkill -f 'artisan serve' 2>/dev/null; export PHP_CLI_SERVER_WORKERS=6 && cd /mnt/c/Users/ADMIN/Projects/cctv-crm && php artisan serve --host=0.0.0.0 --port=8001 --no-reload"
 pause
