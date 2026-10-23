@@ -16,20 +16,19 @@ class AttendanceController extends Controller
      */
     public function index(Request $request): View
     {
-        $tab = $request->input('tab', 'daily');
-        if (!in_array($tab, ['daily', 'weekly', 'monthly'])) {
-            $tab = 'daily';
-        }
+        $tab = in_array($request->input('tab'), ['daily', 'weekly', 'monthly']) 
+            ? (string) $request->input('tab') 
+            : 'daily';
 
-        $selectedDate = $request->input('date') 
+        $selectedDate = $request->filled('date') 
             ? Carbon::parse($request->input('date'))->toDateString() 
             : now()->toDateString();
 
-        $selectedMonth = $request->input('month') 
+        $selectedMonth = $request->filled('month') 
             ? Carbon::parse($request->input('month'))->format('Y-m') 
             : Carbon::parse($selectedDate)->format('Y-m');
 
-        $weekInput = $request->input('week_date', $selectedDate);
+        $weekInput = (string) $request->input('week_date', $selectedDate);
         $weekCarbon = Carbon::parse($weekInput);
         $weekStart = $weekCarbon->copy()->startOfWeek();
         $weekEnd = $weekCarbon->copy()->endOfWeek();
@@ -37,7 +36,40 @@ class AttendanceController extends Controller
         $roleFilter = $request->input('role');
         $search = trim((string) $request->input('search', ''));
 
-        // Internal workforce query (Admin, Staff, Technicians)
+        $employees = $this->getEmployees($roleFilter, $search);
+        $totalEmployees = $employees->count();
+
+        $myAttendanceToday = EmployeeAttendance::where('user_id', auth()->id())
+            ->whereDate('date', now()->toDateString())
+            ->first();
+
+        $dailyData = $this->getDailyStats($totalEmployees, $selectedDate);
+        $weeklyData = $this->getWeeklyStats($employees, $totalEmployees, $weekStart, $weekEnd);
+        $monthlyData = $this->getMonthlyStats($employees, $totalEmployees, $selectedMonth);
+
+        /** @var array<string, mixed> $payload */
+        $payload = array_merge([
+            'tab'               => $tab,
+            'employees'         => $employees,
+            'selectedDate'      => $selectedDate,
+            'selectedMonth'     => $selectedMonth,
+            'weekInput'         => $weekInput,
+            'weekStart'         => $weekStart,
+            'weekEnd'           => $weekEnd,
+            'roleFilter'        => $roleFilter,
+            'search'            => $search,
+            'totalEmployees'    => $totalEmployees,
+            'myAttendanceToday' => $myAttendanceToday,
+        ], $dailyData, $weeklyData, $monthlyData);
+
+        return view('attendance.index', $payload);
+    }
+
+    /**
+     * Retrieve filtered employee workforce collection.
+     */
+    private function getEmployees(?string $roleFilter, string $search)
+    {
         $employeeQuery = User::whereIn('role', ['admin', 'staff', 'technician'])->orderBy('name');
         if ($roleFilter && in_array($roleFilter, ['admin', 'staff', 'technician'])) {
             $employeeQuery->where('role', $roleFilter);
@@ -48,17 +80,14 @@ class AttendanceController extends Controller
                   ->orWhere('email', 'like', "%{$search}%");
             });
         }
-        $employees = $employeeQuery->get();
-        $totalEmployees = $employees->count();
+        return $employeeQuery->get();
+    }
 
-        // Current logged-in user's attendance today (for 1-click clock widget)
-        $myAttendanceToday = EmployeeAttendance::where('user_id', auth()->id())
-            ->whereDate('date', now()->toDateString())
-            ->first();
-
-        // ====================================================
-        // 1. PER-DAY ATTENDANCE & DAILY ANALYSIS
-        // ====================================================
+    /**
+     * Build daily attendance dataset and metrics.
+     */
+    private function getDailyStats(int $totalEmployees, string $selectedDate): array
+    {
         $dailyAttendances = EmployeeAttendance::with('user')
             ->whereDate('date', $selectedDate)
             ->get()
@@ -79,12 +108,26 @@ class AttendanceController extends Controller
         $dailyTotalHours = (float) $dailyAttendances->sum('total_hours');
         $dailyTotalOvertime = (float) $dailyAttendances->sum('overtime_hours');
 
-        // Backwards compatibility alias for existing blades/tests
-        $attendances = $dailyAttendances;
+        return [
+            'attendances'        => $dailyAttendances,
+            'presentCount'       => $presentCount,
+            'lateCount'          => $lateCount,
+            'halfDayCount'       => $halfDayCount,
+            'leaveCount'         => $leaveCount,
+            'markedAbsentCount'  => $markedAbsentCount,
+            'unmarkedCount'      => $unmarkedCount,
+            'absentCount'        => $absentCount,
+            'attendanceRate'     => $attendanceRate,
+            'dailyTotalHours'    => $dailyTotalHours,
+            'dailyTotalOvertime' => $dailyTotalOvertime,
+        ];
+    }
 
-        // ====================================================
-        // 2. WEEKLY ATTENDANCE & WEEKLY ANALYSIS
-        // ====================================================
+    /**
+     * Build weekly attendance matrix and stats.
+     */
+    private function getWeeklyStats($employees, int $totalEmployees, Carbon $weekStart, Carbon $weekEnd): array
+    {
         $weekDays = [];
         $tempDay = $weekStart->copy();
         while ($tempDay->lte($weekEnd)) {
@@ -108,7 +151,6 @@ class AttendanceController extends Controller
             $weeklyMatrix[$rec->user_id][$dateStr] = $rec;
         }
 
-        // Weekly aggregates per employee
         $weeklyEmployeeStats = [];
         foreach ($employees as $emp) {
             $empRecords = $weeklyRecords->where('user_id', $emp->id);
@@ -125,11 +167,9 @@ class AttendanceController extends Controller
             ];
         }
 
-        // Weekly Macro Analytics
         $weeklyTotalHours = (float) $weeklyRecords->sum('total_hours');
         $weeklyTotalOvertime = (float) $weeklyRecords->sum('overtime_hours');
 
-        // Day by day turnout for the week (Mon to Sun)
         $weeklyDailyTurnout = [];
         foreach ($weekDays as $wDay) {
             $dayRecs = $weeklyRecords->where('date', $wDay['date']);
@@ -146,9 +186,22 @@ class AttendanceController extends Controller
             ? round(collect($weeklyDailyTurnout)->avg('rate'), 1) 
             : 0;
 
-        // ====================================================
-        // 3. MONTHLY ATTENDANCE & MONTHLY ANALYSIS
-        // ====================================================
+        return [
+            'weekDays'            => $weekDays,
+            'weeklyMatrix'        => $weeklyMatrix,
+            'weeklyEmployeeStats' => $weeklyEmployeeStats,
+            'weeklyTotalHours'    => $weeklyTotalHours,
+            'weeklyTotalOvertime' => $weeklyTotalOvertime,
+            'weeklyDailyTurnout'  => $weeklyDailyTurnout,
+            'weeklyAvgTurnout'    => $weeklyAvgTurnout,
+        ];
+    }
+
+    /**
+     * Build monthly attendance matrix and analytics.
+     */
+    private function getMonthlyStats($employees, int $totalEmployees, string $selectedMonth): array
+    {
         $monthCarbon = Carbon::parse($selectedMonth . '-01');
         $monthStart = $monthCarbon->copy()->startOfMonth();
         $monthEnd = $monthCarbon->copy()->endOfMonth();
@@ -174,17 +227,14 @@ class AttendanceController extends Controller
         $monthlyRecords = EmployeeAttendance::whereBetween('date', [$monthStart->toDateString(), $monthEnd->toDateString()])
             ->get();
 
-        // Monthly logs grouped by user_id for backward compatibility
         $monthlyLogs = $monthlyRecords->groupBy('user_id');
 
-        // Monthly matrix user_id -> date => record
         $monthlyMatrix = [];
         foreach ($monthlyRecords as $mRec) {
             $dateStr = Carbon::parse($mRec->date)->toDateString();
             $monthlyMatrix[$mRec->user_id][$dateStr] = $mRec;
         }
 
-        // Monthly per-employee stats
         $monthlyEmployeeStats = [];
         foreach ($employees as $emp) {
             $empMonthRecs = $monthlyRecords->where('user_id', $emp->id);
@@ -212,7 +262,6 @@ class AttendanceController extends Controller
             ];
         }
 
-        // Monthly Macro Analytics
         $monthlyTotalHours = (float) $monthlyRecords->sum('total_hours');
         $monthlyTotalOvertime = (float) $monthlyRecords->sum('overtime_hours');
         $monthlyPresentPunches = $monthlyRecords->whereIn('status', ['present', 'late'])->count();
@@ -231,51 +280,20 @@ class AttendanceController extends Controller
             ? round((($monthlyPresentPunches - $monthlyLatePunches) / ($monthlyPresentPunches + $monthlyHalfDays)) * 100, 1) 
             : 100;
 
-        return view('attendance.index', compact(
-            'tab',
-            'employees',
-            'attendances',
-            'selectedDate',
-            'selectedMonth',
-            'weekInput',
-            'weekStart',
-            'weekEnd',
-            'weekDays',
-            'roleFilter',
-            'search',
-            'totalEmployees',
-            'presentCount',
-            'lateCount',
-            'halfDayCount',
-            'absentCount',
-            'markedAbsentCount',
-            'unmarkedCount',
-            'leaveCount',
-            'attendanceRate',
-            'dailyTotalHours',
-            'dailyTotalOvertime',
-            'myAttendanceToday',
-            'monthlyLogs',
-            // Weekly exports
-            'weeklyMatrix',
-            'weeklyEmployeeStats',
-            'weeklyTotalHours',
-            'weeklyTotalOvertime',
-            'weeklyDailyTurnout',
-            'weeklyAvgTurnout',
-            // Monthly exports
-            'monthDays',
-            'monthlyMatrix',
-            'monthlyEmployeeStats',
-            'workingDaysInMonth',
-            'monthlyTotalHours',
-            'monthlyTotalOvertime',
-            'companyMonthlyAttendanceRate',
-            'punctualityRate',
-            'monthlyLatePunches',
-            'monthlyLeaves',
-            'monthlyAbsents'
-        ));
+        return [
+            'monthDays'                    => $monthDays,
+            'monthlyMatrix'                => $monthlyMatrix,
+            'monthlyEmployeeStats'         => $monthlyEmployeeStats,
+            'workingDaysInMonth'           => $workingDaysInMonth,
+            'monthlyTotalHours'            => $monthlyTotalHours,
+            'monthlyTotalOvertime'         => $monthlyTotalOvertime,
+            'companyMonthlyAttendanceRate' => $companyMonthlyAttendanceRate,
+            'punctualityRate'              => $punctualityRate,
+            'monthlyLatePunches'           => $monthlyLatePunches,
+            'monthlyLeaves'                => $monthlyLeaves,
+            'monthlyAbsents'               => $monthlyAbsents,
+            'monthlyLogs'                  => $monthlyLogs,
+        ];
     }
 
     /**
@@ -322,7 +340,7 @@ class AttendanceController extends Controller
         $user = auth()->user();
         $today = now()->toDateString();
  
-        /** @var \App\Models\EmployeeAttendance|null $attendance */
+        /** @var EmployeeAttendance|null $attendance */
         $attendance = EmployeeAttendance::where('user_id', $user->id)
             ->whereDate('date', $today)
             ->first();

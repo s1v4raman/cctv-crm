@@ -15,6 +15,9 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 
+/**
+ * Controller for managing worker weekly wages, payouts, and advances.
+ */
 class WageController extends Controller implements HasMiddleware
 {
     public static function middleware(): array
@@ -37,11 +40,11 @@ class WageController extends Controller implements HasMiddleware
         // Default to current week's Monday (or query param 'week')
         $weekParam = $request->input('week');
         if ($weekParam) {
-            $weekStart = Carbon::parse($weekParam)->startOfWeek(Carbon::MONDAY);
+            $weekStart = Carbon::parse($weekParam)->startOfWeek();
         } else {
-            $weekStart = Carbon::now()->startOfWeek(Carbon::MONDAY);
+            $weekStart = Carbon::now()->startOfWeek();
         }
-        $weekEnd = (clone $weekStart)->endOfWeek(Carbon::SUNDAY); // covers Monday to Sunday
+        $weekEnd = (clone $weekStart)->endOfWeek(); // covers Monday to Sunday
         $saturdayEnd = (clone $weekStart)->addDays(5)->endOfDay(); // Saturday 23:59:59
         $paydaySunday = (clone $weekStart)->addDays(6);
 
@@ -93,7 +96,7 @@ class WageController extends Controller implements HasMiddleware
 
         // Available weeks for dropdown (last 12 weeks)
         $availableWeeks = [];
-        $curr = Carbon::now()->startOfWeek(Carbon::MONDAY);
+        $curr = Carbon::now()->startOfWeek();
         for ($i = 0; $i < 12; $i++) {
             $wStart = (clone $curr)->subWeeks($i);
             $wSun = (clone $wStart)->addDays(6);
@@ -131,8 +134,8 @@ class WageController extends Controller implements HasMiddleware
 
         $worker = Worker::findOrFail($validated['worker_id']);
         $paymentDate = Carbon::parse($validated['payment_date']);
-        $weekStart = (clone $paymentDate)->startOfWeek(Carbon::MONDAY)->toDateString();
-        $weekEnd = (clone $paymentDate)->endOfWeek(Carbon::SUNDAY)->toDateString();
+        $weekStart = (clone $paymentDate)->startOfWeek()->toDateString();
+        $weekEnd = (clone $paymentDate)->endOfWeek()->toDateString();
 
         $payment = WagePayment::create([
             'worker_id' => $worker->id,
@@ -173,7 +176,7 @@ class WageController extends Controller implements HasMiddleware
 
         $worker = Worker::findOrFail($validated['worker_id']);
         $weekStart = Carbon::parse($validated['week_start'])->toDateString();
-        $weekEnd = Carbon::parse($weekStart)->endOfWeek(Carbon::SUNDAY)->toDateString();
+        $weekEnd = Carbon::parse($weekStart)->endOfWeek()->toDateString();
         $saturdayEnd = Carbon::parse($weekStart)->addDays(5)->endOfDay()->toDateString();
 
         $broughtForward = $worker->getBroughtForward($weekStart);
@@ -248,7 +251,7 @@ class WageController extends Controller implements HasMiddleware
     public function printSignatureSheet(Request $request)
     {
         $weekParam = $request->input('week');
-        $weekStart = $weekParam ? Carbon::parse($weekParam)->startOfWeek(Carbon::MONDAY) : Carbon::now()->startOfWeek(Carbon::MONDAY);
+        $weekStart = $weekParam ? Carbon::parse($weekParam)->startOfWeek() : Carbon::now()->startOfWeek();
         $saturdayEnd = (clone $weekStart)->addDays(5)->endOfDay();
         $paydaySunday = (clone $weekStart)->addDays(6);
 
@@ -292,7 +295,7 @@ class WageController extends Controller implements HasMiddleware
     public function exportCsv(Request $request)
     {
         $weekParam = $request->input('week');
-        $weekStart = $weekParam ? Carbon::parse($weekParam)->startOfWeek(Carbon::MONDAY) : Carbon::now()->startOfWeek(Carbon::MONDAY);
+        $weekStart = $weekParam ? Carbon::parse($weekParam)->startOfWeek() : Carbon::now()->startOfWeek();
         $saturdayEnd = (clone $weekStart)->addDays(5)->endOfDay();
         $paydaySunday = (clone $weekStart)->addDays(6);
 
