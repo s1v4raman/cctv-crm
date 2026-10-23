@@ -346,22 +346,56 @@
                 box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
             }
 
-            .btn-primary *,
-            .crm-btn-primary *,
-            .btn-amber *,
-            button.bg-blue-600 *,
-            a.bg-blue-600 *,
-            button[class*="bg-blue-600"] *,
-            a[class*="bg-blue-600"] * {
+            .btn-primary *:not(svg):not(path),
+            .crm-btn-primary *:not(svg):not(path),
+            .btn-amber *:not(svg):not(path),
+            button.bg-blue-600 *:not(svg):not(path),
+            a.bg-blue-600 *:not(svg):not(path),
+            button[class*="bg-blue-600"] *:not(svg):not(path),
+            a[class*="bg-blue-600"] *:not(svg):not(path) {
                 color: #ffffff !important;
-                fill: currentColor;
             }
 
+            /* Action button icons: strictly black color icons with fill: none */
+            button svg,
+            a.btn-primary svg,
+            a.btn-secondary svg,
+            a.btn svg,
+            a[class*="btn-"] svg,
             .btn-primary svg,
+            .btn-secondary svg,
             .crm-btn-primary svg,
             button.bg-blue-600 svg,
-            a.bg-blue-600 svg {
-                stroke: #ffffff !important;
+            a.bg-blue-600 svg,
+            button[class*="bg-blue-600"] svg,
+            a[class*="bg-blue-600"] svg,
+            .tech-card a svg,
+            .tech-card button svg {
+                stroke: #000000 !important;
+                color: #000000 !important;
+                fill: none !important;
+            }
+            button svg path,
+            button svg circle,
+            button svg rect,
+            button svg line,
+            button svg polyline,
+            button svg polygon,
+            a.btn-primary svg path,
+            a.btn-primary svg circle,
+            a.btn-primary svg rect,
+            a.btn-primary svg line,
+            a.btn-primary svg polyline,
+            a.btn-secondary svg path,
+            a.btn-secondary svg circle,
+            a.btn-secondary svg rect,
+            a.btn-secondary svg line,
+            a.btn-secondary svg polyline,
+            a[class*="btn-"] svg path,
+            .tech-card a svg path,
+            .tech-card button svg path {
+                fill: none !important;
+                stroke: #000000 !important;
             }
 
             button.bg-blue-600:hover,

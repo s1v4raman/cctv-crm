@@ -43,6 +43,15 @@ class SiteSurvey extends Model
 
     public function photos(): HasMany
     {
-        return $this->hasMany(SiteSurveyPhoto::class);
+        return $this->hasMany(SiteSurveyPhoto::class)->select([
+            'id',
+            'site_survey_id',
+            'filename',
+            'original_name',
+            'caption',
+            'mime_type',
+            'created_at',
+            'updated_at',
+        ]);
     }
 }

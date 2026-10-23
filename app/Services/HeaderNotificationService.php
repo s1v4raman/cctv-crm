@@ -8,6 +8,7 @@ use App\Models\SiteSurvey;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 
 class HeaderNotificationService
 {
@@ -23,7 +24,8 @@ class HeaderNotificationService
             return ['unread_count' => 0, 'items' => []];
         }
 
-        $items = collect();
+        return Cache::remember("topbar_notifs_user_{$user->id}", 60, function () use ($user) {
+            $items = collect();
 
         // 1. Fetch relevant NotificationLogs (e.g. dispatched WhatsApp, SMS, Email logs)
         if ($user->isAdmin() || $user->isStaff()) {
@@ -134,5 +136,14 @@ class HeaderNotificationService
             'unread_count' => $unreadCount,
             'items'        => $sortedItems,
         ];
+        });
+    }
+
+    /**
+     * Clear the cached notifications for a specific user.
+     */
+    public static function clearCacheForUser(int|string $userId): void
+    {
+        Cache::forget("topbar_notifs_user_{$userId}");
     }
 }

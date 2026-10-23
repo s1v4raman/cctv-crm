@@ -37,27 +37,32 @@
                 @endif
 
                 {{-- Secondary navigation buttons to other modules --}}
-                <a href="{{ route('site-surveys.create', ['lead_id' => $lead->id]) }}" class="btn-secondary text-xs">
-                    Survey
+                <a href="{{ route('site-surveys.create', ['lead_id' => $lead->id]) }}" class="btn-secondary text-xs inline-flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                    <span>Survey</span>
                 </a>
 
-                <a href="{{ route('estimator.index', ['lead_id' => $lead->id]) }}" class="btn-secondary text-xs">
-                    BOM
+                <a href="{{ route('estimator.index', ['lead_id' => $lead->id]) }}" class="btn-secondary text-xs inline-flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                    <span>BOM</span>
                 </a>
 
-                <a href="{{ route('leads.vcard', $lead) }}" class="btn-secondary text-xs">
-                    Save Contact
+                <a href="{{ route('leads.vcard', $lead) }}" class="btn-secondary text-xs inline-flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                    <span>Save Contact</span>
                 </a>
 
                 @if(auth()->user()->isAdmin())
-                    <a href="{{ route('leads.edit', $lead) }}" class="btn-secondary text-xs">
-                        Edit
+                    <a href="{{ route('leads.edit', $lead) }}" class="btn-secondary text-xs inline-flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                        <span>Edit</span>
                     </a>
                 @endif
 
                 {{-- Primary action: New Quote --}}
-                <a href="{{ route('quotations.create', $lead) }}" class="btn-primary text-xs">
-                    New Quote
+                <a href="{{ route('quotations.create', $lead) }}" class="btn-primary text-xs inline-flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    <span>New Quote</span>
                 </a>
 
                 {{-- Danger action link --}}
@@ -67,8 +72,9 @@
                           class="inline">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="danger-link text-xs ml-2 cursor-pointer">
-                            Delete
+                        <button type="submit" class="inline-flex items-center gap-1 text-xs text-rose-600 hover:text-rose-700 ml-1 py-1 px-2 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded cursor-pointer transition">
+                            <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                            <span>Delete</span>
                         </button>
                     </form>
                 @endif
@@ -173,7 +179,21 @@
                     <tbody>
                         <tr>
                             <td style="width: 25%; color: var(--text-muted); font-weight: 500;">Phone</td>
-                            <td style="color: var(--text-main); font-weight: 500;">{{ $lead->phone }}</td>
+                            <td style="color: var(--text-main); font-weight: 500;">
+                                <div class="flex items-center gap-3 flex-wrap">
+                                    <span>{{ $lead->phone }}</span>
+                                    <div class="inline-flex items-center gap-1.5">
+                                        <a href="tel:{{ $lead->phone }}" class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition" title="Call Contact">
+                                            <svg class="w-3 h-3 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                                            <span>Call</span>
+                                        </a>
+                                        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $lead->phone) }}" target="_blank" class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition" title="WhatsApp">
+                                            <svg class="w-3 h-3 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                                            <span>WhatsApp</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </td>
                         </tr>
                         <tr>
                             <td style="color: var(--text-muted); font-weight: 500;">Email</td>
@@ -196,7 +216,15 @@
                         @if($lead->site_address)
                         <tr>
                             <td style="color: var(--text-muted); font-weight: 500;">Site Address</td>
-                            <td style="color: var(--text-main); font-weight: 500;">{{ $lead->site_address }}</td>
+                            <td style="color: var(--text-main); font-weight: 500;">
+                                <div class="flex items-center gap-3 flex-wrap">
+                                    <span>{{ $lead->site_address }}</span>
+                                    <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode($lead->site_address) }}" target="_blank" class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition" title="Open in Maps">
+                                        <svg class="w-3 h-3 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                        <span>Map</span>
+                                    </a>
+                                </div>
+                            </td>
                         </tr>
                         @endif
                         @if($lead->notes)
@@ -217,11 +245,13 @@
                         <div class="text-slate-500 mt-0.5">{{ ucfirst($lead->activeAmcContract->frequency) }} servicing &bull; Valid until {{ $lead->activeAmcContract->end_date->format('d M Y') }}</div>
                     </div>
                     <div class="flex items-center gap-2">
-                        <a href="{{ route('service-tickets.create', ['lead_id' => $lead->id, 'amc_contract_id' => $lead->activeAmcContract->id]) }}" class="btn-primary text-xs">
-                            Log Ticket
+                        <a href="{{ route('service-tickets.create', ['lead_id' => $lead->id, 'amc_contract_id' => $lead->activeAmcContract->id]) }}" class="btn-primary text-xs inline-flex items-center gap-1.5">
+                            <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/></svg>
+                            <span>Log Ticket</span>
                         </a>
-                        <a href="{{ route('amcs.show', $lead->activeAmcContract) }}" class="btn-secondary text-xs">
-                            View Agreement
+                        <a href="{{ route('amcs.show', $lead->activeAmcContract) }}" class="btn-secondary text-xs inline-flex items-center gap-1.5">
+                            <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                            <span>View Agreement</span>
                         </a>
                     </div>
                 </div>
@@ -231,8 +261,9 @@
             <div class="crm-section">
                 <div class="flex items-center justify-between mb-4 pb-2 border-b border-[var(--card-border)] dark:border-slate-700">
                     <h3 class="border-none pb-0 mb-0" style="border:none !important; border-bottom:none !important; margin-bottom:0 !important; padding-bottom:0 !important;">Site Surveys</h3>
-                    <a href="{{ route('site-surveys.create', ['lead_id' => $lead->id]) }}" class="btn-secondary text-xs">
-                        Schedule Survey
+                    <a href="{{ route('site-surveys.create', ['lead_id' => $lead->id]) }}" class="btn-secondary text-xs inline-flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        <span>Schedule Survey</span>
                     </a>
                 </div>
 
@@ -286,8 +317,9 @@
             <div class="crm-section">
                 <div class="flex items-center justify-between mb-4 pb-2 border-b border-[var(--card-border)] dark:border-slate-700">
                     <h3 class="border-none pb-0 mb-0" style="border:none !important; border-bottom:none !important; margin-bottom:0 !important; padding-bottom:0 !important;">Quotations</h3>
-                    <a href="{{ route('quotations.create', $lead) }}" class="btn-secondary text-xs">
-                        Create Quotation
+                    <a href="{{ route('quotations.create', $lead) }}" class="btn-secondary text-xs inline-flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                        <span>Create Quotation</span>
                     </a>
                 </div>
 
@@ -341,8 +373,9 @@
             <div class="crm-section">
                 <div class="flex items-center justify-between mb-4 pb-2 border-b border-[var(--card-border)] dark:border-slate-700">
                     <h3 class="border-none pb-0 mb-0" style="border:none !important; border-bottom:none !important; margin-bottom:0 !important; padding-bottom:0 !important;">Installed CCTV Hardware & Serial Numbers</h3>
-                    <a href="{{ route('equipment.create', ['lead_id' => $lead->id, 'redirect_to' => url()->current()]) }}" class="btn-secondary text-xs">
-                        Add Asset
+                    <a href="{{ route('equipment.create', ['lead_id' => $lead->id, 'redirect_to' => url()->current()]) }}" class="btn-secondary text-xs inline-flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                        <span>Add Asset</span>
                     </a>
                 </div>
 

@@ -9,8 +9,9 @@
             </div>
             <div class="flex items-center gap-2 flex-wrap">
                 <a href="{{ route('finance.expenses.index') }}" 
-                   class="inline-flex items-center px-3 py-1.5 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-medium text-xs hover:bg-slate-50 dark:hover:bg-slate-700 transition">
-                    Travel &amp; Fuel Claims
+                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-medium text-xs hover:bg-slate-50 dark:hover:bg-slate-700 transition">
+                    <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span>Travel &amp; Fuel Claims</span>
                 </a>
             </div>
         </div>
@@ -287,12 +288,14 @@
                     </div>
                     <div class="flex items-center gap-2 flex-wrap">
                         <button type="button" onclick="openBarcodeScanner('tech-barcode-modal', null, handleTechScannedCode)"
-                                class="inline-flex items-center px-3 py-1.5 rounded bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-sm font-normal transition cursor-pointer">
-                            Open Camera Scanner
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-sm font-normal transition cursor-pointer">
+                            <svg class="w-4 h-4 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            <span>Open Camera Scanner</span>
                         </button>
                         <a href="{{ route('equipment.create') }}"
-                           class="inline-flex items-center px-3 py-1.5 rounded bg-white hover:bg-[#f5f5f5] text-[#222222] text-sm font-normal border border-[#cccccc] transition">
-                            Register Asset
+                           class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-white hover:bg-[#f5f5f5] text-[#222222] text-sm font-normal border border-[#cccccc] transition">
+                            <svg class="w-4 h-4 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                            <span>Register Asset</span>
                         </a>
                     </div>
                 </div>
@@ -421,23 +424,27 @@
                                 </div>
                             @endif
 
-                            <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between flex-wrap gap-2">
+                            <div class="mt-3 flex items-center justify-between flex-wrap gap-2">
                                 <div class="flex items-center gap-2 flex-wrap">
                                     @if($prj->contact_phone)
-                                        <a href="tel:{{ $prj->contact_phone }}" class="px-2.5 py-1 rounded border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs hover:bg-slate-50 dark:hover:bg-slate-800 transition">
-                                            Call Client
+                                        <a href="tel:{{ $prj->contact_phone }}" class="inline-flex items-center gap-1 px-2.5 py-1 rounded border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+                                            <svg class="w-3 h-3 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                                            <span>Call Client</span>
                                         </a>
                                     @endif
                                     @if($prj->site?->navigate_url)
-                                        <a href="{{ $prj->site->navigate_url }}" target="_blank" class="px-2.5 py-1 rounded border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs hover:bg-slate-50 dark:hover:bg-slate-800 transition">
-                                            GPS Directions
+                                        <a href="{{ $prj->site->navigate_url }}" target="_blank" class="inline-flex items-center gap-1 px-2.5 py-1 rounded border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+                                            <svg class="w-3 h-3 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                            <span>GPS Directions</span>
                                         </a>
                                     @endif
-                                    <a href="{{ route('projects.show', [$prj, 'tab' => 'work_days']) }}" class="px-2.5 py-1 rounded border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs hover:bg-slate-50 dark:hover:bg-slate-800 transition">
-                                        Daily Attendance
+                                    <a href="{{ route('projects.show', [$prj, 'tab' => 'work_days']) }}" class="inline-flex items-center gap-1 px-2.5 py-1 rounded border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+                                        <svg class="w-3 h-3 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                        <span>Daily Attendance</span>
                                     </a>
-                                    <a href="{{ route('projects.show', [$prj, 'tab' => 'devices']) }}" class="px-2.5 py-1 rounded border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs hover:bg-slate-50 dark:hover:bg-slate-800 transition">
-                                        IP Terminals
+                                    <a href="{{ route('projects.show', [$prj, 'tab' => 'devices']) }}" class="inline-flex items-center gap-1 px-2.5 py-1 rounded border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+                                        <svg class="w-3 h-3 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"/></svg>
+                                        <span>IP Terminals</span>
                                     </a>
                                 </div>
                                 <a href="{{ route('projects.show', $prj) }}" class="text-blue-600 hover:underline text-xs font-semibold">
@@ -490,21 +497,24 @@
                                 </div>
                             @endif
 
-                            <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between flex-wrap gap-2">
+                            <div class="mt-3 flex items-center justify-between flex-wrap gap-2">
                                 <div class="flex items-center gap-2">
                                     @if($survey->contact_phone || $lead->phone)
-                                        <a href="tel:{{ $survey->contact_phone ?: $lead->phone }}" class="px-2.5 py-1 rounded border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs hover:bg-slate-50 transition">
-                                            Call
+                                        <a href="tel:{{ $survey->contact_phone ?: $lead->phone }}" class="inline-flex items-center gap-1 px-2.5 py-1 rounded border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs hover:bg-slate-50 transition">
+                                            <svg class="w-3 h-3 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                                            <span>Call</span>
                                         </a>
                                     @endif
                                     @if($survey->site_address || $lead->site_address)
-                                        <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode($survey->site_address ?: $lead->site_address) }}" target="_blank" class="px-2.5 py-1 rounded border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs hover:bg-slate-50 transition">
-                                            Maps
+                                        <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode($survey->site_address ?: $lead->site_address) }}" target="_blank" class="inline-flex items-center gap-1 px-2.5 py-1 rounded border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs hover:bg-slate-50 transition">
+                                            <svg class="w-3 h-3 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                            <span>Maps</span>
                                         </a>
                                     @endif
                                 </div>
-                                <a href="{{ route('technician.surveys.show', $survey) }}" class="px-3 py-1.5 rounded bg-[#2563eb] text-white text-xs font-medium hover:bg-blue-700 transition">
-                                    Conduct Survey &rarr;
+                                <a href="{{ route('technician.surveys.show', $survey) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-[#2563eb] text-white text-xs font-medium hover:bg-blue-700 transition">
+                                    <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                                    <span>Conduct Survey</span>
                                 </a>
                             </div>
                         </div>

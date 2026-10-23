@@ -18,7 +18,7 @@ class SiteSurveyController extends Controller
             abort(403, 'Technicians are not authorized to view site surveys.');
         }
 
-        $query = SiteSurvey::with('lead', 'surveyedBy', 'photos');
+        $query = SiteSurvey::with('lead', 'surveyedBy');
 
         if ($request->filled('search')) {
             $search = trim($request->search);

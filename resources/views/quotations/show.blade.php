@@ -35,42 +35,51 @@
 
             <div class="flex items-center gap-2 flex-wrap">
                 {{-- PDF Downloads --}}
-                <a href="{{ route('quotations.pdf', [$quotation, '1']) }}" class="btn-secondary text-xs">
-                    Format 1
+                <a href="{{ route('quotations.pdf', [$quotation, '1']) }}" class="btn-secondary text-xs inline-flex items-center gap-1.5 shadow-2xs">
+                    <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v6h6"/></svg>
+                    <span>Format 1</span>
                 </a>
-                <a href="{{ route('quotations.pdf', [$quotation, '2']) }}" class="btn-secondary text-xs">
-                    Format 2
+                <a href="{{ route('quotations.pdf', [$quotation, '2']) }}" class="btn-secondary text-xs inline-flex items-center gap-1.5 shadow-2xs">
+                    <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    <span>Format 2</span>
                 </a>
-                <a href="{{ route('quotations.pdf', [$quotation, '3']) }}" class="btn-secondary text-xs">
-                    Format 3
+                <a href="{{ route('quotations.pdf', [$quotation, '3']) }}" class="btn-secondary text-xs inline-flex items-center gap-1.5 shadow-2xs">
+                    <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+                    <span>Format 3</span>
                 </a>
 
                 {{-- Action Modals & Links --}}
-                <button type="button" onclick="openWhatsAppModal()" class="btn-secondary text-xs cursor-pointer">
-                    Send on WhatsApp
+                <button type="button" onclick="openWhatsAppModal()" class="btn-secondary text-xs cursor-pointer inline-flex items-center gap-1.5 shadow-2xs">
+                    <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                    <span>Send on WhatsApp</span>
                 </button>
-                <button type="button" onclick="openEmailModal()" class="btn-secondary text-xs cursor-pointer">
-                    Email
+                <button type="button" onclick="openEmailModal()" class="btn-secondary text-xs cursor-pointer inline-flex items-center gap-1.5 shadow-2xs">
+                    <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    <span>Email</span>
                 </button>
-                <a href="{{ route('quotations.vcard', $quotation) }}" class="btn-secondary text-xs">
-                    Save Contact to Phone
+                <a href="{{ route('quotations.vcard', $quotation) }}" class="btn-secondary text-xs inline-flex items-center gap-1.5 shadow-2xs">
+                    <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                    <span>Save Contact to Phone</span>
                 </a>
 
                 @if($quotation->status === 'draft')
-                    <a href="{{ route('quotations.edit', $quotation) }}" class="btn-secondary text-xs">
-                        Edit Details
+                    <a href="{{ route('quotations.edit', $quotation) }}" class="btn-secondary text-xs inline-flex items-center gap-1.5 shadow-2xs">
+                        <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                        <span>Edit Details</span>
                     </a>
                     <form method="POST" action="{{ route('quotations.markSent', $quotation) }}" class="inline">
                         @csrf @method('PATCH')
-                        <button type="submit" class="btn-primary text-xs cursor-pointer">
-                            Mark as Sent
+                        <button type="submit" class="btn-primary text-xs cursor-pointer inline-flex items-center gap-1.5 shadow-2xs">
+                            <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                            <span>Mark as Sent</span>
                         </button>
                     </form>
                     <form method="POST" action="{{ route('quotations.destroy', $quotation) }}"
                           onsubmit="return confirm('Delete {{ addslashes($quotation->quotation_no) }}?')" class="inline">
                         @csrf @method('DELETE')
-                        <button type="submit" class="danger-link text-xs ml-2 cursor-pointer">
-                            Delete
+                        <button type="submit" class="btn-secondary text-xs cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 text-rose-600 hover:text-rose-700 hover:border-rose-300 dark:hover:border-rose-700 shadow-2xs transition" title="Delete Quotation">
+                            <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                            <span>Delete</span>
                         </button>
                     </form>
                 @endif
@@ -78,25 +87,29 @@
                 @if($quotation->status === 'sent')
                     <form method="POST" action="{{ route('quotations.accept', $quotation) }}" class="inline">
                         @csrf
-                        <button type="submit" onclick="return confirm('Confirm customer accepted?')" class="btn-primary text-xs cursor-pointer">
-                            Mark Accepted
+                        <button type="submit" onclick="return confirm('Confirm customer accepted?')" class="btn-primary text-xs cursor-pointer inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 shadow-2xs">
+                            <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <span>Mark Accepted</span>
                         </button>
                     </form>
-                    <button type="button" onclick="document.getElementById('reject-modal').classList.add('open')" class="danger-link text-xs ml-2 cursor-pointer">
-                        Mark Rejected
+                    <button type="button" onclick="document.getElementById('reject-modal').classList.add('open')" class="btn-secondary text-xs cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 text-rose-600 hover:text-rose-700 hover:border-rose-300 dark:hover:border-rose-700 shadow-2xs transition">
+                        <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span>Mark Rejected</span>
                     </button>
                 @endif
 
                 @if($quotation->status === 'accepted')
                     @if($quotation->installationJob)
-                        <a href="{{ route('jobs.show', $quotation->installationJob) }}" class="btn-secondary text-xs">
-                            View Job
+                        <a href="{{ route('jobs.show', $quotation->installationJob) }}" class="btn-secondary text-xs inline-flex items-center gap-1.5 shadow-2xs">
+                            <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                            <span>View Job</span>
                         </a>
                     @else
                         <form method="POST" action="{{ route('jobs.store', $quotation) }}" class="inline">
                             @csrf
-                            <button type="submit" class="btn-primary text-xs cursor-pointer">
-                                Create Job
+                            <button type="submit" class="btn-primary text-xs cursor-pointer inline-flex items-center gap-1.5 shadow-2xs">
+                                <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+                                <span>Create Job</span>
                             </button>
                         </form>
                     @endif
@@ -380,7 +393,7 @@
                     <textarea name="custom_message" rows="2" placeholder="e.g. As discussed during our survey, includes 2-year AMC..." class="crm-input h-auto py-2"></textarea>
                 </div>
 
-                <div class="flex items-center justify-between pt-3 border-t border-[#ddd]">
+                <div class="flex items-center justify-between pt-3">
                     <a href="{{ route('alerts.gateways') }}" target="_blank" class="action-link text-xs">
                         SMTP Settings
                     </a>
@@ -511,7 +524,7 @@
             </div>
 
             {{-- Action Buttons --}}
-            <div class="pt-3 border-t border-[#ddd] flex items-center justify-between flex-wrap gap-2">
+            <div class="pt-3 flex items-center justify-between flex-wrap gap-2">
                 <div class="flex gap-2">
                     <button type="button" onclick="openWhatsAppDirect('web')" class="btn-secondary text-xs">
                         Web WhatsApp

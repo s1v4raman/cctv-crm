@@ -135,11 +135,13 @@
 
             {{-- Form Actions: Cancel on left, Primary on right --}}
             <div class="form-actions">
-                <a href="{{ route('site-surveys.show', $siteSurvey) }}" class="btn-secondary">
-                    Cancel
+                <a href="{{ route('site-surveys.show', $siteSurvey) }}" class="btn-secondary inline-flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5 text-slate-800 dark:text-slate-200 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                    <span>Cancel</span>
                 </a>
-                <button type="submit" class="btn-primary">
-                    Save
+                <button type="submit" class="btn-primary inline-flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5 text-white shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                    <span>Save</span>
                 </button>
             </div>
         </form>

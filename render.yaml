@@ -3,7 +3,7 @@ services:
     name: securevision-crm
     runtime: docker
     plan: free
-    region: oregon
+    region: singapore
     branch: main
     dockerfilePath: ./Dockerfile
     healthCheckPath: /up
@@ -23,7 +23,7 @@ services:
       - key: DB_CONNECTION
         value: pgsql
       - key: DB_HOST
-        value: ep-odd-sky-b55wmpnc.c-7.us-east-2.aws.neon.tech
+        value: ep-little-firefly-aolx73by-pooler.c-2.ap-southeast-1.aws.neon.tech
       - key: DB_PORT
         value: "5432"
       - key: DB_DATABASE
@@ -31,11 +31,13 @@ services:
       - key: DB_USERNAME
         value: neondb_owner
       - key: DB_PASSWORD
-        value: npg_hb9lqafutc2E
+        value: npg_r3e8jnXIpKmH
       - key: DB_SSLMODE
         value: require
       - key: DATABASE_URL
-        value: postgresql://neondb_owner:npg_hb9lqafutc2E@ep-odd-sky-b55wmpnc.c-7.us-east-2.aws.neon.tech/neondb?sslmode=require
+        value: postgresql://neondb_owner:npg_r3e8jnXIpKmH@ep-little-firefly-aolx73by-pooler.c-2.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
+      - key: DB_PERSISTENT
+        value: "true"
       - key: AUTO_MIGRATE
         value: "true"
       - key: SESSION_DRIVER

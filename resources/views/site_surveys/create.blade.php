@@ -23,8 +23,9 @@
                             <button type="button" 
                                     @click="newCustomerModalOpen = true"
                                     id="btn-add-new-customer"
-                                    class="btn-subtle text-white font-semibold"
+                                    class="btn-subtle text-white font-semibold inline-flex items-center gap-1"
                                     style="color: #ffffff !important;">
+                                <svg class="w-3 h-3 text-white shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
                                 <span class="text-white font-semibold" style="color: #ffffff !important;">Add New Customer</span>
                             </button>
                         </div>
@@ -39,7 +40,7 @@
                                     data-notes="{{ $lead->notes }}"
                                     @selected(old('lead_id', request('lead_id')) == $lead->id)>
                                      {{ $lead->customer_name }}{{ $lead->company_name ? ' (' . $lead->company_name . ')' : '' }}
-                                </option>
+                                 </option>
                             @endforeach
                         </select>
                         @error('lead_id')
@@ -57,8 +58,9 @@
                                 <button type="button" 
                                         @click="newTechModalOpen = true"
                                         id="btn-add-new-technician"
-                                        class="btn-subtle text-white font-semibold"
+                                        class="btn-subtle text-white font-semibold inline-flex items-center gap-1"
                                         style="color: #ffffff !important;">
+                                    <svg class="w-3 h-3 text-white shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
                                     <span class="text-white font-semibold" style="color: #ffffff !important;">Add New Technician</span>
                                 </button>
                             </div>
@@ -147,11 +149,13 @@
 
             {{-- Form Actions: Cancel on left, Primary on right --}}
             <div class="form-actions">
-                <a href="{{ route('site-surveys.index') }}" class="btn-secondary">
-                    Cancel
+                <a href="{{ route('site-surveys.index') }}" class="btn-secondary inline-flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5 text-slate-800 dark:text-slate-200 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                    <span>Cancel</span>
                 </a>
-                <button type="submit" class="btn-primary">
-                    Save
+                <button type="submit" class="btn-primary inline-flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5 text-white shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                    <span>Save</span>
                 </button>
             </div>
         </form>
