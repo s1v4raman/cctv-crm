@@ -467,6 +467,48 @@
             .border-r { border-right-width: 1px !important; border-top-width: 0 !important; border-bottom-width: 0 !important; border-left-width: 0 !important; }
             .border-0, .border-none { border-width: 0 !important; }
 
+            /* Universal Strict SVG Dimension Guards (Never allow oversized SVGs) */
+            label svg,
+            .crm-label svg,
+            form label svg,
+            .form-group label svg {
+                width: 14px !important;
+                height: 14px !important;
+                max-width: 14px !important;
+                max-height: 14px !important;
+                min-width: 14px !important;
+                min-height: 14px !important;
+                display: inline-block !important;
+                vertical-align: -2px !important;
+                flex-shrink: 0 !important;
+            }
+            button:not(.crm-brand-tile):not([aria-label="User account menu"]) svg,
+            a.btn-secondary svg,
+            a.btn-primary svg,
+            .btn-secondary svg,
+            .btn-primary svg,
+            .crm-btn-primary svg,
+            .crm-btn-secondary svg {
+                width: 15px !important;
+                height: 15px !important;
+                max-width: 15px !important;
+                max-height: 15px !important;
+                min-width: 15px !important;
+                min-height: 15px !important;
+                flex-shrink: 0 !important;
+            }
+            /* Universal Modal SVG and Container View Guards */
+            [x-show*="modal"] svg:not(.crm-brand-tile),
+            [x-show*="Modal"] svg:not(.crm-brand-tile),
+            .modal-container svg:not(.crm-brand-tile) {
+                max-width: 24px !important;
+                max-height: 24px !important;
+            }
+            [x-show*="Modal"] div:not([class*="rounded-2xl"]):not([class*="rounded-xl"]):not([class*="rounded-lg"]):not(.crm-input):not(.ts-control):not(.ts-dropdown):not([class*="border-b"]):not([class*="border-t"]):not([class*="border-l"]):not([class*="border-r"]):not(input):not(select):not(textarea):not(button):not(a),
+            [x-show*="modal"] div:not([class*="rounded-2xl"]):not([class*="rounded-xl"]):not([class*="rounded-lg"]):not(.crm-input):not(.ts-control):not(.ts-dropdown):not([class*="border-b"]):not([class*="border-t"]):not([class*="border-l"]):not([class*="border-r"]):not(input):not(select):not(textarea):not(button):not(a) {
+                border-width: 0 !important;
+            }
+
             button.bg-blue-600:hover,
             button[class*="bg-blue-600"]:hover,
             a.bg-blue-600:hover,

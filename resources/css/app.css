@@ -353,16 +353,23 @@ html.dark .ts-control:focus-within {
     outline: none !important;
 }
 
-/* 5. Modals & Popups */
-[x-show*="Modal"] > div > div,
+/* 5. Modals & Popups (Only border the outer dialog card, NEVER the inner content divs!) */
+[x-show*="Modal"] > div[class*="rounded"],
+[x-show*="modal"] > div[class*="rounded"],
 .modal-container,
 .relative.bg-white[class*="rounded"] {
     border: 1px solid var(--card-border) !important;
 }
-html.dark [x-show*="Modal"] > div > div,
+html.dark [x-show*="Modal"] > div[class*="rounded"],
+html.dark [x-show*="modal"] > div[class*="rounded"],
 html.dark .modal-container,
 html.dark .relative.bg-white[class*="rounded"] {
     border: 1px solid var(--input-border) !important;
+}
+/* Modal content containers reset - inner wrapper divs should never be boxed */
+[x-show*="Modal"] div:not([class*="rounded-2xl"]):not([class*="rounded-xl"]):not([class*="rounded-lg"]):not(.crm-input):not(.ts-control):not(.ts-dropdown):not([class*="border-b"]):not([class*="border-t"]):not([class*="border-l"]):not([class*="border-r"]):not(input):not(select):not(textarea):not(button):not(a),
+[x-show*="modal"] div:not([class*="rounded-2xl"]):not([class*="rounded-xl"]):not([class*="rounded-lg"]):not(.crm-input):not(.ts-control):not(.ts-dropdown):not([class*="border-b"]):not([class*="border-t"]):not([class*="border-l"]):not([class*="border-r"]):not(input):not(select):not(textarea):not(button):not(a) {
+    border-width: 0 !important;
 }
 
 /* 6. Navigation, Tabs & Clear Dark Boundaries */

@@ -909,37 +909,64 @@
         {{-- Quick Register Site Modal --}}
         <div x-show="siteModalOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
             <div @click.away="siteModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
-                <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
-                    <h3 class="font-bold text-slate-900 dark:text-white text-base">Quick-Register Installation Site</h3>
-                    <button type="button" @click="siteModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+                <div class="flex items-center justify-between pb-3.5 border-b border-slate-200/80 dark:border-slate-800">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/80 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                        </div>
+                        <div>
+                            <h3 class="font-extrabold text-slate-900 dark:text-white text-base leading-tight">Quick-Register Installation Site</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Directly add and select site location for this project</p>
+                        </div>
+                    </div>
+                    <button type="button" @click="siteModalOpen = false" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer" aria-label="Close modal">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
                 </div>
 
-                <div class="space-y-3">
+                <div class="space-y-3.5">
                     <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Site / Premises Name *</label>
-                        <input type="text" x-model="newSite.name" placeholder="e.g. Al-Falah Spinning Mills" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                        <label class="crm-label">
+                            <svg class="w-4 h-4 shrink-0 inline-block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                            Site / Premises Name <span class="required-marker text-rose-500">*</span>
+                        </label>
+                        <input type="text" x-model="newSite.name" placeholder="e.g. Al-Falah Spinning Mills" class="crm-input">
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="crm-label">
+                                <svg class="w-4 h-4 shrink-0 inline-block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                Client Name
+                            </label>
+                            <input type="text" x-model="newSite.client_name" placeholder="Organization or Owner" class="crm-input">
+                        </div>
+                        <div>
+                            <label class="crm-label">
+                                <svg class="w-4 h-4 shrink-0 inline-block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                                Client Phone
+                            </label>
+                            <input type="text" x-model="newSite.client_phone" placeholder="+91 98765 43210" class="crm-input">
+                        </div>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Client Name</label>
-                        <input type="text" x-model="newSite.client_name" placeholder="Organization or Owner name" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                        <label class="crm-label">
+                            <svg class="w-4 h-4 shrink-0 inline-block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            Full Physical Address <span class="required-marker text-rose-500">*</span>
+                        </label>
+                        <textarea x-model="newSite.address" rows="2" placeholder="Building, Street, Landmark..." class="crm-input h-auto py-2.5"></textarea>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Client Phone</label>
-                        <input type="text" x-model="newSite.client_phone" placeholder="+91 98765 43210" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Full Physical Address *</label>
-                        <textarea x-model="newSite.address" rows="2" placeholder="Building, Street, Landmark..." class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none"></textarea>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">City</label>
-                        <input type="text" x-model="newSite.city" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                        <label class="crm-label">
+                            <svg class="w-4 h-4 shrink-0 inline-block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                            City
+                        </label>
+                        <input type="text" x-model="newSite.city" placeholder="e.g. Coimbatore" class="crm-input">
                     </div>
                 </div>
 
-                <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
-                    <button type="button" @click="siteModalOpen = false" class="btn-secondary text-xs">Cancel</button>
-                    <button type="button" @click="createSite()" class="btn-primary text-xs shadow-md">Register &amp; Select</button>
+                <div class="flex items-center justify-end gap-2.5 pt-3.5 border-t border-slate-200/80 dark:border-slate-800">
+                    <button type="button" @click="siteModalOpen = false" class="btn-secondary text-xs px-4 py-2">Cancel</button>
+                    <button type="button" @click="createSite()" class="btn-primary text-xs px-4 py-2 shadow-md">Register &amp; Select</button>
                 </div>
             </div>
         </div>
