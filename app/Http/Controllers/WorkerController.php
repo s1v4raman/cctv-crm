@@ -8,6 +8,7 @@ use App\Models\WagePayment;
 use App\Models\ProjectAuditLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class WorkerController extends Controller
 {
@@ -88,7 +89,15 @@ class WorkerController extends Controller
             'skills.*' => 'string',
             'notes' => 'nullable|string',
             'is_active' => 'nullable|boolean',
+            'photo' => 'nullable|image|max:5120',
         ]);
+
+        if ($request->hasFile('photo')) {
+            $file = $request->file('photo');
+            $filename = 'worker_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $photoPath = $file->storeAs('worker_photos', $filename, 'public');
+            $validated['photo_path'] = $photoPath;
+        }
 
         $validated['is_active'] = $request->has('is_active') ? (bool) $request->input('is_active') : true;
         $validated['created_by'] = Auth::id();
@@ -222,7 +231,24 @@ class WorkerController extends Controller
             'skills.*' => 'string',
             'notes' => 'nullable|string',
             'is_active' => 'nullable|boolean',
+            'photo' => 'nullable|image|max:5120',
         ]);
+
+        if ($request->hasFile('photo')) {
+            // Delete old photo if exists
+            if ($worker->photo_path && Storage::disk('public')->exists($worker->photo_path)) {
+                Storage::disk('public')->delete($worker->photo_path);
+            }
+            $file = $request->file('photo');
+            $filename = 'worker_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $photoPath = $file->storeAs('worker_photos', $filename, 'public');
+            $validated['photo_path'] = $photoPath;
+        } elseif ($request->boolean('remove_photo')) {
+            if ($worker->photo_path && Storage::disk('public')->exists($worker->photo_path)) {
+                Storage::disk('public')->delete($worker->photo_path);
+            }
+            $validated['photo_path'] = null;
+        }
 
         $validated['is_active'] = $request->has('is_active') ? (bool) $request->input('is_active') : false;
 

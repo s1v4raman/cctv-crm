@@ -41,6 +41,7 @@ use App\Http\Controllers\ModuleHubController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\SiteController;
 use App\Http\Controllers\WorkerController;
+use App\Http\Controllers\WorkerAttendanceController;
 use App\Http\Controllers\WorkDayController;
 use App\Http\Controllers\IpDeviceController;
 use App\Http\Controllers\WorkerPortalController;
@@ -347,7 +348,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/sites/check-duplicate', [SiteController::class, 'checkDuplicate'])->name('sites.check-duplicate');
         Route::resource('sites', SiteController::class);
 
-        // Daily-Wage Workers
+        // Daily-Wage Workers & Attendance Maintenance
+        Route::get('/workers/attendance', [WorkerAttendanceController::class, 'index'])->name('workers.attendance.index');
+        Route::post('/workers/attendance', [WorkerAttendanceController::class, 'store'])->name('workers.attendance.store');
+        Route::delete('/workers/attendance/{attendance}', [WorkerAttendanceController::class, 'destroy'])->name('workers.attendance.destroy');
         Route::post('/workers/quick-store', [WorkerController::class, 'quickStore'])->name('workers.quick-store');
         Route::post('/workers/quick-add', [WorkerController::class, 'quickStore'])->name('workers.quick-add');
         Route::resource('workers', WorkerController::class);

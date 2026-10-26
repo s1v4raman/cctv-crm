@@ -19,10 +19,26 @@
             @endif
 
             <div class="crm-section">
-                <form method="POST" action="{{ route('workers.store') }}">
+                <form method="POST" action="{{ route('workers.store') }}" enctype="multipart/form-data">
                     @csrf
 
                     <h3 class="mb-4 pb-2 border-b border-[#ddd] font-bold text-base text-gray-900">Personal & Wage Details</h3>
+
+                    {{-- Worker Profile Photo / Login Photo --}}
+                    <div class="mb-5 p-3 rounded bg-slate-50 border border-slate-200 flex items-center gap-4">
+                        <div class="w-16 h-16 rounded-full bg-slate-200 border-2 border-slate-300 flex items-center justify-center overflow-hidden shrink-0 shadow-sm" id="photo-preview-wrap">
+                            <span id="photo-placeholder" class="text-xs font-semibold text-slate-500 uppercase">Photo</span>
+                            <img id="photo-preview" src="#" alt="Worker Photo" class="w-full h-full object-cover hidden">
+                        </div>
+                        <div class="flex-1">
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1">
+                                Worker Profile Photo (Login & Verification Photo)
+                            </label>
+                            <input type="file" name="photo" id="worker-photo-input" accept="image/*" class="text-xs text-slate-600 file:mr-2 file:py-1 file:px-2.5 file:rounded file:border file:border-slate-300 file:text-xs file:font-semibold file:bg-white hover:file:bg-slate-50 cursor-pointer">
+                            <p class="text-[11px] text-slate-500 mt-0.5">Used to verify identity against daily attendance punch photos. Max 5MB (JPG, PNG).</p>
+                            @error('photo') <p class="error-text">{{ $message }}</p> @enderror
+                        </div>
+                    </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                         <div class="sm:col-span-2">
@@ -76,4 +92,21 @@
                 </form>
             </div>
         </div>
+
+    <script>
+        document.getElementById('worker-photo-input')?.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    const img = document.getElementById('photo-preview');
+                    const placeholder = document.getElementById('photo-placeholder');
+                    img.src = evt.target.result;
+                    img.classList.remove('hidden');
+                    if (placeholder) placeholder.classList.add('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
 </x-app-layout>

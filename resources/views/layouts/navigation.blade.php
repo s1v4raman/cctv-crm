@@ -73,14 +73,23 @@
 
                     {{-- Daily Wage Workers (Team/Users icon) --}}
                     <a :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('workers.index') }}" 
-                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('workers.*') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
-                        <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('workers.*') ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ (request()->routeIs('workers.*') && !request()->routeIs('workers.attendance.*')) ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
+                        <svg class="w-5 h-5 shrink-0 {{ (request()->routeIs('workers.*') && !request()->routeIs('workers.attendance.*')) ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
                             <circle cx="9" cy="7" r="4"/>
                             <path stroke-linecap="round" stroke-linejoin="round" d="M22 21v-2a4 4 0 0 0-3-3.87"/>
                             <path stroke-linecap="round" stroke-linejoin="round" d="M16 3.13a4 4 0 0 1 0 7.75"/>
                         </svg>
                         <span :class="sidebarCollapsed ? 'lg:hidden' : ''">Daily Wage Workers</span>
+                    </a>
+
+                    {{-- Worker Attendance Maintenance (Calendar/Check icon) --}}
+                    <a :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('workers.attendance.index') }}" 
+                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('workers.attendance.*') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
+                        <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('workers.attendance.*') ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        <span :class="sidebarCollapsed ? 'lg:hidden' : ''">Worker Attendance</span>
                     </a>
                 </div>
             </div>
@@ -192,14 +201,23 @@
 
                     {{-- Workers & Daily Wages (Team/Users icon) --}}
                     <a :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('workers.index') }}" 
-                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('workers.*') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
-                        <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('workers.*') ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ (request()->routeIs('workers.*') && !request()->routeIs('workers.attendance.*')) ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
+                        <svg class="w-5 h-5 shrink-0 {{ (request()->routeIs('workers.*') && !request()->routeIs('workers.attendance.*')) ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
                             <circle cx="9" cy="7" r="4"/>
                             <path stroke-linecap="round" stroke-linejoin="round" d="M22 21v-2a4 4 0 0 0-3-3.87"/>
                             <path stroke-linecap="round" stroke-linejoin="round" d="M16 3.13a4 4 0 0 1 0 7.75"/>
                         </svg>
                         <span :class="sidebarCollapsed ? 'lg:hidden' : ''">Workers &amp; Daily Wages</span>
+                    </a>
+
+                    {{-- Worker Attendance Maintenance (Calendar/Check icon) --}}
+                    <a :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('workers.attendance.index') }}" 
+                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('workers.attendance.*') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
+                        <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('workers.attendance.*') ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        <span :class="sidebarCollapsed ? 'lg:hidden' : ''">Worker Attendance</span>
                     </a>
 
                     @if(auth()->user()->isAdmin())

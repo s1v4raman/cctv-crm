@@ -5,6 +5,9 @@
                 <h2 class="text-xl font-bold text-slate-900 dark:text-white">Workers</h2>
             </div>
             <div class="flex items-center gap-2">
+                <a href="{{ route('workers.attendance.index') }}" class="btn-secondary">
+                    📅 Attendance Maintenance
+                </a>
                 <a href="{{ route('wages.index') }}" class="btn-secondary">
                     Sunday Payday Console
                 </a>
@@ -73,10 +76,21 @@
                     @endphp
                     <tr>
                         <td class="col-name">
-                            <a href="{{ route('workers.show', $worker) }}" class="action-link font-bold">
-                                {{ $worker->name }}
-                            </a>
-                            <div class="text-xs text-slate-500">{{ $worker->attendances_count }} days logged</div>
+                            <div class="flex items-center gap-2.5">
+                                @if($worker->photo_url)
+                                    <img src="{{ $worker->photo_url }}" alt="{{ $worker->name }}" class="w-8 h-8 rounded-full object-cover border border-slate-300 shrink-0">
+                                @else
+                                    <div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs flex items-center justify-center shrink-0 border border-slate-300 dark:border-slate-600">
+                                        {{ strtoupper(substr($worker->name, 0, 1)) }}
+                                    </div>
+                                @endif
+                                <div>
+                                    <a href="{{ route('workers.show', $worker) }}" class="action-link font-bold">
+                                        {{ $worker->name }}
+                                    </a>
+                                    <div class="text-xs text-slate-500">{{ $worker->attendances_count }} days logged</div>
+                                </div>
+                            </div>
                         </td>
                         <td class="nowrap">
                             @if($worker->phone)

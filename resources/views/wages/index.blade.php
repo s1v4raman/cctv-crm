@@ -5,6 +5,12 @@
                 <h2 class="text-xl font-bold text-slate-900 dark:text-white font-heading tracking-tight">Weekly Wages</h2>
             </div>
             <div class="flex items-center gap-2 flex-wrap">
+                <a href="{{ route('workers.attendance.index') }}" class="btn-secondary">
+                    📅 Attendance Maintenance
+                </a>
+                <a href="{{ route('workers.index') }}" class="btn-secondary">
+                    Workers
+                </a>
                 <a href="{{ route('wages.signature-sheet', ['week' => $weekStart->toDateString()]) }}" target="_blank" class="btn-secondary">
                     Signature Sheet
                 </a>

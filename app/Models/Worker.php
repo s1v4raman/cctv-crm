@@ -42,7 +42,8 @@ class Worker extends Model
         if (filter_var($this->photo_path, FILTER_VALIDATE_URL)) {
             return $this->photo_path;
         }
-        return asset('storage/' . $this->photo_path);
+        $cleanPath = ltrim(str_replace('public/', '', $this->photo_path), '/');
+        return '/storage/' . $cleanPath;
     }
 
     public function attendances(): HasMany
