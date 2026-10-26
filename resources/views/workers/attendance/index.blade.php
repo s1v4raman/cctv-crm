@@ -1027,16 +1027,46 @@
             }
         }
 
-        // File upload live preview
+        // File upload live preview & client-side compression for cross-server synchronization
         document.getElementById('modal-photo-input')?.addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(evt) {
-                    const wrap = document.getElementById('file-preview-wrap');
-                    const img = document.getElementById('file-preview-img');
-                    img.src = evt.target.result;
-                    wrap.classList.remove('hidden');
+                    const tempImg = new Image();
+                    tempImg.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        const maxDim = 800;
+                        let w = tempImg.width;
+                        let h = tempImg.height;
+                        if (w > maxDim || h > maxDim) {
+                            if (w > h) {
+                                h = Math.round((h * maxDim) / w);
+                                w = maxDim;
+                            } else {
+                                w = Math.round((w * maxDim) / h);
+                                h = maxDim;
+                            }
+                        }
+                        canvas.width = w;
+                        canvas.height = h;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(tempImg, 0, 0, w, h);
+                        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.85);
+
+                        const dataInput = document.getElementById('webcam-photo-data');
+                        if (dataInput) {
+                            dataInput.value = compressedBase64;
+                        }
+
+                        const wrap = document.getElementById('file-preview-wrap');
+                        const img = document.getElementById('file-preview-img');
+                        if (img && wrap) {
+                            img.src = compressedBase64;
+                            wrap.classList.remove('hidden');
+                        }
+                    };
+                    tempImg.src = evt.target.result;
                 };
                 reader.readAsDataURL(file);
             }

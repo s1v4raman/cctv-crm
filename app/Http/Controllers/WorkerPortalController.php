@@ -177,19 +177,26 @@ class WorkerPortalController extends Controller
         $project = Project::findOrFail($validated['project_id']);
         $photoPath = null;
 
+        $photoData = null;
+
         // Process uploaded file photo
         if ($request->hasFile('photo')) {
             $file = $request->file('photo');
             $filename = 'attendance_' . $worker->id . '_' . time() . '.' . $file->getClientOriginalExtension();
             $photoPath = $file->storeAs('attendance_photos', $filename, 'public');
+            $mime = $file->getMimeType() ?: 'image/jpeg';
+            $fileContent = @file_get_contents($file->getRealPath());
+            if ($fileContent !== false) {
+                $photoData = 'data:' . $mime . ';base64,' . base64_encode($fileContent);
+            }
         } elseif (!empty($validated['photo_data']) && str_starts_with($validated['photo_data'], 'data:image')) {
             // Process base64 camera image
-            $data = $validated['photo_data'];
-            $data = preg_replace('/^data:image\/\w+;base64,/', '', $data);
+            $photoData = $validated['photo_data'];
+            $data = preg_replace('/^data:image\/\w+;base64,/', '', $photoData);
             $data = str_replace(' ', '+', $data);
             $filename = 'attendance_' . $worker->id . '_' . time() . '_' . uniqid() . '.jpg';
-            Storage::disk('public')->put('attendance_photos/' . $filename, base64_decode($data));
             $photoPath = 'attendance_photos/' . $filename;
+            Storage::disk('public')->put($photoPath, base64_decode($data));
         }
 
         DB::beginTransaction();
@@ -212,6 +219,7 @@ class WorkerPortalController extends Controller
                 $attendance->update([
                     'attendance_type' => $validated['attendance_type'],
                     'photo_path' => $photoPath ?: $attendance->photo_path,
+                    'photo_data' => $photoData ?: $attendance->photo_data,
                     'check_in_at' => $attendance->check_in_at ?: now(),
                     'daily_rate_snapshot' => $dailyRate,
                     'rate_applied' => $dailyRate,
@@ -224,6 +232,7 @@ class WorkerPortalController extends Controller
                     'worker_id' => $worker->id,
                     'attendance_type' => $validated['attendance_type'],
                     'photo_path' => $photoPath,
+                    'photo_data' => $photoData,
                     'check_in_at' => now(),
                     'daily_rate_snapshot' => $dailyRate,
                     'rate_applied' => $dailyRate,

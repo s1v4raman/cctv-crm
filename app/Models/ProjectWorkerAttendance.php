@@ -19,6 +19,7 @@ class ProjectWorkerAttendance extends Model
         'worker_id',
         'attendance_type',
         'photo_path',
+        'photo_data',
         'check_in_at',
         'daily_rate_snapshot',
         'rate_applied',
@@ -61,14 +62,13 @@ class ProjectWorkerAttendance extends Model
 
     public function getPhotoUrlAttribute(): ?string
     {
-        if (!$this->photo_path) {
+        if (!$this->photo_path && !$this->photo_data) {
             return null;
         }
-        if (filter_var($this->photo_path, FILTER_VALIDATE_URL)) {
+        if ($this->photo_path && filter_var($this->photo_path, FILTER_VALIDATE_URL)) {
             return $this->photo_path;
         }
-        $cleanPath = ltrim(str_replace('public/', '', $this->photo_path), '/');
-        return '/storage/' . $cleanPath;
+        return route('workers.attendance.photo', $this->id);
     }
 
     public function workDay(): BelongsTo

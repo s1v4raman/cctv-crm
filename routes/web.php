@@ -62,6 +62,12 @@ Route::get('/api/global-search', [GlobalSearchController::class, 'search'])->nam
 // Public Photo Stream Endpoint (allows <img> rendering, PDF generation, and lightbox without auth redirect)
 Route::get('/site-surveys/photos/{photo}', [SiteSurveyController::class, 'showPhoto'])->name('site-surveys.photos.show');
 
+// Public Worker & Attendance Photo Streaming Endpoints (persistent across Local and OnRender)
+Route::get('/attendance-photos/{attendance}', [WorkerAttendanceController::class, 'streamPhoto'])->name('workers.attendance.photo');
+Route::get('/worker-photos/{worker}', [WorkerController::class, 'streamPhoto'])->name('workers.photo');
+Route::get('/storage/attendance_photos/{filename}', [WorkerAttendanceController::class, 'serveStoragePhoto'])->where('filename', '.*');
+Route::get('/storage/worker_photos/{filename}', [WorkerController::class, 'serveStoragePhoto'])->where('filename', '.*');
+
 // Public Amazon-style CCTV Storefront Homepage & Inquiry Engine
 Route::get('/', [StorefrontController::class, 'index'])->name('home');
 Route::post('/public/inquire', [StorefrontController::class, 'inquire'])->name('public.inquire');

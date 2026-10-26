@@ -97,6 +97,11 @@ class WorkerController extends Controller
             $filename = 'worker_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
             $photoPath = $file->storeAs('worker_photos', $filename, 'public');
             $validated['photo_path'] = $photoPath;
+            $mime = $file->getMimeType() ?: 'image/jpeg';
+            $fileContent = @file_get_contents($file->getRealPath());
+            if ($fileContent !== false) {
+                $validated['photo_data'] = 'data:' . $mime . ';base64,' . base64_encode($fileContent);
+            }
         }
 
         $validated['is_active'] = $request->has('is_active') ? (bool) $request->input('is_active') : true;
@@ -243,11 +248,17 @@ class WorkerController extends Controller
             $filename = 'worker_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
             $photoPath = $file->storeAs('worker_photos', $filename, 'public');
             $validated['photo_path'] = $photoPath;
+            $mime = $file->getMimeType() ?: 'image/jpeg';
+            $fileContent = @file_get_contents($file->getRealPath());
+            if ($fileContent !== false) {
+                $validated['photo_data'] = 'data:' . $mime . ';base64,' . base64_encode($fileContent);
+            }
         } elseif ($request->boolean('remove_photo')) {
             if ($worker->photo_path && Storage::disk('public')->exists($worker->photo_path)) {
                 Storage::disk('public')->delete($worker->photo_path);
             }
             $validated['photo_path'] = null;
+            $validated['photo_data'] = null;
         }
 
         $validated['is_active'] = $request->has('is_active') ? (bool) $request->input('is_active') : false;
@@ -272,5 +283,91 @@ class WorkerController extends Controller
 
         return redirect()->route('workers.index')
             ->with('status', "Worker '{$name}' removed.");
+    }
+
+    /**
+     * Stream worker profile photo with local disk caching and database persistence fallback.
+     */
+    public function streamPhoto(Worker $worker)
+    {
+        // 1. If photo exists on local public disk, serve it directly
+        if ($worker->photo_path) {
+            $cleanPath = ltrim(str_replace('public/', '', $worker->photo_path), '/');
+            if (Storage::disk('public')->exists($cleanPath)) {
+                return response()->file(Storage::disk('public')->path($cleanPath), [
+                    'Cache-Control' => 'public, max-age=31536000, immutable',
+                ]);
+            }
+        }
+
+        // 2. If not on local disk, check photo_data in database
+        if (!empty($worker->photo_data)) {
+            $data = $worker->photo_data;
+            $mime = 'image/jpeg';
+            if (str_starts_with($data, 'data:')) {
+                if (preg_match('/^data:([^;]+);base64,/', $data, $m)) {
+                    $mime = $m[1];
+                }
+                $data = preg_replace('/^data:[^;]+;base64,/', '', $data);
+            }
+            $data = str_replace(' ', '+', $data);
+            $binary = base64_decode($data);
+
+            if ($binary) {
+                if ($worker->photo_path) {
+                    $cleanPath = ltrim(str_replace('public/', '', $worker->photo_path), '/');
+                    try {
+                        Storage::disk('public')->put($cleanPath, $binary);
+                    } catch (\Throwable $e) {}
+                }
+
+                return response($binary, 200, [
+                    'Content-Type' => $mime,
+                    'Cache-Control' => 'public, max-age=31536000, immutable',
+                ]);
+            }
+        }
+
+        abort(404, 'Worker photo not found');
+    }
+
+    /**
+     * Fallback direct storage handler when web server falls through to Laravel on 404 for worker_photos/{filename}.
+     */
+    public function serveStoragePhoto(string $filename)
+    {
+        $path = 'worker_photos/' . $filename;
+        if (Storage::disk('public')->exists($path)) {
+            return response()->file(Storage::disk('public')->path($path), [
+                'Cache-Control' => 'public, max-age=31536000, immutable',
+            ]);
+        }
+
+        $worker = Worker::where('photo_path', 'LIKE', '%' . $filename)->first();
+        if ($worker && !empty($worker->photo_data)) {
+            $data = $worker->photo_data;
+            $mime = 'image/jpeg';
+            if (str_starts_with($data, 'data:')) {
+                if (preg_match('/^data:([^;]+);base64,/', $data, $m)) {
+                    $mime = $m[1];
+                }
+                $data = preg_replace('/^data:[^;]+;base64,/', '', $data);
+            }
+            $data = str_replace(' ', '+', $data);
+            $binary = base64_decode($data);
+
+            if ($binary) {
+                try {
+                    Storage::disk('public')->put($path, $binary);
+                } catch (\Throwable $e) {}
+
+                return response($binary, 200, [
+                    'Content-Type' => $mime,
+                    'Cache-Control' => 'public, max-age=31536000, immutable',
+                ]);
+            }
+        }
+
+        abort(404, 'Worker photo not found');
     }
 }

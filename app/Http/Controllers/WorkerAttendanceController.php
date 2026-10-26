@@ -456,20 +456,26 @@ class WorkerAttendanceController extends Controller
         $project = Project::findOrFail($validated['project_id']);
 
         $photoPath = null;
+        $photoData = null;
 
         // 1. Process uploaded file photo
         if ($request->hasFile('photo')) {
             $file = $request->file('photo');
             $filename = 'attendance_' . $worker->id . '_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
             $photoPath = $file->storeAs('attendance_photos', $filename, 'public');
+            $mime = $file->getMimeType() ?: 'image/jpeg';
+            $fileContent = @file_get_contents($file->getRealPath());
+            if ($fileContent !== false) {
+                $photoData = 'data:' . $mime . ';base64,' . base64_encode($fileContent);
+            }
         } elseif (!empty($validated['photo_data']) && str_starts_with($validated['photo_data'], 'data:image')) {
             // 2. Process base64 camera image
-            $data = $validated['photo_data'];
-            $data = preg_replace('/^data:image\/\w+;base64,/', '', $data);
+            $photoData = $validated['photo_data'];
+            $data = preg_replace('/^data:image\/\w+;base64,/', '', $photoData);
             $data = str_replace(' ', '+', $data);
             $filename = 'attendance_' . $worker->id . '_' . time() . '_' . uniqid() . '.jpg';
-            Storage::disk('public')->put('attendance_photos/' . $filename, base64_decode($data));
             $photoPath = 'attendance_photos/' . $filename;
+            Storage::disk('public')->put($photoPath, base64_decode($data));
         }
 
         DB::beginTransaction();
@@ -518,6 +524,7 @@ class WorkerAttendanceController extends Controller
                 $attendance->update([
                     'attendance_type' => $validated['attendance_type'],
                     'photo_path' => $photoPath ?: $attendance->photo_path,
+                    'photo_data' => $photoData ?: $attendance->photo_data,
                     'check_in_at' => $attendance->check_in_at ?: $checkInAt,
                     'daily_rate_snapshot' => $dailyRate,
                     'rate_applied' => $basePay,
@@ -536,6 +543,7 @@ class WorkerAttendanceController extends Controller
                     'worker_id' => $worker->id,
                     'attendance_type' => $validated['attendance_type'],
                     'photo_path' => $photoPath,
+                    'photo_data' => $photoData,
                     'check_in_at' => $checkInAt,
                     'daily_rate_snapshot' => $dailyRate,
                     'rate_applied' => $basePay,
@@ -593,5 +601,94 @@ class WorkerAttendanceController extends Controller
         $attendance->delete();
 
         return redirect()->back()->with('status', "Attendance record for {$workerName} on {$workDate} has been removed.");
+    }
+
+    /**
+     * Stream attendance photo with local disk caching and database persistence fallback.
+     */
+    public function streamPhoto(ProjectWorkerAttendance $attendance)
+    {
+        // 1. If photo exists on local public disk, serve it directly
+        if ($attendance->photo_path) {
+            $cleanPath = ltrim(str_replace('public/', '', $attendance->photo_path), '/');
+            if (Storage::disk('public')->exists($cleanPath)) {
+                return response()->file(Storage::disk('public')->path($cleanPath), [
+                    'Cache-Control' => 'public, max-age=31536000, immutable',
+                ]);
+            }
+        }
+
+        // 2. If not on local disk, check photo_data in database
+        if (!empty($attendance->photo_data)) {
+            $data = $attendance->photo_data;
+            $mime = 'image/jpeg';
+            if (str_starts_with($data, 'data:')) {
+                if (preg_match('/^data:([^;]+);base64,/', $data, $m)) {
+                    $mime = $m[1];
+                }
+                $data = preg_replace('/^data:[^;]+;base64,/', '', $data);
+            }
+            $data = str_replace(' ', '+', $data);
+            $binary = base64_decode($data);
+
+            if ($binary) {
+                // Cache to local disk for fast subsequent file serving
+                if ($attendance->photo_path) {
+                    $cleanPath = ltrim(str_replace('public/', '', $attendance->photo_path), '/');
+                    try {
+                        Storage::disk('public')->put($cleanPath, $binary);
+                    } catch (\Throwable $e) {
+                        // ignore disk write errors in read-only containers
+                    }
+                }
+
+                return response($binary, 200, [
+                    'Content-Type' => $mime,
+                    'Cache-Control' => 'public, max-age=31536000, immutable',
+                ]);
+            }
+        }
+
+        abort(404, 'Attendance photo not found');
+    }
+
+    /**
+     * Fallback direct storage handler when web server falls through to Laravel on 404 for attendance_photos/{filename}.
+     */
+    public function serveStoragePhoto(string $filename)
+    {
+        $path = 'attendance_photos/' . $filename;
+        if (Storage::disk('public')->exists($path)) {
+            return response()->file(Storage::disk('public')->path($path), [
+                'Cache-Control' => 'public, max-age=31536000, immutable',
+            ]);
+        }
+
+        $attendance = ProjectWorkerAttendance::where('photo_path', 'LIKE', '%' . $filename)->first();
+        if ($attendance && !empty($attendance->photo_data)) {
+            $data = $attendance->photo_data;
+            $mime = 'image/jpeg';
+            if (str_starts_with($data, 'data:')) {
+                if (preg_match('/^data:([^;]+);base64,/', $data, $m)) {
+                    $mime = $m[1];
+                }
+                $data = preg_replace('/^data:[^;]+;base64,/', '', $data);
+            }
+            $data = str_replace(' ', '+', $data);
+            $binary = base64_decode($data);
+
+            if ($binary) {
+                try {
+                    Storage::disk('public')->put($path, $binary);
+                } catch (\Throwable $e) {}
+
+                return response($binary, 200, [
+                    'Content-Type' => $mime,
+                    'Cache-Control' => 'public, max-age=31536000, immutable',
+                ]);
+            }
+        }
+
+        abort(404, 'Attendance photo not found');
     }
 }
