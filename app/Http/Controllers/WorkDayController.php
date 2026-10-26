@@ -6,6 +6,7 @@ use App\Models\Project;
 use App\Models\WorkDay;
 use App\Models\Worker;
 use App\Models\ProjectWorkerAttendance;
+use App\Models\WagePayment;
 use App\Models\ProjectAuditLog;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -183,5 +184,74 @@ class WorkDayController extends Controller
         );
 
         return back()->with('status', "Attendance record for {$attendance->worker->name} unlocked.");
+    }
+
+    /**
+     * Admin-only payout for a single daily work shift (per-day pay).
+     */
+    public function payAttendance(Request $request, ProjectWorkerAttendance $attendance)
+    {
+        if (!Auth::user()->isAdmin()) {
+            abort(403, 'Only administrators can record wage payouts.');
+        }
+
+        if ($attendance->is_paid) {
+            return back()->with('error', 'This work shift is already marked as paid.');
+        }
+
+        $validated = $request->validate([
+            'payment_mode' => 'nullable|string|in:cash,upi,bank_transfer,cheque',
+            'notes' => 'nullable|string|max:255',
+        ]);
+
+        $worker = $attendance->worker;
+        $workDate = Carbon::parse($attendance->workDay->work_date);
+        $weekStart = (clone $workDate)->startOfWeek()->toDateString();
+        $weekEnd = (clone $workDate)->endOfWeek()->toDateString();
+        $amount = (float) $attendance->total_amount;
+        $mode = $validated['payment_mode'] ?? 'cash';
+        $notes = $validated['notes'] ?? "Per-day daily wage payout for {$workDate->format('d M Y')} on project {$attendance->workDay->project->project_code}";
+
+        DB::beginTransaction();
+        try {
+            $payment = WagePayment::create([
+                'worker_id' => $worker->id,
+                'payment_type' => 'wage',
+                'amount' => $amount,
+                'payment_date' => now()->toDateString(),
+                'week_start' => $weekStart,
+                'week_end' => $weekEnd,
+                'week_start_date' => $weekStart,
+                'week_end_date' => $weekEnd,
+                'payment_mode' => $mode,
+                'reference_notes' => $notes,
+                'notes' => $notes,
+                'settled_by' => Auth::id(),
+                'paid_by' => Auth::id(),
+            ]);
+
+            $attendance->update([
+                'is_paid' => true,
+                'is_locked' => true,
+                'paid_week_start' => $weekStart,
+                'wage_payment_id' => $payment->id,
+            ]);
+
+            ProjectAuditLog::logChange(
+                $attendance->workDay->project,
+                'shift_wage_paid',
+                null,
+                null,
+                "Daily wage of ₹" . number_format($amount, 2) . " paid to {$worker->name} for shift on {$workDate->format('d M Y')}"
+            );
+
+            DB::commit();
+
+            return back()->with('status', "✓ Daily wage payout of ₹" . number_format($amount, 2) . " successfully paid to {$worker->name} for {$workDate->format('d M Y')}!");
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Failed to process payout: ' . $e->getMessage());
+        }
     }
 }

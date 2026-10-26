@@ -334,4 +334,35 @@ class Project extends Model
 
         return $query->where('site_id', $siteId);
     }
+
+    /**
+     * Total labor cost incurred across all work day attendances for this project.
+     */
+    public function getTotalLaborCost(): float
+    {
+        return (float) ProjectWorkerAttendance::whereHas('workDay', function ($q) {
+            $q->where('project_id', $this->id);
+        })->sum('total_amount');
+    }
+
+    /**
+     * Total labor cost paid / settled for this project.
+     */
+    public function getTotalLaborPaid(): float
+    {
+        return (float) ProjectWorkerAttendance::whereHas('workDay', function ($q) {
+            $q->where('project_id', $this->id);
+        })->where('is_paid', true)->sum('total_amount');
+    }
+
+    /**
+     * Total outstanding labor cost to pay (unpaid) for this project.
+     */
+    public function getTotalLaborCostToPay(): float
+    {
+        return (float) ProjectWorkerAttendance::whereHas('workDay', function ($q) {
+            $q->where('project_id', $this->id);
+        })->where('is_paid', false)->sum('total_amount');
+    }
 }
+

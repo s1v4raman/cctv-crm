@@ -49,6 +49,11 @@ class WagePayment extends Model
         return $this->belongsTo(User::class, 'settled_by');
     }
 
+    public function attendances()
+    {
+        return $this->hasMany(ProjectWorkerAttendance::class, 'wage_payment_id');
+    }
+
     public function getPaymentTypeBadgeClassesAttribute(): string
     {
         return match ($this->payment_type) {

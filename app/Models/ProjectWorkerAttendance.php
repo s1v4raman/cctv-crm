@@ -85,6 +85,11 @@ class ProjectWorkerAttendance extends Model
         return $this->belongsTo(User::class, 'unlocked_by');
     }
 
+    public function wagePayment(): BelongsTo
+    {
+        return $this->belongsTo(WagePayment::class, 'wage_payment_id');
+    }
+
     /**
      * Compute total daily wage payout for this record.
      */

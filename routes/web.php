@@ -356,6 +356,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/projects/{project}/work-days', [WorkDayController::class, 'store'])->name('projects.work-days.store');
         Route::delete('/projects/{project}/work-days/{workDay}', [WorkDayController::class, 'destroy'])->name('projects.work-days.destroy');
         Route::post('/projects/attendances/{attendance}/unlock', [WorkDayController::class, 'unlockAttendance'])->name('projects.attendances.unlock');
+        Route::post('/projects/attendances/{attendance}/pay', [WorkDayController::class, 'payAttendance'])->name('projects.attendances.pay');
 
         // IP Devices Registry & Configuration
         Route::post('/projects/{project}/devices', [IpDeviceController::class, 'store'])->name('projects.devices.store');
@@ -370,6 +371,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/wages', [WageController::class, 'index'])->name('wages.index');
         Route::post('/wages/advance', [WageController::class, 'recordAdvance'])->name('wages.advance');
         Route::post('/wages/settle', [WageController::class, 'settlePayment'])->name('wages.settle');
+        Route::post('/wages/attendances/{attendance}/pay', [WageController::class, 'payAttendanceShift'])->name('wages.attendances.pay');
         Route::get('/wages/signature-sheet', [WageController::class, 'printSignatureSheet'])->name('wages.signature-sheet');
         Route::get('/wages/export-csv', [WageController::class, 'exportCsv'])->name('wages.export-csv');
 

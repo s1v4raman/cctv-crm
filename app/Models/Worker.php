@@ -80,7 +80,21 @@ class Worker extends Model
     {
         $start = is_string($weekStart) ? Carbon::parse($weekStart) : $weekStart;
         return (float) $this->wagePayments()
-            ->where('payment_date', '<', $start->toDateString())
+            ->where(function ($q) use ($start) {
+                $q->where(function ($sq) use ($start) {
+                    $sq->where(function ($ssq) use ($start) {
+                        $ssq->whereNotNull('week_start')
+                            ->where('week_start', '<', $start->toDateString());
+                    })->orWhere(function ($ssq) use ($start) {
+                        $ssq->whereNotNull('week_start_date')
+                            ->where('week_start_date', '<', $start->toDateString());
+                    });
+                })->orWhere(function ($sq) use ($start) {
+                    $sq->whereNull('week_start')
+                       ->whereNull('week_start_date')
+                       ->where('payment_date', '<', $start->toDateString());
+                });
+            })
             ->sum('amount');
     }
 
@@ -110,7 +124,7 @@ class Worker extends Model
     }
 
     /**
-     * Advances taken between Monday and Saturday.
+     * Advances taken between Monday and Saturday/Sunday.
      */
     public function getAdvancesInWeek($weekStart, $weekEnd): float
     {
@@ -118,7 +132,16 @@ class Worker extends Model
         $end = is_string($weekEnd) ? Carbon::parse($weekEnd) : $weekEnd;
         return (float) $this->wagePayments()
             ->where('payment_type', 'advance')
-            ->whereBetween('payment_date', [$start->toDateString(), $end->toDateString()])
+            ->where(function ($q) use ($start, $end) {
+                $q->where(function ($sq) use ($start) {
+                    $sq->where('week_start', $start->toDateString())
+                       ->orWhere('week_start_date', $start->toDateString());
+                })->orWhere(function ($sq) use ($start, $end) {
+                    $sq->whereNull('week_start')
+                       ->whereNull('week_start_date')
+                       ->whereBetween('payment_date', [$start->toDateString(), (clone $end)->toDateString()]);
+                });
+            })
             ->sum('amount');
     }
 
@@ -132,10 +155,14 @@ class Worker extends Model
         return (float) $this->wagePayments()
             ->where('payment_type', 'wage')
             ->where(function ($q) use ($start, $end) {
-                $q->where(function ($sq) use ($start, $end) {
+                $q->where(function ($sq) use ($start) {
                     $sq->where('week_start', $start->toDateString())
-                       ->where('week_end', $end->toDateString());
-                })->orWhereBetween('payment_date', [$start->toDateString(), (clone $end)->addDay()->toDateString()]);
+                       ->orWhere('week_start_date', $start->toDateString());
+                })->orWhere(function ($sq) use ($start, $end) {
+                    $sq->whereNull('week_start')
+                       ->whereNull('week_start_date')
+                       ->whereBetween('payment_date', [$start->toDateString(), (clone $end)->addDay()->toDateString()]);
+                });
             })
             ->sum('amount');
     }

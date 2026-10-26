@@ -973,8 +973,16 @@
                                 <span class="font-bold font-mono text-blue-600">₹{{ number_format($project->per_metre_rate ?? 8.0, 2) }}/m</span>
                             </div>
                             <div class="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-slate-800">
-                                <span class="text-xs text-slate-400">Total Labor Spent</span>
-                                <span class="font-bold font-mono text-amber-600">₹{{ number_format($totalLaborCost, 2) }}</span>
+                                <span class="text-xs text-slate-400">Total Labor Incurred</span>
+                                <span class="font-bold font-mono text-slate-900 dark:text-white">₹{{ number_format($totalLaborCost, 2) }}</span>
+                            </div>
+                            <div class="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-slate-800">
+                                <span class="text-xs text-slate-400">Labor Paid (Settled)</span>
+                                <span class="font-bold font-mono text-emerald-600 dark:text-emerald-400">₹{{ number_format($totalLaborPaid, 2) }}</span>
+                            </div>
+                            <div class="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-slate-800">
+                                <span class="text-xs text-slate-400">Labor Cost to Pay (Pending)</span>
+                                <span class="font-bold font-mono text-rose-600 dark:text-rose-400">₹{{ number_format($totalLaborPendingPay, 2) }}</span>
                             </div>
                         </div>
                     </div>
@@ -1413,22 +1421,110 @@
         <div x-show="currentTab === 'work_days'" x-cloak class="space-y-6">
 
             {{-- Summary KPI Cards --}}
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div class="p-5 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs">
-                    <span class="text-xs font-semibold uppercase text-slate-400">Total Man-Days</span>
-                    <div class="text-2xl font-black text-slate-900 dark:text-white mt-1">{{ $totalManDays }} Days</div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+                <div class="p-4 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs">
+                    <span class="text-[11px] font-bold uppercase text-slate-400 block">Total Man-Days</span>
+                    <div class="text-xl font-black text-slate-900 dark:text-white mt-1">{{ $totalManDays }} <span class="text-xs font-semibold text-slate-400">Days</span></div>
                 </div>
-                <div class="p-5 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs">
-                    <span class="text-xs font-semibold uppercase text-slate-400">Cabling Metres Done</span>
-                    <div class="text-2xl font-black text-blue-600 dark:text-blue-400 mt-1 font-mono">{{ $totalCablingMetres }} m</div>
+                <div class="p-4 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs">
+                    <span class="text-[11px] font-bold uppercase text-slate-400 block">Cabling Pulled</span>
+                    <div class="text-xl font-black text-blue-600 dark:text-blue-400 mt-1 font-mono">{{ $totalCablingMetres }} <span class="text-xs font-semibold">m</span></div>
                 </div>
-                <div class="p-5 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs">
-                    <span class="text-xs font-semibold uppercase text-slate-400">Labor Wages Spent</span>
-                    <div class="text-2xl font-black text-amber-600 dark:text-amber-400 mt-1 font-mono">₹{{ number_format($totalLaborCost, 2) }}</div>
+                <div class="p-4 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs">
+                    <span class="text-[11px] font-bold uppercase text-slate-400 block">Total Labor Cost</span>
+                    <div class="text-xl font-black text-slate-900 dark:text-white mt-1 font-mono">₹{{ number_format($totalLaborCost, 2) }}</div>
+                </div>
+                <div class="p-4 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs">
+                    <span class="text-[11px] font-bold uppercase text-slate-400 block">Labor Paid (Settled)</span>
+                    <div class="text-xl font-black text-emerald-600 dark:text-emerald-400 mt-1 font-mono">₹{{ number_format($totalLaborPaid, 2) }}</div>
+                </div>
+                <div class="p-4 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs col-span-2 sm:col-span-1">
+                    <span class="text-[11px] font-bold uppercase text-rose-500 dark:text-rose-400 block">Cost to Pay (Pending)</span>
+                    <div class="text-xl font-black text-rose-600 dark:text-rose-400 mt-1 font-mono">₹{{ number_format($totalLaborPendingPay, 2) }}</div>
                 </div>
             </div>
 
-            <div class="flex justify-between items-center">
+            {{-- Worker-wise Project Cost & Settlement Analysis Table --}}
+            @if(!empty($workerAnalysis))
+                <div class="rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden">
+                    <div class="px-5 py-3.5 bg-slate-50/80 dark:bg-slate-800/60 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                        <div>
+                            <h4 class="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+                                <span>Worker-wise Labor Cost &amp; Settlement Analysis ({{ count($workerAnalysis) }} Workers)</span>
+                            </h4>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                                Breakdown of man-days, cabling metrics, wages earned, amounts settled, and pending costs to pay for this project.
+                            </p>
+                        </div>
+                        <a href="{{ route('wages.index') }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition">
+                            <span>Open Sunday Wage Console &rarr;</span>
+                        </a>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm text-slate-600 dark:text-slate-300">
+                            <thead class="text-xs uppercase font-bold text-slate-400 border-b border-slate-100 dark:border-slate-800 bg-slate-50/40 dark:bg-slate-900/40">
+                                <tr>
+                                    <th class="px-5 py-3">Worker Name</th>
+                                    <th class="px-5 py-3 text-center">Shifts / Man-Days</th>
+                                    <th class="px-5 py-3 text-center">Cabling (m)</th>
+                                    <th class="px-5 py-3 text-center">Cameras</th>
+                                    <th class="px-5 py-3 text-right">Total Incurred</th>
+                                    <th class="px-5 py-3 text-right">Amount Paid</th>
+                                    <th class="px-5 py-3 text-right">Cost to Pay (Pending)</th>
+                                    <th class="px-5 py-3 text-center">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                                @foreach($workerAnalysis as $wId => $wData)
+                                    @php
+                                        $wrk = $wData['worker'];
+                                    @endphp
+                                    <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/40">
+                                        <td class="px-5 py-3.5">
+                                            <a href="{{ route('workers.show', $wrk) }}" class="font-bold text-slate-900 dark:text-white hover:text-blue-600 hover:underline block leading-tight">
+                                                {{ $wrk->name }}
+                                            </a>
+                                            <span class="text-[11px] text-slate-500 font-mono">₹{{ number_format($wrk->daily_rate, 2) }}/day &bull; 📞 {{ $wrk->phone ?? '—' }}</span>
+                                        </td>
+                                        <td class="px-5 py-3.5 text-center font-medium">
+                                            {{ $wData['man_days'] }} <span class="text-xs text-slate-400">({{ $wData['shifts_count'] }} {{ Str::plural('shift', $wData['shifts_count']) }})</span>
+                                        </td>
+                                        <td class="px-5 py-3.5 text-center font-mono font-semibold text-slate-900 dark:text-white">
+                                            {{ $wData['cabling_metres'] > 0 ? $wData['cabling_metres'] . ' m' : '—' }}
+                                        </td>
+                                        <td class="px-5 py-3.5 text-center font-semibold text-emerald-600 dark:text-emerald-400">
+                                            {{ $wData['cameras_installed'] > 0 ? $wData['cameras_installed'] : '—' }}
+                                        </td>
+                                        <td class="px-5 py-3.5 text-right font-mono font-bold text-slate-900 dark:text-white">
+                                            ₹{{ number_format($wData['total_earned'], 2) }}
+                                        </td>
+                                        <td class="px-5 py-3.5 text-right font-mono font-semibold text-emerald-600 dark:text-emerald-400">
+                                            ₹{{ number_format($wData['amount_paid'], 2) }}
+                                        </td>
+                                        <td class="px-5 py-3.5 text-right font-mono font-black {{ $wData['cost_to_pay'] > 0 ? 'text-rose-600 dark:text-rose-400' : 'text-slate-400' }}">
+                                            ₹{{ number_format($wData['cost_to_pay'], 2) }}
+                                        </td>
+                                        <td class="px-5 py-3.5 text-center whitespace-nowrap">
+                                            @if($wData['cost_to_pay'] <= 0)
+                                                <span class="px-2 py-0.5 text-xs font-bold rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
+                                                    ✓ Settled
+                                                </span>
+                                            @else
+                                                <span class="px-2 py-0.5 text-xs font-bold rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300">
+                                                    Pending ₹{{ number_format($wData['cost_to_pay'], 0) }}
+                                                </span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            @endif
+
+            <div class="flex justify-between items-center pt-2">
                 <h3 class="font-extrabold text-slate-900 dark:text-white text-base">Work Day Logs &amp; Attendance Records</h3>
                 @if(!auth()->user()->isStaff())
                     <button type="button" @click="workDayModalOpen = true" class="btn-primary text-xs shadow-md">
@@ -1561,9 +1657,19 @@
                                                         @endif
                                                     </div>
                                                 @else
-                                                    <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300">
-                                                        Unpaid
-                                                    </span>
+                                                    <div class="inline-flex items-center gap-1.5 flex-wrap justify-center">
+                                                        <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300">
+                                                            Unpaid
+                                                        </span>
+                                                        @if(auth()->user()->isAdmin())
+                                                            <form method="POST" action="{{ route('projects.attendances.pay', $att) }}" class="inline-block" onsubmit="return confirm('Disburse daily wage payout of ₹{{ number_format($att->total_amount, 2) }} now to {{ addslashes($att->worker->name) }}?')">
+                                                                @csrf
+                                                                <button type="submit" class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs cursor-pointer transition">
+                                                                    Pay Shift (₹{{ number_format($att->total_amount, 0) }})
+                                                                </button>
+                                                            </form>
+                                                        @endif
+                                                    </div>
                                                 @endif
                                             </td>
                                         </tr>

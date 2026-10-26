@@ -416,16 +416,51 @@ class ProjectController extends Controller
         $totalCableMeters = (float) $project->materialConsumptions->where('unit', 'meters')->sum('quantity_used');
         $totalWastageQuantity = (float) $project->materialConsumptions->sum('wastage_quantity');
 
-        // Calculate Work Days & Wages KPI for Tab 4
+        // Calculate Work Days & Wages KPI for Tab 4 and Tab 1 Overview
         $totalManDays = 0;
         $totalCablingMetres = 0;
         $totalLaborCost = 0;
+        $totalLaborPaid = 0;
+        $totalLaborPendingPay = 0;
+        $workerAnalysis = [];
 
         foreach ($project->workDays as $wd) {
             foreach ($wd->attendances as $att) {
-                $totalManDays += ($att->attendance_type === 'half_day' ? 0.5 : 1);
+                $days = ($att->attendance_type === 'half_day' ? 0.5 : 1.0);
+                $totalManDays += $days;
                 $totalCablingMetres += (float) $att->cabling_metres;
-                $totalLaborCost += (float) $att->total_amount;
+                $rowAmount = (float) $att->total_amount;
+                $totalLaborCost += $rowAmount;
+
+                if ($att->is_paid) {
+                    $totalLaborPaid += $rowAmount;
+                } else {
+                    $totalLaborPendingPay += $rowAmount;
+                }
+
+                $wId = $att->worker_id;
+                if (!isset($workerAnalysis[$wId])) {
+                    $workerAnalysis[$wId] = [
+                        'worker' => $att->worker,
+                        'shifts_count' => 0,
+                        'man_days' => 0.0,
+                        'cabling_metres' => 0.0,
+                        'cameras_installed' => 0,
+                        'total_earned' => 0.0,
+                        'amount_paid' => 0.0,
+                        'cost_to_pay' => 0.0,
+                    ];
+                }
+                $workerAnalysis[$wId]['shifts_count'] += 1;
+                $workerAnalysis[$wId]['man_days'] += $days;
+                $workerAnalysis[$wId]['cabling_metres'] += (float) $att->cabling_metres;
+                $workerAnalysis[$wId]['cameras_installed'] += (int) $att->cameras_installed;
+                $workerAnalysis[$wId]['total_earned'] += $rowAmount;
+                if ($att->is_paid) {
+                    $workerAnalysis[$wId]['amount_paid'] += $rowAmount;
+                } else {
+                    $workerAnalysis[$wId]['cost_to_pay'] += $rowAmount;
+                }
             }
         }
 
@@ -458,6 +493,9 @@ class ProjectController extends Controller
             'totalManDays',
             'totalCablingMetres',
             'totalLaborCost',
+            'totalLaborPaid',
+            'totalLaborPendingPay',
+            'workerAnalysis',
             'uninvoicedDcCount',
             'tasksCount',
             'completedTasksCount',

@@ -53,46 +53,162 @@ class WageController extends Controller implements HasMiddleware
             ->get();
 
         $wageRows = [];
+        $totalDaysAll = 0;
+        $totalMetresAll = 0;
+        $totalCamerasAll = 0;
         $totalEarnedAll = 0;
         $totalBroughtForwardAll = 0;
         $totalAdvancesAll = 0;
+        $totalWagesPaidAll = 0;
         $totalDueAll = 0;
 
         foreach ($workers as $worker) {
             $broughtForward = $worker->getBroughtForward($weekStart->toDateString());
-            $earned = $worker->getEarnedInWeek($weekStart->toDateString(), $saturdayEnd->toDateString());
+            $earned = $worker->getEarnedInWeek($weekStart->toDateString(), $weekEnd->toDateString());
             $advances = $worker->getAdvancesInWeek($weekStart->toDateString(), $weekEnd->toDateString());
-            $totalDue = max(0, $broughtForward + $earned - $advances);
+            $grossPayable = max(0, $broughtForward + $earned - $advances);
+            $wagesPaid = $worker->getWagesPaidForWeek($weekStart->toDateString(), $weekEnd->toDateString());
 
-            // Fetch attendances in this week for this worker
-            $attendances = ProjectWorkerAttendance::where('worker_id', $worker->id)
-                ->whereHas('workDay', function ($q) use ($weekStart, $saturdayEnd) {
-                    $q->whereBetween('work_date', [$weekStart->toDateString(), $saturdayEnd->toDateString()]);
+            // Check if worker has an explicit carry forward recorded for this cycle
+            $weekWageRecords = $worker->wagePayments()
+                ->where('payment_type', 'wage')
+                ->where(function ($q) use ($weekStart, $weekEnd) {
+                    $q->where(function ($sq) use ($weekStart) {
+                        $sq->where('week_start', $weekStart->toDateString())
+                           ->orWhere('week_start_date', $weekStart->toDateString());
+                    })->orWhere(function ($sq) use ($weekStart, $weekEnd) {
+                        $sq->whereNull('week_start')
+                           ->whereNull('week_start_date')
+                           ->whereBetween('payment_date', [$weekStart->toDateString(), (clone $weekEnd)->addDay()->toDateString()]);
+                    });
                 })
-                ->with('workDay.project')
                 ->get();
 
+            $carryFwdRecord = $weekWageRecords->first(function ($p) {
+                return $p->amount == 0 && (str_contains(strtolower($p->reference_notes ?? ''), 'carried forward') || str_contains(strtolower($p->reference_notes ?? ''), 'carry_forward'));
+            });
+
+            $isCarriedForward = false;
+            $carriedForwardBalance = 0;
+            if ($carryFwdRecord && ($wagesPaid < $grossPayable)) {
+                $isCarriedForward = true;
+                $carriedForwardBalance = max(0, $grossPayable - $wagesPaid);
+            }
+
+            // Net due to disburse on Sunday
+            if ($isCarriedForward) {
+                $totalDue = 0; // Balance deferred to next week
+            } else {
+                $totalDue = max(0, $grossPayable - $wagesPaid);
+            }
+
+            // Fetch attendances in this week for this worker (Monday through Sunday)
+            $attendances = ProjectWorkerAttendance::where('worker_id', $worker->id)
+                ->whereHas('workDay', function ($q) use ($weekStart, $weekEnd) {
+                    $q->whereBetween('work_date', [$weekStart->toDateString(), $weekEnd->toDateString()]);
+                })
+                ->with(['workDay.project', 'wagePayment'])
+                ->orderByDesc('id')
+                ->get();
+
+            // Fetch advances taken by this worker in this week
+            $workerAdvances = $worker->wagePayments()
+                ->where('payment_type', 'advance')
+                ->where(function ($q) use ($weekStart, $weekEnd) {
+                    $q->where(function ($sq) use ($weekStart) {
+                        $sq->where('week_start', $weekStart->toDateString())
+                           ->orWhere('week_start_date', $weekStart->toDateString());
+                    })->orWhere(function ($sq) use ($weekStart, $weekEnd) {
+                        $sq->whereNull('week_start')
+                           ->whereNull('week_start_date')
+                           ->whereBetween('payment_date', [$weekStart->toDateString(), (clone $weekEnd)->toDateString()]);
+                    });
+                })
+                ->orderByDesc('payment_date')
+                ->get();
+
+            // Fetch wage payments made to this worker in this week
+            $workerPayouts = $worker->wagePayments()
+                ->where('payment_type', 'wage')
+                ->where(function ($q) use ($weekStart, $weekEnd) {
+                    $q->where(function ($sq) use ($weekStart) {
+                        $sq->where('week_start', $weekStart->toDateString())
+                           ->orWhere('week_start_date', $weekStart->toDateString());
+                    })->orWhere(function ($sq) use ($weekStart, $weekEnd) {
+                        $sq->whereNull('week_start')
+                           ->whereNull('week_start_date')
+                           ->whereBetween('payment_date', [$weekStart->toDateString(), (clone $weekEnd)->addDay()->toDateString()]);
+                    });
+                })
+                ->orderByDesc('payment_date')
+                ->get();
+
+            // Prior unpaid shifts contributing to Brought Forward
+            $priorUnpaidAttendances = ProjectWorkerAttendance::where('worker_id', $worker->id)
+                ->whereHas('workDay', function ($q) use ($weekStart) {
+                    $q->where('work_date', '<', $weekStart->toDateString());
+                })
+                ->where('is_paid', false)
+                ->with(['workDay.project', 'wagePayment'])
+                ->orderByDesc('id')
+                ->get();
+
+            $priorDaysWorked = $priorUnpaidAttendances->count();
+            $priorMetres = (float) $priorUnpaidAttendances->sum('cabling_metres');
+            $priorCameras = (int) $priorUnpaidAttendances->sum('cameras_installed');
+
             $daysWorked = $attendances->count();
-            $totalMetres = $attendances->sum('cabling_metres');
-            $alreadySettled = $attendances->isNotEmpty() && $attendances->every(fn($a) => $a->is_paid);
+            $totalMetres = (float) $attendances->sum('cabling_metres');
+            $totalCameras = (int) $attendances->sum('cameras_installed');
+            $alreadySettled = ($grossPayable > 0 && $totalDue <= 0) || ($attendances->isNotEmpty() && $attendances->every(fn($a) => $a->is_paid));
 
             $wageRows[] = [
                 'worker' => $worker,
                 'brought_forward' => $broughtForward,
                 'earned' => $earned,
                 'advances' => $advances,
+                'gross_payable' => $grossPayable,
+                'wages_paid' => $wagesPaid,
                 'total_due' => $totalDue,
+                'is_carried_forward' => $isCarriedForward,
+                'carried_forward_balance' => $carriedForwardBalance,
                 'days_worked' => $daysWorked,
                 'total_metres' => $totalMetres,
+                'total_cameras' => $totalCameras,
+                'prior_days_worked' => $priorDaysWorked,
+                'prior_metres' => $priorMetres,
+                'prior_cameras' => $priorCameras,
+                'prior_attendances' => $priorUnpaidAttendances,
                 'already_settled' => $alreadySettled,
                 'attendances' => $attendances,
+                'worker_advances' => $workerAdvances,
+                'worker_payouts' => $workerPayouts,
             ];
 
+            $totalDaysAll += $daysWorked;
+            $totalMetresAll += $totalMetres;
+            $totalCamerasAll += $totalCameras;
             $totalBroughtForwardAll += $broughtForward;
             $totalEarnedAll += $earned;
             $totalAdvancesAll += $advances;
+            $totalWagesPaidAll += $wagesPaid;
             $totalDueAll += $totalDue;
         }
+
+        // Recent wage transactions for this week
+        $recentPayments = WagePayment::where(function ($q) use ($weekStart, $weekEnd) {
+                $q->where(function ($sq) use ($weekStart) {
+                    $sq->where('week_start', $weekStart->toDateString())
+                       ->orWhere('week_start_date', $weekStart->toDateString());
+                })->orWhere(function ($sq) use ($weekStart, $weekEnd) {
+                    $sq->whereNull('week_start')
+                       ->whereNull('week_start_date')
+                       ->whereBetween('payment_date', [$weekStart->toDateString(), (clone $weekEnd)->addDay()->toDateString()]);
+                });
+            })
+            ->with(['worker', 'settledBy'])
+            ->orderByDesc('id')
+            ->get();
 
         // Available weeks for dropdown (last 12 weeks)
         $availableWeeks = [];
@@ -112,9 +228,14 @@ class WageController extends Controller implements HasMiddleware
             'weekEnd',
             'paydaySunday',
             'availableWeeks',
+            'recentPayments',
+            'totalDaysAll',
+            'totalMetresAll',
+            'totalCamerasAll',
             'totalBroughtForwardAll',
             'totalEarnedAll',
             'totalAdvancesAll',
+            'totalWagesPaidAll',
             'totalDueAll'
         ));
     }
@@ -144,9 +265,13 @@ class WageController extends Controller implements HasMiddleware
             'payment_date' => $validated['payment_date'],
             'week_start' => $weekStart,
             'week_end' => $weekEnd,
+            'week_start_date' => $weekStart,
+            'week_end_date' => $weekEnd,
             'payment_mode' => $validated['payment_mode'],
             'reference_notes' => $validated['reference_notes'] ?? 'Mid-week advance payout',
+            'notes' => $validated['reference_notes'] ?? 'Mid-week advance payout',
             'settled_by' => Auth::id(),
+            'paid_by' => Auth::id(),
         ]);
 
         ProjectAuditLog::logChange(
@@ -157,7 +282,7 @@ class WageController extends Controller implements HasMiddleware
             "Advance of ₹{$payment->amount} paid to {$worker->name} via " . strtoupper($payment->payment_mode)
         );
 
-        return back()->with('status', "Advance of ₹{$payment->amount} recorded for {$worker->name}.");
+        return back()->with('status', "Advance of ₹" . number_format($payment->amount, 2) . " recorded for {$worker->name}.");
     }
 
     /**
@@ -175,55 +300,78 @@ class WageController extends Controller implements HasMiddleware
         ]);
 
         $worker = Worker::findOrFail($validated['worker_id']);
-        $weekStart = Carbon::parse($validated['week_start'])->toDateString();
+        $weekStart = Carbon::parse($validated['week_start'])->startOfWeek()->toDateString();
         $weekEnd = Carbon::parse($weekStart)->endOfWeek()->toDateString();
-        $saturdayEnd = Carbon::parse($weekStart)->addDays(5)->endOfDay()->toDateString();
 
         $broughtForward = $worker->getBroughtForward($weekStart);
-        $earned = $worker->getEarnedInWeek($weekStart, $saturdayEnd);
+        $earned = $worker->getEarnedInWeek($weekStart, $weekEnd);
         $advances = $worker->getAdvancesInWeek($weekStart, $weekEnd);
-        $totalDue = max(0, $broughtForward + $earned - $advances);
+        $grossPayable = max(0, $broughtForward + $earned - $advances);
+        $wagesPaidSoFar = $worker->getWagesPaidForWeek($weekStart, $weekEnd);
+        $remainingDue = max(0, $grossPayable - $wagesPaidSoFar);
 
         $action = $validated['settlement_action'];
         $amountPaid = 0;
 
         if ($action === 'pay_full') {
-            $amountPaid = $totalDue;
+            $amountPaid = $remainingDue;
         } elseif ($action === 'pay_part') {
-            $amountPaid = (float) ($validated['amount_to_pay'] ?? 0);
+            $requested = (float) ($validated['amount_to_pay'] ?? 0);
+            $amountPaid = min($requested, $remainingDue);
         } elseif ($action === 'carry_forward') {
             $amountPaid = 0;
         }
 
         DB::beginTransaction();
         try {
-            $payment = null;
-            if ($amountPaid > 0) {
-                $payment = WagePayment::create([
-                    'worker_id' => $worker->id,
-                    'payment_type' => 'wage',
-                    'amount' => $amountPaid,
-                    'payment_date' => now()->toDateString(),
-                    'week_start' => $weekStart,
-                    'week_end' => $weekEnd,
-                    'payment_mode' => $validated['payment_mode'],
-                    'reference_notes' => $validated['reference_notes'] ?? "Sunday Payday Settlement ({$action})",
-                    'settled_by' => Auth::id(),
-                ]);
+            $notes = $validated['reference_notes'] ?? null;
+            if ($action === 'carry_forward') {
+                $notes = $notes ?: "Carried forward to next week (Balance: ₹" . number_format($remainingDue, 2) . ")";
+            } elseif ($action === 'pay_full') {
+                $notes = $notes ?: "Full wage payout of ₹" . number_format($amountPaid, 2);
+            } elseif ($action === 'pay_part') {
+                $rem = max(0, $remainingDue - $amountPaid);
+                $notes = $notes ?: "Partial wage payout of ₹" . number_format($amountPaid, 2) . " (Remaining: ₹" . number_format($rem, 2) . ")";
             }
 
-            // Lock attendance records for this week
-            $attendances = ProjectWorkerAttendance::where('worker_id', $worker->id)
-                ->whereHas('workDay', function ($q) use ($weekStart, $saturdayEnd) {
-                    $q->whereBetween('work_date', [$weekStart, $saturdayEnd]);
-                })
-                ->get();
+            // Always create a payment/settlement record so the action is captured and recorded
+            $payment = WagePayment::create([
+                'worker_id' => $worker->id,
+                'payment_type' => 'wage',
+                'amount' => $amountPaid,
+                'payment_date' => now()->toDateString(),
+                'week_start' => $weekStart,
+                'week_end' => $weekEnd,
+                'week_start_date' => $weekStart,
+                'week_end_date' => $weekEnd,
+                'payment_mode' => $validated['payment_mode'] ?? 'cash',
+                'reference_notes' => $notes,
+                'notes' => $notes,
+                'settled_by' => Auth::id(),
+                'paid_by' => Auth::id(),
+            ]);
+
+            // Lock attendance records for this week (and prior unpaid attendances if paid in full)
+            if ($action === 'pay_full') {
+                $attendances = ProjectWorkerAttendance::where('worker_id', $worker->id)
+                    ->where('is_paid', false)
+                    ->whereHas('workDay', function ($q) use ($weekEnd) {
+                        $q->where('work_date', '<=', $weekEnd);
+                    })
+                    ->get();
+            } else {
+                $attendances = ProjectWorkerAttendance::where('worker_id', $worker->id)
+                    ->whereHas('workDay', function ($q) use ($weekStart, $weekEnd) {
+                        $q->whereBetween('work_date', [$weekStart, $weekEnd]);
+                    })
+                    ->get();
+            }
 
             foreach ($attendances as $att) {
                 $att->update([
                     'is_paid' => true,
                     'paid_week_start' => $weekStart,
-                    'wage_payment_id' => $payment?->id,
+                    'wage_payment_id' => $payment->id,
                 ]);
             }
 
@@ -237,11 +385,82 @@ class WageController extends Controller implements HasMiddleware
 
             DB::commit();
 
-            return back()->with('status', "Wage settlement for {$worker->name} completed successfully! Paid: ₹{$amountPaid}");
+            $msg = match($action) {
+                'carry_forward' => "Balance of ₹" . number_format($remainingDue, 2) . " for {$worker->name} has been carried forward to next week.",
+                'pay_part' => "Partial wage payout of ₹" . number_format($amountPaid, 2) . " recorded for {$worker->name}. Remaining balance: ₹" . number_format(max(0, $remainingDue - $amountPaid), 2) . ".",
+                default => "Full wage settlement of ₹" . number_format($amountPaid, 2) . " completed for {$worker->name}.",
+            };
+
+            return back()->with('status', $msg);
 
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Failed to settle wages: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Admin 1-click single-shift daily wage payout from Weekly Wages console.
+     */
+    public function payAttendanceShift(Request $request, ProjectWorkerAttendance $attendance)
+    {
+        if ($attendance->is_paid) {
+            return back()->with('error', 'This work shift is already marked as paid.');
+        }
+
+        $validated = $request->validate([
+            'payment_mode' => 'nullable|string|in:cash,upi,bank_transfer,cheque',
+            'notes' => 'nullable|string|max:255',
+        ]);
+
+        $worker = $attendance->worker;
+        $workDate = Carbon::parse($attendance->workDay->work_date);
+        $weekStart = (clone $workDate)->startOfWeek()->toDateString();
+        $weekEnd = (clone $workDate)->endOfWeek()->toDateString();
+        $amount = (float) $attendance->total_amount;
+        $mode = $validated['payment_mode'] ?? 'cash';
+        $notes = $validated['notes'] ?? "Per-day daily wage payout for {$workDate->format('d M Y')} ({$attendance->workDay->project->project_code})";
+
+        DB::beginTransaction();
+        try {
+            $payment = WagePayment::create([
+                'worker_id' => $worker->id,
+                'payment_type' => 'wage',
+                'amount' => $amount,
+                'payment_date' => now()->toDateString(),
+                'week_start' => $weekStart,
+                'week_end' => $weekEnd,
+                'week_start_date' => $weekStart,
+                'week_end_date' => $weekEnd,
+                'payment_mode' => $mode,
+                'reference_notes' => $notes,
+                'notes' => $notes,
+                'settled_by' => Auth::id(),
+                'paid_by' => Auth::id(),
+            ]);
+
+            $attendance->update([
+                'is_paid' => true,
+                'is_locked' => true,
+                'paid_week_start' => $weekStart,
+                'wage_payment_id' => $payment->id,
+            ]);
+
+            ProjectAuditLog::logChange(
+                $attendance->workDay->project,
+                'shift_wage_paid',
+                null,
+                null,
+                "Daily wage of ₹" . number_format($amount, 2) . " paid to {$worker->name} for shift on {$workDate->format('d M Y')}"
+            );
+
+            DB::commit();
+
+            return back()->with('status', "✓ Daily wage payout of ₹" . number_format($amount, 2) . " paid to {$worker->name} for {$workDate->format('d M Y')}!");
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Failed to process payout: ' . $e->getMessage());
         }
     }
 
@@ -252,6 +471,7 @@ class WageController extends Controller implements HasMiddleware
     {
         $weekParam = $request->input('week');
         $weekStart = $weekParam ? Carbon::parse($weekParam)->startOfWeek() : Carbon::now()->startOfWeek();
+        $weekEnd = (clone $weekStart)->endOfWeek();
         $saturdayEnd = (clone $weekStart)->addDays(5)->endOfDay();
         $paydaySunday = (clone $weekStart)->addDays(6);
 
@@ -262,27 +482,46 @@ class WageController extends Controller implements HasMiddleware
 
         foreach ($workers as $worker) {
             $broughtForward = $worker->getBroughtForward($weekStart->toDateString());
-            $earned = $worker->getEarnedInWeek($weekStart->toDateString(), $saturdayEnd->toDateString());
+            $earned = $worker->getEarnedInWeek($weekStart->toDateString(), $weekEnd->toDateString());
             $advances = $worker->getAdvancesInWeek($weekStart->toDateString(), $paydaySunday->toDateString());
-            $totalDue = max(0, $broughtForward + $earned - $advances);
+            $grossPayable = max(0, $broughtForward + $earned - $advances);
+            $wagesPaid = $worker->getWagesPaidForWeek($weekStart->toDateString(), $paydaySunday->toDateString());
+
+            $isCarriedForward = $worker->wagePayments()
+                ->where('payment_type', 'wage')
+                ->where('amount', 0)
+                ->where(function ($q) use ($weekStart) {
+                    $q->where('week_start', $weekStart->toDateString())
+                       ->orWhere('week_start_date', $weekStart->toDateString());
+                })
+                ->where(function ($q) {
+                    $q->where('reference_notes', 'like', '%carried forward%')
+                      ->orWhere('reference_notes', 'like', '%carry_forward%');
+                })
+                ->exists();
+
+            $remainingDue = ($isCarriedForward) ? 0 : max(0, $grossPayable - $wagesPaid);
 
             $attendances = ProjectWorkerAttendance::where('worker_id', $worker->id)
-                ->whereHas('workDay', function ($q) use ($weekStart, $saturdayEnd) {
-                    $q->whereBetween('work_date', [$weekStart->toDateString(), $saturdayEnd->toDateString()]);
+                ->whereHas('workDay', function ($q) use ($weekStart, $weekEnd) {
+                    $q->whereBetween('work_date', [$weekStart->toDateString(), $weekEnd->toDateString()]);
                 })
                 ->get();
 
-            if ($totalDue > 0 || $attendances->count() > 0) {
+            if ($remainingDue > 0 || $attendances->count() > 0 || $wagesPaid > 0) {
                 $rows[] = [
                     'worker' => $worker,
                     'days_worked' => $attendances->count(),
-                    'metres' => $attendances->sum('cabling_metres'),
+                    'metres' => (float) $attendances->sum('cabling_metres'),
+                    'cameras' => (int) $attendances->sum('cameras_installed'),
                     'brought_forward' => $broughtForward,
                     'earned' => $earned,
                     'advances' => $advances,
-                    'total_due' => $totalDue,
+                    'wages_paid' => $wagesPaid,
+                    'total_due' => $remainingDue,
+                    'is_carried_forward' => $isCarriedForward,
                 ];
-                $totalCash += $totalDue;
+                $totalCash += $remainingDue;
             }
         }
 
@@ -296,6 +535,7 @@ class WageController extends Controller implements HasMiddleware
     {
         $weekParam = $request->input('week');
         $weekStart = $weekParam ? Carbon::parse($weekParam)->startOfWeek() : Carbon::now()->startOfWeek();
+        $weekEnd = (clone $weekStart)->endOfWeek();
         $saturdayEnd = (clone $weekStart)->addDays(5)->endOfDay();
         $paydaySunday = (clone $weekStart)->addDays(6);
 
@@ -309,11 +549,11 @@ class WageController extends Controller implements HasMiddleware
             'Expires' => '0',
         ];
 
-        return new StreamedResponse(function () use ($workers, $weekStart, $saturdayEnd, $paydaySunday) {
+        return new StreamedResponse(function () use ($workers, $weekStart, $weekEnd, $paydaySunday) {
             $handle = fopen('php://output', 'w');
 
             fputcsv($handle, ['SecureVision CRM - Sunday Weekly Wage Payout Ledger']);
-            fputcsv($handle, ['Week Cycle', $weekStart->format('d M Y') . ' to ' . $saturdayEnd->format('d M Y')]);
+            fputcsv($handle, ['Week Cycle', $weekStart->format('d M Y') . ' to ' . $weekEnd->format('d M Y')]);
             fputcsv($handle, ['Payday Date', $paydaySunday->format('d M Y')]);
             fputcsv($handle, ['Generated At', now()->toDateTimeString()]);
             fputcsv($handle, []);
@@ -324,26 +564,52 @@ class WageController extends Controller implements HasMiddleware
                 'Daily Rate (₹)',
                 'Days Worked',
                 'Cabling Metres',
+                'Cameras Installed',
                 'Brought Forward (₹)',
                 'Earned This Week (₹)',
                 'Advances Taken (₹)',
+                'Paid This Week (₹)',
                 'Total Payable (₹)',
                 'Status'
             ]);
 
             foreach ($workers as $w) {
                 $bf = $w->getBroughtForward($weekStart->toDateString());
-                $earned = $w->getEarnedInWeek($weekStart->toDateString(), $saturdayEnd->toDateString());
+                $earned = $w->getEarnedInWeek($weekStart->toDateString(), $weekEnd->toDateString());
                 $adv = $w->getAdvancesInWeek($weekStart->toDateString(), $paydaySunday->toDateString());
-                $due = max(0, $bf + $earned - $adv);
+                $gross = max(0, $bf + $earned - $adv);
+                $wagesPaid = $w->getWagesPaidForWeek($weekStart->toDateString(), $paydaySunday->toDateString());
 
-                $attCount = ProjectWorkerAttendance::where('worker_id', $w->id)
-                    ->whereHas('workDay', fn($q) => $q->whereBetween('work_date', [$weekStart->toDateString(), $saturdayEnd->toDateString()]))
-                    ->count();
+                $isCf = $w->wagePayments()
+                    ->where('payment_type', 'wage')
+                    ->where('amount', 0)
+                    ->where(function ($q) use ($weekStart) {
+                        $q->where('week_start', $weekStart->toDateString())
+                           ->orWhere('week_start_date', $weekStart->toDateString());
+                    })
+                    ->where(function ($q) {
+                        $q->where('reference_notes', 'like', '%carried forward%')
+                          ->orWhere('reference_notes', 'like', '%carry_forward%');
+                    })
+                    ->exists();
 
-                $metres = ProjectWorkerAttendance::where('worker_id', $w->id)
-                    ->whereHas('workDay', fn($q) => $q->whereBetween('work_date', [$weekStart->toDateString(), $saturdayEnd->toDateString()]))
-                    ->sum('cabling_metres');
+                $due = ($isCf) ? 0 : max(0, $gross - $wagesPaid);
+
+                $attQuery = ProjectWorkerAttendance::where('worker_id', $w->id)
+                    ->whereHas('workDay', fn($q) => $q->whereBetween('work_date', [$weekStart->toDateString(), $weekEnd->toDateString()]));
+
+                $attCount = (clone $attQuery)->count();
+                $metres = (float) (clone $attQuery)->sum('cabling_metres');
+                $cameras = (int) (clone $attQuery)->sum('cameras_installed');
+
+                $status = 'Due for Settlement';
+                if ($isCf) {
+                    $status = 'Carried Forward';
+                } elseif ($due <= 0 && ($wagesPaid > 0 || $gross == 0)) {
+                    $status = 'Settled';
+                } elseif ($wagesPaid > 0) {
+                    $status = 'Partially Settled';
+                }
 
                 fputcsv($handle, [
                     $w->name,
@@ -351,11 +617,13 @@ class WageController extends Controller implements HasMiddleware
                     number_format($w->daily_rate, 2),
                     $attCount,
                     $metres,
+                    $cameras,
                     number_format($bf, 2),
                     number_format($earned, 2),
                     number_format($adv, 2),
+                    number_format($wagesPaid, 2),
                     number_format($due, 2),
-                    $due > 0 ? 'Due for Settlement' : 'Settled'
+                    $status
                 ]);
             }
 
