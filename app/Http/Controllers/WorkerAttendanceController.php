@@ -8,6 +8,8 @@ use App\Models\ProjectWorkerAttendance;
 use App\Models\WorkDay;
 use App\Models\Worker;
 use Carbon\Carbon;
+use Carbon\Constants\UnitValue;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -34,8 +36,11 @@ class WorkerAttendanceController extends Controller
         $projectFilter = $request->input('project_id');
 
         // Master lists for modal & filter dropdowns
+        /** @var Collection<int, Worker> $activeWorkers */
         $activeWorkers = Worker::where('is_active', true)->orderBy('name')->get();
         $allWorkers = Worker::orderBy('name')->get();
+
+        /** @var Collection<int, Project> $activeProjects */
         $activeProjects = Project::whereIn('status', ['in_progress', 'scheduled', 'draft'])
             ->orderBy('title')
             ->get();
@@ -56,14 +61,17 @@ class WorkerAttendanceController extends Controller
 
     /**
      * Per-Day Attendance Roster.
+     *
+     * @param Collection<int, Worker> $activeWorkers
+     * @param Collection<int, Project> $activeProjects
      */
     protected function renderDayView(
         Request $request,
-        $activeWorkers,
-        $activeProjects,
+        Collection $activeWorkers,
+        Collection $activeProjects,
         string $search,
-        $workerFilter,
-        $projectFilter
+        mixed $workerFilter,
+        mixed $projectFilter
     ): View {
         $dateParam = $request->input('date');
         try {
@@ -123,25 +131,28 @@ class WorkerAttendanceController extends Controller
 
     /**
      * Per-Week Attendance Matrix.
+     *
+     * @param Collection<int, Worker> $activeWorkers
+     * @param Collection<int, Project> $activeProjects
      */
     protected function renderWeekView(
         Request $request,
-        $activeWorkers,
-        $activeProjects,
+        Collection $activeWorkers,
+        Collection $activeProjects,
         string $search,
-        $workerFilter,
-        $projectFilter
+        mixed $workerFilter,
+        mixed $projectFilter
     ): View {
         $weekParam = $request->input('week');
         try {
             $weekStart = $weekParam
-                ? Carbon::parse($weekParam)->startOfWeek(Carbon::MONDAY)
-                : Carbon::today()->startOfWeek(Carbon::MONDAY);
+                ? Carbon::parse($weekParam)->startOfWeek(UnitValue::MONDAY)
+                : Carbon::today()->startOfWeek(UnitValue::MONDAY);
         } catch (\Throwable $e) {
-            $weekStart = Carbon::today()->startOfWeek(Carbon::MONDAY);
+            $weekStart = Carbon::today()->startOfWeek(UnitValue::MONDAY);
         }
 
-        $weekEnd = $weekStart->copy()->endOfWeek(Carbon::SUNDAY);
+        $weekEnd = $weekStart->copy()->endOfWeek(UnitValue::SUNDAY);
 
         // Fetch all attendances for the week
         $query = ProjectWorkerAttendance::query()
@@ -198,39 +209,65 @@ class WorkerAttendanceController extends Controller
 
         $workers = $workersInMatrix->orderBy('name')->get();
 
-        // Build worker weekly grid
+        [$matrixData, $metrics] = $this->buildWeeklyMatrix($workers, $weekAttendances, $weekDays);
+
+        return view('workers.attendance.index', compact(
+            'weekStart',
+            'weekEnd',
+            'weekDays',
+            'matrixData',
+            'metrics',
+            'activeWorkers',
+            'activeProjects',
+            'search',
+            'workerFilter',
+            'projectFilter'
+        ))->with('viewMode', 'week');
+    }
+
+    /**
+     * Compute weekly worker matrix data and aggregate metrics.
+     */
+    protected function buildWeeklyMatrix($workers, $weekAttendances, array $weekDays): array
+    {
         $matrixData = [];
-        $weeklyTotalShifts = 0;
-        $weeklyTotalCabling = 0;
+        $weeklyTotalShifts = 0.0;
+        $weeklyTotalCabling = 0.0;
         $weeklyTotalCameras = 0;
-        $weeklyTotalWages = 0;
+        $weeklyTotalWages = 0.0;
+
+        $attendancesByWorker = $weekAttendances->groupBy('worker_id');
 
         foreach ($workers as $w) {
-            $workerAtts = $weekAttendances->where('worker_id', $w->id);
+            $workerAtts = $attendancesByWorker->get($w->id, collect());
             $dayMap = [];
-            $wShifts = 0;
-            $wCabling = 0;
+            $wShifts = 0.0;
+            $wCabling = 0.0;
             $wCameras = 0;
-            $wWages = 0;
+            $wWages = 0.0;
+
+            $attsByDate = [];
+            foreach ($workerAtts as $att) {
+                $rawDate = $att->work_date;
+                $dateKey = is_string($rawDate) ? substr($rawDate, 0, 10) : (is_object($rawDate) && method_exists($rawDate, 'toDateString') ? $rawDate->toDateString() : (string) $rawDate);
+                $attsByDate[$dateKey] = $att;
+            }
 
             foreach ($weekDays as $wd) {
-                $attForDay = $workerAtts->first(function ($att) use ($wd) {
-                    $workDate = is_string($att->work_date) ? substr($att->work_date, 0, 10) : $att->work_date->toDateString();
-                    return $workDate === $wd['date'];
-                });
+                $targetDate = $wd['date'];
+                $attForDay = $attsByDate[$targetDate] ?? null;
 
                 if ($attForDay) {
-                    $dayMap[$wd['date']] = $attForDay;
+                    $dayMap[$targetDate] = $attForDay;
                     $wShifts += ($attForDay->attendance_type === 'half' ? 0.5 : 1.0);
                     $wCabling += (float) $attForDay->cabling_metres;
                     $wCameras += (int) $attForDay->cameras_installed;
                     $wWages += (float) $attForDay->total_amount;
                 } else {
-                    $dayMap[$wd['date']] = null;
+                    $dayMap[$targetDate] = null;
                 }
             }
 
-            // Only include in matrix if active or has worked this week
             if ($w->is_active || $wShifts > 0) {
                 $matrixData[] = [
                     'worker' => $w,
@@ -256,30 +293,22 @@ class WorkerAttendanceController extends Controller
             'workers_count' => count($matrixData),
         ];
 
-        return view('workers.attendance.index', compact(
-            'weekStart',
-            'weekEnd',
-            'weekDays',
-            'matrixData',
-            'metrics',
-            'activeWorkers',
-            'activeProjects',
-            'search',
-            'workerFilter',
-            'projectFilter'
-        ))->with('viewMode', 'week');
+        return [$matrixData, $metrics];
     }
 
     /**
      * Per-Month Attendance Summary & Timesheet.
+     *
+     * @param Collection<int, Worker> $activeWorkers
+     * @param Collection<int, Project> $activeProjects
      */
     protected function renderMonthView(
         Request $request,
-        $activeWorkers,
-        $activeProjects,
+        Collection $activeWorkers,
+        Collection $activeProjects,
         string $search,
-        $workerFilter,
-        $projectFilter
+        mixed $workerFilter,
+        mixed $projectFilter
     ): View {
         $monthParam = $request->input('month');
         try {
@@ -326,13 +355,35 @@ class WorkerAttendanceController extends Controller
             $allWorkersInSystem = $allWorkersInSystem->where('id', (int) $workerFilter);
         }
 
-        $monthTotalShifts = 0;
-        $monthTotalCabling = 0;
-        $monthTotalCameras = 0;
-        $monthTotalGross = 0;
-        $monthTotalPaid = 0;
+        [$workerSummary, $metrics] = $this->buildMonthlySummary($allWorkersInSystem, $groupedByWorker);
 
-        foreach ($allWorkersInSystem as $w) {
+        return view('workers.attendance.index', compact(
+            'selectedMonth',
+            'monthStart',
+            'monthEnd',
+            'workerSummary',
+            'metrics',
+            'activeWorkers',
+            'activeProjects',
+            'search',
+            'workerFilter',
+            'projectFilter'
+        ))->with('viewMode', 'month');
+    }
+
+    /**
+     * Compute monthly worker summaries and aggregate metrics.
+     */
+    protected function buildMonthlySummary($workers, $groupedByWorker): array
+    {
+        $workerSummary = [];
+        $monthTotalShifts = 0.0;
+        $monthTotalCabling = 0.0;
+        $monthTotalCameras = 0;
+        $monthTotalGross = 0.0;
+        $monthTotalPaid = 0.0;
+
+        foreach ($workers as $w) {
             $wAtts = $groupedByWorker->get($w->id, collect());
 
             if ($wAtts->isEmpty() && !$w->is_active) {
@@ -378,18 +429,7 @@ class WorkerAttendanceController extends Controller
             'active_workers' => count($workerSummary),
         ];
 
-        return view('workers.attendance.index', compact(
-            'selectedMonth',
-            'monthStart',
-            'monthEnd',
-            'workerSummary',
-            'metrics',
-            'activeWorkers',
-            'activeProjects',
-            'search',
-            'workerFilter',
-            'projectFilter'
-        ))->with('viewMode', 'month');
+        return [$workerSummary, $metrics];
     }
 
     /**

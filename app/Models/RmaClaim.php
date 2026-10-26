@@ -8,6 +8,16 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property int $id
+ * @property string $rma_no
+ * @property string $status
+ * @property string $fault_category
+ * @property \Carbon\Carbon|null $dispatched_date
+ * @property \Carbon\Carbon|null $expected_return_date
+ * @property \Carbon\Carbon|null $received_from_vendor_date
+ * @property \Carbon\Carbon|null $replacement_warranty_expiry
+ */
 class RmaClaim extends Model
 {
     use HasFactory;

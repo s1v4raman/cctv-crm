@@ -95,7 +95,7 @@
                         </span>
                         <a href="{{ route('workers.attendance.index', array_merge(request()->query(), ['view' => 'week', 'week' => $nextWeek])) }}" class="btn-secondary py-1 px-2.5 text-xs">Next Week &rarr;</a>
                         @if(!$isCurrentWeek)
-                            <a href="{{ route('workers.attendance.index', array_merge(request()->query(), ['view' => 'week', 'week' => now()->startOfWeek(\Carbon\Carbon::MONDAY)->toDateString()])) }}" class="btn-secondary py-1 px-2 text-[11px]">Current Week</a>
+                            <a href="{{ route('workers.attendance.index', array_merge(request()->query(), ['view' => 'week', 'week' => now()->startOfWeek(\Carbon\Constants\UnitValue::MONDAY)->toDateString()])) }}" class="btn-secondary py-1 px-2 text-[11px]">Current Week</a>
                         @endif
                     @else
                         @php

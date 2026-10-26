@@ -114,7 +114,7 @@ class PettyCashService
         $result = [];
         $today = Carbon::today()->toDateString();
 
-        /** @var \App\Models\PettyCashAccount $acc */
+        /** @var PettyCashAccount $acc */
         foreach ($accounts as $acc) {
             $latestTx = $acc->transactions->first();
             $latestReconciliation = DailyCashReconciliation::where('petty_cash_account_id', $acc->id)

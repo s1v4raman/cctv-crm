@@ -10,7 +10,7 @@
                     {{ $nextCode }}
                 </span>
             </div>
-            <span class="text-xs text-slate-400">4-Step Guided Setup</span>
+            <span class="text-xs text-slate-400">3-Step Guided Setup</span>
         </div>
     </x-slot>
 
@@ -29,7 +29,7 @@
 
     <div class="py-6 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto"
          x-data="{
-             step: {{ (int) old('current_step', request('step', session('new_technician_id') ? 2 : ($errors->any() ? 4 : ($preselectedSite ? 2 : 1)))) }},
+             step: {{ (int) old('current_step', request('step', session('new_technician_id') ? 2 : ($errors->any() ? 3 : ($preselectedSite ? 2 : 1)))) }},
              selectedSite: @json($preselectedSite),
              siteSearch: '',
              siteResults: [],
@@ -38,7 +38,7 @@
              
              goStep(targetStep) {
                  const s = parseInt(targetStep, 10);
-                 if (!isNaN(s) && s >= 1 && s <= 4) {
+                 if (!isNaN(s) && s >= 1 && s <= 3) {
                      this.step = s;
                  }
              },
@@ -243,7 +243,7 @@
              },
 
              addMaterialRow() {
-                 this.materials.push({ item_name: '', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: '' });
+                 this.materials.push({ item_name: '', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: '', is_custom: true });
              },
              removeMaterialRow(index) {
                  this.materials.splice(index, 1);
@@ -361,12 +361,11 @@
             Draft saved successfully.
         </div>
 
-        {{-- Plain text step line ("Step 2 of 4: Project Info") --}}
+        {{-- Plain text step line ("Step 2 of 3: Project Info") --}}
         <div class="mb-5 text-sm font-semibold text-slate-700 dark:text-slate-300">
-            <span x-show="step === 1">Step 1 of 4: Site Selection</span>
-            <span x-show="step === 2">Step 2 of 4: Project Info</span>
-            <span x-show="step === 3">Step 3 of 4: Scope &amp; Requirements</span>
-            <span x-show="step === 4">Step 4 of 4: Materials BOM</span>
+            <span x-show="step === 1">Step 1 of 3: Site Selection</span>
+            <span x-show="step === 2">Step 2 of 3: Project Info</span>
+            <span x-show="step === 3">Step 3 of 3: Materials BOM</span>
         </div>
 
         <form id="projectWizardForm" method="POST" action="{{ route('projects.store') }}">
@@ -550,247 +549,9 @@
             </div>
 
             {{-- ════════════════════════════════════════════════════════════════ --}}
-            {{-- STEP 3: REQUIREMENTS CHECKLIST                                   --}}
+            {{-- STEP 3: MATERIALS BILL OF MATERIALS (BOM) & SUBMISSION            --}}
             {{-- ════════════════════════════════════════════════════════════════ --}}
             <div x-show="step === 3" x-cloak class="space-y-6">
-                <div class="p-6 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-5">
-                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-slate-200/80 dark:border-slate-800">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/80 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
-                            </div>
-                            <div>
-                                <h3 class="font-extrabold text-slate-900 dark:text-white text-base leading-tight">Step 3: Technical Requirements &amp; Scope</h3>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Customized technical fields tailored for this project specification</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800">
-                                Mode: <strong x-text="templates[project_type]?.nameSuffix || project_type"></strong>
-                            </span>
-                            <button type="button" @click="applyTemplate(project_type)" class="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline">
-                                ↺ Reset Template
-                            </button>
-                        </div>
-                    </div>
-
-                    {{-- 1. HARDWARE CCTV --}}
-                    <div x-show="project_type === 'hardware_cctv'" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">CCTV Cameras Count</label>
-                            <input type="number" name="requirements[cctv_count]" x-model="req.cctv_count" min="0" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold font-mono outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">NVR / DVR Channels</label>
-                            <select name="requirements[nvr_channels]" x-model="req.nvr_channels" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
-                                <option value="4">4-Channel</option>
-                                <option value="8">8-Channel</option>
-                                <option value="16">16-Channel</option>
-                                <option value="32">32-Channel</option>
-                                <option value="64">64-Channel</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Est. Cabling Metres</label>
-                            <input type="number" name="requirements[cabling_metres]" x-model="req.cabling_metres" min="0" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold font-mono outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Power Supply Type</label>
-                            <input type="text" name="requirements[power_supply]" x-model="req.power_supply" placeholder="e.g. 8-Port PoE Switch" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Display Monitor / TV</label>
-                            <input type="text" name="requirements[display_screen]" x-model="req.display_screen" placeholder="e.g. 32-inch Full HD LED" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Storage HDD Capacity</label>
-                            <input type="text" name="requirements[storage_hdd]" x-model="req.storage_hdd" placeholder="e.g. 4TB Surveillance SATA HDD" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
-                        </div>
-                    </div>
-
-                    {{-- 2. NETWORKING & WI-FI --}}
-                    <div x-show="project_type === 'networking'" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Network Data Drop Points</label>
-                            <input type="number" name="requirements[network_drops]" x-model="req.network_drops" min="0" placeholder="e.g. 24" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold font-mono outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Wi-Fi Access Points (APs)</label>
-                            <input type="number" name="requirements[wifi_aps]" x-model="req.wifi_aps" min="0" placeholder="e.g. 3" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold font-mono outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Server / Network Rack Size</label>
-                            <input type="text" name="requirements[rack_size]" x-model="req.rack_size" placeholder="e.g. 9U Wall Mount Server Rack" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Switch Specification</label>
-                            <input type="text" name="requirements[switch_spec]" x-model="req.switch_spec" placeholder="e.g. 24-Port Gigabit Managed PoE+ Switch" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Est. Structured Cabling (m)</label>
-                            <input type="number" name="requirements[cabling_metres]" x-model="req.cabling_metres" min="0" placeholder="e.g. 450" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold font-mono outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Router / Firewall Gateway</label>
-                            <input type="text" name="requirements[router_gateway]" x-model="req.router_gateway" placeholder="e.g. Dual-WAN Gigabit Security Router" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
-                        </div>
-                    </div>
-
-                    {{-- 3. SOFTWARE & WEB APPLICATION --}}
-                    <div x-show="project_type === 'software_web'" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Application Architecture</label>
-                            <input type="text" name="requirements[app_architecture]" x-model="req.app_architecture" placeholder="e.g. Full-Stack Responsive Web App" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Primary Tech Stack</label>
-                            <input type="text" name="requirements[tech_stack]" x-model="req.tech_stack" placeholder="e.g. PHP Laravel + Tailwind + MySQL" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Cloud Hosting Infrastructure</label>
-                            <input type="text" name="requirements[hosting_infra]" x-model="req.hosting_infra" placeholder="e.g. Cloud VPS (Ubuntu / Nginx / SSL)" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
-                        </div>
-                        <div class="sm:col-span-2">
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Core Modules &amp; Functional Scope</label>
-                            <input type="text" name="requirements[core_modules]" x-model="req.core_modules" placeholder="e.g. Auth, Role Permissions, CRM, Billing & REST API" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Domain &amp; SSL Configuration</label>
-                            <input type="text" name="requirements[domain_ssl]" x-model="req.domain_ssl" placeholder="e.g. Custom Domain + Cloudflare Wildcard SSL" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
-                        </div>
-                    </div>
-
-                    {{-- 4. BIOMETRIC ACCESS CONTROL --}}
-                    <div x-show="project_type === 'access_control'" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Controlled Doors Count</label>
-                            <input type="number" name="requirements[doors_count]" x-model="req.doors_count" min="1" placeholder="e.g. 2" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold font-mono outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Authentication Method</label>
-                            <input type="text" name="requirements[auth_method]" x-model="req.auth_method" placeholder="e.g. Face Recognition + Fingerprint + Card" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Lock Hardware Type</label>
-                            <input type="text" name="requirements[lock_type]" x-model="req.lock_type" placeholder="e.g. 600lbs Electromagnetic (EM) Lock" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Exit Device Sensor</label>
-                            <input type="text" name="requirements[exit_device]" x-model="req.exit_device" placeholder="e.g. No-Touch Infrared Exit Sensor Switch" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Controller Hardware</label>
-                            <input type="text" name="requirements[controller_type]" x-model="req.controller_type" placeholder="e.g. Standalone IP Biometric Terminal" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Battery Power Backup</label>
-                            <input type="text" name="requirements[power_backup]" x-model="req.power_backup" placeholder="e.g. 12V 5A Supply with 7Ah Battery" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
-                        </div>
-                    </div>
-
-                    {{-- 5. TERMINAL ATTENDANCE --}}
-                    <div x-show="project_type === 'hardware_attendance'" class="space-y-4">
-                        <div class="p-4 rounded-xl bg-purple-50/50 dark:bg-purple-950/20 border border-purple-200/70 dark:border-purple-800/40">
-                            <h4 class="text-xs font-bold text-purple-700 dark:text-purple-300 uppercase tracking-wider mb-3 flex items-center gap-1.5">
-                                <span>⏱ Terminal Camera &amp; Hardware Parameters</span>
-                            </h4>
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                                <div>
-                                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Attendance Terminals Count</label>
-                                    <input type="number" min="0" name="hardware_specs[terminal_count]" x-model="hardware_specs.terminal_count" placeholder="e.g. 2" class="w-full px-3.5 py-2 text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold font-mono outline-none">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Integrated Cameras Count</label>
-                                    <input type="number" min="0" name="hardware_specs[camera_count]" x-model="hardware_specs.camera_count" placeholder="e.g. 4" class="w-full px-3.5 py-2 text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold font-mono outline-none">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Device Brand / Model</label>
-                                    <input type="text" name="hardware_specs[device_brand]" x-model="hardware_specs.device_brand" placeholder="e.g. Hikvision MinMoe / ZKTeco" class="w-full px-3.5 py-2 text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Terminal IP Subnet / Network</label>
-                                    <input type="text" name="hardware_specs[terminal_ip]" x-model="hardware_specs.terminal_ip" placeholder="e.g. 192.168.1.50 - 192.168.1.55" class="w-full px-3.5 py-2 text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono outline-none">
-                                </div>
-                                <div class="sm:col-span-2">
-                                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Attendance Verification Method</label>
-                                    <select name="hardware_specs[attendance_sync_mode]" x-model="hardware_specs.attendance_sync_mode" class="w-full px-3.5 py-2 text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
-                                        <option value="face_recognition">AI Facial Recognition Camera Terminal</option>
-                                        <option value="biometric_fingerprint">Biometric Optical Fingerprint Reader</option>
-                                        <option value="rfid_card">RFID Proximity Card / Keyfob Terminal</option>
-                                        <option value="hybrid_multi">Multi-Modal (Face + Fingerprint + Card)</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <div>
-                                <label class="block text-xs font-bold uppercase text-slate-500 mb-1">User / Employee Capacity</label>
-                                <input type="number" name="requirements[terminal_users]" x-model="req.terminal_users" min="0" placeholder="e.g. 500" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold font-mono outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Communication Protocol</label>
-                                <input type="text" name="requirements[communication]" x-model="req.communication" placeholder="e.g. TCP/IP Ethernet + Wi-Fi + USB" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold uppercase text-slate-500 mb-1">HRMS / Payroll Sync Software</label>
-                                <input type="text" name="requirements[hrms_software]" x-model="req.hrms_software" placeholder="e.g. Desktop HRMS + Automated Excel Sync" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Mounting Location</label>
-                                <input type="text" name="requirements[mounting_location]" x-model="req.mounting_location" placeholder="e.g. Main Reception / Turnstile Gate" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
-                            </div>
-                            <div class="sm:col-span-2">
-                                <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Power / Backup Type</label>
-                                <input type="text" name="requirements[power_battery]" x-model="req.power_battery" placeholder="e.g. Inbuilt Rechargeable Lithium Backup Battery" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- 6. HYBRID (HARDWARE + SOFTWARE) --}}
-                    <div x-show="project_type === 'hybrid'" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Hardware Endpoints Count</label>
-                            <input type="number" name="requirements[hardware_endpoints]" x-model="req.hardware_endpoints" min="0" placeholder="e.g. 16" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold font-mono outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Software Platform</label>
-                            <input type="text" name="requirements[software_platform]" x-model="req.software_platform" placeholder="e.g. Central Web Dashboard & Mobile Alert App" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">IoT Edge Gateway</label>
-                            <input type="text" name="requirements[edge_gateway]" x-model="req.edge_gateway" placeholder="e.g. Edge IoT Controller Unit" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Central Storage Server</label>
-                            <input type="text" name="requirements[server_storage]" x-model="req.server_storage" placeholder="e.g. On-Premises High Availability Micro-Server" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
-                        </div>
-                        <div class="sm:col-span-2">
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Alert Channels &amp; Automation</label>
-                            <input type="text" name="requirements[alert_channels]" x-model="req.alert_channels" placeholder="e.g. Real-Time WhatsApp, Email & SMS Alerts" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
-                        </div>
-                    </div>
-
-                    {{-- Common Special Instructions Textarea --}}
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Client Special Instructions &amp; Project Scope Details</label>
-                        <textarea name="requirements[special_requirements]" x-model="req.special_requirements" rows="2" placeholder="e.g. Special milestones, deployment instructions, site-specific access notes..." class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none"></textarea>
-                    </div>
-                </div>
-
-                <div class="flex items-center justify-between">
-                    <button type="button" @click="step = 2" class="btn-secondary text-sm">Back</button>
-                    <div class="flex items-center gap-2">
-                        <button type="button" @click="saveDraft()" class="btn-secondary text-sm">Save Draft</button>
-                        <button type="button" @click="step = 4" class="btn-primary text-sm px-6 py-2.5">Next</button>
-                    </div>
-                </div>
-            </div>
-
-            {{-- ════════════════════════════════════════════════════════════════ --}}
-            {{-- STEP 4: MATERIALS BILL OF MATERIALS (BOM) & SUBMISSION            --}}
-            {{-- ════════════════════════════════════════════════════════════════ --}}
-            <div x-show="step === 4" x-cloak class="space-y-6">
                 <div class="p-4 sm:p-6 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200/80 dark:border-slate-800">
                         <div class="flex items-center gap-3">
@@ -798,7 +559,7 @@
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
                             </div>
                             <div>
-                                <h3 class="font-extrabold text-slate-900 dark:text-white text-base leading-tight">Step 4: Bill of Materials (BOM)</h3>
+                                <h3 class="font-extrabold text-slate-900 dark:text-white text-base leading-tight">Step 3: Bill of Materials (BOM)</h3>
                                 <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Specify hardware line items and whether sourced from warehouse or local purchase</p>
                             </div>
                         </div>
@@ -845,7 +606,7 @@
                                                    required
                                                    placeholder="Item description"
                                                    class="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none">
-                                            <div x-show="isNewProduct(mat.item_name)" x-cloak class="text-[11px] text-slate-400 dark:text-slate-500 mt-1 font-medium">
+                                            <div x-show="mat.is_custom && isNewProduct(mat.item_name)" x-cloak class="text-[11px] text-slate-400 dark:text-slate-500 mt-1 font-medium">
                                                 New item. Will be saved for next time.
                                             </div>
                                         </td>
@@ -875,7 +636,7 @@
                                                    list="bom-vendors-list"
                                                    placeholder="Shop name if local"
                                                    class="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none">
-                                            <div x-show="mat.source === 'local_purchase' && isNewVendor(mat.shop_name)" x-cloak class="text-[11px] text-slate-400 dark:text-slate-500 mt-1 font-medium">
+                                            <div x-show="mat.is_custom && mat.source === 'local_purchase' && isNewVendor(mat.shop_name)" x-cloak class="text-[11px] text-slate-400 dark:text-slate-500 mt-1 font-medium">
                                                 New item. Will be saved for next time.
                                             </div>
                                         </td>
@@ -890,8 +651,8 @@
                 </div>
 
                 {{-- Submission Actions --}}
-                <div class="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-slate-800">
-                    <button type="button" @click="step = 3" class="btn-secondary text-sm">Back</button>
+                <div class="flex items-center justify-between pt-4">
+                    <button type="button" @click="step = 2" class="btn-secondary text-sm">Back</button>
 
                     <div class="flex items-center gap-2">
                         <button type="button" @click="saveDraft()" class="btn-secondary text-sm">

@@ -86,7 +86,7 @@ class CalendarController extends Controller
 
             $this->applyTaskFilters($overallTasksQuery, $filters, false);
 
-            $overallTasks = $overallTasksQuery->get()->map(function ($task) {
+            $overallTasks = $overallTasksQuery->get()->map(function (ProjectTask $task) {
                 return $this->formatTaskForStaff($task);
             });
         }
@@ -99,7 +99,7 @@ class CalendarController extends Controller
 
         $this->applyTaskFilters($myTasksQuery, $filters, true);
 
-        $myTasks = $myTasksQuery->get()->map(function ($task) use ($isWorker) {
+        $myTasks = $myTasksQuery->get()->map(function (ProjectTask $task) use ($isWorker) {
             return $isWorker ? $this->sanitizeTaskForWorker($task) : $this->formatTaskForStaff($task);
         });
 

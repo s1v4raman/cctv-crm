@@ -5,6 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property string $ticket_no
+ * @property string $status
+ * @property int|null $assigned_technician_id
+ * @property string|null $resolution_notes
+ * @property \Carbon\Carbon|null $scheduled_date
+ * @property \Carbon\Carbon|null $resolved_at
+ * @property \Carbon\Carbon|null $closed_at
+ */
 class ServiceTicket extends Model
 {
     protected $fillable = [

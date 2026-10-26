@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Project;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -9,6 +11,29 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property int $id
+ * @property int $project_id
+ * @property string $title
+ * @property string|null $description
+ * @property string|null $phase_name
+ * @property string|null $shift
+ * @property string|null $location
+ * @property Carbon|null $start_date
+ * @property Carbon|null $due_date
+ * @property float|null $estimated_hours
+ * @property float|null $actual_hours
+ * @property string $status
+ * @property string $priority
+ * @property int|null $assigned_to
+ * @property Carbon|null $accepted_at
+ * @property Carbon|null $rejected_at
+ * @property int|null $rejected_by
+ * @property string|null $rejection_reason
+ * @property-read Project|null $project
+ * @property-read User|null $assignedUser
+ * @property-read User|null $rejectedByUser
+ */
 class ProjectTask extends Model
 {
     use HasFactory;

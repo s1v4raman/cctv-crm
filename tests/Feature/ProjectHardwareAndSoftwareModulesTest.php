@@ -259,7 +259,7 @@ class ProjectHardwareAndSoftwareModulesTest extends TestCase
             'budget' => 50000,
         ]);
 
-        $technician = \App\Models\User::factory()->create([
+        $technician = User::factory()->create([
             'role' => 'technician',
             'name' => 'Ravi Kumar',
             'email' => 'ravi.technician@example.com',

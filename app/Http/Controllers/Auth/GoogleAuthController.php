@@ -39,7 +39,10 @@ class GoogleAuthController extends Controller
             'oauth_mode'   => $mode,
         ]);
 
-        return Socialite::driver('google')
+        /** @var \Laravel\Socialite\Two\AbstractProvider $driver */
+        $driver = Socialite::driver('google');
+
+        return $driver
             ->with(['prompt' => 'select_account'])
             ->redirect();
     }
