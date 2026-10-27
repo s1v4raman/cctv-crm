@@ -9,6 +9,7 @@ use App\Models\ProjectAuditLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ProjectDocumentController extends Controller
@@ -195,7 +196,10 @@ class ProjectDocumentController extends Controller
             }
         }
 
-        return Storage::disk($disk)->download($document->file_path, $document->file_name);
+        /** @var FilesystemAdapter $storage */
+        $storage = Storage::disk($disk);
+
+        return $storage->download($document->file_path, $document->file_name);
     }
 
     /**
@@ -213,7 +217,10 @@ class ProjectDocumentController extends Controller
             }
         }
 
-        return Storage::disk($disk)->response($document->file_path, $document->file_name);
+        /** @var FilesystemAdapter $storage */
+        $storage = Storage::disk($disk);
+
+        return $storage->response($document->file_path, $document->file_name);
     }
 
     /**

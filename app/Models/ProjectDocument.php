@@ -96,9 +96,13 @@ class ProjectDocument extends Model
 
         // Try R2 if configured, else public
         if (config('filesystems.disks.r2.bucket') && Storage::disk('r2')->exists($this->file_path)) {
-            return Storage::disk('r2')->url($this->file_path);
+            /** @var \Illuminate\Filesystem\FilesystemAdapter $r2Disk */
+            $r2Disk = Storage::disk('r2');
+            return $r2Disk->url($this->file_path);
         }
 
-        return Storage::disk('public')->url($this->file_path);
+        /** @var \Illuminate\Filesystem\FilesystemAdapter $publicDisk */
+        $publicDisk = Storage::disk('public');
+        return $publicDisk->url($this->file_path);
     }
 }

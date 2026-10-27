@@ -54,7 +54,7 @@ class GstComplianceService
         $totalOutputIgst = 0.0;
         $totalOutputTax = 0.0;
 
-        /** @var \App\Models\Invoice $inv */
+        /** @var Invoice $inv */
         foreach ($invoices as $inv) {
             $lead = $inv->quotation?->lead;
             $customerGstin = trim((string) ($lead?->gstin ?? ''));
@@ -92,7 +92,7 @@ class GstComplianceService
                 $b2bInvoices[] = [
                     'invoice_id'     => $inv->id,
                     'invoice_no'     => $inv->invoice_no,
-                    'invoice_date'   => $inv->invoice_date?->format('d-m-Y'),
+                    'invoice_date'   => $inv->invoice_date ? Carbon::parse($inv->invoice_date)->format('d-m-Y') : null,
                     'customer_name'  => $lead?->company_legal_name ?: ($lead?->customer_name ?: 'B2B Client'),
                     'customer_gstin' => $customerGstin ?: 'Unspecified GSTIN',
                     'pos_state'      => $posState,
@@ -114,7 +114,7 @@ class GstComplianceService
                     $b2cLargeInvoices[] = [
                         'invoice_id'     => $inv->id,
                         'invoice_no'     => $inv->invoice_no,
-                        'invoice_date'   => $inv->invoice_date?->format('d-m-Y'),
+                        'invoice_date'   => $inv->invoice_date ? Carbon::parse($inv->invoice_date)->format('d-m-Y') : null,
                         'customer_name'  => $lead?->customer_name ?: 'Retail Customer',
                         'pos_state'      => $posState,
                         'pos_code'       => $posCode,

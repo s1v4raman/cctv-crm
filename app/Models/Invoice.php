@@ -5,6 +5,27 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property int $id
+ * @property string|null $invoice_no
+ * @property Carbon|null $invoice_date
+ * @property Carbon|null $due_date
+ * @property float|string|null $subtotal
+ * @property float|string|null $discount
+ * @property float|string|null $tax_percent
+ * @property float|string|null $tax_amount
+ * @property string|null $place_of_supply
+ * @property string|null $place_of_supply_code
+ * @property bool $is_b2b
+ * @property bool $is_reverse_charge
+ * @property float|string|null $cgst_amount
+ * @property float|string|null $sgst_amount
+ * @property float|string|null $igst_amount
+ * @property float|string|null $total
+ * @property float|string|null $amount_paid
+ * @property string $status
+ * @property string|null $notes
+ */
 class Invoice extends Model
 {
     protected $fillable = [

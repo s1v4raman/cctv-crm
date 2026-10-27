@@ -158,10 +158,13 @@
             color: #ffffff !important;
         }
 
-        html:not(.dark) .google-btn,
-        html:not(.dark) .google-btn span { 
+        /* Google Workspace button in Light Mode */
+        html:not(.dark) .google-btn { 
             background: #ffffff !important; 
             border: 1.5px solid #cbd5e1 !important; 
+        }
+        html:not(.dark) .google-btn,
+        html:not(.dark) .google-btn span { 
             color: #0f172a !important; 
             font-weight: 600 !important; 
         }

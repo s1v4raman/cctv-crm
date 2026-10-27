@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Models\WorkDay;
 use App\Models\Worker;
 use Carbon\Carbon;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -64,6 +65,13 @@ class WorkerAttendanceMaintenanceTest extends TestCase
         $this->today = Carbon::parse('2026-10-26');
     }
 
+    protected function publicDisk(): FilesystemAdapter
+    {
+        /** @var FilesystemAdapter $disk */
+        $disk = Storage::disk('public');
+        return $disk;
+    }
+
     public function test_worker_profile_photo_upload_and_update(): void
     {
         // 1. Create worker with uploaded photo
@@ -80,7 +88,7 @@ class WorkerAttendanceMaintenanceTest extends TestCase
         $response->assertRedirect();
         $createdWorker = Worker::where('phone', '9123456780')->firstOrFail();
         $this->assertNotNull($createdWorker->photo_path);
-        Storage::disk('public')->assertExists($createdWorker->photo_path);
+        $this->publicDisk()->assertExists($createdWorker->photo_path);
         $this->assertNotNull($createdWorker->photo_url);
         $this->assertTrue(str_contains($createdWorker->photo_url, 'worker-photos/') || str_contains($createdWorker->photo_url, 'storage/'));
 
@@ -99,8 +107,8 @@ class WorkerAttendanceMaintenanceTest extends TestCase
         $updateResponse->assertRedirect();
         $createdWorker->refresh();
         $this->assertNotEquals($oldPath, $createdWorker->photo_path);
-        Storage::disk('public')->assertExists($createdWorker->photo_path);
-        Storage::disk('public')->assertMissing($oldPath);
+        $this->publicDisk()->assertExists($createdWorker->photo_path);
+        $this->publicDisk()->assertMissing($oldPath);
 
         // 3. Remove photo
         $this->actingAs($this->admin)->put(route('workers.update', $createdWorker), [
@@ -139,7 +147,7 @@ class WorkerAttendanceMaintenanceTest extends TestCase
         $this->assertEquals(120.5, (float) $attendance->cabling_metres);
         $this->assertEquals(6, $attendance->cameras_installed);
         $this->assertNotNull($attendance->photo_path);
-        Storage::disk('public')->assertExists($attendance->photo_path);
+        $this->publicDisk()->assertExists($attendance->photo_path);
 
         // Base Pay = 1000.00, Cabling Amount = 120.5 * 10 = 1205.00, Extra = 200.00 => Total = 2405.00
         $this->assertEquals(2405.00, (float) $attendance->total_amount);
@@ -253,13 +261,13 @@ class WorkerAttendanceMaintenanceTest extends TestCase
             'is_paid' => false,
         ]);
 
-        Storage::disk('public')->assertExists($storedPath);
+        $this->publicDisk()->assertExists($storedPath);
 
         $response = $this->actingAs($this->admin)->delete(route('workers.attendance.destroy', $attendance));
 
         $response->assertRedirect();
         $this->assertDatabaseMissing('project_worker_attendances', ['id' => $attendance->id]);
-        Storage::disk('public')->assertMissing($storedPath);
+        $this->publicDisk()->assertMissing($storedPath);
     }
 
     public function test_cross_server_photo_fallback_restores_image_from_database(): void
@@ -277,20 +285,20 @@ class WorkerAttendanceMaintenanceTest extends TestCase
         ]);
 
         // Verify file is missing from local disk
-        Storage::disk('public')->assertMissing('attendance_photos/attendance_test_missing_on_local.jpg');
+        $this->publicDisk()->assertMissing('attendance_photos/attendance_test_missing_on_local.jpg');
 
         // Requesting via streamPhoto endpoint should succeed, serve image, and cache to local disk
         $response = $this->get(route('workers.attendance.photo', $attendance));
         $response->assertOk();
         $response->assertHeader('Content-Type', 'image/jpeg');
         $this->assertEquals('fake-image-bytes-from-render', $response->getContent());
-        Storage::disk('public')->assertExists('attendance_photos/attendance_test_missing_on_local.jpg');
+        $this->publicDisk()->assertExists('attendance_photos/attendance_test_missing_on_local.jpg');
 
         // Delete disk file again to test storage fallback route
-        Storage::disk('public')->delete('attendance_photos/attendance_test_missing_on_local.jpg');
+        $this->publicDisk()->delete('attendance_photos/attendance_test_missing_on_local.jpg');
         $storageFallbackResponse = $this->get('/storage/attendance_photos/attendance_test_missing_on_local.jpg');
         $storageFallbackResponse->assertOk();
         $this->assertEquals('fake-image-bytes-from-render', $storageFallbackResponse->getContent());
-        Storage::disk('public')->assertExists('attendance_photos/attendance_test_missing_on_local.jpg');
+        $this->publicDisk()->assertExists('attendance_photos/attendance_test_missing_on_local.jpg');
     }
 }

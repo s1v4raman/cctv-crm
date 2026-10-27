@@ -202,6 +202,7 @@ class LeaveRequestController extends Controller
                 $attendanceStatus = $leave->is_half_day ? 'half_day' : 'on_leave';
                 $sessionNote = $leave->is_half_day ? " [{$leave->half_day_session} session]" : '';
 
+                /** @var EmployeeAttendance|null $existingAttendance */
                 $existingAttendance = EmployeeAttendance::where('user_id', $leave->user_id)
                     ->whereDate('date', $date->toDateString())
                     ->first();
