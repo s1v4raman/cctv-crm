@@ -531,6 +531,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
             $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('docs.data_flow_pdf');
             return $pdf->stream('CCTV_CRM_Module_Data_Flow_Diagram.pdf');
         })->name('docs.data-flow-pdf');
+
+        // Admin to Technician Workflow Guide PDF
+        Route::get('/docs/admin-technician-workflow', function () {
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('docs.admin_technician_workflow_pdf');
+            $pdf->setPaper('a4', 'portrait');
+            return $pdf->stream('Admin_to_Technician_Workflow_Guide.pdf');
+        })->name('docs.admin-technician-workflow-pdf');
     });
 
     // JCR Sign-off Wizard & Report Views (Technicians + Internal Staff)

@@ -86,7 +86,8 @@ class CalendarController extends Controller
 
             $this->applyTaskFilters($overallTasksQuery, $filters, false);
 
-            $overallTasks = $overallTasksQuery->get()->map(function (ProjectTask $task) {
+            $overallTasks = $overallTasksQuery->get()->map(function ($task) {
+                /** @var ProjectTask $task */
                 return $this->formatTaskForStaff($task);
             });
         }
@@ -99,7 +100,8 @@ class CalendarController extends Controller
 
         $this->applyTaskFilters($myTasksQuery, $filters, true);
 
-        $myTasks = $myTasksQuery->get()->map(function (ProjectTask $task) use ($isWorker) {
+        $myTasks = $myTasksQuery->get()->map(function ($task) use ($isWorker) {
+            /** @var ProjectTask $task */
             return $isWorker ? $this->sanitizeTaskForWorker($task) : $this->formatTaskForStaff($task);
         });
 
@@ -376,6 +378,10 @@ class CalendarController extends Controller
 
     /**
      * Helper to apply search and filter constraints.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<ProjectTask> $query
+     * @param array<string, string> $filters
+     * @param bool $isMyTasks
      */
     protected function applyTaskFilters($query, array $filters, bool $isMyTasks = false): void
     {

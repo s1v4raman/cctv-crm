@@ -438,10 +438,15 @@ class ProjectController extends Controller
                     $totalLaborPendingPay += $rowAmount;
                 }
 
-                $wId = $att->worker_id;
+                $wId = $att->worker_id ?: ('unknown_' . $att->id);
                 if (!isset($workerAnalysis[$wId])) {
                     $workerAnalysis[$wId] = [
-                        'worker' => $att->worker,
+                        'worker' => $att->worker ?? (object) [
+                            'id' => $att->worker_id,
+                            'name' => 'Worker #' . ($att->worker_id ?: $att->id),
+                            'daily_rate' => (float) $att->daily_rate_snapshot,
+                            'phone' => '—',
+                        ],
                         'shifts_count' => 0,
                         'man_days' => 0.0,
                         'cabling_metres' => 0.0,

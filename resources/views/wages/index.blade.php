@@ -453,11 +453,11 @@
 
             {{-- This Week's Payout & Settlement History --}}
             @if(isset($recentPayments) && $recentPayments->isNotEmpty())
-                <div class="pg-card p-5 space-y-4">
-                    <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
-                        <h3 class="font-bold text-slate-900 dark:text-white text-base flex items-center gap-2">
+                <div class="pg-card overflow-hidden">
+                    <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50/60 dark:bg-slate-800/40">
+                        <h3 class="font-bold text-slate-900 dark:text-white text-base flex items-center gap-2.5">
                             <span>This Week's Payout & Settlement History</span>
-                            <span class="px-2 py-0.5 text-xs rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-normal">
+                            <span class="px-2.5 py-0.5 text-xs rounded-full bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 font-medium border border-slate-200 dark:border-slate-700 shadow-xs">
                                 {{ $recentPayments->count() }} records
                             </span>
                         </h3>
@@ -467,51 +467,51 @@
                         <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-800 text-sm">
                             <thead class="bg-slate-50 dark:bg-slate-800/60">
                                 <tr>
-                                    <th class="px-4 py-2.5 text-left font-semibold text-slate-700 dark:text-slate-300">Date & Time</th>
-                                    <th class="px-4 py-2.5 text-left font-semibold text-slate-700 dark:text-slate-300">Worker</th>
-                                    <th class="px-4 py-2.5 text-center font-semibold text-slate-700 dark:text-slate-300">Type</th>
-                                    <th class="px-4 py-2.5 text-center font-semibold text-slate-700 dark:text-slate-300">Mode</th>
-                                    <th class="px-4 py-2.5 text-right font-semibold text-slate-700 dark:text-slate-300">Amount Paid</th>
-                                    <th class="px-4 py-2.5 text-left font-semibold text-slate-700 dark:text-slate-300">Notes / Reason</th>
-                                    <th class="px-4 py-2.5 text-left font-semibold text-slate-700 dark:text-slate-300">Settled By</th>
+                                    <th class="px-5 py-3 text-left font-semibold text-slate-700 dark:text-slate-300">Date & Time</th>
+                                    <th class="px-5 py-3 text-left font-semibold text-slate-700 dark:text-slate-300">Worker</th>
+                                    <th class="px-5 py-3 text-center font-semibold text-slate-700 dark:text-slate-300">Type</th>
+                                    <th class="px-5 py-3 text-center font-semibold text-slate-700 dark:text-slate-300">Mode</th>
+                                    <th class="px-5 py-3 text-right font-semibold text-slate-700 dark:text-slate-300">Amount Paid</th>
+                                    <th class="px-5 py-3 text-left font-semibold text-slate-700 dark:text-slate-300">Notes / Reason</th>
+                                    <th class="px-5 py-3 text-left font-semibold text-slate-700 dark:text-slate-300">Settled By</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100 dark:divide-slate-800/60 bg-white dark:bg-slate-900">
                                 @foreach($recentPayments as $p)
                                     <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
-                                        <td class="px-4 py-2.5 whitespace-nowrap text-xs font-mono text-slate-600 dark:text-slate-400">
+                                        <td class="px-5 py-3 whitespace-nowrap text-xs font-mono text-slate-600 dark:text-slate-400">
                                             {{ $p->created_at ? $p->created_at->format('d M Y, h:i A') : $p->payment_date->format('d M Y') }}
                                         </td>
-                                        <td class="px-4 py-2.5 whitespace-nowrap font-medium text-slate-900 dark:text-white">
+                                        <td class="px-5 py-3 whitespace-nowrap font-medium text-slate-900 dark:text-white">
                                             <a href="{{ route('workers.show', $p->worker_id) }}" class="hover:text-blue-600 hover:underline">
                                                 {{ $p->worker?->name ?? 'Worker #' . $p->worker_id }}
                                             </a>
                                         </td>
-                                        <td class="px-4 py-2.5 text-center whitespace-nowrap">
+                                        <td class="px-5 py-3 text-center whitespace-nowrap">
                                             @if($p->amount == 0 && (str_contains(strtolower($p->reference_notes ?? ''), 'carried forward') || str_contains(strtolower($p->reference_notes ?? ''), 'carry_forward')))
-                                                <span class="px-2 py-0.5 rounded text-xs font-semibold bg-blue-100 text-blue-800 dark:bg-blue-950/70 dark:text-blue-300">
+                                                <span class="px-2.5 py-0.5 rounded text-xs font-semibold bg-blue-100 text-blue-800 dark:bg-blue-950/70 dark:text-blue-300">
                                                     Carry Forward
                                                 </span>
                                             @elseif($p->payment_type === 'advance')
-                                                <span class="px-2 py-0.5 rounded text-xs font-semibold bg-amber-100 text-amber-800 dark:bg-amber-950/70 dark:text-amber-300">
+                                                <span class="px-2.5 py-0.5 rounded text-xs font-semibold bg-amber-100 text-amber-800 dark:bg-amber-950/70 dark:text-amber-300">
                                                     Advance
                                                 </span>
                                             @else
-                                                <span class="px-2 py-0.5 rounded text-xs font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-300">
+                                                <span class="px-2.5 py-0.5 rounded text-xs font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-300">
                                                     Wage Payout
                                                 </span>
                                             @endif
                                         </td>
-                                        <td class="px-4 py-2.5 text-center whitespace-nowrap uppercase text-xs font-semibold text-slate-600 dark:text-slate-400">
+                                        <td class="px-5 py-3 text-center whitespace-nowrap uppercase text-xs font-semibold text-slate-600 dark:text-slate-400">
                                             {{ $p->payment_mode ?? 'cash' }}
                                         </td>
-                                        <td class="px-4 py-2.5 text-right whitespace-nowrap font-mono font-bold {{ $p->amount > 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400' }}">
+                                        <td class="px-5 py-3 text-right whitespace-nowrap font-mono font-bold {{ $p->amount > 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400' }}">
                                             ₹{{ number_format($p->amount, 2) }}
                                         </td>
-                                        <td class="px-4 py-2.5 text-xs text-slate-600 dark:text-slate-400 max-w-xs truncate" title="{{ $p->reference_notes }}">
+                                        <td class="px-5 py-3 text-xs text-slate-600 dark:text-slate-400 max-w-xs truncate" title="{{ $p->reference_notes }}">
                                             {{ $p->reference_notes ?: '—' }}
                                         </td>
-                                        <td class="px-4 py-2.5 whitespace-nowrap text-xs text-slate-500">
+                                        <td class="px-5 py-3 whitespace-nowrap text-xs text-slate-500">
                                             {{ $p->settledBy?->name ?? 'System' }}
                                         </td>
                                     </tr>
@@ -620,8 +620,11 @@
             </div>
 
             {{-- Worker Shift, Photo & Financial Analysis Modal --}}
-            <div x-show="analysisModalOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-xs">
-                <div @click.away="analysisModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-lg max-w-4xl w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
+            <div x-show="analysisModalOpen" 
+                 x-cloak 
+                 class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-xs"
+                 @keydown.escape.window="if (photoModalUrl) { photoModalUrl = null; } else if (analysisModalOpen) { analysisModalOpen = false; }">
+                <div @click.away="if (!photoModalUrl) analysisModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-lg max-w-4xl w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
                     
                     {{-- Modal Header --}}
                     <div class="flex items-start justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
@@ -730,7 +733,7 @@
                                             </td>
                                             <td class="px-3 py-2 text-center whitespace-nowrap">
                                                 <template x-if="att.photo_url">
-                                                    <button type="button" @click="openPhoto(att.photo_url)" class="inline-block relative group cursor-pointer border border-slate-200 dark:border-slate-700 rounded overflow-hidden shadow-xs hover:border-blue-500 transition">
+                                                    <button type="button" @click.stop="openPhoto(att.photo_url)" class="inline-block relative group cursor-pointer border border-slate-200 dark:border-slate-700 rounded overflow-hidden shadow-xs hover:border-blue-500 transition" title="Click to view full photo">
                                                         <img :src="att.photo_url" alt="Punch selfie" class="w-10 h-10 object-cover">
                                                         <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-[10px] font-bold transition">
                                                             View
@@ -844,7 +847,7 @@
                                                 </td>
                                                 <td class="px-3 py-2 text-center whitespace-nowrap">
                                                     <template x-if="patt.photo_url">
-                                                        <button type="button" @click="openPhoto(patt.photo_url)" class="inline-block relative group cursor-pointer border border-slate-200 dark:border-slate-700 rounded overflow-hidden shadow-xs hover:border-blue-500 transition">
+                                                        <button type="button" @click.stop="openPhoto(patt.photo_url)" class="inline-block relative group cursor-pointer border border-slate-200 dark:border-slate-700 rounded overflow-hidden shadow-xs hover:border-blue-500 transition" title="Click to view full photo">
                                                             <img :src="patt.photo_url" alt="Punch selfie" class="w-10 h-10 object-cover">
                                                             <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-[10px] font-bold transition">
                                                                 View
@@ -988,19 +991,46 @@
                     </div>
 
                 </div>
-            </div>
 
-            {{-- Full Size Punch Photo Lightbox --}}
-            <div x-show="photoModalUrl !== null" x-cloak class="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs">
-                <div @click.away="photoModalUrl = null" class="relative max-w-2xl w-full bg-slate-900 rounded-lg p-2 border border-slate-700 shadow-2xl flex flex-col items-center">
-                    <button type="button" @click="photoModalUrl = null" class="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-rose-600 text-white font-bold flex items-center justify-center hover:bg-rose-700 shadow-lg text-lg cursor-pointer">
-                        &times;
-                    </button>
-                    <img :src="photoModalUrl" alt="Punch Verification Photo" class="w-full max-h-[80vh] object-contain rounded">
-                    <div class="mt-2 text-xs text-slate-400 font-mono text-center">
-                        Punch-in selfie verification photo
+                {{-- Full Size Punch Photo Lightbox (Displayed directly in front of the analysis modal) --}}
+                <div x-show="photoModalUrl !== null" 
+                     x-cloak 
+                     class="fixed inset-0 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm" 
+                     style="z-index: 99999 !important;"
+                     @click.self="photoModalUrl = null">
+                    <div class="relative max-w-2xl w-full bg-slate-900 rounded-xl p-4 border border-slate-700 shadow-2xl flex flex-col items-center animate-in fade-in zoom-in-95 duration-150">
+                        {{-- Lightbox Header --}}
+                        <div class="flex items-center justify-between w-full pb-3 mb-3 border-b border-slate-800">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                <h4 class="text-sm font-bold text-white">Punch-In Selfie Verification</h4>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <a :href="photoModalUrl" target="_blank" class="text-xs text-blue-400 hover:text-blue-300 hover:underline flex items-center gap-1 font-mono" title="Open full resolution in new tab">
+                                    <span>Open Full</span>
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                                </a>
+                                <button type="button" @click.stop="photoModalUrl = null" class="w-7 h-7 rounded-full bg-slate-800 hover:bg-rose-600 text-slate-300 hover:text-white flex items-center justify-center text-lg font-bold transition cursor-pointer" title="Close Preview (Esc)">
+                                    &times;
+                                </button>
+                            </div>
+                        </div>
+
+                        {{-- Lightbox Image Box --}}
+                        <div class="w-full flex items-center justify-center bg-black/50 rounded-lg p-2 overflow-hidden border border-slate-800">
+                            <img :src="photoModalUrl" alt="Punch Verification Photo" class="max-h-[70vh] w-auto max-w-full object-contain rounded">
+                        </div>
+
+                        {{-- Lightbox Footer --}}
+                        <div class="mt-3 flex items-center justify-between w-full text-xs text-slate-400">
+                            <span>Selfie photo recorded at shift check-in</span>
+                            <button type="button" @click.stop="photoModalUrl = null" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-xs font-semibold transition cursor-pointer">
+                                Close Preview
+                            </button>
+                        </div>
                     </div>
                 </div>
+
             </div>
 
         </div>

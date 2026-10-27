@@ -2780,7 +2780,7 @@ span.rounded-full:not(.crm-user-avatar):not(.avatar-circle) {
     border-radius: 9999px !important;
 }
 
-/* 3. Borders: 1px solid #1e293b (dark: #334155) */
+/* 3. Borders: 1px solid #1e293b (dark: #334155) - True Card & Container Elements Only */
 .stat-card,
 .pip-card,
 .pg-card,
@@ -2789,11 +2789,7 @@ span.rounded-full:not(.crm-user-avatar):not(.avatar-circle) {
 .saas-card,
 .crm-section-box,
 table,
-.border-card,
-div.border-slate-200,
-div.border-slate-300,
-div.border-gray-200,
-div.border-gray-300 {
+.border-card {
     border: 1px solid var(--card-border) !important;
 }
 
@@ -2803,11 +2799,7 @@ html.dark .pg-card,
 html.dark .crm-card,
 html.dark .card,
 html.dark .saas-card,
-html.dark .crm-section-box,
-html.dark div.border-slate-200,
-html.dark div.border-slate-300,
-html.dark div.border-gray-200,
-html.dark div.border-gray-300 {
+html.dark .crm-section-box {
     border: 1px solid var(--card-border) !important;
 }
 

@@ -1478,14 +1478,22 @@
                             <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
                                 @foreach($workerAnalysis as $wId => $wData)
                                     @php
-                                        $wrk = $wData['worker'];
+                                        $wrk = $wData['worker'] ?? null;
+                                        $wrkId = $wrk?->id ?? null;
+                                        $wrkName = $wrk?->name ?? ('Worker #' . $wId);
                                     @endphp
                                     <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/40">
                                         <td class="px-5 py-3.5">
-                                            <a href="{{ route('workers.show', $wrk) }}" class="font-bold text-slate-900 dark:text-white hover:text-blue-600 hover:underline block leading-tight">
-                                                {{ $wrk->name }}
-                                            </a>
-                                            <span class="text-[11px] text-slate-500 font-mono">₹{{ number_format($wrk->daily_rate, 2) }}/day &bull; 📞 {{ $wrk->phone ?? '—' }}</span>
+                                            @if($wrkId)
+                                                <a href="{{ route('workers.show', $wrkId) }}" class="font-bold text-slate-900 dark:text-white hover:text-blue-600 hover:underline block leading-tight">
+                                                    {{ $wrkName }}
+                                                </a>
+                                            @else
+                                                <span class="font-bold text-slate-900 dark:text-white block leading-tight">
+                                                    {{ $wrkName }}
+                                                </span>
+                                            @endif
+                                            <span class="text-[11px] text-slate-500 font-mono">₹{{ number_format($wrk?->daily_rate ?? 0, 2) }}/day &bull; 📞 {{ $wrk?->phone ?? '—' }}</span>
                                         </td>
                                         <td class="px-5 py-3.5 text-center font-medium">
                                             {{ $wData['man_days'] }} <span class="text-xs text-slate-400">({{ $wData['shifts_count'] }} {{ Str::plural('shift', $wData['shifts_count']) }})</span>
@@ -1576,7 +1584,7 @@
                                                     @if($att->photo_path)
                                                         <div class="relative shrink-0">
                                                             <img src="{{ $att->photo_url }}" 
-                                                                 alt="{{ $att->worker->name }}" 
+                                                                 alt="{{ $att->worker?->name ?? 'Worker' }}" 
                                                                  @click="workerPhotoModalUrl = '{{ $att->photo_url }}'"
                                                                  title="Click to view verified punch selfie"
                                                                  class="w-10 h-10 rounded-full object-cover border-2 border-emerald-500 cursor-pointer shadow-sm hover:scale-105 transition-transform">
@@ -1584,16 +1592,22 @@
                                                         </div>
                                                     @else
                                                         <div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 flex items-center justify-center text-xs font-bold text-slate-500 shrink-0">
-                                                            {{ strtoupper(substr($att->worker->name, 0, 2)) }}
+                                                            {{ strtoupper(substr($att->worker?->name ?? 'WK', 0, 2)) }}
                                                         </div>
                                                     @endif
 
                                                     <div>
                                                         <div class="font-bold text-slate-900 dark:text-white leading-tight">
-                                                            {{ $att->worker->name }}
+                                                            @if($att->worker?->id)
+                                                                <a href="{{ route('workers.show', $att->worker->id) }}" class="hover:text-blue-600 hover:underline">
+                                                                    {{ $att->worker->name }}
+                                                                </a>
+                                                            @else
+                                                                {{ $att->worker?->name ?? ('Worker #' . ($att->worker_id ?? '—')) }}
+                                                            @endif
                                                         </div>
                                                         <div class="text-[11px] text-slate-500 font-mono mt-0.5 flex items-center gap-2">
-                                                            <span>📞 {{ $att->worker->phone }}</span>
+                                                            <span>📞 {{ $att->worker?->phone ?? '—' }}</span>
                                                             @if($att->check_in_at)
                                                                 <span class="text-emerald-600 dark:text-emerald-400 font-semibold">• {{ $att->check_in_at->format('h:i A') }}</span>
                                                             @endif
@@ -1662,7 +1676,7 @@
                                                             Unpaid
                                                         </span>
                                                         @if(auth()->user()->isAdmin())
-                                                            <form method="POST" action="{{ route('projects.attendances.pay', $att) }}" class="inline-block" onsubmit="return confirm('Disburse daily wage payout of ₹{{ number_format($att->total_amount, 2) }} now to {{ addslashes($att->worker->name) }}?')">
+                                                            <form method="POST" action="{{ route('projects.attendances.pay', $att) }}" class="inline-block" onsubmit="return confirm('Disburse daily wage payout of ₹{{ number_format($att->total_amount, 2) }} now to {{ addslashes($att->worker?->name ?? 'Worker') }}?')">
                                                                 @csrf
                                                                 <button type="submit" class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs cursor-pointer transition">
                                                                     Pay Shift (₹{{ number_format($att->total_amount, 0) }})

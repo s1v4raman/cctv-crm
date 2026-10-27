@@ -10,7 +10,7 @@ sort($files);
 echo "Found " . count($files) . " migration files.\n";
 
 $connection = DB::connection('sqlite');
-$grammar = new \Illuminate\Database\Schema\Grammars\PostgresGrammar();
+$grammar = new \Illuminate\Database\Schema\Grammars\PostgresGrammar($connection);
 
 foreach ($files as $file) {
     $migration = require $file;

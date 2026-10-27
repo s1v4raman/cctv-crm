@@ -200,7 +200,7 @@
                 border: 1px solid var(--card-border) !important;
             }
 
-            /* Universal Tailwind Utility Overrides to Crisp 1px Border */
+            /* Universal Tailwind Utility Overrides to Crisp 1px Border (Color ONLY - never force 4-sided border width!) */
             .border-\[\#ddd\],
             .border-\[\#dddddd\],
             .border-\[\#cbd5e1\],
@@ -211,7 +211,6 @@
             .border-gray-100,
             .border-gray-200,
             .border-gray-300 {
-                border-width: 1px !important;
                 border-color: var(--card-border) !important;
             }
             html.dark .border-\[\#ddd\],
@@ -226,9 +225,15 @@
             html.dark .border-gray-300,
             html.dark .dark\:border-slate-800,
             html.dark .dark\:border-slate-700 {
-                border-width: 1px !important;
                 border-color: var(--card-border) !important;
             }
+
+            /* Directional Border Guards: Ensure headers, dividers & tabs never turn into 4-sided boxed cages */
+            .border-b, [class*="border-b-"] { border-top-width: 0 !important; border-left-width: 0 !important; border-right-width: 0 !important; }
+            .border-t, [class*="border-t-"] { border-bottom-width: 0 !important; border-left-width: 0 !important; border-right-width: 0 !important; }
+            .border-l, [class*="border-l-"] { border-top-width: 0 !important; border-bottom-width: 0 !important; border-right-width: 0 !important; }
+            .border-r, [class*="border-r-"] { border-top-width: 0 !important; border-bottom-width: 0 !important; border-left-width: 0 !important; }
+            .border-0, .border-none { border-width: 0 !important; }
 
             /* Universal Form Search & Input Bars: Crisp single 1px dark borders with distinct focus ring */
             input[type="text"]:not([class*="bg-transparent"]):not([class*="border-0"]):not([class*="border-b"]),
@@ -265,6 +270,27 @@
             html.dark .crm-cal-select,
             html.dark .ts-control {
                 border: 1px solid var(--input-border) !important;
+            }
+
+            /* Generous, comfortable font-to-border space for inputs and selects */
+            input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="color"]):not([type="range"]):not(.ts-control input):not(.ts-wrapper input):not([type="search"]):not([name="search"]):not(.search-icon-input):not(.pl-9):not(.pl-10):not(.pl-11):not(.pl-12):not(.pl-14),
+            .crm-input,
+            .crm-cal-input {
+                padding-left: 12px !important;
+                padding-right: 12px !important;
+            }
+
+            select:not(.tomselected),
+            .crm-select,
+            .crm-cal-select {
+                padding-left: 12px !important;
+                padding-right: 32px !important;
+            }
+
+            textarea,
+            .crm-textarea {
+                padding: 10px 14px !important;
+                line-height: 1.5 !important;
             }
 
             /* Distinct Focus Ring */
@@ -397,6 +423,7 @@
                 background-color: var(--table-header-bg) !important;
                 color: var(--text-main) !important;
                 font-weight: 600 !important;
+                padding: 10px 16px;
             }
             html.dark table th {
                 border-top: none !important;
@@ -404,6 +431,7 @@
                 background-color: var(--table-header-bg) !important;
                 color: var(--text-main) !important;
                 font-weight: 600 !important;
+                padding: 10px 16px;
             }
 
             table tbody tr,
@@ -413,6 +441,7 @@
             table td {
                 border-bottom: 1px solid var(--table-border) !important;
                 color: var(--text-main) !important;
+                padding: 11px 16px;
             }
             html.dark table tbody tr,
             html.dark table tr {
@@ -421,6 +450,13 @@
             html.dark table td {
                 border-bottom: 1px solid var(--table-border) !important;
                 color: var(--text-main) !important;
+                padding: 11px 16px;
+            }
+
+            /* No right border on last column */
+            table th:last-child,
+            table td:last-child {
+                border-right: none !important;
             }
 
             /* Never double the bottom border on the last table row */
