@@ -105,11 +105,11 @@
                         <svg class="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                         <input type="text" name="search" value="{{ request('search') }}" 
                             placeholder="Search ticket #, issue, customer, phone..."
-                            style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important; padding-left: 36px !important;"
+                            style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important; padding-left: 36px !important;"
                             class="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-blue-600">
                     </div>
 
-                    <select name="status" style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important; min-width: 140px;" class="text-xs px-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 shrink-0">
+                    <select name="status" style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important; min-width: 140px;" class="text-xs px-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 shrink-0">
                         <option value="">All Statuses</option>
                         <option value="open" @selected(request('status') === 'open')>Open</option>
                         <option value="assigned" @selected(request('status') === 'assigned')>Assigned</option>
@@ -119,14 +119,14 @@
                     </select>
                     
                     <button type="submit"
-                            style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important;"
+                            style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important;"
                             class="px-4 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition inline-flex items-center justify-center shrink-0 shadow-xs cursor-pointer">
                         Filter
                     </button>
 
                     @if(request()->hasAny(['search', 'status', 'priority', 'technician_id', 'issue_type']))
                         <a href="{{ route('service-tickets.index', ['tab' => $activeTab]) }}"
-                           style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important;"
+                           style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important;"
                            class="px-3.5 inline-flex items-center rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-medium transition shrink-0">
                             Reset
                         </a>
@@ -172,7 +172,7 @@
                                             <a href="{{ route('service-tickets.show', $ticket) }}" class="cell-no font-mono flex items-center gap-1.5">
                                                 {{ $ticket->ticket_no }}
                                                 @if($isEmailInbound)
-                                                    <span class="text-[10px] text-slate-500 font-medium">
+                                                    <span class="text-[11px] text-slate-500 font-medium">
                                                         [Email]
                                                     </span>
                                                 @endif
@@ -329,7 +329,7 @@
                     <div class="mt-5">
                         <div class="text-xs font-bold uppercase tracking-wider text-slate-300 mb-3 flex items-center justify-between">
                             <span>Simulate Customer Support Email</span>
-                            <span class="text-[10px] text-slate-500 font-mono">Test instant conversion</span>
+                            <span class="text-[11px] text-slate-500 font-mono">Test instant conversion</span>
                         </div>
 
                         <form method="POST" action="{{ route('service-tickets.simulate-email') }}" class="space-y-3.5">

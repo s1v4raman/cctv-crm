@@ -6,7 +6,7 @@
                 <div>
                     <h2 class="text-2xl font-black tracking-wider text-white uppercase font-['Outfit'] flex items-center gap-2">
                         CCTV Storage & Sizing Estimator
-                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-mono font-bold" style="color: var(--crm-accent, #2563eb); background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.12); border: 1px solid rgba(var(--crm-accent-rgb, 37, 99, 235), 0.3);">Auto-BOM Engine</span>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-mono font-bold" style="color: var(--crm-accent, #2563eb); background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.12); border: 1px solid rgba(var(--crm-accent-rgb, 37, 99, 235), 0.3);">Auto-BOM Engine</span>
                     </h2>
                     <p class="text-xs text-slate-400 font-mono">
                         Calculate exact HDD storage, network PoE load, cabling rolls & auto-generate official Quotations in 1-click.
@@ -43,7 +43,7 @@
                         <label class="block text-sm font-semibold text-slate-800 dark:text-slate-300 mb-1.5 flex items-center justify-between">
                             <span>Target Customer / Lead <span class="text-amber-500">*</span></span>
                             @if(!empty($initialData['survey_id']))
-                                <span class="text-[10px] text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded font-mono font-semibold">Loaded from Site Survey #{{ $initialData['survey_id'] }}</span>
+                                <span class="text-[11px] text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded font-mono font-semibold">Loaded from Site Survey #{{ $initialData['survey_id'] }}</span>
                             @endif
                         </label>
                         <select x-model="selectedLeadId" class="w-full text-xs rounded-xl border border-[var(--card-border)] dark:border-slate-600 bg-white dark:bg-[#060913] text-slate-900 dark:text-white focus:border-blue-600 focus:outline-none p-2.5">
@@ -130,7 +130,7 @@
                                         <span x-text="retentionDays"></span> <span>Days</span>
                                     </div>
                                 </div>
-                                <div class="flex justify-between text-[10px] font-mono text-slate-500 mt-1.5 px-1">
+                                <div class="flex justify-between text-[11px] font-mono text-slate-500 mt-1.5 px-1">
                                     <span @click="retentionDays = 15; recalculateAll()" class="cursor-pointer hover:underline" style="color: var(--crm-accent, #2563eb);">15d</span>
                                     <span @click="retentionDays = 30; recalculateAll()" class="cursor-pointer hover:underline font-bold text-slate-300">30d (Std)</span>
                                     <span @click="retentionDays = 60; recalculateAll()" class="cursor-pointer hover:underline" style="color: var(--crm-accent, #2563eb);">60d</span>
@@ -146,7 +146,7 @@
                                     <input type="number" min="5" max="250" x-model.number="defaultDistanceMeters" @input="updateAllZoneDistances()" class="w-full text-xs font-mono rounded-xl border border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:outline-none p-2.5">
                                     <span class="text-xs text-slate-400 font-mono shrink-0">Mtr/Cam</span>
                                 </div>
-                                <p class="text-[10px] text-slate-500 font-mono mt-1">Includes riser and drop slack margins.</p>
+                                <p class="text-[11px] text-slate-500 font-mono mt-1">Includes riser and drop slack margins.</p>
                             </div>
                         </div>
                     </div>
@@ -287,12 +287,12 @@
                             </div>
 
                             <div class="bg-[#060913] border border-white/10 p-4 rounded-xl space-y-1">
-                                <div class="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Recommended HDD Configuration:</div>
+                                <div class="text-[11px] uppercase tracking-widest text-slate-400 font-bold">Recommended HDD Configuration:</div>
                                 <div class="text-sm font-bold text-white flex items-center gap-2">
                                     <svg class="w-4 h-4 text-emerald-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                                     <span x-text="recommendedHddPlan"></span>
                                 </div>
-                                <p class="text-[10px] text-slate-500">Enterprise 24/7 Surveillance Grade (5400-7200 RPM)</p>
+                                <p class="text-[11px] text-slate-500">Enterprise 24/7 Surveillance Grade (5400-7200 RPM)</p>
                             </div>
                         </div>
                     </div>
@@ -352,7 +352,7 @@
                     <div class="bg-[#0F172A] rounded-2xl p-4 border border-white/10 text-xs space-y-2.5 font-mono">
                         <div class="font-bold text-white flex items-center justify-between font-['Outfit'] uppercase">
                             <span>Bill of Materials Blueprint</span>
-                            <span class="text-[10px] px-2 py-0.5 rounded font-mono font-bold uppercase bg-amber-500/10 text-amber-400 border border-amber-500/30">Auto-Sized</span>
+                            <span class="text-[11px] px-2 py-0.5 rounded font-mono font-bold uppercase bg-amber-500/10 text-amber-400 border border-amber-500/30">Auto-Sized</span>
                         </div>
                         <ul class="space-y-1.5 text-slate-300">
                             <li class="flex items-center justify-between">
@@ -382,7 +382,7 @@
                     <div>
                         <h3 class="text-sm font-bold uppercase tracking-wider text-white font-['Outfit'] flex items-center gap-2">
                             <span>Itemized Bill of Materials (BOM)</span>
-                            <span class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">Auto-Matched Catalog</span>
+                            <span class="text-[11px] font-mono font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">Auto-Matched Catalog</span>
                         </h3>
                         <p class="text-slate-400 text-xs font-mono mt-0.5">Edit quantities, replace products, or adjust unit rates prior to generating the formal quote.</p>
                     </div>
@@ -405,7 +405,7 @@
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-xs border-collapse">
                         <thead>
-                            <tr class="border-b border-white/5 bg-[#060913] text-[10px] font-mono uppercase tracking-widest text-slate-400">
+                            <tr class="border-b border-white/5 bg-[#060913] text-[11px] font-mono uppercase tracking-widest text-slate-400">
                                 <th class="py-3 px-4 w-12 text-center">#</th>
                                 <th class="py-3 px-4">Item & Description</th>
                                 <th class="py-3 px-4 w-28 text-center">Qty</th>

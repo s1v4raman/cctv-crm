@@ -200,37 +200,37 @@
                     <div class="pg-card p-4 text-center">
                         <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Total Staff</span>
                         <span class="text-2xl font-black text-slate-900 dark:text-white mt-1 block">{{ $totalEmployees }}</span>
-                        <span class="text-[10px] text-slate-500 dark:text-slate-400 mt-1 block">Active internal roster</span>
+                        <span class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 block">Active internal roster</span>
                     </div>
                     <div class="pg-card p-4 text-center border-t-2 border-t-emerald-500">
                         <span class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider block">Present</span>
                         <span class="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1 block">{{ $presentCount }}</span>
-                        <span class="text-[10px] text-slate-500 dark:text-slate-400 mt-1 block">On-time full shifts</span>
+                        <span class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 block">On-time full shifts</span>
                     </div>
                     <div class="pg-card p-4 text-center border-t-2 border-t-amber-500">
                         <span class="text-[11px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider block">Late Arrival</span>
                         <span class="text-2xl font-black text-amber-600 dark:text-amber-400 mt-1 block">{{ $lateCount }}</span>
-                        <span class="text-[10px] text-slate-500 dark:text-slate-400 mt-1 block">Past 09:30 AM</span>
+                        <span class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 block">Past 09:30 AM</span>
                     </div>
                     <div class="pg-card p-4 text-center border-t-2 border-t-sky-500">
                         <span class="text-[11px] font-bold text-sky-600 dark:text-sky-400 uppercase tracking-wider block">Half Day</span>
                         <span class="text-2xl font-black text-sky-600 dark:text-sky-400 mt-1 block">{{ $halfDayCount }}</span>
-                        <span class="text-[10px] text-slate-500 dark:text-slate-400 mt-1 block">&lt; 5 hours logged</span>
+                        <span class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 block">&lt; 5 hours logged</span>
                     </div>
                     <div class="pg-card p-4 text-center border-t-2 border-t-rose-500">
                         <span class="text-[11px] font-bold text-rose-600 dark:text-rose-400 uppercase tracking-wider block">Absent / Unmarked</span>
                         <span class="text-2xl font-black text-rose-600 dark:text-rose-400 mt-1 block">{{ $absentCount }}</span>
-                        <span class="text-[10px] text-slate-500 dark:text-slate-400 mt-1 block">{{ $unmarkedCount }} unmarked</span>
+                        <span class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 block">{{ $unmarkedCount }} unmarked</span>
                     </div>
                     <div class="pg-card p-4 text-center border-t-2 border-t-purple-500">
                         <span class="text-[11px] font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider block">Attendance Rate</span>
                         <span class="text-2xl font-black text-purple-600 dark:text-purple-400 mt-1 block">{{ $attendanceRate }}%</span>
-                        <span class="text-[10px] text-slate-500 dark:text-slate-400 mt-1 block">{{ $leaveCount }} on approved leave</span>
+                        <span class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 block">{{ $leaveCount }} on approved leave</span>
                     </div>
                     <div class="pg-card p-4 text-center border-t-2 border-t-indigo-500 col-span-2 sm:col-span-1">
                         <span class="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider block">Total Man-Hours</span>
                         <span class="text-2xl font-black text-indigo-600 dark:text-indigo-400 mt-1 block font-mono">{{ round($dailyTotalHours, 1) }}h</span>
-                        <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold mt-1 block">+{{ round($dailyTotalOvertime, 1) }}h overtime</span>
+                        <span class="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold mt-1 block">+{{ round($dailyTotalOvertime, 1) }}h overtime</span>
                     </div>
                 </div>
 
@@ -313,7 +313,7 @@
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-xs border-collapse">
                             <thead>
-                                <tr class="border-b border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider text-[10px]">
+                                <tr class="border-b border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider text-[11px]">
                                     <th class="py-3 px-4">Employee</th>
                                     <th class="py-3 px-4">Role</th>
                                     <th class="py-3 px-4">Status</th>
@@ -344,7 +344,7 @@
                                             </div>
                                         </td>
                                         <td class="py-3 px-4">
-                                            <span class="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold uppercase
+                                            <span class="inline-block px-2 py-0.5 rounded-full text-[11px] font-bold uppercase
                                                 {{ $emp->role === 'admin' ? 'bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300' : '' }}
                                                 {{ $emp->role === 'technician' ? 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300' : '' }}
                                                 {{ $emp->role === 'staff' ? 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300' : '' }}
@@ -396,7 +396,7 @@
                                                     <input type="hidden" name="date" value="{{ $selectedDate }}">
                                                     <input type="hidden" name="status" value="present">
                                                     <button type="submit" title="Mark Present (8h)"
-                                                            class="w-6 h-6 rounded-md text-[10px] font-bold flex items-center justify-center transition {{ ($att && $att->status === 'present') ? 'bg-emerald-600 text-white' : 'bg-slate-100 hover:bg-emerald-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 hover:text-emerald-700' }}">
+                                                            class="w-6 h-6 rounded-md text-[11px] font-bold flex items-center justify-center transition {{ ($att && $att->status === 'present') ? 'bg-emerald-600 text-white' : 'bg-slate-100 hover:bg-emerald-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 hover:text-emerald-700' }}">
                                                         P
                                                     </button>
                                                 </form>
@@ -407,7 +407,7 @@
                                                     <input type="hidden" name="date" value="{{ $selectedDate }}">
                                                     <input type="hidden" name="status" value="late">
                                                     <button type="submit" title="Mark Late Arrival (8h)"
-                                                            class="w-6 h-6 rounded-md text-[10px] font-bold flex items-center justify-center transition {{ ($att && $att->status === 'late') ? 'bg-amber-500 text-white' : 'bg-slate-100 hover:bg-amber-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 hover:text-amber-700' }}">
+                                                            class="w-6 h-6 rounded-md text-[11px] font-bold flex items-center justify-center transition {{ ($att && $att->status === 'late') ? 'bg-amber-500 text-white' : 'bg-slate-100 hover:bg-amber-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 hover:text-amber-700' }}">
                                                         L
                                                     </button>
                                                 </form>
@@ -418,7 +418,7 @@
                                                     <input type="hidden" name="date" value="{{ $selectedDate }}">
                                                     <input type="hidden" name="status" value="half_day">
                                                     <button type="submit" title="Mark Half Day (4h)"
-                                                            class="w-6 h-6 rounded-md text-[10px] font-bold flex items-center justify-center transition {{ ($att && $att->status === 'half_day') ? 'bg-sky-600 text-white' : 'bg-slate-100 hover:bg-sky-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 hover:text-sky-700' }}">
+                                                            class="w-6 h-6 rounded-md text-[11px] font-bold flex items-center justify-center transition {{ ($att && $att->status === 'half_day') ? 'bg-sky-600 text-white' : 'bg-slate-100 hover:bg-sky-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 hover:text-sky-700' }}">
                                                         H
                                                     </button>
                                                 </form>
@@ -429,7 +429,7 @@
                                                     <input type="hidden" name="date" value="{{ $selectedDate }}">
                                                     <input type="hidden" name="status" value="absent">
                                                     <button type="submit" title="Mark Absent (0h)"
-                                                            class="w-6 h-6 rounded-md text-[10px] font-bold flex items-center justify-center transition {{ ($att && $att->status === 'absent') ? 'bg-rose-600 text-white' : 'bg-slate-100 hover:bg-rose-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 hover:text-rose-700' }}">
+                                                            class="w-6 h-6 rounded-md text-[11px] font-bold flex items-center justify-center transition {{ ($att && $att->status === 'absent') ? 'bg-rose-600 text-white' : 'bg-slate-100 hover:bg-rose-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 hover:text-rose-700' }}">
                                                         A
                                                     </button>
                                                 </form>
@@ -440,7 +440,7 @@
                                                     <input type="hidden" name="date" value="{{ $selectedDate }}">
                                                     <input type="hidden" name="status" value="on_leave">
                                                     <button type="submit" title="Mark On Leave"
-                                                            class="w-6 h-6 rounded-md text-[10px] font-bold flex items-center justify-center transition {{ ($att && $att->status === 'on_leave') ? 'bg-purple-600 text-white' : 'bg-slate-100 hover:bg-purple-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 hover:text-purple-700' }}">
+                                                            class="w-6 h-6 rounded-md text-[11px] font-bold flex items-center justify-center transition {{ ($att && $att->status === 'on_leave') ? 'bg-purple-600 text-white' : 'bg-slate-100 hover:bg-purple-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 hover:text-purple-700' }}">
                                                         V
                                                     </button>
                                                 </form>
@@ -556,12 +556,12 @@
                                 <span class="text-[11px] font-bold {{ $wDay['is_sunday'] ? 'text-rose-500' : 'text-slate-700 dark:text-slate-300' }} block">
                                     {{ $wDay['day_name'] }}
                                 </span>
-                                <span class="text-[10px] text-slate-400 block">{{ $wDay['day_num'] }}</span>
+                                <span class="text-[11px] text-slate-400 block">{{ $wDay['day_num'] }}</span>
                                 <div class="my-2">
                                     <span class="text-lg font-black text-slate-900 dark:text-white block">{{ $dTurnout['count'] }} / {{ $totalEmployees }}</span>
-                                    <span class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 block">{{ $dTurnout['rate'] }}% turnout</span>
+                                    <span class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 block">{{ $dTurnout['rate'] }}% turnout</span>
                                 </div>
-                                <span class="inline-block px-2 py-0.5 rounded-md text-[10px] font-mono bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                                <span class="inline-block px-2 py-0.5 rounded-md text-[11px] font-mono bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
                                     {{ $dTurnout['hours'] }}h total
                                 </span>
                             </div>
@@ -588,12 +588,12 @@
                     <div class="overflow-x-auto custom-scrollbar">
                         <table class="w-full text-left text-xs border-collapse">
                             <thead>
-                                <tr class="border-b border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider text-[10px]">
+                                <tr class="border-b border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider text-[11px]">
                                     <th class="py-3 px-4 min-w-[200px]">Employee</th>
                                     @foreach($weekDays as $wDay)
                                         <th class="py-3 px-2 text-center min-w-[95px] {{ $wDay['is_today'] ? 'bg-blue-50/50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400' : '' }} {{ $wDay['is_sunday'] ? 'text-rose-500' : '' }}">
                                             <div>{{ $wDay['day_name'] }}</div>
-                                            <div class="text-[9px] font-normal opacity-80">{{ $wDay['day_num'] }}</div>
+                                            <div class="text-[11px] font-normal opacity-80">{{ $wDay['day_num'] }}</div>
                                         </th>
                                     @endforeach
                                     <th class="py-3 px-3 text-center min-w-[85px]">Worked</th>
@@ -615,7 +615,7 @@
                                                 </div>
                                                 <div>
                                                     <span class="font-bold text-slate-900 dark:text-white block">{{ $emp->name }}</span>
-                                                    <span class="text-[10px] text-slate-400 uppercase font-semibold">{{ $emp->role }}</span>
+                                                    <span class="text-[11px] text-slate-400 uppercase font-semibold">{{ $emp->role }}</span>
                                                 </div>
                                             </div>
                                         </td>
@@ -631,7 +631,7 @@
                                                             onclick="openEditModal({{ json_encode($emp) }}, {{ json_encode($dayRecord) }}, '{{ $wDay['date'] }}')"
                                                             title="Click to edit {{ $wDay['day_full'] }} ({{ $dayRecord->status_label }})"
                                                             class="w-full py-1.5 px-1.5 rounded-lg border text-center transition flex flex-col items-center justify-center {{ $dayRecord->status_badge_class }} hover:shadow-xs">
-                                                        <span class="font-bold text-[10px]">
+                                                        <span class="font-bold text-[11px]">
                                                             @if($dayRecord->status === 'present') P
                                                             @elseif($dayRecord->status === 'late') L
                                                             @elseif($dayRecord->status === 'half_day') H
@@ -639,14 +639,14 @@
                                                             @elseif($dayRecord->status === 'on_leave') V
                                                             @else ? @endif
                                                         </span>
-                                                        <span class="text-[9px] font-mono opacity-90">{{ $dayRecord->total_hours }}h</span>
+                                                        <span class="text-[11px] font-mono opacity-90">{{ $dayRecord->total_hours }}h</span>
                                                     </button>
                                                 @else
                                                     <button type="button"
                                                             onclick="openEditModal({{ json_encode($emp) }}, null, '{{ $wDay['date'] }}')"
                                                             title="Click to mark {{ $wDay['day_full'] }}"
                                                             class="w-full py-2 px-1 rounded-lg border border-dashed border-slate-200 dark:border-slate-800 hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-950/30 text-slate-300 dark:text-slate-600 hover:text-blue-600 text-center transition">
-                                                        <span class="text-[10px] font-bold block">+</span>
+                                                        <span class="text-[11px] font-bold block">+</span>
                                                     </button>
                                                 @endif
                                             </td>
@@ -669,7 +669,7 @@
                                         <td class="py-3 px-3 text-right">
                                             <button type="button"
                                                     onclick="openQuickWeekFillModal({{ json_encode($emp) }}, '{{ $weekStart->toDateString() }}', '{{ $weekEnd->toDateString() }}')"
-                                                    class="px-2 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/60 font-bold text-[10px] transition">
+                                                    class="px-2 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/60 font-bold text-[11px] transition">
                                                 ⚡ Fill Week
                                             </button>
                                         </td>
@@ -698,37 +698,37 @@
                         <h4 class="text-lg font-black text-slate-900 dark:text-white mt-1">
                             {{ \Carbon\Carbon::parse($selectedMonth . '-01')->format('F Y') }}
                         </h4>
-                        <span class="text-[10px] text-blue-600 dark:text-blue-400 font-bold mt-1 block">{{ $workingDaysInMonth }} Working Days</span>
+                        <span class="text-[11px] text-blue-600 dark:text-blue-400 font-bold mt-1 block">{{ $workingDaysInMonth }} Working Days</span>
                     </div>
 
                     <div class="pg-card p-4 text-center border-t-2 border-t-emerald-500">
                         <span class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider block">Attendance Rate</span>
                         <span class="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1 block">{{ $companyMonthlyAttendanceRate }}%</span>
-                        <span class="text-[10px] text-slate-400 mt-1 block">Workforce turnout</span>
+                        <span class="text-[11px] text-slate-400 mt-1 block">Workforce turnout</span>
                     </div>
 
                     <div class="pg-card p-4 text-center border-t-2 border-t-indigo-500">
                         <span class="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider block">Total Man-Hours</span>
                         <span class="text-2xl font-black text-indigo-600 dark:text-indigo-400 mt-1 block font-mono">{{ round($monthlyTotalHours, 1) }}h</span>
-                        <span class="text-[10px] text-slate-400 mt-1 block">Logged by all staff</span>
+                        <span class="text-[11px] text-slate-400 mt-1 block">Logged by all staff</span>
                     </div>
 
                     <div class="pg-card p-4 text-center border-t-2 border-t-teal-500">
                         <span class="text-[11px] font-bold text-teal-600 dark:text-teal-400 uppercase tracking-wider block">Monthly Overtime</span>
                         <span class="text-2xl font-black text-teal-600 dark:text-teal-400 mt-1 block font-mono">+{{ round($monthlyTotalOvertime, 1) }}h</span>
-                        <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold mt-1 block">Extra shift hours</span>
+                        <span class="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold mt-1 block">Extra shift hours</span>
                     </div>
 
                     <div class="pg-card p-4 text-center border-t-2 border-t-amber-500">
                         <span class="text-[11px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider block">Punctuality Score</span>
                         <span class="text-2xl font-black text-amber-600 dark:text-amber-400 mt-1 block">{{ $punctualityRate }}%</span>
-                        <span class="text-[10px] text-amber-600 dark:text-amber-400 font-bold mt-1 block">{{ $monthlyLatePunches }} late arrivals</span>
+                        <span class="text-[11px] text-amber-600 dark:text-amber-400 font-bold mt-1 block">{{ $monthlyLatePunches }} late arrivals</span>
                     </div>
 
                     <div class="pg-card p-4 text-center border-t-2 border-t-purple-500">
                         <span class="text-[11px] font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider block">Leaves &amp; Absents</span>
                         <span class="text-2xl font-black text-purple-600 dark:text-purple-400 mt-1 block">{{ $monthlyLeaves + $monthlyAbsents }}</span>
-                        <span class="text-[10px] text-slate-400 mt-1 block">{{ $monthlyLeaves }} leaves • {{ $monthlyAbsents }} absents</span>
+                        <span class="text-[11px] text-slate-400 mt-1 block">{{ $monthlyLeaves }} leaves • {{ $monthlyAbsents }} absents</span>
                     </div>
                 </div>
 
@@ -788,12 +788,12 @@
                     <div class="overflow-x-auto custom-scrollbar">
                         <table class="w-full text-left text-xs border-collapse">
                             <thead>
-                                <tr class="border-b border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider text-[10px]">
+                                <tr class="border-b border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider text-[11px]">
                                     <th class="py-3 px-3 min-w-[180px] sticky left-0 bg-slate-50 dark:bg-slate-900 z-10 shadow-xs">Employee</th>
                                     @foreach($monthDays as $mDay)
                                         <th class="py-2.5 px-1 text-center min-w-[32px] {{ $mDay['is_today'] ? 'bg-blue-100/60 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300 font-black' : '' }} {{ $mDay['is_sunday'] ? 'text-rose-500' : '' }}">
                                             <span class="block text-[11px]">{{ $mDay['day_num'] }}</span>
-                                            <span class="block text-[8px] font-normal opacity-70">{{ substr($mDay['day_name'], 0, 1) }}</span>
+                                            <span class="block text-[11px] font-normal opacity-70">{{ substr($mDay['day_name'], 0, 1) }}</span>
                                         </th>
                                     @endforeach
                                     <th class="py-3 px-3 text-center min-w-[80px]">Days</th>
@@ -814,12 +814,12 @@
                                     <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition">
                                         <td class="py-2.5 px-3 sticky left-0 bg-white dark:bg-[#0f172a] z-10 shadow-xs">
                                             <div class="flex items-center gap-2">
-                                                <div class="w-6 h-6 rounded-md bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-[10px]">
+                                                <div class="w-6 h-6 rounded-md bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-[11px]">
                                                     {{ strtoupper(substr($emp->name, 0, 1)) }}
                                                 </div>
                                                 <div class="truncate max-w-[120px]">
                                                     <span class="font-bold text-slate-900 dark:text-white block truncate">{{ $emp->name }}</span>
-                                                    <span class="text-[9px] text-slate-400 uppercase font-semibold">{{ $emp->role }}</span>
+                                                    <span class="text-[11px] text-slate-400 uppercase font-semibold">{{ $emp->role }}</span>
                                                 </div>
                                             </div>
                                         </td>
@@ -834,7 +834,7 @@
                                                     <button type="button"
                                                             onclick="openEditModal({{ json_encode($emp) }}, {{ json_encode($rec) }}, '{{ $mDay['date'] }}')"
                                                             title="{{ $mDay['date'] }}: {{ $rec->status_label }} ({{ $rec->total_hours }}h)"
-                                                            class="w-6 h-6 mx-auto rounded text-[10px] font-bold flex items-center justify-center transition
+                                                            class="w-6 h-6 mx-auto rounded text-[11px] font-bold flex items-center justify-center transition
                                                                 {{ $rec->status === 'present' ? 'bg-emerald-500 hover:bg-emerald-600 text-white' : '' }}
                                                                 {{ $rec->status === 'late' ? 'bg-amber-400 hover:bg-amber-500 text-slate-900 font-black' : '' }}
                                                                 {{ $rec->status === 'half_day' ? 'bg-sky-500 hover:bg-sky-600 text-white' : '' }}
@@ -852,7 +852,7 @@
                                                     <button type="button"
                                                             onclick="openEditModal({{ json_encode($emp) }}, null, '{{ $mDay['date'] }}')"
                                                             title="Add attendance for {{ $mDay['date'] }}"
-                                                            class="w-6 h-6 mx-auto rounded border border-transparent hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 text-slate-300 dark:text-slate-600 hover:text-blue-500 flex items-center justify-center text-[9px] transition">
+                                                            class="w-6 h-6 mx-auto rounded border border-transparent hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 text-slate-300 dark:text-slate-600 hover:text-blue-500 flex items-center justify-center text-[11px] transition">
                                                         ·
                                                     </button>
                                                 @endif
@@ -874,7 +874,7 @@
                                             @endif
                                         </td>
                                         <td class="py-2.5 px-3 text-center">
-                                            <span class="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold 
+                                            <span class="inline-block px-2 py-0.5 rounded-full text-[11px] font-bold 
                                                 {{ $mStats['attendance_rate'] >= 85 ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' : ($mStats['attendance_rate'] >= 70 ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300' : 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300') }}">
                                                 {{ $mStats['attendance_rate'] }}%
                                             </span>
@@ -912,7 +912,7 @@
                                         </div>
                                         <div>
                                             <span class="font-bold text-xs text-slate-900 dark:text-white block">{{ $emp->name }}</span>
-                                            <span class="text-[10px] text-slate-400 capitalize">{{ $emp->role }}</span>
+                                            <span class="text-[11px] text-slate-400 capitalize">{{ $emp->role }}</span>
                                         </div>
                                     </div>
                                     <span class="text-xs font-black px-2 py-0.5 rounded-full {{ $mStats['attendance_rate'] >= 85 ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300' }}">
@@ -927,19 +927,19 @@
 
                                 <div class="grid grid-cols-4 gap-2 mt-3 pt-3 border-t border-slate-200/60 dark:border-slate-800 text-center">
                                     <div>
-                                        <span class="text-[9px] text-slate-400 block uppercase">Present</span>
+                                        <span class="text-[11px] text-slate-400 block uppercase">Present</span>
                                         <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400">{{ $mStats['present_days'] }} d</span>
                                     </div>
                                     <div>
-                                        <span class="text-[9px] text-slate-400 block uppercase">Late</span>
+                                        <span class="text-[11px] text-slate-400 block uppercase">Late</span>
                                         <span class="text-xs font-bold text-amber-600 dark:text-amber-400">{{ $mStats['late_days'] }} d</span>
                                     </div>
                                     <div>
-                                        <span class="text-[9px] text-slate-400 block uppercase">Total Hrs</span>
+                                        <span class="text-[11px] text-slate-400 block uppercase">Total Hrs</span>
                                         <span class="text-xs font-bold text-slate-800 dark:text-slate-200 font-mono">{{ round($mStats['total_hours'], 1) }}h</span>
                                     </div>
                                     <div>
-                                        <span class="text-[9px] text-slate-400 block uppercase">Overtime</span>
+                                        <span class="text-[11px] text-slate-400 block uppercase">Overtime</span>
                                         <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 font-mono">+{{ round($mStats['overtime_hours'], 1) }}h</span>
                                     </div>
                                 </div>

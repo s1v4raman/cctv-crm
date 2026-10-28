@@ -7,7 +7,7 @@
                 </div>
                 <div>
                     <div class="flex items-center gap-2">
-                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-widest bg-blue-100 text-blue-800 dark:bg-blue-950/80 dark:text-blue-300 border border-blue-300 dark:border-blue-800">
+                        <span class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold uppercase tracking-widest bg-blue-100 text-blue-800 dark:bg-blue-950/80 dark:text-blue-300 border border-blue-300 dark:border-blue-800">
                             Finance Analytics Hub
                         </span>
                         <span class="text-xs text-slate-400 font-medium">• {{ $totalInvoicesCount }} Total Invoices</span>
@@ -59,74 +59,74 @@
             {{-- Total Invoiced --}}
             <div class="col-span-1 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Total Billed</span>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Billed</span>
                     <div class="w-7 h-7 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 flex items-center justify-center">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                     </div>
                 </div>
                 <div class="text-xl font-black text-slate-900 dark:text-white">₹{{ number_format($totalInvoicedAmount / 1000, 0) }}K</div>
-                <div class="text-[10px] text-slate-400 mt-0.5">{{ $totalInvoicesCount }} invoices total</div>
+                <div class="text-[11px] text-slate-400 mt-0.5">{{ $totalInvoicesCount }} invoices total</div>
             </div>
 
             {{-- Collected --}}
             <div class="col-span-1 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Collected</span>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Collected</span>
                     <div class="w-7 h-7 rounded-lg bg-teal-50 dark:bg-teal-950/50 text-teal-600 flex items-center justify-center">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     </div>
                 </div>
                 <div class="text-xl font-black text-emerald-600 dark:text-emerald-400">₹{{ number_format($totalPaidAmount / 1000, 0) }}K</div>
                 @php $collectionRate = $totalInvoicedAmount > 0 ? round($totalPaidAmount / $totalInvoicedAmount * 100) : 0; @endphp
-                <div class="text-[10px] text-slate-400 mt-0.5">{{ $collectionRate }}% collection rate</div>
+                <div class="text-[11px] text-slate-400 mt-0.5">{{ $collectionRate }}% collection rate</div>
             </div>
 
             {{-- Outstanding AR --}}
             <div class="col-span-1 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Outstanding</span>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Outstanding</span>
                     <div class="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 flex items-center justify-center">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     </div>
                 </div>
                 <div class="text-xl font-black text-indigo-600 dark:text-indigo-400">₹{{ number_format($totalOutstandingAR / 1000, 0) }}K</div>
-                <div class="text-[10px] text-rose-500 mt-0.5 font-semibold">{{ $overdueInvoicesCount }} overdue</div>
+                <div class="text-[11px] text-rose-500 mt-0.5 font-semibold">{{ $overdueInvoicesCount }} overdue</div>
             </div>
 
             {{-- Payables --}}
             <div class="col-span-1 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Payables (AP)</span>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Payables (AP)</span>
                     <div class="w-7 h-7 rounded-lg bg-rose-50 dark:bg-rose-950/50 text-rose-600 flex items-center justify-center">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
                     </div>
                 </div>
                 <div class="text-xl font-black text-rose-600 dark:text-rose-400">₹{{ number_format($totalPayablesAmount / 1000, 0) }}K</div>
-                <div class="text-[10px] text-slate-400 mt-0.5">{{ $unpaidPoCount }} unpaid POs</div>
+                <div class="text-[11px] text-slate-400 mt-0.5">{{ $unpaidPoCount }} unpaid POs</div>
             </div>
 
             {{-- GST Liability --}}
             <div class="col-span-1 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">GST Liability</span>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">GST Liability</span>
                     <div class="w-7 h-7 rounded-lg bg-amber-50 dark:bg-amber-950/50 text-amber-600 flex items-center justify-center">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/></svg>
                     </div>
                 </div>
                 <div class="text-xl font-black text-amber-600 dark:text-amber-400">₹{{ number_format($netGstLiability / 1000, 0) }}K</div>
-                <div class="text-[10px] text-slate-400 mt-0.5">Net GST payable</div>
+                <div class="text-[11px] text-slate-400 mt-0.5">Net GST payable</div>
             </div>
 
             {{-- Petty Cash --}}
             <div class="col-span-1 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Petty Cash</span>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Petty Cash</span>
                     <div class="w-7 h-7 rounded-lg bg-sky-50 dark:bg-sky-950/50 text-sky-600 flex items-center justify-center">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                     </div>
                 </div>
                 <div class="text-xl font-black text-sky-600 dark:text-sky-400">₹{{ number_format($totalPettyCashBalance, 0) }}</div>
-                <div class="text-[10px] text-slate-400 mt-0.5">{{ $activePettyAccountsCount }} float registers</div>
+                <div class="text-[11px] text-slate-400 mt-0.5">{{ $activePettyAccountsCount }} float registers</div>
             </div>
         </div>
 
@@ -140,7 +140,7 @@
                         <h3 class="text-sm font-bold text-slate-900 dark:text-white">Invoice Status</h3>
                         <p class="text-[11px] text-slate-400">Collection pipeline overview</p>
                     </div>
-                    <a href="{{ route('invoices.index') }}" class="text-[10px] font-bold text-emerald-600 hover:underline">View All →</a>
+                    <a href="{{ route('invoices.index') }}" class="text-[11px] font-bold text-emerald-600 hover:underline">View All →</a>
                 </div>
                 @php
                     $total = max(1, $totalInvoicesCount);
@@ -181,7 +181,7 @@
                         <h3 class="text-sm font-bold text-slate-900 dark:text-white">6-Month Revenue Trend</h3>
                         <p class="text-[11px] text-slate-400">Invoiced vs Collected per month</p>
                     </div>
-                    <div class="flex items-center gap-3 text-[10px] font-semibold">
+                    <div class="flex items-center gap-3 text-[11px] font-semibold">
                         <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-blue-500"></span>Invoiced</span>
                         <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500"></span>Collected</span>
                     </div>
@@ -198,7 +198,7 @@
                                  style="height:{{ $maxRev > 0 ? max(2, round($r['collected'] / $maxRev * 112)) : 2 }}px"
                                  title="Collected: ₹{{ number_format($r['collected'], 0) }}"></div>
                         </div>
-                        <span class="text-[9px] text-slate-400 font-medium">{{ $r['month'] }}</span>
+                        <span class="text-[11px] text-slate-400 font-medium">{{ $r['month'] }}</span>
                     </div>
                     @endforeach
                 </div>
@@ -215,7 +215,7 @@
                         <h3 class="text-sm font-bold text-slate-900 dark:text-white">AR Aging Buckets</h3>
                         <p class="text-[11px] text-slate-400">Outstanding by overdue days</p>
                     </div>
-                    <a href="{{ route('finance.receivables.index') }}" class="text-[10px] font-bold text-indigo-600 hover:underline">View AR →</a>
+                    <a href="{{ route('finance.receivables.index') }}" class="text-[11px] font-bold text-indigo-600 hover:underline">View AR →</a>
                 </div>
                 @php $maxAging = max(1, max($arAging)); @endphp
                 @foreach([
@@ -250,19 +250,19 @@
                             <h3 class="text-sm font-bold text-slate-900 dark:text-white">GST Overview</h3>
                             <p class="text-[11px] text-slate-400">Output tax vs ITC credit</p>
                         </div>
-                        <a href="{{ route('finance.gst.index') }}" class="text-[10px] font-bold text-amber-600 hover:underline">GST Hub →</a>
+                        <a href="{{ route('finance.gst.index') }}" class="text-[11px] font-bold text-amber-600 hover:underline">GST Hub →</a>
                     </div>
                     <div class="space-y-3">
                         <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60">
-                            <div class="text-[10px] text-slate-400 font-medium mb-1">Output GST (Sales)</div>
+                            <div class="text-[11px] text-slate-400 font-medium mb-1">Output GST (Sales)</div>
                             <div class="text-lg font-black text-slate-900 dark:text-white">₹{{ number_format($totalOutputGst, 0) }}</div>
                         </div>
                         <div class="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/30">
-                            <div class="text-[10px] text-emerald-600 font-medium mb-1">Input Tax Credit (ITC)</div>
+                            <div class="text-[11px] text-emerald-600 font-medium mb-1">Input Tax Credit (ITC)</div>
                             <div class="text-lg font-black text-emerald-600">₹{{ number_format($totalInputGst, 0) }}</div>
                         </div>
                         <div class="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/30">
-                            <div class="text-[10px] text-amber-600 font-medium mb-1">Net GST Payable</div>
+                            <div class="text-[11px] text-amber-600 font-medium mb-1">Net GST Payable</div>
                             <div class="text-lg font-black text-amber-600">₹{{ number_format($netGstLiability, 0) }}</div>
                         </div>
                     </div>
@@ -278,18 +278,18 @@
                     <div class="space-y-3">
                         <div class="p-3 rounded-xl bg-teal-50 dark:bg-teal-950/30">
                             <div class="flex justify-between items-center mb-1.5">
-                                <span class="text-[10px] text-teal-600 font-bold">Job Completion Rate</span>
+                                <span class="text-[11px] text-teal-600 font-bold">Job Completion Rate</span>
                                 <span class="text-xs font-black text-teal-700">{{ $completionPct }}%</span>
                             </div>
                             <div class="w-full h-1.5 bg-teal-200/60 dark:bg-teal-900/50 rounded-full overflow-hidden">
                                 <div class="bg-teal-500 h-full rounded-full" style="width:{{ $completionPct }}%"></div>
                             </div>
-                            <div class="text-[10px] text-slate-400 mt-1">{{ $completedJobsCount }} / {{ $jobsCount }} CCTV Jobs</div>
+                            <div class="text-[11px] text-slate-400 mt-1">{{ $completedJobsCount }} / {{ $jobsCount }} CCTV Jobs</div>
                         </div>
                         <div class="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/30">
-                            <div class="text-[10px] text-rose-600 font-medium mb-1">Vendor Payables (AP)</div>
+                            <div class="text-[11px] text-rose-600 font-medium mb-1">Vendor Payables (AP)</div>
                             <div class="text-lg font-black text-rose-600">₹{{ number_format($totalPayablesAmount, 0) }}</div>
-                            <div class="text-[10px] text-slate-400">{{ $unpaidPoCount }} unpaid · {{ $threeWayMatchedCount }} 3-way matched</div>
+                            <div class="text-[11px] text-slate-400">{{ $unpaidPoCount }} unpaid · {{ $threeWayMatchedCount }} 3-way matched</div>
                         </div>
                         <a href="{{ route('finance.job-costing.index') }}" class="flex items-center justify-between p-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors border border-dashed border-slate-200 dark:border-slate-700">
                             <span class="text-xs font-bold text-slate-700 dark:text-slate-300">View Job P&L →</span>
@@ -307,18 +307,18 @@
                     <h3 class="text-sm font-bold text-slate-900 dark:text-white">Recent Invoices</h3>
                     <p class="text-[11px] text-slate-400">Latest 8 invoices · sorted by date</p>
                 </div>
-                <a href="{{ route('invoices.index') }}" class="text-[10px] font-bold text-emerald-600 hover:underline">View All Invoices →</a>
+                <a href="{{ route('invoices.index') }}" class="text-[11px] font-bold text-emerald-600 hover:underline">View All Invoices →</a>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-xs">
                     <thead class="bg-slate-50 dark:bg-slate-800/60">
                         <tr>
-                            <th class="text-left px-5 py-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Invoice #</th>
-                            <th class="text-left px-4 py-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Customer</th>
-                            <th class="text-left px-4 py-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Date</th>
-                            <th class="text-left px-4 py-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Status</th>
-                            <th class="text-right px-4 py-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Total</th>
-                            <th class="text-right px-5 py-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Balance Due</th>
+                            <th class="text-left px-5 py-3 text-[11px] font-extrabold uppercase tracking-wider text-slate-400">Invoice #</th>
+                            <th class="text-left px-4 py-3 text-[11px] font-extrabold uppercase tracking-wider text-slate-400">Customer</th>
+                            <th class="text-left px-4 py-3 text-[11px] font-extrabold uppercase tracking-wider text-slate-400">Date</th>
+                            <th class="text-left px-4 py-3 text-[11px] font-extrabold uppercase tracking-wider text-slate-400">Status</th>
+                            <th class="text-right px-4 py-3 text-[11px] font-extrabold uppercase tracking-wider text-slate-400">Total</th>
+                            <th class="text-right px-5 py-3 text-[11px] font-extrabold uppercase tracking-wider text-slate-400">Balance Due</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
@@ -341,11 +341,11 @@
                             <td class="px-4 py-3 text-slate-900 dark:text-white font-medium">
                                 {{ $inv->customer_name }}
                             </td>
-                            <td class="px-4 py-3 text-slate-500 font-mono text-[10px]">
+                            <td class="px-4 py-3 text-slate-500 font-mono text-[11px]">
                                 {{ \Carbon\Carbon::parse($inv->invoice_date)->format('d M Y') }}
                             </td>
                             <td class="px-4 py-3">
-                                <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold {{ $statusStyles[0] }}">{{ $statusStyles[1] }}</span>
+                                <span class="px-2 py-0.5 rounded-full text-[11px] font-semibold {{ $statusStyles[0] }}">{{ $statusStyles[1] }}</span>
                             </td>
                             <td class="px-4 py-3 text-right font-bold text-slate-900 dark:text-white">
                                 ₹{{ number_format($inv->total, 0) }}
@@ -376,20 +376,20 @@
                         <h3 class="text-sm font-bold text-slate-900 dark:text-white">Top Unpaid Receivables</h3>
                         <p class="text-[11px] text-slate-400">Highest outstanding balances due</p>
                     </div>
-                    <a href="{{ route('finance.receivables.index') }}" class="text-[10px] font-bold text-indigo-600 hover:underline">Full AR →</a>
+                    <a href="{{ route('finance.receivables.index') }}" class="text-[11px] font-bold text-indigo-600 hover:underline">Full AR →</a>
                 </div>
                 <div class="divide-y divide-slate-100 dark:divide-slate-800">
                     @forelse($topUnpaid as $inv)
                     <div class="flex items-center justify-between px-5 py-3">
                         <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-400 to-blue-600 flex items-center justify-center text-white font-bold text-[10px] flex-shrink-0">
+                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-400 to-blue-600 flex items-center justify-center text-white font-bold text-[11px] flex-shrink-0">
                                 {{ strtoupper(substr($inv->customer_name, 0, 1)) }}
                             </div>
                             <div>
                                 <div class="text-xs font-semibold text-slate-900 dark:text-white">
                                     {{ $inv->customer_name }}
                                 </div>
-                                <div class="text-[10px] text-slate-400 font-mono">
+                                <div class="text-[11px] text-slate-400 font-mono">
                                     {{ $inv->invoice_no ?? '#' . str_pad($inv->id, 5, '0', STR_PAD_LEFT) }}
                                     · Due {{ $inv->due_date ? \Carbon\Carbon::parse($inv->due_date)->format('d M') : '—' }}
                                 </div>
@@ -398,9 +398,9 @@
                         <div class="text-right">
                             <div class="text-sm font-black text-rose-600">₹{{ number_format($inv->balance_due ?? 0, 0) }}</div>
                             @if($inv->due_date && \Carbon\Carbon::parse($inv->due_date)->isPast())
-                                <div class="text-[10px] font-semibold text-rose-500">Overdue</div>
+                                <div class="text-[11px] font-semibold text-rose-500">Overdue</div>
                             @else
-                                <div class="text-[10px] text-slate-400">Pending</div>
+                                <div class="text-[11px] text-slate-400">Pending</div>
                             @endif
                         </div>
                     </div>
@@ -424,35 +424,35 @@
                         <div class="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-950/50 text-emerald-600 flex items-center justify-center group-hover:scale-110 transition-transform">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                         </div>
-                        <div><div class="text-xs font-bold text-slate-900 dark:text-white">Invoices</div><div class="text-[10px] text-slate-400">{{ $totalInvoicesCount }} total bills</div></div>
+                        <div><div class="text-xs font-bold text-slate-900 dark:text-white">Invoices</div><div class="text-[11px] text-slate-400">{{ $totalInvoicesCount }} total bills</div></div>
                         <svg class="w-4 h-4 text-slate-300 ml-auto" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
                     </a>
                     <a href="{{ route('finance.receivables.index') }}" class="flex items-center gap-3 p-3 rounded-xl hover:bg-indigo-50 dark:hover:bg-indigo-950/30 group transition-colors">
                         <div class="w-9 h-9 rounded-xl bg-indigo-100 dark:bg-indigo-950/50 text-indigo-600 flex items-center justify-center group-hover:scale-110 transition-transform">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         </div>
-                        <div><div class="text-xs font-bold text-slate-900 dark:text-white">AR Collections</div><div class="text-[10px] text-rose-500">{{ $overdueInvoicesCount }} overdue bills</div></div>
+                        <div><div class="text-xs font-bold text-slate-900 dark:text-white">AR Collections</div><div class="text-[11px] text-rose-500">{{ $overdueInvoicesCount }} overdue bills</div></div>
                         <svg class="w-4 h-4 text-slate-300 ml-auto" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
                     </a>
                     <a href="{{ route('finance.payables.index') }}" class="flex items-center gap-3 p-3 rounded-xl hover:bg-rose-50 dark:hover:bg-rose-950/30 group transition-colors">
                         <div class="w-9 h-9 rounded-xl bg-rose-100 dark:bg-rose-950/50 text-rose-600 flex items-center justify-center group-hover:scale-110 transition-transform">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
                         </div>
-                        <div><div class="text-xs font-bold text-slate-900 dark:text-white">Vendor Payables</div><div class="text-[10px] text-slate-400">{{ $unpaidPoCount }} unpaid POs</div></div>
+                        <div><div class="text-xs font-bold text-slate-900 dark:text-white">Vendor Payables</div><div class="text-[11px] text-slate-400">{{ $unpaidPoCount }} unpaid POs</div></div>
                         <svg class="w-4 h-4 text-slate-300 ml-auto" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
                     </a>
                     <a href="{{ route('finance.gst.index') }}" class="flex items-center gap-3 p-3 rounded-xl hover:bg-amber-50 dark:hover:bg-amber-950/30 group transition-colors">
                         <div class="w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-950/50 text-amber-600 flex items-center justify-center group-hover:scale-110 transition-transform">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/></svg>
                         </div>
-                        <div><div class="text-xs font-bold text-slate-900 dark:text-white">GST Filing</div><div class="text-[10px] text-slate-400">Net: ₹{{ number_format($netGstLiability, 0) }}</div></div>
+                        <div><div class="text-xs font-bold text-slate-900 dark:text-white">GST Filing</div><div class="text-[11px] text-slate-400">Net: ₹{{ number_format($netGstLiability, 0) }}</div></div>
                         <svg class="w-4 h-4 text-slate-300 ml-auto" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
                     </a>
                     <a href="{{ route('finance.petty_cash.index') }}" class="flex items-center gap-3 p-3 rounded-xl hover:bg-sky-50 dark:hover:bg-sky-950/30 group transition-colors">
                         <div class="w-9 h-9 rounded-xl bg-sky-100 dark:bg-sky-950/50 text-sky-600 flex items-center justify-center group-hover:scale-110 transition-transform">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                         </div>
-                        <div><div class="text-xs font-bold text-slate-900 dark:text-white">Petty Cash</div><div class="text-[10px] text-slate-400">₹{{ number_format($totalPettyCashBalance, 0) }} float</div></div>
+                        <div><div class="text-xs font-bold text-slate-900 dark:text-white">Petty Cash</div><div class="text-[11px] text-slate-400">₹{{ number_format($totalPettyCashBalance, 0) }} float</div></div>
                         <svg class="w-4 h-4 text-slate-300 ml-auto" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
                     </a>
                 </div>

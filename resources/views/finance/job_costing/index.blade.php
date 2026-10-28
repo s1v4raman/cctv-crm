@@ -192,7 +192,7 @@
                                 <!-- Labor Cost -->
                                 <td class="py-3 px-3 text-right text-slate-700 dark:text-slate-300">
                                     <div>&#8377;{{ number_format($costing['labor_cost'], 2) }}</div>
-                                    <div class="text-[10px] text-slate-400">({{ $costing['labor_hours'] }}h)</div>
+                                    <div class="text-[11px] text-slate-400">({{ $costing['labor_hours'] }}h)</div>
                                 </td>
 
                                 <!-- Travel & Overheads -->

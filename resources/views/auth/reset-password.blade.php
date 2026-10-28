@@ -19,10 +19,6 @@
 
     <!-- Scripts & Styles via Vite -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-
-    <!-- Tailwind CSS & Alpine.js -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 
 <body class="h-full antialiased font-sans text-slate-800 bg-white"
@@ -179,7 +175,7 @@
             {{-- Bottom Right Tagline --}}
             <div class="flex items-center justify-between text-xs text-slate-500 pt-4">
                 <span>Enterprise Security Operations</span>
-                <span class="font-mono text-xs">ISO 27001 Certified</span>
+                <span class="font-mono text-xs">Role-based secure access</span>
             </div>
 
         </div>

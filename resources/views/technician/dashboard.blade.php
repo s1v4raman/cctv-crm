@@ -715,7 +715,7 @@
                     container.innerHTML = `
                         <div class="flex justify-between items-center flex-wrap gap-3">
                             <div>
-                                <div class="text-[10px] font-bold text-blue-300 uppercase">Catalog Product</div>
+                                <div class="text-[11px] font-bold text-blue-300 uppercase">Catalog Product</div>
                                 <h4 class="text-sm font-bold text-white mt-0.5">${data.product_name}</h4>
                                 <div class="text-xs text-slate-300">SKU: ${data.sku} &middot; Model: ${data.model_no || 'N/A'} &middot; Stock: <strong class="text-emerald-400">${data.stock_quantity} in stock</strong></div>
                             </div>

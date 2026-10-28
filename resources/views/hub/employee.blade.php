@@ -7,7 +7,7 @@
                 </div>
                 <div>
                     <div class="flex items-center gap-2">
-                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-widest bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
+                        <span class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold uppercase tracking-widest bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
                             Workforce Analytics Hub
                         </span>
                         <span class="text-xs text-slate-400 font-medium">• {{ $totalEmployees }} Active Staff</span>
@@ -56,67 +56,67 @@
             {{-- Total Workforce --}}
             <div class="col-span-1 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Total Staff</span>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Staff</span>
                     <div class="w-7 h-7 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 flex items-center justify-center">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                     </div>
                 </div>
                 <div class="text-2xl font-black text-slate-900 dark:text-white">{{ $totalEmployees }}</div>
-                <div class="text-[10px] text-slate-400 mt-0.5">{{ $technicianCount }} Techs · {{ $staffCount }} Staff · {{ $adminCount }} Admin</div>
+                <div class="text-[11px] text-slate-400 mt-0.5">{{ $technicianCount }} Techs · {{ $staffCount }} Staff · {{ $adminCount }} Admin</div>
             </div>
 
             {{-- Present Today --}}
             <div class="col-span-1 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Present</span>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Present</span>
                     <div class="w-7 h-7 rounded-lg bg-teal-50 dark:bg-teal-950/50 text-teal-600 flex items-center justify-center">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     </div>
                 </div>
                 <div class="text-2xl font-black text-emerald-600 dark:text-emerald-400">{{ $presentCount }}</div>
-                <div class="text-[10px] text-slate-400 mt-0.5">{{ $lateCount }} late · {{ $unmarkedCount }} unmarked</div>
+                <div class="text-[11px] text-slate-400 mt-0.5">{{ $lateCount }} late · {{ $unmarkedCount }} unmarked</div>
             </div>
 
             {{-- Absent --}}
             <div class="col-span-1 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Absent</span>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Absent</span>
                     <div class="w-7 h-7 rounded-lg bg-rose-50 dark:bg-rose-950/50 text-rose-600 flex items-center justify-center">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     </div>
                 </div>
                 <div class="text-2xl font-black text-rose-600 dark:text-rose-400">{{ $absentCount }}</div>
-                <div class="text-[10px] text-slate-400 mt-0.5">{{ $leaveCount }} on leave today</div>
+                <div class="text-[11px] text-slate-400 mt-0.5">{{ $leaveCount }} on leave today</div>
             </div>
 
             {{-- Salary Burn --}}
             <div class="col-span-1 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Monthly Burn</span>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Monthly Burn</span>
                     <div class="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 flex items-center justify-center">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     </div>
                 </div>
                 <div class="text-xl font-black text-slate-900 dark:text-white">₹{{ number_format($monthlySalaryBurn / 1000, 0) }}K</div>
-                <div class="text-[10px] text-slate-400 mt-0.5">₹{{ number_format($monthlySalaryBurn / 26, 0) }}/day burn rate</div>
+                <div class="text-[11px] text-slate-400 mt-0.5">₹{{ number_format($monthlySalaryBurn / 26, 0) }}/day burn rate</div>
             </div>
 
             {{-- Pending Actions --}}
             <div class="col-span-1 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Pending</span>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Pending</span>
                     <div class="w-7 h-7 rounded-lg bg-amber-50 dark:bg-amber-950/50 text-amber-600 flex items-center justify-center">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
                     </div>
                 </div>
                 <div class="text-2xl font-black text-amber-600 dark:text-amber-400">{{ $pendingLeavesCount + $pendingExpensesCount }}</div>
-                <div class="text-[10px] text-slate-400 mt-0.5">{{ $pendingLeavesCount }} leaves · {{ $pendingExpensesCount }} expenses</div>
+                <div class="text-[11px] text-slate-400 mt-0.5">{{ $pendingLeavesCount }} leaves · {{ $pendingExpensesCount }} expenses</div>
             </div>
 
             {{-- Payroll Status --}}
             <div class="col-span-1 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Payroll</span>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Payroll</span>
                     <div class="w-7 h-7 rounded-lg {{ $isPayrollGenerated ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600' : 'bg-amber-50 dark:bg-amber-950/50 text-amber-600' }} flex items-center justify-center">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/></svg>
                     </div>
@@ -124,7 +124,7 @@
                 <div class="text-sm font-black {{ $isPayrollGenerated ? 'text-emerald-600' : 'text-amber-600' }}">
                     {{ $isPayrollGenerated ? 'Generated' : 'Pending Run' }}
                 </div>
-                <div class="text-[10px] text-slate-400 mt-0.5">{{ $payrollPaidCount }} paid · ₹{{ number_format($payrollTotalAmount, 0) }}</div>
+                <div class="text-[11px] text-slate-400 mt-0.5">{{ $payrollPaidCount }} paid · ₹{{ number_format($payrollTotalAmount, 0) }}</div>
             </div>
         </div>
 
@@ -138,7 +138,7 @@
                         <h3 class="text-sm font-bold text-slate-900 dark:text-white">Today's Attendance</h3>
                         <p class="text-[11px] text-slate-400">{{ now()->format('D, d M Y') }}</p>
                     </div>
-                    <a href="{{ route('attendance.index') }}" class="text-[10px] font-bold text-emerald-600 hover:underline">View Full →</a>
+                    <a href="{{ route('attendance.index') }}" class="text-[11px] font-bold text-emerald-600 hover:underline">View Full →</a>
                 </div>
 
                 {{-- Visual bar breakdown --}}
@@ -173,7 +173,7 @@
                         </div>
                         <div class="flex items-center gap-2">
                             <span class="text-xs font-bold {{ $text }}">{{ $count }}</span>
-                            <span class="text-[10px] text-slate-400 w-7 text-right">{{ $total > 0 ? round($count / $total * 100) : 0 }}%</span>
+                            <span class="text-[11px] text-slate-400 w-7 text-right">{{ $total > 0 ? round($count / $total * 100) : 0 }}%</span>
                         </div>
                     </div>
                     @endforeach
@@ -187,7 +187,7 @@
                         <h3 class="text-sm font-bold text-slate-900 dark:text-white">7-Day Attendance Trend</h3>
                         <p class="text-[11px] text-slate-400">Daily present vs absent vs leave</p>
                     </div>
-                    <div class="flex items-center gap-3 text-[10px] font-semibold">
+                    <div class="flex items-center gap-3 text-[11px] font-semibold">
                         <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500"></span>Present</span>
                         <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-rose-500"></span>Absent</span>
                         <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-purple-500"></span>Leave</span>
@@ -202,7 +202,7 @@
                             <div class="bg-rose-400/70 w-full"    style="height:{{ $dayTotal > 0 ? round($day['absent'] / $totalEmployees * 120) : 0 }}px" title="Absent: {{ $day['absent'] }}"></div>
                             <div class="bg-purple-400/70 w-full"  style="height:{{ $dayTotal > 0 ? round($day['on_leave'] / $totalEmployees * 120) : 0 }}px" title="Leave: {{ $day['on_leave'] }}"></div>
                         </div>
-                        <span class="text-[9px] text-slate-400 font-medium text-center">{{ $day['date'] }}</span>
+                        <span class="text-[11px] text-slate-400 font-medium text-center">{{ $day['date'] }}</span>
                     </div>
                     @endforeach
                 </div>
@@ -232,14 +232,14 @@
                         <div class="flex items-center gap-1.5">
                             <span class="w-2 h-2 rounded-full {{ $barColor }}"></span>
                             <span class="text-xs font-semibold text-slate-700 dark:text-slate-300">{{ $roleLabel }}</span>
-                            <span class="text-[10px] text-slate-400">({{ $roleCount }})</span>
+                            <span class="text-[11px] text-slate-400">({{ $roleCount }})</span>
                         </div>
                         <span class="text-xs font-bold {{ $textColor }}">₹{{ number_format($roleAmt, 0) }}</span>
                     </div>
                     <div class="w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
                         <div class="{{ $barColor }} h-full rounded-full transition-all duration-700" style="width:{{ $rolePct }}%"></div>
                     </div>
-                    <div class="text-right text-[10px] text-slate-400 mt-0.5">{{ $rolePct }}% of total</div>
+                    <div class="text-right text-[11px] text-slate-400 mt-0.5">{{ $rolePct }}% of total</div>
                 </div>
                 @endforeach
             </div>
@@ -251,19 +251,19 @@
                         <h3 class="text-sm font-bold text-slate-900 dark:text-white">Payroll History (6 Months)</h3>
                         <p class="text-[11px] text-slate-400">Net salary disbursed per month</p>
                     </div>
-                    <a href="{{ route('finance.payroll.index') }}" class="text-[10px] font-bold text-indigo-600 hover:underline">Manage Payroll →</a>
+                    <a href="{{ route('finance.payroll.index') }}" class="text-[11px] font-bold text-indigo-600 hover:underline">Manage Payroll →</a>
                 </div>
                 @php $maxPayroll = max(1, $payrollHistory->max('total')); @endphp
                 <div class="flex items-end gap-3 h-32">
                     @foreach($payrollHistory as $ph)
                     @php $barH = $ph['total'] > 0 ? max(4, round($ph['total'] / $maxPayroll * 112)) : 4; @endphp
                     <div class="flex-1 flex flex-col items-center gap-1.5 group">
-                        <span class="text-[9px] text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity font-mono">
+                        <span class="text-[11px] text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity font-mono">
                             ₹{{ number_format($ph['total'] / 1000, 0) }}K
                         </span>
                         <div class="w-full rounded-t-lg {{ $ph['total'] > 0 ? 'bg-indigo-500' : 'bg-slate-200 dark:bg-slate-700' }} transition-all"
                              style="height:{{ $barH }}px" title="₹{{ number_format($ph['total'], 0) }}"></div>
-                        <span class="text-[9px] text-slate-400 font-medium text-center">{{ $ph['month'] }}</span>
+                        <span class="text-[11px] text-slate-400 font-medium text-center">{{ $ph['month'] }}</span>
                     </div>
                     @endforeach
                 </div>
@@ -281,21 +281,21 @@
                     <a href="{{ route('admin.users.create', ['return_to' => route('employee.hub')]) }}" class="btn-primary" style="height: 32px !important; min-height: 32px !important; font-size: 13px !important; padding: 0 14px !important;">
                         Add New Employee
                     </a>
-                    <a href="{{ route('attendance.index') }}" class="text-[10px] font-bold text-emerald-600 hover:underline">Mark Attendance →</a>
+                    <a href="{{ route('attendance.index') }}" class="text-[11px] font-bold text-emerald-600 hover:underline">Mark Attendance →</a>
                 </div>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-xs">
                     <thead class="bg-slate-50 dark:bg-slate-800/60">
                         <tr>
-                            <th class="text-left px-5 py-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">#</th>
-                            <th class="text-left px-4 py-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Employee</th>
-                            <th class="text-left px-4 py-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Role</th>
-                            <th class="text-left px-4 py-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Today</th>
-                            <th class="text-left px-4 py-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Clock In</th>
-                            <th class="text-left px-4 py-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Clock Out</th>
-                            <th class="text-right px-4 py-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Salary/mo</th>
-                            <th class="text-right px-5 py-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Actions</th>
+                            <th class="text-left px-5 py-3 text-[11px] font-extrabold uppercase tracking-wider text-slate-400">#</th>
+                            <th class="text-left px-4 py-3 text-[11px] font-extrabold uppercase tracking-wider text-slate-400">Employee</th>
+                            <th class="text-left px-4 py-3 text-[11px] font-extrabold uppercase tracking-wider text-slate-400">Role</th>
+                            <th class="text-left px-4 py-3 text-[11px] font-extrabold uppercase tracking-wider text-slate-400">Today</th>
+                            <th class="text-left px-4 py-3 text-[11px] font-extrabold uppercase tracking-wider text-slate-400">Clock In</th>
+                            <th class="text-left px-4 py-3 text-[11px] font-extrabold uppercase tracking-wider text-slate-400">Clock Out</th>
+                            <th class="text-right px-4 py-3 text-[11px] font-extrabold uppercase tracking-wider text-slate-400">Salary/mo</th>
+                            <th class="text-right px-5 py-3 text-[11px] font-extrabold uppercase tracking-wider text-slate-400">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
@@ -317,25 +317,25 @@
                             };
                         @endphp
                         <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
-                            <td class="px-5 py-3 text-slate-400 font-mono text-[10px]">{{ $i + 1 }}</td>
+                            <td class="px-5 py-3 text-slate-400 font-mono text-[11px]">{{ $i + 1 }}</td>
                             <td class="px-4 py-3">
                                 <div class="flex items-center gap-2.5">
-                                    <div class="w-7 h-7 rounded-full bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center text-white font-bold text-[10px] flex-shrink-0">
+                                    <div class="w-7 h-7 rounded-full bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center text-white font-bold text-[11px] flex-shrink-0">
                                         {{ strtoupper(substr($emp['name'], 0, 1)) }}
                                     </div>
                                     <div>
                                         <div class="font-semibold text-slate-900 dark:text-white text-xs">{{ $emp['name'] }}</div>
-                                        <div class="text-slate-400 text-[10px]">{{ $emp['email'] }}</div>
+                                        <div class="text-slate-400 text-[11px]">{{ $emp['email'] }}</div>
                                     </div>
                                 </div>
                             </td>
                             <td class="px-4 py-3">
-                                <span class="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase {{ $roleColor }}">
+                                <span class="px-2 py-0.5 rounded-md text-[11px] font-bold uppercase {{ $roleColor }}">
                                     {{ ucfirst($emp['role']) }}
                                 </span>
                             </td>
                             <td class="px-4 py-3">
-                                <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold {{ $statusStyles[0] }}">
+                                <span class="px-2 py-0.5 rounded-full text-[11px] font-semibold {{ $statusStyles[0] }}">
                                     {{ $statusStyles[1] }}
                                 </span>
                             </td>
@@ -397,7 +397,7 @@
                         <h3 class="text-sm font-bold text-slate-900 dark:text-white">Recent Leave Requests</h3>
                         <p class="text-[11px] text-slate-400">{{ $pendingLeavesCount }} pending approval</p>
                     </div>
-                    <a href="{{ route('leaves.index') }}" class="text-[10px] font-bold text-amber-600 hover:underline">View All →</a>
+                    <a href="{{ route('leaves.index') }}" class="text-[11px] font-bold text-amber-600 hover:underline">View All →</a>
                 </div>
                 <div class="divide-y divide-slate-100 dark:divide-slate-800">
                     @forelse($recentLeaves as $leave)
@@ -410,19 +410,19 @@
                     @endphp
                     <div class="flex items-center justify-between px-5 py-3">
                         <div class="flex items-center gap-3">
-                            <div class="w-7 h-7 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white font-bold text-[10px] flex-shrink-0">
+                            <div class="w-7 h-7 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white font-bold text-[11px] flex-shrink-0">
                                 {{ strtoupper(substr($leave->user?->name ?? 'U', 0, 1)) }}
                             </div>
                             <div>
                                 <div class="text-xs font-semibold text-slate-900 dark:text-white">{{ $leave->user?->name ?? 'Unknown' }}</div>
-                                <div class="text-[10px] text-slate-400">
+                                <div class="text-[11px] text-slate-400">
                                     {{ ucfirst(str_replace('_', ' ', $leave->leave_type ?? 'Leave')) }}
                                     · {{ \Carbon\Carbon::parse($leave->start_date ?? $leave->created_at)->format('d M') }}
                                     @if(!empty($leave->end_date)) – {{ \Carbon\Carbon::parse($leave->end_date)->format('d M') }} @endif
                                 </div>
                             </div>
                         </div>
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold {{ $leaveStatus[0] }}">{{ $leaveStatus[1] }}</span>
+                        <span class="px-2 py-0.5 rounded-full text-[11px] font-semibold {{ $leaveStatus[0] }}">{{ $leaveStatus[1] }}</span>
                     </div>
                     @empty
                     <div class="flex flex-col items-center justify-center py-10 text-slate-400">
@@ -447,9 +447,9 @@
                         <div>
                             <div class="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
                                 <span>Add New Employee</span>
-                                <span class="px-1.5 py-0.2 bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 rounded text-[9px] font-extrabold uppercase tracking-wide">New</span>
+                                <span class="px-1.5 py-0.2 bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 rounded text-[11px] font-extrabold uppercase tracking-wide">New</span>
                             </div>
-                            <div class="text-[10px] text-slate-400">Onboard staff, admin or technician</div>
+                            <div class="text-[11px] text-slate-400">Onboard staff, admin or technician</div>
                         </div>
                         <svg class="w-4 h-4 text-slate-300 ml-auto" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
                     </a>
@@ -459,7 +459,7 @@
                         </div>
                         <div>
                             <div class="text-xs font-bold text-slate-900 dark:text-white">Mark Attendance</div>
-                            <div class="text-[10px] text-slate-400">Daily punch-in log</div>
+                            <div class="text-[11px] text-slate-400">Daily punch-in log</div>
                         </div>
                         <svg class="w-4 h-4 text-slate-300 ml-auto" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
                     </a>
@@ -469,7 +469,7 @@
                         </div>
                         <div>
                             <div class="text-xs font-bold text-slate-900 dark:text-white">Manage Leaves</div>
-                            <div class="text-[10px] text-slate-400">{{ $pendingLeavesCount }} pending</div>
+                            <div class="text-[11px] text-slate-400">{{ $pendingLeavesCount }} pending</div>
                         </div>
                         <svg class="w-4 h-4 text-slate-300 ml-auto" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
                     </a>
@@ -479,7 +479,7 @@
                         </div>
                         <div>
                             <div class="text-xs font-bold text-slate-900 dark:text-white">Salary Master</div>
-                            <div class="text-[10px] text-slate-400">{{ $configuredSalariesCount }}/{{ $totalEmployees }} configured</div>
+                            <div class="text-[11px] text-slate-400">{{ $configuredSalariesCount }}/{{ $totalEmployees }} configured</div>
                         </div>
                         <svg class="w-4 h-4 text-slate-300 ml-auto" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
                     </a>
@@ -489,7 +489,7 @@
                         </div>
                         <div>
                             <div class="text-xs font-bold text-slate-900 dark:text-white">Run Payroll</div>
-                            <div class="text-[10px] text-slate-400 {{ $isPayrollGenerated ? 'text-emerald-500' : 'text-amber-500' }}">
+                            <div class="text-[11px] text-slate-400 {{ $isPayrollGenerated ? 'text-emerald-500' : 'text-amber-500' }}">
                                 {{ $isPayrollGenerated ? 'Generated' : 'Pending Run' }}
                             </div>
                         </div>
@@ -501,7 +501,7 @@
                         </div>
                         <div>
                             <div class="text-xs font-bold text-slate-900 dark:text-white">Expense Claims</div>
-                            <div class="text-[10px] text-slate-400">{{ $pendingExpensesCount }} pending · ₹{{ number_format($pendingExpensesAmount, 0) }}</div>
+                            <div class="text-[11px] text-slate-400">{{ $pendingExpensesCount }} pending · ₹{{ number_format($pendingExpensesAmount, 0) }}</div>
                         </div>
                         <svg class="w-4 h-4 text-slate-300 ml-auto" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
                     </a>

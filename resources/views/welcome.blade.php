@@ -34,34 +34,6 @@
     <!-- Scripts & Styles via Vite (Precompiled local assets guarantee normal styling even if Edge or extensions block CDNs) -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-    <!-- Tailwind CSS Play CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-                        heading: ['"Outfit"', 'sans-serif'],
-                    },
-                    colors: {
-                        brand: {
-                            blue: '#1366e2',
-                            blueDark: '#0e4db0',
-                            blueLight: '#eff6ff',
-                            dark: '#060913',
-                            surface: '#0f172a',
-                            surfaceHover: '#1e293b',
-                            border: '#1e293b',
-                            borderLight: '#e2e8f0',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-
     <style>
         body {
             font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -206,7 +178,7 @@
                         <!-- Authenticated User Profile Initial Badge -->
                         <button type="button" id="userDropdownBtn" onclick="toggleUserDropdown(event)"
                             class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl flex items-center justify-center font-black text-xs sm:text-base text-white shadow-md transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none ring-2 ring-slate-200/90 dark:ring-slate-700/80 hover:ring-blue-500/50 cursor-pointer select-none shrink-0"
-                            style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);"
+                            style="background: var(--crm-accent, #2563eb);"
                             title="My Account: {{ Auth::user()->name }} (Click to view profile)">
                             <span class="drop-shadow-xs">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
                         </button>
@@ -230,7 +202,7 @@
                         @auth
                             <div class="px-4 py-3 bg-gradient-to-r from-blue-50/80 to-slate-50 dark:from-blue-950/40 dark:to-slate-900/60 border-b border-blue-100 dark:border-blue-900/50 flex items-center gap-3">
                                 <div class="w-9 h-9 rounded-xl flex items-center justify-center font-black text-sm text-white shrink-0 shadow-sm"
-                                     style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);">
+                                     style="background: var(--crm-accent, #2563eb);">
                                     {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                                 </div>
                                 <div class="min-w-0 flex-1">
@@ -608,7 +580,7 @@
                                 </div>
                                 <div class="min-w-0 flex-1">
                                     <div id="heroFloatingBadgeTitle" class="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider truncate">CCTV &amp; Biometrics</div>
-                                    <div id="heroFloatingBadgeSub" class="text-xs text-slate-500 dark:text-slate-400 truncate">ISO 27001 Certified Security</div>
+                                    <div id="heroFloatingBadgeSub" class="text-xs text-slate-500 dark:text-slate-400 truncate">Installation, AMC &amp; Support</div>
                                 </div>
                                 <div class="hidden sm:flex items-center gap-1.5 text-[10px] text-slate-400 dark:text-slate-500 font-medium flex-shrink-0">
                                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -827,7 +799,7 @@
                         </div>
 
                         <div class="mt-8 pt-6 border-t border-slate-200/80 dark:border-slate-800/80 text-xs text-slate-500 dark:text-slate-400">
-                            We pride ourselves on 99.9% uptime reliability, strict SLA adherence, and precision security engineering.
+                            We pride ourselves on reliable installations, strict SLA adherence, and precision security engineering.
                         </div>
                     </div>
                 </div>

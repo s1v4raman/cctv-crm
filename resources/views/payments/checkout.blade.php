@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Secure Online Payment | {{ config('app.name', 'CCTV Security Solutions') }}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite('resources/css/standalone.css')
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: #f8fafc; color: #1e293b; }

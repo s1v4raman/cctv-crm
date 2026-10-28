@@ -7,8 +7,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Mobile Barcode & Asset Scanner | PathSoft CCTV</title>
 
-    <!-- Tailwind Play CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Compiled Tailwind (standalone.css) -->
+    @vite('resources/css/standalone.css')
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
@@ -45,14 +45,14 @@
                     <span>Mobile Barcode Scanner</span>
                     <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse" title="Online"></span>
                 </h1>
-                <p class="text-[10px] text-slate-400 font-mono truncate max-w-[170px]">
+                <p class="text-[11px] text-slate-400 font-mono truncate max-w-[170px]">
                     Session: <span class="text-blue-400 font-bold">{{ $token }}</span>
                 </p>
             </div>
         </div>
 
         <div class="flex items-center space-x-1.5">
-            <span id="connectionBadge" class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-950/80 text-emerald-400 border border-emerald-800/60 flex items-center gap-1">
+            <span id="connectionBadge" class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-950/80 text-emerald-400 border border-emerald-800/60 flex items-center gap-1">
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
                 <span>Laptop Linked</span>
             </span>
@@ -68,7 +68,7 @@
                 <span class="text-blue-400">Scanning for:</span>
                 <span class="font-bold text-white bg-blue-900/50 px-2 py-0.5 rounded text-[11px]">{{ $label }}</span>
             </div>
-            <span class="text-[10px] text-slate-400">Instant Sync</span>
+            <span class="text-[11px] text-slate-400">Instant Sync</span>
         </div>
 
         <!-- Camera Viewport Card -->
@@ -154,7 +154,7 @@
         <div class="mt-4 pt-3 border-t border-slate-800/80 flex-grow">
             <div class="flex items-center justify-between mb-2">
                 <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Recent Scans This Session</h3>
-                <span class="text-[10px] text-slate-500 font-mono" id="scanCountBadge">0 items</span>
+                <span class="text-[11px] text-slate-500 font-mono" id="scanCountBadge">0 items</span>
             </div>
 
             <div id="recentScansList" class="space-y-2 max-h-40 overflow-y-auto pr-1">
@@ -167,7 +167,7 @@
     </main>
 
     <!-- Bottom Instructions Footer -->
-    <footer class="bg-slate-900/60 border-t border-slate-800/80 px-4 py-2.5 text-center text-[10px] text-slate-500">
+    <footer class="bg-slate-900/60 border-t border-slate-800/80 px-4 py-2.5 text-center text-[11px] text-slate-500">
         Connected to CCTV CRM ERP • Scanning automatically fills your laptop screen.
     </footer>
 
@@ -410,7 +410,7 @@
                         <span class="text-blue-400 font-mono text-xs font-bold">${escapeHtml(item)}</span>
                     </div>
                     <button type="button" onclick="pushCodeToLaptop('${escapeHtml(item)}'); alert('Re-sent to laptop!');"
-                        class="px-2.5 py-1 rounded bg-blue-600/30 hover:bg-blue-600 text-blue-300 hover:text-white text-[10px] font-bold transition-colors">
+                        class="px-2.5 py-1 rounded bg-blue-600/30 hover:bg-blue-600 text-blue-300 hover:text-white text-[11px] font-bold transition-colors">
                         Re-Send
                     </button>
                 </div>

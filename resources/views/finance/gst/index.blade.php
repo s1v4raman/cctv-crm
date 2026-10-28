@@ -41,15 +41,15 @@
                         </div>
                         <a href="{{ route('finance.gst.export-json', ['month' => $selectedMonth]) }}" class="block px-3.5 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
                             <div class="font-bold">GSTR-1 Portal JSON</div>
-                            <div class="text-[10px] text-slate-400">Direct upload to gst.gov.in</div>
+                            <div class="text-[11px] text-slate-400">Direct upload to gst.gov.in</div>
                         </a>
                         <a href="{{ route('finance.gst.export-csv', ['month' => $selectedMonth]) }}" class="block px-3.5 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
                             <div class="font-bold">GSTR-1 Sales Report (CSV)</div>
-                            <div class="text-[10px] text-slate-400">B2B, B2C & HSN format</div>
+                            <div class="text-[11px] text-slate-400">B2B, B2C & HSN format</div>
                         </a>
                         <a href="{{ route('finance.gst.export-itc-csv', ['month' => $selectedMonth]) }}" class="block px-3.5 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
                             <div class="font-bold">GSTR-2B / ITC Purchases (CSV)</div>
-                            <div class="text-[10px] text-slate-400">Vendor POs & Expenses</div>
+                            <div class="text-[11px] text-slate-400">Vendor POs & Expenses</div>
                         </a>
                         <div class="border-t border-slate-100 dark:border-slate-800 my-1"></div>
                         <a href="{{ route('finance.gst.export-pdf', ['month' => $selectedMonth]) }}" class="block px-3.5 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
@@ -237,7 +237,7 @@
                     <!-- Matrix Table -->
                     <div class="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800">
                         <table class="w-full text-xs text-left">
-                            <thead class="bg-slate-50 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 font-bold uppercase tracking-wider text-[10px]">
+                            <thead class="bg-slate-50 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 font-bold uppercase tracking-wider text-[11px]">
                                 <tr>
                                     <th class="py-3 px-4">Tax Component / Head</th>
                                     <th class="py-3 px-4 text-right">Integrated Tax (IGST)</th>
@@ -332,7 +332,7 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                                    <span class="px-2 py-0.5 bg-indigo-100 text-indigo-800 dark:bg-indigo-950/60 dark:text-indigo-400 rounded-md text-[10px] font-black">TABLE 4</span>
+                                    <span class="px-2 py-0.5 bg-indigo-100 text-indigo-800 dark:bg-indigo-950/60 dark:text-indigo-400 rounded-md text-[11px] font-black">TABLE 4</span>
                                     <span>B2B Invoices (Registered Clients with GSTIN)</span>
                                 </h3>
                                 <p class="text-xs text-slate-500 dark:text-slate-400">Total: {{ count($gstr1Data['b2b_invoices']) }} invoice(s)</p>
@@ -341,7 +341,7 @@
 
                         <div class="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800">
                             <table class="w-full text-xs text-left">
-                                <thead class="bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold uppercase tracking-wider text-[10px]">
+                                <thead class="bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold uppercase tracking-wider text-[11px]">
                                     <tr>
                                         <th class="py-3 px-3">Invoice No</th>
                                         <th class="py-3 px-3">Date</th>
@@ -367,7 +367,7 @@
                                             <td class="py-3 px-3 font-semibold">{{ $b2b['customer_name'] }}</td>
                                             <td class="py-3 px-3 font-mono font-bold text-slate-800 dark:text-slate-200">{{ $b2b['customer_gstin'] }}</td>
                                             <td class="py-3 px-3">
-                                                <span class="px-2 py-0.5 rounded-md text-[10px] font-bold {{ $b2b['is_intra_state'] ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-400' : 'bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-400' }}">
+                                                <span class="px-2 py-0.5 rounded-md text-[11px] font-bold {{ $b2b['is_intra_state'] ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-400' : 'bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-400' }}">
                                                     {{ $b2b['pos_state'] }} ({{ $b2b['pos_code'] }})
                                                 </span>
                                             </td>
@@ -396,7 +396,7 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                                    <span class="px-2 py-0.5 bg-teal-100 text-teal-800 dark:bg-teal-950/60 dark:text-teal-400 rounded-md text-[10px] font-black">TABLE 7</span>
+                                    <span class="px-2 py-0.5 bg-teal-100 text-teal-800 dark:bg-teal-950/60 dark:text-teal-400 rounded-md text-[11px] font-black">TABLE 7</span>
                                     <span>B2C Small Supplies (Unregistered / Retail Customers)</span>
                                 </h3>
                                 <p class="text-xs text-slate-500 dark:text-slate-400">Consolidated Place of Supply & Tax Rate aggregation</p>
@@ -405,7 +405,7 @@
 
                         <div class="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800">
                             <table class="w-full text-xs text-left">
-                                <thead class="bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold uppercase tracking-wider text-[10px]">
+                                <thead class="bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold uppercase tracking-wider text-[11px]">
                                     <tr>
                                         <th class="py-3 px-3">Place of Supply</th>
                                         <th class="py-3 px-3">Supply Type</th>
@@ -423,7 +423,7 @@
                                         <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition">
                                             <td class="py-3 px-3 font-bold">{{ $b2cs['pos_state'] }} ({{ $b2cs['pos_code'] }})</td>
                                             <td class="py-3 px-3">
-                                                <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold {{ $b2cs['is_intra_state'] ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400' : 'bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-400' }}">
+                                                <span class="px-2 py-0.5 rounded-md text-[11px] font-semibold {{ $b2cs['is_intra_state'] ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400' : 'bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-400' }}">
                                                     {{ $b2cs['is_intra_state'] ? 'Intra-State' : 'Inter-State' }}
                                                 </span>
                                             </td>
@@ -459,7 +459,7 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                                    <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-400 rounded-md text-[10px] font-black">GSTR-2B</span>
+                                    <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-400 rounded-md text-[11px] font-black">GSTR-2B</span>
                                     <span>Vendor Inward Supplies (Purchase Orders)</span>
                                 </h3>
                                 <p class="text-xs text-slate-500 dark:text-slate-400">Total PO ITC: ₹{{ number_format($itcData['total_po_itc'], 2) }}</p>
@@ -468,7 +468,7 @@
 
                         <div class="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800">
                             <table class="w-full text-xs text-left">
-                                <thead class="bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold uppercase tracking-wider text-[10px]">
+                                <thead class="bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold uppercase tracking-wider text-[11px]">
                                     <tr>
                                         <th class="py-3 px-3">PO Number</th>
                                         <th class="py-3 px-3">Vendor Bill No</th>
@@ -519,7 +519,7 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                                    <span class="px-2 py-0.5 bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-400 rounded-md text-[10px] font-black">EXPENSES</span>
+                                    <span class="px-2 py-0.5 bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-400 rounded-md text-[11px] font-black">EXPENSES</span>
                                     <span>Hardware Tools & Site Materials (ITC Eligible)</span>
                                 </h3>
                                 <p class="text-xs text-slate-500 dark:text-slate-400">Total Expense ITC: ₹{{ number_format($itcData['total_expense_itc'], 2) }}</p>
@@ -528,7 +528,7 @@
 
                         <div class="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800">
                             <table class="w-full text-xs text-left">
-                                <thead class="bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold uppercase tracking-wider text-[10px]">
+                                <thead class="bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold uppercase tracking-wider text-[11px]">
                                     <tr>
                                         <th class="py-3 px-3">Claim No</th>
                                         <th class="py-3 px-3">Date</th>
@@ -582,7 +582,7 @@
 
                     <div class="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800">
                         <table class="w-full text-xs text-left">
-                            <thead class="bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold uppercase tracking-wider text-[10px]">
+                            <thead class="bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold uppercase tracking-wider text-[11px]">
                                 <tr>
                                     <th class="py-3 px-4">HSN / SAC Code</th>
                                     <th class="py-3 px-4">Item Description</th>
@@ -641,7 +641,7 @@
 
                     <div class="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800">
                         <table class="w-full text-xs text-left">
-                            <thead class="bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold uppercase tracking-wider text-[10px]">
+                            <thead class="bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold uppercase tracking-wider text-[11px]">
                                 <tr>
                                     <th class="py-3 px-4">Period</th>
                                     <th class="py-3 px-4 text-center">GSTR-1</th>
@@ -661,12 +661,12 @@
                                             {{ $hist->formatted_period }} ({{ $hist->period }})
                                         </td>
                                         <td class="py-3.5 px-4 text-center">
-                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase {{ $hist->gstr1_status === 'filed' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-400' : 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-400' }}">
+                                            <span class="px-2 py-0.5 rounded-full text-[11px] font-black uppercase {{ $hist->gstr1_status === 'filed' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-400' : 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-400' }}">
                                                 {{ $hist->gstr1_status }}
                                             </span>
                                         </td>
                                         <td class="py-3.5 px-4 text-center">
-                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase {{ $hist->gstr3b_status === 'filed' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-400' : 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-400' }}">
+                                            <span class="px-2 py-0.5 rounded-full text-[11px] font-black uppercase {{ $hist->gstr3b_status === 'filed' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-400' : 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-400' }}">
                                                 {{ $hist->gstr3b_status }}
                                             </span>
                                         </td>
@@ -677,7 +677,7 @@
                                         <td class="py-3.5 px-4 font-mono text-[11px]">
                                             <div>{{ $hist->challan_no ?: '—' }}</div>
                                             @if($hist->cin_number)
-                                                <div class="text-[10px] text-slate-400 font-normal">CIN: {{ $hist->cin_number }}</div>
+                                                <div class="text-[11px] text-slate-400 font-normal">CIN: {{ $hist->cin_number }}</div>
                                             @endif
                                         </td>
                                         <td class="py-3.5 px-4 text-slate-500 whitespace-nowrap">

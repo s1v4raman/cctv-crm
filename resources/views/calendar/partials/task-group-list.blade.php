@@ -69,7 +69,7 @@
                                             <p class="mt-0.5 text-[11px] leading-relaxed italic">
                                                 &ldquo;{{ $task['rejection_reason'] }}&rdquo;
                                             </p>
-                                            <p class="mt-1 text-[10px] font-semibold text-rose-600 dark:text-rose-400 uppercase tracking-wider">
+                                            <p class="mt-1 text-[11px] font-semibold text-rose-600 dark:text-rose-400 uppercase tracking-wider">
                                                 Routed to Administrator for reassignment
                                             </p>
                                         </div>
@@ -98,7 +98,7 @@
                                     </span>
 
                                     {{-- Priority Badge --}}
-                                    <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded
+                                    <span class="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded
                                         {{ $task['priority'] === 'urgent' ? 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300' : 
                                            ($task['priority'] === 'high' ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300' : 
                                            ($task['priority'] === 'medium' ? 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300' : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300')) }}">
@@ -106,7 +106,7 @@
                                     </span>
 
                                     {{-- Status Badge --}}
-                                    <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded
+                                    <span class="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded
                                         {{ $task['status'] === 'completed' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' :
                                            ($task['status'] === 'in_progress' ? 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300' :
                                            ($task['status'] === 'rejected' ? 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300' : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300')) }}">
@@ -114,14 +114,14 @@
                                     </span>
 
                                     {{-- Shift badge --}}
-                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-200/60 dark:border-amber-800/60 inline-flex items-center gap-1">
+                                    <span class="text-[11px] font-bold px-2 py-0.5 rounded bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-200/60 dark:border-amber-800/60 inline-flex items-center gap-1">
                                         <span>☀️</span>
                                         <span>{{ $task['shift'] }}</span>
                                     </span>
 
                                     {{-- Accepted indicator --}}
                                     @if(!empty($task['accepted_at']))
-                                        <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 dark:bg-emerald-950/80 dark:text-emerald-300 inline-flex items-center gap-1">
+                                        <span class="text-[11px] font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 dark:bg-emerald-950/80 dark:text-emerald-300 inline-flex items-center gap-1">
                                             <span>✓ Accepted</span>
                                             <span class="font-normal">({{ $task['accepted_at'] }})</span>
                                         </span>
@@ -179,7 +179,7 @@
                                     {{-- Assignee (Non-workers only) --}}
                                     @if(empty($task['is_worker_view']) && !empty($task['assigned_user']))
                                         <div class="inline-flex items-center gap-1.5 font-medium">
-                                            <div class="w-5 h-5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/60 dark:text-blue-300 font-bold flex items-center justify-center text-[10px]">
+                                            <div class="w-5 h-5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/60 dark:text-blue-300 font-bold flex items-center justify-center text-[11px]">
                                                 {{ substr($task['assigned_user']['name'], 0, 1) }}
                                             </div>
                                             <span>{{ $task['assigned_user']['name'] }}</span>

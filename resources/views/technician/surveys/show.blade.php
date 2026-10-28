@@ -49,23 +49,23 @@
                 <h3 class="text-xs font-extrabold text-amber-400 uppercase tracking-wider mb-3">Premises & Contact Details</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
                     <div>
-                        <span class="text-slate-500 block uppercase text-[10px] font-bold">Client / Site Name</span>
+                        <span class="text-slate-500 block uppercase text-[11px] font-bold">Client / Site Name</span>
                         <span class="font-extrabold text-white text-sm font-heading">{{ $siteSurvey->lead->customer_name }}</span>
                     </div>
                     <div>
-                        <span class="text-slate-500 block uppercase text-[10px] font-bold">Contact Person & Phone</span>
+                        <span class="text-slate-500 block uppercase text-[11px] font-bold">Contact Person & Phone</span>
                         <span class="font-bold text-slate-200">{{ $siteSurvey->contact_person ?: $siteSurvey->lead->customer_name }}</span>
                         <span class="text-amber-400 font-mono block">{{ $siteSurvey->contact_phone ?: $siteSurvey->lead->phone }}</span>
                     </div>
                     <div>
-                        <span class="text-slate-500 block uppercase text-[10px] font-bold">Installation Address</span>
+                        <span class="text-slate-500 block uppercase text-[11px] font-bold">Installation Address</span>
                         <span class="font-medium text-slate-300">{{ $siteSurvey->site_address ?: ($siteSurvey->lead->site_address ?: 'Address not provided') }}</span>
                     </div>
                 </div>
 
                 @if($siteSurvey->visit_notes && $siteSurvey->status !== 'completed')
                     <div class="p-3.5 rounded-xl bg-[#060913] border border-amber-500/30 text-xs">
-                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-amber-400 block mb-1">Instructions & Customer Scope from Admin:</span>
+                        <span class="text-[11px] font-extrabold uppercase tracking-wider text-amber-400 block mb-1">Instructions & Customer Scope from Admin:</span>
                         <p class="text-slate-200 font-medium whitespace-pre-line">{{ $siteSurvey->visit_notes }}</p>
                     </div>
                 @endif
@@ -84,15 +84,15 @@
 
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div class="p-4 bg-[#060913] rounded-xl border border-slate-800">
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Cameras Recommended</span>
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Cameras Recommended</span>
                             <div class="text-2xl font-black text-amber-400 font-mono mt-1">{{ $siteSurvey->camera_count_recommended }} Units</div>
                         </div>
                         <div class="p-4 bg-[#060913] rounded-xl border border-slate-800">
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Estimated Cable Length</span>
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Estimated Cable Length</span>
                             <div class="text-2xl font-black text-sky-400 font-mono mt-1">{{ $siteSurvey->cable_length_estimate }} Mtr</div>
                         </div>
                         <div class="p-4 bg-[#060913] rounded-xl border border-slate-800">
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">DVR / NVR Location</span>
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">DVR / NVR Location</span>
                             <div class="text-sm font-bold text-slate-200 mt-1.5">{{ $siteSurvey->dvr_location ?: 'Main Server Rack' }}</div>
                         </div>
                     </div>
@@ -100,20 +100,20 @@
                     <div class="space-y-3 text-xs">
                         @if($siteSurvey->power_availability)
                             <div>
-                                <span class="font-bold uppercase tracking-wider text-slate-400 text-[10px] block">Power & UPS Availability</span>
+                                <span class="font-bold uppercase tracking-wider text-slate-400 text-[11px] block">Power & UPS Availability</span>
                                 <p class="text-slate-200 bg-[#060913] p-3 rounded-xl border border-slate-800 mt-0.5">{{ $siteSurvey->power_availability }}</p>
                             </div>
                         @endif
 
                         @if($siteSurvey->challenges)
                             <div>
-                                <span class="font-bold uppercase tracking-wider text-amber-400 text-[10px] block">Site Constraints / Challenges</span>
+                                <span class="font-bold uppercase tracking-wider text-amber-400 text-[11px] block">Site Constraints / Challenges</span>
                                 <p class="text-slate-200 bg-amber-950/20 p-3 rounded-xl border border-amber-500/30 mt-0.5">{{ $siteSurvey->challenges }}</p>
                             </div>
                         @endif
 
                         <div>
-                            <span class="font-bold uppercase tracking-wider text-slate-400 text-[10px] block">Technician Visit Notes & Recommendations</span>
+                            <span class="font-bold uppercase tracking-wider text-slate-400 text-[11px] block">Technician Visit Notes & Recommendations</span>
                             <p class="text-slate-200 bg-[#060913] p-3.5 rounded-xl border border-slate-800 mt-0.5 whitespace-pre-line leading-relaxed">{{ $siteSurvey->visit_notes }}</p>
                         </div>
                     </div>
@@ -246,7 +246,7 @@
                                     <template x-for="(item, index) in previews" :key="index">
                                         <div class="rounded-xl overflow-hidden border border-slate-700 shadow-sm bg-[#060913] relative">
                                             <img :src="item.url" class="w-full h-28 object-cover">
-                                            <input type="text" :name="'captions[' + index + ']'" placeholder="Photo caption..." class="w-full text-[10px] p-1.5 bg-[#0b1120] text-white border-t border-slate-700 focus:outline-none">
+                                            <input type="text" :name="'captions[' + index + ']'" placeholder="Photo caption..." class="w-full text-[11px] p-1.5 bg-[#0b1120] text-white border-t border-slate-700 focus:outline-none">
                                             <button type="button" @click="removePhoto(index)" class="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-rose-600 text-white text-xs font-bold flex items-center justify-center shadow">✕</button>
                                         </div>
                                     </template>

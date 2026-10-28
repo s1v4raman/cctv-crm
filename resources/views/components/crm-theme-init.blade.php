@@ -162,25 +162,6 @@
                 --brand-blue-hover: ${hoverHex} !important;
             }
             
-            /* 0. STRICT ELIMINATION OF ALL 2-COLOR GRADIENTS (Flat solid one color) */
-            [style*="linear-gradient"],
-            .saas-card [style*="linear-gradient"],
-            div[style*="linear-gradient"],
-            header[style*="linear-gradient"],
-            button[style*="linear-gradient"],
-            a[style*="linear-gradient"],
-            span[style*="linear-gradient"] {
-                background: ${hex} !important;
-                background-color: ${hex} !important;
-                background-image: none !important;
-            }
-            button[style*="linear-gradient"]:hover,
-            a[style*="linear-gradient"]:hover {
-                background: ${hoverHex} !important;
-                background-color: ${hoverHex} !important;
-                background-image: none !important;
-            }
-
             /* 1. BRAND WORDMARK: Precision IT [Systems] */
             .crm-brand-accent-text,
             .crm-brand-accent-text * {
@@ -197,86 +178,6 @@
                 background-image: none !important;
                 color: #ffffff !important;
                 box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
-            }
-
-            /* 3. SIDEBAR & NAVIGATION ACTIVE LINKS (Solid Royal Blue matching user swatch #2563eb) */
-            aside nav a.crm-active-link,
-            .crm-active-link {
-                background: #2563eb !important;
-                background-color: #2563eb !important;
-                background-image: none !important;
-                border: none !important;
-                border-left: none !important;
-                border-radius: 8px !important;
-                color: #ffffff !important;
-                font-weight: 700 !important;
-                box-shadow: 0 1px 3px rgba(37, 99, 235, 0.3) !important;
-            }
-            aside nav a.crm-active-link svg,
-            .crm-active-link svg,
-            aside nav a.crm-active-link svg *,
-            .crm-active-link svg * {
-                color: #ffffff !important;
-                stroke: #ffffff !important;
-            }
-
-            html.dark aside nav a.crm-active-link,
-            html.dark .crm-active-link {
-                background: #2563eb !important;
-                background-color: #2563eb !important;
-                border: none !important;
-                border-left: none !important;
-                border-radius: 8px !important;
-                color: #ffffff !important;
-                font-weight: 700 !important;
-                box-shadow: 0 1px 3px rgba(37, 99, 235, 0.3) !important;
-            }
-            html.dark aside nav a.crm-active-link svg,
-            html.dark .crm-active-link svg,
-            html.dark aside nav a.crm-active-link svg *,
-            html.dark .crm-active-link svg * {
-                color: #ffffff !important;
-                stroke: #ffffff !important;
-            }
-
-            aside nav a:hover {
-                background-color: #f1f2f4 !important;
-                color: #0f172a !important;
-            }
-
-            html.dark aside nav a:hover {
-                background-color: rgba(30, 41, 59, 0.7) !important;
-                color: #f8fafc !important;
-            }
-
-            aside nav a:active,
-            aside nav a.crm-active-link:hover,
-            .crm-active-link:hover {
-                background: #ebebed !important;
-                background-color: #ebebed !important;
-                color: #0f172a !important;
-            }
-
-            html.dark aside nav a:active,
-            html.dark aside nav a.crm-active-link:hover,
-            html.dark .crm-active-link:hover {
-                background: #334155 !important;
-                background-color: #334155 !important;
-                color: #f8fafc !important;
-            }
-
-            aside nav a.crm-active-link svg,
-            .crm-active-link svg,
-            aside nav a:active svg {
-                color: #ffffff !important;
-                stroke: #ffffff !important;
-            }
-
-            html.dark aside nav a.crm-active-link svg,
-            html.dark .crm-active-link svg,
-            html.dark aside nav a:active svg {
-                color: #ffffff !important;
-                stroke: #ffffff !important;
             }
 
             /* Clean Outline Icon System: Proper size, linear stroke, no color boxes or shades */

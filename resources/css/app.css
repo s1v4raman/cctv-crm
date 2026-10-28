@@ -8,6 +8,41 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
+   DESIGN TOKENS: the single source for type, radius, control size and
+   status colours. Rules below reference these instead of literal values.
+   ═══════════════════════════════════════════════════════════════════════ */
+:root {
+    --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+    --radius-control: 6px;   /* inputs, selects, buttons, square badges */
+    --radius-card: 10px;     /* cards, panels, dropdowns, modals */
+    --radius-pill: 9999px;   /* status pills, avatars, dots */
+
+    --control-height: 38px;  /* every input, select and button */
+
+    --text-min: 11px;        /* smallest text anywhere (uppercase micro-labels) */
+    --text-sm: 12px;         /* meta text, table headers, badges */
+    --text-base: 13px;       /* table cells, dense UI */
+    --text-md: 14px;         /* body text, inputs */
+
+    --status-success-fg: #047857; --status-success-bg: #ecfdf5; --status-success-bd: #a7f3d0;
+    --status-warning-fg: #b45309; --status-warning-bg: #fffbeb; --status-warning-bd: #fde68a;
+    --status-info-fg: #1d4ed8;    --status-info-bg: #eff6ff;    --status-info-bd: #bfdbfe;
+    --status-danger-fg: #b91c1c;  --status-danger-bg: #fef2f2;  --status-danger-bd: #fecaca;
+    --status-neutral-fg: #475569; --status-neutral-bg: #f1f5f9; --status-neutral-bd: #cbd5e1;
+    --status-purple-fg: #7e22ce;  --status-purple-bg: #faf5ff;  --status-purple-bd: #e9d5ff;
+}
+html.dark {
+    --status-success-fg: #6ee7b7; --status-success-bg: rgba(16, 185, 129, 0.12); --status-success-bd: rgba(16, 185, 129, 0.35);
+    --status-warning-fg: #fcd34d; --status-warning-bg: rgba(245, 158, 11, 0.12); --status-warning-bd: rgba(245, 158, 11, 0.35);
+    --status-info-fg: #93c5fd;    --status-info-bg: rgba(59, 130, 246, 0.14);    --status-info-bd: rgba(59, 130, 246, 0.38);
+    --status-danger-fg: #fca5a5;  --status-danger-bg: rgba(239, 68, 68, 0.12);   --status-danger-bd: rgba(239, 68, 68, 0.35);
+    --status-neutral-fg: #cbd5e1; --status-neutral-bg: rgba(148, 163, 184, 0.12); --status-neutral-bd: rgba(148, 163, 184, 0.3);
+    --status-purple-fg: #d8b4fe;  --status-purple-bg: rgba(168, 85, 247, 0.12);  --status-purple-bd: rgba(168, 85, 247, 0.35);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
    SECUREVISION AI CRM — MODERN SAAS LIGHT DESIGN SYSTEM
    Matches Reference: Clean SaaS CRM Dashboard (Royal Blue & Slate Light)
    ═══════════════════════════════════════════════════════════════════════ */
@@ -105,7 +140,7 @@ html[data-theme='dark'] {
 body {
     background-color: var(--page-bg);
     color: var(--text-main);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-family: var(--font-sans);
     font-size: 14px;
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
@@ -424,34 +459,11 @@ html.dark a.btn-secondary {
     border: 1px solid var(--input-border) !important;
 }
 
-/* Universal Badge, Label & Status Pill System with Crisp Single 1px Dark Border (Matching Image 4) */
+/* Neutral chips (tags, date chips). Status badges get their own tones further down. */
 .badge,
-.status-badge,
 .tech-tag,
-.date-chip,
-span.badge,
-span[class*="rounded-full"][class*="border"],
-span[class*="rounded-md"][class*="border"],
-span[class*="rounded"][class*="border"],
-.cell-sub span,
-td > span[class*="rounded"] {
-    border-width: 1px !important;
-    border-style: solid !important;
-    border-color: var(--card-border) !important;
-}
-html.dark .badge,
-html.dark .status-badge,
-html.dark .tech-tag,
-html.dark .date-chip,
-html.dark span.badge,
-html.dark span[class*="rounded-full"][class*="border"],
-html.dark span[class*="rounded-md"][class*="border"],
-html.dark span[class*="rounded"][class*="border"],
-html.dark .cell-sub span,
-html.dark td > span[class*="rounded"] {
-    border-width: 1px !important;
-    border-style: solid !important;
-    border-color: var(--input-border) !important;
+.date-chip {
+    border: 1px solid var(--card-border);
 }
 
 /* User Avatars: circular badge with crisp white text */
@@ -544,60 +556,6 @@ a[role="button"]:active {
     transform: scale(0.98);
 }
 
-/* Sidebar Active Navigation Item: Clean light background matching Image 3 */
-aside nav a.crm-active-link,
-.crm-active-link {
-    background-color: #ebebed !important;
-    border: none !important;
-    border-left: none !important;
-    border-radius: 8px !important;
-    color: var(--text-main) !important;
-    font-weight: 600 !important;
-    box-shadow: none !important;
-}
-html.dark aside nav a.crm-active-link,
-html.dark .crm-active-link {
-    background-color: var(--table-header-bg) !important;
-    border: none !important;
-    border-left: none !important;
-    border-radius: 8px !important;
-    color: var(--text-main) !important;
-    font-weight: 600 !important;
-    box-shadow: none !important;
-}
-aside nav a:hover {
-    background-color: #f1f2f4 !important;
-    color: var(--text-main) !important;
-}
-html.dark aside nav a:hover {
-    background-color: rgba(30, 41, 59, 0.7) !important;
-    color: var(--text-main) !important;
-}
-aside nav a:active,
-aside nav a.crm-active-link:hover,
-.crm-active-link:hover {
-    background-color: #ebebed !important;
-    color: var(--text-main) !important;
-}
-html.dark aside nav a:active,
-html.dark aside nav a.crm-active-link:hover,
-html.dark .crm-active-link:hover {
-    background-color: #334155 !important;
-    color: var(--text-main) !important;
-}
-aside nav a.crm-active-link svg,
-.crm-active-link svg,
-aside nav a:active svg {
-    color: var(--text-main) !important;
-    stroke: #ffffff !important;
-}
-html.dark aside nav a.crm-active-link svg,
-html.dark .crm-active-link svg,
-html.dark aside nav a:active svg {
-    color: var(--text-main) !important;
-    stroke: #ffffff !important;
-}
-
 /* Brand Logo Tile & User Avatars */
 .crm-brand-tile,
 .crm-user-avatar {
@@ -614,7 +572,7 @@ html.dark aside nav a:active svg {
     border: 1px solid #cbd5e1;
     font-weight: 600;
     font-size: 0.9375rem;
-    min-height: 42px;
+    min-height: var(--control-height);
     padding: 0.55rem 1.25rem;
     border-radius: 0.75rem;
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -830,41 +788,6 @@ html.dark label {
     border-bottom: 1px solid #f1f5f9;
 }
 
-/* Status Pill Badges matching Mockup */
-.badge-pill {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.2rem 0.65rem;
-    border-radius: 9999px;
-    font-size: 0.72rem;
-    font-weight: 600;
-}
-.badge-pill-blue {
-    background-color: #eff6ff;
-    color: #2563eb;
-    border: 1px solid #dbeafe;
-}
-.badge-pill-green {
-    background-color: #ecfdf5;
-    color: #059669;
-    border: 1px solid #d1fae5;
-}
-.badge-pill-amber {
-    background-color: #fffbeb;
-    color: #d97706;
-    border: 1px solid #fef3c7;
-}
-.badge-pill-purple {
-    background-color: #faf5ff;
-    color: #7e22ce;
-    border: 1px solid #f3e8ff;
-}
-.badge-pill-red {
-    background-color: #fef2f2;
-    color: #dc2626;
-    border: 1px solid #fee2e2;
-}
-
 /* Deals Funnel Styles */
 .funnel-container {
     display: flex;
@@ -915,22 +838,27 @@ html.dark .header-slot-container p.text-slate-400 {
     color: var(--text-muted) !important;
 }
 
-/* Page Outer Wrappers */
-.pg-wrap {
-    background: #f8fafc !important;
-    min-height: calc(100vh - 4rem) !important;
-    padding: 1.5rem 0 3rem !important;
-    transition: background 0.2s ease, color 0.2s ease;
+/* Page wrappers: the layout's <main> already sets the page background, padding and
+   max width, so module wrappers (pg-wrap / pg-inner, Breeze py-* and max-w-7xl px-*)
+   only stack their sections and never add a second frame of spacing. */
+.pg-wrap,
+.pg-inner,
+.crm-content > .py-1,
+.crm-content > .py-5,
+.crm-content > .py-6,
+.crm-content > .py-8,
+.crm-content > .py-12 {
+    padding-top: 0;
+    padding-bottom: 0;
+    margin: 0;
+    max-width: none;
+    min-height: 0;
+    background: transparent;
 }
-html.dark .pg-wrap {
-    background: #060913 !important;
-}
-
-/* Inner Layout Containers */
-.pg-inner {
-    max-width: 1360px !important;
-    margin: 0 auto !important;
-    padding: 0 1.25rem !important;
+.pg-inner,
+.crm-content .max-w-7xl.mx-auto {
+    padding-left: 0;
+    padding-right: 0;
 }
 
 /* Main Cards */
@@ -946,7 +874,7 @@ html.dark .pg-wrap {
 .stat-card {
     background: var(--card-bg) !important;
     border: 1px solid #ddd !important;
-    border-radius: 4px !important;
+    border-radius: var(--radius-card) !important;
     padding: 10px 14px !important;
     box-shadow: none !important;
     color: var(--text-main) !important;
@@ -1152,7 +1080,7 @@ table.products-table thead th,
 table.data-table thead th,
 table.pg-table thead th {
     padding: 0.8rem 1.25rem !important;
-    font-size: 0.68rem !important;
+    font-size: var(--text-sm) !important;
     font-weight: 700 !important;
     text-transform: uppercase !important;
     letter-spacing: 0.05em !important;
@@ -1341,7 +1269,6 @@ html.dark table.pg-table tbody td {
     font-size: 0.9rem !important;
     font-weight: 800 !important;
     color: var(--text-main) !important;
-    font-family: 'Outfit', sans-serif !important;
 }
 .cell-date {
     font-size: 0.75rem !important;
@@ -1497,68 +1424,53 @@ html.dark .pg-links {
     color: var(--text-muted) !important;
 }
 
-/* Status Badges in Light Mode */
-.badge-new, .badge-draft, .badge-pending, .badge-low, .badge-closed {
-    background: #f1f5f9 !important;
-    color: #475569 !important;
-    border: 1px solid #e2e8f0 !important;
+/* ═══════════════════════════════════════════════════════════════════════
+   STATUS BADGES: one soft pill for every status, in tables and cards alike.
+   Shape is shared; colour comes from the tone the status means
+   (success / warning / info / danger / neutral / purple tokens above).
+   ═══════════════════════════════════════════════════════════════════════ */
+.badge-pill, .status-badge, .status-text,
+.badge-pill-green, .badge-pill-amber, .badge-pill-blue, .badge-pill-red, .badge-pill-purple,
+.badge-new, .badge-draft, .badge-pending, .badge-low, .badge-closed, .badge-contacted, .badge-sent,
+.badge-scheduled, .badge-quoted, .badge-in_progress, .badge-won, .badge-accepted, .badge-completed,
+.badge-lost, .badge-rejected, .badge-cancelled, .badge-assigned,
+.status-completed, .status-won, .status-accepted, .status-paid, .status-resolved,
+.status-pending, .status-quoted, .status-scheduled, .status-in-progress, .status-in_progress,
+.status-new, .status-contacted, .status-lost, .status-declined, .status-cancelled, .status-canceled,
+.status-overdue, .status-failed, .status-open, .status-assigned,
+.priority-low, .priority-medium, .priority-high, .priority-critical {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--tone-bd, var(--status-neutral-bd));
+    background-color: var(--tone-bg, var(--status-neutral-bg));
+    color: var(--tone-fg, var(--status-neutral-fg));
+    font-size: var(--text-sm);
+    font-weight: 600;
+    line-height: 16px;
+    white-space: nowrap;
+    text-transform: capitalize;
 }
-.badge-contacted, .badge-sent, .badge-scheduled, .priority-medium {
-    background: #eff6ff !important;
-    color: #2563eb !important;
-    border: 1px solid #dbeafe !important;
+.badge-pill-green, .badge-won, .badge-accepted, .badge-completed,
+.status-completed, .status-won, .status-accepted, .status-paid, .status-resolved {
+    --tone-fg: var(--status-success-fg); --tone-bg: var(--status-success-bg); --tone-bd: var(--status-success-bd);
 }
-.badge-quoted, .badge-in_progress, .priority-high {
-    background: #fffbeb !important;
-    color: var(--status-orange) !important;
-    border: 1px solid #fef3c7 !important;
+.badge-pill-amber, .badge-pending, .badge-quoted, .badge-in_progress, .priority-high,
+.status-pending, .status-quoted, .status-in-progress, .status-in_progress {
+    --tone-fg: var(--status-warning-fg); --tone-bg: var(--status-warning-bg); --tone-bd: var(--status-warning-bd);
 }
-.badge-won, .badge-accepted, .badge-completed, .status-resolved {
-    background: #ecfdf5 !important;
-    color: #059669 !important;
-    border: 1px solid #d1fae5 !important;
+.badge-pill-blue, .badge-new, .badge-contacted, .badge-sent, .badge-scheduled, .priority-medium,
+.status-new, .status-contacted, .status-scheduled {
+    --tone-fg: var(--status-info-fg); --tone-bg: var(--status-info-bg); --tone-bd: var(--status-info-bd);
 }
-.badge-lost, .badge-rejected, .badge-cancelled, .priority-critical, .status-open {
-    background: #fef2f2 !important;
-    color: var(--status-red) !important;
-    border: 1px solid #fee2e2 !important;
+.badge-pill-red, .badge-lost, .badge-rejected, .badge-cancelled, .priority-critical,
+.status-lost, .status-declined, .status-cancelled, .status-canceled, .status-overdue, .status-failed, .status-open {
+    --tone-fg: var(--status-danger-fg); --tone-bg: var(--status-danger-bg); --tone-bd: var(--status-danger-bd);
 }
-.badge-assigned, .status-assigned {
-    background: #faf5ff !important;
-    color: #7e22ce !important;
-    border: 1px solid #f3e8ff !important;
-}
-
-/* Status Badges in Dark Mode */
-html.dark .badge-new, html.dark .badge-draft, html.dark .badge-pending, html.dark .badge-low, html.dark .badge-closed {
-    background: rgba(148, 163, 184, 0.15) !important;
-    color: var(--text-muted) !important;
-    border-color: rgba(148, 163, 184, 0.3) !important;
-}
-html.dark .badge-contacted, html.dark .badge-sent, html.dark .badge-scheduled, html.dark .priority-medium {
-    background: rgba(59, 130, 246, 0.15) !important;
-    color: #60a5fa !important;
-    border-color: rgba(59, 130, 246, 0.3) !important;
-}
-html.dark .badge-quoted, html.dark .badge-in_progress, html.dark .priority-high {
-    background: rgba(245, 158, 11, 0.15) !important;
-    color: var(--status-orange) !important;
-    border-color: rgba(245, 158, 11, 0.3) !important;
-}
-html.dark .badge-won, html.dark .badge-accepted, html.dark .badge-completed, html.dark .status-resolved {
-    background: rgba(16, 185, 129, 0.15) !important;
-    color: #34d399 !important;
-    border-color: rgba(16, 185, 129, 0.3) !important;
-}
-html.dark .badge-lost, html.dark .badge-rejected, html.dark .badge-cancelled, html.dark .priority-critical, html.dark .status-open {
-    background: rgba(244, 63, 94, 0.15) !important;
-    color: #fb7185 !important;
-    border-color: rgba(244, 63, 94, 0.3) !important;
-}
-html.dark .badge-assigned, html.dark .status-assigned {
-    background: rgba(168, 85, 247, 0.15) !important;
-    color: #c084fc !important;
-    border-color: rgba(168, 85, 247, 0.3) !important;
+.badge-pill-purple, .badge-assigned, .status-assigned {
+    --tone-fg: var(--status-purple-fg); --tone-bg: var(--status-purple-bg); --tone-bd: var(--status-purple-bd);
 }
 
 /* Form Styles for Create & Edit Views */
@@ -2182,14 +2094,14 @@ html:not(.dark) .tech-stat {
 .ts-control {
     background-color: var(--card-bg) !important;
     border: 1px solid #cccccc !important;
-    border-radius: 4px !important;
+    border-radius: var(--radius-control) !important;
     padding: 0 10px !important;
     font-size: 13px !important;
     color: var(--text-main) !important;
     box-shadow: none !important;
-    height: 38px !important;
-    min-height: 38px !important;
-    max-height: 38px !important;
+    height: var(--control-height) !important;
+    min-height: var(--control-height) !important;
+    max-height: var(--control-height) !important;
     display: flex !important;
     align-items: center !important;
     box-sizing: border-box !important;
@@ -2477,13 +2389,13 @@ html.dark .crm-customer-icon-box {
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   CLEAN CRM STANDARD FORM CONTROLS & TABLES (4px radius, 38px height)
+   CLEAN CRM STANDARD FORM CONTROLS & TABLES (--radius-control, --control-height)
    Shared across Leads, Surveys, and Form pages
    ═══════════════════════════════════════════════════════════════════ */
 .crm-control {
-    height: 42px !important;
-    min-height: 42px !important;
-    border-radius: 8px !important;
+    height: var(--control-height) !important;
+    min-height: var(--control-height) !important;
+    border-radius: var(--radius-control) !important;
     box-sizing: border-box !important;
     font-size: 0.875rem !important;
     line-height: 1.25rem !important;
@@ -2493,9 +2405,9 @@ html.dark .crm-customer-icon-box {
 .crm-select {
     display: block !important;
     width: 100% !important;
-    height: 42px !important;
-    min-height: 42px !important;
-    border-radius: 8px !important;
+    height: var(--control-height) !important;
+    min-height: var(--control-height) !important;
+    border-radius: var(--radius-control) !important;
     box-sizing: border-box !important;
     font-size: 0.875rem !important;
     line-height: 1.25rem !important;
@@ -2521,9 +2433,9 @@ html.dark .crm-customer-icon-box {
 
 .crm-btn-primary,
 .crm-btn-secondary {
-    height: 42px !important;
-    min-height: 42px !important;
-    border-radius: 8px !important;
+    height: var(--control-height) !important;
+    min-height: var(--control-height) !important;
+    border-radius: var(--radius-control) !important;
     box-sizing: border-box !important;
     font-size: 0.875rem !important;
     font-weight: 600 !important;
@@ -2569,7 +2481,7 @@ html.dark .crm-select {
 }
 
 .crm-textarea {
-    border-radius: 4px !important;
+    border-radius: var(--radius-control) !important;
     background-color: var(--card-bg) !important;
     border: 1px solid var(--card-border) !important;
     color: var(--text-main) !important;
@@ -2637,7 +2549,7 @@ html.dark .crm-btn-secondary:hover {
 }
 
 .crm-card {
-    border-radius: 4px !important;
+    border-radius: var(--radius-card) !important;
     border: 1px solid var(--card-border) !important;
     background-color: var(--card-bg) !important;
     box-shadow: none !important;
@@ -2715,9 +2627,9 @@ a.btn-primary {
 
 /* TomSelect Override: 38px, 4px radius, white background */
 .ts-control {
-    min-height: 38px !important;
-    height: 38px !important;
-    border-radius: 4px !important;
+    min-height: var(--control-height) !important;
+    height: var(--control-height) !important;
+    border-radius: var(--radius-control) !important;
     background-color: var(--card-bg) !important;
     border: 1px solid var(--card-border) !important;
     box-sizing: border-box !important;
@@ -2736,7 +2648,7 @@ html.dark .ts-control {
 
 /* ═══════════════════════════════════════════════════════════════════════
    4. STRICT SYSTEM RULES: LAYOUT AND SPACING ENFORCEMENT
-   Fixed values, zero box-shadow, 4px radius, 1px solid #ddd borders
+   Fixed values from the design tokens at the top of this file
    ═══════════════════════════════════════════════════════════════════════ */
 
 /* 1. Reset text-shadow */
@@ -2744,7 +2656,8 @@ html.dark .ts-control {
     text-shadow: none;
 }
 
-/* 2. Border radius: 4px on elements (only circle avatars retain full radius) */
+/* 2. Border radius: two tiers from the tokens. Controls and small chips use
+   --radius-control, containers use --radius-card, rounded-full stays a pill. */
 button,
 .btn,
 .btn-primary,
@@ -2755,29 +2668,26 @@ input,
 select,
 textarea,
 .ts-control,
+div.border,
+div.rounded,
+div.rounded-md,
+span.rounded,
+span.rounded-md,
+span.rounded-lg {
+    border-radius: var(--radius-control);
+}
 .stat-card,
 .pip-card,
 .pg-card,
 .card,
 .crm-card,
 .saas-card,
-table,
-thead,
-tbody,
-tr,
-th,
-td,
 section,
-div.border,
-div.rounded,
 div.rounded-lg,
 div.rounded-xl,
 div.rounded-2xl,
-span.rounded,
-span.rounded-md,
-span.rounded-lg,
-span.rounded-full:not(.crm-user-avatar):not(.avatar-circle) {
-    border-radius: 4px;
+div.rounded-3xl {
+    border-radius: var(--radius-card);
 }
 
 /* Circle avatar exception */
@@ -2811,11 +2721,11 @@ html.dark .crm-section-box {
 /* 4. Input, select and button height: 38px (inputs border: 1px solid #1e293b) */
 input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="color"]):not([type="range"]):not(.ts-control input):not(.ts-wrapper input),
 select:not(.tomselected) {
-    height: 38px !important;
-    min-height: 38px !important;
-    max-height: 38px !important;
+    height: var(--control-height) !important;
+    min-height: var(--control-height) !important;
+    max-height: var(--control-height) !important;
     border: 1px solid var(--card-border) !important;
-    border-radius: 4px !important;
+    border-radius: var(--radius-control) !important;
     font-size: 13px !important;
     box-sizing: border-box !important;
     background-color: var(--card-bg) !important;
@@ -2840,7 +2750,7 @@ textarea,
 textarea.crm-input,
 textarea.form-textarea {
     border: 1px solid var(--card-border) !important;
-    border-radius: 6px !important;
+    border-radius: var(--radius-control) !important;
     padding: 10px 12px !important;
     font-size: 14px !important;
     line-height: 1.5 !important;
@@ -2873,7 +2783,7 @@ table select {
     font-size: 12px !important;
 }
 
-/* Button height: 38px */
+/* Button height: --control-height */
 button:not(.btn-icon):not([class*="p-0"]):not([class*="p-1"]):not([class*="h-"]):not([class*="w-"]),
 .btn,
 .btn-primary,
@@ -2882,9 +2792,9 @@ button:not(.btn-icon):not([class*="p-0"]):not([class*="p-1"]):not([class*="h-"])
 .crm-btn-primary,
 .crm-btn-secondary,
 a.btn {
-    height: 38px !important;
-    min-height: 38px !important;
-    border-radius: 4px !important;
+    height: var(--control-height) !important;
+    min-height: var(--control-height) !important;
+    border-radius: var(--radius-control) !important;
     font-size: 13px !important;
     box-sizing: border-box !important;
     display: inline-flex !important;
@@ -2924,51 +2834,41 @@ form .form-grid {
 aside {
     width: 100% !important;
     min-width: 0 !important;
-    background-color: var(--card-bg) !important;
-    border-right: 1px solid #dddddd !important;
-}
-html.dark aside {
-    background-color: var(--card-bg) !important;
-    border-right-color: #334155 !important;
+    background-color: var(--card-bg);
 }
 
-/* Sidebar Icons: one gray color #666 or no icons */
+/* Sidebar navigation: the one definition of idle, hover and active links (light + dark).
+   Markup only toggles .crm-active-link; the active colour follows the user's accent. */
+aside nav a {
+    color: var(--text-secondary);
+    font-weight: 500;
+}
 aside nav a svg {
-    color: #666666 !important;
-    stroke: #666666 !important;
+    color: var(--text-muted);
+    transition: color 0.15s ease;
 }
-html.dark aside nav a svg {
-    color: var(--text-muted) !important;
-    stroke: #94a3b8 !important;
+aside nav a:hover {
+    background-color: var(--crm-accent-light);
+    color: var(--text-main);
 }
-
-/* Active menu item: Light blue #e8f0fe with 3px solid #2563eb left border */
+aside nav a:hover svg {
+    color: var(--crm-accent);
+}
 aside nav a.crm-active-link,
-aside nav a[class*="crm-active-link"] {
-    background-color: #e8f0fe !important;
-    border-left: 3px solid #2563eb !important;
-    border-radius: 0 4px 4px 0 !important;
-    color: #2563eb !important;
-    font-weight: 600 !important;
+aside nav a.crm-active-link:hover {
+    background-color: var(--crm-accent);
+    color: #ffffff;
+    font-weight: 600;
 }
-aside nav a.crm-active-link svg,
-aside nav a[class*="crm-active-link"] svg,
-aside nav a:active svg {
-    color: var(--text-main) !important;
-    stroke: #ffffff !important;
+aside nav a.crm-active-link svg {
+    color: #ffffff;
 }
-
-html.dark aside nav a.crm-active-link,
-html.dark aside nav a[class*="crm-active-link"] {
-    background-color: var(--primary-btn-bg) !important;
-    border-left: none !important;
-    color: var(--text-main) !important;
+aside nav a:focus-visible {
+    outline: 2px solid var(--crm-accent);
+    outline-offset: 2px;
 }
-html.dark aside nav a.crm-active-link svg,
-html.dark aside nav a[class*="crm-active-link"] svg,
-html.dark aside nav a:active svg {
-    color: var(--text-main) !important;
-    stroke: #ffffff !important;
+aside nav div.uppercase {
+    color: var(--text-muted);
 }
 
 /* Section: One white box with a border (no card inside a card) */
@@ -2976,7 +2876,7 @@ html.dark aside nav a:active svg {
 .crm-box {
     background: #ffffff;
     border: 1px solid #dddddd;
-    border-radius: 4px;
+    border-radius: var(--radius-card);
     padding: 16px;
     margin-bottom: 20px;
 }
@@ -3000,12 +2900,11 @@ a.btn-primary {
     background-color: var(--primary-btn-bg) !important;
     color: #ffffff !important;
     border: none !important;
-    border-radius: 4px !important;
-    height: 38px !important;
-    min-height: 38px !important;
+    border-radius: var(--radius-control) !important;
+    height: var(--control-height) !important;
+    min-height: var(--control-height) !important;
     padding: 0 16px !important;
     font-size: 14px !important;
-    font-family: Arial, sans-serif !important;
     font-weight: 500 !important;
     display: inline-flex !important;
     align-items: center !important;
@@ -3036,12 +2935,11 @@ a.btn-secondary {
     background-color: var(--card-bg) !important;
     color: var(--text-main) !important;
     border: 1px solid var(--card-border) !important;
-    border-radius: 4px !important;
-    height: 38px !important;
-    min-height: 38px !important;
+    border-radius: var(--radius-control) !important;
+    height: var(--control-height) !important;
+    min-height: var(--control-height) !important;
     padding: 0 16px !important;
     font-size: 14px !important;
-    font-family: Arial, sans-serif !important;
     font-weight: 500 !important;
     display: inline-flex !important;
     align-items: center !important;
@@ -3147,7 +3045,6 @@ label,
 .crm-label,
 .form-label {
     display: block !important;
-    font-family: Arial, sans-serif !important;
     font-size: 14px !important;
     font-weight: normal !important;
     text-transform: none !important;
@@ -3171,17 +3068,17 @@ label span[class*="text-rose"] {
     font-weight: bold !important;
 }
 
-/* Inputs, selects, and date fields: 42px height, clean background, 1px dark border */
+/* Inputs, selects, and date fields: --control-height, clean background, 1px border */
 input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="color"]):not([type="range"]):not(.ts-control input):not(.ts-wrapper input):not(.ts-control),
 select {
-    height: 42px !important;
-    min-height: 42px !important;
+    height: var(--control-height) !important;
+    min-height: var(--control-height) !important;
     font-family: inherit !important;
     font-size: 14px !important;
     color: var(--text-main) !important;
     background-color: var(--card-bg) !important;
     border: 1px solid var(--card-border) !important;
-    border-radius: 8px !important;
+    border-radius: var(--radius-control) !important;
     padding: 0 12px !important;
     box-sizing: border-box !important;
 }
@@ -3208,7 +3105,6 @@ p[class*="text-rose-"],
 span[class*="text-red-"],
 span[class*="text-rose-"] {
     color: var(--status-red) !important;
-    font-family: Arial, sans-serif !important;
     font-size: 13px !important;
     margin-top: 4px !important;
 }
@@ -3219,7 +3115,6 @@ table {
     border-collapse: collapse !important;
     border-spacing: 0 !important;
     border: none !important;
-    font-family: Arial, sans-serif !important;
     font-size: 14px !important;
     background: #ffffff;
     border-radius: 0 !important;
@@ -3229,17 +3124,16 @@ html.dark table {
     border: 1px solid var(--card-border) !important;
 }
 
-/* Header text: normal case, bold, 14px, dark horizontal divider and vertical cell dividers */
+/* Header text: 12px semibold uppercase labels (tokens), divider lines below */
 table thead tr,
 table thead th,
 table th {
     background-color: var(--table-header-bg) !important;
     color: var(--text-main) !important;
-    font-family: Arial, sans-serif !important;
-    font-size: 14px !important;
-    font-weight: bold !important;
-    text-transform: none !important;
-    letter-spacing: normal !important;
+    font-size: var(--text-sm) !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.04em !important;
     border-bottom: 1px solid var(--table-border) !important;
     border-top: none !important;
     border-right: 1px solid var(--table-border) !important;
@@ -3269,9 +3163,8 @@ table td {
     padding: 10px !important;
     border-bottom: 1px solid var(--table-border) !important;
     border-right: 1px solid var(--table-border) !important;
-    color: #222222 !important;
-    font-family: Arial, sans-serif !important;
-    font-size: 14px !important;
+    color: var(--text-main) !important;
+    font-size: var(--text-base) !important;
 }
 html.dark table td {
     border-bottom: 1px solid var(--table-border) !important;
@@ -3317,73 +3210,6 @@ table td a:not(.btn):not(.btn-primary):hover {
     text-decoration: underline !important;
 }
 
-/* 5.4 STATUS TEXT */
-/* Status is plain bold text with a color. It is never a pill, a badge or a background. */
-.status-text,
-table td .status-badge,
-table td .status-pill,
-table td span[class*="rounded-full"][class*="text-"],
-table td span[class*="bg-"][class*="text-"] {
-    background: transparent !important;
-    background-color: transparent !important;
-    border: none !important;
-    border-radius: 0 !important;
-    padding: 0 !important;
-    font-family: Arial, sans-serif !important;
-    font-size: 14px !important;
-    font-weight: bold !important;
-    display: inline !important;
-    box-shadow: none !important;
-    text-transform: capitalize !important;
-    letter-spacing: normal !important;
-}
-
-/* Completed, Won, Accepted, Paid -> Green #16a34a */
-.status-completed,
-.status-won,
-.status-accepted,
-.status-paid,
-table td [class*="emerald"]:not(button):not(a.btn):not([class*="bg-"]):not([class*="text-white"]),
-table td [class*="green"]:not(button):not(a.btn):not([class*="bg-"]):not([class*="text-white"]) {
-    color: var(--status-green) !important;
-    font-weight: bold !important;
-}
-
-/* Pending, Quoted, Scheduled, In progress -> Orange #d97706 */
-.status-pending,
-.status-quoted,
-.status-scheduled,
-.status-in-progress,
-.status-in_progress,
-table td [class*="amber"]:not(button):not(a.btn):not([class*="bg-"]):not([class*="text-white"]),
-table td [class*="orange"]:not(button):not(a.btn):not([class*="bg-"]):not([class*="text-white"]),
-table td [class*="yellow"]:not(button):not(a.btn):not([class*="bg-"]):not([class*="text-white"]) {
-    color: var(--status-orange) !important;
-    font-weight: bold !important;
-}
-
-/* New, Contacted -> Blue #2563eb */
-.status-new,
-.status-contacted,
-table td [class*="blue"]:not(button):not(a.btn):not([class*="bg-"]):not([class*="text-white"]),
-table td [class*="sky"]:not(button):not(a.btn):not([class*="bg-"]):not([class*="text-white"]) {
-    color: #2563eb !important;
-    font-weight: bold !important;
-}
-
-/* Lost, Declined, Cancelled, Overdue -> Red #dc2626 */
-.status-lost,
-.status-declined,
-.status-cancelled,
-.status-canceled,
-.status-overdue,
-.status-failed,
-table td [class*="rose"]:not(button):not(a.btn):not([class*="bg-"]):not([class*="text-white"]),
-table td [class*="red"]:not(button):not(a.btn):not([class*="bg-"]):not([class*="text-white"]) {
-    color: var(--status-red) !important;
-    font-weight: bold !important;
-}
-
 /* Ensure explicit white text on primary buttons and badges */
 button.text-white,
 button[class~="text-white"],
@@ -3400,7 +3226,7 @@ section.crm-section,
 .section-box {
     background-color: var(--card-bg) !important;
     border: 1px solid var(--card-border) !important;
-    border-radius: 4px !important;
+    border-radius: var(--radius-card) !important;
     padding: 16px !important;
     margin-bottom: 20px !important;
 }
@@ -3415,7 +3241,6 @@ html.dark .section-box {
 section h3,
 .crm-section h3,
 .section-heading {
-    font-family: Arial, sans-serif !important;
     font-size: 16px !important;
     font-weight: bold !important;
     color: #222222 !important;
@@ -3438,7 +3263,7 @@ html.dark .section-heading {
 .stat-card {
     background-color: var(--card-bg) !important;
     border: 1px solid var(--card-border) !important;
-    border-radius: 4px !important;
+    border-radius: var(--radius-card) !important;
     padding: 16px !important;
 }
 html.dark .stat-card {
@@ -3448,7 +3273,6 @@ html.dark .stat-card {
 
 .stat-card .stat-label,
 .stat-card > div:first-child {
-    font-family: Arial, sans-serif !important;
     font-size: 13px !important;
     font-weight: normal !important;
     text-transform: normal !important;
@@ -3458,7 +3282,6 @@ html.dark .stat-card {
 
 .stat-card .stat-value,
 .stat-card > div:nth-child(2) {
-    font-family: Arial, sans-serif !important;
     font-size: 24px !important;
     font-weight: bold !important;
     color: #222222 !important;
@@ -3581,7 +3404,6 @@ html.dark .filter-tabs a:not(.active):hover {
 .back-link,
 a.crm-back-link {
     display: inline-block !important;
-    font-family: Arial, sans-serif !important;
     font-size: 14px !important;
     color: #2563eb !important;
     text-decoration: none !important;
@@ -3678,7 +3500,7 @@ input[type="password"]:not([class*="bg-transparent"]):not([class*="border-0"]):n
 form input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="submit"]):not([type="file"]):not([type="range"]):not(.ts-control input) {
     border: 1px solid var(--card-border) !important;
     border-color: var(--card-border) !important;
-    border-radius: 6px !important;
+    border-radius: var(--radius-control) !important;
 }
 html.dark input[type="text"]:not([class*="bg-transparent"]):not([class*="border-0"]):not([class*="border-b"]):not(.ts-control input),
 html.dark input[type="search"]:not([class*="bg-transparent"]):not([class*="border-0"]):not([class*="border-b"]):not(.ts-control input),
@@ -3700,7 +3522,7 @@ textarea,
 .crm-textarea {
     border: 1px solid var(--card-border) !important;
     border-color: var(--card-border) !important;
-    border-radius: 6px !important;
+    border-radius: var(--radius-control) !important;
 }
 html.dark textarea,
 html.dark .crm-textarea {
@@ -3964,16 +3786,6 @@ a.btn-primary {
     background-color: var(--primary-btn-bg) !important;
     border: 1px solid var(--primary-btn-bg) !important;
     color: var(--primary-btn-text) !important;
-}
-
-.status-won, .status-accepted, .status-completed, .status-paid, .badge-completed, .badge-won, .badge-paid, [class*="status-active"], .status-green {
-    color: var(--status-green) !important;
-}
-.status-pending, .status-quoted, .status-scheduled, .status-in-progress, .status-in_progress, .badge-pending, .badge-scheduled, .badge-in_progress, .status-contacted {
-    color: var(--status-orange) !important;
-}
-.status-lost, .status-declined, .status-cancelled, .status-canceled, .status-overdue, .badge-cancelled, .badge-lost {
-    color: var(--status-red) !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════

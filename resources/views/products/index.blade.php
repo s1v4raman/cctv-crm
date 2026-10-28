@@ -272,7 +272,7 @@
                                         <div class="cell-name flex items-center gap-1.5">
                                             <span>{{ $product->name }}</span>
                                             @if($isPending)
-                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-300 border border-amber-300 dark:border-amber-700">
+                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-bold bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-300 border border-amber-300 dark:border-amber-700">
                                                     Auto-Learned
                                                 </span>
                                             @endif

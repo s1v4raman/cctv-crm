@@ -1,0 +1,24 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   STANDALONE PAGES (worker portal, payment checkout, mobile scanner)
+   Plain compiled Tailwind without the CRM-wide overrides in app.css,
+   replacing the Tailwind Play CDN these pages used to load at runtime.
+   ═══════════════════════════════════════════════════════════════════════ */
+@config "../../tailwind.standalone.config.js";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Alpine: keep x-cloak elements hidden until Alpine has initialised them */
+[x-cloak] {
+    display: none !important;
+}
+
+/* Touch devices: iOS Safari zooms into any focused field under 16px */
+@media (hover: none) and (pointer: coarse) {
+    input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]),
+    select,
+    textarea {
+        font-size: 16px !important;
+    }
+}

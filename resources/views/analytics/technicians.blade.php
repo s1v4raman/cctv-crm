@@ -189,12 +189,12 @@
                                             </div>
                                             <div>
                                                 <div class="font-bold text-slate-900 dark:text-white">{{ $tech['name'] }}</div>
-                                                <div class="text-[10px] text-slate-500 dark:text-slate-400 capitalize">{{ $tech['role'] }} &bull; {{ $tech['email'] }}</div>
+                                                <div class="text-[11px] text-slate-500 dark:text-slate-400 capitalize">{{ $tech['role'] }} &bull; {{ $tech['email'] }}</div>
                                             </div>
                                         </div>
                                     </td>
                                     <td class="px-4 py-3.5 text-center">
-                                        <span class="inline-block px-2.5 py-1 rounded-full font-bold text-[10px] {{ $tech['first_time_fix_rate'] >= 80 ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30' : ($tech['first_time_fix_rate'] >= 60 ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30' : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/30') }}">
+                                        <span class="inline-block px-2.5 py-1 rounded-full font-bold text-[11px] {{ $tech['first_time_fix_rate'] >= 80 ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30' : ($tech['first_time_fix_rate'] >= 60 ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30' : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/30') }}">
                                             {{ $tech['first_time_fix_rate'] }}%
                                         </span>
                                     </td>
@@ -205,19 +205,19 @@
                                     </td>
                                     <td class="px-4 py-3.5 text-center">
                                         <span class="font-black text-amber-600 dark:text-amber-400 text-sm">{{ $tech['jobs_completed'] }}</span>
-                                        <span class="text-[10px] text-slate-500 block">of {{ $tech['jobs_total'] }}</span>
+                                        <span class="text-[11px] text-slate-500 block">of {{ $tech['jobs_total'] }}</span>
                                     </td>
                                     <td class="px-4 py-3.5 text-center">
                                         <span class="font-black text-sky-600 dark:text-sky-400 text-sm">{{ $tech['surveys_completed'] }}</span>
-                                        <span class="text-[10px] text-slate-500 block">surveys</span>
+                                        <span class="text-[11px] text-slate-500 block">surveys</span>
                                     </td>
                                     <td class="px-4 py-3.5 text-center">
                                         <span class="font-black text-indigo-600 dark:text-indigo-400 text-sm">{{ $tech['projects_count'] }}</span>
-                                        <span class="text-[10px] text-slate-500 block">projects</span>
+                                        <span class="text-[11px] text-slate-500 block">projects</span>
                                     </td>
                                     <td class="px-4 py-3.5 text-center font-semibold">
                                         @if($tech['open_backlog'] > 0)
-                                            <span class="inline-block px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/30 font-bold text-[10px]">
+                                            <span class="inline-block px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/30 font-bold text-[11px]">
                                                 {{ $tech['open_backlog'] }} active
                                             </span>
                                         @else

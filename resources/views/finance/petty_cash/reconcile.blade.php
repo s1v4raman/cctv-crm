@@ -73,7 +73,7 @@
                                 <div class="flex items-center justify-between p-3 rounded-xl bg-pink-50/50 border border-pink-100 hover:border-pink-300 transition">
                                     <div class="w-24">
                                         <span class="font-bold text-pink-900 text-sm">₹ 2,000</span>
-                                        <span class="block text-[10px] text-pink-600">Note</span>
+                                        <span class="block text-[11px] text-pink-600">Note</span>
                                     </div>
                                     <div class="flex items-center gap-2">
                                         <span class="text-xs text-gray-400">×</span>
@@ -86,7 +86,7 @@
                                 <div class="flex items-center justify-between p-3 rounded-xl bg-amber-50/50 border border-amber-100 hover:border-amber-300 transition">
                                     <div class="w-24">
                                         <span class="font-bold text-amber-900 text-sm">₹ 500</span>
-                                        <span class="block text-[10px] text-amber-600">Note</span>
+                                        <span class="block text-[11px] text-amber-600">Note</span>
                                     </div>
                                     <div class="flex items-center gap-2">
                                         <span class="text-xs text-gray-400">×</span>
@@ -99,7 +99,7 @@
                                 <div class="flex items-center justify-between p-3 rounded-xl bg-orange-50/50 border border-orange-100 hover:border-orange-300 transition">
                                     <div class="w-24">
                                         <span class="font-bold text-orange-900 text-sm">₹ 200</span>
-                                        <span class="block text-[10px] text-orange-600">Note</span>
+                                        <span class="block text-[11px] text-orange-600">Note</span>
                                     </div>
                                     <div class="flex items-center gap-2">
                                         <span class="text-xs text-gray-400">×</span>
@@ -112,7 +112,7 @@
                                 <div class="flex items-center justify-between p-3 rounded-xl bg-violet-50/50 border border-violet-100 hover:border-violet-300 transition">
                                     <div class="w-24">
                                         <span class="font-bold text-violet-900 text-sm">₹ 100</span>
-                                        <span class="block text-[10px] text-violet-600">Note</span>
+                                        <span class="block text-[11px] text-violet-600">Note</span>
                                     </div>
                                     <div class="flex items-center gap-2">
                                         <span class="text-xs text-gray-400">×</span>
@@ -125,7 +125,7 @@
                                 <div class="flex items-center justify-between p-3 rounded-xl bg-cyan-50/50 border border-cyan-100 hover:border-cyan-300 transition">
                                     <div class="w-24">
                                         <span class="font-bold text-cyan-900 text-sm">₹ 50</span>
-                                        <span class="block text-[10px] text-cyan-600">Note</span>
+                                        <span class="block text-[11px] text-cyan-600">Note</span>
                                     </div>
                                     <div class="flex items-center gap-2">
                                         <span class="text-xs text-gray-400">×</span>
@@ -143,7 +143,7 @@
                                 <div class="flex items-center justify-between p-3 rounded-xl bg-emerald-50/50 border border-emerald-100 hover:border-emerald-300 transition">
                                     <div class="w-24">
                                         <span class="font-bold text-emerald-900 text-sm">₹ 20</span>
-                                        <span class="block text-[10px] text-emerald-600">Note / Coin</span>
+                                        <span class="block text-[11px] text-emerald-600">Note / Coin</span>
                                     </div>
                                     <div class="flex items-center gap-2">
                                         <span class="text-xs text-gray-400">×</span>
@@ -156,7 +156,7 @@
                                 <div class="flex items-center justify-between p-3 rounded-xl bg-yellow-50/50 border border-yellow-100 hover:border-yellow-300 transition">
                                     <div class="w-24">
                                         <span class="font-bold text-yellow-900 text-sm">₹ 10</span>
-                                        <span class="block text-[10px] text-yellow-600">Note / Coin</span>
+                                        <span class="block text-[11px] text-yellow-600">Note / Coin</span>
                                     </div>
                                     <div class="flex items-center gap-2">
                                         <span class="text-xs text-gray-400">×</span>
@@ -169,7 +169,7 @@
                                 <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 border border-gray-200 hover:border-gray-400 transition">
                                     <div class="w-24">
                                         <span class="font-bold text-gray-900 text-sm">₹ 5</span>
-                                        <span class="block text-[10px] text-gray-500">Coin / Note</span>
+                                        <span class="block text-[11px] text-gray-500">Coin / Note</span>
                                     </div>
                                     <div class="flex items-center gap-2">
                                         <span class="text-xs text-gray-400">×</span>
@@ -182,7 +182,7 @@
                                 <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 border border-gray-200 hover:border-gray-400 transition">
                                     <div class="w-24">
                                         <span class="font-bold text-gray-900 text-sm">₹ 2</span>
-                                        <span class="block text-[10px] text-gray-500">Coin</span>
+                                        <span class="block text-[11px] text-gray-500">Coin</span>
                                     </div>
                                     <div class="flex items-center gap-2">
                                         <span class="text-xs text-gray-400">×</span>
@@ -195,7 +195,7 @@
                                 <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 border border-gray-200 hover:border-gray-400 transition">
                                     <div class="w-24">
                                         <span class="font-bold text-gray-900 text-sm">₹ 1</span>
-                                        <span class="block text-[10px] text-gray-500">Coin</span>
+                                        <span class="block text-[11px] text-gray-500">Coin</span>
                                     </div>
                                     <div class="flex items-center gap-2">
                                         <span class="text-xs text-gray-400">×</span>
@@ -208,7 +208,7 @@
                                 <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 border border-gray-200 hover:border-gray-400 transition">
                                     <div class="w-24">
                                         <span class="font-bold text-gray-900 text-sm">Loose Coins</span>
-                                        <span class="block text-[10px] text-gray-500">Direct Value (₹)</span>
+                                        <span class="block text-[11px] text-gray-500">Direct Value (₹)</span>
                                     </div>
                                     <div class="flex items-center gap-2">
                                         <span class="text-xs text-gray-400">₹</span>
@@ -288,11 +288,11 @@
                                             <div class="text-right">
                                                 <div class="font-bold text-gray-900">₹{{ number_format($recon->physical_counted_balance, 2) }}</div>
                                                 @if($recon->variance_status === 'matched')
-                                                    <span class="text-[10px] font-bold text-emerald-600">Exact Match</span>
+                                                    <span class="text-[11px] font-bold text-emerald-600">Exact Match</span>
                                                 @elseif($recon->variance_status === 'shortage')
-                                                    <span class="text-[10px] font-bold text-rose-600">-₹{{ number_format(abs($recon->variance_amount), 2) }} Short</span>
+                                                    <span class="text-[11px] font-bold text-rose-600">-₹{{ number_format(abs($recon->variance_amount), 2) }} Short</span>
                                                 @else
-                                                    <span class="text-[10px] font-bold text-amber-600">+₹{{ number_format($recon->variance_amount, 2) }} Excess</span>
+                                                    <span class="text-[11px] font-bold text-amber-600">+₹{{ number_format($recon->variance_amount, 2) }} Excess</span>
                                                 @endif
                                             </div>
                                         </div>

@@ -153,7 +153,7 @@
                                             {{ $eq->serial_number }}
                                         </a>
                                         @if($eq->mac_address)
-                                            <div class="text-[10px] text-slate-500 font-mono">MAC: {{ $eq->mac_address }}</div>
+                                            <div class="text-[11px] text-slate-500 font-mono">MAC: {{ $eq->mac_address }}</div>
                                         @endif
                                     </td>
                                     <td>

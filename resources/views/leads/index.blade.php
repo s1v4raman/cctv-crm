@@ -94,12 +94,12 @@
                         <svg class="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                         <input type="text" name="search" id="lead-search" value="{{ request('search') }}" 
                                 placeholder="Search customer, phone, address…" 
-                                style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important; box-sizing: border-box; padding-left: 36px !important;"
+                                style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important; box-sizing: border-box; padding-left: 36px !important;"
                                 class="crm-input w-full text-xs border border-[var(--input-border)] bg-[var(--card-bg)] text-[var(--text-main)] placeholder-[var(--text-muted)] focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/30">
                     </div>
 
                     <select name="status" id="lead-status-filter" 
-                            style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important; box-sizing: border-box; min-width: 140px;"
+                            style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important; box-sizing: border-box; min-width: 140px;"
                             class="crm-select text-xs border border-[var(--input-border)] bg-[var(--card-bg)] text-[var(--text-main)] focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/30 shrink-0">
                         <option value="">All Statuses</option>
                         <option value="new" @selected(request('status') === 'new')>New</option>
@@ -110,14 +110,14 @@
                     </select>
 
                     <button type="submit" 
-                            style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important; box-sizing: border-box;"
+                            style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important; box-sizing: border-box;"
                             class="crm-btn-primary px-4 text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white transition shrink-0 inline-flex items-center justify-center shadow-xs cursor-pointer">
                         Filter
                     </button>
 
                     @if(request('search') || request('status'))
                         <a href="{{ route('leads.index') }}" 
-                           style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important; box-sizing: border-box;"
+                           style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important; box-sizing: border-box;"
                            class="crm-btn-secondary px-3.5 text-xs font-medium border border-[var(--button-border)] bg-[var(--card-bg)] text-[var(--text-main)] hover:bg-[var(--page-bg)] transition inline-flex items-center shrink-0">
                             Reset
                         </a>
@@ -140,16 +140,6 @@
                         </thead>
                         <tbody>
                             @forelse ($leads as $lead)
-                                @php
-                                    $statusColors = [
-                                        'won' => 'var(--status-green)',
-                                        'quoted' => 'var(--status-orange)',
-                                        'new' => 'var(--crm-accent)',
-                                        'contacted' => 'var(--crm-accent)',
-                                        'lost' => 'var(--status-red)',
-                                    ];
-                                    $sColor = $statusColors[strtolower($lead->status)] ?? 'var(--crm-accent)';
-                                @endphp
                                 <tr>
                                     {{-- Customer name --}}
                                     <td>
@@ -178,9 +168,9 @@
                                         {{ $lead->source ?: '—' }}
                                     </td>
 
-                                    {{-- Status: Plain bold colored text, semantic variable --}}
+                                    {{-- Status: shared status pill (tone comes from status-{name}) --}}
                                     <td>
-                                        <span class="font-bold" style="color: {{ $sColor }};">
+                                        <span class="status-badge status-{{ strtolower($lead->status) }}">
                                             {{ ucfirst(strtolower($lead->status)) }}
                                         </span>
                                     </td>

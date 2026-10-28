@@ -16,17 +16,9 @@
     <link rel="shortcut icon" href="{{ asset('favicon.ico') }}?v={{ filemtime(public_path('favicon.ico')) }}">
     <link rel="apple-touch-icon" href="{{ asset('logo.png') }}">
 
-    <!-- Google Fonts: Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Scripts & Styles via Vite -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-
-    <!-- Tailwind CSS & Alpine.js -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <x-crm-theme-init />
 
@@ -38,7 +30,7 @@
             --brand-blue-hover: #1d4ed8 !important;
         }
 
-        * { font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+        * { font-family: var(--font-sans); }
 
         /* ══════════════════════════════════════════════════════════════
            LEFT PANEL — always dark regardless of theme mode
@@ -420,7 +412,7 @@
                         </div>
                         <div>
                             <span class="text-lg font-bold text-white tracking-tight">Precision IT <span class="text-blue-400">Systems</span></span>
-                            <span class="block text-[10px] font-semibold text-slate-500 tracking-widest uppercase mt-0">Operations ERP</span>
+                            <span class="block text-[11px] font-semibold text-slate-500 tracking-widest uppercase mt-0">Operations ERP</span>
                         </div>
                     </a>
                 </div>
@@ -429,9 +421,8 @@
                 <div class="flex-1 flex flex-col justify-center py-8 max-w-lg">
                     
                     <div class="anim anim-d1">
-                        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full stat-pill text-xs text-emerald-300 font-medium mb-6">
-                            <div class="live-dot"></div>
-                            <span>All Systems Operational</span>
+                        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full stat-pill text-xs text-sky-300 font-medium mb-6">
+                            <span>CCTV Installation &amp; Service ERP</span>
                         </div>
                     </div>
 
@@ -460,21 +451,21 @@
                 <div class="anim anim-d5">
                     <div class="flex flex-wrap gap-2.5 mb-5">
                         <div class="stat-pill rounded-lg px-4 py-2.5 text-center min-w-[95px]">
-                            <div class="text-lg font-extrabold text-white leading-tight">2,480+</div>
-                            <div class="text-[9px] text-slate-400 font-semibold uppercase tracking-wider mt-0.5">Cameras Live</div>
+                            <div class="text-lg font-extrabold text-white leading-tight">Sales</div>
+                            <div class="text-[11px] text-slate-400 font-semibold uppercase tracking-wider mt-0.5">Leads &amp; Quotes</div>
                         </div>
                         <div class="stat-pill rounded-lg px-4 py-2.5 text-center min-w-[95px]">
-                            <div class="text-lg font-extrabold text-white leading-tight">99.9%</div>
-                            <div class="text-[9px] text-slate-400 font-semibold uppercase tracking-wider mt-0.5">Uptime</div>
+                            <div class="text-lg font-extrabold text-white leading-tight">Field</div>
+                            <div class="text-[11px] text-slate-400 font-semibold uppercase tracking-wider mt-0.5">Jobs &amp; Dispatch</div>
                         </div>
                         <div class="stat-pill rounded-lg px-4 py-2.5 text-center min-w-[95px]">
-                            <div class="text-lg font-extrabold text-white leading-tight">v2.6</div>
-                            <div class="text-[9px] text-slate-400 font-semibold uppercase tracking-wider mt-0.5">Enterprise</div>
+                            <div class="text-lg font-extrabold text-white leading-tight">GST</div>
+                            <div class="text-[11px] text-slate-400 font-semibold uppercase tracking-wider mt-0.5">Billing &amp; Payroll</div>
                         </div>
                     </div>
                     <div class="flex items-center gap-2 text-[11px] text-slate-500">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-                        <span>256-Bit SSL Encrypted &middot; SOC-2 Certified</span>
+                        <span>Role-based access for admins, staff, technicians &amp; workers</span>
                     </div>
                 </div>
             </div>
@@ -729,7 +720,7 @@
                         <div class="demo-wrapper rounded-xl overflow-hidden">
                             <div class="demo-header px-4 py-2.5 flex items-center justify-between">
                                 <span class="text-[11px] font-bold fp-muted uppercase tracking-wider">Demo Logins</span>
-                                <span class="text-[10px] fp-muted font-medium" x-text="portal === 'worker' ? 'Daily wages profile' : 'Click to autofill'"></span>
+                                <span class="text-[11px] fp-muted font-medium" x-text="portal === 'worker' ? 'Daily wages profile' : 'Click to autofill'"></span>
                             </div>
                             <div class="grid grid-cols-4 gap-0">
                                 <div class="demo-card p-3 cursor-pointer text-center" 
@@ -738,7 +729,7 @@
                                         <svg class="dc-icon w-3.5 h-3.5 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                                     </div>
                                     <span class="dc-name font-bold block text-[11px]">Admin</span>
-                                    <span class="dc-email text-[9px] block truncate mt-0.5 font-mono">test@example.c…</span>
+                                    <span class="dc-email text-[11px] block truncate mt-0.5 font-mono">test@example.c…</span>
                                 </div>
                                 <div class="demo-card p-3 cursor-pointer text-center" 
                                      @click="portal = 'technician'; setEmailAndPass('bob@example.com', 'password')">
@@ -746,7 +737,7 @@
                                         <svg class="dc-icon w-3.5 h-3.5 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                                     </div>
                                     <span class="dc-name font-bold block text-[11px]">Technician</span>
-                                    <span class="dc-email text-[9px] block truncate mt-0.5 font-mono">bob@example.c…</span>
+                                    <span class="dc-email text-[11px] block truncate mt-0.5 font-mono">bob@example.c…</span>
                                 </div>
                                 <div class="demo-card p-3 cursor-pointer text-center" 
                                      @click="portal = 'staff'; setEmailAndPass('alex@example.com', 'password')">
@@ -754,7 +745,7 @@
                                         <svg class="dc-icon w-3.5 h-3.5 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                                     </div>
                                     <span class="dc-name font-bold block text-[11px]">Staff</span>
-                                    <span class="dc-email text-[9px] block truncate mt-0.5 font-mono">alex@example.c…</span>
+                                    <span class="dc-email text-[11px] block truncate mt-0.5 font-mono">alex@example.c…</span>
                                 </div>
                                 <div class="demo-card demo-card-worker p-3 cursor-pointer text-center" 
                                      @click="portal = 'worker'; workerName = 'Raju Kumar'; workerPhone = '9876543210'">
@@ -762,7 +753,7 @@
                                         <svg class="dc-icon w-3.5 h-3.5 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                                     </div>
                                     <span class="dc-name font-bold block text-[11px]">Worker</span>
-                                    <span class="dc-email text-[9px] block truncate mt-0.5 font-mono">9876543210</span>
+                                    <span class="dc-email text-[11px] block truncate mt-0.5 font-mono">9876543210</span>
                                 </div>
                             </div>
                         </div>

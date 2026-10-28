@@ -80,13 +80,13 @@
             <div class="bg-white dark:bg-[#0f172a] rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-800">
                 <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-200 dark:border-slate-800">
                     <div>
-                        <span class="inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 mb-1.5">
+                        <span class="inline-block text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 mb-1.5">
                             {{ $title }}
                         </span>
                         <h3 class="text-xl font-bold text-slate-900 dark:text-white font-heading">{{ $lead?->customer_name ?? 'Customer Handover' }}</h3>
                     </div>
                     <div class="text-right">
-                        <span class="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Field Engineer</span>
+                        <span class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Field Engineer</span>
                         <p class="text-sm font-bold text-slate-900 dark:text-white">{{ auth()->user()->name }}</p>
                     </div>
                 </div>
@@ -225,8 +225,8 @@
                                 <div class="w-full h-44 rounded-xl overflow-hidden relative border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-black group">
                                     <img src="" class="slot-preview-img w-full h-full object-cover">
                                     <div class="absolute top-2 left-2 flex items-center gap-1.5">
-                                        <span class="px-2 py-0.5 rounded-full bg-emerald-600 text-white font-bold text-[10px] shadow">✓ Photo Attached</span>
-                                        <span class="slot-file-size px-2 py-0.5 rounded-full bg-slate-900/80 text-slate-300 font-mono text-[10px] border border-slate-700"></span>
+                                        <span class="px-2 py-0.5 rounded-full bg-emerald-600 text-white font-bold text-[11px] shadow">✓ Photo Attached</span>
+                                        <span class="slot-file-size px-2 py-0.5 rounded-full bg-slate-900/80 text-slate-300 font-mono text-[11px] border border-slate-700"></span>
                                     </div>
                                     <div class="absolute bottom-2 inset-x-2 flex items-center justify-center gap-2">
                                         <button type="button" onclick="openPhotoCameraModal('slot-0', 'DVR Rack Setup')"
@@ -288,8 +288,8 @@
                                 <div class="w-full h-44 rounded-xl overflow-hidden relative border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-black group">
                                     <img src="" class="slot-preview-img w-full h-full object-cover">
                                     <div class="absolute top-2 left-2 flex items-center gap-1.5">
-                                        <span class="px-2 py-0.5 rounded-full bg-emerald-600 text-white font-bold text-[10px] shadow">✓ Photo Attached</span>
-                                        <span class="slot-file-size px-2 py-0.5 rounded-full bg-slate-900/80 text-slate-300 font-mono text-[10px] border border-slate-700"></span>
+                                        <span class="px-2 py-0.5 rounded-full bg-emerald-600 text-white font-bold text-[11px] shadow">✓ Photo Attached</span>
+                                        <span class="slot-file-size px-2 py-0.5 rounded-full bg-slate-900/80 text-slate-300 font-mono text-[11px] border border-slate-700"></span>
                                     </div>
                                     <div class="absolute bottom-2 inset-x-2 flex items-center justify-center gap-2">
                                         <button type="button" onclick="openPhotoCameraModal('slot-1', 'Live Monitor View')"
@@ -497,7 +497,7 @@
 
                     {{-- Big Shutter Button --}}
                     <button type="button" onclick="snapJcrPhoto()"
-                            style="padding:.65rem 1.5rem;background:linear-gradient(135deg, #f59e0b, #d97706);color:#0f172a;border:none;border-radius:999px;font-size:.85rem;font-weight:900;cursor:pointer;display:inline-flex;align-items:center;gap:.5rem;box-shadow:0 0 20px rgba(245,158,11,0.4);transition:all .15s ease;">
+                            style="padding:.65rem 1.5rem;background:#f59e0b;color:#0f172a;border:none;border-radius:999px;font-size:.85rem;font-weight:900;cursor:pointer;display:inline-flex;align-items:center;gap:.5rem;box-shadow:0 0 20px rgba(245,158,11,0.4);transition:all .15s ease;">
                         <span style="font-size:1.1rem;">📸</span> Snap Photo
                     </button>
 
@@ -515,7 +515,7 @@
                     </button>
 
                     <button type="button" onclick="confirmJcrPhoto()"
-                            style="padding:.55rem 1.5rem;background:linear-gradient(135deg, #10b981, #059669);color:#fff;border:none;border-radius:.75rem;font-size:.8rem;font-weight:900;cursor:pointer;display:inline-flex;align-items:center;gap:.4rem;box-shadow:0 0 15px rgba(16,185,129,0.35);">
+                            style="padding:.55rem 1.5rem;background:#059669;color:#fff;border:none;border-radius:.75rem;font-size:.8rem;font-weight:900;cursor:pointer;display:inline-flex;align-items:center;gap:.4rem;box-shadow:0 0 15px rgba(16,185,129,0.35);">
                         ✓ Use This Photo
                     </button>
                 </div>
@@ -1028,8 +1028,8 @@
                     <div class="w-full h-44 rounded-xl overflow-hidden relative border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-black group">
                         <img src="" class="slot-preview-img w-full h-full object-cover">
                         <div class="absolute top-2 left-2 flex items-center gap-1.5">
-                            <span class="px-2 py-0.5 rounded-full bg-emerald-600 text-white font-bold text-[10px] shadow">✓ Photo Attached</span>
-                            <span class="slot-file-size px-2 py-0.5 rounded-full bg-slate-900/80 text-slate-300 font-mono text-[10px] border border-slate-700"></span>
+                            <span class="px-2 py-0.5 rounded-full bg-emerald-600 text-white font-bold text-[11px] shadow">✓ Photo Attached</span>
+                            <span class="slot-file-size px-2 py-0.5 rounded-full bg-slate-900/80 text-slate-300 font-mono text-[11px] border border-slate-700"></span>
                         </div>
                         <div class="absolute bottom-2 inset-x-2 flex items-center justify-center gap-2">
                             <button type="button" onclick="openPhotoCameraModal('${newId}', 'Proof Photo #${slotIndex}')"

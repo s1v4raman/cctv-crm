@@ -20,7 +20,7 @@
                 --brand-blue-hover: #1d4ed8 !important;
             }
             html, body {
-                font-family: Arial, sans-serif !important;
+                font-family: var(--font-sans) !important;
                 background-color: #f5f5f5 !important;
                 color: #222222 !important;
                 font-size: 14px !important;
@@ -28,26 +28,26 @@
             }
             * { box-shadow: none !important; }
             h1, h2 {
-                font-family: Arial, sans-serif !important;
+                font-family: var(--font-sans) !important;
                 font-size: 24px !important;
                 font-weight: bold !important;
                 color: #222222 !important;
             }
             h3 {
-                font-family: Arial, sans-serif !important;
+                font-family: var(--font-sans) !important;
                 font-size: 18px !important;
                 font-weight: bold !important;
                 color: #222222 !important;
             }
             label {
-                font-family: Arial, sans-serif !important;
+                font-family: var(--font-sans) !important;
                 font-size: 14px !important;
                 font-weight: normal !important;
                 color: #555555 !important;
                 text-transform: none !important;
             }
             input {
-                font-family: Arial, sans-serif !important;
+                font-family: var(--font-sans) !important;
                 font-size: 14px !important;
                 border: 1px solid #cccccc !important;
                 border-radius: 4px !important;
@@ -57,7 +57,7 @@
                 outline: none !important;
             }
             button, .btn-primary {
-                font-family: Arial, sans-serif !important;
+                font-family: var(--font-sans) !important;
                 font-size: 14px !important;
                 font-weight: normal !important;
                 background-color: #2563eb !important;
@@ -69,10 +69,6 @@
                 background-color: #1d4ed8 !important;
             }
         </style>
-
-        <!-- Tailwind CSS & Alpine.js CDN Guard -->
-        <script src="https://cdn.tailwindcss.com"></script>
-        <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
         <!-- Scripts & Styles via Vite -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])

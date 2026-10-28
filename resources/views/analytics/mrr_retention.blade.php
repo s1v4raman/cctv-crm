@@ -211,7 +211,7 @@
                                     <td class="px-4 py-3.5 text-center text-slate-600 dark:text-slate-300">{{ $data['conversion']['monthly_trend']['quotations'][$idx] }}</td>
                                     <td class="px-4 py-3.5 text-center font-bold text-emerald-600 dark:text-emerald-400">{{ $data['conversion']['monthly_trend']['accepted'][$idx] }}</td>
                                     <td class="px-4 py-3.5 text-center">
-                                        <span class="inline-block px-2.5 py-0.5 rounded-full font-bold text-[10px] {{ $data['conversion']['monthly_trend']['conversion_rates'][$idx] >= 40 ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400' }}">
+                                        <span class="inline-block px-2.5 py-0.5 rounded-full font-bold text-[11px] {{ $data['conversion']['monthly_trend']['conversion_rates'][$idx] >= 40 ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400' }}">
                                             {{ $data['conversion']['monthly_trend']['conversion_rates'][$idx] }}%
                                         </span>
                                     </td>

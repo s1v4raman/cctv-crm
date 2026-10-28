@@ -7,7 +7,7 @@
             <img src="{{ asset('logos/logo_' . ltrim(auth()->user()->theme_accent ?? '2563eb', '#') . '.png') }}" alt="Precision IT Systems" class="crm-brand-logo h-8 w-8 object-contain group-hover:scale-105 transition-transform shrink-0" onerror="this.src='{{ asset('logo.png') }}'">
             <div :class="sidebarCollapsed ? 'lg:hidden' : ''" class="min-w-0">
                 <span class="block text-sm font-bold tracking-tight text-[var(--text-main)] truncate">Precision IT</span>
-                <span class="block text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)] font-mono truncate">CRM SUITE</span>
+                <span class="block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)] font-mono truncate">CRM SUITE</span>
             </div>
         </a>
         
@@ -26,21 +26,19 @@
                 <div :class="sidebarCollapsed ? 'lg:hidden' : ''" class="px-3 mb-1.5 text-[11px] font-bold tracking-wider uppercase text-slate-400 dark:text-slate-500">Technician Portal</div>
                 <div :class="sidebarCollapsed ? 'hidden lg:block' : 'hidden'" class="my-2 border-t border-slate-100 dark:border-slate-800"></div>
                 <div class="space-y-1">
-                    {{-- Field Work Orders (Menu/Tasks list icon) --}}
-                    <a :title="sidebarCollapsed ? $el.textContent.trim() : null" :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('technician.dashboard') }}" 
-                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('technician.*') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
-                        <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('technician.*') ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                            <line stroke-linecap="round" stroke-linejoin="round" x1="4" x2="20" y1="6" y2="6"/>
-                            <line stroke-linecap="round" stroke-linejoin="round" x1="4" x2="20" y1="12" y2="12"/>
-                            <line stroke-linecap="round" stroke-linejoin="round" x1="4" x2="20" y1="18" y2="18"/>
+                    {{-- Field Work Orders (Wrench icon) --}}
+                    <a :title="sidebarCollapsed ? $el.textContent.trim() : null" :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('technician.dashboard') }}"
+                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('technician.*') ? 'crm-active-link' : '' }}" @if(request()->routeIs('technician.*')) aria-current="page" @endif>
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/>
                         </svg>
                         <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">Field Work Orders</span>
                     </a>
 
                     {{-- Calendar & Tasks Module (Calendar icon) --}}
                     <a :title="sidebarCollapsed ? $el.textContent.trim() : null" :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('calendar.index') }}" 
-                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('calendar.*') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
-                        <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('calendar.*') ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('calendar.*') ? 'crm-active-link' : '' }}" @if(request()->routeIs('calendar.*')) aria-current="page" @endif>
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                             <rect width="18" height="18" x="3" y="4" rx="3" ry="3"/>
                             <line stroke-linecap="round" stroke-linejoin="round" x1="16" x2="16" y1="2" y2="6"/>
                             <line stroke-linecap="round" stroke-linejoin="round" x1="8" x2="8" y1="2" y2="6"/>
@@ -52,8 +50,8 @@
 
                     {{-- Projects & Sites (Briefcase icon) --}}
                     <a :title="sidebarCollapsed ? $el.textContent.trim() : null" :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('projects.index') }}" 
-                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('projects.*') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
-                        <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('projects.*') ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('projects.*') ? 'crm-active-link' : '' }}" @if(request()->routeIs('projects.*')) aria-current="page" @endif>
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                             <rect width="20" height="14" x="2" y="7" rx="3"/>
                             <path stroke-linecap="round" stroke-linejoin="round" d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
                             <line stroke-linecap="round" stroke-linejoin="round" x1="2" x2="22" y1="13" y2="13"/>
@@ -63,8 +61,8 @@
 
                     {{-- Installation Sites (Location pin icon) --}}
                     <a :title="sidebarCollapsed ? $el.textContent.trim() : null" :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('sites.index') }}" 
-                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('sites.*') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
-                        <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('sites.*') ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('sites.*') ? 'crm-active-link' : '' }}" @if(request()->routeIs('sites.*')) aria-current="page" @endif>
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 21c-4.5-5.5-7-9.5-7-13a7 7 0 0 1 14 0c0 3.5-2.5 7.5-7 13z"/>
                             <circle cx="12" cy="8" r="2.5"/>
                         </svg>
@@ -73,8 +71,8 @@
 
                     {{-- Daily Wage Workers (Team/Users icon) --}}
                     <a :title="sidebarCollapsed ? $el.textContent.trim() : null" :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('workers.index') }}" 
-                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ (request()->routeIs('workers.*') && !request()->routeIs('workers.attendance.*')) ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
-                        <svg class="w-5 h-5 shrink-0 {{ (request()->routeIs('workers.*') && !request()->routeIs('workers.attendance.*')) ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ (request()->routeIs('workers.*') && !request()->routeIs('workers.attendance.*')) ? 'crm-active-link' : '' }}" @if((request()->routeIs('workers.*') && !request()->routeIs('workers.attendance.*'))) aria-current="page" @endif>
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
                             <circle cx="9" cy="7" r="4"/>
                             <path stroke-linecap="round" stroke-linejoin="round" d="M22 21v-2a4 4 0 0 0-3-3.87"/>
@@ -85,8 +83,8 @@
 
                     {{-- Worker Attendance Maintenance (Calendar/Check icon) --}}
                     <a :title="sidebarCollapsed ? $el.textContent.trim() : null" :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('workers.attendance.index') }}" 
-                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('workers.attendance.*') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
-                        <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('workers.attendance.*') ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('workers.attendance.*') ? 'crm-active-link' : '' }}" @if(request()->routeIs('workers.attendance.*')) aria-current="page" @endif>
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                         </svg>
                         <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">Worker Attendance</span>
@@ -104,8 +102,8 @@
                 <div class="space-y-1">
                     {{-- Dashboard (Home icon) --}}
                     <a :title="sidebarCollapsed ? $el.textContent.trim() : null" :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('dashboard') }}" 
-                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('dashboard') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
-                        <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('dashboard') ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('dashboard') ? 'crm-active-link' : '' }}" @if(request()->routeIs('dashboard')) aria-current="page" @endif>
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M3 10.5L12 3l9 7.5V20a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-9.5z"/>
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 22V12h6v10"/>
                         </svg>
@@ -114,8 +112,8 @@
 
                     {{-- Calendar & Dispatch (Calendar with dots icon) --}}
                     <a :title="sidebarCollapsed ? $el.textContent.trim() : null" :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('calendar.index') }}" 
-                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('calendar.*') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
-                        <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('calendar.*') ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('calendar.*') ? 'crm-active-link' : '' }}" @if(request()->routeIs('calendar.*')) aria-current="page" @endif>
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                             <rect width="18" height="18" x="3" y="4" rx="3" ry="3"/>
                             <line stroke-linecap="round" stroke-linejoin="round" x1="16" x2="16" y1="2" y2="6"/>
                             <line stroke-linecap="round" stroke-linejoin="round" x1="8" x2="8" y1="2" y2="6"/>
@@ -134,8 +132,8 @@
                 <div class="space-y-1">
                     {{-- Leads & Inquiries (User outline icon) --}}
                     <a :title="sidebarCollapsed ? $el.textContent.trim() : null" :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('leads.index') }}" 
-                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('leads.*') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
-                        <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('leads.*') ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('leads.*') ? 'crm-active-link' : '' }}" @if(request()->routeIs('leads.*')) aria-current="page" @endif>
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                             <circle cx="12" cy="7" r="4.5"/>
                             <path stroke-linecap="round" stroke-linejoin="round" d="M5.5 21a6.5 6.5 0 0 1 13 0"/>
                         </svg>
@@ -144,8 +142,8 @@
 
                     {{-- Site Surveys (Location pin icon) --}}
                     <a :title="sidebarCollapsed ? $el.textContent.trim() : null" :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('site-surveys.index') }}" 
-                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('site-surveys.*') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
-                        <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('site-surveys.*') ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('site-surveys.*') ? 'crm-active-link' : '' }}" @if(request()->routeIs('site-surveys.*')) aria-current="page" @endif>
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 21c-4.5-5.5-7-9.5-7-13a7 7 0 0 1 14 0c0 3.5-2.5 7.5-7 13z"/>
                             <circle cx="12" cy="8" r="2.5"/>
                         </svg>
@@ -154,8 +152,8 @@
 
                     {{-- Deals & Quotations (Edit/Pencil note icon) --}}
                     <a :title="sidebarCollapsed ? $el.textContent.trim() : null" :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('quotations.index') }}" 
-                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('quotations.*') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
-                        <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('quotations.*') ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('quotations.*') ? 'crm-active-link' : '' }}" @if(request()->routeIs('quotations.*')) aria-current="page" @endif>
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M11 4H5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h13a2 2 0 0 0 2-2v-6"/>
                             <path stroke-linecap="round" stroke-linejoin="round" d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                         </svg>
@@ -164,8 +162,8 @@
 
                     {{-- CCTV Storage Estimator (Lightbulb icon) --}}
                     <a :title="sidebarCollapsed ? $el.textContent.trim() : null" :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('estimator.index') }}" 
-                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('estimator.*') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
-                        <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('estimator.*') ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('estimator.*') ? 'crm-active-link' : '' }}" @if(request()->routeIs('estimator.*')) aria-current="page" @endif>
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 18h6m-4 4h2M12 2a7 7 0 0 0-4.5 12.35c.95.83 1.5 2 1.5 3.15h6c0-1.15.55-2.32 1.5-3.15A7 7 0 0 0 12 2z"/>
                         </svg>
                         <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">CCTV Storage Estimator</span>
@@ -180,8 +178,8 @@
                 <div class="space-y-1">
                     {{-- Projects & Sites (Briefcase icon) --}}
                     <a :title="sidebarCollapsed ? $el.textContent.trim() : null" :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('projects.index') }}" 
-                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('projects.*') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
-                        <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('projects.*') ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('projects.*') ? 'crm-active-link' : '' }}" @if(request()->routeIs('projects.*')) aria-current="page" @endif>
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                             <rect width="20" height="14" x="2" y="7" rx="3"/>
                             <path stroke-linecap="round" stroke-linejoin="round" d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
                             <line stroke-linecap="round" stroke-linejoin="round" x1="2" x2="22" y1="13" y2="13"/>
@@ -191,8 +189,8 @@
 
                     {{-- Installation Sites (Location pin icon) --}}
                     <a :title="sidebarCollapsed ? $el.textContent.trim() : null" :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('sites.index') }}" 
-                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('sites.*') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
-                        <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('sites.*') ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('sites.*') ? 'crm-active-link' : '' }}" @if(request()->routeIs('sites.*')) aria-current="page" @endif>
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 21c-4.5-5.5-7-9.5-7-13a7 7 0 0 1 14 0c0 3.5-2.5 7.5-7 13z"/>
                             <circle cx="12" cy="8" r="2.5"/>
                         </svg>
@@ -201,8 +199,8 @@
 
                     {{-- Workers & Daily Wages (Team/Users icon) --}}
                     <a :title="sidebarCollapsed ? $el.textContent.trim() : null" :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('workers.index') }}" 
-                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ (request()->routeIs('workers.*') && !request()->routeIs('workers.attendance.*')) ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
-                        <svg class="w-5 h-5 shrink-0 {{ (request()->routeIs('workers.*') && !request()->routeIs('workers.attendance.*')) ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ (request()->routeIs('workers.*') && !request()->routeIs('workers.attendance.*')) ? 'crm-active-link' : '' }}" @if((request()->routeIs('workers.*') && !request()->routeIs('workers.attendance.*'))) aria-current="page" @endif>
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
                             <circle cx="9" cy="7" r="4"/>
                             <path stroke-linecap="round" stroke-linejoin="round" d="M22 21v-2a4 4 0 0 0-3-3.87"/>
@@ -213,8 +211,8 @@
 
                     {{-- Worker Attendance Maintenance (Calendar/Check icon) --}}
                     <a :title="sidebarCollapsed ? $el.textContent.trim() : null" :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('workers.attendance.index') }}" 
-                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('workers.attendance.*') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
-                        <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('workers.attendance.*') ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('workers.attendance.*') ? 'crm-active-link' : '' }}" @if(request()->routeIs('workers.attendance.*')) aria-current="page" @endif>
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                         </svg>
                         <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">Worker Attendance</span>
@@ -223,8 +221,8 @@
                     @if(auth()->user()->isAdmin())
                     {{-- Sunday Payday Hub (Download icon) --}}
                     <a :title="sidebarCollapsed ? $el.textContent.trim() : null" :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('wages.index') }}" 
-                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('wages.*') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
-                        <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('wages.*') ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('wages.*') ? 'crm-active-link' : '' }}" @if(request()->routeIs('wages.*')) aria-current="page" @endif>
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                             <polyline stroke-linecap="round" stroke-linejoin="round" points="7 10 12 15 17 10"/>
                             <line stroke-linecap="round" stroke-linejoin="round" x1="12" x2="12" y1="15" y2="3"/>
@@ -235,8 +233,8 @@
 
                     {{-- Ready to Invoice (DCs) (Document icon) --}}
                     <a :title="sidebarCollapsed ? $el.textContent.trim() : null" :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('documents.to-invoice') }}" 
-                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('documents.to-invoice') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
-                        <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('documents.to-invoice') ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('documents.to-invoice') ? 'crm-active-link' : '' }}" @if(request()->routeIs('documents.to-invoice')) aria-current="page" @endif>
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                             <polyline stroke-linecap="round" stroke-linejoin="round" points="14 2 14 8 20 8"/>
                             <line stroke-linecap="round" stroke-linejoin="round" x1="16" x2="8" y1="13" y2="13"/>
@@ -245,21 +243,19 @@
                         <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">Ready to Invoice (DCs)</span>
                     </a>
 
-                    {{-- Tasks & Field Jobs (Menu/Checklist lines icon) --}}
+                    {{-- Tasks & Field Jobs (Clipboard-check icon) --}}
                     <a :title="sidebarCollapsed ? $el.textContent.trim() : null" :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('jobs.index') }}" 
-                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('jobs.*') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
-                        <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('jobs.*') ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                            <line stroke-linecap="round" stroke-linejoin="round" x1="4" x2="20" y1="6" y2="6"/>
-                            <line stroke-linecap="round" stroke-linejoin="round" x1="4" x2="20" y1="12" y2="12"/>
-                            <line stroke-linecap="round" stroke-linejoin="round" x1="4" x2="20" y1="18" y2="18"/>
+                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('jobs.*') ? 'crm-active-link' : '' }}" @if(request()->routeIs('jobs.*')) aria-current="page" @endif>
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
                         </svg>
                         <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">Tasks & Field Jobs</span>
                     </a>
 
                     {{-- Cameras & Assets (Eye icon) --}}
                     <a :title="sidebarCollapsed ? $el.textContent.trim() : null" :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('equipment.index') }}" 
-                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('equipment.*') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
-                        <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('equipment.*') ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('equipment.*') ? 'crm-active-link' : '' }}" @if(request()->routeIs('equipment.*')) aria-current="page" @endif>
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/>
                             <circle cx="12" cy="12" r="3.2"/>
                         </svg>
@@ -276,9 +272,9 @@
                     @if(auth()->user()->isAdmin())
                     {{-- Products & Pricing (Bento 4-squares icon) --}}
                     <a :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('products.index') }}" 
-                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('products.*') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}"
+                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('products.*') ? 'crm-active-link' : '' }}" @if(request()->routeIs('products.*')) aria-current="page" @endif
                        title="Product Catalogue & Pricing (Admin Only)">
-                        <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('products.*') ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                             <rect width="7" height="7" x="3" y="3" rx="2"/>
                             <rect width="7" height="7" x="14" y="3" rx="2"/>
                             <rect width="7" height="7" x="14" y="14" rx="2"/>
@@ -290,8 +286,8 @@
 
                     {{-- Purchase Orders (PO) (Download icon) --}}
                     <a :title="sidebarCollapsed ? $el.textContent.trim() : null" :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('purchase-orders.index') }}" 
-                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('purchase-orders.*') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
-                        <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('purchase-orders.*') ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('purchase-orders.*') ? 'crm-active-link' : '' }}" @if(request()->routeIs('purchase-orders.*')) aria-current="page" @endif>
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                             <polyline stroke-linecap="round" stroke-linejoin="round" points="7 10 12 15 17 10"/>
                             <line stroke-linecap="round" stroke-linejoin="round" x1="12" x2="12" y1="15" y2="3"/>
@@ -301,8 +297,8 @@
 
                     {{-- Suppliers & Vendors (Globe icon) --}}
                     <a :title="sidebarCollapsed ? $el.textContent.trim() : null" :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('suppliers.index') }}" 
-                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('suppliers.*') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
-                        <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('suppliers.*') ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('suppliers.*') ? 'crm-active-link' : '' }}" @if(request()->routeIs('suppliers.*')) aria-current="page" @endif>
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                             <circle cx="12" cy="12" r="10"/>
                             <line stroke-linecap="round" stroke-linejoin="round" x1="2" x2="22" y1="12" y2="12"/>
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
@@ -319,9 +315,9 @@
                 <div class="space-y-1">
                     {{-- Employee & Workspace (User outline icon) --}}
                     <a :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('employee.hub') }}" 
-                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('employee.*') || request()->routeIs('attendance.*') || request()->routeIs('leaves.*') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}"
+                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('employee.*') || request()->routeIs('attendance.*') || request()->routeIs('leaves.*') ? 'crm-active-link' : '' }}" @if(request()->routeIs('employee.*') || request()->routeIs('attendance.*') || request()->routeIs('leaves.*')) aria-current="page" @endif
                        title="Employee & Workspace">
-                        <svg class="w-5 h-5 shrink-0 {{ (request()->routeIs('employee.*') || request()->routeIs('attendance.*') || request()->routeIs('leaves.*')) ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                             <circle cx="12" cy="7" r="4.5"/>
                             <path stroke-linecap="round" stroke-linejoin="round" d="M5.5 21a6.5 6.5 0 0 1 13 0"/>
                         </svg>
@@ -337,9 +333,9 @@
                 <div class="space-y-1">
                     {{-- Finance & Accounting (Briefcase icon) --}}
                     <a :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('finance.hub') }}" 
-                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('finance.*') || request()->routeIs('invoices.*') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}"
+                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('finance.*') || request()->routeIs('invoices.*') ? 'crm-active-link' : '' }}" @if(request()->routeIs('finance.*') || request()->routeIs('invoices.*')) aria-current="page" @endif
                        title="Finance & Accounting">
-                        <svg class="w-5 h-5 shrink-0 {{ (request()->routeIs('finance.*') || request()->routeIs('invoices.*')) ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                             <rect width="20" height="14" x="2" y="7" rx="3"/>
                             <path stroke-linecap="round" stroke-linejoin="round" d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
                             <line stroke-linecap="round" stroke-linejoin="round" x1="2" x2="22" y1="13" y2="13"/>
@@ -357,8 +353,8 @@
                     <div class="space-y-1">
                         {{-- Automated Alerts & SMS (Megaphone icon) --}}
                         <a :title="sidebarCollapsed ? $el.textContent.trim() : null" :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('alerts.index') }}" 
-                           class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('alerts.*') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
-                            <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('alerts.*') ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                           class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('alerts.*') ? 'crm-active-link' : '' }}" @if(request()->routeIs('alerts.*')) aria-current="page" @endif>
+                            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="m3 11 18-5v12L3 14v-3z"/>
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>
                             </svg>
@@ -367,8 +363,8 @@
 
                         {{-- Executive Analytics (Sliders/Controls icon) --}}
                         <a :title="sidebarCollapsed ? $el.textContent.trim() : null" :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('analytics.index') }}" 
-                           class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('analytics.*') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
-                            <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('analytics.*') ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                           class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('analytics.*') ? 'crm-active-link' : '' }}" @if(request()->routeIs('analytics.*')) aria-current="page" @endif>
+                            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                                 <line stroke-linecap="round" stroke-linejoin="round" x1="4" x2="20" y1="6" y2="6"/>
                                 <circle cx="8" cy="6" r="2.5"/>
                                 <line stroke-linecap="round" stroke-linejoin="round" x1="4" x2="20" y1="12" y2="12"/>
@@ -381,8 +377,8 @@
 
                         {{-- User Accounts & Settings (Sliders/Controls icon) --}}
                         <a :title="sidebarCollapsed ? $el.textContent.trim() : null" :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('admin.users.index') }}" 
-                           class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('admin.users.*') ? 'crm-active-link bg-[#ebebed] dark:bg-slate-800 text-slate-900 dark:text-white font-semibold' : 'text-slate-600 dark:text-slate-400 hover:bg-[#f1f2f4] active:bg-[#ebebed] dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium' }}">
-                            <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('admin.users.*') ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300' }}" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                           class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('admin.users.*') ? 'crm-active-link' : '' }}" @if(request()->routeIs('admin.users.*')) aria-current="page" @endif>
+                            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                                 <line stroke-linecap="round" stroke-linejoin="round" x1="4" x2="20" y1="6" y2="6"/>
                                 <circle cx="8" cy="6" r="2.5"/>
                                 <line stroke-linecap="round" stroke-linejoin="round" x1="4" x2="20" y1="12" y2="12"/>

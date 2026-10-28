@@ -14,7 +14,10 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['"Plus Jakarta Sans"', ...defaultTheme.fontFamily.sans],
+                // The CRM uses the system UI font everywhere (matches --font-sans in app.css).
+                sans: defaultTheme.fontFamily.sans,
+                // Outfit is only loaded by the public marketing page (welcome.blade.php);
+                // everywhere else font-heading falls back to the system font.
                 heading: ['"Outfit"', ...defaultTheme.fontFamily.sans],
             },
             colors: {

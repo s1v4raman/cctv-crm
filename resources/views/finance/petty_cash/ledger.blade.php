@@ -53,15 +53,15 @@
                     <!-- Metrics -->
                     <div class="lg:col-span-2 grid grid-cols-3 gap-3 text-center border-t lg:border-t-0 lg:border-l border-gray-100 pt-4 lg:pt-0 lg:pl-6">
                         <div class="p-3 bg-emerald-50 rounded-xl">
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700 block">Total Inflow</span>
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-700 block">Total Inflow</span>
                             <span class="text-base font-black text-emerald-800">+₹{{ number_format($ledger['total_inflow'], 2) }}</span>
                         </div>
                         <div class="p-3 bg-rose-50 rounded-xl">
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-rose-700 block">Total Outflow</span>
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-rose-700 block">Total Outflow</span>
                             <span class="text-base font-black text-rose-800">-₹{{ number_format($ledger['total_outflow'], 2) }}</span>
                         </div>
                         <div class="p-3 bg-indigo-50 rounded-xl">
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-700 block">Current Balance</span>
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-700 block">Current Balance</span>
                             <span class="text-base font-black text-indigo-900">₹{{ number_format($ledger['current_balance'], 2) }}</span>
                         </div>
                     </div>
@@ -110,13 +110,13 @@
                                     <td class="px-4 py-3.5 whitespace-nowrap">
                                         <div class="flex items-center gap-1.5">
                                             @if($item->transaction_type === 'float_advance')
-                                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700">Advance</span>
+                                                <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-blue-50 text-blue-700">Advance</span>
                                             @elseif($item->transaction_type === 'field_collection')
-                                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700">Collection</span>
+                                                <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-50 text-emerald-700">Collection</span>
                                             @elseif($item->transaction_type === 'direct_expense')
-                                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-50 text-rose-700">Expense</span>
+                                                <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-rose-50 text-rose-700">Expense</span>
                                             @else
-                                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-50 text-purple-700">Handover</span>
+                                                <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-purple-50 text-purple-700">Handover</span>
                                             @endif
                                             <span class="text-xs text-gray-500">{{ $entry['category'] }}</span>
                                         </div>

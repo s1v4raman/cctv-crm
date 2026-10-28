@@ -412,7 +412,7 @@
                                                 </a>
                                                 <p class="text-slate-400 text-[11px] mt-0.5">{{ $ticket->created_at?->diffForHumans() }}</p>
                                             </div>
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold uppercase
                                                 {{ $ticket->status === 'resolved' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300' }}">
                                                 {{ ucfirst($ticket->status) }}
                                             </span>
@@ -447,7 +447,7 @@
                                                 </a>
                                                 <p class="text-slate-400 text-[11px] mt-0.5">Amount: ₹{{ number_format($quote->grand_total ?? $quote->total_amount ?? 0, 2) }} • {{ $quote->created_at?->diffForHumans() }}</p>
                                             </div>
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold uppercase bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300">
                                                 {{ ucfirst($quote->status) }}
                                             </span>
                                         </div>

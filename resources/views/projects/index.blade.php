@@ -41,12 +41,12 @@
                     <svg class="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                     <input type="search" name="search" value="{{ $search }}"
                            placeholder="Search projects..." 
-                           style="padding-left: 36px !important; height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important;"
+                           style="padding-left: 36px !important; height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important;"
                            class="w-full text-xs border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-blue-500">
                 </div>
 
                 {{-- Company Filter --}}
-                <select name="company" class="crm-select text-xs shrink-0" style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important; min-width: 140px;">
+                <select name="company" class="crm-select text-xs shrink-0" style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important; min-width: 140px;">
                     <option value="all">All Companies</option>
                     @foreach($companies as $comp)
                         <option value="{{ $comp->id }}" {{ $companyFilter == $comp->id ? 'selected' : '' }}>{{ $comp->name }}</option>
@@ -54,7 +54,7 @@
                 </select>
 
                 {{-- Assignee Filter --}}
-                <select name="assigned" class="crm-select text-xs shrink-0" style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important; min-width: 130px;">
+                <select name="assigned" class="crm-select text-xs shrink-0" style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important; min-width: 130px;">
                     <option value="">All Assignees</option>
                     @foreach($teamMembers as $tm)
                         <option value="{{ $tm->id }}" {{ $assignedFilter == $tm->id ? 'selected' : '' }}>
@@ -64,7 +64,7 @@
                 </select>
 
                 {{-- Status Filter --}}
-                <select name="status" class="crm-select text-xs shrink-0" style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important; min-width: 120px;">
+                <select name="status" class="crm-select text-xs shrink-0" style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important; min-width: 120px;">
                     <option value="all" {{ $statusFilter === 'all' ? 'selected' : '' }}>All Statuses</option>
                     <option value="pending_approval" {{ $statusFilter === 'pending_approval' ? 'selected' : '' }}>Pending</option>
                     <option value="approved" {{ $statusFilter === 'approved' ? 'selected' : '' }}>Approved</option>
@@ -77,7 +77,7 @@
                 </select>
 
                 {{-- Priority Filter --}}
-                <select name="priority" class="crm-select text-xs shrink-0" style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important; min-width: 120px;">
+                <select name="priority" class="crm-select text-xs shrink-0" style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important; min-width: 120px;">
                     <option value="all" {{ $priorityFilter === 'all' ? 'selected' : '' }}>All Priorities</option>
                     <option value="urgent" {{ $priorityFilter === 'urgent' ? 'selected' : '' }}>Urgent</option>
                     <option value="high" {{ $priorityFilter === 'high' ? 'selected' : '' }}>High</option>
@@ -86,7 +86,7 @@
                 </select>
 
                 {{-- Type Filter --}}
-                <select name="type" class="crm-select text-xs shrink-0" style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important; min-width: 120px;">
+                <select name="type" class="crm-select text-xs shrink-0" style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important; min-width: 120px;">
                     <option value="all">All Types</option>
                     <option value="hardware_attendance" {{ $typeFilter === 'hardware_attendance' ? 'selected' : '' }}>Attendance</option>
                     <option value="hardware_cctv" {{ $typeFilter === 'hardware_cctv' ? 'selected' : '' }}>CCTV</option>
@@ -97,13 +97,13 @@
                 {{-- Submit and Reset Buttons --}}
                 <div class="flex items-center gap-2 shrink-0">
                     <button type="submit" 
-                            style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important;"
+                            style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important;"
                             class="px-4 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs transition inline-flex items-center justify-center cursor-pointer">
                         Filter
                     </button>
                     @if($search || $statusFilter !== 'all' || $priorityFilter !== 'all' || ($typeFilter && $typeFilter !== 'all') || $assignedFilter || $companyFilter !== 'all')
                     <a href="{{ route('projects.index') }}" 
-                       style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important;"
+                       style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important;"
                        class="px-3.5 inline-flex items-center border border-slate-300 dark:border-slate-700 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold transition" 
                        title="Clear all filters">
                         Clear

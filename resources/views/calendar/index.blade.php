@@ -391,7 +391,7 @@
                                               x-text="cell.dayNumber">
                                         </span>
                                         <template x-if="getDayEvents(cell.date).length > 2">
-                                            <span class="text-[10px] font-bold text-slate-400 cursor-pointer"
+                                            <span class="text-[11px] font-bold text-slate-400 cursor-pointer"
                                                   @click="openDaySummary(cell)"
                                                   x-text="'+' + (getDayEvents(cell.date).length - 2)">
                                             </span>
@@ -426,7 +426,7 @@
                                  class="p-3 rounded-lg border border-slate-100 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-600 bg-slate-50/50 dark:bg-slate-800/40 transition cursor-pointer flex items-center justify-between gap-3">
                                 <div class="flex items-center gap-3">
                                     <div class="text-center w-14 shrink-0 py-1 px-2 rounded-md bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600">
-                                        <div class="text-[10px] font-bold text-slate-400 uppercase" x-text="new Date(event.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short' })"></div>
+                                        <div class="text-[11px] font-bold text-slate-400 uppercase" x-text="new Date(event.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short' })"></div>
                                         <div class="text-base font-extrabold text-slate-900 dark:text-white" x-text="new Date(event.date + 'T00:00:00').getDate()"></div>
                                     </div>
                                     <div>
@@ -438,7 +438,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full border uppercase" :class="getEventChipClasses(event)" x-text="event.status"></span>
+                                <span class="text-[11px] font-bold px-2 py-0.5 rounded-full border uppercase" :class="getEventChipClasses(event)" x-text="event.status"></span>
                             </div>
                         </template>
                     </div>
@@ -469,7 +469,7 @@
                                      class="p-3 rounded-lg border border-slate-200/80 dark:border-slate-700/80 hover:border-blue-500 transition cursor-pointer bg-slate-50/40 dark:bg-slate-800/30">
                                     <div class="flex items-center justify-between text-[11px]">
                                         <span class="font-bold text-blue-600 dark:text-blue-400" x-text="event.time"></span>
-                                        <span class="font-semibold uppercase tracking-wider text-[10px] px-1.5 py-0.5 rounded" :class="getEventChipClasses(event)" x-text="event.status"></span>
+                                        <span class="font-semibold uppercase tracking-wider text-[11px] px-1.5 py-0.5 rounded" :class="getEventChipClasses(event)" x-text="event.status"></span>
                                     </div>
                                     <div class="text-xs font-bold text-slate-900 dark:text-white mt-1" x-text="event.title"></div>
                                     <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 flex items-start gap-1" x-show="event.address">
@@ -894,20 +894,20 @@
                     {{-- Customer details (HIDDEN for workers) --}}
                     <div class="p-4 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 text-xs space-y-2"
                          x-show="selectedEvent && selectedEvent.customer && !isWorker">
-                        <div class="font-bold text-slate-500 uppercase text-[10px]">Client Information</div>
+                        <div class="font-bold text-slate-500 uppercase text-[11px]">Client Information</div>
                         <div class="font-bold text-slate-900 dark:text-white text-sm" x-text="selectedEvent ? selectedEvent.customer : ''"></div>
                         <div class="text-slate-600 dark:text-slate-300" x-show="selectedEvent && selectedEvent.phone" x-text="selectedEvent ? selectedEvent.phone : ''"></div>
                     </div>
 
                     {{-- Location / Site Address --}}
                     <div class="p-4 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 text-xs space-y-1.5" x-show="selectedEvent && selectedEvent.address">
-                        <div class="font-bold text-slate-500 uppercase text-[10px]">Site Location</div>
+                        <div class="font-bold text-slate-500 uppercase text-[11px]">Site Location</div>
                         <div class="text-slate-700 dark:text-slate-200 font-medium" x-text="selectedEvent ? selectedEvent.address : ''"></div>
                     </div>
 
                     {{-- Notes / Work Scope --}}
                     <div class="p-4 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 text-xs space-y-1.5" x-show="selectedEvent && selectedEvent.notes">
-                        <div class="font-bold text-slate-500 uppercase text-[10px]">Work Scope &amp; Notes</div>
+                        <div class="font-bold text-slate-500 uppercase text-[11px]">Work Scope &amp; Notes</div>
                         <p class="text-slate-700 dark:text-slate-300 whitespace-pre-line leading-relaxed" x-text="selectedEvent ? selectedEvent.notes : ''"></p>
                     </div>
                 </div>

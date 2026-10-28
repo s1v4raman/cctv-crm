@@ -170,11 +170,11 @@
                         <input type="text" name="search" id="q-search" value="{{ request('search') }}" 
                                placeholder="Search quotation no, customer, phone…" 
                                oninput="filterQuotes()" 
-                               style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important; padding-left: 36px !important;"
+                               style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important; padding-left: 36px !important;"
                                class="w-full text-xs">
                     </div>
                     <select name="status" id="q-status" onchange="this.form.submit()" 
-                            style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important; min-width: 140px;"
+                            style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important; min-width: 140px;"
                             class="text-xs shrink-0">
                         <option value="">All Statuses</option>
                         <option value="draft" @selected(request('status') === 'draft')>Draft</option>
@@ -184,13 +184,13 @@
                         <option value="expired" @selected(request('status') === 'expired')>Expired</option>
                     </select>
                     <button type="submit" 
-                            style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important;"
+                            style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important;"
                             class="px-4 text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white transition shadow-xs inline-flex items-center justify-center shrink-0 cursor-pointer">
                         Filter
                     </button>
                     @if(request('search') || request('status'))
                         <a href="{{ route('quotations.index') }}" 
-                           style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important;"
+                           style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important;"
                            class="px-3.5 text-xs font-medium border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 inline-flex items-center shrink-0">
                             Clear
                         </a>

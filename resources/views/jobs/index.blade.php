@@ -194,11 +194,11 @@
                                placeholder="Search job no, customer, tech…" 
                                oninput="filterJobs()" 
                                class="w-full text-xs" 
-                               style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important; padding-left: 36px !important;">
+                               style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important; padding-left: 36px !important;">
                     </div>
                     <select name="status" id="job-status-filter" onchange="this.form.submit()" 
                             class="text-xs shrink-0" 
-                            style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important; min-width: 140px;">
+                            style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important; min-width: 140px;">
                         <option value="">All Statuses</option>
                         <option value="pending" @selected(request('status') === 'pending')>Pending</option>
                         <option value="scheduled" @selected(request('status') === 'scheduled')>Scheduled</option>
@@ -208,13 +208,13 @@
                         <option value="cancelled" @selected(request('status') === 'cancelled')>Cancelled</option>
                     </select>
                     <button type="submit" 
-                            style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important;" 
+                            style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important;" 
                             class="px-4 rounded-md bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition shrink-0 inline-flex items-center justify-center shadow-xs cursor-pointer">
                         Filter
                     </button>
                     @if(request('search') || request('status'))
                         <a href="{{ route('jobs.index') }}" 
-                           style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important;" 
+                           style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important;" 
                            class="px-3.5 inline-flex items-center rounded-md border border-slate-300 dark:border-slate-700 bg-white hover:bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold transition shrink-0">
                             Clear
                         </a>

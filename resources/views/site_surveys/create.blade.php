@@ -276,7 +276,7 @@
                             <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Password (Optional)</label>
                             <input type="password" x-model="newTech.password" placeholder="Default: password"
                                    class="w-full text-xs h-9 px-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-blue-500 focus:outline-none">
-                            <p class="text-[10px] text-slate-400 mt-0.5">Leave blank to use default password: <code class="font-mono">password</code></p>
+                            <p class="text-[11px] text-slate-400 mt-0.5">Leave blank to use default password: <code class="font-mono">password</code></p>
                         </div>
 
                         <div class="flex items-center justify-end gap-2 pt-2">

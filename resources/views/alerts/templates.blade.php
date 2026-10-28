@@ -107,13 +107,13 @@
                                 <div>
                                     <div class="flex items-center gap-2">
                                         <h3 class="text-base font-bold text-white font-['Outfit']">{{ $template->title }}</h3>
-                                        <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-slate-800 text-slate-400 border border-slate-700">{{ $template->category }}</span>
+                                        <span class="px-2 py-0.5 rounded text-[11px] font-mono font-bold uppercase tracking-wider bg-slate-800 text-slate-400 border border-slate-700">{{ $template->category }}</span>
                                     </div>
                                     <span class="text-[11px] font-mono text-slate-400">Event key: <code class="text-amber-400">{{ $template->event_key }}</code></span>
                                 </div>
                             </div>
                             <div class="flex items-center gap-3">
-                                <div class="flex items-center gap-1.5 text-[10px] font-mono font-bold uppercase">
+                                <div class="flex items-center gap-1.5 text-[11px] font-mono font-bold uppercase">
                                     <span class="px-2 py-0.5 rounded {{ $template->is_whatsapp_enabled ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'bg-slate-800 text-slate-500 border border-slate-700' }}">WA</span>
                                     <span class="px-2 py-0.5 rounded {{ $template->is_sms_enabled ? 'bg-amber-500/10 text-amber-400 border border-amber-500/30' : 'bg-slate-800 text-slate-500 border border-slate-700' }}">SMS</span>
                                     <span class="px-2 py-0.5 rounded {{ $template->is_email_enabled ? 'bg-sky-500/10 text-sky-400 border border-sky-500/30' : 'bg-slate-800 text-slate-500 border border-slate-700' }}">EMAIL</span>
@@ -127,9 +127,9 @@
 
                         {{-- Available Tags Pills --}}
                         <div class="mt-3 flex flex-wrap items-center gap-1.5 text-xs">
-                            <span class="text-slate-400 font-mono text-[10px] uppercase tracking-widest mr-1">Dynamic Tags:</span>
+                            <span class="text-slate-400 font-mono text-[11px] uppercase tracking-widest mr-1">Dynamic Tags:</span>
                             @foreach($template->available_variables ?? [] as $var)
-                                <span class="px-2 py-0.5 rounded-md bg-[#060913] text-sky-400 font-mono text-[10px] border border-slate-700">
+                                <span class="px-2 py-0.5 rounded-md bg-[#060913] text-sky-400 font-mono text-[11px] border border-slate-700">
                                     {<!-- -->{<!-- -->{{ $var }}<!-- -->}<!-- -->}
                                 </span>
                             @endforeach
@@ -143,7 +143,7 @@
 
                                 {{-- Channel Toggles --}}
                                 <div class="flex flex-wrap items-center gap-6 p-3.5 rounded-xl bg-[#060913] border border-white/10 font-mono">
-                                    <span class="font-bold text-slate-300 uppercase tracking-wider text-[10px]">Active Channels:</span>
+                                    <span class="font-bold text-slate-300 uppercase tracking-wider text-[11px]">Active Channels:</span>
                                     <label class="inline-flex items-center gap-2 cursor-pointer">
                                         <input type="checkbox" name="is_whatsapp_enabled" value="1" @checked($template->is_whatsapp_enabled) class="rounded border-slate-700 text-amber-500 focus:ring-0">
                                         <span class="font-bold text-white">💬 WhatsApp</span>

@@ -89,7 +89,7 @@
                 <div class="bg-white dark:bg-[#0f172a] p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
                     <div class="flex items-start justify-between gap-2">
                         <div>
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Revenue (Without Tax)</span>
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">Revenue (Without Tax)</span>
                             <span class="text-[11px] text-blue-600 dark:text-sky-400 font-semibold">Subtotal Billings</span>
                         </div>
                         <div class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 flex items-center justify-center shrink-0 shadow-xs">
@@ -108,7 +108,7 @@
                 <div class="bg-white dark:bg-[#0f172a] p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
                     <div class="flex items-start justify-between gap-2">
                         <div>
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Product Buy Cost</span>
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">Product Buy Cost</span>
                             <span class="text-[11px] text-rose-500 font-semibold">Hardware COGS</span>
                         </div>
                         <div class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 flex items-center justify-center shrink-0 shadow-xs">
@@ -127,7 +127,7 @@
                 <div class="bg-white dark:bg-[#0f172a] p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
                     <div class="flex items-start justify-between gap-2">
                         <div>
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Gross Profit</span>
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">Gross Profit</span>
                             <span class="text-[11px] text-amber-500 font-semibold">Pre-Tax Margin</span>
                         </div>
                         <div class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 flex items-center justify-center shrink-0 shadow-xs">
@@ -146,7 +146,7 @@
                 <div class="bg-white dark:bg-[#0f172a] p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
                     <div class="flex items-start justify-between gap-2">
                         <div>
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Salary Credited Cost</span>
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">Salary Credited Cost</span>
                             <span class="text-[11px] text-purple-600 dark:text-purple-400 font-semibold">Auto-Deducted</span>
                         </div>
                         <div class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 flex items-center justify-center shrink-0 shadow-xs">
@@ -165,7 +165,7 @@
                 <div class="bg-white dark:bg-[#0f172a] p-5 rounded-2xl border-2 {{ $data['financials']['net_profit_without_tax'] >= 0 ? 'border-emerald-500/50 bg-gradient-to-br from-emerald-50/20 dark:from-emerald-950/20 to-transparent' : 'border-rose-500/50 bg-gradient-to-br from-rose-50/20 dark:from-rose-950/20 to-transparent' }} shadow-lg flex flex-col justify-between">
                     <div class="flex items-start justify-between gap-2">
                         <div>
-                            <span class="text-[10px] font-extrabold uppercase tracking-wider {{ $data['financials']['net_profit_without_tax'] >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400' }} block">NET PROFIT (Without Tax)</span>
+                            <span class="text-[11px] font-extrabold uppercase tracking-wider {{ $data['financials']['net_profit_without_tax'] >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400' }} block">NET PROFIT (Without Tax)</span>
                             <span class="text-[11px] font-semibold text-slate-500 dark:text-slate-400">After Salary &amp; COGS</span>
                         </div>
                         <div class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 flex items-center justify-center shrink-0 shadow-xs">
@@ -278,7 +278,7 @@
                 {{-- Non-Operating Tax Reference Box --}}
                 <div class="p-4 bg-slate-50 dark:bg-slate-900/60 border-t border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-4 text-xs">
                     <div class="flex items-center gap-2">
-                        <span class="text-slate-400 font-bold uppercase tracking-wider text-[10px]">Tax &amp; Compliance Memo (Excluded from Pre-Tax Profit):</span>
+                        <span class="text-slate-400 font-bold uppercase tracking-wider text-[11px]">Tax &amp; Compliance Memo (Excluded from Pre-Tax Profit):</span>
                     </div>
                     <div class="flex flex-wrap items-center gap-4 text-[11px]">
                         <div>Sales GST Billed to Clients: <strong class="text-blue-600 dark:text-sky-400">₹{{ number_format($data['financials']['tax_collected_cost'], 2) }}</strong></div>
@@ -306,7 +306,7 @@
                     
                     <div class="overflow-x-auto max-h-80 overflow-y-auto">
                         <table class="w-full text-xs">
-                            <thead class="bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-bold uppercase text-[10px] sticky top-0">
+                            <thead class="bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-bold uppercase text-[11px] sticky top-0">
                                 <tr>
                                     <th class="px-4 py-2.5 text-left">Staff Name</th>
                                     <th class="px-4 py-2.5 text-left">Role</th>
@@ -322,7 +322,7 @@
                                             {{ $emp['name'] }}
                                         </td>
                                         <td class="px-4 py-2.5">
-                                            <span class="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase {{ $emp['role'] === 'technician' ? 'bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 border border-sky-200 dark:border-sky-800' : ($emp['role'] === 'admin' ? 'bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800' : 'bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-800') }}">
+                                            <span class="px-2 py-0.5 rounded text-[11px] font-extrabold uppercase {{ $emp['role'] === 'technician' ? 'bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 border border-sky-200 dark:border-sky-800' : ($emp['role'] === 'admin' ? 'bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800' : 'bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-800') }}">
                                                 {{ $emp['role'] }}
                                             </span>
                                         </td>
@@ -334,11 +334,11 @@
                                         </td>
                                         <td class="px-4 py-2.5 text-center">
                                             @if($emp['is_credited'])
-                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
                                                     ✓ Credited
                                                 </span>
                                             @else
-                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
                                                     Accrued
                                                 </span>
                                             @endif
@@ -369,7 +369,7 @@
                     
                     <div class="overflow-x-auto max-h-80 overflow-y-auto">
                         <table class="w-full text-xs">
-                            <thead class="bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-bold uppercase text-[10px] sticky top-0">
+                            <thead class="bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-bold uppercase text-[11px] sticky top-0">
                                 <tr>
                                     <th class="px-4 py-2.5 text-left">Invoice #</th>
                                     <th class="px-4 py-2.5 text-left">Customer</th>
@@ -395,7 +395,7 @@
                                         </td>
                                         <td class="px-4 py-2.5 text-right font-extrabold text-emerald-600 dark:text-emerald-400 font-mono">
                                             ₹{{ number_format($inv['profit_without_tax'], 2) }}
-                                            <span class="text-[9px] block text-slate-400">({{ $inv['margin_percent'] }}%)</span>
+                                            <span class="text-[11px] block text-slate-400">({{ $inv['margin_percent'] }}%)</span>
                                         </td>
                                     </tr>
                                 @empty

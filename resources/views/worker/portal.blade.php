@@ -17,36 +17,10 @@
             --crm-accent-hover: #1d4ed8 !important;
         }
         * { box-shadow: none !important; }
-        [x-cloak] { display: none !important; }
-        /* iOS Safari zooms into focused fields under 16px */
-        @media (hover: none) and (pointer: coarse) {
-            input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea { font-size: 16px !important; }
-        }
     </style>
 
-    <!-- Tailwind CSS with darkMode: 'class' configured -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Arial', 'sans-serif'],
-                    },
-                    colors: {
-                        brand: {
-                            blue: '#2563eb',
-                            blueHover: '#1d4ed8',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-
-    <!-- Alpine.js -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- Compiled Tailwind (standalone.css) + Alpine via app.js -->
+    @vite(['resources/css/standalone.css', 'resources/js/app.js'])
 
     <x-crm-theme-init />
 </head>
@@ -63,7 +37,7 @@
                 <div>
                     <div class="flex items-center gap-2">
                         <span class="text-base font-bold text-slate-900 dark:text-white tracking-tight leading-tight">Precision IT <span class="text-blue-600">Operations</span></span>
-                        <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-900 uppercase tracking-wide">Daily Wage Worker</span>
+                        <span class="px-1.5 py-0.5 rounded text-[11px] font-bold bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-900 uppercase tracking-wide">Daily Wage Worker</span>
                     </div>
                     <span class="block text-xs text-slate-500 dark:text-slate-400 font-medium">Field Attendance &amp; Cabling Tracker</span>
                 </div>
@@ -182,7 +156,7 @@
                 {{-- Today Wage Quick Pill --}}
                 <div class="flex items-center gap-2 bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 px-3 py-2 rounded-[4px] self-start sm:self-auto">
                     <div>
-                        <span class="block text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 tracking-wider">Today's Total Pay</span>
+                        <span class="block text-[11px] uppercase font-bold text-slate-500 dark:text-slate-400 tracking-wider">Today's Total Pay</span>
                         <span class="text-base font-extrabold text-blue-600 dark:text-blue-400">₹{{ number_format($todayEarnings, 2) }}</span>
                     </div>
                 </div>
@@ -191,15 +165,15 @@
             {{-- 3-METRIC STATS GRID --}}
             <div class="grid grid-cols-3 gap-2.5 mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-center">
                 <div class="p-2.5 bg-slate-50 dark:bg-slate-800/60 rounded-[4px] border border-slate-200 dark:border-slate-700">
-                    <span class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Cabling Today</span>
+                    <span class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Cabling Today</span>
                     <span class="text-lg font-bold text-slate-900 dark:text-white">{{ number_format($todayCablingMetres, 1) }} <span class="text-xs font-normal text-slate-500 dark:text-slate-400">m</span></span>
                 </div>
                 <div class="p-2.5 bg-slate-50 dark:bg-slate-800/60 rounded-[4px] border border-slate-200 dark:border-slate-700">
-                    <span class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Cameras Today</span>
+                    <span class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Cameras Today</span>
                     <span class="text-lg font-bold text-slate-900 dark:text-white">{{ $todayCamerasCount }} <span class="text-xs font-normal text-slate-500 dark:text-slate-400">nos</span></span>
                 </div>
                 <div class="p-2.5 bg-slate-50 dark:bg-slate-800/60 rounded-[4px] border border-slate-200 dark:border-slate-700">
-                    <span class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Lifetime Meters</span>
+                    <span class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Lifetime Meters</span>
                     <span class="text-lg font-bold text-slate-900 dark:text-white">{{ number_format($lifetimeCablingMetres, 0) }} <span class="text-xs font-normal text-slate-500 dark:text-slate-400">m</span></span>
                 </div>
             </div>
@@ -275,8 +249,8 @@
                             Shift Type <span class="text-rose-500">*</span>
                         </label>
                         <div class="grid grid-cols-2 gap-3">
-                            <label class="flex items-center gap-3 p-3 rounded-[4px] border border-slate-300 dark:border-slate-700 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors"
-                                   :class="attendanceType === 'full_day' ? 'border-blue-600 bg-blue-50/50 dark:bg-blue-950/40 dark:border-blue-500' : ''">
+                            <label class="flex items-center gap-3 p-3 rounded-[4px] border cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors"
+                                   :class="attendanceType === 'full_day' ? 'border-blue-600 bg-blue-50/50 dark:bg-blue-950/40 dark:border-blue-500' : 'border-slate-300 dark:border-slate-700'">
                                 <input type="radio" name="attendance_type" value="full_day" x-model="attendanceType" class="text-blue-600 focus:ring-0">
                                 <div>
                                     <span class="block text-xs font-bold text-slate-900 dark:text-white">Full Day (100% Rate)</span>
@@ -284,8 +258,8 @@
                                 </div>
                             </label>
 
-                            <label class="flex items-center gap-3 p-3 rounded-[4px] border border-slate-300 dark:border-slate-700 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors"
-                                   :class="attendanceType === 'half_day' ? 'border-blue-600 bg-blue-50/50 dark:bg-blue-950/40 dark:border-blue-500' : ''">
+                            <label class="flex items-center gap-3 p-3 rounded-[4px] border cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors"
+                                   :class="attendanceType === 'half_day' ? 'border-blue-600 bg-blue-50/50 dark:bg-blue-950/40 dark:border-blue-500' : 'border-slate-300 dark:border-slate-700'">
                                 <input type="radio" name="attendance_type" value="half_day" x-model="attendanceType" class="text-blue-600 focus:ring-0">
                                 <div>
                                     <span class="block text-xs font-bold text-slate-900 dark:text-white">Half Day (50% Rate)</span>
@@ -563,7 +537,7 @@
                 @if ($recentAttendances->count() > 0)
                     <div class="overflow-x-auto border border-slate-200 dark:border-slate-800 rounded-[4px]">
                         <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-800 text-xs">
-                            <thead class="bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-bold uppercase text-[10px] tracking-wider">
+                            <thead class="bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-bold uppercase text-[11px] tracking-wider">
                                 <tr>
                                     <th class="py-2.5 px-3 text-left">Date</th>
                                     <th class="py-2.5 px-3 text-left">Photo</th>
@@ -594,7 +568,7 @@
                                             {{ $att->workDay?->project?->title ?? 'Site Work' }}
                                         </td>
                                         <td class="py-2 px-3 text-center whitespace-nowrap">
-                                            <span class="px-2 py-0.5 rounded text-[10px] font-bold {{ $att->attendance_type === 'full_day' ? 'bg-blue-100 dark:bg-blue-950/70 text-blue-800 dark:text-blue-300' : 'bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300' }}">
+                                            <span class="px-2 py-0.5 rounded text-[11px] font-bold {{ $att->attendance_type === 'full_day' ? 'bg-blue-100 dark:bg-blue-950/70 text-blue-800 dark:text-blue-300' : 'bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300' }}">
                                                 {{ $att->attendance_type === 'full_day' ? 'Full Day' : 'Half Day' }}
                                             </span>
                                         </td>

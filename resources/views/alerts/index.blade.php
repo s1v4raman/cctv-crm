@@ -184,7 +184,7 @@
                         @forelse($logs as $log)
                             <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
                                 <td class="px-4 py-3.5 whitespace-nowrap">
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border {{ $log->channel_badge_class }} mb-1">
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold border {{ $log->channel_badge_class }} mb-1">
                                         @if($log->channel === 'whatsapp') 💬 WhatsApp
                                         @elseif($log->channel === 'sms') 📱 SMS
                                         @else ✉️ Email
@@ -203,7 +203,7 @@
                                 <td class="px-4 py-3.5 max-w-md">
                                     <div class="text-slate-800 dark:text-slate-300 line-clamp-2 leading-relaxed whitespace-pre-line text-[11px]">{{ $log->message_body }}</div>
                                     @if($log->error_message)
-                                        <div class="text-[10px] text-rose-600 dark:text-rose-400 font-medium mt-1">⚠️ {{ $log->error_message }}</div>
+                                        <div class="text-[11px] text-rose-600 dark:text-rose-400 font-medium mt-1">⚠️ {{ $log->error_message }}</div>
                                     @endif
                                 </td>
                                 <td class="px-4 py-3.5 whitespace-nowrap">
@@ -223,7 +223,7 @@
                                 </td>
                                 <td class="px-4 py-3.5 whitespace-nowrap">
                                     <div class="font-semibold text-slate-900 dark:text-slate-100">{{ $log->sent_at?->format('d M Y') ?? $log->created_at->format('d M Y') }}</div>
-                                    <div class="text-[10px] text-slate-500 dark:text-slate-400">{{ $log->sent_at?->format('h:i A') ?? $log->created_at->format('h:i A') }}</div>
+                                    <div class="text-[11px] text-slate-500 dark:text-slate-400">{{ $log->sent_at?->format('h:i A') ?? $log->created_at->format('h:i A') }}</div>
                                 </td>
                                 <td class="px-4 py-3.5 whitespace-nowrap text-right font-medium">
                                     <div class="flex items-center justify-end gap-1.5">

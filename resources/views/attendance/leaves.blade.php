@@ -343,7 +343,7 @@
                                                 {{ $l->leave_type_label }}
                                             </span>
                                             @if($l->is_half_day)
-                                                <div class="text-[10px] text-sky-600 dark:text-sky-400 font-semibold mt-0.5">
+                                                <div class="text-[11px] text-sky-600 dark:text-sky-400 font-semibold mt-0.5">
                                                     Half Day ({{ ucfirst($l->half_day_session) }})
                                                 </div>
                                             @endif
@@ -372,7 +372,7 @@
                                                 {{ $l->status_label }}
                                             </span>
                                             @if($l->actioner)
-                                                <div class="text-[10px] text-slate-500 dark:text-slate-400 mt-1">
+                                                <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
                                                     By: {{ $l->actioner->name }} ({{ $l->actioned_at?->format('d M') }})
                                                 </div>
                                             @endif
@@ -434,7 +434,7 @@
                                                 {{ $al->leave_type_label }}
                                             </span>
                                             @if($al->is_half_day)
-                                                <span class="block text-[10px] text-sky-600 dark:text-sky-400 font-semibold mt-0.5">
+                                                <span class="block text-[11px] text-sky-600 dark:text-sky-400 font-semibold mt-0.5">
                                                     Half Day ({{ ucfirst($al->half_day_session) }})
                                                 </span>
                                             @endif
@@ -458,7 +458,7 @@
                                                 {{ $al->status_label }}
                                             </span>
                                             @if($al->actioner)
-                                                <div class="text-[10px] text-slate-500 dark:text-slate-400 mt-1">
+                                                <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
                                                     By {{ $al->actioner->name }}
                                                 </div>
                                             @endif

@@ -139,7 +139,7 @@
                                                         {{ $user->name }}
                                                     </a>
                                                     @if($user->id === auth()->id())
-                                                        <span class="ml-1 text-[10px] font-bold text-blue-500">(You)</span>
+                                                        <span class="ml-1 text-[11px] font-bold text-blue-500">(You)</span>
                                                     @endif
                                                 </div>
                                             </div>

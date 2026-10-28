@@ -137,13 +137,13 @@
                         <svg class="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                         <input type="text" name="search" value="{{ request('search') }}" 
                                placeholder="Search product name, SKU..." 
-                               style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important; padding-left: 36px !important;"
+                               style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important; padding-left: 36px !important;"
                                class="w-full text-xs" />
                     </div>
 
                     @if(count($categories) > 0)
                     <select name="category" onchange="this.form.submit()" 
-                            style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important; min-width: 140px;"
+                            style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important; min-width: 140px;"
                             class="text-xs shrink-0">
                         <option value="">All Categories</option>
                         @foreach($categories as $cat)
@@ -153,7 +153,7 @@
                     @endif
 
                     <select name="status" onchange="this.form.submit()" 
-                            style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important; min-width: 140px;"
+                            style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important; min-width: 140px;"
                             class="text-xs shrink-0">
                         <option value="">All Stock Levels</option>
                         <option value="in_stock" @selected(request('status') == 'in_stock')>In Stock</option>
@@ -162,13 +162,13 @@
                     </select>
 
                     <button type="submit" 
-                            style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important;" 
+                            style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important;" 
                             class="px-4 rounded-md bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition shadow-xs inline-flex items-center justify-center cursor-pointer">
                         Filter
                     </button>
                     @if(request()->hasAny(['search', 'category', 'status']))
                         <a href="{{ route('inventory.index') }}" 
-                           style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important;" 
+                           style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important;" 
                            class="px-3.5 inline-flex items-center rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 text-slate-700 dark:text-slate-200 text-xs font-medium transition">
                             Clear
                         </a>

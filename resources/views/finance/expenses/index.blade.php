@@ -286,7 +286,7 @@
                                             </span>
                                             @if($c->receipt_path)
                                                 <div class="mt-1">
-                                                    <a href="{{ asset('storage/' . $c->receipt_path) }}" target="_blank" class="text-[10px] text-blue-600 dark:text-blue-400 font-bold hover:underline">
+                                                    <a href="{{ asset('storage/' . $c->receipt_path) }}" target="_blank" class="text-[11px] text-blue-600 dark:text-blue-400 font-bold hover:underline">
                                                         📎 Receipt Attached
                                                     </a>
                                                 </div>
@@ -306,10 +306,10 @@
                                         <td class="py-4 px-4 whitespace-nowrap">
                                             @if($c->installationJob)
                                                 <div class="font-bold text-slate-800 dark:text-slate-200">{{ $c->installationJob->job_no }}</div>
-                                                <div class="text-[10px] text-slate-400">{{ $c->installationJob->quotation?->lead?->customer_name }}</div>
+                                                <div class="text-[11px] text-slate-400">{{ $c->installationJob->quotation?->lead?->customer_name }}</div>
                                             @elseif($c->serviceTicket)
                                                 <div class="font-bold text-slate-800 dark:text-slate-200">{{ $c->serviceTicket->ticket_no }}</div>
-                                                <div class="text-[10px] text-slate-400">{{ $c->serviceTicket->title }}</div>
+                                                <div class="text-[11px] text-slate-400">{{ $c->serviceTicket->title }}</div>
                                             @else
                                                 <span class="text-slate-400 text-xs">General / Fleet</span>
                                             @endif
@@ -324,12 +324,12 @@
                                                 {{ $c->status_label }}
                                             </span>
                                             @if($c->status === 'paid')
-                                                <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold mt-0.5">
+                                                <div class="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold mt-0.5">
                                                     Disbursed via {{ ucfirst(str_replace('_', ' ', $c->payment_method)) }}
                                                 </div>
                                             @endif
                                             @if($c->rejection_reason)
-                                                <div class="text-[10px] text-rose-600 dark:text-rose-400 font-semibold mt-0.5">
+                                                <div class="text-[11px] text-rose-600 dark:text-rose-400 font-semibold mt-0.5">
                                                     {{ $c->rejection_reason }}
                                                 </div>
                                             @endif
@@ -384,11 +384,11 @@
                                     <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition">
                                         <td class="py-4 px-4 sm:px-6 whitespace-nowrap">
                                             <div class="font-bold text-slate-900 dark:text-white">{{ $ac->user?->name }}</div>
-                                            <div class="text-[10px] text-slate-400">{{ $ac->user?->email }} &bull; <strong class="uppercase">{{ $ac->user?->role }}</strong></div>
+                                            <div class="text-[11px] text-slate-400">{{ $ac->user?->email }} &bull; <strong class="uppercase">{{ $ac->user?->role }}</strong></div>
                                         </td>
                                         <td class="py-4 px-4 whitespace-nowrap">
                                             <div class="font-mono font-bold text-slate-900 dark:text-white">#{{ $ac->claim_no }}</div>
-                                            <span class="inline-flex mt-1 px-2 py-0.5 rounded-full text-[10px] font-bold border {{ $ac->category_badge_class }}">
+                                            <span class="inline-flex mt-1 px-2 py-0.5 rounded-full text-[11px] font-bold border {{ $ac->category_badge_class }}">
                                                 {{ $ac->category_label }}
                                             </span>
                                         </td>
@@ -401,7 +401,7 @@
                                             @endif
                                             <div class="text-[11px] text-slate-500 line-clamp-1">{{ $ac->description }}</div>
                                             @if($ac->receipt_path)
-                                                <a href="{{ asset('storage/' . $ac->receipt_path) }}" target="_blank" class="text-[10px] text-blue-600 dark:text-blue-400 font-bold hover:underline">
+                                                <a href="{{ asset('storage/' . $ac->receipt_path) }}" target="_blank" class="text-[11px] text-blue-600 dark:text-blue-400 font-bold hover:underline">
                                                     Receipt Proof
                                                 </a>
                                             @endif
@@ -416,7 +416,7 @@
                                                 {{ $ac->status_label }}
                                             </span>
                                             @if($ac->status === 'paid')
-                                                <div class="text-[10px] text-emerald-600 font-bold mt-0.5">
+                                                <div class="text-[11px] text-emerald-600 font-bold mt-0.5">
                                                     Disbursed via {{ ucfirst(str_replace('_', ' ', $ac->payment_method)) }}
                                                 </div>
                                             @endif

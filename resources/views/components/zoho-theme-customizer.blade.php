@@ -19,7 +19,7 @@
         <div class="mb-3.5">
             <h4 class="text-xs font-bold text-slate-900 dark:text-white mb-2 font-heading tracking-tight flex items-center justify-between">
                 <span>Mode</span>
-                <span class="text-[10px] font-semibold text-slate-400 capitalize" x-text="mode === 'auto' ? 'Auto (System)' : mode"></span>
+                <span class="text-[11px] font-semibold text-slate-400 capitalize" x-text="mode === 'auto' ? 'Auto (System)' : mode"></span>
             </h4>
 
             {{-- Mode Segmented Pill Buttons (Matches Zoho CRM UI) --}}
@@ -111,7 +111,7 @@
         <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
             <div class="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2 flex items-center justify-between">
                 <span>Accent Palette</span>
-                <span class="text-[9px] font-mono text-slate-400 lowercase" x-text="accent"></span>
+                <span class="text-[11px] font-mono text-slate-400 lowercase" x-text="accent"></span>
             </div>
             
             <div class="grid grid-cols-7 gap-1.5 sm:gap-2 items-center justify-between">
