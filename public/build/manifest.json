@@ -1,11 +1,20 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-B5yLhRuw.css",
+    "file": "assets/app-Bbw8yr46.css",
     "name": "app",
     "names": [
       "app.css"
     ],
     "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/css/standalone.css": {
+    "file": "assets/standalone-BYCk7Ciw.css",
+    "name": "standalone",
+    "names": [
+      "standalone.css"
+    ],
+    "src": "resources/css/standalone.css",
     "isEntry": true
   },
   "resources/js/app.js": {
