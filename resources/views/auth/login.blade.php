@@ -1,6 +1,10 @@
 @php
     $cookieMode = request()->cookie('crm_mode');
     $isDarkServer = ($cookieMode === 'night' || $cookieMode === 'dark' || $cookieMode === null);
+
+    // Seeded demo accounts and pre-filled credentials are for local development only;
+    // every other environment gets an empty sign-in form.
+    $showDemoLogins = app()->environment('local');
 @endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full {{ $isDarkServer ? 'dark' : '' }}">
@@ -361,10 +365,11 @@
           portal: 'admin',
           showPassword: false,
           isDarkMode: document.documentElement.classList.contains('dark'),
-          workerName: 'Raju Kumar',
-          workerPhone: '9876543210',
+          workerName: @js($showDemoLogins ? 'Raju Kumar' : ''),
+          workerPhone: @js($showDemoLogins ? '9876543210' : ''),
           setRole(role) {
               this.portal = role;
+              @if ($showDemoLogins)
               if (role === 'admin') {
                   this.setEmailAndPass('test@example.com', 'password');
               } else if (role === 'technician') {
@@ -375,17 +380,13 @@
                   this.workerName = 'Raju Kumar';
                   this.workerPhone = '9876543210';
               }
+              @endif
           },
           setEmailAndPass(email, pass) {
               const emailEl = document.getElementById('email');
               const passEl = document.getElementById('password');
               if (emailEl) emailEl.value = email;
               if (passEl) passEl.value = pass;
-          },
-          quickSubmitRole(email, pass, role) {
-              this.portal = role;
-              this.setEmailAndPass(email, pass);
-              document.getElementById('loginForm').submit();
           }
       }">
 
@@ -612,7 +613,7 @@
                                         <svg class="w-4 h-4 input-icon transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                                     </div>
                                     <input id="worker_name" type="text" name="name" x-model="workerName"
-                                           required placeholder="e.g. Raju Kumar" 
+                                           required placeholder="Your full name" 
                                            style="padding-left: 2.75rem !important;"
                                            class="login-input login-input-with-icon w-full pr-4 py-2.5 text-sm rounded-lg">
                                 </div>
@@ -626,7 +627,7 @@
                                         <svg class="w-4 h-4 input-icon transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
                                     </div>
                                     <input id="worker_phone" type="tel" name="phone" x-model="workerPhone"
-                                           required placeholder="e.g. 9876543210" 
+                                           required placeholder="10-digit mobile number" 
                                            style="padding-left: 2.75rem !important;"
                                            class="login-input login-input-with-icon w-full pr-4 py-2.5 text-sm rounded-lg">
                                 </div>
@@ -676,7 +677,7 @@
                             <div>
                                 <label for="email" class="fp-label block text-xs font-semibold mb-1.5">Email Address</label>
                                 <input id="email" type="email" name="email" 
-                                       value="{{ old('email', 'test@example.com') }}" 
+                                       value="{{ old('email', $showDemoLogins ? 'test@example.com' : '') }}"
                                        required autofocus autocomplete="username" 
                                        placeholder="you@company.com" 
                                        class="login-input w-full px-4 py-2.5 text-sm rounded-lg">
@@ -685,7 +686,7 @@
                                 <label for="password" class="fp-label block text-xs font-semibold mb-1.5">Password</label>
                                 <div class="relative">
                                     <input id="password" :type="showPassword ? 'text' : 'password'" name="password" 
-                                           value="password" required autocomplete="current-password" 
+                                           @if ($showDemoLogins) value="password" @endif required autocomplete="current-password"
                                            placeholder="••••••••" 
                                            class="login-input w-full px-4 py-2.5 text-sm rounded-lg pr-11">
                                     <button type="button" @click="showPassword = !showPassword" 
@@ -715,7 +716,8 @@
                         </form>
                     </div>
 
-                    <!-- Demo Credentials -->
+                    <!-- Demo Credentials (local development only) -->
+                    @if ($showDemoLogins)
                     <div class="mt-7 anim anim-d4">
                         <div class="demo-wrapper rounded-xl overflow-hidden">
                             <div class="demo-header px-4 py-2.5 flex items-center justify-between">
@@ -758,6 +760,7 @@
                             </div>
                         </div>
                     </div>
+                    @endif
 
                 </div>
             </div>
