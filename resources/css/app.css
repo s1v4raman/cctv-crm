@@ -3994,7 +3994,8 @@ a.btn-primary {
     }
 }
 
-/* <x-filter-bar> search field: leave room for the magnifier icon */
-input.crm-filter-search {
+/* <x-filter-bar> search field: leave room for the magnifier icon
+   (:not(#id) outranks the long :not() chain on the generic input rule) */
+input.crm-filter-search:not(#crm-no-pad) {
     padding-left: 36px !important;
 }
