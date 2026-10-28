@@ -19,6 +19,63 @@
     }
 
     $isDarkServer = ($activeMode === 'night');
+
+    // Top bar + browser tab title: first matching route pattern wins, so keep specific patterns above broad ones
+    $crmPageTitles = [
+        'dashboard' => 'Dashboard',
+        'technician.*' => 'Field Work Orders',
+        'calendar.*' => 'Calendar',
+        'leads.*' => 'Leads & Inquiries',
+        'site-surveys.*' => 'Site Surveys',
+        'quotations.*' => 'Quotations',
+        'estimator.*' => 'CCTV Storage Estimator',
+        'projects.*' => 'Projects',
+        'sites.*' => 'Installation Sites',
+        'workers.attendance.*' => 'Worker Attendance',
+        'workers.*' => 'Daily Wage Workers',
+        'wages.*' => 'Sunday Payday Hub',
+        'documents.*' => 'Ready to Invoice',
+        'jobs.*' => 'Tasks & Field Jobs',
+        'jcr.*' => 'Job Completion Reports',
+        'equipment.*' => 'Cameras & Assets',
+        'service-tickets.*' => 'Service Tickets',
+        'amcs.*' => 'AMC Contracts',
+        'amc-visits.*' => 'AMC Contracts',
+        'rma.*' => 'RMA Claims',
+        'products.*' => 'Products & Pricing',
+        'purchase-orders.*' => 'Purchase Orders',
+        'suppliers.*' => 'Suppliers & Vendors',
+        'inventory.*' => 'Inventory',
+        'employee.hub' => 'Employee & Workspace',
+        'attendance.*' => 'Attendance',
+        'leaves.*' => 'Leaves & Approvals',
+        'finance.hub' => 'Finance & Accounting',
+        'finance.analytics' => 'Finance Analytics',
+        'finance.expenses.*' => 'Expenses',
+        'finance.gst.*' => 'GST',
+        'finance.job-costing.*' => 'Job Costing',
+        'finance.payables.*' => 'Payables',
+        'finance.receivables.*' => 'Receivables',
+        'finance.payroll.*' => 'Payroll',
+        'finance.petty_cash.*' => 'Petty Cash',
+        'finance.salaries.*' => 'Salaries',
+        'finance.*' => 'Finance & Accounting',
+        'invoices.*' => 'Invoices',
+        'payments.*' => 'Payments',
+        'payment.*' => 'Payments',
+        'alerts.*' => 'Automated Alerts & SMS',
+        'analytics.*' => 'Executive Analytics',
+        'admin.users.*' => 'User Accounts',
+        'profile.*' => 'Profile Settings',
+    ];
+    $crmPageTitle = null;
+    foreach ($crmPageTitles as $pattern => $label) {
+        if (request()->routeIs($pattern)) {
+            $crmPageTitle = $label;
+            break;
+        }
+    }
+    $crmPageTitle ??= \Illuminate\Support\Str::headline(\Illuminate\Support\Str::before((string) request()->route()?->getName(), '.')) ?: 'Dashboard';
 @endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full overflow-x-hidden max-w-full {{ $isDarkServer ? 'dark' : '' }}" data-theme="{{ $isDarkServer ? 'dark' : 'light' }}" style="background-color: var(--page-bg); color: var(--text-main);">
@@ -27,7 +84,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Precision IT Systems CRM') }} | Smart Operations</title>
+        <title>{{ $crmPageTitle }} | {{ config('app.name', 'Precision IT Systems CRM') }}</title>
 
         <!-- Favicon / App Icon -->
         <link rel="icon" type="image/png" href="{{ asset('logo.png') }}?v={{ filemtime(public_path('logo.png')) }}">
@@ -1431,21 +1488,21 @@
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
                             </button>
 
-                            <span class="crm-page-title text-sm font-bold text-[var(--text-main)] truncate">
-                                @if(request()->routeIs('dashboard')) Dashboard
-                                @elseif(request()->routeIs('projects.*')) Projects
-                                @elseif(request()->routeIs('leads.*')) Leads
-                                @elseif(request()->routeIs('jobs.*')) Tasks &amp; Field Jobs
-                                @elseif(request()->routeIs('quotations.*')) Quotations
-                                @elseif(request()->routeIs('calendar.*')) Calendar
-                                @elseif(request()->routeIs('invoices.*')) Invoices
-                                @elseif(request()->routeIs('site-surveys.*')) Site Surveys
-                                @elseif(request()->routeIs('equipment.*')) Hardware
-                                @elseif(request()->routeIs('suppliers.*')) Suppliers
-                                @elseif(request()->routeIs('reports.*')) Reports
-                                @else Dashboard
-                                @endif
-                            </span>
+                            {{-- Desktop Sidebar Collapse Toggle (same action as Ctrl+B) --}}
+                            <button @click="window.crmSidebar.toggle()"
+                                    type="button"
+                                    id="header-sidebar-toggle-btn"
+                                    class="hidden lg:inline-flex items-center justify-center w-8 h-8 rounded-[6px] text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer shrink-0"
+                                    :title="sidebarCollapsed ? 'Expand sidebar (Ctrl+B)' : 'Collapse sidebar (Ctrl+B)'"
+                                    :aria-expanded="(!sidebarCollapsed).toString()"
+                                    aria-label="Toggle sidebar">
+                                <svg class="w-[18px] h-[18px] pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                                    <rect width="18" height="18" x="3" y="3" rx="2"/>
+                                    <line stroke-linecap="round" x1="9" x2="9" y1="3" y2="21"/>
+                                </svg>
+                            </button>
+
+                            <span class="crm-page-title text-sm font-bold text-[var(--text-main)] truncate">{{ $crmPageTitle }}</span>
                         </div>
 
                         {{-- 2. One Search Box (Center) --}}
@@ -1735,6 +1792,14 @@
                                             </span>
                                             <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300" x-text="isDarkMode ? 'Night' : 'Day'"></span>
                                         </button>
+
+                                        <button type="button" @click="userMenuOpen = false; window.crmOpenShortcuts()" class="hidden lg:flex w-full text-left items-center justify-between px-3.5 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer">
+                                            <span class="flex items-center gap-2.5">
+                                                <svg class="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M6 9h.01M10 9h.01M14 9h.01M18 9h.01M6 13h.01M18 13h.01M9 15h6"/></svg>
+                                                <span>Keyboard Shortcuts</span>
+                                            </span>
+                                            <kbd class="crm-kbd">?</kbd>
+                                        </button>
                                     </div>
 
                                     <form method="POST" action="{{ route('logout') }}" class="border-t border-[#ddd] dark:border-slate-800">
@@ -1906,6 +1971,93 @@
                     @endif
                 </div>
             </nav>
+
+            {{-- ════════════════════════════════════════════════════════════════ --}}
+            {{-- KEYBOARD SHORTCUTS HELP (opened with ? or Ctrl+/, closed with Esc) --}}
+            {{-- ════════════════════════════════════════════════════════════════ --}}
+            <div x-show="shortcutsModalOpen"
+                 x-cloak
+                 x-init="$watch('shortcutsModalOpen', open => {
+                     if (open) {
+                         $el._returnFocus = document.activeElement;
+                         $nextTick(() => $refs.shortcutsClose?.focus());
+                     } else {
+                         $el._returnFocus?.focus?.();
+                     }
+                 })"
+                 x-transition.opacity.duration.150ms
+                 @click.self="shortcutsModalOpen = false"
+                 class="crm-shortcuts-overlay fixed inset-0 z-[70] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
+                <div role="dialog" aria-modal="true" aria-labelledby="crm-shortcuts-title" class="crm-shortcuts-panel w-full max-w-md rounded-xl bg-[var(--card-bg)] text-[var(--text-main)]">
+                    <div class="flex items-center justify-between px-5 py-3.5 border-b border-[var(--card-border)]">
+                        <h2 id="crm-shortcuts-title" class="text-sm font-bold">Keyboard Shortcuts</h2>
+                        <button type="button" x-ref="shortcutsClose" @click="shortcutsModalOpen = false" class="crm-shortcuts-close btn-icon" aria-label="Close keyboard shortcuts">
+                            <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+                    @php
+                        $crmShortcuts = [
+                            [['Ctrl', 'K'], 'Search leads, jobs, quotes, equipment'],
+                            [['Ctrl', 'B'], 'Collapse or expand the sidebar'],
+                            [['Alt', 'T'], 'Switch between day and night mode'],
+                            [['Alt', 'D'], 'Go to dashboard'],
+                            [['Alt', 'A'], 'Go to attendance'],
+                        ];
+                        if (auth()->user()->isAdmin() || auth()->user()->isStaff()) {
+                            $crmShortcuts[] = [['Alt', 'L'], 'Go to leads'];
+                        }
+                        $crmShortcuts[] = [['?'], 'Show this help'];
+                        $crmShortcuts[] = [['Esc'], 'Close popups and dialogs'];
+                    @endphp
+                    <ul class="px-5 py-2 text-xs">
+                        @foreach($crmShortcuts as [$keys, $description])
+                            <li class="flex items-center justify-between gap-4 py-2 border-b border-[var(--card-border)] last:border-b-0">
+                                <span class="text-[var(--text-secondary)]">{{ $description }}</span>
+                                <span class="flex items-center gap-1 shrink-0">
+                                    @foreach($keys as $key)
+                                        <kbd class="crm-kbd">{{ $key }}</kbd>
+                                    @endforeach
+                                </span>
+                            </li>
+                        @endforeach
+                    </ul>
+                    <p class="px-5 pb-4 text-[11px] text-[var(--text-muted)]">On Mac, use ⌘ instead of Ctrl. Alt shortcuts work when you are not typing in a field.</p>
+                </div>
+            </div>
+
+            {{-- ════════════════════════════════════════════════════════════════ --}}
+            {{-- GLOBAL FLASH TOASTS: shown only when the page itself did not     --}}
+            {{-- already print the message, so every redirect gives feedback      --}}
+            {{-- ════════════════════════════════════════════════════════════════ --}}
+            @php
+                $crmRenderedPage = (string) $slot . (isset($header) ? (string) $header : '');
+                // Breeze status codes that the profile/verification views translate themselves
+                $crmHandledStatusCodes = ['profile-updated', 'password-updated', 'verification-link-sent'];
+                $crmFlashes = collect(['success' => 'success', 'status' => 'success', 'warning' => 'warning', 'error' => 'error'])
+                    ->map(fn ($tone, $key) => ['tone' => $tone, 'text' => session($key)])
+                    ->filter(fn ($flash) => is_string($flash['text'])
+                        && trim($flash['text']) !== ''
+                        && ! in_array($flash['text'], $crmHandledStatusCodes, true)
+                        && ! str_contains($crmRenderedPage, e($flash['text'])))
+                    ->values();
+            @endphp
+            @if($crmFlashes->isNotEmpty())
+                <div class="crm-toast-stack" aria-live="polite">
+                    @foreach($crmFlashes as $flash)
+                        <div x-data="{ show: true }"
+                             @if($flash['tone'] !== 'error') x-init="setTimeout(() => show = false, 6000)" @endif
+                             x-show="show"
+                             x-transition.opacity.duration.200ms
+                             role="{{ $flash['tone'] === 'error' ? 'alert' : 'status' }}"
+                             class="crm-toast crm-toast--{{ $flash['tone'] }}">
+                            <p class="crm-toast__text">{{ $flash['text'] }}</p>
+                            <button type="button" @click="show = false" class="crm-toast__close btn-icon" aria-label="Dismiss message">
+                                <svg class="w-3.5 h-3.5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </button>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
 
     </body>
 </html>

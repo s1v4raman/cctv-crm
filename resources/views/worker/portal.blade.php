@@ -17,6 +17,11 @@
             --crm-accent-hover: #1d4ed8 !important;
         }
         * { box-shadow: none !important; }
+        [x-cloak] { display: none !important; }
+        /* iOS Safari zooms into focused fields under 16px */
+        @media (hover: none) and (pointer: coarse) {
+            input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea { font-size: 16px !important; }
+        }
     </style>
 
     <!-- Tailwind CSS with darkMode: 'class' configured -->
