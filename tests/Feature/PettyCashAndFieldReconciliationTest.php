@@ -286,6 +286,17 @@ class PettyCashAndFieldReconciliationTest extends TestCase
         $this->assertEquals(1000.00, $techWallet->fresh()->current_balance);
     }
 
+    public function test_reconciliation_screen_shows_the_system_expected_balance(): void
+    {
+        $vault = PettyCashAccount::getMainVault();
+        $vault->update(['current_balance' => 12345.50]);
+
+        $this->actingAs($this->admin)
+            ->get(route('finance.petty_cash.reconcile', $vault))
+            ->assertOk()
+            ->assertSee('12,345.50');
+    }
+
     public function test_physical_cash_reconciliation_calculates_denominations_and_variance(): void
     {
         $vault = PettyCashAccount::getMainVault();

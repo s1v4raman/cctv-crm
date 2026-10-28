@@ -181,11 +181,15 @@ class PettyCashController extends Controller
             ->whereDate('reconciliation_date', $date->toDateString())
             ->first();
 
+        // Same figure storeReconcile() compares the physical count against
+        $expectedBalance = (float) $account->current_balance;
+
         return view('finance.petty_cash.reconcile', compact(
             'account',
             'date',
             'summary',
-            'existingReconciliation'
+            'existingReconciliation',
+            'expectedBalance'
         ));
     }
 
