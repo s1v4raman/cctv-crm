@@ -27,7 +27,7 @@
                 @if(auth()->user()->isAdmin())
                     <form method="POST" action="{{ route('leads.status', $lead) }}" class="inline">
                         @csrf
-                        <select name="status" onchange="this.form.submit()"
+                        <select aria-label="Status" name="status" onchange="this.form.submit()"
                                 class="px-2.5 py-1.5 rounded text-xs font-semibold border border-[#ccc] bg-white text-slate-800 focus:outline-none cursor-pointer">
                             @foreach (['new','contacted','quoted','won','lost'] as $s)
                                 <option value="{{ $s }}" @selected($lead->status === $s)>Status: {{ ucfirst($s) }}</option>
@@ -68,7 +68,7 @@
                 {{-- Danger action link --}}
                 @if(auth()->user()->isAdmin())
                     <form method="POST" action="{{ route('leads.destroy', $lead) }}"
-                          onsubmit="return confirm('Delete {{ addslashes($lead->customer_name) }}? All quotations and jobs will also be deleted.')"
+                          data-confirm="Delete {{ $lead->customer_name }}? All quotations and jobs will also be deleted."
                           class="inline">
                         @csrf
                         @method('DELETE')

@@ -135,14 +135,14 @@
                 <form method="GET" action="{{ route('inventory.index') }}" class="filter-bar flex items-center gap-2.5 flex-wrap p-2.5 text-xs">
                     <div class="relative w-72 min-w-[220px] flex items-center shrink-0">
                         <svg class="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                        <input type="text" name="search" value="{{ request('search') }}" 
+                        <input aria-label="Search product name, SKU" type="text" name="search" value="{{ request('search') }}" 
                                placeholder="Search product name, SKU..." 
                                style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important; padding-left: 36px !important;"
                                class="w-full text-xs" />
                     </div>
 
                     @if(count($categories) > 0)
-                    <select name="category" onchange="this.form.submit()" 
+                    <select aria-label="Category" name="category" onchange="this.form.submit()" 
                             style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important; min-width: 140px;"
                             class="text-xs shrink-0">
                         <option value="">All Categories</option>
@@ -152,7 +152,7 @@
                     </select>
                     @endif
 
-                    <select name="status" onchange="this.form.submit()" 
+                    <select aria-label="Status" name="status" onchange="this.form.submit()" 
                             style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important; min-width: 140px;"
                             class="text-xs shrink-0">
                         <option value="">All Stock Levels</option>
@@ -377,13 +377,13 @@
                         <div class="mb-4">
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
                                    x-text="adjustType === 'adjustment' ? 'New Exact Stock Count' : 'Quantity'"></label>
-                            <input type="number" name="quantity" min="0" required x-model="adjustQty"
+                            <input aria-label="Quantity" type="number" name="quantity" min="0" required x-model="adjustQty"
                                    class="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 rounded px-3 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500">
                         </div>
 
                         <div class="mb-5">
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Reason / Notes</label>
-                            <input type="text" name="notes" placeholder="e.g., Vendor Invoice, Physical audit" x-model="adjustNotes"
+                            <input aria-label="Reason / Notes" type="text" name="notes" placeholder="e.g., Vendor Invoice, Physical audit" x-model="adjustNotes"
                                    class="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 rounded px-3 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500">
                         </div>
 

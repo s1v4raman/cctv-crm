@@ -22,7 +22,7 @@
                         <label class="crm-label">
                             Accepted Quotation <span class="required-marker">*</span>
                         </label>
-                        <select name="quotation_id" id="quotation_id" class="crm-select" required>
+                        <select aria-label="Accepted Quotation" name="quotation_id" id="quotation_id" class="crm-select" required>
                             <option value="">Select quotation</option>
                             @foreach($quotations as $quotation)
                                 <option value="{{ $quotation->id }}">
@@ -49,7 +49,7 @@
     function submitJobForm() {
         const quotationId = document.getElementById('quotation_id').value;
         if (!quotationId) {
-            alert('Please select a quotation first.');
+            crmAlert('Please select a quotation first.');
             return;
         }
         const form = document.getElementById('job-select-form');

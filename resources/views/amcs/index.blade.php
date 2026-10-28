@@ -96,12 +96,12 @@
                 <form method="GET" action="{{ route('amcs.index') }}" class="p-3 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0b1120] flex items-center gap-2.5 flex-wrap text-xs">
                     <div class="relative flex-1 min-w-[220px] max-w-md flex items-center">
                         <svg class="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                        <input type="text" name="search" value="{{ request('search') }}" 
+                        <input aria-label="Search contract #, customer, phone" type="text" name="search" value="{{ request('search') }}" 
                                placeholder="Search contract #, customer, phone…" 
                                style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important; padding-left: 36px !important;"
                                class="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0f172a] text-slate-800 dark:text-white px-3 focus:outline-none focus:border-blue-500">
                     </div>
-                    <select name="status" onchange="this.form.submit()" 
+                    <select aria-label="Status" name="status" onchange="this.form.submit()" 
                             style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important; min-width: 140px;"
                             class="text-xs px-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0f172a] text-slate-800 dark:text-white focus:outline-none focus:border-blue-500">
                         <option value="">All Statuses</option>
@@ -180,7 +180,7 @@
                                         <a href="{{ route('amcs.show', $amc) }}" class="action-link">View</a>
                                         @if(auth()->user()->isAdmin())
                                             <form method="POST" action="{{ route('amcs.destroy', $amc) }}" class="inline"
-                                                  onsubmit="return confirm('Delete AMC contract {{ addslashes($amc->contract_no) }}?')">
+                                                  data-confirm="Delete AMC contract {{ $amc->contract_no }}?">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="danger-link">Delete</button>

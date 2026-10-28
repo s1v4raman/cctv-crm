@@ -103,13 +103,13 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                         <div class="sm:col-span-2">
                             <label class="crm-label">Site Name / Location Identifier <span class="required-marker">*</span></label>
-                            <input type="text" name="name" x-model="siteName" @blur="checkDuplicate()" value="{{ old('name') }}" required placeholder="e.g. Apex Hospital - Admin Block" class="crm-input">
+                            <input aria-label="Site Name / Location Identifier" type="text" name="name" x-model="siteName" @blur="checkDuplicate()" value="{{ old('name') }}" required placeholder="e.g. Apex Hospital - Admin Block" class="crm-input">
                             @error('name') <p class="error-text">{{ $message }}</p> @enderror
                         </div>
 
                         <div>
                             <label class="crm-label">Link to CRM Lead / Client</label>
-                            <select name="lead_id" class="crm-select">
+                            <select aria-label="Link to CRM Lead / Client" name="lead_id" class="crm-select">
                                 <option value="">-- Standalone Site / Select Client --</option>
                                 @foreach($leads as $l)
                                     <option value="{{ $l->id }}" @selected(old('lead_id', request('lead_id')) == $l->id)>
@@ -122,7 +122,7 @@
 
                         <div>
                             <label class="crm-label">Building / Structure Type <span class="required-marker">*</span></label>
-                            <select name="type" required class="crm-select">
+                            <select aria-label="Building / Structure Type" name="type" required class="crm-select">
                                 @foreach(['commercial' => 'Commercial / Office', 'industrial' => 'Industrial / Factory', 'residential' => 'Residential / Apartment', 'warehouse' => 'Warehouse / Logistics', 'retail' => 'Retail / Showroom', 'hospital' => 'Hospital / Healthcare', 'education' => 'School / College', 'other' => 'Other Facility'] as $k => $label)
                                     <option value="{{ $k }}" @selected(old('type') == $k)>{{ $label }}</option>
                                 @endforeach
@@ -133,26 +133,26 @@
 
                     <div class="mb-4">
                         <label class="crm-label">Physical Address <span class="required-marker">*</span></label>
-                        <textarea name="address" rows="2" required placeholder="e.g. Plot 42, Electronics City Phase 1" class="crm-input" style="height: auto;">{{ old('address') }}</textarea>
+                        <textarea aria-label="Physical Address" name="address" rows="2" required placeholder="e.g. Plot 42, Electronics City Phase 1" class="crm-input" style="height: auto;">{{ old('address') }}</textarea>
                         @error('address') <p class="error-text">{{ $message }}</p> @enderror
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div>
                             <label class="crm-label">City <span class="required-marker">*</span></label>
-                            <input type="text" name="city" value="{{ old('city') }}" required placeholder="e.g. Bengaluru" class="crm-input">
+                            <input aria-label="City" type="text" name="city" value="{{ old('city') }}" required placeholder="e.g. Bengaluru" class="crm-input">
                             @error('city') <p class="error-text">{{ $message }}</p> @enderror
                         </div>
 
                         <div>
                             <label class="crm-label">State</label>
-                            <input type="text" name="state" value="{{ old('state', 'Karnataka') }}" placeholder="e.g. Karnataka" class="crm-input">
+                            <input aria-label="State" type="text" name="state" value="{{ old('state', 'Karnataka') }}" placeholder="e.g. Karnataka" class="crm-input">
                             @error('state') <p class="error-text">{{ $message }}</p> @enderror
                         </div>
 
                         <div>
                             <label class="crm-label">PIN Code</label>
-                            <input type="text" name="pincode" value="{{ old('pincode') }}" placeholder="e.g. 560100" class="crm-input">
+                            <input aria-label="PIN Code" type="text" name="pincode" value="{{ old('pincode') }}" placeholder="e.g. 560100" class="crm-input">
                             @error('pincode') <p class="error-text">{{ $message }}</p> @enderror
                         </div>
                     </div>
@@ -165,12 +165,12 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                         <div>
                             <label class="crm-label">Site Contact Person</label>
-                            <input type="text" name="client_contact_person" value="{{ old('client_contact_person') }}" placeholder="e.g. Suresh Kumar (Manager)" class="crm-input">
+                            <input aria-label="Site Contact Person" type="text" name="client_contact_person" value="{{ old('client_contact_person') }}" placeholder="e.g. Suresh Kumar (Manager)" class="crm-input">
                         </div>
 
                         <div>
                             <label class="crm-label">Site Contact Phone</label>
-                            <input type="text" name="client_phone" x-model="clientPhone" @blur="checkDuplicate()" value="{{ old('client_phone') }}" placeholder="e.g. 9840123456" class="crm-input">
+                            <input aria-label="Site Contact Phone" type="text" name="client_phone" x-model="clientPhone" @blur="checkDuplicate()" value="{{ old('client_phone') }}" placeholder="e.g. 9840123456" class="crm-input">
                         </div>
                     </div>
 
@@ -186,23 +186,23 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                         <div>
                             <label class="crm-label">Latitude</label>
-                            <input type="number" step="any" name="latitude" x-model="lat" placeholder="e.g. 11.016844" class="crm-input">
+                            <input aria-label="Latitude" type="number" step="any" name="latitude" x-model="lat" placeholder="e.g. 11.016844" class="crm-input">
                         </div>
 
                         <div>
                             <label class="crm-label">Longitude</label>
-                            <input type="number" step="any" name="longitude" x-model="lng" placeholder="e.g. 76.955832" class="crm-input">
+                            <input aria-label="Longitude" type="number" step="any" name="longitude" x-model="lng" placeholder="e.g. 76.955832" class="crm-input">
                         </div>
                     </div>
 
                     <div class="mb-4">
                         <label class="crm-label">Google Maps Link</label>
-                        <input type="text" name="google_maps_url" x-model="gmapsUrl" @input.debounce.500ms="parseGoogleMapsUrl()" placeholder="e.g. https://maps.google.com/?q=11.0168,76.9558" class="crm-input">
+                        <input aria-label="Google Maps Link" type="text" name="google_maps_url" x-model="gmapsUrl" @input.debounce.500ms="parseGoogleMapsUrl()" placeholder="e.g. https://maps.google.com/?q=11.0168,76.9558" class="crm-input">
                     </div>
 
                     <div>
                         <label class="crm-label">Site Notes &amp; Access Instructions</label>
-                        <textarea name="notes" rows="3" placeholder="e.g. Security gate entry requirements, contact guard on arrival" class="crm-input" style="height: auto;">{{ old('notes') }}</textarea>
+                        <textarea aria-label="Site Notes &amp; Access Instructions" name="notes" rows="3" placeholder="e.g. Security gate entry requirements, contact guard on arrival" class="crm-input" style="height: auto;">{{ old('notes') }}</textarea>
                     </div>
                 </div>
 

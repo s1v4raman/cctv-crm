@@ -18,7 +18,7 @@
                         Edit Details
                     </a>
                     @if(auth()->user()->isAdmin())
-                        <form method="POST" action="{{ route('equipment.destroy', $equipment) }}" onsubmit="return confirm('Are you sure you want to delete this equipment record?');" class="inline">
+                        <form method="POST" action="{{ route('equipment.destroy', $equipment) }}" data-confirm="Are you sure you want to delete this equipment record?" class="inline">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="danger-link p-0 bg-transparent border-0 cursor-pointer text-xs ml-2">Delete</button>

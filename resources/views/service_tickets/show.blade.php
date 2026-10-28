@@ -30,7 +30,7 @@
                         Edit Details
                     </a>
                     @if(auth()->user()->isAdmin())
-                        <form method="POST" action="{{ route('service-tickets.destroy', $ticket) }}" onsubmit="return confirm('Are you sure you want to delete this service ticket?');" class="inline">
+                        <form method="POST" action="{{ route('service-tickets.destroy', $ticket) }}" data-confirm="Are you sure you want to delete this service ticket?" class="inline">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="danger-link p-0 bg-transparent border-0 cursor-pointer text-xs ml-2">
@@ -173,7 +173,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="crm-label">Technician <span class="required-marker">*</span></label>
-                        <select name="assigned_technician_id" required class="crm-select">
+                        <select aria-label="Technician" name="assigned_technician_id" required class="crm-select">
                             <option value="">Select technician</option>
                             @foreach($technicians as $tech)
                                 <option value="{{ $tech->id }}" {{ $ticket->assigned_technician_id == $tech->id ? 'selected' : '' }}>
@@ -184,7 +184,7 @@
                     </div>
                     <div>
                         <label class="crm-label">Scheduled Date</label>
-                        <input type="date" name="scheduled_date" value="{{ $ticket->scheduled_date?->format('Y-m-d') }}" class="crm-input">
+                        <input aria-label="Scheduled Date" type="date" name="scheduled_date" value="{{ $ticket->scheduled_date?->format('Y-m-d') }}" class="crm-input">
                     </div>
                 </div>
                 <div class="form-actions mt-4">
@@ -229,7 +229,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                     <div>
                         <label class="crm-label">Status <span class="required-marker">*</span></label>
-                        <select name="status" class="crm-select">
+                        <select aria-label="Status" name="status" class="crm-select">
                             @foreach(\App\Models\ServiceTicket::statusOptions() as $k => $label)
                                 <option value="{{ $k }}" {{ $ticket->status === $k ? 'selected' : '' }}>{{ $label }}</option>
                             @endforeach
@@ -237,18 +237,18 @@
                     </div>
                     <div>
                         <label class="crm-label">Parts Replaced</label>
-                        <input type="text" name="parts_replaced" value="{{ $ticket->parts_replaced }}" placeholder="e.g. 1x 12V 2A SMPS Adapter" class="crm-input">
+                        <input aria-label="Parts Replaced" type="text" name="parts_replaced" value="{{ $ticket->parts_replaced }}" placeholder="e.g. 1x 12V 2A SMPS Adapter" class="crm-input">
                     </div>
                 </div>
 
                 <div class="mb-4">
                     <label class="crm-label">Troubleshooting Notes</label>
-                    <textarea name="troubleshooting_notes" rows="2" placeholder="e.g. BNC connector loose, crimped new pin" class="crm-input h-auto py-2">{{ $ticket->troubleshooting_notes }}</textarea>
+                    <textarea aria-label="Troubleshooting Notes" name="troubleshooting_notes" rows="2" placeholder="e.g. BNC connector loose, crimped new pin" class="crm-input h-auto py-2">{{ $ticket->troubleshooting_notes }}</textarea>
                 </div>
 
                 <div class="mb-4">
                     <label class="crm-label">Resolution Summary</label>
-                    <textarea name="resolution_notes" rows="2" placeholder="e.g. System tested and cameras restored to live feed" class="crm-input h-auto py-2">{{ $ticket->resolution_notes }}</textarea>
+                    <textarea aria-label="Resolution Summary" name="resolution_notes" rows="2" placeholder="e.g. System tested and cameras restored to live feed" class="crm-input h-auto py-2">{{ $ticket->resolution_notes }}</textarea>
                 </div>
 
                 <div class="form-actions">

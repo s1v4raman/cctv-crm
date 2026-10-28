@@ -143,4 +143,65 @@ class UserManagementTest extends TestCase
         $response->assertSee('Technician');
         $response->assertSee('Profile Overview');
     }
+
+    public function test_admin_can_filter_worker_data_only(): void
+    {
+        $workerUser = User::factory()->create(['name' => 'Ramesh Worker', 'role' => 'worker']);
+        \App\Models\Worker::create([
+            'user_id' => $workerUser->id,
+            'name' => 'Ramesh Worker',
+            'phone' => '9876543210',
+            'daily_rate' => 850.00,
+            'is_active' => true,
+        ]);
+
+        $unlinkedWorker = \App\Models\Worker::create([
+            'name' => 'Suresh Laborer',
+            'phone' => '9876543211',
+            'daily_rate' => 700.00,
+            'is_active' => true,
+        ]);
+
+        $tech = User::factory()->create(['name' => 'Deepak Tech', 'role' => 'technician']);
+
+        // Request with role=worker filter
+        $response = $this->actingAs($this->admin)->get(route('admin.users.index', ['role' => 'worker']));
+        $response->assertOk();
+        $response->assertSee('Ramesh Worker');
+        $response->assertSee('Suresh Laborer');
+        $response->assertSee('Workers');
+        $response->assertSee('850.00');
+        $response->assertDontSee('Deepak Tech');
+    }
+
+    public function test_admin_can_register_and_view_worker_user_account(): void
+    {
+        $response = $this->actingAs($this->admin)->post(route('admin.users.store'), [
+            'name' => 'Mahesh Worker',
+            'email' => 'mahesh.worker@example.com',
+            'role' => 'worker',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+        ]);
+
+        $response->assertRedirect(route('admin.users.index'));
+        $this->assertDatabaseHas('users', [
+            'name' => 'Mahesh Worker',
+            'email' => 'mahesh.worker@example.com',
+            'role' => 'worker',
+        ]);
+
+        $createdUser = User::where('email', 'mahesh.worker@example.com')->first();
+        $this->assertNotNull($createdUser);
+        $this->assertNotNull($createdUser->worker);
+        $this->assertEquals(750.00, $createdUser->worker->daily_rate);
+
+        // View worker profile
+        $showResponse = $this->actingAs($this->admin)->get(route('admin.users.show', $createdUser));
+        $showResponse->assertOk();
+        $showResponse->assertSee('Mahesh Worker');
+        $showResponse->assertSee('Field Worker');
+        $showResponse->assertSee('Daily Wage Rate');
+        $showResponse->assertSee('Shifts Worked');
+    }
 }

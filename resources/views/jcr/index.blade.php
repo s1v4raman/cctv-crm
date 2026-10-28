@@ -45,16 +45,16 @@
         {{-- Filter Section --}}
         <div class="crm-section">
             <form method="GET" action="{{ route('jcr.index') }}" class="flex items-center gap-3 flex-wrap">
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="e.g. JCR-2026-001" class="crm-input" style="width: 240px;">
+                <input aria-label="Search" type="text" name="search" value="{{ request('search') }}" placeholder="e.g. JCR-2026-001" class="crm-input" style="width: 240px;">
 
-                <select name="type" class="crm-select" style="width: 180px;">
+                <select aria-label="Type" name="type" class="crm-select" style="width: 180px;">
                     <option value="">All Job Types</option>
                     <option value="installation" @selected(request('type') === 'installation')>Installation</option>
                     <option value="service" @selected(request('type') === 'service')>Service Ticket</option>
                     <option value="amc" @selected(request('type') === 'amc')>AMC Maintenance</option>
                 </select>
 
-                <select name="technician_id" class="crm-select" style="width: 180px;">
+                <select aria-label="Technician" name="technician_id" class="crm-select" style="width: 180px;">
                     <option value="">All Technicians</option>
                     @foreach($technicians as $tech)
                         <option value="{{ $tech->id }}" @selected(request('technician_id') == $tech->id)>{{ $tech->name }}</option>

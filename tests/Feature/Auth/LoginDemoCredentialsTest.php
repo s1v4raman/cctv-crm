@@ -9,25 +9,21 @@ class LoginDemoCredentialsTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_login_screen_hides_demo_credentials_outside_local(): void
+    public function test_login_screen_never_shows_demo_credentials(): void
     {
-        $response = $this->get('/login');
+        foreach (['production', 'local'] as $environment) {
+            $this->app['env'] = $environment;
 
-        $response->assertStatus(200);
-        $response->assertDontSee('Demo Logins');
-        $response->assertDontSee('test@example.com');
-        $response->assertDontSee('value="password"', false);
-        $response->assertDontSee('Raju Kumar');
-    }
+            $response = $this->get('/login');
 
-    public function test_login_screen_offers_demo_credentials_in_local(): void
-    {
-        $this->app['env'] = 'local';
-
-        $response = $this->get('/login');
-
-        $response->assertStatus(200);
-        $response->assertSee('Demo Logins');
-        $response->assertSee('value="password"', false);
+            $response->assertStatus(200);
+            $response->assertDontSee('Demo Logins');
+            $response->assertDontSee('test@example.com');
+            $response->assertDontSee('bob@example.com');
+            $response->assertDontSee('alex@example.com');
+            $response->assertDontSee('value="password"', false);
+            $response->assertDontSee('Raju Kumar');
+            $response->assertDontSee('9876543210');
+        }
     }
 }

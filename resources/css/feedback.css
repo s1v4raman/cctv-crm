@@ -1,0 +1,217 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   FEEDBACK & ACCESSIBILITY COMPONENTS (loaded with app.js via a11y.js)
+   Toasts, the confirm dialog, the keyboard-shortcuts panel, the skip link
+   and the shared focus ring. Every colour falls back to a literal so the
+   standalone pages (worker portal, checkout, scanner) render them too.
+   ═══════════════════════════════════════════════════════════════════════ */
+.crm-toast-stack,
+.crm-dialog {
+    --fb-surface: var(--card-bg, #ffffff);
+    --fb-text: var(--text-main, #0f172a);
+    --fb-muted: var(--text-muted, #64748b);
+    --fb-border: var(--card-border, #cbd5e1);
+    --fb-hover: var(--page-bg, #f1f5f9);
+    --fb-accent: var(--crm-accent, #2563eb);
+}
+html.dark .crm-toast-stack,
+html.dark .crm-dialog {
+    --fb-surface: var(--card-bg, #1e293b);
+    --fb-text: var(--text-main, #e2e8f0);
+    --fb-muted: var(--text-muted, #94a3b8);
+    --fb-border: var(--card-border, #334155);
+    --fb-hover: var(--page-bg, #0f172a);
+}
+
+/* Shared keyboard focus ring (form fields keep their own focus styling) */
+:where(a[href], button, summary, [role="button"], [tabindex]:not([tabindex="-1"])):focus-visible {
+    outline: 2px solid var(--crm-accent, #2563eb);
+    outline-offset: 2px;
+}
+
+/* Skip link: hidden until a keyboard user tabs to it */
+.crm-skip-link {
+    position: fixed;
+    top: 8px;
+    left: 8px;
+    z-index: 100;
+    padding: 8px 14px;
+    border-radius: 6px;
+    background: var(--crm-accent, #2563eb);
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    transform: translateY(-160%);
+    transition: transform 0.15s ease;
+}
+.crm-skip-link:focus {
+    transform: translateY(0);
+}
+
+/* ── Toasts (flash messages and crmAlert) ───────────────────────────────── */
+.crm-toast-stack {
+    position: fixed;
+    top: 64px;
+    left: 12px;
+    right: 12px;
+    z-index: 60;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    pointer-events: none;
+}
+@media (min-width: 640px) {
+    .crm-toast-stack {
+        left: auto;
+        right: 20px;
+        width: 380px;
+    }
+}
+.crm-toast {
+    pointer-events: auto;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 10px 12px 14px;
+    background: var(--fb-surface) !important;
+    color: var(--fb-text) !important;
+    border: 1px solid var(--fb-border) !important;
+    border-left: 4px solid var(--crm-toast-tone, var(--fb-accent)) !important;
+    border-radius: 8px !important;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.16) !important;
+    font-size: 13px;
+    line-height: 1.45;
+}
+.crm-toast--success { --crm-toast-tone: var(--status-success, #16a34a); }
+.crm-toast--warning { --crm-toast-tone: var(--status-warning, #d97706); }
+.crm-toast--error { --crm-toast-tone: var(--status-danger, #dc2626); }
+.crm-toast__text {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    font-weight: 500;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+}
+.crm-toast__close,
+.crm-shortcuts-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 28px !important;
+    height: 28px !important;
+    min-height: 28px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 6px !important;
+    background: transparent !important;
+    color: var(--fb-muted, var(--text-muted)) !important;
+    cursor: pointer;
+}
+.crm-toast__close:hover,
+.crm-shortcuts-close:hover {
+    background: var(--fb-hover, var(--page-bg)) !important;
+    color: var(--fb-text, var(--text-main)) !important;
+}
+
+/* ── Confirm dialog (crmConfirm / data-confirm) ─────────────────────────── */
+html.crm-dialog-open {
+    overflow: hidden;
+}
+.crm-dialog-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: rgba(15, 23, 42, 0.55);
+}
+.crm-dialog-backdrop[hidden] {
+    display: none;
+}
+.crm-dialog {
+    width: 100%;
+    max-width: 420px;
+    padding: 20px;
+    border: 1px solid var(--fb-border);
+    border-radius: 12px;
+    background: var(--fb-surface);
+    color: var(--fb-text);
+    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.3);
+}
+.crm-dialog__title {
+    margin: 0 0 6px;
+    font-size: 16px;
+    font-weight: 700;
+}
+.crm-dialog__message {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--fb-muted);
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+}
+.crm-dialog__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 20px;
+}
+.crm-dialog__btn {
+    min-width: 96px;
+    height: 38px;
+    padding: 0 16px;
+    border: 1px solid var(--fb-border);
+    border-radius: 6px;
+    background: var(--fb-surface);
+    color: var(--fb-text);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.crm-dialog__btn:hover {
+    background: var(--fb-hover);
+}
+.crm-dialog__btn--primary {
+    border-color: var(--fb-accent);
+    background: var(--fb-accent);
+    color: #ffffff;
+}
+.crm-dialog__btn--primary:hover {
+    background: var(--fb-accent);
+    filter: brightness(0.92);
+}
+.crm-dialog__btn--danger {
+    border-color: #dc2626;
+    background: #dc2626;
+}
+
+/* ── Keyboard shortcuts panel (layouts/app.blade.php) ───────────────────── */
+.crm-shortcuts-panel {
+    border-radius: 12px !important;
+    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.3) !important;
+    overflow: hidden;
+}
+.crm-shortcuts-panel li:last-child {
+    border-bottom-width: 0 !important;
+}
+.crm-kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 22px;
+    padding: 0 6px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--text-main, #0f172a);
+    background: var(--page-bg, #f1f5f9);
+    border: 1px solid var(--card-border, #cbd5e1);
+    border-bottom-width: 2px;
+    border-radius: 4px;
+}

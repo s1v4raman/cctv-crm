@@ -176,12 +176,22 @@ class Worker extends Model
         return round((float) $this->attendances()->sum('total_amount'), 2);
     }
 
+    public function getTotalEarned(): float
+    {
+        return $this->getTotalEarnedLifetime();
+    }
+
     /**
      * Lifetime total wages paid to worker (advances and wage settlements).
      */
     public function getTotalPaidLifetime(): float
     {
         return round((float) $this->wagePayments()->sum('amount'), 2);
+    }
+
+    public function getTotalPaid(): float
+    {
+        return $this->getTotalPaidLifetime();
     }
 
     /**

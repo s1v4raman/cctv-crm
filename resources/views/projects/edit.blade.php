@@ -202,19 +202,19 @@
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Attendance Terminals Count</label>
-                            <input type="number" min="0" name="hardware_specs[terminal_count]" value="{{ old('hardware_specs.terminal_count', $project->hardware_specs['terminal_count'] ?? 0) }}"
+                            <input aria-label="Attendance Terminals Count" type="number" min="0" name="hardware_specs[terminal_count]" value="{{ old('hardware_specs.terminal_count', $project->hardware_specs['terminal_count'] ?? 0) }}"
                                    placeholder="e.g. 4 Terminals"
                                    class="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Camera Channels Count</label>
-                            <input type="number" min="0" name="hardware_specs[camera_count]" value="{{ old('hardware_specs.camera_count', $project->hardware_specs['camera_count'] ?? 0) }}"
+                            <input aria-label="Camera Channels Count" type="number" min="0" name="hardware_specs[camera_count]" value="{{ old('hardware_specs.camera_count', $project->hardware_specs['camera_count'] ?? 0) }}"
                                    placeholder="e.g. 16 Cameras"
                                    class="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Device Brand / Model</label>
-                            <input type="text" name="hardware_specs[device_brand]" value="{{ old('hardware_specs.device_brand', $project->hardware_specs['device_brand'] ?? '') }}"
+                            <input aria-label="Device Brand / Model" type="text" name="hardware_specs[device_brand]" value="{{ old('hardware_specs.device_brand', $project->hardware_specs['device_brand'] ?? '') }}"
                                    placeholder="e.g. ZKTeco ProFace X / Hikvision MinMoe"
                                    class="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
                         </div>
@@ -223,13 +223,13 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Terminal IP Subnet / Network</label>
-                            <input type="text" name="hardware_specs[terminal_ip]" value="{{ old('hardware_specs.terminal_ip', $project->hardware_specs['terminal_ip'] ?? '') }}"
+                            <input aria-label="Terminal IP Subnet / Network" type="text" name="hardware_specs[terminal_ip]" value="{{ old('hardware_specs.terminal_ip', $project->hardware_specs['terminal_ip'] ?? '') }}"
                                    placeholder="e.g. 192.168.1.50 - 192.168.1.60"
                                    class="w-full text-xs font-mono rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Attendance Sync Mode</label>
-                            <select name="hardware_specs[attendance_sync_mode]" class="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
+                            <select aria-label="Attendance Sync Mode" name="hardware_specs[attendance_sync_mode]" class="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
                                 <option value="face_recognition" {{ old('hardware_specs.attendance_sync_mode', $project->hardware_specs['attendance_sync_mode'] ?? '') === 'face_recognition' ? 'selected' : '' }}>AI Face Recognition Terminal</option>
                                 <option value="biometric_fingerprint" {{ old('hardware_specs.attendance_sync_mode', $project->hardware_specs['attendance_sync_mode'] ?? '') === 'biometric_fingerprint' ? 'selected' : '' }}>Biometric Fingerprint Scanner</option>
                                 <option value="rfid_card" {{ old('hardware_specs.attendance_sync_mode', $project->hardware_specs['attendance_sync_mode'] ?? '') === 'rfid_card' ? 'selected' : '' }}>RFID Proximity Card Terminal</option>
@@ -249,13 +249,13 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Live / Staging Webpage URL</label>
-                            <input type="url" name="software_specs[webpage_url]" value="{{ old('software_specs.webpage_url', $project->software_specs['webpage_url'] ?? '') }}"
+                            <input aria-label="Live / Staging Webpage URL" type="url" name="software_specs[webpage_url]" value="{{ old('software_specs.webpage_url', $project->software_specs['webpage_url'] ?? '') }}"
                                    placeholder="https://portal.clientcompany.com"
                                    class="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Source Repository URL</label>
-                            <input type="url" name="software_specs[repository_url]" value="{{ old('software_specs.repository_url', $project->software_specs['repository_url'] ?? '') }}"
+                            <input aria-label="Source Repository URL" type="url" name="software_specs[repository_url]" value="{{ old('software_specs.repository_url', $project->software_specs['repository_url'] ?? '') }}"
                                    placeholder="https://github.com/organization/project"
                                    class="w-full text-xs font-mono rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
                         </div>
@@ -264,13 +264,13 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Tech Stack (comma separated)</label>
-                            <input type="text" name="software_specs[tech_stack]" value="{{ old('software_specs.tech_stack', $project->software_specs['tech_stack'] ?? '') }}"
+                            <input aria-label="Tech Stack (comma separated)" type="text" name="software_specs[tech_stack]" value="{{ old('software_specs.tech_stack', $project->software_specs['tech_stack'] ?? '') }}"
                                    placeholder="Laravel, Tailwind CSS, Alpine.js, REST API"
                                    class="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Deployment Server / Host</label>
-                            <input type="text" name="software_specs[deployment_server]" value="{{ old('software_specs.deployment_server', $project->software_specs['deployment_server'] ?? '') }}"
+                            <input aria-label="Deployment Server / Host" type="text" name="software_specs[deployment_server]" value="{{ old('software_specs.deployment_server', $project->software_specs['deployment_server'] ?? '') }}"
                                    placeholder="Ubuntu 24.04 LTS / Nginx / Cloudflare"
                                    class="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
                         </div>

@@ -154,23 +154,23 @@
             <div class="pg-card">
                 {{-- Filters --}}
                 <form method="GET" action="{{ route('equipment.index') }}" class="filter-bar">
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search Serial No, MAC, Device..." style="min-width: 220px;" />
+                    <input aria-label="Search Serial No, MAC, Device" type="text" name="search" value="{{ request('search') }}" placeholder="Search Serial No, MAC, Device..." style="min-width: 220px;" />
 
-                    <select name="lead_id" data-no-tom>
+                    <select aria-label="Lead" name="lead_id" data-no-tom>
                         <option value="">All Customer Sites</option>
                         @foreach($leads as $l)
                             <option value="{{ $l->id }}" @selected(request('lead_id') == $l->id)>{{ $l->customer_name }}</option>
                         @endforeach
                     </select>
 
-                    <select name="warranty">
+                    <select aria-label="Warranty" name="warranty">
                         <option value="">All Warranty States</option>
                         <option value="active" @selected(request('warranty') == 'active')>Active Warranty</option>
                         <option value="expiring_soon" @selected(request('warranty') == 'expiring_soon')>Expiring Soon (&le; 30 days)</option>
                         <option value="expired" @selected(request('warranty') == 'expired')>Expired Warranty</option>
                     </select>
 
-                    <select name="status">
+                    <select aria-label="Status" name="status">
                         <option value="">All Device Status</option>
                         <option value="active" @selected(request('status') == 'active')>Active</option>
                         <option value="under_repair" @selected(request('status') == 'under_repair')>Under Repair</option>
@@ -280,7 +280,7 @@
                                     <a href="{{ route('equipment.show', $item) }}" class="action-link">View</a>
                                     <a href="{{ route('equipment.edit', $item) }}" class="action-link">Edit</a>
                                     @if(auth()->user()->isAdmin())
-                                        <form method="POST" action="{{ route('equipment.destroy', $item) }}" onsubmit="return confirm('Are you sure you want to delete this equipment record?');" class="inline">
+                                        <form method="POST" action="{{ route('equipment.destroy', $item) }}" data-confirm="Are you sure you want to delete this equipment record?" class="inline">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="danger-link">Delete</button>

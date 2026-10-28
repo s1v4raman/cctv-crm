@@ -187,7 +187,7 @@
                                     </div>
 
                                     {{-- Approve Form --}}
-                                    <form action="{{ route('finance.expenses.approve', $c) }}" method="POST" onsubmit="return confirm('Approve expense claim #{{ $c->claim_no }} for ₹{{ number_format((float) $c->amount, 2) }}?')">
+                                    <form action="{{ route('finance.expenses.approve', $c) }}" method="POST" data-confirm="Approve expense claim #{{ $c->claim_no }} for ₹{{ number_format((float) $c->amount, 2) }}?">
                                         @csrf
                                         @method('PATCH')
                                         <button type="submit" 
@@ -230,9 +230,9 @@
                     <form method="GET" action="{{ route('finance.expenses.index') }}" class="flex items-center gap-2 pb-2 flex-wrap">
                         <input type="hidden" name="tab" value="{{ $tab }}">
 
-                        <input type="month" name="month" value="{{ $selectedMonth }}" onchange="this.form.submit()" class="text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 px-3" style="height: 38px; border-radius: 4px;">
+                        <input aria-label="Month" type="month" name="month" value="{{ $selectedMonth }}" onchange="this.form.submit()" class="text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 px-3" style="height: 38px; border-radius: 4px;">
 
-                        <select name="category" onchange="this.form.submit()" class="text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 px-3" style="height: 38px; border-radius: 4px;">
+                        <select aria-label="Category" name="category" onchange="this.form.submit()" class="text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 px-3" style="height: 38px; border-radius: 4px;">
                             <option value="">All Categories</option>
                             <option value="fuel_travel" {{ $categoryFilter === 'fuel_travel' ? 'selected' : '' }}>Fuel &amp; Travel</option>
                             <option value="hardware_tools" {{ $categoryFilter === 'hardware_tools' ? 'selected' : '' }}>Hardware Tools</option>
@@ -242,7 +242,7 @@
                             <option value="other" {{ $categoryFilter === 'other' ? 'selected' : '' }}>Other</option>
                         </select>
 
-                        <select name="status" onchange="this.form.submit()" class="text-sm min-h-[44px] rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 py-1.5 pl-3 pr-8">
+                        <select aria-label="Status" name="status" onchange="this.form.submit()" class="text-sm min-h-[44px] rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 py-1.5 pl-3 pr-8">
                             <option value="">All Statuses</option>
                             <option value="pending" {{ $statusFilter === 'pending' ? 'selected' : '' }}>Pending</option>
                             <option value="approved" {{ $statusFilter === 'approved' ? 'selected' : '' }}>Approved</option>
@@ -252,7 +252,7 @@
                         </select>
 
                         @if($tab === 'all_claims' && $isAdmin)
-                            <select name="employee_id" onchange="this.form.submit()" class="text-sm min-h-[44px] rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 py-1.5 pl-3 pr-8">
+                            <select aria-label="Employee" name="employee_id" onchange="this.form.submit()" class="text-sm min-h-[44px] rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 py-1.5 pl-3 pr-8">
                                 <option value="">All Employees</option>
                                 @foreach($workforce as $emp)
                                     <option value="{{ $emp->id }}" {{ $employeeFilter == $emp->id ? 'selected' : '' }}>{{ $emp->name }}</option>
@@ -336,7 +336,7 @@
                                         </td>
                                         <td class="py-4 px-4 text-right whitespace-nowrap">
                                             @if($c->status === 'pending')
-                                                <form action="{{ route('finance.expenses.cancel', $c) }}" method="POST" onsubmit="return confirm('Cancel this pending claim?')">
+                                                <form action="{{ route('finance.expenses.cancel', $c) }}" method="POST" data-confirm="Cancel this pending claim?">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="text-rose-600 hover:text-rose-800 dark:text-rose-400 text-sm font-semibold underline">
@@ -488,7 +488,7 @@
                     {{-- Category --}}
                     <div>
                         <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Expense Category *</label>
-                        <select name="expense_category" id="expenseCategorySelect" onchange="toggleKmSection(this.value)" required class="w-full text-sm min-h-[44px] rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5">
+                        <select aria-label="Expense Category" name="expense_category" id="expenseCategorySelect" onchange="toggleKmSection(this.value)" required class="w-full text-sm min-h-[44px] rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5">
                             <option value="fuel_travel">Fuel &amp; Travel (Per-KM Calculation)</option>
                             <option value="hardware_tools">Hardware Tools, Cables &amp; Connectors</option>
                             <option value="food_lodging">Meals &amp; On-Site Allowance</option>
@@ -501,7 +501,7 @@
                     {{-- Expense Date --}}
                     <div>
                         <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Expense Date *</label>
-                        <input type="date" name="expense_date" required value="{{ now()->toDateString() }}" 
+                        <input aria-label="Expense Date" type="date" name="expense_date" required value="{{ now()->toDateString() }}" 
                                class="w-full text-sm min-h-[44px] rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5">
                     </div>
                 </div>
@@ -517,11 +517,11 @@
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                         <div>
-                            <input type="text" name="travel_from" placeholder="From Location (e.g. Office / HSR Layout)" 
+                            <input aria-label="From Location (e.g. Office / HSR Layout)" type="text" name="travel_from" placeholder="From Location (e.g. Office / HSR Layout)" 
                                    class="w-full text-sm min-h-[44px] rounded-xl border-purple-200 dark:border-purple-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2">
                         </div>
                         <div>
-                            <input type="text" name="travel_to" placeholder="To Client Site (e.g. Cyber City Tower)" 
+                            <input aria-label="To Client Site (e.g. Cyber City Tower)" type="text" name="travel_to" placeholder="To Client Site (e.g. Cyber City Tower)" 
                                    class="w-full text-sm min-h-[44px] rounded-xl border-purple-200 dark:border-purple-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2">
                         </div>
                     </div>
@@ -529,12 +529,12 @@
                     <div class="grid grid-cols-2 gap-2.5 items-center">
                         <div>
                             <label class="block text-sm font-semibold text-purple-800 dark:text-purple-300 mb-1">Total Kilometers</label>
-                            <input type="number" step="0.1" name="travel_distance_km" id="kmInput" oninput="calculateKmAmount()" placeholder="e.g. 25.5" 
+                            <input aria-label="Total Kilometers" type="number" step="0.1" name="travel_distance_km" id="kmInput" oninput="calculateKmAmount()" placeholder="e.g. 25.5" 
                                    class="w-full text-sm min-h-[44px] rounded-xl border-purple-200 dark:border-purple-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2">
                         </div>
                         <div>
                             <label class="block text-sm font-semibold text-purple-800 dark:text-purple-300 mb-1">Rate / KM (₹)</label>
-                            <input type="number" step="0.5" name="rate_per_km" id="rateInput" value="6.0" oninput="calculateKmAmount()" 
+                            <input aria-label="Rate / KM (₹)" type="number" step="0.5" name="rate_per_km" id="rateInput" value="6.0" oninput="calculateKmAmount()" 
                                    class="w-full text-sm min-h-[44px] rounded-xl border-purple-200 dark:border-purple-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2">
                         </div>
                     </div>
@@ -543,7 +543,7 @@
                 {{-- Amount Field --}}
                 <div>
                     <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Claim Amount (₹) *</label>
-                    <input type="number" step="0.01" name="amount" id="claimAmountInput" required placeholder="0.00" 
+                    <input aria-label="Claim Amount (₹)" type="number" step="0.01" name="amount" id="claimAmountInput" required placeholder="0.00" 
                            class="w-full text-sm font-bold rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white p-2.5">
                 </div>
 
@@ -551,7 +551,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                         <label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Link to Installation Job (Optional)</label>
-                        <select name="installation_job_id" class="w-full text-sm min-h-[44px] rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5">
+                        <select aria-label="Link to Installation Job (Optional)" name="installation_job_id" class="w-full text-sm min-h-[44px] rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5">
                             <option value="">None / General Expense</option>
                             @foreach($activeJobs as $job)
                                 <option value="{{ $job->id }}">{{ $job->job_no }} - {{ $job->quotation?->lead?->customer_name }}</option>
@@ -561,7 +561,7 @@
 
                     <div>
                         <label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Link to Service Ticket (Optional)</label>
-                        <select name="service_ticket_id" class="w-full text-sm min-h-[44px] rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5">
+                        <select aria-label="Link to Service Ticket (Optional)" name="service_ticket_id" class="w-full text-sm min-h-[44px] rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5">
                             <option value="">None / General</option>
                             @foreach($activeTickets as $ticket)
                                 <option value="{{ $ticket->id }}">{{ $ticket->ticket_no }} - {{ $ticket->title }}</option>
@@ -573,7 +573,7 @@
                 {{-- Description --}}
                 <div>
                     <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Description / Purpose *</label>
-                    <textarea name="description" rows="2" required placeholder="State exact purpose of travel or list items bought on-site..." 
+                    <textarea aria-label="Description / Purpose" name="description" rows="2" required placeholder="State exact purpose of travel or list items bought on-site..." 
                               class="w-full text-sm min-h-[44px] rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5"></textarea>
                 </div>
 
@@ -618,7 +618,7 @@
 
                 <div>
                     <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Rejection Reason *</label>
-                    <textarea name="rejection_reason" rows="3" required placeholder="e.g. Receipt photo unclear, kilometers exceeded standard route..." 
+                    <textarea aria-label="Rejection Reason" name="rejection_reason" rows="3" required placeholder="e.g. Receipt photo unclear, kilometers exceeded standard route..." 
                               class="w-full text-sm min-h-[44px] rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5"></textarea>
                 </div>
 
@@ -655,7 +655,7 @@
 
                 <div>
                     <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Disbursal Method *</label>
-                    <select name="payment_method" required class="w-full text-sm min-h-[44px] rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5">
+                    <select aria-label="Disbursal Method" name="payment_method" required class="w-full text-sm min-h-[44px] rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5">
                         <option value="upi">UPI Instant Transfer (GPay / PhonePe / Paytm)</option>
                         <option value="bank_transfer">Direct Bank Transfer (NEFT / IMPS)</option>
                         <option value="cash">Petty Cash Payment</option>
@@ -665,7 +665,7 @@
 
                 <div>
                     <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Transaction / UTR Reference (Optional)</label>
-                    <input type="text" name="payment_reference" placeholder="e.g. UPI-99881234 / NEFT-HDFC-991" 
+                    <input aria-label="Transaction / UTR Reference (Optional)" type="text" name="payment_reference" placeholder="e.g. UPI-99881234 / NEFT-HDFC-991" 
                            class="w-full text-sm min-h-[44px] rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5">
                 </div>
 

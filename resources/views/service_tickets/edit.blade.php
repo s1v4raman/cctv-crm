@@ -30,7 +30,7 @@
                         <label class="crm-label">
                             Customer / Site <span class="required-marker">*</span>
                         </label>
-                        <select name="lead_id" required class="crm-select">
+                        <select aria-label="Customer / Site" name="lead_id" required class="crm-select">
                             @foreach($leads as $lead)
                                 <option value="{{ $lead->id }}" {{ old('lead_id', $ticket->lead_id) == $lead->id ? 'selected' : '' }}>
                                     {{ $lead->customer_name }} ({{ $lead->phone }})
@@ -46,7 +46,7 @@
                         <label class="crm-label">
                             Covered Under AMC
                         </label>
-                        <select name="amc_contract_id" class="crm-select">
+                        <select aria-label="Covered Under AMC" name="amc_contract_id" class="crm-select">
                             <option value="">Standalone / No AMC</option>
                             @foreach($amcContracts as $amc)
                                 <option value="{{ $amc->id }}" {{ old('amc_contract_id', $ticket->amc_contract_id) == $amc->id ? 'selected' : '' }}>
@@ -62,7 +62,7 @@
                         <label class="crm-label">
                             Issue Category <span class="required-marker">*</span>
                         </label>
-                        <select name="issue_type" required class="crm-select">
+                        <select aria-label="Issue Category" name="issue_type" required class="crm-select">
                             @foreach(\App\Models\ServiceTicket::issueTypeOptions() as $k => $label)
                                 <option value="{{ $k }}" {{ old('issue_type', $ticket->issue_type) === $k ? 'selected' : '' }}>{{ $label }}</option>
                             @endforeach
@@ -73,7 +73,7 @@
                         <label class="crm-label">
                             Priority <span class="required-marker">*</span>
                         </label>
-                        <select name="priority" required class="crm-select">
+                        <select aria-label="Priority" name="priority" required class="crm-select">
                             @foreach(\App\Models\ServiceTicket::priorityOptions() as $k => $label)
                                 <option value="{{ $k }}" {{ old('priority', $ticket->priority) === $k ? 'selected' : '' }}>{{ $label }}</option>
                             @endforeach
@@ -84,7 +84,7 @@
                         <label class="crm-label">
                             Status <span class="required-marker">*</span>
                         </label>
-                        <select name="status" required class="crm-select">
+                        <select aria-label="Status" name="status" required class="crm-select">
                             @foreach(\App\Models\ServiceTicket::statusOptions() as $k => $label)
                                 <option value="{{ $k }}" {{ old('status', $ticket->status) === $k ? 'selected' : '' }}>{{ $label }}</option>
                             @endforeach
@@ -96,7 +96,7 @@
                     <label class="crm-label">
                         Subject / Title <span class="required-marker">*</span>
                     </label>
-                    <input type="text" name="title" value="{{ old('title', $ticket->title) }}" required class="crm-input">
+                    <input aria-label="Subject / Title" type="text" name="title" value="{{ old('title', $ticket->title) }}" required class="crm-input">
                     @error('title')
                         <p class="error-text">{{ $message }}</p>
                     @enderror
@@ -106,7 +106,7 @@
                     <label class="crm-label">
                         Description <span class="required-marker">*</span>
                     </label>
-                    <textarea name="description" rows="3" required class="crm-input h-auto py-2">{{ old('description', $ticket->description) }}</textarea>
+                    <textarea aria-label="Description" name="description" rows="3" required class="crm-input h-auto py-2">{{ old('description', $ticket->description) }}</textarea>
                     @error('description')
                         <p class="error-text">{{ $message }}</p>
                     @enderror
@@ -117,7 +117,7 @@
                         <label class="crm-label">
                             Assign Technician
                         </label>
-                        <select name="assigned_technician_id" class="crm-select">
+                        <select aria-label="Assign Technician" name="assigned_technician_id" class="crm-select">
                             <option value="">Select technician</option>
                             @foreach($technicians as $tech)
                                 <option value="{{ $tech->id }}" {{ old('assigned_technician_id', $ticket->assigned_technician_id) == $tech->id ? 'selected' : '' }}>
@@ -131,7 +131,7 @@
                         <label class="crm-label">
                             Scheduled Date
                         </label>
-                        <input type="date" name="scheduled_date" value="{{ old('scheduled_date', $ticket->scheduled_date?->format('Y-m-d')) }}" class="crm-input">
+                        <input aria-label="Scheduled Date" type="date" name="scheduled_date" value="{{ old('scheduled_date', $ticket->scheduled_date?->format('Y-m-d')) }}" class="crm-input">
                     </div>
                 </div>
 
@@ -140,7 +140,7 @@
                         <label class="crm-label">
                             Billing Type <span class="required-marker">*</span>
                         </label>
-                        <select name="billing_type" required class="crm-select">
+                        <select aria-label="Billing Type" name="billing_type" required class="crm-select">
                             <option value="warranty_amc" {{ old('billing_type', $ticket->billing_type) === 'warranty_amc' ? 'selected' : '' }}>Under Warranty / AMC</option>
                             <option value="billable" {{ old('billing_type', $ticket->billing_type) === 'billable' ? 'selected' : '' }}>Billable</option>
                             <option value="free_courtesy" {{ old('billing_type', $ticket->billing_type) === 'free_courtesy' ? 'selected' : '' }}>Free Courtesy Visit</option>
@@ -151,7 +151,7 @@
                         <label class="crm-label">
                             Charge / Amount (₹)
                         </label>
-                        <input type="number" step="0.01" name="cost" value="{{ old('cost', $ticket->cost) }}" class="crm-input">
+                        <input aria-label="Charge / Amount (₹)" type="number" step="0.01" name="cost" value="{{ old('cost', $ticket->cost) }}" class="crm-input">
                     </div>
                 </div>
 

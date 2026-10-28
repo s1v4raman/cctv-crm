@@ -217,9 +217,9 @@
                 <form method="GET" action="{{ route('products.index') }}" class="filter-bar flex items-center gap-2 flex-wrap">
                     <input type="hidden" name="status" value="{{ $statusFilter ?? 'all' }}">
                     <div class="relative flex-1 min-w-[220px]">
-                        <input type="text" name="search" id="p-search" value="{{ request('search') }}" placeholder="Search product name, SKU, model, brand…" oninput="filterProducts()" class="w-full">
+                        <input aria-label="Search product name, SKU, model, brand" type="text" name="search" id="p-search" value="{{ request('search') }}" placeholder="Search product name, SKU, model, brand…" oninput="filterProducts()" class="w-full">
                     </div>
-                    <select name="category" onchange="this.form.submit()">
+                    <select aria-label="Category" name="category" onchange="this.form.submit()">
                         <option value="">All Categories</option>
                         <option value="camera" @selected(request('category') === 'camera')>Camera</option>
                         <option value="recorder" @selected(request('category') === 'recorder')>Recorder / NVR</option>
@@ -359,7 +359,7 @@
                                                 <a href="{{ route('products.edit', $product) }}" class="action-link text-xs">Edit</a>
 
                                                 <form method="POST" action="{{ route('products.destroy', $product) }}" class="inline"
-                                                      onsubmit="return confirm('Delete {{ addslashes($product->name) }}? This cannot be undone.')">
+                                                      data-confirm="Delete {{ $product->name }}? This cannot be undone.">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="danger-link text-xs">Delete</button>
@@ -422,7 +422,7 @@
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Category *</label>
-                            <select name="category" x-model="selectedProduct.category" required class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none">
+                            <select aria-label="Category" name="category" x-model="selectedProduct.category" required class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none">
                                 <option value="">-- Select Category --</option>
                                 <option value="camera">Camera</option>
                                 <option value="recorder">Recorder / NVR</option>
@@ -436,7 +436,7 @@
                         </div>
                         <div>
                             <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Unit of Measure *</label>
-                            <select name="unit" x-model="selectedProduct.unit" required class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none">
+                            <select aria-label="Unit of Measure" name="unit" x-model="selectedProduct.unit" required class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none">
                                 <option value="Nos">Nos</option>
                                 <option value="Mtr">Mtr</option>
                                 <option value="Box">Box</option>
@@ -451,11 +451,11 @@
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Cost Price (₹) *</label>
-                            <input type="number" step="0.01" min="0" name="cost_price" x-model="selectedProduct.cost_price" required placeholder="0.00" class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg font-mono font-bold outline-none">
+                            <input aria-label="Cost Price (₹)" type="number" step="0.01" min="0" name="cost_price" x-model="selectedProduct.cost_price" required placeholder="0.00" class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg font-mono font-bold outline-none">
                         </div>
                         <div>
                             <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Sale / Unit Price (₹) *</label>
-                            <input type="number" step="0.01" min="0" name="unit_price" x-model="selectedProduct.unit_price" required placeholder="0.00" class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg font-mono font-bold outline-none">
+                            <input aria-label="Sale / Unit Price (₹)" type="number" step="0.01" min="0" name="unit_price" x-model="selectedProduct.unit_price" required placeholder="0.00" class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg font-mono font-bold outline-none">
                         </div>
                     </div>
 
@@ -481,7 +481,7 @@
                 </div>
 
                 <form :action="selectedProduct?.id ? `/products/${selectedProduct.id}/merge` : '#'" method="POST" class="space-y-4"
-                      onsubmit="return confirm('Are you sure you want to merge this product? All existing references will point to the target product and this duplicate will be deleted.')">
+                      data-confirm="Are you sure you want to merge this product? All existing references will point to the target product and this duplicate will be deleted.">
                     @csrf
 
                     <div class="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300 text-xs leading-relaxed">
@@ -497,7 +497,7 @@
 
                     <div>
                         <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Target Master Product to Keep *</label>
-                        <select name="target_product_id" required class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none font-medium">
+                        <select aria-label="Target Master Product to Keep" name="target_product_id" required class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none font-medium">
                             <option value="">-- Choose Target Master Product --</option>
                             @foreach($allProducts as $ap)
                                 <option value="{{ $ap->id }}" x-show="selectedProduct?.id !== {{ $ap->id }}">

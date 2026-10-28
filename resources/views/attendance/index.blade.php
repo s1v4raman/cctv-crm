@@ -11,7 +11,7 @@
                     Leaves &amp; Approvals
                 </a>
                 {{-- Mark Unmarked as Present --}}
-                <form method="POST" action="{{ route('attendance.batch-store') }}" class="inline" onsubmit="return confirm('Mark all unmarked employees as Present (Full Day 8h) for {{ \Carbon\Carbon::parse($selectedDate)->format('d M Y') }}?');">
+                <form method="POST" action="{{ route('attendance.batch-store') }}" class="inline" data-confirm="Mark all unmarked employees as Present (Full Day 8h) for {{ \Carbon\Carbon::parse($selectedDate)->format('d M Y') }}?">
                     @csrf
                     <input type="hidden" name="mode" value="bulk_day">
                     <input type="hidden" name="date" value="{{ $selectedDate }}">
@@ -23,7 +23,7 @@
                 </form>
 
                 {{-- Mark Unmarked as Absent --}}
-                <form method="POST" action="{{ route('attendance.batch-store') }}" class="inline" onsubmit="return confirm('Mark all unmarked employees as Absent (0h) for {{ \Carbon\Carbon::parse($selectedDate)->format('d M Y') }}?');">
+                <form method="POST" action="{{ route('attendance.batch-store') }}" class="inline" data-confirm="Mark all unmarked employees as Absent (0h) for {{ \Carbon\Carbon::parse($selectedDate)->format('d M Y') }}?">
                     @csrf
                     <input type="hidden" name="mode" value="bulk_day">
                     <input type="hidden" name="date" value="{{ $selectedDate }}">
@@ -111,7 +111,7 @@
                         @if(!$myAttendanceToday || !$myAttendanceToday->clock_in)
                             <form method="POST" action="{{ route('attendance.clock-in') }}" class="flex items-center gap-2">
                                 @csrf
-                                <select name="location_type" class="text-sm font-medium rounded bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 px-3 py-1.5 text-slate-700 dark:text-slate-200" style="height: 38px; border-radius: 4px;">
+                                <select aria-label="Location type" name="location_type" class="text-sm font-medium rounded bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 px-3 py-1.5 text-slate-700 dark:text-slate-200" style="height: 38px; border-radius: 4px;">
                                     <option value="office">Office</option>
                                     <option value="on_site">On-Site Client</option>
                                     <option value="remote">Remote / Field</option>
@@ -169,7 +169,7 @@
                         <input type="hidden" name="month" value="{{ $selectedMonth }}">
                     @endif
 
-                    <select name="role" onchange="this.form.submit()" class="text-xs font-bold rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-1.5 text-slate-800 dark:text-slate-200">
+                    <select aria-label="Role" name="role" onchange="this.form.submit()" class="text-xs font-bold rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-1.5 text-slate-800 dark:text-slate-200">
                         <option value="">All Roles ({{ $totalEmployees }})</option>
                         <option value="technician" @selected($roleFilter === 'technician')>Technicians</option>
                         <option value="staff" @selected($roleFilter === 'staff')>Staff / Employees</option>
@@ -178,7 +178,7 @@
 
                     <div class="relative flex items-center">
                         <svg class="w-3.5 h-3.5 absolute left-2.5 pointer-events-none text-slate-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
-                        <input type="text" name="search" value="{{ $search }}" placeholder="Search employee..."
+                        <input aria-label="Search employee" type="text" name="search" value="{{ $search }}" placeholder="Search employee..."
                                style="padding-left: 2.25rem !important;"
                                class="text-xs rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 pr-3 py-1.5 text-slate-800 dark:text-slate-200 w-44 focus:w-56 transition-all">
                     </div>
@@ -243,7 +243,7 @@
 
                         <div class="flex items-center gap-2">
                             <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Select Date:</label>
-                            <input type="date" 
+                            <input aria-label="Select Date:" type="date" 
                                    name="date" 
                                    value="{{ $selectedDate }}" 
                                    onchange="this.form.submit()"
@@ -271,7 +271,7 @@
                         </a>
 
                         {{-- Quick Mark All Unmarked as Present --}}
-                        <form method="POST" action="{{ route('attendance.batch-store') }}" class="inline ml-1" onsubmit="return confirm('Mark all unmarked employees as Present (Full Day 8h) for {{ \Carbon\Carbon::parse($selectedDate)->format('d M Y') }}?');">
+                        <form method="POST" action="{{ route('attendance.batch-store') }}" class="inline ml-1" data-confirm="Mark all unmarked employees as Present (Full Day 8h) for {{ \Carbon\Carbon::parse($selectedDate)->format('d M Y') }}?">
                             @csrf
                             <input type="hidden" name="mode" value="bulk_day">
                             <input type="hidden" name="date" value="{{ $selectedDate }}">
@@ -284,7 +284,7 @@
                         </form>
 
                         {{-- Quick Mark All Unmarked as Absent --}}
-                        <form method="POST" action="{{ route('attendance.batch-store') }}" class="inline ml-1" onsubmit="return confirm('Mark all unmarked employees as Absent (0h) for {{ \Carbon\Carbon::parse($selectedDate)->format('d M Y') }}?');">
+                        <form method="POST" action="{{ route('attendance.batch-store') }}" class="inline ml-1" data-confirm="Mark all unmarked employees as Absent (0h) for {{ \Carbon\Carbon::parse($selectedDate)->format('d M Y') }}?">
                             @csrf
                             <input type="hidden" name="mode" value="bulk_day">
                             <input type="hidden" name="date" value="{{ $selectedDate }}">
@@ -520,7 +520,7 @@
 
                         <div class="flex items-center gap-2">
                             <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Jump to Date in Week:</label>
-                            <input type="date" 
+                            <input aria-label="Jump to Date in Week:" type="date" 
                                    name="week_date" 
                                    value="{{ $weekInput }}" 
                                    onchange="this.form.submit()"
@@ -741,7 +741,7 @@
 
                         <div class="flex items-center gap-2">
                             <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Select Month:</label>
-                            <input type="month" 
+                            <input aria-label="Select Month:" type="month" 
                                    name="month" 
                                    value="{{ $selectedMonth }}" 
                                    onchange="this.form.submit()"
@@ -967,7 +967,7 @@
 
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Employee *</label>
-                    <select name="user_id" id="modalUserId" required class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
+                    <select aria-label="Employee" name="user_id" id="modalUserId" required class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
                         @foreach($employees as $emp)
                             <option value="{{ $emp->id }}">{{ $emp->name }} ({{ ucfirst($emp->role) }})</option>
                         @endforeach
@@ -977,11 +977,11 @@
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Date *</label>
-                        <input type="date" name="date" id="modalDate" value="{{ $selectedDate }}" required class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
+                        <input aria-label="Date" type="date" name="date" id="modalDate" value="{{ $selectedDate }}" required class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
                     </div>
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Status *</label>
-                        <select name="status" id="modalStatus" required onchange="adjustModalHoursByStatus(this.value)" class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
+                        <select aria-label="Status" name="status" id="modalStatus" required onchange="adjustModalHoursByStatus(this.value)" class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
                             <option value="present">Present (Full Day)</option>
                             <option value="late">Late Arrival</option>
                             <option value="half_day">Half Day</option>
@@ -994,28 +994,28 @@
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Clock In</label>
-                        <input type="time" name="clock_in" id="modalClockIn" value="09:00" class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
+                        <input aria-label="Clock In" type="time" name="clock_in" id="modalClockIn" value="09:00" class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
                     </div>
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Clock Out</label>
-                        <input type="time" name="clock_out" id="modalClockOut" value="18:00" class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
+                        <input aria-label="Clock Out" type="time" name="clock_out" id="modalClockOut" value="18:00" class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Total Hours</label>
-                        <input type="number" step="0.25" name="total_hours" id="modalTotalHours" placeholder="e.g. 8.0" class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
+                        <input aria-label="Total Hours" type="number" step="0.25" name="total_hours" id="modalTotalHours" placeholder="e.g. 8.0" class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
                     </div>
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Overtime (Hrs)</label>
-                        <input type="number" step="0.25" name="overtime_hours" id="modalOvertimeHours" placeholder="e.g. 1.5" class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
+                        <input aria-label="Overtime (Hrs)" type="number" step="0.25" name="overtime_hours" id="modalOvertimeHours" placeholder="e.g. 1.5" class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
                     </div>
                 </div>
 
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Location</label>
-                    <select name="location_type" id="modalLocation" class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
+                    <select aria-label="Location" name="location_type" id="modalLocation" class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
                         <option value="office">🏢 Office</option>
                         <option value="on_site">🔧 On-Site Client</option>
                         <option value="remote">🏠 Remote / Field</option>
@@ -1024,7 +1024,7 @@
 
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Remarks / Notes</label>
-                    <input type="text" name="notes" id="modalNotes" placeholder="Optional notes (e.g. Approved leave, Client site installation)" class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
+                    <input aria-label="Remarks / Notes" type="text" name="notes" id="modalNotes" placeholder="Optional notes (e.g. Approved leave, Client site installation)" class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
                 </div>
 
                 <div class="flex items-center justify-end gap-2 pt-2">
@@ -1049,7 +1049,7 @@
 
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Select Employee *</label>
-                    <select name="user_id" id="bulkUserId" required class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
+                    <select aria-label="Select Employee" name="user_id" id="bulkUserId" required class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
                         @foreach($employees as $emp)
                             <option value="{{ $emp->id }}">{{ $emp->name }} ({{ ucfirst($emp->role) }})</option>
                         @endforeach
@@ -1059,18 +1059,18 @@
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Start Date *</label>
-                        <input type="date" name="start_date" id="bulkStartDate" value="{{ $selectedDate }}" required class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
+                        <input aria-label="Start Date" type="date" name="start_date" id="bulkStartDate" value="{{ $selectedDate }}" required class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
                     </div>
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">End Date *</label>
-                        <input type="date" name="end_date" id="bulkEndDate" value="{{ $selectedDate }}" required class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
+                        <input aria-label="End Date" type="date" name="end_date" id="bulkEndDate" value="{{ $selectedDate }}" required class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Status *</label>
-                        <select name="status" required class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
+                        <select aria-label="Status" name="status" required class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
                             <option value="present">Present (Full Day)</option>
                             <option value="late">Late Arrival</option>
                             <option value="half_day">Half Day</option>
@@ -1080,7 +1080,7 @@
                     </div>
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Daily Hours</label>
-                        <input type="number" step="0.25" name="daily_hours" value="8.0" placeholder="e.g. 8.0" class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
+                        <input aria-label="Daily Hours" type="number" step="0.25" name="daily_hours" value="8.0" placeholder="e.g. 8.0" class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
                     </div>
                 </div>
 

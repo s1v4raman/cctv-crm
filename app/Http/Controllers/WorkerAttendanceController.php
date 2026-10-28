@@ -82,7 +82,7 @@ class WorkerAttendanceController extends Controller
 
         $query = ProjectWorkerAttendance::query()
             ->join('work_days', 'project_worker_attendances.work_day_id', '=', 'work_days.id')
-            ->join('workers', 'project_worker_attendances.worker_id', '=', 'workers.id')
+            ->leftJoin('workers', 'project_worker_attendances.worker_id', '=', 'workers.id')
             ->whereDate('work_days.work_date', $selectedDate->toDateString())
             ->select('project_worker_attendances.*')
             ->with(['worker', 'workDay.project']);
@@ -157,7 +157,7 @@ class WorkerAttendanceController extends Controller
         // Fetch all attendances for the week
         $query = ProjectWorkerAttendance::query()
             ->join('work_days', 'project_worker_attendances.work_day_id', '=', 'work_days.id')
-            ->join('workers', 'project_worker_attendances.worker_id', '=', 'workers.id')
+            ->leftJoin('workers', 'project_worker_attendances.worker_id', '=', 'workers.id')
             ->whereBetween('work_days.work_date', [$weekStart->toDateString(), $weekEnd->toDateString()])
             ->select('project_worker_attendances.*', 'work_days.work_date')
             ->with(['worker', 'workDay.project']);
@@ -193,7 +193,7 @@ class WorkerAttendanceController extends Controller
 
         // Determine list of workers to display in matrix
         $workerIdsInWeek = $weekAttendances->pluck('worker_id')->unique();
-        $workersInMatrix = Worker::query()
+        $workersInMatrix = Worker::withTrashed()
             ->where(function ($q) use ($workerIdsInWeek) {
                 $q->where('is_active', true)
                   ->orWhereIn('id', $workerIdsInWeek);
@@ -324,7 +324,7 @@ class WorkerAttendanceController extends Controller
 
         $query = ProjectWorkerAttendance::query()
             ->join('work_days', 'project_worker_attendances.work_day_id', '=', 'work_days.id')
-            ->join('workers', 'project_worker_attendances.worker_id', '=', 'workers.id')
+            ->leftJoin('workers', 'project_worker_attendances.worker_id', '=', 'workers.id')
             ->whereBetween('work_days.work_date', [$monthStart->toDateString(), $monthEnd->toDateString()])
             ->select('project_worker_attendances.*', 'work_days.work_date')
             ->with(['worker', 'workDay.project']);
@@ -350,7 +350,7 @@ class WorkerAttendanceController extends Controller
         $groupedByWorker = $monthAttendances->groupBy('worker_id');
         $workerSummary = [];
 
-        $allWorkersInSystem = Worker::orderBy('name')->get();
+        $allWorkersInSystem = Worker::withTrashed()->orderBy('name')->get();
         if ($workerFilter) {
             $allWorkersInSystem = $allWorkersInSystem->where('id', (int) $workerFilter);
         }

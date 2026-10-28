@@ -39,7 +39,7 @@
                                     <span class="text-white font-semibold" style="color: #ffffff !important;">Add New Customer</span>
                                 </a>
                             </div>
-                            <select name="lead_id" data-no-tom="true" class="crm-select w-full h-[44px] text-sm rounded-lg" required>
+                            <select aria-label="Customer Site / Lead" name="lead_id" data-no-tom="true" class="crm-select w-full h-[44px] text-sm rounded-lg" required>
                                 <option value="">-- Select Customer / Lead (or General Estimate) --</option>
                                 @foreach($leads as $l)
                                     <option value="{{ $l->id }}" @selected(old('lead_id', $selectedLeadId) == $l->id)>
@@ -52,7 +52,7 @@
                         {{-- Installation Job (Optional) --}}
                         <div>
                             <label class="crm-label text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2 block">Associated Installation Job</label>
-                            <select name="installation_job_id" data-no-tom="true" class="crm-select w-full h-[44px] text-sm rounded-lg">
+                            <select aria-label="Associated Installation Job" name="installation_job_id" data-no-tom="true" class="crm-select w-full h-[44px] text-sm rounded-lg">
                                 <option value="">-- None (Direct Entry / Existing Site) --</option>
                                 @foreach($jobs as $j)
                                     <option value="{{ $j->id }}" @selected(old('installation_job_id', $selectedJobId) == $j->id)>
@@ -65,7 +65,7 @@
                         {{-- Product Catalog Reference --}}
                         <div>
                             <label class="crm-label text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2 block">Product Model (Catalog)</label>
-                            <select name="product_id" data-no-tom="true" class="crm-select w-full h-[44px] text-sm rounded-lg" @change="onProductChange($event.target.value)">
+                            <select aria-label="Product Model (Catalog)" name="product_id" data-no-tom="true" class="crm-select w-full h-[44px] text-sm rounded-lg" @change="onProductChange($event.target.value)">
                                 <option value="">-- Select Product Model (Catalog) --</option>
                                 @foreach($products as $p)
                                     <option value="{{ $p->id }}" @selected(old('product_id') == $p->id)>
@@ -79,7 +79,7 @@
                     {{-- Equipment Name --}}
                     <div class="mb-5">
                         <label class="crm-label text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2 block">Equipment Name / Description <span class="required-marker text-rose-500">*</span></label>
-                        <input type="text" name="equipment_name" x-model="equipmentName" placeholder="e.g. 4MP ColorVu Bullet Camera" required class="crm-input w-full h-[44px] text-sm rounded-lg">
+                        <input aria-label="Equipment Name / Description" type="text" name="equipment_name" x-model="equipmentName" placeholder="e.g. 4MP ColorVu Bullet Camera" required class="crm-input w-full h-[44px] text-sm rounded-lg">
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
@@ -100,7 +100,7 @@
                                     </button>
                                 </div>
                             </div>
-                            <input type="text" id="serial_number_input" name="serial_number" value="{{ old('serial_number', request('serial')) }}" placeholder="e.g. SN-HK2026-981247" required class="crm-input font-mono w-full h-[44px] text-sm rounded-lg">
+                            <input aria-label="Serial number" type="text" id="serial_number_input" name="serial_number" value="{{ old('serial_number', request('serial')) }}" placeholder="e.g. SN-HK2026-981247" required class="crm-input font-mono w-full h-[44px] text-sm rounded-lg">
                         </div>
 
                         {{-- MAC Address --}}
@@ -120,7 +120,7 @@
                                     </button>
                                 </div>
                             </div>
-                            <input type="text" id="mac_address_input" name="mac_address" value="{{ old('mac_address') }}" placeholder="e.g. BC:A8:A6:11:22:33" class="crm-input font-mono w-full h-[44px] text-sm rounded-lg">
+                            <input aria-label="Mac address" type="text" id="mac_address_input" name="mac_address" value="{{ old('mac_address') }}" placeholder="e.g. BC:A8:A6:11:22:33" class="crm-input font-mono w-full h-[44px] text-sm rounded-lg">
                         </div>
                     </div>
 
@@ -128,13 +128,13 @@
                         {{-- Location Tag --}}
                         <div>
                             <label class="crm-label text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2 block">Location / Channel Placement</label>
-                            <input type="text" name="location_tag" value="{{ old('location_tag') }}" placeholder="e.g. Main Gate, Server Rack" class="crm-input w-full h-[44px] text-sm rounded-lg">
+                            <input aria-label="Location / Channel Placement" type="text" name="location_tag" value="{{ old('location_tag') }}" placeholder="e.g. Main Gate, Server Rack" class="crm-input w-full h-[44px] text-sm rounded-lg">
                         </div>
 
                         {{-- Status --}}
                         <div>
                             <label class="crm-label text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2 block">Operational Status</label>
-                            <select name="status" class="crm-select w-full h-[44px] text-sm rounded-lg">
+                            <select aria-label="Operational Status" name="status" class="crm-select w-full h-[44px] text-sm rounded-lg">
                                 <option value="active" @selected(old('status') == 'active')>Active</option>
                                 <option value="under_repair" @selected(old('status') == 'under_repair')>Under Repair</option>
                                 <option value="replaced" @selected(old('status') == 'replaced')>Replaced</option>
@@ -148,15 +148,15 @@
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-5">
                         <div>
                             <label class="crm-label text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2 block">Installation Date</label>
-                            <input type="date" name="installation_date" x-model="installDate" @change="calculateWarranties()" class="crm-input w-full h-[44px] text-sm rounded-lg">
+                            <input aria-label="Installation Date" type="date" name="installation_date" x-model="installDate" @change="calculateWarranties()" class="crm-input w-full h-[44px] text-sm rounded-lg">
                         </div>
                         <div>
                             <label class="crm-label text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2 block">Mfg Warranty Expiry</label>
-                            <input type="date" name="manufacturer_warranty_expiry" x-model="mfgExpiry" class="crm-input w-full h-[44px] text-sm rounded-lg">
+                            <input aria-label="Mfg Warranty Expiry" type="date" name="manufacturer_warranty_expiry" x-model="mfgExpiry" class="crm-input w-full h-[44px] text-sm rounded-lg">
                         </div>
                         <div>
                             <label class="crm-label text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2 block">Service Warranty Expiry</label>
-                            <input type="date" name="service_warranty_expiry" x-model="serviceExpiry" class="crm-input w-full h-[44px] text-sm rounded-lg">
+                            <input aria-label="Service Warranty Expiry" type="date" name="service_warranty_expiry" x-model="serviceExpiry" class="crm-input w-full h-[44px] text-sm rounded-lg">
                         </div>
                     </div>
 
@@ -171,7 +171,7 @@
                     {{-- Notes --}}
                     <div class="mb-6">
                         <label class="crm-label text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2 block">Technical Notes / Config Details</label>
-                        <textarea name="notes" rows="3" class="crm-input w-full p-3 text-sm rounded-lg" style="height: auto;" placeholder="e.g. IP 192.168.1.104, default admin credentials, Lens 2.8mm">{{ old('notes') }}</textarea>
+                        <textarea aria-label="Technical Notes / Config Details" name="notes" rows="3" class="crm-input w-full p-3 text-sm rounded-lg" style="height: auto;" placeholder="e.g. IP 192.168.1.104, default admin credentials, Lens 2.8mm">{{ old('notes') }}</textarea>
                     </div>
 
                     <div class="flex items-center gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">

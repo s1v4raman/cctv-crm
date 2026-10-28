@@ -39,11 +39,11 @@
                     <form action="{{ route('finance.petty_cash.ledger', $account) }}" method="GET" class="lg:col-span-2 flex items-end gap-3">
                         <div class="flex-1">
                             <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">From Date</label>
-                            <input type="date" name="from_date" value="{{ $filters['from_date'] ?? '' }}" class="w-full rounded-xl border-gray-200 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            <input aria-label="From Date" type="date" name="from_date" value="{{ $filters['from_date'] ?? '' }}" class="w-full rounded-xl border-gray-200 text-sm focus:border-indigo-500 focus:ring-indigo-500">
                         </div>
                         <div class="flex-1">
                             <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">To Date</label>
-                            <input type="date" name="to_date" value="{{ $filters['to_date'] ?? '' }}" class="w-full rounded-xl border-gray-200 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            <input aria-label="To Date" type="date" name="to_date" value="{{ $filters['to_date'] ?? '' }}" class="w-full rounded-xl border-gray-200 text-sm focus:border-indigo-500 focus:ring-indigo-500">
                         </div>
                         <button type="submit" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl shadow-md shadow-indigo-600/20 transition">
                             Filter
@@ -139,11 +139,11 @@
                                     <td class="px-4 py-3.5 text-center whitespace-nowrap">
                                         <div class="flex items-center justify-center gap-1.5">
                                             @if($item->receipt_photo_path)
-                                                <a href="{{ asset('storage/' . $item->receipt_photo_path) }}" target="_blank" class="p-1 rounded text-gray-400 hover:text-indigo-600" title="View Uploaded Receipt">
+                                                <a aria-label="View Uploaded Receipt" href="{{ asset('storage/' . $item->receipt_photo_path) }}" target="_blank" class="p-1 rounded text-gray-400 hover:text-indigo-600" title="View Uploaded Receipt">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
                                                 </a>
                                             @endif
-                                            <a href="{{ route('finance.petty_cash.voucher.pdf', $item) }}" target="_blank" class="p-1 rounded text-gray-400 hover:text-rose-600" title="Print Official Cash Voucher">
+                                            <a aria-label="Print Official Cash Voucher" href="{{ route('finance.petty_cash.voucher.pdf', $item) }}" target="_blank" class="p-1 rounded text-gray-400 hover:text-rose-600" title="Print Official Cash Voucher">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
                                             </a>
                                         </div>

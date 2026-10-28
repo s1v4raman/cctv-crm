@@ -23,13 +23,13 @@
         {{-- Filters Bar: One Simple Row, 38px Height, 4px Radius --}}
         <form method="GET" action="{{ route('sites.index') }}" class="flex items-center gap-2 flex-wrap">
             <div class="relative flex-1 min-w-[220px]">
-                <input type="text" name="search" value="{{ $search }}" 
+                <input aria-label="Search site code, client, city, phone" type="text" name="search" value="{{ $search }}" 
                        placeholder="Search site code, client, city, phone…" 
                        style="height: 38px; min-height: 38px; max-height: 38px; border-radius: 4px; box-sizing: border-box;"
                        class="crm-input w-full text-sm border border-[#ddd] dark:border-slate-700 bg-white dark:bg-[#0f172a] text-slate-800 dark:text-white px-3 focus:outline-none focus:border-slate-400">
             </div>
 
-            <select name="city" onchange="this.form.submit()" 
+            <select aria-label="City" name="city" onchange="this.form.submit()" 
                     style="height: 38px; min-height: 38px; max-height: 38px; border-radius: 4px; box-sizing: border-box;"
                     class="crm-select text-sm border border-[#ddd] dark:border-slate-700 bg-white dark:bg-[#0f172a] text-slate-800 dark:text-white px-3 focus:outline-none focus:border-slate-400">
                 <option value="all">All Cities ({{ $cities->count() }})</option>
@@ -109,7 +109,7 @@
                                 <a href="{{ route('sites.show', $site) }}" class="action-link">View</a>
                                 <a href="{{ route('sites.edit', $site) }}" class="action-link">Edit</a>
                                 @if(auth()->user()->isAdmin())
-                                    <form method="POST" action="{{ route('sites.destroy', $site) }}" class="inline" onsubmit="return confirm('Delete site {{ addslashes($site->site_name) }}? This cannot be undone.')">
+                                    <form method="POST" action="{{ route('sites.destroy', $site) }}" class="inline" data-confirm="Delete site {{ $site->site_name }}? This cannot be undone.">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="danger-link">Delete</button>

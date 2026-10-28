@@ -26,7 +26,7 @@
                 </a>
                 @if(auth()->user()->isAdmin())
                     <form method="POST" action="{{ route('amcs.destroy', $amc) }}"
-                          onsubmit="return confirm('Delete this AMC contract?');" class="inline">
+                          data-confirm="Delete this AMC contract?" class="inline">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="danger-link text-xs ml-2 cursor-pointer">
@@ -82,7 +82,7 @@
                                 <form method="POST" action="{{ route('amcs.updateStatus', $amc) }}" class="inline">
                                     @csrf
                                     @method('PATCH')
-                                    <select name="status" class="crm-select text-xs" style="width: auto;" onchange="this.form.submit()">
+                                    <select aria-label="Status" name="status" class="crm-select text-xs" style="width: auto;" onchange="this.form.submit()">
                                         <option value="pending" @selected($amc->status === 'pending')>Pending</option>
                                         <option value="active" @selected($amc->status === 'active')>Active</option>
                                         <option value="expired" @selected($amc->status === 'expired')>Expired</option>
@@ -128,7 +128,7 @@
                                         @else
                                             <form method="POST" action="{{ route('amc-visits.assign', $visit) }}" class="inline-flex items-center gap-1.5">
                                                 @csrf
-                                                <select name="assigned_technician_id" class="crm-select text-xs" style="width: auto; height: 32px;" required>
+                                                <select aria-label="Assigned technician" name="assigned_technician_id" class="crm-select text-xs" style="width: auto; height: 32px;" required>
                                                     <option value="">Select Technician...</option>
                                                     @foreach($technicians as $tech)
                                                         <option value="{{ $tech->id }}" @selected($visit->assigned_technician_id == $tech->id)>
@@ -159,7 +159,7 @@
                                         @if($visit->status !== 'completed')
                                             <form method="POST" action="{{ route('amc-visits.complete', $visit) }}" class="inline-flex items-center gap-1.5">
                                                 @csrf
-                                                <input type="text" name="completion_notes" placeholder="e.g. Lens cleaned, tested" required
+                                                <input aria-label="Completion notes" type="text" name="completion_notes" placeholder="e.g. Lens cleaned, tested" required
                                                        class="crm-input text-xs" style="width: 180px; height: 32px;">
                                                 <button type="submit" class="btn-primary text-xs" style="height: 32px; padding: 0 8px;">
                                                     Mark Done

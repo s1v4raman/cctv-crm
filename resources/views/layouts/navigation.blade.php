@@ -413,7 +413,7 @@
             </div>
 
             <div class="flex items-center gap-1 shrink-0" :class="sidebarCollapsed ? 'lg:hidden' : ''">
-                <a href="{{ route('profile.edit') }}" title="Profile Settings" class="p-2 rounded-lg text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-800 transition !bg-transparent !border-0 flex items-center justify-center">
+                <a aria-label="Profile Settings" href="{{ route('profile.edit') }}" title="Profile Settings" class="p-2 rounded-lg text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-800 transition !bg-transparent !border-0 flex items-center justify-center">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                         <line stroke-linecap="round" stroke-linejoin="round" x1="4" x2="20" y1="6" y2="6"/>
                         <circle cx="8" cy="6" r="2"/>
@@ -425,7 +425,7 @@
                 </a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit" title="Log Out" class="p-2 rounded-lg text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer !bg-transparent !border-0 flex items-center justify-center">
+                    <button aria-label="Log Out" type="submit" title="Log Out" class="p-2 rounded-lg text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer !bg-transparent !border-0 flex items-center justify-center">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                         </svg>

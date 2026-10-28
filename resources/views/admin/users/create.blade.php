@@ -42,6 +42,7 @@
                             <option value="admin" @selected(request('role', old('role')) === 'admin') class="bg-[#0F172A]">Admin</option>
                             <option value="staff" @selected(request('role', old('role')) === 'staff') class="bg-[#0F172A]">Employee (Staff)</option>
                             <option value="technician" @selected(request('role', old('role')) === 'technician') class="bg-[#0F172A]">Technician</option>
+                            <option value="worker" @selected(request('role', old('role')) === 'worker') class="bg-[#0F172A]">Worker (Daily Wage)</option>
                         </select>
                         @error('role') <div class="text-xs text-rose-400 mt-1 font-mono">{{ $message }}</div> @enderror
                     </div>

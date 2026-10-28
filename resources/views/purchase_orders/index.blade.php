@@ -25,9 +25,9 @@
         {{-- Filter Section --}}
         <div class="crm-section">
             <form method="GET" action="{{ route('purchase-orders.index') }}" class="flex items-center gap-3 flex-wrap">
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="e.g. PO-2026-001" class="crm-input" style="width: 240px;">
+                <input aria-label="Search" type="text" name="search" value="{{ request('search') }}" placeholder="e.g. PO-2026-001" class="crm-input" style="width: 240px;">
 
-                <select name="status" class="crm-select" style="width: 180px;">
+                <select aria-label="Status" name="status" class="crm-select" style="width: 180px;">
                     <option value="">All Statuses</option>
                     <option value="draft" {{ request('status') === 'draft' ? 'selected' : '' }}>Draft</option>
                     <option value="ordered" {{ request('status') === 'ordered' ? 'selected' : '' }}>Ordered</option>
@@ -36,7 +36,7 @@
                     <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
                 </select>
 
-                <select name="payment_status" class="crm-select" style="width: 180px;">
+                <select aria-label="Payment status" name="payment_status" class="crm-select" style="width: 180px;">
                     <option value="">All Payments</option>
                     <option value="unpaid" {{ request('payment_status') === 'unpaid' ? 'selected' : '' }}>Unpaid</option>
                     <option value="partially_paid" {{ request('payment_status') === 'partially_paid' ? 'selected' : '' }}>Partially Paid</option>
@@ -116,7 +116,7 @@
                                 <a href="{{ route('purchase-orders.edit', $po) }}" class="action-link">Edit</a>
                             @endif
                             @if(auth()->user()->isAdmin())
-                                <form method="POST" action="{{ route('purchase-orders.destroy', $po) }}" class="inline" onsubmit="return confirm('Delete purchase order {{ addslashes($po->po_number) }}? This cannot be undone.')">
+                                <form method="POST" action="{{ route('purchase-orders.destroy', $po) }}" class="inline" data-confirm="Delete purchase order {{ $po->po_number }}? This cannot be undone.">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="danger-link p-0 bg-transparent border-0 cursor-pointer text-xs">Delete</button>

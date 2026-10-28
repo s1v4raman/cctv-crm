@@ -26,7 +26,7 @@
                         </a>
                     @endif
                     @if(auth()->user()->isAdmin() && in_array($purchaseOrder->status, ['draft', 'cancelled']))
-                        <form method="POST" action="{{ route('purchase-orders.destroy', $purchaseOrder) }}" onsubmit="return confirm('Are you sure you want to delete this purchase order?');" class="inline">
+                        <form method="POST" action="{{ route('purchase-orders.destroy', $purchaseOrder) }}" data-confirm="Are you sure you want to delete this purchase order?" class="inline">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="danger-link p-0 bg-transparent border-0 cursor-pointer text-xs ml-2">
@@ -63,7 +63,7 @@
                 <form method="POST" action="{{ route('purchase-orders.updateStatus', $purchaseOrder) }}" class="flex items-center gap-2">
                     @csrf
                     @method('PATCH')
-                    <select name="status" class="crm-select text-xs py-1" style="height: 38px; width: 140px;">
+                    <select aria-label="Status" name="status" class="crm-select text-xs py-1" style="height: 38px; width: 140px;">
                         <option value="draft" @selected($purchaseOrder->status === 'draft')>Draft</option>
                         <option value="ordered" @selected($purchaseOrder->status === 'ordered')>Ordered</option>
                         <option value="cancelled" @selected($purchaseOrder->status === 'cancelled')>Cancelled</option>
@@ -226,7 +226,7 @@
                                     <td class="nowrap font-bold">{{ $item->pendingQuantity() }}</td>
                                     <td class="nowrap">
                                         @if($item->pendingQuantity() > 0)
-                                            <input type="number" name="received[{{ $item->id }}]" min="0" max="{{ $item->pendingQuantity() }}" value="{{ $item->pendingQuantity() }}" class="crm-input" style="width: 100px;">
+                                            <input aria-label="Received" type="number" name="received[{{ $item->id }}]" min="0" max="{{ $item->pendingQuantity() }}" value="{{ $item->pendingQuantity() }}" class="crm-input" style="width: 100px;">
                                         @else
                                             <span class="status-won">Completed</span>
                                         @endif
@@ -256,12 +256,12 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                     <div>
                         <label class="crm-label">Total Amount Paid (₹)</label>
-                        <input type="number" step="0.01" min="0" max="{{ $purchaseOrder->total }}" name="amount_paid" value="{{ old('amount_paid', $purchaseOrder->amount_paid) }}" required class="crm-input">
+                        <input aria-label="Total Amount Paid (₹)" type="number" step="0.01" min="0" max="{{ $purchaseOrder->total }}" name="amount_paid" value="{{ old('amount_paid', $purchaseOrder->amount_paid) }}" required class="crm-input">
                     </div>
 
                     <div>
                         <label class="crm-label">Payment Status</label>
-                        <select name="payment_status" class="crm-select">
+                        <select aria-label="Payment Status" name="payment_status" class="crm-select">
                             <option value="unpaid" @selected($purchaseOrder->payment_status === 'unpaid')>Unpaid</option>
                             <option value="partially_paid" @selected($purchaseOrder->payment_status === 'partially_paid')>Partially Paid</option>
                             <option value="paid" @selected($purchaseOrder->payment_status === 'paid')>Paid</option>

@@ -574,14 +574,14 @@
                                 @csrf
                                 <div class="update-form">
                                     <label class="form-label">Update Status</label>
-                                    <select name="status" class="form-select mb-3" style="height: 38px;">
+                                    <select aria-label="Update Status" name="status" class="form-select mb-3" style="height: 38px;">
                                         <option value="pending"   @selected($job->status === 'pending')>Pending</option>
                                         <option value="scheduled" @selected($job->status === 'scheduled')>Scheduled</option>
                                         <option value="assigned"  @selected($job->status === 'assigned')>Assigned (In Progress)</option>
                                         <option value="completed" @selected($job->status === 'completed')>Completed</option>
                                     </select>
                                     <label class="form-label">Completion Notes (optional)</label>
-                                    <textarea name="notes" class="form-textarea mb-3" placeholder="Describe what was installed, tested, or any issues…">{{ $job->installation_notes }}</textarea>
+                                    <textarea aria-label="Completion Notes (optional)" name="notes" class="form-textarea mb-3" placeholder="Describe what was installed, tested, or any issues…">{{ $job->installation_notes }}</textarea>
                                                                      <div class="flex items-center justify-between mt-3 flex-wrap gap-2">
                                         <button type="submit" class="btn-submit">
                                             Save Status

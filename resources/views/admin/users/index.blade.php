@@ -113,6 +113,7 @@
                     <a href="{{ route('admin.users.index', ['role' => 'admin']) }}" class="crm-filter-tab filter-tab {{ $roleFilter === 'admin' ? 'active' : '' }}">Admins</a>
                     <a href="{{ route('admin.users.index', ['role' => 'staff']) }}" class="crm-filter-tab filter-tab {{ $roleFilter === 'staff' ? 'active' : '' }}">Employees</a>
                     <a href="{{ route('admin.users.index', ['role' => 'technician']) }}" class="crm-filter-tab filter-tab {{ $roleFilter === 'technician' ? 'active' : '' }}">Technicians</a>
+                    <a href="{{ route('admin.users.index', ['role' => 'worker']) }}" class="crm-filter-tab filter-tab {{ $roleFilter === 'worker' ? 'active' : '' }}">Workers</a>
                 </div>
 
                     <div class="overflow-x-auto">
@@ -131,15 +132,27 @@
                                     <tr>
                                         <td class="col-name" style="min-width: 200px;">
                                             <div class="flex items-center gap-2.5">
-                                                <div class="w-8 h-8 rounded-full text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs ring-2 ring-white dark:ring-slate-800 crm-user-avatar" style="background-color: var(--crm-accent, #2563eb);">
-                                                    {{ strtoupper(substr($user->name, 0, 1)) }}
-                                                </div>
+                                                @if($user->isWorker() && $user->worker?->photo_url)
+                                                    <img src="{{ $user->worker->photo_url }}" alt="{{ $user->name }}" class="w-8 h-8 rounded-full object-cover shrink-0 ring-2 ring-emerald-500/30">
+                                                @else
+                                                    <div class="w-8 h-8 rounded-full text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs ring-2 ring-white dark:ring-slate-800 crm-user-avatar" style="background-color: {{ $user->isWorker() ? '#059669' : 'var(--crm-accent, #2563eb)' }};">
+                                                        {{ strtoupper(substr($user->name, 0, 1)) }}
+                                                    </div>
+                                                @endif
                                                 <div>
                                                     <a href="{{ route('admin.users.show', $user) }}" class="cell-name hover:text-blue-600 dark:hover:text-blue-400 font-semibold transition">
                                                         {{ $user->name }}
                                                     </a>
                                                     @if($user->id === auth()->id())
                                                         <span class="ml-1 text-[11px] font-bold text-blue-500">(You)</span>
+                                                    @endif
+                                                    @if($user->isWorker() && $user->worker)
+                                                        <div class="text-[11px] text-slate-500 dark:text-slate-400 font-mono mt-0.5">
+                                                            ₹{{ number_format($user->worker->daily_rate, 2) }}/day
+                                                            @if($user->worker->phone)
+                                                                • {{ $user->worker->phone }}
+                                                            @endif
+                                                        </div>
                                                     @endif
                                                 </div>
                                             </div>
@@ -153,16 +166,20 @@
                                                 if ($user->isAdmin()) $roleColor = '#7e22ce';
                                                 elseif ($user->isStaff()) $roleColor = '#2563eb';
                                                 elseif ($user->isTechnician()) $roleColor = '#d97706';
+                                                elseif ($user->isWorker()) $roleColor = '#059669';
                                                 else $roleColor = '#16a34a';
                                             @endphp
                                             <span class="status-text" style="color: {{ $roleColor }}; font-weight: bold;">
-                                                {{ $user->role === 'staff' ? 'Employee' : ucfirst($user->role) }}
+                                                {{ $user->role === 'staff' ? 'Employee' : ($user->role === 'worker' ? 'Worker' : ucfirst($user->role)) }}
                                             </span>
                                         </td>
                                         <td class="col-date whitespace-nowrap">
                                             <span class="cell-date">{{ $user->created_at?->format('d M Y') ?? 'N/A' }}</span>
                                         </td>
                                         <td style="text-align:right" class="whitespace-nowrap text-sm table-actions">
+                                            @if($user->isWorker() && $user->worker)
+                                                <a href="{{ route('workers.show', $user->worker) }}" class="action-link text-emerald-600 dark:text-emerald-400 font-medium">Worker Profile</a>
+                                            @endif
                                             <a href="{{ route('admin.users.show', $user) }}" class="action-link">View</a>
                                             <a href="{{ route('admin.users.edit', $user) }}" class="action-link">Edit</a>
                                             @if($user->id !== auth()->id())
@@ -177,8 +194,15 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="5" class="text-center py-6 text-slate-500 text-sm">
-                                            No users yet
+                                        <td colspan="5" class="text-center py-8 text-slate-500 text-sm">
+                                            @if($roleFilter === 'worker')
+                                                <div class="flex flex-col items-center justify-center gap-2">
+                                                    <p class="text-slate-600 dark:text-slate-400 font-medium">No worker accounts found.</p>
+                                                    <a href="{{ route('workers.create') }}" class="text-xs text-blue-600 dark:text-blue-400 hover:underline font-semibold">Register a new field worker</a>
+                                                </div>
+                                            @else
+                                                No users yet
+                                            @endif
                                         </td>
                                     </tr>
                                 @endforelse

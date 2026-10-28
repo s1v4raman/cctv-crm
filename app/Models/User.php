@@ -121,6 +121,7 @@ class User extends Authenticatable
             'admin'      => 'Administrator',
             'staff'      => 'Sales Manager',
             'technician' => 'Field Engineer',
+            'worker'     => 'Field Worker',
             'customer'   => 'Client Account',
             default      => ucfirst($this->role ?? 'User'),
         };

@@ -36,7 +36,7 @@
                      this.selectedDcs = [singleId];
                  }
                  if (this.selectedDcs.length === 0) {
-                     alert('Please select at least one Delivery Challan to mark as invoiced.');
+                     crmAlert('Please select at least one Delivery Challan to mark as invoiced.');
                      return;
                  }
                  this.invoiceModalOpen = true;
@@ -55,11 +55,11 @@
             <form method="GET" action="{{ route('documents.to-invoice') }}" class="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto flex-1">
                 <div class="relative w-full sm:w-80 flex items-center">
                     <svg class="w-4 h-4 text-slate-400 absolute left-3.5 pointer-events-none shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                    <input type="text" name="search" value="{{ $search }}" placeholder="Search DC number, project, site..." style="padding-left: 2.75rem !important;" class="w-full pl-11 pr-4 py-2 text-sm bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
+                    <input aria-label="Search DC number, project, site" type="text" name="search" value="{{ $search }}" placeholder="Search DC number, project, site..." style="padding-left: 2.75rem !important;" class="w-full pl-11 pr-4 py-2 text-sm bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
 
                 <div class="flex items-center gap-2 w-full sm:w-auto">
-                    <select name="company" onchange="this.form.submit()" class="px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-700 dark:text-slate-200 outline-none">
+                    <select aria-label="Company" name="company" onchange="this.form.submit()" class="px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-700 dark:text-slate-200 outline-none">
                         <option value="all">All Executing Companies</option>
                         @foreach($companies as $comp)
                             <option value="{{ $comp->id }}" {{ $companyFilter == $comp->id ? 'selected' : '' }}>
@@ -159,7 +159,7 @@
                                         </td>
                                         <td class="px-5 py-3.5 text-right">
                                             <div class="flex items-center justify-end gap-2">
-                                                <a href="{{ route('projects.documents.view', $doc) }}" target="_blank" class="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition" title="View Document">
+                                                <a aria-label="View Document" href="{{ route('projects.documents.view', $doc) }}" target="_blank" class="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition" title="View Document">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                                 </a>
                                                 <button type="button" @click="openInvoiceModal({{ $doc->id }})" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">
@@ -197,12 +197,12 @@
 
                     <div>
                         <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Invoice Number *</label>
-                        <input type="text" name="invoice_number" required placeholder="e.g. INV-2026-0042 or PITS/26/089" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold font-mono outline-none focus:ring-2 focus:ring-blue-500">
+                        <input aria-label="Invoice Number" type="text" name="invoice_number" required placeholder="e.g. INV-2026-0042 or PITS/26/089" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold font-mono outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
 
                     <div>
                         <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Invoice Date *</label>
-                        <input type="date" name="invoiced_at" value="{{ now()->toDateString() }}" required class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                        <input aria-label="Invoice Date" type="date" name="invoiced_at" value="{{ now()->toDateString() }}" required class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
                     </div>
 
                     <div class="flex items-center justify-end gap-2 pt-2">

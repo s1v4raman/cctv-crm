@@ -253,28 +253,28 @@
             <div class="space-y-3 text-xs">
                 <div>
                     <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">Actual On-Site Labor Hours Logged</label>
-                    <input type="number" step="0.5" name="labor_hours_logged" value="{{ old('labor_hours_logged', $job->labor_hours_logged) }}" placeholder="8.0"
+                    <input aria-label="Actual On-Site Labor Hours Logged" type="number" step="0.5" name="labor_hours_logged" value="{{ old('labor_hours_logged', $job->labor_hours_logged) }}" placeholder="8.0"
                            class="w-full rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs px-3 py-2 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
                     <p class="text-[11px] text-slate-400 mt-1">Leave blank to auto-estimate from camera count & scope.</p>
                 </div>
 
                 <div>
                     <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">Custom Labor Hourly Rate (&#8377;/hr)</label>
-                    <input type="number" step="1.0" name="custom_hourly_rate" value="{{ old('custom_hourly_rate', $job->custom_hourly_rate) }}" placeholder="250.00"
+                    <input aria-label="Custom Labor Hourly Rate (&#8377;/hr)" type="number" step="1.0" name="custom_hourly_rate" value="{{ old('custom_hourly_rate', $job->custom_hourly_rate) }}" placeholder="250.00"
                            class="w-full rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs px-3 py-2 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
                     <p class="text-[11px] text-slate-400 mt-1">Leave blank to use technician's base salary hourly rate.</p>
                 </div>
 
                 <div>
                     <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">Other Direct Project Costs (&#8377;)</label>
-                    <input type="number" step="0.01" name="other_direct_costs" value="{{ old('other_direct_costs', $job->other_direct_costs) }}" placeholder="1500.00"
+                    <input aria-label="Other Direct Project Costs (&#8377;)" type="number" step="0.01" name="other_direct_costs" value="{{ old('other_direct_costs', $job->other_direct_costs) }}" placeholder="1500.00"
                            class="w-full rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs px-3 py-2 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
                     <p class="text-[11px] text-slate-400 mt-1">Scaffolding rentals, scissor lift hire, sub-contractor fees.</p>
                 </div>
 
                 <div>
                     <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">Costing Audit Notes</label>
-                    <textarea name="costing_notes" rows="3" placeholder="Explain additional project expenses or subcontracting..."
+                    <textarea aria-label="Costing Audit Notes" name="costing_notes" rows="3" placeholder="Explain additional project expenses or subcontracting..."
                               class="w-full rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs px-3 py-2 text-slate-900 dark:text-white focus:outline-none">{{ old('costing_notes', $job->costing_notes) }}</textarea>
                 </div>
             </div>

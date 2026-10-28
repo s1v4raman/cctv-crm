@@ -183,7 +183,7 @@
                                                        name="items[{{ $index }}][product_id]"
                                                        value="{{ $item['product_id'] ?? '' }}">
 
-                                                <input type="text"
+                                                <input aria-label="Search camera, NVR, cable" type="text"
                                                        name="items[{{ $index }}][item_name]"
                                                        value="{{ $item['item_name'] ?? '' }}"
                                                        required
@@ -197,7 +197,7 @@
                                             </td>
 
                                             <td class="p-2 align-top">
-                                                <input type="text"
+                                                <input aria-label="Optional specification" type="text"
                                                        name="items[{{ $index }}][description]"
                                                        value="{{ $item['description'] ?? '' }}"
                                                        placeholder="Optional specification"
@@ -205,7 +205,7 @@
                                             </td>
 
                                             <td class="p-2 align-top">
-                                                <input type="number"
+                                                <input aria-label="Quantity" type="number"
                                                        name="items[{{ $index }}][quantity]"
                                                        value="{{ $item['quantity'] ?? 1 }}"
                                                        min="0.01"
@@ -219,7 +219,7 @@
                                             </td>
 
                                             <td class="p-2 align-top">
-                                                <select name="items[{{ $index }}][unit]"
+                                                <select aria-label="Unit" name="items[{{ $index }}][unit]"
                                                         class="item-unit w-24 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-sm px-3 py-2 shadow-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
                                                     @foreach (['Nos', 'Mtr', 'Box', 'Set', 'Job'] as $unit)
                                                         <option value="{{ $unit }}"
@@ -231,7 +231,7 @@
                                             </td>
 
                                             <td class="p-2 align-top">
-                                                <input type="number"
+                                                <input aria-label="Unit price" type="number"
                                                        name="items[{{ $index }}][unit_price]"
                                                        value="{{ $item['unit_price'] ?? 0 }}"
                                                        min="0"
@@ -318,7 +318,7 @@
                        name="items[__INDEX__][product_id]"
                        value="">
 
-                <input type="text"
+                <input aria-label="Search camera, NVR, cable" type="text"
                        name="items[__INDEX__][item_name]"
                        required
                        autocomplete="off"
@@ -327,14 +327,14 @@
             </td>
 
             <td class="p-2 align-top">
-                <input type="text"
+                <input aria-label="Optional specification" type="text"
                        name="items[__INDEX__][description]"
                        placeholder="Optional specification"
                        class="item-description block w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-sm px-3 py-2 shadow-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500 placeholder-slate-400">
             </td>
 
             <td class="p-2 align-top">
-                <input type="number"
+                <input aria-label="Quantity" type="number"
                        name="items[__INDEX__][quantity]"
                        value="1"
                        min="0.01"
@@ -344,7 +344,7 @@
             </td>
 
             <td class="p-2 align-top">
-                <select name="items[__INDEX__][unit]"
+                <select aria-label="Unit" name="items[__INDEX__][unit]"
                         class="item-unit w-24 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-sm px-3 py-2 shadow-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
                     <option value="Nos">Nos</option>
                     <option value="Mtr">Mtr</option>
@@ -355,7 +355,7 @@
             </td>
 
             <td class="p-2 align-top">
-                <input type="number"
+                <input aria-label="Unit price" type="number"
                        name="items[__INDEX__][unit_price]"
                        value="0"
                        min="0"
@@ -663,7 +663,7 @@
                 const rows = document.querySelectorAll('.item-row');
 
                 if (rows.length === 1) {
-                    alert('A quotation must contain at least one item.');
+                    crmAlert('A quotation must contain at least one item.');
                     return;
                 }
 

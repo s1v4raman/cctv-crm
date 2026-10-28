@@ -77,7 +77,7 @@
                                     </div>
                                     <div class="flex items-center gap-2">
                                         <span class="text-xs text-gray-400">×</span>
-                                        <input type="number" name="denominations[2000]" x-model.number="denominations['2000']" min="0" class="w-20 rounded-lg border-gray-200 text-right font-semibold text-sm focus:border-pink-500 focus:ring-pink-500">
+                                        <input aria-label="2000" type="number" name="denominations[2000]" x-model.number="denominations['2000']" min="0" class="w-20 rounded-lg border-gray-200 text-right font-semibold text-sm focus:border-pink-500 focus:ring-pink-500">
                                     </div>
                                     <div class="w-24 text-right font-bold text-gray-900 text-sm" x-text="formatCurrency((denominations['2000'] || 0) * 2000)"></div>
                                 </div>
@@ -90,7 +90,7 @@
                                     </div>
                                     <div class="flex items-center gap-2">
                                         <span class="text-xs text-gray-400">×</span>
-                                        <input type="number" name="denominations[500]" x-model.number="denominations['500']" min="0" class="w-20 rounded-lg border-gray-200 text-right font-semibold text-sm focus:border-amber-500 focus:ring-amber-500">
+                                        <input aria-label="500" type="number" name="denominations[500]" x-model.number="denominations['500']" min="0" class="w-20 rounded-lg border-gray-200 text-right font-semibold text-sm focus:border-amber-500 focus:ring-amber-500">
                                     </div>
                                     <div class="w-24 text-right font-bold text-gray-900 text-sm" x-text="formatCurrency((denominations['500'] || 0) * 500)"></div>
                                 </div>
@@ -103,7 +103,7 @@
                                     </div>
                                     <div class="flex items-center gap-2">
                                         <span class="text-xs text-gray-400">×</span>
-                                        <input type="number" name="denominations[200]" x-model.number="denominations['200']" min="0" class="w-20 rounded-lg border-gray-200 text-right font-semibold text-sm focus:border-orange-500 focus:ring-orange-500">
+                                        <input aria-label="200" type="number" name="denominations[200]" x-model.number="denominations['200']" min="0" class="w-20 rounded-lg border-gray-200 text-right font-semibold text-sm focus:border-orange-500 focus:ring-orange-500">
                                     </div>
                                     <div class="w-24 text-right font-bold text-gray-900 text-sm" x-text="formatCurrency((denominations['200'] || 0) * 200)"></div>
                                 </div>
@@ -116,7 +116,7 @@
                                     </div>
                                     <div class="flex items-center gap-2">
                                         <span class="text-xs text-gray-400">×</span>
-                                        <input type="number" name="denominations[100]" x-model.number="denominations['100']" min="0" class="w-20 rounded-lg border-gray-200 text-right font-semibold text-sm focus:border-violet-500 focus:ring-violet-500">
+                                        <input aria-label="100" type="number" name="denominations[100]" x-model.number="denominations['100']" min="0" class="w-20 rounded-lg border-gray-200 text-right font-semibold text-sm focus:border-violet-500 focus:ring-violet-500">
                                     </div>
                                     <div class="w-24 text-right font-bold text-gray-900 text-sm" x-text="formatCurrency((denominations['100'] || 0) * 100)"></div>
                                 </div>
@@ -129,7 +129,7 @@
                                     </div>
                                     <div class="flex items-center gap-2">
                                         <span class="text-xs text-gray-400">×</span>
-                                        <input type="number" name="denominations[50]" x-model.number="denominations['50']" min="0" class="w-20 rounded-lg border-gray-200 text-right font-semibold text-sm focus:border-cyan-500 focus:ring-cyan-500">
+                                        <input aria-label="50" type="number" name="denominations[50]" x-model.number="denominations['50']" min="0" class="w-20 rounded-lg border-gray-200 text-right font-semibold text-sm focus:border-cyan-500 focus:ring-cyan-500">
                                     </div>
                                     <div class="w-24 text-right font-bold text-gray-900 text-sm" x-text="formatCurrency((denominations['50'] || 0) * 50)"></div>
                                 </div>
@@ -147,7 +147,7 @@
                                     </div>
                                     <div class="flex items-center gap-2">
                                         <span class="text-xs text-gray-400">×</span>
-                                        <input type="number" name="denominations[20]" x-model.number="denominations['20']" min="0" class="w-20 rounded-lg border-gray-200 text-right font-semibold text-sm focus:border-emerald-500 focus:ring-emerald-500">
+                                        <input aria-label="20" type="number" name="denominations[20]" x-model.number="denominations['20']" min="0" class="w-20 rounded-lg border-gray-200 text-right font-semibold text-sm focus:border-emerald-500 focus:ring-emerald-500">
                                     </div>
                                     <div class="w-24 text-right font-bold text-gray-900 text-sm" x-text="formatCurrency((denominations['20'] || 0) * 20)"></div>
                                 </div>
@@ -160,7 +160,7 @@
                                     </div>
                                     <div class="flex items-center gap-2">
                                         <span class="text-xs text-gray-400">×</span>
-                                        <input type="number" name="denominations[10]" x-model.number="denominations['10']" min="0" class="w-20 rounded-lg border-gray-200 text-right font-semibold text-sm focus:border-yellow-500 focus:ring-yellow-500">
+                                        <input aria-label="10" type="number" name="denominations[10]" x-model.number="denominations['10']" min="0" class="w-20 rounded-lg border-gray-200 text-right font-semibold text-sm focus:border-yellow-500 focus:ring-yellow-500">
                                     </div>
                                     <div class="w-24 text-right font-bold text-gray-900 text-sm" x-text="formatCurrency((denominations['10'] || 0) * 10)"></div>
                                 </div>
@@ -173,7 +173,7 @@
                                     </div>
                                     <div class="flex items-center gap-2">
                                         <span class="text-xs text-gray-400">×</span>
-                                        <input type="number" name="denominations[5]" x-model.number="denominations['5']" min="0" class="w-20 rounded-lg border-gray-200 text-right font-semibold text-sm focus:border-gray-500 focus:ring-gray-500">
+                                        <input aria-label="5" type="number" name="denominations[5]" x-model.number="denominations['5']" min="0" class="w-20 rounded-lg border-gray-200 text-right font-semibold text-sm focus:border-gray-500 focus:ring-gray-500">
                                     </div>
                                     <div class="w-24 text-right font-bold text-gray-900 text-sm" x-text="formatCurrency((denominations['5'] || 0) * 5)"></div>
                                 </div>
@@ -186,7 +186,7 @@
                                     </div>
                                     <div class="flex items-center gap-2">
                                         <span class="text-xs text-gray-400">×</span>
-                                        <input type="number" name="denominations[2]" x-model.number="denominations['2']" min="0" class="w-20 rounded-lg border-gray-200 text-right font-semibold text-sm focus:border-gray-500 focus:ring-gray-500">
+                                        <input aria-label="2" type="number" name="denominations[2]" x-model.number="denominations['2']" min="0" class="w-20 rounded-lg border-gray-200 text-right font-semibold text-sm focus:border-gray-500 focus:ring-gray-500">
                                     </div>
                                     <div class="w-24 text-right font-bold text-gray-900 text-sm" x-text="formatCurrency((denominations['2'] || 0) * 2)"></div>
                                 </div>
@@ -199,7 +199,7 @@
                                     </div>
                                     <div class="flex items-center gap-2">
                                         <span class="text-xs text-gray-400">×</span>
-                                        <input type="number" name="denominations[1]" x-model.number="denominations['1']" min="0" class="w-20 rounded-lg border-gray-200 text-right font-semibold text-sm focus:border-gray-500 focus:ring-gray-500">
+                                        <input aria-label="1" type="number" name="denominations[1]" x-model.number="denominations['1']" min="0" class="w-20 rounded-lg border-gray-200 text-right font-semibold text-sm focus:border-gray-500 focus:ring-gray-500">
                                     </div>
                                     <div class="w-24 text-right font-bold text-gray-900 text-sm" x-text="formatCurrency((denominations['1'] || 0) * 1)"></div>
                                 </div>
@@ -212,7 +212,7 @@
                                     </div>
                                     <div class="flex items-center gap-2">
                                         <span class="text-xs text-gray-400">₹</span>
-                                        <input type="number" step="0.01" name="denominations[coins]" x-model.number="denominations['coins']" min="0" class="w-20 rounded-lg border-gray-200 text-right font-semibold text-sm focus:border-gray-500 focus:ring-gray-500">
+                                        <input aria-label="Coins" type="number" step="0.01" name="denominations[coins]" x-model.number="denominations['coins']" min="0" class="w-20 rounded-lg border-gray-200 text-right font-semibold text-sm focus:border-gray-500 focus:ring-gray-500">
                                     </div>
                                     <div class="w-24 text-right font-bold text-gray-900 text-sm" x-text="formatCurrency(denominations['coins'] || 0)"></div>
                                 </div>
@@ -232,7 +232,7 @@
                             <div class="space-y-4">
                                 <div>
                                     <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Reconciliation Date *</label>
-                                    <input type="date" name="reconciliation_date" value="{{ date('Y-m-d') }}" required class="w-full rounded-xl border-gray-200 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                    <input aria-label="Reconciliation Date" type="date" name="reconciliation_date" value="{{ date('Y-m-d') }}" required class="w-full rounded-xl border-gray-200 text-sm focus:border-indigo-500 focus:ring-indigo-500">
                                 </div>
 
                                 <div class="p-4 rounded-xl bg-gray-50 border border-gray-200 space-y-3">
@@ -260,7 +260,7 @@
 
                                 <div>
                                     <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Remarks / Variance Explanation</label>
-                                    <textarea name="reconciliation_notes" rows="3" placeholder="Explain reasons if there is any shortage/excess, or notes on physical count verification..." class="w-full rounded-xl border-gray-200 text-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
+                                    <textarea aria-label="Remarks / Variance Explanation" name="reconciliation_notes" rows="3" placeholder="Explain reasons if there is any shortage/excess, or notes on physical count verification..." class="w-full rounded-xl border-gray-200 text-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
                                 </div>
                             </div>
 

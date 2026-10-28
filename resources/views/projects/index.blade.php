@@ -39,14 +39,14 @@
                 {{-- Search Box --}}
                 <div class="relative flex-1 min-w-[220px] max-w-xs flex items-center shrink-0">
                     <svg class="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                    <input type="search" name="search" value="{{ $search }}"
+                    <input aria-label="Search projects" type="search" name="search" value="{{ $search }}"
                            placeholder="Search projects..." 
                            style="padding-left: 36px !important; height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important;"
                            class="w-full text-xs border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-blue-500">
                 </div>
 
                 {{-- Company Filter --}}
-                <select name="company" class="crm-select text-xs shrink-0" style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important; min-width: 140px;">
+                <select aria-label="Company" name="company" class="crm-select text-xs shrink-0" style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important; min-width: 140px;">
                     <option value="all">All Companies</option>
                     @foreach($companies as $comp)
                         <option value="{{ $comp->id }}" {{ $companyFilter == $comp->id ? 'selected' : '' }}>{{ $comp->name }}</option>
@@ -54,7 +54,7 @@
                 </select>
 
                 {{-- Assignee Filter --}}
-                <select name="assigned" class="crm-select text-xs shrink-0" style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important; min-width: 130px;">
+                <select aria-label="Assigned" name="assigned" class="crm-select text-xs shrink-0" style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important; min-width: 130px;">
                     <option value="">All Assignees</option>
                     @foreach($teamMembers as $tm)
                         <option value="{{ $tm->id }}" {{ $assignedFilter == $tm->id ? 'selected' : '' }}>
@@ -64,7 +64,7 @@
                 </select>
 
                 {{-- Status Filter --}}
-                <select name="status" class="crm-select text-xs shrink-0" style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important; min-width: 120px;">
+                <select aria-label="Status" name="status" class="crm-select text-xs shrink-0" style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important; min-width: 120px;">
                     <option value="all" {{ $statusFilter === 'all' ? 'selected' : '' }}>All Statuses</option>
                     <option value="pending_approval" {{ $statusFilter === 'pending_approval' ? 'selected' : '' }}>Pending</option>
                     <option value="approved" {{ $statusFilter === 'approved' ? 'selected' : '' }}>Approved</option>
@@ -77,7 +77,7 @@
                 </select>
 
                 {{-- Priority Filter --}}
-                <select name="priority" class="crm-select text-xs shrink-0" style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important; min-width: 120px;">
+                <select aria-label="Priority" name="priority" class="crm-select text-xs shrink-0" style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important; min-width: 120px;">
                     <option value="all" {{ $priorityFilter === 'all' ? 'selected' : '' }}>All Priorities</option>
                     <option value="urgent" {{ $priorityFilter === 'urgent' ? 'selected' : '' }}>Urgent</option>
                     <option value="high" {{ $priorityFilter === 'high' ? 'selected' : '' }}>High</option>
@@ -86,7 +86,7 @@
                 </select>
 
                 {{-- Type Filter --}}
-                <select name="type" class="crm-select text-xs shrink-0" style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important; min-width: 120px;">
+                <select aria-label="Type" name="type" class="crm-select text-xs shrink-0" style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important; min-width: 120px;">
                     <option value="all">All Types</option>
                     <option value="hardware_attendance" {{ $typeFilter === 'hardware_attendance' ? 'selected' : '' }}>Attendance</option>
                     <option value="hardware_cctv" {{ $typeFilter === 'hardware_cctv' ? 'selected' : '' }}>CCTV</option>
@@ -228,7 +228,7 @@
                                 <form action="{{ route('projects.updateStatus', $project) }}" method="POST" class="inline-flex">
                                     @csrf
                                     @method('PATCH')
-                                    <select name="status" onchange="this.form.submit()" class="text-xs h-[30px] px-2 rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium">
+                                    <select aria-label="Status" name="status" onchange="this.form.submit()" class="text-xs h-[30px] px-2 rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium">
                                         <option value="pending_approval" {{ $project->status === 'pending_approval' ? 'selected' : '' }}>Pending Approval</option>
                                         <option value="approved" {{ $project->status === 'approved' ? 'selected' : '' }}>Approved</option>
                                         <option value="in_progress" {{ $project->status === 'in_progress' ? 'selected' : '' }}>In Progress</option>
@@ -248,7 +248,7 @@
                                     <a href="{{ route('projects.edit', $project) }}" class="action-link">Edit</a>
                                 @endif
                                 @if(auth()->user()->isAdmin())
-                                    <form method="POST" action="{{ route('projects.destroy', $project) }}" class="inline" onsubmit="return confirm('Delete project {{ addslashes($project->project_code) }}? This cannot be undone.')">
+                                    <form method="POST" action="{{ route('projects.destroy', $project) }}" class="inline" data-confirm="Delete project {{ $project->project_code }}? This cannot be undone.">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="danger-link">Delete</button>

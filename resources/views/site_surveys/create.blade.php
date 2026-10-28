@@ -193,25 +193,25 @@
                     <form @submit.prevent="submitQuickCustomer()" class="space-y-3.5">
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Customer / Company Name <span class="text-rose-500">*</span></label>
-                            <input type="text" x-model="newCustomer.customer_name" required placeholder="e.g. Ramesh Kumar or Tech Park Corp"
+                            <input aria-label="Customer / Company Name" type="text" x-model="newCustomer.customer_name" required placeholder="e.g. Ramesh Kumar or Tech Park Corp"
                                    class="w-full text-xs h-9 px-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-blue-500 focus:outline-none">
                         </div>
 
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Phone Number <span class="text-rose-500">*</span></label>
-                            <input type="tel" x-model="newCustomer.phone" required placeholder="e.g. +91 98765 43210"
+                            <input aria-label="Phone Number" type="tel" x-model="newCustomer.phone" required placeholder="e.g. +91 98765 43210"
                                    class="w-full text-xs h-9 px-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-blue-500 focus:outline-none">
                         </div>
 
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Email Address (Optional)</label>
-                            <input type="email" x-model="newCustomer.email" placeholder="e.g. ramesh@example.com"
+                            <input aria-label="Email Address (Optional)" type="email" x-model="newCustomer.email" placeholder="e.g. ramesh@example.com"
                                    class="w-full text-xs h-9 px-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-blue-500 focus:outline-none">
                         </div>
 
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Site / Installation Address (Optional)</label>
-                            <textarea x-model="newCustomer.site_address" rows="2" placeholder="e.g. Plot 14, Electronic City, Bangalore"
+                            <textarea aria-label="Site / Installation Address (Optional)" x-model="newCustomer.site_address" rows="2" placeholder="e.g. Plot 14, Electronic City, Bangalore"
                                       class="w-full text-xs p-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-blue-500 focus:outline-none"></textarea>
                         </div>
 
@@ -262,19 +262,19 @@
                     <form @submit.prevent="submitQuickTechnician()" class="space-y-3.5">
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Technician Full Name <span class="text-rose-500">*</span></label>
-                            <input type="text" x-model="newTech.name" required placeholder="e.g. Anand Sharma"
+                            <input aria-label="Technician Full Name" type="text" x-model="newTech.name" required placeholder="e.g. Anand Sharma"
                                    class="w-full text-xs h-9 px-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-blue-500 focus:outline-none">
                         </div>
 
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Email Address / Login ID <span class="text-rose-500">*</span></label>
-                            <input type="email" x-model="newTech.email" required placeholder="e.g. anand@precisionit.com"
+                            <input aria-label="Email Address / Login ID" type="email" x-model="newTech.email" required placeholder="e.g. anand@precisionit.com"
                                    class="w-full text-xs h-9 px-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-blue-500 focus:outline-none">
                         </div>
 
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Password (Optional)</label>
-                            <input type="password" x-model="newTech.password" placeholder="Default: password"
+                            <input aria-label="Password (Optional)" type="password" x-model="newTech.password" placeholder="Default: password"
                                    class="w-full text-xs h-9 px-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-blue-500 focus:outline-none">
                             <p class="text-[11px] text-slate-400 mt-0.5">Leave blank to use default password: <code class="font-mono">password</code></p>
                         </div>

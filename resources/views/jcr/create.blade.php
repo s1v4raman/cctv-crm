@@ -171,7 +171,7 @@
 
                     <div class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-800">
                         <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Work Summary / Observations</label>
-                        <textarea name="work_summary" rows="2" class="crm-textarea w-full text-xs" placeholder="e.g. Installed 4x 5MP Dome Cameras, configured 1TB HDD recording, setup Hik-Connect on 2 mobile devices..."></textarea>
+                        <textarea aria-label="Work Summary / Observations" name="work_summary" rows="2" class="crm-textarea w-full text-xs" placeholder="e.g. Installed 4x 5MP Dome Cameras, configured 1TB HDD recording, setup Hik-Connect on 2 mobile devices..."></textarea>
                     </div>
                 </div>
 
@@ -246,7 +246,7 @@
                             </div>
 
                             <div class="mt-2.5">
-                                <input type="text" name="photo_captions[]" value="DVR Rack Setup" placeholder="Photo caption (e.g. DVR Rack Setup)"
+                                <input aria-label="Photo caption (e.g. DVR Rack Setup)" type="text" name="photo_captions[]" value="DVR Rack Setup" placeholder="Photo caption (e.g. DVR Rack Setup)"
                                        class="crm-input slot-caption w-full text-xs" style="height: 36px;">
                                 <input type="hidden" name="photo_types[]" value="rack_setup" class="slot-type">
                             </div>
@@ -309,7 +309,7 @@
                             </div>
 
                             <div class="mt-2.5">
-                                <input type="text" name="photo_captions[]" value="Live Monitor View" placeholder="Photo caption (e.g. Live Monitor View)"
+                                <input aria-label="Photo caption (e.g. Live Monitor View)" type="text" name="photo_captions[]" value="Live Monitor View" placeholder="Photo caption (e.g. Live Monitor View)"
                                        class="crm-input slot-caption w-full text-xs" style="height: 36px;">
                                 <input type="hidden" name="photo_types[]" value="camera_view" class="slot-type">
                             </div>
@@ -351,7 +351,7 @@
 
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Customer Comments / Feedback (Optional)</label>
-                        <textarea name="customer_feedback" rows="2" class="crm-textarea w-full text-xs" placeholder="e.g. Excellent work, neat wiring, camera angles are very clear!"></textarea>
+                        <textarea aria-label="Customer Comments / Feedback (Optional)" name="customer_feedback" rows="2" class="crm-textarea w-full text-xs" placeholder="e.g. Excellent work, neat wiring, camera angles are very clear!"></textarea>
                     </div>
                 </div>
 
@@ -366,15 +366,15 @@
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Signer Name <span class="text-amber-500">*</span></label>
-                            <input type="text" name="signer_name" value="{{ old('signer_name', $lead?->customer_name) }}" required class="crm-input w-full text-xs" style="height: 38px;">
+                            <input aria-label="Signer Name" type="text" name="signer_name" value="{{ old('signer_name', $lead?->customer_name) }}" required class="crm-input w-full text-xs" style="height: 38px;">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Designation / Role</label>
-                            <input type="text" name="signer_designation" value="{{ old('signer_designation') }}" placeholder="e.g. Owner, Store Manager" class="crm-input w-full text-xs" style="height: 38px;">
+                            <input aria-label="Designation / Role" type="text" name="signer_designation" value="{{ old('signer_designation') }}" placeholder="e.g. Owner, Store Manager" class="crm-input w-full text-xs" style="height: 38px;">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Phone Number</label>
-                            <input type="text" name="signer_phone" value="{{ old('signer_phone', $lead?->phone) }}" class="crm-input w-full text-xs" style="height: 38px;">
+                            <input aria-label="Phone Number" type="text" name="signer_phone" value="{{ old('signer_phone', $lead?->phone) }}" class="crm-input w-full text-xs" style="height: 38px;">
                         </div>
                     </div>
 
@@ -770,10 +770,10 @@
                     }
                 }).catch(() => {
                     jcrCameraState.torchOn = false;
-                    alert('Torch / Flashlight not supported on this webcam/device.');
+                    crmAlert('Torch / Flashlight not supported on this webcam/device.');
                 });
             } else {
-                alert('Torch control unavailable on this camera stream.');
+                crmAlert('Torch control unavailable on this camera stream.');
             }
         }
 
@@ -786,9 +786,9 @@
 
             if (!jcrCameraState.stream) {
                 if (jcrCameraState.lastError === 'NotAllowedError' || jcrCameraState.lastError === 'PermissionDeniedError') {
-                    alert('🚫 Camera Permission is Blocked in your browser!\n\nTo allow it:\n1. Look at the address bar (http://127.0.0.1:8000).\n2. Click the Lock/Tune icon (🔒) on the left.\n3. Change "Camera" permission to "Allow".\n4. Re-open camera or reload the page.\n\nYou can also click "📁 Choose Photo from Files" to upload directly from your computer.');
+                    crmAlert('🚫 Camera Permission is Blocked in your browser!\n\nTo allow it:\n1. Look at the address bar (http://127.0.0.1:8000).\n2. Click the Lock/Tune icon (🔒) on the left.\n3. Change "Camera" permission to "Allow".\n4. Re-open camera or reload the page.\n\nYou can also click "📁 Choose Photo from Files" to upload directly from your computer.');
                 } else {
-                    alert('⚠️ Camera stream is not connected.\n\nPlease check browser permissions or use "📁 Choose Photo from Files".');
+                    crmAlert('⚠️ Camera stream is not connected.\n\nPlease check browser permissions or use "📁 Choose Photo from Files".');
                 }
                 const fallbackUpload = document.getElementById('jcrModalFallbackUpload');
                 if (fallbackUpload) fallbackUpload.style.display = 'flex';
@@ -979,7 +979,7 @@
 
             const totalSlots = container.querySelectorAll('.photo-slot-card').length;
             if (totalSlots >= 10) {
-                alert('Maximum of 10 proof photos reached.');
+                crmAlert('Maximum of 10 proof photos reached.');
                 return;
             }
 
@@ -1049,7 +1049,7 @@
                 </div>
 
                 <div class="mt-2.5">
-                    <input type="text" name="photo_captions[]" value="" placeholder="Photo caption (e.g. Cable Pathway / Outdoor View)"
+                    <input aria-label="Photo caption (e.g. Cable Pathway / Outdoor View)" type="text" name="photo_captions[]" value="" placeholder="Photo caption (e.g. Cable Pathway / Outdoor View)"
                            class="crm-input slot-caption w-full text-xs" style="height: 36px;">
                     <input type="hidden" name="photo_types[]" value="general" class="slot-type">
                 </div>
@@ -1156,7 +1156,7 @@
             form.addEventListener('submit', function (e) {
                 if (!hasDrawn) {
                     e.preventDefault();
-                    alert('⚠️ Please ask the customer to sign in the signature box before submitting.');
+                    crmAlert('⚠️ Please ask the customer to sign in the signature box before submitting.');
                     canvas.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     return false;
                 }

@@ -49,7 +49,7 @@ class AuthenticationTest extends TestCase
         $response = $this->actingAs($user)->post('/logout');
 
         $this->assertGuest();
-        $response->assertRedirect(route('staff.login'));
+        $response->assertRedirect(route('login'));
     }
 
     public function test_staff_can_logout_and_redirects_to_login(): void
@@ -59,7 +59,17 @@ class AuthenticationTest extends TestCase
         $response = $this->actingAs($user)->post('/logout');
 
         $this->assertGuest();
-        $response->assertRedirect(route('staff.login'));
+        $response->assertRedirect(route('login'));
+    }
+
+    public function test_user_can_logout_via_get_request(): void
+    {
+        $user = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($user)->get('/logout');
+
+        $this->assertGuest();
+        $response->assertRedirect(route('login'));
     }
 
     public function test_customer_login_screen_redirects_to_login(): void

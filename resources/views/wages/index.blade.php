@@ -265,10 +265,17 @@
                                     <td class="px-4 py-3 whitespace-nowrap">
                                         <div class="flex items-center gap-2">
                                             <div>
-                                                <a href="{{ route('workers.show', $w) }}" class="font-bold text-slate-900 dark:text-white hover:text-blue-600 hover:underline">
-                                                    {{ $w->name }}
-                                                </a>
-                                                <div class="text-xs text-slate-500 font-mono">₹{{ number_format($w->daily_rate, 2) }}/day</div>
+                                                @if($w)
+                                                    <a href="{{ route('workers.show', $w) }}" class="font-bold text-slate-900 dark:text-white hover:text-blue-600 hover:underline">
+                                                        {{ $w->name }}
+                                                    </a>
+                                                    @if(method_exists($w, 'trashed') && $w->trashed())
+                                                        <span class="text-[9px] px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 font-medium">Archived</span>
+                                                    @endif
+                                                    <div class="text-xs text-slate-500 font-mono">₹{{ number_format($w->daily_rate, 2) }}/day</div>
+                                                @else
+                                                    <span class="font-bold text-slate-500">Worker #{{ $row['worker_id'] ?? '—' }}</span>
+                                                @endif
                                             </div>
                                             <button type="button" @click='openAnalysis(@json($rowData))' class="px-2 py-0.5 text-[11px] font-semibold rounded bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 hover:bg-blue-100 dark:hover:bg-blue-900/60 transition cursor-pointer" title="View Shift Analysis, Verified Photos, and Advances">
                                                 Analysis ({{ $row['days_worked'] > 0 ? $row['days_worked'] : ($row['prior_days_worked'] > 0 ? $row['prior_days_worked'] . ' b/f' : 0) }})
@@ -483,9 +490,13 @@
                                             {{ $p->created_at ? $p->created_at->format('d M Y, h:i A') : $p->payment_date->format('d M Y') }}
                                         </td>
                                         <td class="px-5 py-3 whitespace-nowrap font-medium text-slate-900 dark:text-white">
-                                            <a href="{{ route('workers.show', $p->worker_id) }}" class="hover:text-blue-600 hover:underline">
-                                                {{ $p->worker?->name ?? 'Worker #' . $p->worker_id }}
-                                            </a>
+                                            @if($p->worker_id)
+                                                <a href="{{ route('workers.show', $p->worker_id) }}" class="hover:text-blue-600 hover:underline">
+                                                    {{ $p->worker?->name ?? 'Worker #' . $p->worker_id }}
+                                                </a>
+                                            @else
+                                                <span class="text-slate-500">{{ $p->worker?->name ?? 'Unknown Worker' }}</span>
+                                            @endif
                                         </td>
                                         <td class="px-5 py-3 text-center whitespace-nowrap">
                                             @if($p->amount == 0 && (str_contains(strtolower($p->reference_notes ?? ''), 'carried forward') || str_contains(strtolower($p->reference_notes ?? ''), 'carry_forward')))

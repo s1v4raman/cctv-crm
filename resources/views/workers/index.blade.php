@@ -28,11 +28,11 @@
         {{-- Filter Section (Single Filter Row) --}}
         <div class="crm-section p-3">
             <form method="GET" action="{{ route('workers.index') }}" class="flex items-center gap-2 flex-wrap">
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search worker name or phone…" 
+                <input aria-label="Search worker name or phone" type="text" name="search" value="{{ request('search') }}" placeholder="Search worker name or phone…" 
                        style="height: 38px; min-height: 38px; max-height: 38px; border-radius: 4px; box-sizing: border-box;"
                        class="crm-input flex-1 min-w-[220px]">
 
-                <select name="status" 
+                <select aria-label="Status" name="status" 
                         style="height: 38px; min-height: 38px; max-height: 38px; border-radius: 4px; box-sizing: border-box;"
                         class="crm-select min-w-[140px]">
                     <option value="">All Statuses</option>
@@ -123,7 +123,7 @@
                             <a href="{{ route('workers.show', $worker) }}" class="action-link">View</a>
                             <a href="{{ route('workers.edit', $worker) }}" class="action-link">Edit</a>
                             @if(auth()->user()->isAdmin())
-                                <form method="POST" action="{{ route('workers.destroy', $worker) }}" class="inline" onsubmit="return confirm('Delete worker {{ addslashes($worker->name) }}? This cannot be undone.')">
+                                <form method="POST" action="{{ route('workers.destroy', $worker) }}" class="inline" data-confirm="Delete worker {{ $worker->name }}? This cannot be undone.">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="danger-link p-0 bg-transparent border-0 cursor-pointer text-xs">Delete</button>

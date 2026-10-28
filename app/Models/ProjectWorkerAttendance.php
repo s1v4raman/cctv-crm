@@ -73,12 +73,12 @@ class ProjectWorkerAttendance extends Model
 
     public function workDay(): BelongsTo
     {
-        return $this->belongsTo(WorkDay::class);
+        return $this->belongsTo(WorkDay::class)->withTrashed();
     }
 
     public function worker(): BelongsTo
     {
-        return $this->belongsTo(Worker::class);
+        return $this->belongsTo(Worker::class)->withTrashed();
     }
 
     public function unlocker(): BelongsTo

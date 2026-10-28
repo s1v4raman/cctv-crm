@@ -15,7 +15,7 @@
             <div class="crm-section mb-4">
                 <form method="GET" action="{{ route('inventory.movements') }}" class="flex flex-wrap items-center gap-3">
                     <div>
-                        <select name="product_id" class="crm-select min-w-[220px]">
+                        <select aria-label="Product" name="product_id" class="crm-select min-w-[220px]">
                             <option value="">All Products</option>
                             @foreach($products as $p)
                                 <option value="{{ $p->id }}" @selected(request('product_id') == $p->id)>
@@ -26,7 +26,7 @@
                     </div>
 
                     <div>
-                        <select name="type" class="crm-select min-w-[200px]">
+                        <select aria-label="Type" name="type" class="crm-select min-w-[200px]">
                             <option value="">All Movement Types</option>
                             <option value="in" @selected(request('type') == 'in')>Stock IN (Purchase/Add)</option>
                             <option value="out" @selected(request('type') == 'out')>Stock OUT (Manual Dispatch)</option>

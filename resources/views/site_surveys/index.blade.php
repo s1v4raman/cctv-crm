@@ -22,11 +22,11 @@
             <form method="GET" action="{{ route('site-surveys.index') }}" class="mb-4 flex items-center gap-2.5 flex-wrap text-xs">
                 <div class="relative flex-1 min-w-[220px] max-w-md flex items-center">
                     <svg class="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search customer, address, contact, technician…" 
+                    <input aria-label="Search customer, address, contact, technician" type="text" name="search" value="{{ request('search') }}" placeholder="Search customer, address, contact, technician…" 
                            style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important; padding-left: 36px !important; box-sizing: border-box;"
                            class="crm-input w-full text-xs border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0f172a] text-slate-800 dark:text-white focus:outline-none focus:border-blue-500">
                 </div>
-                <select name="status" onchange="this.form.submit()" 
+                <select aria-label="Status" name="status" onchange="this.form.submit()" 
                         style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important; min-width: 140px; box-sizing: border-box;"
                         class="crm-select text-xs border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0f172a] text-slate-800 dark:text-white px-3 focus:outline-none focus:border-blue-500">
                     <option value="">All Statuses</option>
@@ -112,7 +112,7 @@
                                             <span>Edit</span>
                                         </a>
                                         <form method="POST" action="{{ route('site-surveys.destroy', $survey) }}" class="inline ml-2"
-                                              onsubmit="return confirm('Delete this survey and all photos?')">
+                                              data-confirm="Delete this survey and all photos?">
                                             @csrf @method('DELETE')
                                             <button type="submit" class="danger-link inline-flex items-center gap-1 cursor-pointer">
                                                 <svg class="w-3 h-3 text-rose-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>

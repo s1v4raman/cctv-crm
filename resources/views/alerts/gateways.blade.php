@@ -114,17 +114,17 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label class="crm-label">Account SID</label>
-                                    <input type="text" name="twilio_account_sid" value="{{ old('twilio_account_sid', $settings->twilio_account_sid) }}" placeholder="ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                                    <input aria-label="Account SID" type="text" name="twilio_account_sid" value="{{ old('twilio_account_sid', $settings->twilio_account_sid) }}" placeholder="ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
                                            class="crm-input font-mono">
                                 </div>
                                 <div>
                                     <label class="crm-label">Auth Token</label>
-                                    <input type="password" name="twilio_auth_token" value="{{ old('twilio_auth_token', $settings->twilio_auth_token) }}" placeholder="••••••••••••••••••••••••"
+                                    <input aria-label="Auth Token" type="password" name="twilio_auth_token" value="{{ old('twilio_auth_token', $settings->twilio_auth_token) }}" placeholder="••••••••••••••••••••••••"
                                            class="crm-input font-mono">
                                 </div>
                                 <div class="sm:col-span-2">
                                     <label class="crm-label">From Phone Number (E.164 format)</label>
-                                    <input type="text" name="twilio_from_number" value="{{ old('twilio_from_number', $settings->twilio_from_number) }}" placeholder="+1234567890"
+                                    <input aria-label="From Phone Number (E.164 format)" type="text" name="twilio_from_number" value="{{ old('twilio_from_number', $settings->twilio_from_number) }}" placeholder="+1234567890"
                                            class="crm-input font-mono">
                                 </div>
                             </div>
@@ -139,22 +139,22 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label class="crm-label">Auth Key</label>
-                                    <input type="password" name="msg91_auth_key" value="{{ old('msg91_auth_key', $settings->msg91_auth_key) }}" placeholder="MSG91 Auth Key"
+                                    <input aria-label="Auth Key" type="password" name="msg91_auth_key" value="{{ old('msg91_auth_key', $settings->msg91_auth_key) }}" placeholder="MSG91 Auth Key"
                                            class="crm-input font-mono">
                                 </div>
                                 <div>
                                     <label class="crm-label">Sender ID (6 Chars DLT)</label>
-                                    <input type="text" name="msg91_sender_id" value="{{ old('msg91_sender_id', $settings->msg91_sender_id) }}" placeholder="e.g. CCTVCR" maxlength="6"
+                                    <input aria-label="Sender ID (6 Chars DLT)" type="text" name="msg91_sender_id" value="{{ old('msg91_sender_id', $settings->msg91_sender_id) }}" placeholder="e.g. CCTVCR" maxlength="6"
                                            class="crm-input font-mono">
                                 </div>
                                 <div>
                                     <label class="crm-label">Flow ID (Template Flow ID)</label>
-                                    <input type="text" name="msg91_flow_id" value="{{ old('msg91_flow_id', $settings->msg91_flow_id) }}" placeholder="e.g. 648392a8..."
+                                    <input aria-label="Flow ID (Template Flow ID)" type="text" name="msg91_flow_id" value="{{ old('msg91_flow_id', $settings->msg91_flow_id) }}" placeholder="e.g. 648392a8..."
                                            class="crm-input font-mono">
                                 </div>
                                 <div>
                                     <label class="crm-label">DLT Template / TE ID (Optional)</label>
-                                    <input type="text" name="msg91_dlt_te_id" value="{{ old('msg91_dlt_te_id', $settings->msg91_dlt_te_id) }}" placeholder="e.g. 1201160..."
+                                    <input aria-label="DLT Template / TE ID (Optional)" type="text" name="msg91_dlt_te_id" value="{{ old('msg91_dlt_te_id', $settings->msg91_dlt_te_id) }}" placeholder="e.g. 1201160..."
                                            class="crm-input font-mono">
                                 </div>
                             </div>
@@ -170,12 +170,12 @@
                                 <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
                                     <div class="sm:col-span-3">
                                         <label class="crm-label">Webhook Endpoint URL</label>
-                                        <input type="url" name="webhook_url" value="{{ old('webhook_url', $settings->webhook_url) }}" placeholder="https://api.example.com/sms/send"
+                                        <input aria-label="Webhook Endpoint URL" type="url" name="webhook_url" value="{{ old('webhook_url', $settings->webhook_url) }}" placeholder="https://api.example.com/sms/send"
                                                class="crm-input font-mono">
                                     </div>
                                     <div>
                                         <label class="crm-label">HTTP Method</label>
-                                        <select name="webhook_method" class="crm-select">
+                                        <select aria-label="HTTP Method" name="webhook_method" class="crm-select">
                                             <option value="POST" {{ $settings->webhook_method === 'POST' ? 'selected' : '' }}>POST</option>
                                             <option value="GET" {{ $settings->webhook_method === 'GET' ? 'selected' : '' }}>GET</option>
                                             <option value="PUT" {{ $settings->webhook_method === 'PUT' ? 'selected' : '' }}>PUT</option>
@@ -186,19 +186,19 @@
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
                                         <label class="crm-label">Webhook Secret / HMAC Key</label>
-                                        <input type="text" name="webhook_secret" value="{{ old('webhook_secret', $settings->webhook_secret) }}" placeholder="Optional secret for X-Signature header"
+                                        <input aria-label="Webhook Secret / HMAC Key" type="text" name="webhook_secret" value="{{ old('webhook_secret', $settings->webhook_secret) }}" placeholder="Optional secret for X-Signature header"
                                                class="crm-input font-mono">
                                     </div>
                                     <div>
                                         <label class="crm-label">Custom HTTP Headers (JSON)</label>
-                                        <input type="text" name="webhook_headers" value="{{ old('webhook_headers', $settings->webhook_headers) }}" placeholder='{"Authorization": "Bearer key..."}'
+                                        <input aria-label="Custom HTTP Headers (JSON)" type="text" name="webhook_headers" value="{{ old('webhook_headers', $settings->webhook_headers) }}" placeholder='{"Authorization": "Bearer key..."}'
                                                class="crm-input font-mono">
                                     </div>
                                 </div>
 
                                 <div>
                                     <label class="crm-label">Custom JSON Payload Template (Optional)</label>
-                                    <textarea name="webhook_payload_template" rows="2" placeholder='{"recipient": "{phone}", "text": "{message}", "code": "{otp}"}'
+                                    <textarea aria-label="Custom JSON Payload Template (Optional)" name="webhook_payload_template" rows="2" placeholder='{"recipient": "{phone}", "text": "{message}", "code": "{otp}"}'
                                               class="crm-input font-mono" style="height: auto;">{{ old('webhook_payload_template', $settings->webhook_payload_template) }}</textarea>
                                     <span class="text-[11px] text-slate-500 dark:text-slate-400">Supported placeholders: <code>{phone}</code>, <code>{message}</code>, <code>{otp}</code></span>
                                 </div>
@@ -264,27 +264,27 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label class="crm-label">Razorpay Key ID</label>
-                                    <input type="text" name="razorpay_key_id" value="{{ old('razorpay_key_id', $settings->razorpay_key_id) }}" placeholder="rzp_live_... / rzp_test_..."
+                                    <input aria-label="Razorpay Key ID" type="text" name="razorpay_key_id" value="{{ old('razorpay_key_id', $settings->razorpay_key_id) }}" placeholder="rzp_live_... / rzp_test_..."
                                            class="crm-input font-mono">
                                 </div>
                                 <div>
                                     <label class="crm-label">Razorpay Key Secret</label>
-                                    <input type="password" name="razorpay_key_secret" value="{{ old('razorpay_key_secret', $settings->razorpay_key_secret) }}" placeholder="••••••••••••••••"
+                                    <input aria-label="Razorpay Key Secret" type="password" name="razorpay_key_secret" value="{{ old('razorpay_key_secret', $settings->razorpay_key_secret) }}" placeholder="••••••••••••••••"
                                            class="crm-input font-mono">
                                 </div>
                                 <div>
                                     <label class="crm-label">Razorpay Webhook Secret (Optional)</label>
-                                    <input type="text" name="razorpay_webhook_secret" value="{{ old('razorpay_webhook_secret', $settings->razorpay_webhook_secret) }}" placeholder="Secret for /webhook/razorpay"
+                                    <input aria-label="Razorpay Webhook Secret (Optional)" type="text" name="razorpay_webhook_secret" value="{{ old('razorpay_webhook_secret', $settings->razorpay_webhook_secret) }}" placeholder="Secret for /webhook/razorpay"
                                            class="crm-input font-mono">
                                 </div>
                                 <div>
                                     <label class="crm-label">UPI VPA ID (Virtual Address)</label>
-                                    <input type="text" name="upi_vpa_id" value="{{ old('upi_vpa_id', $settings->upi_vpa_id) }}" placeholder="cctvbusiness@okhdfcbank"
+                                    <input aria-label="UPI VPA ID (Virtual Address)" type="text" name="upi_vpa_id" value="{{ old('upi_vpa_id', $settings->upi_vpa_id) }}" placeholder="cctvbusiness@okhdfcbank"
                                            class="crm-input font-mono">
                                 </div>
                                 <div class="sm:col-span-2">
                                     <label class="crm-label">Merchant / Payee Name (Shown in UPI Apps)</label>
-                                    <input type="text" name="upi_merchant_name" value="{{ old('upi_merchant_name', $settings->upi_merchant_name) }}" placeholder="Precision IT Security Solutions"
+                                    <input aria-label="Merchant / Payee Name (Shown in UPI Apps)" type="text" name="upi_merchant_name" value="{{ old('upi_merchant_name', $settings->upi_merchant_name) }}" placeholder="Precision IT Security Solutions"
                                            class="crm-input">
                                 </div>
                             </div>
@@ -325,7 +325,7 @@
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 <div>
                                     <label class="crm-label">Mailer Driver</label>
-                                    <select name="smtp_mailer" id="smtp_mailer" class="crm-select">
+                                    <select aria-label="Mailer Driver" name="smtp_mailer" id="smtp_mailer" class="crm-select">
                                         <option value="smtp" {{ ($settings->smtp_mailer ?? 'smtp') === 'smtp' ? 'selected' : '' }}>SMTP (Live Delivery)</option>
                                         <option value="log" {{ ($settings->smtp_mailer ?? '') === 'log' ? 'selected' : '' }}>Log (Local file testing)</option>
                                         <option value="sendmail" {{ ($settings->smtp_mailer ?? '') === 'sendmail' ? 'selected' : '' }}>Sendmail</option>
@@ -333,13 +333,13 @@
                                 </div>
                                 <div>
                                     <label class="crm-label">SMTP Host Server</label>
-                                    <input type="text" name="smtp_host" id="smtp_host" value="{{ $settings->smtp_host }}"
+                                    <input aria-label="SMTP Host Server" type="text" name="smtp_host" id="smtp_host" value="{{ $settings->smtp_host }}"
                                            placeholder="smtp.office365.com"
                                            class="crm-input font-mono">
                                 </div>
                                 <div>
                                     <label class="crm-label">SMTP Port</label>
-                                    <input type="number" name="smtp_port" id="smtp_port" value="{{ $settings->smtp_port ?? 587 }}"
+                                    <input aria-label="SMTP Port" type="number" name="smtp_port" id="smtp_port" value="{{ $settings->smtp_port ?? 587 }}"
                                            placeholder="587"
                                            class="crm-input font-mono">
                                 </div>
@@ -348,19 +348,19 @@
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 <div>
                                     <label class="crm-label">SMTP Username</label>
-                                    <input type="text" name="smtp_username" id="smtp_username" value="{{ $settings->smtp_username }}"
+                                    <input aria-label="SMTP Username" type="text" name="smtp_username" id="smtp_username" value="{{ $settings->smtp_username }}"
                                            placeholder="sales@yourdomain.com"
                                            class="crm-input font-mono">
                                 </div>
                                 <div>
                                     <label class="crm-label">SMTP Password</label>
-                                    <input type="password" name="smtp_password" id="smtp_password" value="{{ $settings->smtp_password }}"
+                                    <input aria-label="SMTP Password" type="password" name="smtp_password" id="smtp_password" value="{{ $settings->smtp_password }}"
                                            placeholder="••••••••••••"
                                            class="crm-input font-mono">
                                 </div>
                                 <div>
                                     <label class="crm-label">Encryption</label>
-                                    <select name="smtp_encryption" id="smtp_encryption" class="crm-select">
+                                    <select aria-label="Encryption" name="smtp_encryption" id="smtp_encryption" class="crm-select">
                                         <option value="tls" {{ ($settings->smtp_encryption ?? 'tls') === 'tls' ? 'selected' : '' }}>STARTTLS (Port 587)</option>
                                         <option value="ssl" {{ ($settings->smtp_encryption ?? '') === 'ssl' ? 'selected' : '' }}>SSL (Port 465)</option>
                                         <option value="null" {{ ($settings->smtp_encryption ?? '') === 'null' ? 'selected' : '' }}>None</option>
@@ -371,13 +371,13 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label class="crm-label">Sender Email Address (From)</label>
-                                    <input type="email" name="smtp_from_address" id="smtp_from_address" value="{{ $settings->smtp_from_address }}"
+                                    <input aria-label="Sender Email Address (From)" type="email" name="smtp_from_address" id="smtp_from_address" value="{{ $settings->smtp_from_address }}"
                                            placeholder="quotations@yourcompany.com"
                                            class="crm-input font-mono">
                                 </div>
                                 <div>
                                     <label class="crm-label">Sender Display Name (From Name)</label>
-                                    <input type="text" name="smtp_from_name" id="smtp_from_name" value="{{ $settings->smtp_from_name }}"
+                                    <input aria-label="Sender Display Name (From Name)" type="text" name="smtp_from_name" id="smtp_from_name" value="{{ $settings->smtp_from_name }}"
                                            placeholder="CCTV Security Engineering"
                                            class="crm-input">
                                 </div>
@@ -407,7 +407,7 @@
                             @csrf
                             <div>
                                 <label class="crm-label">Target Test Email</label>
-                                <input type="email" name="test_email" required placeholder="customer@example.com"
+                                <input aria-label="Target Test Email" type="email" name="test_email" required placeholder="customer@example.com"
                                        class="crm-input">
                             </div>
 
@@ -428,13 +428,13 @@
                             @csrf
                             <div>
                                 <label class="crm-label">Recipient Phone</label>
-                                <input type="text" name="test_phone" required placeholder="9876543210"
+                                <input aria-label="Recipient Phone" type="text" name="test_phone" required placeholder="9876543210"
                                        class="crm-input font-mono">
                             </div>
 
                             <div>
                                 <label class="crm-label">Test Message Body</label>
-                                <textarea name="test_message" rows="2" required class="crm-input" style="height: auto;">Test notification from CCTV CRM Gateway.</textarea>
+                                <textarea aria-label="Test Message Body" name="test_message" rows="2" required class="crm-input" style="height: auto;">Test notification from CCTV CRM Gateway.</textarea>
                             </div>
 
                             <button type="submit" class="btn-secondary w-full h-[38px] text-xs font-semibold">
@@ -454,13 +454,13 @@
                             @csrf
                             <div>
                                 <label class="crm-label">Phone Number</label>
-                                <input type="text" name="otp_phone" required placeholder="9876543210"
+                                <input aria-label="Phone Number" type="text" name="otp_phone" required placeholder="9876543210"
                                        class="crm-input font-mono">
                             </div>
 
                             <div>
                                 <label class="crm-label">Recipient Name</label>
-                                <input type="text" name="otp_name" placeholder="John Doe"
+                                <input aria-label="Recipient Name" type="text" name="otp_name" placeholder="John Doe"
                                        class="crm-input">
                             </div>
 

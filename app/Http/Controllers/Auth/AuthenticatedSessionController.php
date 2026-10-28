@@ -67,13 +67,6 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        $port = (int) $request->getPort();
-        if ($port === 8001) {
-            $scheme = $request->getScheme();
-            $host = $request->getHost();
-            return redirect("{$scheme}://{$host}:8001/staff/login");
-        }
-
-        return redirect()->route('staff.login');
+        return redirect()->route('login');
     }
 }

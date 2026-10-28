@@ -301,4 +301,49 @@ class WorkerAttendanceMaintenanceTest extends TestCase
         $this->assertEquals('fake-image-bytes-from-render', $storageFallbackResponse->getContent());
         $this->publicDisk()->assertExists('attendance_photos/attendance_test_missing_on_local.jpg');
     }
+
+    public function test_attendance_page_loads_cleanly_when_worker_is_soft_deleted_or_null(): void
+    {
+        $workDay = WorkDay::create([
+            'project_id' => $this->project->id,
+            'work_date' => $this->today->toDateString(),
+        ]);
+
+        $attendance = ProjectWorkerAttendance::create([
+            'work_day_id' => $workDay->id,
+            'worker_id' => $this->worker->id,
+            'attendance_type' => 'full',
+            'daily_rate_snapshot' => 1000.00,
+            'rate_applied' => 1000.00,
+            'total_amount' => 1000.00,
+            'check_in_at' => now(),
+        ]);
+
+        // Soft-delete the worker
+        $this->worker->delete();
+        $this->assertSoftDeleted('workers', ['id' => $this->worker->id]);
+
+        // 1. Test Day View
+        $response = $this->actingAs($this->admin)->get(route('workers.attendance.index', [
+            'view' => 'day',
+            'date' => $this->today->toDateString(),
+        ]));
+        $response->assertOk();
+        $response->assertSee($this->worker->name);
+        $response->assertSee('Archived');
+
+        // 2. Test Week View
+        $weekResponse = $this->actingAs($this->admin)->get(route('workers.attendance.index', [
+            'view' => 'week',
+            'week' => $this->today->startOfWeek()->toDateString(),
+        ]));
+        $weekResponse->assertOk();
+
+        // 3. Test Month View
+        $monthResponse = $this->actingAs($this->admin)->get(route('workers.attendance.index', [
+            'view' => 'month',
+            'month' => $this->today->format('Y-m'),
+        ]));
+        $monthResponse->assertOk();
+    }
 }

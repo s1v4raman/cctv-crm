@@ -198,14 +198,14 @@
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div>
                             <label class="crm-label">Scheduled Date</label>
-                            <input type="date" name="scheduled_date"
+                            <input aria-label="Scheduled Date" type="date" name="scheduled_date"
                                    value="{{ $job->scheduled_date?->format('Y-m-d') }}"
                                    class="crm-input w-full">
                         </div>
 
                         <div>
                             <label class="crm-label">Assigned Technician</label>
-                            <select name="assigned_technician_id" class="crm-select w-full">
+                            <select aria-label="Assigned Technician" name="assigned_technician_id" class="crm-select w-full">
                                 <option value="">Select Technician...</option>
                                 @foreach ($technicians as $tech)
                                     <option value="{{ $tech->id }}" @selected($job->assigned_technician_id == $tech->id)>
@@ -217,7 +217,7 @@
 
                         <div>
                             <label class="crm-label">Job Status</label>
-                            <select name="status" class="crm-select w-full">
+                            <select aria-label="Job Status" name="status" class="crm-select w-full">
                                 @foreach (['pending','scheduled','assigned','in_progress','completed','cancelled'] as $s)
                                     <option value="{{ $s }}" @selected($job->status === $s)>
                                         {{ ucfirst(str_replace('_', ' ', $s)) }}
@@ -229,7 +229,7 @@
 
                     <div>
                         <label class="crm-label">Installation Notes</label>
-                        <textarea name="installation_notes" rows="3"
+                        <textarea aria-label="Installation Notes" name="installation_notes" rows="3"
                                   placeholder="e.g. Completed camera mounting in warehouse bay 2"
                                   class="w-full bg-white border border-[#ccc] rounded px-3 py-2 text-sm focus:border-blue-600 focus:outline-none">{{ $job->installation_notes }}</textarea>
                     </div>

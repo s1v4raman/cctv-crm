@@ -20,7 +20,7 @@
         {{-- Filter Section --}}
         <div class="crm-section">
             <form method="GET" action="{{ route('suppliers.index') }}" class="flex items-center gap-3 flex-wrap">
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="e.g. Hikvision India" class="crm-input" style="width: 280px;">
+                <input aria-label="Search" type="text" name="search" value="{{ request('search') }}" placeholder="e.g. Hikvision India" class="crm-input" style="width: 280px;">
                 <button type="submit" class="btn-primary">
                     Search
                 </button>
@@ -91,7 +91,7 @@
                             <a href="{{ route('suppliers.show', $supplier) }}" class="action-link">View</a>
                             <a href="{{ route('suppliers.edit', $supplier) }}" class="action-link">Edit</a>
                             @if(auth()->user()->isAdmin())
-                                <form method="POST" action="{{ route('suppliers.destroy', $supplier) }}" onsubmit="return confirm('Are you sure you want to delete this supplier?');" class="inline">
+                                <form method="POST" action="{{ route('suppliers.destroy', $supplier) }}" data-confirm="Are you sure you want to delete this supplier?" class="inline">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="danger-link p-0 bg-transparent border-0 cursor-pointer text-xs">Delete</button>

@@ -22,11 +22,30 @@ class UserController extends Controller
 
         $query = User::query();
 
-        if (in_array($roleFilter, ['admin', 'staff', 'technician', 'customer'])) {
+        if (in_array($roleFilter, ['admin', 'staff', 'technician', 'customer', 'worker'])) {
+            if ($roleFilter === 'worker') {
+                // Ensure all registered workers have associated user records
+                $unlinkedWorkers = \App\Models\Worker::whereNull('user_id')
+                    ->orWhereDoesntHave('user')
+                    ->get();
+                foreach ($unlinkedWorkers as $w) {
+                    $cleanPhone = preg_replace('/[^0-9]/', '', (string) $w->phone);
+                    $email = $cleanPhone ? "worker_{$cleanPhone}@cctv-crm.local" : "worker_{$w->id}@cctv-crm.local";
+                    $user = User::firstOrCreate(
+                        ['email' => $email],
+                        [
+                            'name'     => $w->name,
+                            'password' => Hash::make('worker123!'),
+                            'role'     => 'worker',
+                        ]
+                    );
+                    $w->update(['user_id' => $user->id]);
+                }
+            }
             $query->where('role', $roleFilter);
         }
 
-        $users = $query->orderBy('name')->paginate(15);
+        $users = $query->with('worker')->orderBy('name')->paginate(15)->withQueryString();
 
         return view('admin.users.index', compact('users', 'roleFilter'));
     }
@@ -57,7 +76,7 @@ class UserController extends Controller
             'name'     => ['required', 'string', 'max:255'],
             'email'    => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role'     => ['required', 'string', Rule::in(['admin', 'staff', 'technician'])],
+            'role'     => ['required', 'string', Rule::in(['admin', 'staff', 'technician', 'worker'])],
         ]);
 
         $user = User::create([
@@ -67,17 +86,27 @@ class UserController extends Controller
             'role'     => $request->role,
         ]);
 
+        if ($user->role === 'worker' && !$user->worker) {
+            \App\Models\Worker::create([
+                'user_id'    => $user->id,
+                'name'       => $user->name,
+                'phone'      => null,
+                'daily_rate' => 750.00,
+                'is_active'  => true,
+            ]);
+        }
+
         if ($request->expectsJson() || $request->ajax() || $request->isJson()) {
             return response()->json([
                 'success' => true,
                 'user'    => $user,
-                'message' => 'Technician account registered successfully.',
+                'message' => ucfirst($user->role) . ' account registered successfully.',
             ]);
         }
 
         if ($request->filled('return_to')) {
             return redirect($request->return_to)
-                ->with('status', 'Technician account registered successfully.')
+                ->with('status', ucfirst($user->role) . ' account registered successfully.')
                 ->with('new_technician_id', $user->id);
         }
 
@@ -90,7 +119,7 @@ class UserController extends Controller
      */
     public function show(User $user): View
     {
-        $user->load(['lead']);
+        $user->load(['lead', 'worker']);
 
         $stats = [
             'tickets_count'    => 0,
@@ -99,6 +128,11 @@ class UserController extends Controller
             'invoices_count'   => 0,
             'open_tickets'     => 0,
             'resolved_tickets' => 0,
+            'shifts_count'     => 0,
+            'daily_rate'       => 0,
+            'total_earned'     => 0,
+            'total_paid'       => 0,
+            'balance'          => 0,
         ];
         $recentTickets  = collect();
         $recentJobs     = collect();
@@ -113,6 +147,16 @@ class UserController extends Controller
             
             $recentTickets = \App\Models\ServiceTicket::where('assigned_technician_id', $user->id)->latest()->limit(5)->get();
             $recentJobs    = \App\Models\InstallationJob::where('assigned_technician_id', $user->id)->latest()->limit(5)->get();
+        } elseif ($user->role === 'worker') {
+            $worker = $user->worker ?? \App\Models\Worker::where('user_id', $user->id)->first();
+            if ($worker) {
+                $worker->load(['attendances.project', 'wagePayments.recorder']);
+                $stats['shifts_count'] = $worker->attendances()->count();
+                $stats['daily_rate']   = (float) $worker->daily_rate;
+                $stats['total_earned'] = (float) $worker->getTotalEarned();
+                $stats['total_paid']   = (float) $worker->getTotalPaid();
+                $stats['balance']      = (float) $worker->getRunningBalance();
+            }
         } elseif ($user->role === 'customer') {
             $lead = $user->lead ?? ($user->lead_id ? \App\Models\Lead::find($user->lead_id) : null);
             if ($lead) {
@@ -152,7 +196,7 @@ class UserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
             'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
-            'role' => ['required', 'string', Rule::in(['admin', 'staff', 'technician'])],
+            'role' => ['required', 'string', Rule::in(['admin', 'staff', 'technician', 'worker'])],
         ]);
 
         $data = [
@@ -166,6 +210,16 @@ class UserController extends Controller
         }
 
         $user->update($data);
+
+        if ($user->role === 'worker' && !$user->worker) {
+            \App\Models\Worker::create([
+                'user_id'    => $user->id,
+                'name'       => $user->name,
+                'phone'      => null,
+                'daily_rate' => 750.00,
+                'is_active'  => true,
+            ]);
+        }
 
         $redirectTo = $request->input('return_to', route('admin.users.index'));
         return redirect($redirectTo)

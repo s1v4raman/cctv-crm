@@ -1,4 +1,5 @@
 import Alpine from 'alpinejs';
+import './a11y';
 
 window.Alpine = Alpine;
 

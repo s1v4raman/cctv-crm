@@ -49,7 +49,7 @@
                     </div>
                     <div class="relative w-full sm:w-72 flex items-center">
                         <span class="absolute left-2.5 pointer-events-none text-slate-500 text-xs shrink-0">🔍</span>
-                        <input type="text" x-model="searchTerm" placeholder="Search template title or event key..." 
+                        <input aria-label="Search template title or event key" type="text" x-model="searchTerm" placeholder="Search template title or event key..." 
                                style="padding-left: 2.25rem !important;"
                                class="w-full text-xs font-mono rounded-xl border border-slate-700 bg-[#060913] text-white placeholder-slate-500 focus:border-amber-400 focus:outline-none p-2.5">
                         <button type="button" x-show="searchTerm" @click="searchTerm = ''" class="absolute right-2.5 top-2 text-slate-400 hover:text-white text-xs">&times;</button>
@@ -163,7 +163,7 @@
                                     <label class="block text-sm font-semibold text-slate-300 mb-1.5">
                                         💬 WhatsApp Message Text (Supports *bold*, _italic_, newlines)
                                     </label>
-                                    <textarea name="whatsapp_template" rows="4" required class="w-full text-xs font-mono rounded-xl border border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:outline-none p-3 leading-relaxed">{{ $template->whatsapp_template }}</textarea>
+                                    <textarea aria-label="💬 WhatsApp Message Text (Supports bold, _italic_, newlines)" name="whatsapp_template" rows="4" required class="w-full text-xs font-mono rounded-xl border border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:outline-none p-3 leading-relaxed">{{ $template->whatsapp_template }}</textarea>
                                 </div>
 
                                 {{-- SMS Template --}}
@@ -171,7 +171,7 @@
                                     <label class="block text-sm font-semibold text-slate-300 mb-1.5">
                                         📱 SMS Text (Single / 160-char format)
                                     </label>
-                                    <textarea name="sms_template" rows="2" class="w-full text-xs font-mono rounded-xl border border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:outline-none p-3 leading-relaxed">{{ $template->sms_template }}</textarea>
+                                    <textarea aria-label="📱 SMS Text (Single / 160-char format)" name="sms_template" rows="2" class="w-full text-xs font-mono rounded-xl border border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:outline-none p-3 leading-relaxed">{{ $template->sms_template }}</textarea>
                                 </div>
 
                                 {{-- Email Subject & Body --}}
@@ -180,12 +180,12 @@
                                         <label class="block text-sm font-semibold text-slate-300 mb-1.5">
                                             ✉️ Email Subject Line
                                         </label>
-                                        <input type="text" name="email_subject" value="{{ $template->email_subject }}" required class="w-full text-xs font-semibold rounded-xl border border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:outline-none p-2.5">
+                                        <input aria-label="✉️ Email Subject Line" type="text" name="email_subject" value="{{ $template->email_subject }}" required class="w-full text-xs font-semibold rounded-xl border border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:outline-none p-2.5">
                                     </div>
 
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-300 mb-1.5">Email HTML Body</label>
-                                        <textarea name="email_body" rows="4" required class="w-full text-xs font-mono rounded-xl border border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:outline-none p-3 leading-relaxed">{{ $template->email_body }}</textarea>
+                                        <textarea aria-label="Email HTML Body" name="email_body" rows="4" required class="w-full text-xs font-mono rounded-xl border border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:outline-none p-3 leading-relaxed">{{ $template->email_body }}</textarea>
                                     </div>
                                 </div>
 

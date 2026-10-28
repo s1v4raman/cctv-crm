@@ -75,13 +75,13 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                         <div class="sm:col-span-2">
                             <label class="crm-label">Site Name <span class="required-marker">*</span></label>
-                            <input type="text" name="name" value="{{ old('name', $site->name) }}" required class="crm-input">
+                            <input aria-label="Site Name" type="text" name="name" value="{{ old('name', $site->name) }}" required class="crm-input">
                             @error('name') <p class="error-text">{{ $message }}</p> @enderror
                         </div>
 
                         <div>
                             <label class="crm-label">Link to CRM Lead / Client</label>
-                            <select name="lead_id" class="crm-select">
+                            <select aria-label="Link to CRM Lead / Client" name="lead_id" class="crm-select">
                                 <option value="">-- Standalone Site / Select Client --</option>
                                 @foreach($leads as $l)
                                     <option value="{{ $l->id }}" @selected(old('lead_id', $site->lead_id) == $l->id)>
@@ -94,7 +94,7 @@
 
                         <div>
                             <label class="crm-label">Facility Type <span class="required-marker">*</span></label>
-                            <select name="type" required class="crm-select">
+                            <select aria-label="Facility Type" name="type" required class="crm-select">
                                 @foreach(['commercial' => 'Commercial / Office', 'industrial' => 'Industrial / Factory', 'residential' => 'Residential / Apartment', 'warehouse' => 'Warehouse / Logistics', 'retail' => 'Retail / Showroom', 'hospital' => 'Hospital / Healthcare', 'education' => 'School / College', 'other' => 'Other Facility'] as $k => $label)
                                     <option value="{{ $k }}" @selected(old('type', $site->type) == $k)>{{ $label }}</option>
                                 @endforeach
@@ -105,25 +105,25 @@
 
                     <div class="mb-4">
                         <label class="crm-label">Physical Address <span class="required-marker">*</span></label>
-                        <textarea name="address" rows="2" required class="crm-input" style="height: auto;">{{ old('address', $site->address) }}</textarea>
+                        <textarea aria-label="Physical Address" name="address" rows="2" required class="crm-input" style="height: auto;">{{ old('address', $site->address) }}</textarea>
                         @error('address') <p class="error-text">{{ $message }}</p> @enderror
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
                         <div>
                             <label class="crm-label">City <span class="required-marker">*</span></label>
-                            <input type="text" name="city" value="{{ old('city', $site->city) }}" required class="crm-input">
+                            <input aria-label="City" type="text" name="city" value="{{ old('city', $site->city) }}" required class="crm-input">
                             @error('city') <p class="error-text">{{ $message }}</p> @enderror
                         </div>
 
                         <div>
                             <label class="crm-label">State</label>
-                            <input type="text" name="state" value="{{ old('state', $site->state) }}" class="crm-input">
+                            <input aria-label="State" type="text" name="state" value="{{ old('state', $site->state) }}" class="crm-input">
                         </div>
 
                         <div>
                             <label class="crm-label">PIN Code</label>
-                            <input type="text" name="pincode" value="{{ old('pincode', $site->pincode) }}" class="crm-input">
+                            <input aria-label="PIN Code" type="text" name="pincode" value="{{ old('pincode', $site->pincode) }}" class="crm-input">
                         </div>
                     </div>
 
@@ -132,12 +132,12 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                         <div>
                             <label class="crm-label">Site Contact Person</label>
-                            <input type="text" name="client_contact_person" value="{{ old('client_contact_person', $site->client_contact_person) }}" class="crm-input">
+                            <input aria-label="Site Contact Person" type="text" name="client_contact_person" value="{{ old('client_contact_person', $site->client_contact_person) }}" class="crm-input">
                         </div>
 
                         <div>
                             <label class="crm-label">Site Contact Phone</label>
-                            <input type="text" name="client_phone" value="{{ old('client_phone', $site->client_phone) }}" class="crm-input">
+                            <input aria-label="Site Contact Phone" type="text" name="client_phone" value="{{ old('client_phone', $site->client_phone) }}" class="crm-input">
                         </div>
                     </div>
 
@@ -153,23 +153,23 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                         <div>
                             <label class="crm-label">Latitude</label>
-                            <input type="number" step="any" name="latitude" x-model="lat" class="crm-input">
+                            <input aria-label="Latitude" type="number" step="any" name="latitude" x-model="lat" class="crm-input">
                         </div>
 
                         <div>
                             <label class="crm-label">Longitude</label>
-                            <input type="number" step="any" name="longitude" x-model="lng" class="crm-input">
+                            <input aria-label="Longitude" type="number" step="any" name="longitude" x-model="lng" class="crm-input">
                         </div>
                     </div>
 
                     <div class="mb-4">
                         <label class="crm-label">Google Maps Link</label>
-                        <input type="text" name="google_maps_url" x-model="gmapsUrl" @input.debounce.500ms="parseGoogleMapsUrl()" class="crm-input">
+                        <input aria-label="Google Maps Link" type="text" name="google_maps_url" x-model="gmapsUrl" @input.debounce.500ms="parseGoogleMapsUrl()" class="crm-input">
                     </div>
 
                     <div class="mb-4">
                         <label class="crm-label">Site Notes &amp; Access Instructions</label>
-                        <textarea name="notes" rows="3" class="crm-input" style="height: auto;">{{ old('notes', $site->notes) }}</textarea>
+                        <textarea aria-label="Site Notes &amp; Access Instructions" name="notes" rows="3" class="crm-input" style="height: auto;">{{ old('notes', $site->notes) }}</textarea>
                     </div>
                 </form>
 
@@ -180,7 +180,7 @@
 
                 <div class="flex items-center justify-between pt-4 border-t border-[#ddd] mt-4">
                     @if(!$site->projects()->exists())
-                        <button type="submit" form="delete-site-form" onclick="return confirm('Are you sure you want to delete this site?')" class="danger-link" style="background: none; border: none; cursor: pointer;">
+                        <button type="submit" form="delete-site-form" data-confirm="Are you sure you want to delete this site?" class="danger-link" style="background: none; border: none; cursor: pointer;">
                             Delete
                         </button>
                     @else

@@ -88,7 +88,7 @@
                         @csrf
                         <div>
                             <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Dispatch Channel <span class="text-rose-500">*</span></label>
-                            <select name="channel" required class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#060913] border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-200 focus:border-blue-500 focus:ring-blue-500 font-semibold">
+                            <select aria-label="Dispatch Channel" name="channel" required class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#060913] border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-200 focus:border-blue-500 focus:ring-blue-500 font-semibold">
                                 <option value="whatsapp">💬 WhatsApp Direct</option>
                                 <option value="email">✉️ Email Notification</option>
                                 <option value="sms">📱 SMS Text</option>
@@ -97,27 +97,27 @@
 
                         <div>
                             <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Recipient Name <span class="text-rose-500">*</span></label>
-                            <input type="text" name="recipient_name" required placeholder="e.g. John Doe" class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#060913] border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-200 focus:border-blue-500 focus:ring-blue-500">
+                            <input aria-label="Recipient Name" type="text" name="recipient_name" required placeholder="e.g. John Doe" class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#060913] border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-200 focus:border-blue-500 focus:ring-blue-500">
                         </div>
 
                         <div>
                             <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Recipient Phone / Mobile</label>
-                            <input type="text" name="phone" placeholder="e.g. 9876543210" class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#060913] border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-200 focus:border-blue-500 focus:ring-blue-500">
+                            <input aria-label="Recipient Phone / Mobile" type="text" name="phone" placeholder="e.g. 9876543210" class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#060913] border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-200 focus:border-blue-500 focus:ring-blue-500">
                         </div>
 
                         <div class="sm:col-span-2">
                             <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Email Subject (If sending email)</label>
-                            <input type="text" name="subject" placeholder="e.g. Important Service Notification regarding your CCTV setup" class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#060913] border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-200 focus:border-blue-500 focus:ring-blue-500">
+                            <input aria-label="Email Subject (If sending email)" type="text" name="subject" placeholder="e.g. Important Service Notification regarding your CCTV setup" class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#060913] border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-200 focus:border-blue-500 focus:ring-blue-500">
                         </div>
 
                         <div>
                             <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Recipient Email (If sending email)</label>
-                            <input type="email" name="email" placeholder="e.g. customer@example.com" class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#060913] border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-200 focus:border-blue-500 focus:ring-blue-500">
+                            <input aria-label="Recipient Email (If sending email)" type="email" name="email" placeholder="e.g. customer@example.com" class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#060913] border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-200 focus:border-blue-500 focus:ring-blue-500">
                         </div>
 
                         <div class="sm:col-span-3">
                             <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Message Body <span class="text-rose-500">*</span></label>
-                            <textarea name="message" rows="3" required placeholder="Type your message content here..." class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#060913] border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-200 focus:border-blue-500 focus:ring-blue-500"></textarea>
+                            <textarea aria-label="Message Body" name="message" rows="3" required placeholder="Type your message content here..." class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#060913] border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-200 focus:border-blue-500 focus:ring-blue-500"></textarea>
                         </div>
 
                         <div class="sm:col-span-3 flex justify-end">
@@ -134,11 +134,11 @@
                 <form method="GET" action="{{ route('alerts.index') }}" class="grid grid-cols-1 sm:grid-cols-4 gap-3">
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Search Logs</label>
-                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Recipient, Phone, Message text..." class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#060913] border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-200 focus:border-amber-500 focus:ring-amber-500">
+                        <input aria-label="Search Logs" type="text" name="search" value="{{ request('search') }}" placeholder="Recipient, Phone, Message text..." class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#060913] border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-200 focus:border-amber-500 focus:ring-amber-500">
                     </div>
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Channel</label>
-                        <select name="channel" class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#060913] border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-200 focus:border-amber-500 focus:ring-amber-500">
+                        <select aria-label="Channel" name="channel" class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#060913] border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-200 focus:border-amber-500 focus:ring-amber-500">
                             <option value="">All Channels</option>
                             <option value="whatsapp" @selected(request('channel') === 'whatsapp')>💬 WhatsApp</option>
                             <option value="sms" @selected(request('channel') === 'sms')>📱 SMS</option>
@@ -147,7 +147,7 @@
                     </div>
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Status</label>
-                        <select name="status" class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#060913] border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-200 focus:border-amber-500 focus:ring-amber-500">
+                        <select aria-label="Status" name="status" class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#060913] border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-200 focus:border-amber-500 focus:ring-amber-500">
                             <option value="">All Statuses</option>
                             <option value="sent" @selected(request('status') === 'sent')>Sent</option>
                             <option value="delivered" @selected(request('status') === 'delivered')>Delivered</option>

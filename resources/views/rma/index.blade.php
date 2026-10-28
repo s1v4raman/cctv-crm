@@ -20,9 +20,9 @@
         {{-- Filter Section --}}
         <div class="crm-section">
             <form method="GET" action="{{ route('rma.index') }}" class="flex items-center gap-3 flex-wrap">
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="e.g. RMA-2026-001" class="crm-input" style="width: 240px;">
+                <input aria-label="Search" type="text" name="search" value="{{ request('search') }}" placeholder="e.g. RMA-2026-001" class="crm-input" style="width: 240px;">
 
-                <select name="status" class="crm-select" style="width: 180px;">
+                <select aria-label="Status" name="status" class="crm-select" style="width: 180px;">
                     <option value="">All Statuses</option>
                     @foreach(\App\Models\RmaClaim::statusLabels() as $key => $label)
                         <option value="{{ $key }}" @selected(request('status') === $key)>{{ $label }}</option>
@@ -107,7 +107,7 @@
                                 <a href="{{ route('rma.edit', $claim) }}" class="action-link">Edit</a>
                             @endif
                             @if(auth()->user()->isAdmin())
-                                <form method="POST" action="{{ route('rma.destroy', $claim) }}" class="inline" onsubmit="return confirm('Delete RMA claim {{ addslashes($claim->rma_number) }}? This cannot be undone.')">
+                                <form method="POST" action="{{ route('rma.destroy', $claim) }}" class="inline" data-confirm="Delete RMA claim {{ $claim->rma_number }}? This cannot be undone.">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="danger-link p-0 bg-transparent border-0 cursor-pointer text-xs">Delete</button>

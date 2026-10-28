@@ -305,11 +305,21 @@
                                             @endif
                                             <div>
                                                 <div class="flex items-center gap-1.5">
-                                                    <a href="{{ route('workers.show', $w) }}" class="font-bold text-slate-900 dark:text-white hover:text-indigo-600 transition-colors">
-                                                        {{ $w?->name ?? 'Unknown Worker' }}
-                                                    </a>
-                                                    @if($w && !$w->photo_url && auth()->user()->isAdmin())
-                                                        <a href="{{ route('workers.edit', $w) }}" class="text-[10px] text-indigo-500 hover:underline" title="Upload master profile photo">+ Photo</a>
+                                                    @if($w)
+                                                        <a href="{{ route('workers.show', $w) }}" class="font-bold text-slate-900 dark:text-white hover:text-indigo-600 transition-colors">
+                                                            {{ $w->name }}
+                                                        </a>
+                                                        @if(method_exists($w, 'trashed') && $w->trashed())
+                                                            <span class="text-[9px] px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 font-medium" title="This worker profile is archived/deleted">Archived</span>
+                                                        @endif
+                                                        @if(!$w->photo_url && auth()->user()->isAdmin())
+                                                            <a href="{{ route('workers.edit', $w) }}" class="text-[10px] text-indigo-500 hover:underline" title="Upload master profile photo">+ Photo</a>
+                                                        @endif
+                                                    @else
+                                                        <span class="font-bold text-slate-600 dark:text-slate-400">
+                                                            {{ $att->worker_id ? 'Worker #' . $att->worker_id : 'Unknown Worker' }}
+                                                        </span>
+                                                        <span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 font-medium">Deleted</span>
                                                     @endif
                                                 </div>
                                                 <div class="text-[11px] text-slate-500">{{ $w?->phone ?? 'No phone' }}</div>
@@ -511,18 +521,25 @@
                                 <tr class="hover:bg-slate-50/70 dark:hover:bg-slate-800/50 transition-colors">
                                     <td class="py-2.5 px-3">
                                         <div class="flex items-center gap-2">
-                                            @if($w->photo_url)
+                                            @if($w?->photo_url)
                                                 <img src="{{ $w->photo_url }}" alt="{{ $w->name }}" class="w-7 h-7 rounded-full object-cover border border-slate-300 dark:border-slate-600 shrink-0">
                                             @else
                                                 <div class="w-7 h-7 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-[11px] flex items-center justify-center shrink-0">
-                                                    {{ strtoupper(substr($w->name, 0, 1)) }}
+                                                    {{ strtoupper(substr($w?->name ?? 'W', 0, 1)) }}
                                                 </div>
                                             @endif
                                             <div>
-                                                <a href="{{ route('workers.show', $w) }}" class="font-bold text-slate-900 dark:text-white hover:text-indigo-600">
-                                                    {{ $w->name }}
-                                                </a>
-                                                <div class="text-[10px] text-slate-500">&#8377;{{ number_format($w->daily_rate, 2) }}/day</div>
+                                                @if($w)
+                                                    <a href="{{ route('workers.show', $w) }}" class="font-bold text-slate-900 dark:text-white hover:text-indigo-600">
+                                                        {{ $w->name }}
+                                                    </a>
+                                                    @if(method_exists($w, 'trashed') && $w->trashed())
+                                                        <span class="text-[9px] px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 font-medium">Archived</span>
+                                                    @endif
+                                                    <div class="text-[10px] text-slate-500">&#8377;{{ number_format($w->daily_rate, 2) }}/day</div>
+                                                @else
+                                                    <span class="font-bold text-slate-500">Deleted Worker</span>
+                                                @endif
                                             </div>
                                         </div>
                                     </td>
@@ -633,18 +650,25 @@
                                 <tr class="hover:bg-slate-50/70 dark:hover:bg-slate-800/50 transition-colors">
                                     <td class="py-2.5 px-3">
                                         <div class="flex items-center gap-2">
-                                            @if($w->photo_url)
+                                            @if($w?->photo_url)
                                                 <img src="{{ $w->photo_url }}" alt="{{ $w->name }}" class="w-8 h-8 rounded-full object-cover border border-slate-300 dark:border-slate-600 shrink-0">
                                             @else
                                                 <div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs flex items-center justify-center shrink-0">
-                                                    {{ strtoupper(substr($w->name, 0, 1)) }}
+                                                    {{ strtoupper(substr($w?->name ?? 'W', 0, 1)) }}
                                                 </div>
                                             @endif
                                             <div>
-                                                <a href="{{ route('workers.show', $w) }}" class="font-bold text-slate-900 dark:text-white hover:text-indigo-600">
-                                                    {{ $w->name }}
-                                                </a>
-                                                <div class="text-[10px] text-slate-500">&#8377;{{ number_format($w->daily_rate, 2) }}/day</div>
+                                                @if($w)
+                                                    <a href="{{ route('workers.show', $w) }}" class="font-bold text-slate-900 dark:text-white hover:text-indigo-600">
+                                                        {{ $w->name }}
+                                                    </a>
+                                                    @if(method_exists($w, 'trashed') && $w->trashed())
+                                                        <span class="text-[9px] px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 font-medium">Archived</span>
+                                                    @endif
+                                                    <div class="text-[10px] text-slate-500">&#8377;{{ number_format($w->daily_rate, 2) }}/day</div>
+                                                @else
+                                                    <span class="font-bold text-slate-500">Deleted Worker</span>
+                                                @endif
                                             </div>
                                         </div>
                                     </td>

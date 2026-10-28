@@ -26,7 +26,7 @@
                         New Purchase Order
                     </a>
                     @if(auth()->user()->isAdmin())
-                        <form method="POST" action="{{ route('suppliers.destroy', $supplier) }}" onsubmit="return confirm('Are you sure you want to delete supplier {{ addslashes($supplier->name) }}?');" class="inline">
+                        <form method="POST" action="{{ route('suppliers.destroy', $supplier) }}" data-confirm="Are you sure you want to delete supplier {{ $supplier->name }}?" class="inline">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="danger-link p-0 bg-transparent border-0 cursor-pointer text-xs ml-2">Delete</button>

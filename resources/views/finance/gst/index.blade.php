@@ -19,7 +19,7 @@
             <div class="flex flex-wrap items-center gap-2">
                 <form method="GET" action="{{ route('finance.gst.index') }}" class="flex items-center gap-2">
                     <input type="hidden" name="tab" value="{{ $activeTab }}">
-                    <input type="month" name="month" value="{{ $selectedMonth }}" onchange="this.form.submit()"
+                    <input aria-label="Month" type="month" name="month" value="{{ $selectedMonth }}" onchange="this.form.submit()"
                            class="crm-input text-xs py-1" style="height: 38px; width: 140px;">
                 </form>
 
@@ -726,43 +726,43 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
                 <div>
                     <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Company Trade Name *</label>
-                    <input type="text" name="company_trade_name" value="{{ old('company_trade_name', $companyGst['trade_name']) }}" required
+                    <input aria-label="Company Trade Name" type="text" name="company_trade_name" value="{{ old('company_trade_name', $companyGst['trade_name']) }}" required
                            class="w-full rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold">
                 </div>
 
                 <div>
                     <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Legal Registered Name</label>
-                    <input type="text" name="company_legal_name" value="{{ old('company_legal_name', $companyGst['legal_name']) }}"
+                    <input aria-label="Legal Registered Name" type="text" name="company_legal_name" value="{{ old('company_legal_name', $companyGst['legal_name']) }}"
                            class="w-full rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold">
                 </div>
 
                 <div>
                     <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Company GSTIN (15 Digits) *</label>
-                    <input type="text" name="company_gstin" value="{{ old('company_gstin', $companyGst['gstin']) }}" maxlength="15" required
+                    <input aria-label="Company GSTIN (15 Digits)" type="text" name="company_gstin" value="{{ old('company_gstin', $companyGst['gstin']) }}" maxlength="15" required
                            class="w-full rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-mono font-bold uppercase">
                 </div>
 
                 <div>
                     <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Company PAN</label>
-                    <input type="text" name="company_pan" value="{{ old('company_pan', $companyGst['pan']) }}" maxlength="10"
+                    <input aria-label="Company PAN" type="text" name="company_pan" value="{{ old('company_pan', $companyGst['pan']) }}" maxlength="10"
                            class="w-full rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-mono font-bold uppercase">
                 </div>
 
                 <div>
                     <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Principal State *</label>
-                    <input type="text" name="company_state" value="{{ old('company_state', $companyGst['state']) }}" required
+                    <input aria-label="Principal State" type="text" name="company_state" value="{{ old('company_state', $companyGst['state']) }}" required
                            class="w-full rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold">
                 </div>
 
                 <div>
                     <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">State Code (2 Digits) *</label>
-                    <input type="text" name="company_state_code" value="{{ old('company_state_code', $companyGst['state_code']) }}" maxlength="2" required
+                    <input aria-label="State Code (2 Digits)" type="text" name="company_state_code" value="{{ old('company_state_code', $companyGst['state_code']) }}" maxlength="2" required
                            class="w-full rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-mono font-bold">
                 </div>
 
                 <div class="md:col-span-2">
                     <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Registered Business Address</label>
-                    <textarea name="company_address" rows="2"
+                    <textarea aria-label="Registered Business Address" name="company_address" rows="2"
                               class="w-full rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium">{{ old('company_address', $companyGst['address']) }}</textarea>
                 </div>
             </div>
@@ -804,7 +804,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
                 <div>
                     <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">GSTR-1 Status *</label>
-                    <select name="gstr1_status" required class="w-full rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold">
+                    <select aria-label="GSTR-1 Status" name="gstr1_status" required class="w-full rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold">
                         <option value="pending" {{ ($filing?->gstr1_status ?? '') === 'pending' ? 'selected' : '' }}>Pending</option>
                         <option value="reconciled" {{ ($filing?->gstr1_status ?? '') === 'reconciled' ? 'selected' : '' }}>Reconciled (Ready)</option>
                         <option value="filed" {{ ($filing?->gstr1_status ?? '') === 'filed' ? 'selected' : '' }}>Filed on Portal</option>
@@ -813,7 +813,7 @@
 
                 <div>
                     <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">GSTR-3B Status *</label>
-                    <select name="gstr3b_status" required class="w-full rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold">
+                    <select aria-label="GSTR-3B Status" name="gstr3b_status" required class="w-full rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold">
                         <option value="pending" {{ ($filing?->gstr3b_status ?? '') === 'pending' ? 'selected' : '' }}>Pending</option>
                         <option value="reconciled" {{ ($filing?->gstr3b_status ?? '') === 'reconciled' ? 'selected' : '' }}>Reconciled (Ready)</option>
                         <option value="filed" {{ ($filing?->gstr3b_status ?? '') === 'filed' ? 'selected' : '' }}>Filed & Discharged</option>
@@ -822,13 +822,13 @@
 
                 <div>
                     <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Cash Tax Paid (₹)</label>
-                    <input type="number" step="0.01" name="tax_paid" value="{{ old('tax_paid', $filing?->tax_paid ?? $gstr3bData['net_tax_payable_cash']['total']) }}"
+                    <input aria-label="Cash Tax Paid (₹)" type="number" step="0.01" name="tax_paid" value="{{ old('tax_paid', $filing?->tax_paid ?? $gstr3bData['net_tax_payable_cash']['total']) }}"
                            class="w-full rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-mono font-bold">
                 </div>
 
                 <div>
                     <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Payment Mode</label>
-                    <select name="payment_mode" class="w-full rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold">
+                    <select aria-label="Payment Mode" name="payment_mode" class="w-full rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold">
                         <option value="online_portal">GST Portal E-Payment (Net Banking/UPI)</option>
                         <option value="neft_rtgs">NEFT / RTGS Challan</option>
                         <option value="over_counter">Over the Counter (Bank Counter)</option>
@@ -837,25 +837,25 @@
 
                 <div>
                     <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">GST PMT-06 Challan Number</label>
-                    <input type="text" name="challan_no" value="{{ old('challan_no', $filing?->challan_no) }}" placeholder="e.g. 2409330001234"
+                    <input aria-label="GST PMT-06 Challan Number" type="text" name="challan_no" value="{{ old('challan_no', $filing?->challan_no) }}" placeholder="e.g. 2409330001234"
                            class="w-full rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-mono font-semibold">
                 </div>
 
                 <div>
                     <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Challan Identification Number (CIN)</label>
-                    <input type="text" name="cin_number" value="{{ old('cin_number', $filing?->cin_number) }}" placeholder="17 Digit CIN number from bank"
+                    <input aria-label="Challan Identification Number (CIN)" type="text" name="cin_number" value="{{ old('cin_number', $filing?->cin_number) }}" placeholder="17 Digit CIN number from bank"
                            class="w-full rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-mono font-semibold">
                 </div>
 
                 <div>
                     <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Filing / Payment Date</label>
-                    <input type="date" name="filing_date" value="{{ old('filing_date', $filing?->filing_date?->format('Y-m-d') ?? now()->format('Y-m-d')) }}"
+                    <input aria-label="Filing / Payment Date" type="date" name="filing_date" value="{{ old('filing_date', $filing?->filing_date?->format('Y-m-d') ?? now()->format('Y-m-d')) }}"
                            class="w-full rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold">
                 </div>
 
                 <div class="md:col-span-2">
                     <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Filing Audit Notes</label>
-                    <textarea name="notes" rows="2" placeholder="e.g. Filed by CA Sharma & Associates. ARN: AA3309260012345"
+                    <textarea aria-label="Filing Audit Notes" name="notes" rows="2" placeholder="e.g. Filed by CA Sharma & Associates. ARN: AA3309260012345"
                               class="w-full rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium">{{ old('notes', $filing?->notes) }}</textarea>
                 </div>
             </div>

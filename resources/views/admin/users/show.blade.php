@@ -73,10 +73,11 @@
                                     if ($user->isAdmin()) $roleBadgeClass = 'bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300 border-purple-200 dark:border-purple-800';
                                     elseif ($user->isStaff()) $roleBadgeClass = 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 border-blue-200 dark:border-blue-800';
                                     elseif ($user->isTechnician()) $roleBadgeClass = 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300 border-amber-200 dark:border-amber-800';
-                                    elseif ($user->isCustomer()) $roleBadgeClass = 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800';
+                                    elseif ($user->isWorker()) $roleBadgeClass = 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800';
+                                    elseif ($user->isCustomer()) $roleBadgeClass = 'bg-teal-100 text-teal-700 dark:bg-teal-950 dark:text-teal-300 border-teal-200 dark:border-teal-800';
                                 @endphp
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider border {{ $roleBadgeClass }}">
-                                    {{ $user->role === 'staff' ? 'Employee' : ucfirst($user->role) }}
+                                    {{ $user->role === 'staff' ? 'Employee' : ($user->role === 'worker' ? 'Field Worker' : ucfirst($user->role)) }}
                                 </span>
 
                                 @if($user->id === auth()->id())
@@ -107,6 +108,16 @@
                             <a href="{{ route('leads.show', $user->lead_id) }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 transition">
                                 <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                                 View Linked CRM Lead
+                            </a>
+                        </div>
+                    @endif
+
+                    {{-- Worker Hub Quick Link (if applicable) --}}
+                    @if($user->isWorker() && $user->worker)
+                        <div class="shrink-0 flex items-center gap-2">
+                            <a href="{{ route('workers.show', $user->worker) }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white transition shadow-xs">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                Open Worker Hub & Ledger
                             </a>
                         </div>
                     @endif
@@ -147,6 +158,39 @@
                         </div>
                         <div class="text-2xl font-bold text-slate-900 dark:text-white">{{ $stats['tickets_count'] + $stats['jobs_count'] }}</div>
                         <div class="text-[11px] text-slate-400 mt-0.5">All service touchpoints</div>
+                    </div>
+                @elseif($user->isWorker())
+                    <div class="bg-white dark:bg-[#0f172a] rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-xs">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Daily Wage Rate</span>
+                            <span class="w-7 h-7 rounded-lg bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-xs">₹</span>
+                        </div>
+                        <div class="text-2xl font-bold text-slate-900 dark:text-white">₹{{ number_format($stats['daily_rate'] ?? 0, 2) }}</div>
+                        <div class="text-[11px] text-slate-400 mt-0.5">Approved per shift</div>
+                    </div>
+                    <div class="bg-white dark:bg-[#0f172a] rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-xs">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Shifts Worked</span>
+                            <span class="w-7 h-7 rounded-lg bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-xs">📅</span>
+                        </div>
+                        <div class="text-2xl font-bold text-slate-900 dark:text-white">{{ $stats['shifts_count'] ?? 0 }}</div>
+                        <div class="text-[11px] text-slate-400 mt-0.5">Project attendances logged</div>
+                    </div>
+                    <div class="bg-white dark:bg-[#0f172a] rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-xs">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Total Wages Paid</span>
+                            <span class="w-7 h-7 rounded-lg bg-purple-100 dark:bg-purple-950 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold text-xs">💰</span>
+                        </div>
+                        <div class="text-2xl font-bold text-slate-900 dark:text-white">₹{{ number_format($stats['total_paid'] ?? 0, 2) }}</div>
+                        <div class="text-[11px] text-slate-400 mt-0.5">Disbursed wage payments</div>
+                    </div>
+                    <div class="bg-white dark:bg-[#0f172a] rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-xs">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Outstanding Balance</span>
+                            <span class="w-7 h-7 rounded-lg {{ ($stats['balance'] ?? 0) > 0 ? 'bg-amber-100 text-amber-600 dark:bg-amber-950 dark:text-amber-400' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400' }} flex items-center justify-center font-bold text-xs">⏳</span>
+                        </div>
+                        <div class="text-2xl font-bold {{ ($stats['balance'] ?? 0) > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-slate-900 dark:text-white' }}">₹{{ number_format($stats['balance'] ?? 0, 2) }}</div>
+                        <div class="text-[11px] text-slate-400 mt-0.5">Net liability due</div>
                     </div>
                 @elseif($user->isCustomer())
                     <div class="bg-white dark:bg-[#0f172a] rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-xs">

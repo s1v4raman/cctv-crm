@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Secure Online Payment | {{ config('app.name', 'CCTV Security Solutions') }}</title>
-    @vite('resources/css/standalone.css')
+    @vite(['resources/css/standalone.css', 'resources/js/app.js'])
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: #f8fafc; color: #1e293b; }
@@ -104,7 +104,7 @@
                 </div>
                 <div class="relative">
                     <span class="absolute left-3 top-2 text-sm font-bold text-slate-500">₹</span>
-                    <input type="number" step="0.01" min="1" max="{{ $fullAmount }}" id="pay-amount-input" value="{{ $payableAmount }}"
+                    <input aria-label="Amount to Pay (₹)" type="number" step="0.01" min="1" max="{{ $fullAmount }}" id="pay-amount-input" value="{{ $payableAmount }}"
                            class="w-full pl-7 pr-20 py-2 bg-white border border-slate-300 rounded-[4px] text-sm font-bold text-slate-900 focus:outline-none focus:border-blue-600">
                     <button type="button" onclick="selectPaymentPlan('full')" class="absolute right-1.5 top-1 px-2.5 py-1 rounded-[4px] bg-slate-100 text-slate-700 hover:bg-slate-200 text-xs font-medium border border-slate-300">
                         Set Full
@@ -319,13 +319,13 @@
 
         function copyVpa() {
             navigator.clipboard.writeText(vpaId);
-            alert('UPI ID copied to clipboard: ' + vpaId);
+            crmAlert('UPI ID copied to clipboard: ' + vpaId);
         }
 
         async function initiateRazorpayPayment() {
             const amount = parseFloat(document.getElementById('pay-amount-input').value);
             if (!amount || amount <= 0) {
-                alert('Please enter a valid payment amount.');
+                crmAlert('Please enter a valid payment amount.');
                 return;
             }
 
@@ -382,7 +382,7 @@
                 };
 
                 if (orderData.is_mock) {
-                    const simulateSuccess = confirm(`[DEMO / TEST GATEWAY MODE]\n\nSimulate successful online payment of ₹${amount} for order ${orderData.order_id}?`);
+                    const simulateSuccess = await crmConfirm(`[DEMO / TEST GATEWAY MODE]\n\nSimulate successful online payment of ₹${amount} for order ${orderData.order_id}?`);
                     if (simulateSuccess) {
                         await verifyAndConfirmPayment({
                             razorpay_order_id: orderData.order_id,
@@ -397,7 +397,7 @@
                 rzp.open();
 
             } catch (err) {
-                alert('Payment error: ' + err.message);
+                crmAlert('Payment error: ' + err.message);
                 btn.disabled = false;
                 spinner.classList.add('hidden');
             }
@@ -428,17 +428,17 @@
                 if (result.success) {
                     showPaymentSuccess(result, method);
                 } else {
-                    alert('Payment verification failed: ' + result.message);
+                    crmAlert('Payment verification failed: ' + result.message);
                 }
             } catch (e) {
-                alert('Verification server error: ' + e.message);
+                crmAlert('Verification server error: ' + e.message);
             }
         }
 
         async function submitManualUtr() {
             const utr = document.getElementById('manual-utr-input').value.trim();
             if (!utr) {
-                alert('Please enter your 12-digit UPI UTR / Transaction Reference number.');
+                crmAlert('Please enter your 12-digit UPI UTR / Transaction Reference number.');
                 return;
             }
             const amount = parseFloat(document.getElementById('pay-amount-input').value);
@@ -463,17 +463,17 @@
                 if (result.success) {
                     showPaymentSuccess(result, 'upi');
                 } else {
-                    alert('Error recording UPI transfer: ' + result.message);
+                    crmAlert('Error recording UPI transfer: ' + result.message);
                 }
             } catch (e) {
-                alert('Server error: ' + e.message);
+                crmAlert('Server error: ' + e.message);
             }
         }
 
         async function submitCashPaymentChoice() {
             const amount = parseFloat(document.getElementById('pay-amount-input').value);
             if (!amount || amount <= 0) {
-                alert('Please enter a valid amount.');
+                crmAlert('Please enter a valid amount.');
                 return;
             }
 
@@ -502,12 +502,12 @@
                 if (result.success) {
                     showPaymentSuccess(result, 'cash');
                 } else {
-                    alert('Error confirming cash order: ' + result.message);
+                    crmAlert('Error confirming cash order: ' + result.message);
                     btn.disabled = false;
                     spinner.classList.add('hidden');
                 }
             } catch (e) {
-                alert('Server error: ' + e.message);
+                crmAlert('Server error: ' + e.message);
                 btn.disabled = false;
                 spinner.classList.add('hidden');
             }

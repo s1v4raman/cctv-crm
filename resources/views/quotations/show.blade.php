@@ -75,7 +75,7 @@
                         </button>
                     </form>
                     <form method="POST" action="{{ route('quotations.destroy', $quotation) }}"
-                          onsubmit="return confirm('Delete {{ addslashes($quotation->quotation_no) }}?')" class="inline">
+                          data-confirm="Delete {{ $quotation->quotation_no }}?" class="inline">
                         @csrf @method('DELETE')
                         <button type="submit" class="btn-secondary text-xs cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 text-rose-600 hover:text-rose-700 hover:border-rose-300 dark:hover:border-rose-700 shadow-2xs transition" title="Delete Quotation">
                             <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
@@ -87,7 +87,7 @@
                 @if($quotation->status === 'sent')
                     <form method="POST" action="{{ route('quotations.accept', $quotation) }}" class="inline">
                         @csrf
-                        <button type="submit" onclick="return confirm('Confirm customer accepted?')" class="btn-primary text-xs cursor-pointer inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 shadow-2xs">
+                        <button type="submit" data-confirm="Confirm customer accepted?" class="btn-primary text-xs cursor-pointer inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 shadow-2xs">
                             <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                             <span>Mark Accepted</span>
                         </button>
@@ -222,7 +222,7 @@
                                     @if($quotation->status === 'draft')
                                         <td class="text-right">
                                             <form method="POST" action="{{ route('quotation-items.destroy', $item) }}"
-                                                  onsubmit="return confirm('Remove this item?')" class="inline">
+                                                  data-confirm="Remove this item?" class="inline">
                                                 @csrf @method('DELETE')
                                                 <button type="submit" class="danger-link text-xs cursor-pointer">Remove</button>
                                             </form>
@@ -312,7 +312,7 @@
             <p class="text-xs text-slate-400 mb-4">Please provide the reason why the customer rejected this quotation.</p>
             <form method="POST" action="{{ route('quotations.reject', $quotation) }}">
                 @csrf
-                <textarea name="rejection_reason" class="w-full bg-[#060913] border border-slate-700 rounded-xl p-3 text-sm text-white placeholder-slate-500 focus:border-rose-500 focus:outline-none min-h-[100px] mb-4" required
+                <textarea aria-label="Rejection reason" name="rejection_reason" class="w-full bg-[#060913] border border-slate-700 rounded-xl p-3 text-sm text-white placeholder-slate-500 focus:border-rose-500 focus:outline-none min-h-[100px] mb-4" required
                           placeholder="e.g. Price too high, customer chose another vendor…"></textarea>
                 <div class="flex justify-end gap-3">
                     <button type="button" onclick="document.getElementById('reject-modal').classList.remove('open')"
@@ -380,7 +380,7 @@
                         <svg class="w-4 h-4 shrink-0 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.206"/></svg>
                         Recipient Email <span class="required-marker text-rose-500">*</span>
                     </label>
-                    <input type="email" name="email" required value="{{ old('email', $quotation->lead->email) }}" placeholder="client@example.com" class="crm-input">
+                    <input aria-label="Recipient Email" type="email" name="email" required value="{{ old('email', $quotation->lead->email) }}" placeholder="client@example.com" class="crm-input">
                 </div>
 
                 <div>
@@ -388,7 +388,7 @@
                         <svg class="w-4 h-4 shrink-0 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/></svg>
                         Subject <span class="required-marker text-rose-500">*</span>
                     </label>
-                    <input type="text" name="subject" required value="{{ $quotation->getEmailSubject() }}" class="crm-input">
+                    <input aria-label="Subject" type="text" name="subject" required value="{{ $quotation->getEmailSubject() }}" class="crm-input">
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -397,7 +397,7 @@
                             <svg class="w-4 h-4 shrink-0 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                             PDF Template Style
                         </label>
-                        <select name="pdf_format" class="crm-select">
+                        <select aria-label="PDF Template Style" name="pdf_format" class="crm-select">
                             <option value="1">Executive Modern (Format 1)</option>
                             <option value="2">Technical Detailed (Format 2)</option>
                             <option value="3">Classic Formal (Format 3)</option>
@@ -420,7 +420,7 @@
                         <svg class="w-4 h-4 shrink-0 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                         Custom Notes for Customer
                     </label>
-                    <textarea name="custom_message" rows="2" placeholder="e.g. As discussed during our survey, includes 2-year AMC..." class="crm-input h-auto py-2.5"></textarea>
+                    <textarea aria-label="Custom Notes for Customer" name="custom_message" rows="2" placeholder="e.g. As discussed during our survey, includes 2-year AMC..." class="crm-input h-auto py-2.5"></textarea>
                 </div>
 
                 <div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800">
@@ -537,7 +537,7 @@
                             <svg class="w-4 h-4 shrink-0 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                             Customer Name
                         </label>
-                        <input type="text" id="wa-customer-name" value="{{ $quotation->lead?->customer_name ?? 'Valued Customer' }}"
+                        <input aria-label="Customer Name" type="text" id="wa-customer-name" value="{{ $quotation->lead?->customer_name ?? 'Valued Customer' }}"
                                placeholder="e.g. John Doe"
                                oninput="onWhatsAppNameInput(this.value)"
                                class="crm-input">
@@ -547,7 +547,7 @@
                             <svg class="w-4 h-4 shrink-0 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
                             WhatsApp Phone <span class="required-marker text-rose-500">*</span>
                         </label>
-                        <input type="tel" id="wa-customer-phone" value="{{ $quotation->getWhatsAppPhone() ?: $quotation->lead?->phone }}" placeholder="e.g. 9876543210"
+                        <input aria-label="WhatsApp Phone" type="tel" id="wa-customer-phone" value="{{ $quotation->getWhatsAppPhone() ?: $quotation->lead?->phone }}" placeholder="e.g. 9876543210"
                                oninput="onWhatsAppPhoneInput(this.value)"
                                class="crm-input">
                     </div>
@@ -745,7 +745,7 @@
         const name = nameInput ? nameInput.value.trim() : '';
 
         if (!phone) {
-            alert('Please enter a valid mobile number first.');
+            crmAlert('Please enter a valid mobile number first.');
             return;
         }
 
@@ -786,7 +786,7 @@
                 setTimeout(() => { btn.innerHTML = prev; }, 2000);
             }
         } catch (e) {
-            alert('Could not copy to clipboard. Please select text manually.');
+            crmAlert('Could not copy to clipboard. Please select text manually.');
         }
     }
 
@@ -944,7 +944,7 @@
                 setTimeout(() => { btn.innerHTML = prev; }, 2000);
             }
         } catch (e) {
-            alert('Could not auto-copy to clipboard. Please copy manually.');
+            crmAlert('Could not auto-copy to clipboard. Please copy manually.');
         }
     }
 

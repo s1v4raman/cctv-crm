@@ -83,7 +83,7 @@
             <form method="GET" action="{{ route('finance.payroll.index') }}" class="flex flex-wrap items-end gap-3">
                 <div>
                     <label class="text-xs font-medium text-slate-700 dark:text-slate-300 block mb-1">Select Month</label>
-                    <input type="month" 
+                    <input aria-label="Select Month" type="month" 
                            name="month" 
                            value="{{ $selectedMonth }}" 
                            onchange="this.form.submit()"
@@ -92,7 +92,7 @@
 
                 <div>
                     <label class="text-xs font-medium text-slate-700 dark:text-slate-300 block mb-1">Payment Status</label>
-                    <select name="status" onchange="this.form.submit()" 
+                    <select aria-label="Payment Status" name="status" onchange="this.form.submit()" 
                             class="text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
                         <option value="">All Statuses</option>
                         <option value="draft" {{ $statusFilter === 'draft' ? 'selected' : '' }}>Draft</option>
@@ -103,7 +103,7 @@
 
                 <div>
                     <label class="text-xs font-medium text-slate-700 dark:text-slate-300 block mb-1">Employee</label>
-                    <select name="user_id" onchange="this.form.submit()" 
+                    <select aria-label="Employee" name="user_id" onchange="this.form.submit()" 
                             class="text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
                         <option value="">All Employees</option>
                         @foreach($internalUsers as $u)
@@ -281,13 +281,13 @@
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Period Start</label>
-                        <input type="date" id="gen_period_start" name="period_start" required
+                        <input aria-label="Period Start" type="date" id="gen_period_start" name="period_start" required
                                value="{{ \Carbon\Carbon::parse($selectedMonth . '-01')->startOfMonth()->toDateString() }}"
                                class="w-full text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
                     </div>
                     <div>
                         <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Period End</label>
-                        <input type="date" id="gen_period_end" name="period_end" required
+                        <input aria-label="Period End" type="date" id="gen_period_end" name="period_end" required
                                value="{{ \Carbon\Carbon::parse($selectedMonth . '-01')->endOfMonth()->toDateString() }}"
                                class="w-full text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
                     </div>
@@ -295,7 +295,7 @@
 
                 <div>
                     <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Target Employees</label>
-                    <select name="user_id" class="w-full text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
+                    <select aria-label="Target Employees" name="user_id" class="w-full text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
                         <option value="">All Salaried Employees</option>
                         @foreach($internalUsers as $u)
                             <option value="{{ $u->id }}">{{ $u->name }} ({{ ucfirst($u->role) }})</option>
@@ -329,7 +329,7 @@
                 @csrf
                 <div>
                     <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Status</label>
-                    <select id="modal_status" name="status" required class="w-full text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
+                    <select aria-label="Status" id="modal_status" name="status" required class="w-full text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
                         <option value="draft">Draft</option>
                         <option value="approved">Approved</option>
                         <option value="paid">Paid</option>
@@ -338,19 +338,19 @@
 
                 <div>
                     <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Payment Date</label>
-                    <input type="date" id="modal_payment_date" name="payment_date" value="{{ now()->toDateString() }}"
+                    <input aria-label="Payment Date" type="date" id="modal_payment_date" name="payment_date" value="{{ now()->toDateString() }}"
                            class="w-full text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
                 </div>
 
                 <div>
                     <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Payment Reference / UTR #</label>
-                    <input type="text" id="modal_payment_reference" name="payment_reference" placeholder="UTR-982736192"
+                    <input aria-label="Payment Reference / UTR #" type="text" id="modal_payment_reference" name="payment_reference" placeholder="UTR-982736192"
                            class="w-full text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
                 </div>
 
                 <div>
                     <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Notes</label>
-                    <textarea id="modal_notes" name="notes" rows="2" placeholder="Audit notes..."
+                    <textarea aria-label="Notes" id="modal_notes" name="notes" rows="2" placeholder="Audit notes..."
                               class="w-full text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white focus:outline-none"></textarea>
                 </div>
 

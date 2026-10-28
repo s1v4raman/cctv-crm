@@ -42,6 +42,7 @@
                             <option value="admin" @selected(old('role', $user->role) === 'admin') class="bg-[#0F172A]">Admin</option>
                             <option value="staff" @selected(old('role', $user->role) === 'staff') class="bg-[#0F172A]">Employee (Staff)</option>
                             <option value="technician" @selected(old('role', $user->role) === 'technician') class="bg-[#0F172A]">Technician</option>
+                            <option value="worker" @selected(old('role', $user->role) === 'worker') class="bg-[#0F172A]">Worker (Daily Wage)</option>
                         </select>
                         @error('role') <div class="text-xs text-rose-400 mt-1 font-mono">{{ $message }}</div> @enderror
                     </div>

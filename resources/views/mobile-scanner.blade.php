@@ -8,7 +8,7 @@
     <title>Mobile Barcode & Asset Scanner | PathSoft CCTV</title>
 
     <!-- Compiled Tailwind (standalone.css) -->
-    @vite('resources/css/standalone.css')
+    @vite(['resources/css/standalone.css', 'resources/js/app.js'])
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
@@ -409,7 +409,7 @@
                     <div class="flex items-center space-x-2">
                         <span class="text-blue-400 font-mono text-xs font-bold">${escapeHtml(item)}</span>
                     </div>
-                    <button type="button" onclick="pushCodeToLaptop('${escapeHtml(item)}'); alert('Re-sent to laptop!');"
+                    <button type="button" onclick="pushCodeToLaptop('${escapeHtml(item)}'); crmAlert('Re-sent to laptop!');"
                         class="px-2.5 py-1 rounded bg-blue-600/30 hover:bg-blue-600 text-blue-300 hover:text-white text-[11px] font-bold transition-colors">
                         Re-Send
                     </button>
@@ -474,10 +474,10 @@
                     const btn = document.getElementById('torchBtn');
                     if (btn) btn.style.background = isTorchOn ? '#eab308' : 'rgba(15, 23, 42, 0.7)';
                 }).catch(() => {
-                    alert('Flashlight torch not supported on this device/browser.');
+                    crmAlert('Flashlight torch not supported on this device/browser.');
                 });
             } else {
-                alert('Torch control unavailable on this camera stream.');
+                crmAlert('Torch control unavailable on this camera stream.');
             }
         }
 

@@ -74,17 +74,17 @@
                                     Scan Barcode
                                 </button>
                             </div>
-                            <input type="text" id="rma_serial_input" name="faulty_serial_number" value="{{ old('faulty_serial_number', $prefilledEquipment?->serial_number) }}" required placeholder="e.g. HK-982348123" class="crm-input font-mono">
+                            <input aria-label="Faulty Serial Number (S/N)" type="text" id="rma_serial_input" name="faulty_serial_number" value="{{ old('faulty_serial_number', $prefilledEquipment?->serial_number) }}" required placeholder="e.g. HK-982348123" class="crm-input font-mono">
                             <div id="rma-scan-feedback" style="display:none;font-size:12px;margin-top:4px;"></div>
                         </div>
                         <div>
                             <label class="crm-label">MAC / IP Address (Optional)</label>
-                            <input type="text" id="rma_mac_input" name="faulty_mac_address" value="{{ old('faulty_mac_address', $prefilledEquipment?->mac_address) }}" placeholder="e.g. 54:C8:01:A2:FE:9B" class="crm-input font-mono">
+                            <input aria-label="MAC / IP Address (Optional)" type="text" id="rma_mac_input" name="faulty_mac_address" value="{{ old('faulty_mac_address', $prefilledEquipment?->mac_address) }}" placeholder="e.g. 54:C8:01:A2:FE:9B" class="crm-input font-mono">
                         </div>
 
                         <div>
                             <label class="crm-label">Product Model (Catalog)</label>
-                            <select name="product_id" class="crm-select">
+                            <select aria-label="Product Model (Catalog)" name="product_id" class="crm-select">
                                 <option value="">Select Catalog Product (Optional)</option>
                                 @foreach($products as $prod)
                                     <option value="{{ $prod->id }}" @selected(old('product_id', $prefilledProduct?->id) == $prod->id)>
@@ -96,7 +96,7 @@
 
                         <div>
                             <label class="crm-label">Customer / Organization (Optional)</label>
-                            <select name="lead_id" class="crm-select">
+                            <select aria-label="Customer / Organization (Optional)" name="lead_id" class="crm-select">
                                 <option value="">None (Warehouse / Direct Stock)</option>
                                 @foreach($leads as $l)
                                     <option value="{{ $l->id }}" @selected(old('lead_id', $prefilledLead?->id) == $l->id)>
@@ -115,7 +115,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                         <div>
                             <label class="crm-label">Target Supplier / Vendor <span class="required-marker">*</span></label>
-                            <select name="supplier_id" required class="crm-select">
+                            <select aria-label="Target Supplier / Vendor" name="supplier_id" required class="crm-select">
                                 <option value="">Select Supplier</option>
                                 @foreach($suppliers as $supplier)
                                     <option value="{{ $supplier->id }}" @selected(old('supplier_id') == $supplier->id)>
@@ -126,7 +126,7 @@
                         </div>
                         <div>
                             <label class="crm-label">Warranty Status at Claim <span class="required-marker">*</span></label>
-                            <select name="warranty_status_at_claim" required class="crm-select">
+                            <select aria-label="Warranty Status at Claim" name="warranty_status_at_claim" required class="crm-select">
                                 <option value="under_warranty" @selected(old('warranty_status_at_claim', $warrantyStatus) === 'under_warranty')>Under Manufacturer Warranty</option>
                                 <option value="out_of_warranty" @selected(old('warranty_status_at_claim', $warrantyStatus) === 'out_of_warranty')>Out of Warranty (Chargeable Service)</option>
                                 <option value="extended_warranty" @selected(old('warranty_status_at_claim', $warrantyStatus) === 'extended_warranty')>Extended Warranty / AMC</option>
@@ -137,11 +137,11 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="crm-label">Vendor RMA Reference # (Optional)</label>
-                            <input type="text" name="vendor_rma_ref" value="{{ old('vendor_rma_ref') }}" placeholder="e.g. HIK-SERVICE-9821" class="crm-input font-mono">
+                            <input aria-label="Vendor RMA Reference # (Optional)" type="text" name="vendor_rma_ref" value="{{ old('vendor_rma_ref') }}" placeholder="e.g. HIK-SERVICE-9821" class="crm-input font-mono">
                         </div>
                         <div>
                             <label class="crm-label">Expected Return Date</label>
-                            <input type="date" name="expected_return_date" value="{{ old('expected_return_date', now()->addDays(7)->format('Y-m-d')) }}" class="crm-input">
+                            <input aria-label="Expected Return Date" type="date" name="expected_return_date" value="{{ old('expected_return_date', now()->addDays(7)->format('Y-m-d')) }}" class="crm-input">
                         </div>
                     </div>
                 </div>
@@ -152,7 +152,7 @@
 
                     <div class="mb-4">
                         <label class="crm-label">Fault Category <span class="required-marker">*</span></label>
-                        <select name="fault_category" required class="crm-select">
+                        <select aria-label="Fault Category" name="fault_category" required class="crm-select">
                             @foreach(\App\Models\RmaClaim::faultCategories() as $key => $label)
                                 <option value="{{ $key }}" @selected(old('fault_category') === $key)>{{ $label }}</option>
                             @endforeach
@@ -161,7 +161,7 @@
 
                     <div>
                         <label class="crm-label">Detailed Defect Description <span class="required-marker">*</span></label>
-                        <textarea name="issue_description" rows="3" required class="crm-input" style="height: auto;" placeholder="e.g. Camera powers on with 12V DC, but sensor sends purple screen feeds.">{{ old('issue_description', $prefilledTicket?->description) }}</textarea>
+                        <textarea aria-label="Detailed Defect Description" name="issue_description" rows="3" required class="crm-input" style="height: auto;" placeholder="e.g. Camera powers on with 12V DC, but sensor sends purple screen feeds.">{{ old('issue_description', $prefilledTicket?->description) }}</textarea>
                     </div>
                 </div>
 

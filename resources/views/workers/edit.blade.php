@@ -55,19 +55,19 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                         <div class="sm:col-span-2">
                             <label class="crm-label">Worker Full Name <span class="required-marker">*</span></label>
-                            <input type="text" name="name" value="{{ old('name', $worker->name) }}" required class="crm-input">
+                            <input aria-label="Worker Full Name" type="text" name="name" value="{{ old('name', $worker->name) }}" required class="crm-input">
                             @error('name') <p class="error-text">{{ $message }}</p> @enderror
                         </div>
 
                         <div>
                             <label class="crm-label">Mobile Phone Number</label>
-                            <input type="text" name="phone" value="{{ old('phone', $worker->phone) }}" class="crm-input">
+                            <input aria-label="Mobile Phone Number" type="text" name="phone" value="{{ old('phone', $worker->phone) }}" class="crm-input">
                             @error('phone') <p class="error-text">{{ $message }}</p> @enderror
                         </div>
 
                         <div>
                             <label class="crm-label">Standard Daily Wage Rate (₹) <span class="required-marker">*</span></label>
-                            <input type="number" step="any" min="0" name="daily_rate" value="{{ old('daily_rate', $worker->daily_rate) }}" required class="crm-input">
+                            <input aria-label="Standard Daily Wage Rate (₹)" type="number" step="any" min="0" name="daily_rate" value="{{ old('daily_rate', $worker->daily_rate) }}" required class="crm-input">
                             @error('daily_rate') <p class="error-text">{{ $message }}</p> @enderror
                         </div>
 
@@ -88,7 +88,7 @@
 
                         <div class="sm:col-span-2">
                             <label class="crm-label">Notes / Emergency Contact / Aadhaar Details</label>
-                            <textarea name="notes" rows="3" class="crm-input" style="height: auto;">{{ old('notes', $worker->notes) }}</textarea>
+                            <textarea aria-label="Notes / Emergency Contact / Aadhaar Details" name="notes" rows="3" class="crm-input" style="height: auto;">{{ old('notes', $worker->notes) }}</textarea>
                             @error('notes') <p class="error-text">{{ $message }}</p> @enderror
                         </div>
 
@@ -107,7 +107,7 @@
                 </form>
 
                 <div class="flex items-center justify-between pt-4 border-t border-[#ddd] mt-4">
-                    <button type="submit" form="delete-worker-form" onclick="return confirm('Are you sure you want to delete this worker?')" class="danger-link" style="background: none; border: none; cursor: pointer;">
+                    <button type="submit" form="delete-worker-form" data-confirm="Are you sure you want to delete this worker?" class="danger-link" style="background: none; border: none; cursor: pointer;">
                         Delete
                     </button>
 

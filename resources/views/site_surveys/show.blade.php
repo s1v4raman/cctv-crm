@@ -45,7 +45,7 @@
                         <span>Create Quotation</span>
                     </a>
                     @if(auth()->user()->isAdmin())
-                        <form method="POST" action="{{ route('site-surveys.destroy', $siteSurvey) }}" onsubmit="return confirm('Delete this survey and all photos?');" class="inline">
+                        <form method="POST" action="{{ route('site-surveys.destroy', $siteSurvey) }}" data-confirm="Delete this survey and all photos?" class="inline">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn-secondary text-xs cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 text-rose-600 hover:text-rose-700 hover:border-rose-300 dark:hover:border-rose-700 shadow-2xs transition" title="Delete Survey">
@@ -184,7 +184,7 @@
                                 <span class="text-slate-600 dark:text-slate-400 truncate flex-1" title="{{ $photo->caption ?: $photo->original_name }}">
                                     {{ $photo->caption ?: $photo->original_name }}
                                 </span>
-                                <form method="POST" action="{{ route('site-surveys.photos.destroy', $photo) }}" onsubmit="return confirm('Remove this photo?');" class="inline m-0">
+                                <form method="POST" action="{{ route('site-surveys.photos.destroy', $photo) }}" data-confirm="Remove this photo?" class="inline m-0">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="text-red-500 hover:text-red-700 font-bold px-1.5 py-0.5 bg-transparent border-0 cursor-pointer text-sm" title="Delete photo">&times;</button>
@@ -223,7 +223,7 @@
 
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Caption (Optional)</label>
-                    <input type="text" name="captions[]" placeholder="e.g. Main Entrance Camera Position" class="crm-input text-xs">
+                    <input aria-label="Caption (Optional)" type="text" name="captions[]" placeholder="e.g. Main Entrance Camera Position" class="crm-input text-xs">
                 </div>
 
                 <div class="flex items-center justify-end gap-2 pt-3">

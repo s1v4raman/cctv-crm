@@ -305,7 +305,7 @@
                     @csrf
                     <div>
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Field Custodian *</label>
-                        <select name="custodian_id" required class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
+                        <select aria-label="Field Custodian" name="custodian_id" required class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
                             <option value="">-- Select Field Custodian --</option>
                             @foreach($technicians as $tech)
                                 <option value="{{ $tech->id }}">{{ $tech->name }} ({{ ucfirst($tech->role) }} - {{ $tech->phone ?? $tech->email }})</option>
@@ -316,17 +316,17 @@
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Advance Amount (&#8377;) *</label>
-                            <input type="number" step="1" min="1" name="amount" required placeholder="5000" class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
+                            <input aria-label="Advance Amount (&#8377;)" type="number" step="1" min="1" name="amount" required placeholder="5000" class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Disbursement Date *</label>
-                            <input type="date" name="transaction_date" value="{{ date('Y-m-d') }}" required class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
+                            <input aria-label="Disbursement Date" type="date" name="transaction_date" value="{{ date('Y-m-d') }}" required class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
                         </div>
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Purpose / Notes</label>
-                        <textarea name="notes" rows="2" placeholder="Weekly field cash float" class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none"></textarea>
+                        <textarea aria-label="Purpose / Notes" name="notes" rows="2" placeholder="Weekly field cash float" class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none"></textarea>
                     </div>
 
                     <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
@@ -357,7 +357,7 @@
                     @csrf
                     <div>
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Receiving Custodian *</label>
-                        <select name="custodian_id" required class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
+                        <select aria-label="Receiving Custodian" name="custodian_id" required class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
                             @foreach($technicians as $tech)
                                 <option value="{{ $tech->id }}">{{ $tech->name }} ({{ ucfirst($tech->role) }})</option>
                             @endforeach
@@ -367,23 +367,23 @@
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Amount Collected (&#8377;) *</label>
-                            <input type="number" step="1" min="1" name="amount" required placeholder="3500" class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
+                            <input aria-label="Amount Collected (&#8377;)" type="number" step="1" min="1" name="amount" required placeholder="3500" class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Collection Date *</label>
-                            <input type="date" name="transaction_date" value="{{ date('Y-m-d') }}" required class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
+                            <input aria-label="Collection Date" type="date" name="transaction_date" value="{{ date('Y-m-d') }}" required class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
                         </div>
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Customer / Client Name *</label>
-                        <input type="text" name="customer_name" required placeholder="Customer Name" class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
+                        <input aria-label="Customer / Client Name" type="text" name="customer_name" required placeholder="Customer Name" class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
                     </div>
 
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Link to Invoice</label>
-                            <select name="invoice_id" class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
+                            <select aria-label="Link to Invoice" name="invoice_id" class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
                                 <option value="">-- No Specific Invoice --</option>
                                 @foreach($pendingInvoices as $inv)
                                     <option value="{{ $inv->id }}">{{ $inv->invoice_no }} (&#8377;{{ number_format($inv->balanceDue(), 2) }} due - {{ $inv->quotation?->lead?->customer_name }})</option>
@@ -392,7 +392,7 @@
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Receipt / Slip #</label>
-                            <input type="text" name="receipt_reference" placeholder="SLIP-1092" class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
+                            <input aria-label="Receipt / Slip #" type="text" name="receipt_reference" placeholder="SLIP-1092" class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
                         </div>
                     </div>
 
@@ -424,7 +424,7 @@
                     @csrf
                     <div>
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Paying Account / Wallet *</label>
-                        <select name="petty_cash_account_id" required class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
+                        <select aria-label="Paying Account / Wallet" name="petty_cash_account_id" required class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
                             @foreach($accounts as $acc)
                                 <option value="{{ $acc['id'] }}">{{ $acc['name'] }} (Balance: &#8377;{{ number_format($acc['current_balance'], 2) }})</option>
                             @endforeach
@@ -434,7 +434,7 @@
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Expense Category *</label>
-                            <select name="category" required class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
+                            <select aria-label="Expense Category" name="category" required class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
                                 <option value="hardware_conduits">Hardware, PVC Pipes & Conduits</option>
                                 <option value="materials">Screws, Fasteners & Cable Clips</option>
                                 <option value="travel_fuel">Vehicle Petrol / Conveyance</option>
@@ -446,25 +446,25 @@
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Expense Amount (&#8377;) *</label>
-                            <input type="number" step="0.50" min="0.50" name="amount" required placeholder="450" class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
+                            <input aria-label="Expense Amount (&#8377;)" type="number" step="0.50" min="0.50" name="amount" required placeholder="450" class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Vendor / Payee Name</label>
-                            <input type="text" name="vendor_payee_name" placeholder="Vendor Name" class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
+                            <input aria-label="Vendor / Payee Name" type="text" name="vendor_payee_name" placeholder="Vendor Name" class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Date of Purchase *</label>
-                            <input type="date" name="transaction_date" value="{{ date('Y-m-d') }}" required class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
+                            <input aria-label="Date of Purchase" type="date" name="transaction_date" value="{{ date('Y-m-d') }}" required class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Attach Job</label>
-                            <select name="job_id" class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
+                            <select aria-label="Attach Job" name="job_id" class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
                                 <option value="">-- General Site Expense --</option>
                                 @foreach($activeJobs as $j)
                                     <option value="{{ $j->id }}">{{ $j->job_no }} ({{ $j->lead?->customer_name }})</option>
@@ -479,7 +479,7 @@
 
                     <div>
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Description / Remarks</label>
-                        <textarea name="notes" rows="2" placeholder="Description of items purchased" class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none"></textarea>
+                        <textarea aria-label="Description / Remarks" name="notes" rows="2" placeholder="Description of items purchased" class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none"></textarea>
                     </div>
 
                     <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
@@ -510,7 +510,7 @@
                     @csrf
                     <div>
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Source Field Wallet *</label>
-                        <select name="source_account_id" required class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
+                        <select aria-label="Source Field Wallet" name="source_account_id" required class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
                             @foreach($accounts as $acc)
                                 @if($acc['account_type'] === 'field_wallet')
                                     <option value="{{ $acc['id'] }}">{{ $acc['name'] }} (In-Hand: &#8377;{{ number_format($acc['current_balance'], 2) }})</option>
@@ -522,31 +522,31 @@
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Destination *</label>
-                            <select name="destination_type" required class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
+                            <select aria-label="Destination" name="destination_type" required class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
                                 <option value="main_vault">Head Office Safe Vault</option>
                                 <option value="bank_deposit">Company Current Bank Account</option>
                             </select>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Handover Amount (&#8377;) *</label>
-                            <input type="number" step="1" min="1" name="amount" required placeholder="10000" class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
+                            <input aria-label="Handover Amount (&#8377;)" type="number" step="1" min="1" name="amount" required placeholder="10000" class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Handover Date *</label>
-                            <input type="date" name="transaction_date" value="{{ date('Y-m-d') }}" required class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
+                            <input aria-label="Handover Date" type="date" name="transaction_date" value="{{ date('Y-m-d') }}" required class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Bank / Vault Ack Ref #</label>
-                            <input type="text" name="bank_ack_no" placeholder="DEPOSIT-SLIP-8821" class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
+                            <input aria-label="Bank / Vault Ack Ref #" type="text" name="bank_ack_no" placeholder="DEPOSIT-SLIP-8821" class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
                         </div>
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Handover Remarks</label>
-                        <textarea name="notes" rows="2" placeholder="Remarks" class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none"></textarea>
+                        <textarea aria-label="Handover Remarks" name="notes" rows="2" placeholder="Remarks" class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none"></textarea>
                     </div>
 
                     <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">

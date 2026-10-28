@@ -244,7 +244,7 @@
 
                                 <div class="flex items-center gap-2 flex-shrink-0">
                                     {{-- Approve Form --}}
-                                    <form action="{{ route('leaves.approve', $req) }}" method="POST" onsubmit="return confirm('Approve this leave request for {{ $req->user->name }}? Attendance records will be marked on_leave.')">
+                                    <form action="{{ route('leaves.approve', $req) }}" method="POST" data-confirm="Approve this leave request for {{ $req->user->name }}? Attendance records will be marked on_leave.">
                                         @csrf
                                         @method('PATCH')
                                         <button type="submit" 
@@ -293,7 +293,7 @@
                     <form method="GET" action="{{ route('leaves.index') }}" class="flex items-center gap-2 pb-3">
                         <input type="hidden" name="tab" value="{{ $tab }}">
                         
-                        <select name="status" onchange="this.form.submit()" class="text-xs rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 py-1.5 px-3">
+                        <select aria-label="Status" name="status" onchange="this.form.submit()" class="text-xs rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 py-1.5 px-3">
                             <option value="">All Statuses</option>
                             <option value="pending" {{ $statusFilter === 'pending' ? 'selected' : '' }}>Pending</option>
                             <option value="approved" {{ $statusFilter === 'approved' ? 'selected' : '' }}>Approved</option>
@@ -302,16 +302,16 @@
                         </select>
 
                         @if($tab === 'all_leaves' && $isAdmin)
-                            <select name="employee_id" onchange="this.form.submit()" class="text-xs rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 py-1.5 px-3">
+                            <select aria-label="Employee" name="employee_id" onchange="this.form.submit()" class="text-xs rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 py-1.5 px-3">
                                 <option value="">All Employees</option>
                                 @foreach($workforce as $emp)
                                     <option value="{{ $emp->id }}" {{ $employeeFilter == $emp->id ? 'selected' : '' }}>{{ $emp->name }}</option>
                                 @endforeach
                             </select>
 
-                            <input type="month" name="month" value="{{ $selectedMonth }}" onchange="this.form.submit()" class="text-xs rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 py-1.5 px-3">
+                            <input aria-label="Month" type="month" name="month" value="{{ $selectedMonth }}" onchange="this.form.submit()" class="text-xs rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 py-1.5 px-3">
                         @else
-                            <select name="year" onchange="this.form.submit()" class="text-xs rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 py-1.5 px-3">
+                            <select aria-label="Year" name="year" onchange="this.form.submit()" class="text-xs rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 py-1.5 px-3">
                                 <option value="2026" {{ $selectedYear == 2026 ? 'selected' : '' }}>2026</option>
                                 <option value="2025" {{ $selectedYear == 2025 ? 'selected' : '' }}>2025</option>
                             </select>
@@ -379,7 +379,7 @@
                                         </td>
                                         <td class="py-4 px-4 text-right whitespace-nowrap">
                                             @if($l->status === 'pending')
-                                                <form action="{{ route('leaves.cancel', $l) }}" method="POST" onsubmit="return confirm('Cancel this pending leave request?')">
+                                                <form action="{{ route('leaves.cancel', $l) }}" method="POST" data-confirm="Cancel this pending leave request?">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="text-rose-600 hover:text-rose-800 dark:text-rose-400 text-sm font-semibold underline">
@@ -523,7 +523,7 @@
                 {{-- Leave Type --}}
                 <div>
                     <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Leave Type *</label>
-                    <select name="leave_type" required class="w-full text-xs rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5">
+                    <select aria-label="Leave Type" name="leave_type" required class="w-full text-xs rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5">
                         <option value="casual">Casual Leave (CL) — {{ $leaveSummary['casual']['remaining'] }} days remaining</option>
                         <option value="sick">Sick Leave (SL) — {{ $leaveSummary['sick']['remaining'] }} days remaining</option>
                         <option value="earned">Earned / Paid Leave (EL) — {{ $leaveSummary['earned']['remaining'] }} days remaining</option>
@@ -536,12 +536,12 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                         <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Start Date *</label>
-                        <input type="date" name="start_date" id="leaveStartDate" required value="{{ now()->toDateString() }}" 
+                        <input aria-label="Start Date" type="date" name="start_date" id="leaveStartDate" required value="{{ now()->toDateString() }}" 
                                class="w-full text-xs rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5">
                     </div>
                     <div>
                         <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">End Date *</label>
-                        <input type="date" name="end_date" id="leaveEndDate" required value="{{ now()->toDateString() }}" 
+                        <input aria-label="End Date" type="date" name="end_date" id="leaveEndDate" required value="{{ now()->toDateString() }}" 
                                class="w-full text-xs rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5">
                     </div>
                 </div>
@@ -555,7 +555,7 @@
 
                     <div id="halfDaySessionGroup" class="hidden pt-1">
                         <label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Session</label>
-                        <select name="half_day_session" class="w-full text-xs rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2">
+                        <select aria-label="Session" name="half_day_session" class="w-full text-xs rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2">
                             <option value="morning">Morning Session (1st Half)</option>
                             <option value="afternoon">Afternoon Session (2nd Half)</option>
                         </select>
@@ -565,7 +565,7 @@
                 {{-- Reason --}}
                 <div>
                     <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Reason for Leave *</label>
-                    <textarea name="reason" rows="3" required placeholder="Please provide specific details for your leave request..." 
+                    <textarea aria-label="Reason for Leave" name="reason" rows="3" required placeholder="Please provide specific details for your leave request..." 
                               class="w-full text-xs rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5"></textarea>
                 </div>
 
@@ -610,7 +610,7 @@
 
                 <div>
                     <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Rejection Reason *</label>
-                    <textarea name="rejection_reason" rows="3" required placeholder="e.g. Critical site deployment scheduled, staff shortage..." 
+                    <textarea aria-label="Rejection Reason" name="rejection_reason" rows="3" required placeholder="e.g. Critical site deployment scheduled, staff shortage..." 
                               class="w-full text-xs rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5"></textarea>
                 </div>
 

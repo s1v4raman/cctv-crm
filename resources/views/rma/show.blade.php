@@ -31,7 +31,7 @@
                         Edit
                     </a>
                     @if(auth()->user()->isAdmin())
-                        <form method="POST" action="{{ route('rma.destroy', $rma) }}" onsubmit="return confirm('Are you sure you want to delete this RMA claim?');" class="inline">
+                        <form method="POST" action="{{ route('rma.destroy', $rma) }}" data-confirm="Are you sure you want to delete this RMA claim?" class="inline">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="danger-link p-0 bg-transparent border-0 cursor-pointer text-xs ml-2">Delete</button>
@@ -208,15 +208,15 @@
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
                         <div>
                             <label class="crm-label">Shipping Carrier <span class="required-marker">*</span></label>
-                            <input type="text" name="shipping_courier" required placeholder="e.g. DTDC, Blue Dart" class="crm-input">
+                            <input aria-label="Shipping Carrier" type="text" name="shipping_courier" required placeholder="e.g. DTDC, Blue Dart" class="crm-input">
                         </div>
                         <div>
                             <label class="crm-label">AWB / Tracking Number</label>
-                            <input type="text" name="tracking_number" placeholder="e.g. D19283741" class="crm-input">
+                            <input aria-label="AWB / Tracking Number" type="text" name="tracking_number" placeholder="e.g. D19283741" class="crm-input">
                         </div>
                         <div>
                             <label class="crm-label">Dispatched Date <span class="required-marker">*</span></label>
-                            <input type="date" name="dispatched_date" value="{{ now()->format('Y-m-d') }}" required class="crm-input">
+                            <input aria-label="Dispatched Date" type="date" name="dispatched_date" value="{{ now()->format('Y-m-d') }}" required class="crm-input">
                         </div>
                     </div>
                     <div class="form-actions">
@@ -237,7 +237,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                         <div>
                             <label class="crm-label">Resolution Outcome <span class="required-marker">*</span></label>
-                            <select name="resolution_type" required class="crm-select" onchange="toggleReplacementFields(this.value)">
+                            <select aria-label="Resolution Outcome" name="resolution_type" required class="crm-select" onchange="toggleReplacementFields(this.value)">
                                 <option value="replacement">Brand New Replacement (New S/N)</option>
                                 <option value="repaired_unit">Original Unit Repaired &amp; Returned</option>
                                 <option value="credit_note">Vendor Credit Note / Refund</option>
@@ -246,24 +246,24 @@
                         </div>
                         <div>
                             <label class="crm-label">Received Date <span class="required-marker">*</span></label>
-                            <input type="date" name="received_from_vendor_date" value="{{ now()->format('Y-m-d') }}" required class="crm-input">
+                            <input aria-label="Received Date" type="date" name="received_from_vendor_date" value="{{ now()->format('Y-m-d') }}" required class="crm-input">
                         </div>
                     </div>
 
                     <div id="replacementSerialNumberDiv" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                         <div>
                             <label class="crm-label">New Serial Number <span class="required-marker">*</span></label>
-                            <input type="text" name="replacement_serial_number" placeholder="e.g. SN-889922" class="crm-input">
+                            <input aria-label="New Serial Number" type="text" name="replacement_serial_number" placeholder="e.g. SN-889922" class="crm-input">
                         </div>
                         <div>
                             <label class="crm-label">New MAC Address</label>
-                            <input type="text" name="replacement_mac_address" placeholder="e.g. 54:C8:01:B3:99:11" class="crm-input">
+                            <input aria-label="New MAC Address" type="text" name="replacement_mac_address" placeholder="e.g. 54:C8:01:B3:99:11" class="crm-input">
                         </div>
                     </div>
 
                     <div class="mb-4">
                         <label class="crm-label">Resolution Notes</label>
-                        <textarea name="vendor_repair_notes" rows="2" placeholder="e.g. Replaced motherboard and updated firmware" class="crm-input h-auto py-2"></textarea>
+                        <textarea aria-label="Resolution Notes" name="vendor_repair_notes" rows="2" placeholder="e.g. Replaced motherboard and updated firmware" class="crm-input h-auto py-2"></textarea>
                     </div>
 
                     <div class="form-actions">

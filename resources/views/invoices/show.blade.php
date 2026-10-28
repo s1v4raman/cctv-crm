@@ -189,7 +189,7 @@
                                             Receipt
                                         </a>
                                         <form method="POST" action="{{ route('payments.destroy', $payment) }}"
-                                              onsubmit="return confirm('Remove payment of ₹{{ number_format($payment->amount, 2) }}?');" class="inline">
+                                              data-confirm="Remove payment of ₹{{ number_format($payment->amount, 2) }}?" class="inline">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="danger-link text-xs cursor-pointer">Delete</button>
@@ -218,12 +218,12 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label class="crm-label">Payment Amount (₹)<span class="required-marker">*</span></label>
-                                    <input type="number" name="amount" min="0.01" step="0.01" max="{{ $invoice->balanceDue() }}" value="{{ old('amount', $invoice->balanceDue()) }}" required class="crm-input w-full">
+                                    <input aria-label="Payment Amount (₹)" type="number" name="amount" min="0.01" step="0.01" max="{{ $invoice->balanceDue() }}" value="{{ old('amount', $invoice->balanceDue()) }}" required class="crm-input w-full">
                                     @error('amount') <div class="error-text">{{ $message }}</div> @enderror
                                 </div>
                                 <div>
                                     <label class="crm-label">Date Paid<span class="required-marker">*</span></label>
-                                    <input type="date" name="paid_on" value="{{ old('paid_on', now()->format('Y-m-d')) }}" required class="crm-input w-full">
+                                    <input aria-label="Date Paid" type="date" name="paid_on" value="{{ old('paid_on', now()->format('Y-m-d')) }}" required class="crm-input w-full">
                                     @error('paid_on') <div class="error-text">{{ $message }}</div> @enderror
                                 </div>
                             </div>
@@ -231,7 +231,7 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label class="crm-label">Payment Method<span class="required-marker">*</span></label>
-                                    <select name="method" class="crm-select w-full" required>
+                                    <select aria-label="Payment Method" name="method" class="crm-select w-full" required>
                                         <option value="cash" @selected(old('method') === 'cash')>Cash</option>
                                         <option value="upi" @selected(old('method') === 'upi')>UPI</option>
                                         <option value="razorpay" @selected(old('method') === 'razorpay')>Razorpay</option>
@@ -244,14 +244,14 @@
                                 </div>
                                 <div>
                                     <label class="crm-label">Reference / UTR No.</label>
-                                    <input type="text" name="reference_no" value="{{ old('reference_no') }}" placeholder="e.g. UPI-987214" class="crm-input w-full">
+                                    <input aria-label="Reference / UTR No." type="text" name="reference_no" value="{{ old('reference_no') }}" placeholder="e.g. UPI-987214" class="crm-input w-full">
                                     @error('reference_no') <div class="error-text">{{ $message }}</div> @enderror
                                 </div>
                             </div>
 
                             <div>
                                 <label class="crm-label">Payment Notes</label>
-                                <input type="text" name="notes" value="{{ old('notes') }}" placeholder="e.g. Received via NEFT" class="crm-input w-full">
+                                <input aria-label="Payment Notes" type="text" name="notes" value="{{ old('notes') }}" placeholder="e.g. Received via NEFT" class="crm-input w-full">
                                 @error('notes') <div class="error-text">{{ $message }}</div> @enderror
                             </div>
 

@@ -92,9 +92,9 @@
                 {{-- Search & filter bar - Uniform 36px Height Level --}}
                 <form method="GET" action="{{ route('invoices.index') }}" class="p-2 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0b1120] flex items-center gap-2 flex-wrap text-xs">
                     <div class="relative w-60 min-w-[180px] shrink-0">
-                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Search invoice #, customer, phone…" class="w-full text-xs h-[36px] rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0f172a] text-slate-800 dark:text-white px-3 focus:outline-none focus:border-blue-500">
+                        <input aria-label="Search invoice #, customer, phone" type="text" name="search" value="{{ request('search') }}" placeholder="Search invoice #, customer, phone…" class="w-full text-xs h-[36px] rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0f172a] text-slate-800 dark:text-white px-3 focus:outline-none focus:border-blue-500">
                     </div>
-                    <select name="status" onchange="this.form.submit()" class="text-xs h-[36px] rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0f172a] text-slate-800 dark:text-white px-3 focus:outline-none focus:border-blue-500 shrink-0">
+                    <select aria-label="Status" name="status" onchange="this.form.submit()" class="text-xs h-[36px] rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0f172a] text-slate-800 dark:text-white px-3 focus:outline-none focus:border-blue-500 shrink-0">
                         <option value="">All Statuses</option>
                         <option value="unpaid" @selected(request('status') === 'unpaid')>Unpaid</option>
                         <option value="partially_paid" @selected(request('status') === 'partially_paid')>Partially Paid</option>

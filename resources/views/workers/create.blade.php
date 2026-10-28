@@ -43,19 +43,19 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                         <div class="sm:col-span-2">
                             <label class="crm-label">Worker Full Name <span class="required-marker">*</span></label>
-                            <input type="text" name="name" value="{{ old('name') }}" required placeholder="e.g. S. Kumar" class="crm-input">
+                            <input aria-label="Worker Full Name" type="text" name="name" value="{{ old('name') }}" required placeholder="e.g. S. Kumar" class="crm-input">
                             @error('name') <p class="error-text">{{ $message }}</p> @enderror
                         </div>
 
                         <div>
                             <label class="crm-label">Mobile Phone Number</label>
-                            <input type="text" name="phone" value="{{ old('phone') }}" placeholder="e.g. 9842155678" class="crm-input">
+                            <input aria-label="Mobile Phone Number" type="text" name="phone" value="{{ old('phone') }}" placeholder="e.g. 9842155678" class="crm-input">
                             @error('phone') <p class="error-text">{{ $message }}</p> @enderror
                         </div>
 
                         <div>
                             <label class="crm-label">Standard Daily Wage Rate (₹) <span class="required-marker">*</span></label>
-                            <input type="number" step="any" min="0" name="daily_rate" value="{{ old('daily_rate', 700) }}" required placeholder="e.g. 700" class="crm-input">
+                            <input aria-label="Standard Daily Wage Rate (₹)" type="number" step="any" min="0" name="daily_rate" value="{{ old('daily_rate', 700) }}" required placeholder="e.g. 700" class="crm-input">
                             @error('daily_rate') <p class="error-text">{{ $message }}</p> @enderror
                         </div>
 
@@ -73,7 +73,7 @@
 
                         <div class="sm:col-span-2">
                             <label class="crm-label">Notes / Emergency Contact / Aadhaar Details</label>
-                            <textarea name="notes" rows="3" placeholder="e.g. Aadhaar number, emergency contact, UPI details" class="crm-input" style="height: auto;">{{ old('notes') }}</textarea>
+                            <textarea aria-label="Notes / Emergency Contact / Aadhaar Details" name="notes" rows="3" placeholder="e.g. Aadhaar number, emergency contact, UPI details" class="crm-input" style="height: auto;">{{ old('notes') }}</textarea>
                             @error('notes') <p class="error-text">{{ $message }}</p> @enderror
                         </div>
 

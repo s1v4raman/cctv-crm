@@ -404,11 +404,11 @@ async function snapBarcodeCurrentFrame(modalId) {
 
     if (!state || !state.stream) {
         if (state && (state.lastError === 'NotAllowedError' || state.lastError === 'PermissionDeniedError')) {
-            alert('🚫 Camera Permission is Blocked in your browser!\n\nTo allow it:\n1. Look at the address bar at the top (where http://127.0.0.1:8000 is written).\n2. Click the Lock / Tune icon (🔒 or 🎚️) on the left of the URL.\n3. Change "Camera" permission from "Block" to "Allow".\n4. Re-open this scanner or reload the page.\n\nYou can also click "📁 Upload Image" below to choose a photo directly from your computer.');
+            crmAlert('🚫 Camera Permission is Blocked in your browser!\n\nTo allow it:\n1. Look at the address bar at the top (where http://127.0.0.1:8000 is written).\n2. Click the Lock / Tune icon (🔒 or 🎚️) on the left of the URL.\n3. Change "Camera" permission from "Block" to "Allow".\n4. Re-open this scanner or reload the page.\n\nYou can also click "📁 Upload Image" below to choose a photo directly from your computer.');
         } else if (state && (state.lastError === 'NotReadableError' || state.lastError === 'TrackStartError')) {
-            alert('⚠️ Camera is currently in use by another application (Zoom, Teams, Skype, etc.).\n\nPlease close the other app and click "🔄 Flip Cam" to retry, or use "📁 Upload Image".');
+            crmAlert('⚠️ Camera is currently in use by another application (Zoom, Teams, Skype, etc.).\n\nPlease close the other app and click "🔄 Flip Cam" to retry, or use "📁 Upload Image".');
         } else {
-            alert('⚠️ Camera stream is not connected.\n\nPlease click "📁 Upload Image" to scan from a photo file, or ensure camera permissions are allowed in your browser.');
+            crmAlert('⚠️ Camera stream is not connected.\n\nPlease click "📁 Upload Image" to scan from a photo file, or ensure camera permissions are allowed in your browser.');
         }
         return;
     }
@@ -501,10 +501,10 @@ function toggleTorch(modalId) {
             }
         }).catch(() => {
             state.torchOn = false;
-            alert('Torch / Flashlight is not supported on this webcam/device.');
+            crmAlert('Torch / Flashlight is not supported on this webcam/device.');
         });
     } else {
-        alert('Torch control unavailable on this camera stream.');
+        crmAlert('Torch control unavailable on this camera stream.');
     }
 }
 

@@ -38,7 +38,7 @@
                     @csrf
 
                     <button type="submit"
-                            onclick="return confirm('Confirm that the customer accepted this quotation?');"
+                            data-confirm="Confirm that the customer accepted this quotation?"
                             style="display: inline-flex; align-items: center; justify-content: center; background-color: #15803d; color: #ffffff !important; border: 1px solid #166534; border-radius: 6px; padding: 9px 15px; font-size: 13px; font-weight: 700; cursor: pointer;">
                         Mark as Accepted
                     </button>

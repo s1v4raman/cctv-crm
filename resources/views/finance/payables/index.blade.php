@@ -456,7 +456,7 @@
                         <template x-if="!modalSupplierId">
                             <div>
                                 <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Select Supplier / Vendor *</label>
-                                <select name="supplier_id" required
+                                <select aria-label="Select Supplier / Vendor" name="supplier_id" required
                                         class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white" style="border-radius: 4px; height: 38px;">
                                     <option value="">-- Choose Vendor / Supplier --</option>
                                     @foreach($allSuppliers as $sup)
@@ -472,12 +472,12 @@
                         <div class="grid grid-cols-2 gap-3">
                             <div>
                                 <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Disbursement Amount (₹) *</label>
-                                <input type="number" step="0.01" min="0.01" name="amount" :value="modalAmount" required
+                                <input aria-label="Disbursement Amount (₹)" type="number" step="0.01" min="0.01" name="amount" :value="modalAmount" required
                                        class="w-full px-3 py-2 text-sm font-mono rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white" style="border-radius: 4px; height: 38px;">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Payment Date *</label>
-                                <input type="date" name="payment_date" value="{{ date('Y-m-d') }}" required
+                                <input aria-label="Payment Date" type="date" name="payment_date" value="{{ date('Y-m-d') }}" required
                                        class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white" style="border-radius: 4px; height: 38px;">
                             </div>
                         </div>
@@ -485,7 +485,7 @@
                         <div class="grid grid-cols-2 gap-3">
                             <div>
                                 <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Payment Method *</label>
-                                <select name="payment_method" required
+                                <select aria-label="Payment Method" name="payment_method" required
                                         class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white" style="border-radius: 4px; height: 38px;">
                                     <option value="neft_rtgs">NEFT / RTGS (Bank Transfer)</option>
                                     <option value="upi">UPI (GPay / PhonePe)</option>
@@ -496,14 +496,14 @@
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Bank Ref / UTR / Cheque #</label>
-                                <input type="text" name="transaction_reference" placeholder="e.g. UTR12345678"
+                                <input aria-label="Bank Ref / UTR / Cheque #" type="text" name="transaction_reference" placeholder="e.g. UTR12345678"
                                        class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white" style="border-radius: 4px; height: 38px;">
                             </div>
                         </div>
 
                         <div>
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Payment Remarks</label>
-                            <textarea name="notes" rows="2" placeholder="Optional settlement notes..."
+                            <textarea aria-label="Payment Remarks" name="notes" rows="2" placeholder="Optional settlement notes..."
                                       class="w-full px-3 py-2 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white" style="border-radius: 4px;"></textarea>
                         </div>
 

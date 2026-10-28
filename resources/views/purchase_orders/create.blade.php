@@ -31,7 +31,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
                         <div>
                             <label class="crm-label">Select Supplier <span class="required-marker">*</span></label>
-                            <select name="supplier_id" required class="crm-select">
+                            <select aria-label="Select Supplier" name="supplier_id" required class="crm-select">
                                 <option value="">-- Choose Hardware Supplier --</option>
                                 @foreach($suppliers as $supplier)
                                     <option value="{{ $supplier->id }}" @selected(old('supplier_id', $selectedSupplierId) == $supplier->id)>
@@ -44,13 +44,13 @@
 
                         <div>
                             <label class="crm-label">Order Date <span class="required-marker">*</span></label>
-                            <input type="date" name="order_date" value="{{ old('order_date', now()->format('Y-m-d')) }}" required class="crm-input">
+                            <input aria-label="Order Date" type="date" name="order_date" value="{{ old('order_date', now()->format('Y-m-d')) }}" required class="crm-input">
                             @error('order_date') <p class="error-text">{{ $message }}</p> @enderror
                         </div>
 
                         <div>
                             <label class="crm-label">Expected Delivery Date</label>
-                            <input type="date" name="expected_delivery_date" value="{{ old('expected_delivery_date', now()->addDays(5)->format('Y-m-d')) }}" class="crm-input">
+                            <input aria-label="Expected Delivery Date" type="date" name="expected_delivery_date" value="{{ old('expected_delivery_date', now()->addDays(5)->format('Y-m-d')) }}" class="crm-input">
                             @error('expected_delivery_date') <p class="error-text">{{ $message }}</p> @enderror
                         </div>
                     </div>
@@ -58,14 +58,14 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="crm-label">Initial PO Status</label>
-                            <select name="status" class="crm-select">
+                            <select aria-label="Initial PO Status" name="status" class="crm-select">
                                 <option value="ordered" @selected(old('status', 'ordered') === 'ordered')>Ordered</option>
                                 <option value="draft" @selected(old('status') === 'draft')>Draft</option>
                             </select>
                         </div>
                         <div>
                             <label class="crm-label">Procurement / Delivery Notes</label>
-                            <input type="text" name="notes" value="{{ old('notes') }}" placeholder="e.g. Delivery to Central Warehouse" class="crm-input">
+                            <input aria-label="Procurement / Delivery Notes" type="text" name="notes" value="{{ old('notes') }}" placeholder="e.g. Delivery to Central Warehouse" class="crm-input">
                         </div>
                     </div>
                 </div>
@@ -94,7 +94,7 @@
                                 <template x-for="(item, index) in items" :key="index">
                                     <tr>
                                         <td>
-                                            <select :name="`items[${index}][product_id]`" x-model="item.product_id" @change="onProductSelect(index)" class="crm-select">
+                                            <select aria-label="Item product" :name="`items[${index}][product_id]`" x-model="item.product_id" @change="onProductSelect(index)" class="crm-select">
                                                 <option value="">-- Custom / Non-Catalog --</option>
                                                 <template x-for="prod in catalogProducts" :key="prod.id">
                                                     <option :value="prod.id" x-text="`${prod.name} (${prod.sku})`"></option>
@@ -102,10 +102,10 @@
                                             </select>
                                         </td>
                                         <td>
-                                            <input type="text" :name="`items[${index}][item_name]`" x-model="item.item_name" required placeholder="e.g. 4MP Dome Camera" class="crm-input">
+                                            <input aria-label="Item item name" type="text" :name="`items[${index}][item_name]`" x-model="item.item_name" required placeholder="e.g. 4MP Dome Camera" class="crm-input">
                                         </td>
                                         <td>
-                                            <input type="text" :name="`items[${index}][sku]`" x-model="item.sku" placeholder="e.g. DS-2CD2143G2" class="crm-input">
+                                            <input aria-label="Item sku" type="text" :name="`items[${index}][sku]`" x-model="item.sku" placeholder="e.g. DS-2CD2143G2" class="crm-input">
                                         </td>
                                         <td class="text-right">
                                             <input type="number" step="0.01" min="0" :name="`items[${index}][unit_cost]`" x-model.number="item.unit_cost" required class="crm-input text-right">
@@ -131,11 +131,11 @@
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
                                     <label class="crm-label">GST Tax (%)</label>
-                                    <input type="number" step="0.01" min="0" max="100" name="tax_percent" x-model.number="taxPercent" class="crm-input" placeholder="e.g. 18">
+                                    <input aria-label="GST Tax (%)" type="number" step="0.01" min="0" max="100" name="tax_percent" x-model.number="taxPercent" class="crm-input" placeholder="e.g. 18">
                                 </div>
                                 <div>
                                     <label class="crm-label">Shipping / Freight (₹)</label>
-                                    <input type="number" step="0.01" min="0" name="shipping_cost" x-model.number="shippingCost" class="crm-input" placeholder="e.g. 250">
+                                    <input aria-label="Shipping / Freight (₹)" type="number" step="0.01" min="0" name="shipping_cost" x-model.number="shippingCost" class="crm-input" placeholder="e.g. 250">
                                 </div>
                             </div>
                         </div>

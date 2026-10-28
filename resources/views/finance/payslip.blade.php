@@ -271,14 +271,14 @@
 
                 <div>
                     <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Recipient Mobile Number (with Country Code)</label>
-                    <input type="text" name="phone" value="{{ $detectedPhone ?: '918789076658' }}" placeholder="e.g. 919876543210" required 
+                    <input aria-label="Recipient Mobile Number (with Country Code)" type="text" name="phone" value="{{ $detectedPhone ?: '918789076658' }}" placeholder="e.g. 919876543210" required 
                            class="w-full text-xs rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5">
                     <p class="text-[11px] text-slate-400 mt-1">Recipient: <strong>{{ $payroll->user?->name }}</strong> ({{ $payroll->user?->role }})</p>
                 </div>
 
                 <div>
                     <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Message Preview</label>
-                    <textarea name="custom_message" rows="6" class="w-full text-[11px] font-mono rounded-xl border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5">{{ $payroll->getWhatsAppFormattedMessage() }}</textarea>
+                    <textarea aria-label="Message Preview" name="custom_message" rows="6" class="w-full text-[11px] font-mono rounded-xl border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5">{{ $payroll->getWhatsAppFormattedMessage() }}</textarea>
                 </div>
 
                 <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">

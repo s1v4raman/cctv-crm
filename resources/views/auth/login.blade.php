@@ -1,10 +1,6 @@
 @php
     $cookieMode = request()->cookie('crm_mode');
     $isDarkServer = ($cookieMode === 'night' || $cookieMode === 'dark' || $cookieMode === null);
-
-    // Seeded demo accounts and pre-filled credentials are for local development only;
-    // every other environment gets an empty sign-in form.
-    $showDemoLogins = app()->environment('local');
 @endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full {{ $isDarkServer ? 'dark' : '' }}">
@@ -173,16 +169,6 @@
         html:not(.dark) .divider-line { border-color: #e2e8f0 !important; }
         html:not(.dark) .divider-text { color: #94a3b8 !important; background: #f8fafc !important; }
 
-        html:not(.dark) .demo-wrapper { background: #ffffff !important; border: 1.5px solid #e2e8f0 !important; }
-        html:not(.dark) .demo-header { background: #f8fafc !important; border-bottom: 1px solid #e2e8f0 !important; }
-        html:not(.dark) .demo-card { border-right: 1px solid #f1f5f9 !important; }
-        html:not(.dark) .demo-card:last-child { border-right: none !important; }
-        html:not(.dark) .demo-card:hover { background: #f0f5ff !important; }
-        html:not(.dark) .demo-card .dc-name { color: #1e293b !important; }
-        html:not(.dark) .demo-card .dc-email { color: #94a3b8 !important; }
-        html:not(.dark) .demo-card-worker:hover { background: #fffbeb !important; }
-        html:not(.dark) .demo-card-worker .dc-name { color: #92400e !important; }
-        html:not(.dark) .demo-card-worker .dc-email { color: #d97706 !important; }
 
         html:not(.dark) .info-banner { background: linear-gradient(135deg, #eff6ff 0%, #eef2ff 100%) !important; border: 1px solid #bfdbfe !important; }
         html:not(.dark) .info-banner .ib-icon-wrap { background: #dbeafe !important; }
@@ -203,9 +189,6 @@
         html:not(.dark) .login-alert-success { background: #f0fdf4 !important; border: 1px solid #bbf7d0 !important; color: #15803d !important; }
 
         /* Icons in Light Mode — Black */
-        html:not(.dark) .demo-card .dc-icon { color: #000000 !important; stroke: #000000 !important; }
-        html:not(.dark) .demo-card .dc-icon-wrap { background: #e2e8f0 !important; border: 1px solid #cbd5e1 !important; }
-        html:not(.dark) .demo-card:hover .dc-icon-wrap { background: #cbd5e1 !important; border-color: #94a3b8 !important; }
         html:not(.dark) .input-icon { color: #000000 !important; stroke: #000000 !important; }
         html:not(.dark) .pwd-toggle { color: #000000 !important; stroke: #000000 !important; }
         html:not(.dark) .tab-btn svg { color: #000000 !important; stroke: #000000 !important; }
@@ -258,16 +241,6 @@
         html.dark .divider-line { border-color: #334155 !important; }
         html.dark .divider-text { color: #94a3b8 !important; background: #0f172a !important; }
 
-        html.dark .demo-wrapper { background: #1e293b !important; border: 1.5px solid #334155 !important; }
-        html.dark .demo-header { background: #162032 !important; border-bottom: 1px solid #334155 !important; }
-        html.dark .demo-card { border-right: 1px solid #293548 !important; }
-        html.dark .demo-card:last-child { border-right: none !important; }
-        html.dark .demo-card:hover { background: rgba(37, 99, 235, 0.15) !important; }
-        html.dark .demo-card .dc-name { color: #f8fafc !important; }
-        html.dark .demo-card .dc-email { color: #94a3b8 !important; }
-        html.dark .demo-card-worker:hover { background: rgba(217, 119, 6, 0.15) !important; }
-        html.dark .demo-card-worker .dc-name { color: #fcd34d !important; }
-        html.dark .demo-card-worker .dc-email { color: #f59e0b !important; }
 
         html.dark .info-banner { background: linear-gradient(135deg, rgba(30,58,138,0.25) 0%, rgba(49,46,129,0.2) 100%) !important; border: 1px solid rgba(59,130,246,0.35) !important; }
         html.dark .info-banner .ib-icon-wrap { background: rgba(37, 99, 235, 0.25) !important; }
@@ -303,9 +276,6 @@
         html.dark .login-alert-success { background: rgba(22, 101, 52, 0.25) !important; border: 1px solid rgba(74, 222, 128, 0.3) !important; color: #86efac !important; }
 
         /* Icons in Dark Mode — White / Light Slate */
-        html.dark .demo-card .dc-icon { color: #ffffff !important; stroke: #ffffff !important; }
-        html.dark .demo-card .dc-icon-wrap { background: #334155 !important; border: 1px solid #475569 !important; }
-        html.dark .demo-card:hover .dc-icon-wrap { background: #475569 !important; border-color: #64748b !important; }
         html.dark .input-icon { color: #94a3b8 !important; stroke: #94a3b8 !important; }
         html.dark .pwd-toggle { color: #94a3b8 !important; stroke: #94a3b8 !important; }
         html.dark .pwd-toggle:hover { color: #ffffff !important; stroke: #ffffff !important; }
@@ -337,8 +307,7 @@
 
         .worker-tab-active { background: #2563eb !important; color: #fff !important; border: 1px solid #1d4ed8 !important; }
 
-        .demo-card, .google-btn, .tab-btn { transition: all 0.2s ease; }
-        .demo-card:hover { transform: translateY(-1px); }
+        .google-btn, .tab-btn { transition: all 0.2s ease; }
         .google-btn:hover { transform: translateY(-1px); }
 
         /* Entrance animation */
@@ -365,28 +334,10 @@
           portal: 'admin',
           showPassword: false,
           isDarkMode: document.documentElement.classList.contains('dark'),
-          workerName: @js($showDemoLogins ? 'Raju Kumar' : ''),
-          workerPhone: @js($showDemoLogins ? '9876543210' : ''),
+          workerName: '',
+          workerPhone: '',
           setRole(role) {
               this.portal = role;
-              @if ($showDemoLogins)
-              if (role === 'admin') {
-                  this.setEmailAndPass('test@example.com', 'password');
-              } else if (role === 'technician') {
-                  this.setEmailAndPass('bob@example.com', 'password');
-              } else if (role === 'staff') {
-                  this.setEmailAndPass('alex@example.com', 'password');
-              } else if (role === 'worker') {
-                  this.workerName = 'Raju Kumar';
-                  this.workerPhone = '9876543210';
-              }
-              @endif
-          },
-          setEmailAndPass(email, pass) {
-              const emailEl = document.getElementById('email');
-              const passEl = document.getElementById('password');
-              if (emailEl) emailEl.value = email;
-              if (passEl) passEl.value = pass;
           }
       }">
 
@@ -677,7 +628,7 @@
                             <div>
                                 <label for="email" class="fp-label block text-xs font-semibold mb-1.5">Email Address</label>
                                 <input id="email" type="email" name="email" 
-                                       value="{{ old('email', $showDemoLogins ? 'test@example.com' : '') }}"
+                                       value="{{ old('email') }}"
                                        required autofocus autocomplete="username" 
                                        placeholder="you@company.com" 
                                        class="login-input w-full px-4 py-2.5 text-sm rounded-lg">
@@ -686,10 +637,10 @@
                                 <label for="password" class="fp-label block text-xs font-semibold mb-1.5">Password</label>
                                 <div class="relative">
                                     <input id="password" :type="showPassword ? 'text' : 'password'" name="password" 
-                                           @if ($showDemoLogins) value="password" @endif required autocomplete="current-password"
+                                           required autocomplete="current-password"
                                            placeholder="••••••••" 
                                            class="login-input w-full px-4 py-2.5 text-sm rounded-lg pr-11">
-                                    <button type="button" @click="showPassword = !showPassword" 
+                                    <button aria-label="Toggle password visibility" type="button" @click="showPassword = !showPassword" 
                                             class="pwd-toggle absolute right-3 top-1/2 -translate-y-1/2 transition-colors cursor-pointer"
                                             title="Toggle password visibility">
                                         <svg x-show="!showPassword" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
@@ -716,51 +667,6 @@
                         </form>
                     </div>
 
-                    <!-- Demo Credentials (local development only) -->
-                    @if ($showDemoLogins)
-                    <div class="mt-7 anim anim-d4">
-                        <div class="demo-wrapper rounded-xl overflow-hidden">
-                            <div class="demo-header px-4 py-2.5 flex items-center justify-between">
-                                <span class="text-[11px] font-bold fp-muted uppercase tracking-wider">Demo Logins</span>
-                                <span class="text-[11px] fp-muted font-medium" x-text="portal === 'worker' ? 'Daily wages profile' : 'Click to autofill'"></span>
-                            </div>
-                            <div class="grid grid-cols-4 gap-0">
-                                <div class="demo-card p-3 cursor-pointer text-center" 
-                                     @click="portal = 'admin'; setEmailAndPass('test@example.com', 'password')">
-                                    <div class="dc-icon-wrap w-7 h-7 rounded-full flex items-center justify-center mx-auto mb-1.5 transition-all">
-                                        <svg class="dc-icon w-3.5 h-3.5 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-                                    </div>
-                                    <span class="dc-name font-bold block text-[11px]">Admin</span>
-                                    <span class="dc-email text-[11px] block truncate mt-0.5 font-mono">test@example.c…</span>
-                                </div>
-                                <div class="demo-card p-3 cursor-pointer text-center" 
-                                     @click="portal = 'technician'; setEmailAndPass('bob@example.com', 'password')">
-                                    <div class="dc-icon-wrap w-7 h-7 rounded-full flex items-center justify-center mx-auto mb-1.5 transition-all">
-                                        <svg class="dc-icon w-3.5 h-3.5 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                                    </div>
-                                    <span class="dc-name font-bold block text-[11px]">Technician</span>
-                                    <span class="dc-email text-[11px] block truncate mt-0.5 font-mono">bob@example.c…</span>
-                                </div>
-                                <div class="demo-card p-3 cursor-pointer text-center" 
-                                     @click="portal = 'staff'; setEmailAndPass('alex@example.com', 'password')">
-                                    <div class="dc-icon-wrap w-7 h-7 rounded-full flex items-center justify-center mx-auto mb-1.5 transition-all">
-                                        <svg class="dc-icon w-3.5 h-3.5 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                                    </div>
-                                    <span class="dc-name font-bold block text-[11px]">Staff</span>
-                                    <span class="dc-email text-[11px] block truncate mt-0.5 font-mono">alex@example.c…</span>
-                                </div>
-                                <div class="demo-card demo-card-worker p-3 cursor-pointer text-center" 
-                                     @click="portal = 'worker'; workerName = 'Raju Kumar'; workerPhone = '9876543210'">
-                                    <div class="dc-icon-wrap w-7 h-7 rounded-full flex items-center justify-center mx-auto mb-1.5 transition-all">
-                                        <svg class="dc-icon w-3.5 h-3.5 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-                                    </div>
-                                    <span class="dc-name font-bold block text-[11px]">Worker</span>
-                                    <span class="dc-email text-[11px] block truncate mt-0.5 font-mono">9876543210</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    @endif
 
                 </div>
             </div>

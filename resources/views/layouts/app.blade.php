@@ -1110,6 +1110,24 @@
                 border-style: solid !important;
                 border-color: var(--input-border) !important;
             }
+
+            /* Omnisearch Result Badge: Compact, Crisp, Proportionate */
+            .crm-search-badge {
+                font-size: 9.5px !important;
+                font-weight: 600 !important;
+                line-height: 12px !important;
+                letter-spacing: 0.04em !important;
+                padding: 1.5px 6.5px !important;
+                border-radius: 4px !important;
+                border-width: 1px !important;
+                border-style: solid !important;
+                text-transform: uppercase !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                white-space: nowrap !important;
+                flex-shrink: 0 !important;
+            }
         </style>
 
         <script>
@@ -1357,6 +1375,37 @@
                                         this.$refs.searchInput?.focus();
                                         this.open = true;
                                     }
+                                },
+                                getBadgeClass(badge) {
+                                    const b = (badge || '').toLowerCase();
+                                    if (b.includes('quote') || b.includes('quoted')) {
+                                        return 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/60 dark:text-blue-300 dark:border-blue-800';
+                                    }
+                                    if (b.includes('project')) {
+                                        return 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-950/60 dark:text-indigo-300 dark:border-indigo-800';
+                                    }
+                                    if (b.includes('survey')) {
+                                        return 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800';
+                                    }
+                                    if (b.includes('product')) {
+                                        return 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800';
+                                    }
+                                    if (b.includes('lead') || b.includes('new') || b.includes('contacted')) {
+                                        return 'bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-950/60 dark:text-sky-300 dark:border-sky-800';
+                                    }
+                                    if (b.includes('won') || b.includes('paid')) {
+                                        return 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800';
+                                    }
+                                    if (b.includes('lost') || b.includes('cancelled') || b.includes('overdue')) {
+                                        return 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800';
+                                    }
+                                    if (b.includes('job') || b.includes('task')) {
+                                        return 'bg-violet-50 text-violet-700 border-violet-200 dark:bg-violet-950/60 dark:text-violet-300 dark:border-violet-800';
+                                    }
+                                    if (b.includes('asset') || b.includes('camera') || b.includes('equipment')) {
+                                        return 'bg-teal-50 text-teal-700 border-teal-200 dark:bg-teal-950/60 dark:text-teal-300 dark:border-teal-800';
+                                    }
+                                    return 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700';
                                 }
                             };
                         }
@@ -1446,9 +1495,12 @@
                                                    :class="selectedIndex === index ? 'bg-slate-100 dark:bg-slate-800 text-[var(--text-main)]' : 'hover:bg-slate-50 dark:hover:bg-slate-800/60'"
                                                    class="flex items-start gap-3 px-3 py-2 transition text-left group block">
                                                     <div class="flex-1 min-w-0">
-                                                        <div class="flex items-center justify-between gap-1">
+                                                        <div class="flex items-center justify-between gap-2">
                                                             <p class="text-xs font-bold text-[var(--text-main)] truncate" x-text="item.title"></p>
-                                                            <span class="text-[11px] font-bold uppercase px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 shrink-0" x-text="item.badge"></span>
+                                                            <span class="crm-search-badge shrink-0"
+                                                                  :class="getBadgeClass(item.badge)"
+                                                                  style="font-size: 9.5px !important; line-height: 12px !important; font-weight: 600 !important; letter-spacing: 0.04em !important; padding: 1.5px 6.5px !important; border-radius: 4px !important; text-transform: uppercase !important; display: inline-flex !important; align-items: center !important;"
+                                                                  x-text="item.badge"></span>
                                                         </div>
                                                         <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate" x-text="item.subtitle"></p>
                                                     </div>
@@ -1710,28 +1762,59 @@
                         {{-- Mobile Omnisearch Full-Width Overlay --}}
                         <div x-show="mobileSearchOpen"
                              x-cloak
-                             class="absolute inset-0 bg-[var(--card-bg)] z-50 px-3 flex items-center gap-2 border-b border-[var(--card-border)] md:hidden"
+                             class="absolute inset-x-0 top-0 bg-[var(--card-bg)] z-50 px-3 py-2 border-b border-[var(--card-border)] md:hidden shadow-lg"
                              style="display: none;">
                             
-                            <div class="relative flex-1 flex items-center">
-                                <input type="text" 
-                                       x-ref="mobileSearchInput"
-                                       x-model="query"
-                                       @input.debounce.250ms="search()"
-                                       @focus="if(query.length >= 2) open = true"
-                                       @keydown.arrow-down.prevent="navigate(1)"
-                                       @keydown.arrow-up.prevent="navigate(-1)"
-                                       @keydown.enter.prevent="selectActive()"
-                                       placeholder="Search..."
-                                       style="height: 38px !important; border-radius: 6px !important;"
-                                       class="w-full px-3 text-xs bg-white dark:bg-slate-900 border border-[var(--card-border)] rounded text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none">
+                            <div class="flex items-center gap-2">
+                                <div class="relative flex-1 flex items-center">
+                                    <input type="text" 
+                                           x-ref="mobileSearchInput"
+                                           x-model="query"
+                                           @input.debounce.250ms="search()"
+                                           @focus="if(query.length >= 2) open = true"
+                                           @keydown.arrow-down.prevent="navigate(1)"
+                                           @keydown.arrow-up.prevent="navigate(-1)"
+                                           @keydown.enter.prevent="selectActive()"
+                                           placeholder="Search leads, projects, products..."
+                                           style="height: 38px !important; border-radius: 6px !important;"
+                                           class="w-full px-3 text-xs bg-white dark:bg-slate-900 border border-[var(--card-border)] rounded text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none">
+                                </div>
+
+                                <button @click="mobileSearchOpen = false; open = false;" 
+                                        type="button" 
+                                        class="px-2 py-1 rounded text-xs font-semibold text-slate-600 dark:text-slate-300 shrink-0 cursor-pointer">
+                                    Cancel
+                                </button>
                             </div>
 
-                            <button @click="mobileSearchOpen = false; open = false;" 
-                                    type="button" 
-                                    class="px-2 py-1 rounded text-xs font-semibold text-slate-600 dark:text-slate-300 shrink-0">
-                                Cancel
-                            </button>
+                            {{-- Mobile Dropdown Results --}}
+                            <div x-show="open && query.trim().length >= 2"
+                                 class="mt-2 max-h-80 overflow-y-auto bg-[var(--card-bg)] border border-[var(--card-border)] rounded-lg py-1 divide-y divide-[var(--card-border)] shadow-xl">
+                                <template x-if="results.length > 0">
+                                    <div class="py-1">
+                                        <template x-for="(item, index) in results" :key="'mob-' + index">
+                                            <a :href="item.url" 
+                                               class="flex items-start gap-2.5 px-3 py-2 transition text-left hover:bg-slate-50 dark:hover:bg-slate-800/60 block">
+                                                <div class="flex-1 min-w-0">
+                                                    <div class="flex items-center justify-between gap-1.5">
+                                                        <p class="text-xs font-bold text-[var(--text-main)] truncate" x-text="item.title"></p>
+                                                        <span class="crm-search-badge shrink-0"
+                                                              :class="getBadgeClass(item.badge)"
+                                                              style="font-size: 9.5px !important; line-height: 12px !important; font-weight: 600 !important; letter-spacing: 0.04em !important; padding: 1.5px 6.5px !important; border-radius: 4px !important; text-transform: uppercase !important; display: inline-flex !important; align-items: center !important;"
+                                                              x-text="item.badge"></span>
+                                                    </div>
+                                                    <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate" x-text="item.subtitle"></p>
+                                                </div>
+                                            </a>
+                                        </template>
+                                    </div>
+                                </template>
+                                <template x-if="!loading && results.length === 0">
+                                    <div class="p-4 text-center text-xs text-slate-500">
+                                        No matches found
+                                    </div>
+                                </template>
+                            </div>
                         </div>
                     </header>
 

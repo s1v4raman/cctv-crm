@@ -57,7 +57,7 @@
     function goToQuotation() {
         const leadId = document.getElementById('lead_id').value;
         if (!leadId) {
-            alert('Please select a lead first.');
+            crmAlert('Please select a lead first.');
             return;
         }
         window.location.href = `/leads/${leadId}/quote`;

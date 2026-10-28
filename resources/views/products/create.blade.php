@@ -26,14 +26,14 @@
 
                     <div class="mb-4">
                         <label class="crm-label">Product / Service Name <span class="required-marker">*</span></label>
-                        <input type="text" name="name" value="{{ old('name') }}" class="crm-input" placeholder="e.g. Hikvision 4MP Bullet Camera" required>
+                        <input aria-label="Product / Service Name" type="text" name="name" value="{{ old('name') }}" class="crm-input" placeholder="e.g. Hikvision 4MP Bullet Camera" required>
                         @error('name') <p class="error-text">{{ $message }}</p> @enderror
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                         <div>
                             <label class="crm-label">Category</label>
-                            <input type="text" name="category" list="category-list" value="{{ old('category') }}" class="crm-input" placeholder="e.g. Camera">
+                            <input aria-label="Category" type="text" name="category" list="category-list" value="{{ old('category') }}" class="crm-input" placeholder="e.g. Camera">
                             <datalist id="category-list">
                                 <option value="Camera">
                                 <option value="NVR/DVR">
@@ -48,7 +48,7 @@
                         </div>
                         <div>
                             <label class="crm-label">Brand / Manufacturer</label>
-                            <input type="text" name="brand" list="brand-list" value="{{ old('brand') }}" class="crm-input" placeholder="e.g. Hikvision">
+                            <input aria-label="Brand / Manufacturer" type="text" name="brand" list="brand-list" value="{{ old('brand') }}" class="crm-input" placeholder="e.g. Hikvision">
                             <datalist id="brand-list">
                                 <option value="Hikvision">
                                 <option value="Dahua">
@@ -66,12 +66,12 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                         <div>
                             <label class="crm-label">Model Number</label>
-                            <input type="text" name="model_no" value="{{ old('model_no') }}" class="crm-input" placeholder="e.g. DS-2CD2043G2-I">
+                            <input aria-label="Model Number" type="text" name="model_no" value="{{ old('model_no') }}" class="crm-input" placeholder="e.g. DS-2CD2043G2-I">
                             @error('model_no') <p class="error-text">{{ $message }}</p> @enderror
                         </div>
                         <div>
                             <label class="crm-label">SKU / Product Code</label>
-                            <input type="text" name="sku" value="{{ old('sku') }}" class="crm-input" placeholder="e.g. HK-4MP-BULLET">
+                            <input aria-label="SKU / Product Code" type="text" name="sku" value="{{ old('sku') }}" class="crm-input" placeholder="e.g. HK-4MP-BULLET">
                             @error('sku') <p class="error-text">{{ $message }}</p> @enderror
                         </div>
                     </div>
@@ -79,7 +79,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                         <div>
                             <label class="crm-label">Unit <span class="required-marker">*</span></label>
-                            <select name="unit" class="crm-select" required>
+                            <select aria-label="Unit" name="unit" class="crm-select" required>
                                 @foreach (['Nos', 'Mtr', 'Box', 'Set', 'Job', 'Pkt', 'Roll'] as $unit)
                                     <option value="{{ $unit }}" @selected(old('unit', 'Nos') === $unit)>{{ $unit }}</option>
                                 @endforeach
@@ -88,7 +88,7 @@
                         </div>
                         <div>
                             <label class="crm-label">Default Warranty (Months)</label>
-                            <input type="number" name="default_warranty_months" value="{{ old('default_warranty_months', 24) }}" min="0" class="crm-input" placeholder="e.g. 24">
+                            <input aria-label="Default Warranty (Months)" type="number" name="default_warranty_months" value="{{ old('default_warranty_months', 24) }}" min="0" class="crm-input" placeholder="e.g. 24">
                         </div>
                     </div>
 
@@ -97,12 +97,12 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                         <div>
                             <label class="crm-label">Opening Stock Quantity</label>
-                            <input type="number" name="stock_quantity" value="{{ old('stock_quantity', 0) }}" min="0" class="crm-input" placeholder="e.g. 10">
+                            <input aria-label="Opening Stock Quantity" type="number" name="stock_quantity" value="{{ old('stock_quantity', 0) }}" min="0" class="crm-input" placeholder="e.g. 10">
                             @error('stock_quantity') <p class="error-text">{{ $message }}</p> @enderror
                         </div>
                         <div>
                             <label class="crm-label">Low Stock Alert Level</label>
-                            <input type="number" name="min_stock_alert" value="{{ old('min_stock_alert', 5) }}" min="0" class="crm-input" placeholder="e.g. 5">
+                            <input aria-label="Low Stock Alert Level" type="number" name="min_stock_alert" value="{{ old('min_stock_alert', 5) }}" min="0" class="crm-input" placeholder="e.g. 5">
                             @error('min_stock_alert') <p class="error-text">{{ $message }}</p> @enderror
                         </div>
                     </div>
@@ -110,12 +110,12 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                         <div>
                             <label class="crm-label">Cost Price (₹) <span class="required-marker">*</span></label>
-                            <input type="number" name="cost_price" id="cost_price" value="{{ old('cost_price', 0) }}" min="0" step="0.01" class="crm-input" placeholder="e.g. 2900" required oninput="calcMargin()">
+                            <input aria-label="Cost Price (₹)" type="number" name="cost_price" id="cost_price" value="{{ old('cost_price', 0) }}" min="0" step="0.01" class="crm-input" placeholder="e.g. 2900" required oninput="calcMargin()">
                             @error('cost_price') <p class="error-text">{{ $message }}</p> @enderror
                         </div>
                         <div>
                             <label class="crm-label">Sale Price (₹) <span class="required-marker">*</span></label>
-                            <input type="number" name="unit_price" id="unit_price" value="{{ old('unit_price', 0) }}" min="0" step="0.01" class="crm-input" placeholder="e.g. 3500" required oninput="calcMargin()">
+                            <input aria-label="Sale Price (₹)" type="number" name="unit_price" id="unit_price" value="{{ old('unit_price', 0) }}" min="0" step="0.01" class="crm-input" placeholder="e.g. 3500" required oninput="calcMargin()">
                             @error('unit_price') <p class="error-text">{{ $message }}</p> @enderror
                         </div>
                     </div>
@@ -123,7 +123,7 @@
 
                     <div class="mb-4">
                         <label class="crm-label">Description / Specification</label>
-                        <textarea name="description" rows="3" class="crm-input" style="height: auto;" placeholder="e.g. 4MP outdoor IR bullet camera, 30m night vision">{{ old('description') }}</textarea>
+                        <textarea aria-label="Description / Specification" name="description" rows="3" class="crm-input" style="height: auto;" placeholder="e.g. 4MP outdoor IR bullet camera, 30m night vision">{{ old('description') }}</textarea>
                     </div>
 
                     <div class="mb-4">

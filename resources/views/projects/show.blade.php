@@ -955,37 +955,6 @@
                         </div>
                     </div>
 
-                    {{-- Financial Stats Card --}}
-                    <div class="p-6 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
-                        <h3 class="font-extrabold text-slate-900 dark:text-white text-sm">Financial Breakdown</h3>
-
-                        <div class="space-y-3 text-sm">
-                            <div class="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-slate-800">
-                                <span class="text-xs text-slate-400">Budget Estimate</span>
-                                <span class="font-bold font-mono">₹{{ number_format($project->budget, 2) }}</span>
-                            </div>
-                            <div class="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-slate-800">
-                                <span class="text-xs text-slate-400">Approved Value</span>
-                                <span class="font-bold font-mono text-emerald-600">₹{{ number_format($project->approved_value ?? $project->budget, 2) }}</span>
-                            </div>
-                            <div class="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-slate-800">
-                                <span class="text-xs text-slate-400">Per-Metre Cabling Rate</span>
-                                <span class="font-bold font-mono text-blue-600">₹{{ number_format($project->per_metre_rate ?? 8.0, 2) }}/m</span>
-                            </div>
-                            <div class="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-slate-800">
-                                <span class="text-xs text-slate-400">Total Labor Incurred</span>
-                                <span class="font-bold font-mono text-slate-900 dark:text-white">₹{{ number_format($totalLaborCost, 2) }}</span>
-                            </div>
-                            <div class="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-slate-800">
-                                <span class="text-xs text-slate-400">Labor Paid (Settled)</span>
-                                <span class="font-bold font-mono text-emerald-600 dark:text-emerald-400">₹{{ number_format($totalLaborPaid, 2) }}</span>
-                            </div>
-                            <div class="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-slate-800">
-                                <span class="text-xs text-slate-400">Labor Cost to Pay (Pending)</span>
-                                <span class="font-bold font-mono text-rose-600 dark:text-rose-400">₹{{ number_format($totalLaborPendingPay, 2) }}</span>
-                            </div>
-                        </div>
-                    </div>
 
                     {{-- Audit Trail Log --}}
                     <div class="p-6 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-3">
@@ -2066,13 +2035,13 @@
                         <div class="relative flex items-center">
                             <svg class="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                             <input type="text" x-model="taskSearchQuery" placeholder="Filter tasks or assignee..." 
-                                   style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; padding-left: 36px !important; border-radius: 8px !important;"
+                                   style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; padding-left: 36px !important; border-radius: var(--radius-control) !important;"
                                    class="text-xs border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200 outline-none w-56 sm:w-64 focus:ring-2 focus:ring-blue-500">
                         </div>
 
                         {{-- Phase Pill Dropdown / Selector --}}
                         <select x-model="activePhaseFilter" 
-                                style="height: 38px !important; min-height: 38px !important; max-height: 38px !important; border-radius: 8px !important;"
+                                style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important;"
                                 class="text-xs font-semibold px-3 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 outline-none">
                             <option value="all">All Phases ({{ $tasksCount }})</option>
                             @foreach($tasksByPhase as $phaseName => $phaseTasks)

@@ -17,7 +17,7 @@
                     Aging PDF
                 </a>
 
-                <form action="{{ route('finance.receivables.sweep') }}" method="POST" onsubmit="return confirm('Trigger payment reminder sweep for all overdue invoices? (Invoices notified within last 3 days will be skipped)');" class="inline">
+                <form action="{{ route('finance.receivables.sweep') }}" method="POST" data-confirm="Trigger payment reminder sweep for all overdue invoices? (Invoices notified within last 3 days will be skipped)" class="inline">
                     @csrf
                     <button type="submit" class="btn-primary">
                         Dunning Sweep

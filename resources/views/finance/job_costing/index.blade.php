@@ -80,14 +80,14 @@
                 <!-- Search -->
                 <div>
                     <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Search Job / Client</label>
-                    <input type="text" name="search" value="{{ $filters['search'] }}" placeholder="Job #, Customer..."
+                    <input aria-label="Search Job / Client" type="text" name="search" value="{{ $filters['search'] }}" placeholder="Job #, Customer..."
                            class="w-full rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs px-3 py-2 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
                 </div>
 
                 <!-- Margin Status Filter -->
                 <div>
                     <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Profitability Health</label>
-                    <select name="margin_status" class="w-full rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs px-3 py-2 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
+                    <select aria-label="Profitability Health" name="margin_status" class="w-full rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs px-3 py-2 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
                         <option value="">All Profit Tiers</option>
                         <option value="high_profit" {{ $filters['margin_status'] === 'high_profit' ? 'selected' : '' }}>High Margin (&ge; 35%)</option>
                         <option value="healthy" {{ $filters['margin_status'] === 'healthy' ? 'selected' : '' }}>Healthy Margin (20% - 35%)</option>
@@ -99,7 +99,7 @@
                 <!-- Technician Filter -->
                 <div>
                     <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Technician</label>
-                    <select name="technician_id" class="w-full rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs px-3 py-2 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
+                    <select aria-label="Technician" name="technician_id" class="w-full rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs px-3 py-2 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
                         <option value="">All Technicians</option>
                         @foreach($technicians as $tech)
                             <option value="{{ $tech->id }}" {{ (string)$filters['technician_id'] === (string)$tech->id ? 'selected' : '' }}>
@@ -112,7 +112,7 @@
                 <!-- Date Range -->
                 <div>
                     <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Time Period</label>
-                    <select name="range" class="w-full rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs px-3 py-2 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
+                    <select aria-label="Time Period" name="range" class="w-full rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs px-3 py-2 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
                         <option value="all" {{ $range === 'all' ? 'selected' : '' }}>All Time</option>
                         <option value="this_month" {{ $range === 'this_month' ? 'selected' : '' }}>This Month</option>
                         <option value="last_month" {{ $range === 'last_month' ? 'selected' : '' }}>Last Month</option>

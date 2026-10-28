@@ -36,7 +36,7 @@ class WagePayment extends Model
 
     public function worker(): BelongsTo
     {
-        return $this->belongsTo(Worker::class);
+        return $this->belongsTo(Worker::class)->withTrashed();
     }
 
     public function payer(): BelongsTo

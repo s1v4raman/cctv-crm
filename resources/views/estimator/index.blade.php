@@ -46,7 +46,7 @@
                                 <span class="text-[11px] text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded font-mono font-semibold">Loaded from Site Survey #{{ $initialData['survey_id'] }}</span>
                             @endif
                         </label>
-                        <select x-model="selectedLeadId" class="w-full text-xs rounded-xl border border-[var(--card-border)] dark:border-slate-600 bg-white dark:bg-[#060913] text-slate-900 dark:text-white focus:border-blue-600 focus:outline-none p-2.5">
+                        <select aria-label="Selected lead" x-model="selectedLeadId" class="w-full text-xs rounded-xl border border-[var(--card-border)] dark:border-slate-600 bg-white dark:bg-[#060913] text-slate-900 dark:text-white focus:border-blue-600 focus:outline-none p-2.5">
                             <option value="">-- Select Customer / Lead (or General Estimate) --</option>
                             @foreach($leads as $lead)
                                 <option value="{{ $lead->id }}">
@@ -143,7 +143,7 @@
                                     Default Cable Distance (Meters / Point)
                                 </label>
                                 <div class="flex items-center gap-3">
-                                    <input type="number" min="5" max="250" x-model.number="defaultDistanceMeters" @input="updateAllZoneDistances()" class="w-full text-xs font-mono rounded-xl border border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:outline-none p-2.5">
+                                    <input aria-label="Default Cable Distance (Meters / Point)" type="number" min="5" max="250" x-model.number="defaultDistanceMeters" @input="updateAllZoneDistances()" class="w-full text-xs font-mono rounded-xl border border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:outline-none p-2.5">
                                     <span class="text-xs text-slate-400 font-mono shrink-0">Mtr/Cam</span>
                                 </div>
                                 <p class="text-[11px] text-slate-500 font-mono mt-1">Includes riser and drop slack margins.</p>
@@ -177,13 +177,13 @@
                                     <div class="flex items-center justify-between gap-3">
                                         <div class="flex items-center gap-2 flex-1">
                                             <span class="w-6 h-6 rounded-full bg-slate-800 text-amber-400 text-xs font-mono font-bold flex items-center justify-center shrink-0 border border-slate-700" x-text="index + 1"></span>
-                                            <input type="text" x-model="zone.name" class="text-xs font-bold text-white bg-transparent border-0 border-b border-dashed border-slate-700 focus:ring-0 focus:border-amber-400 p-0 w-full" placeholder="Zone name (e.g., Outdoor Perimeter)">
+                                            <input aria-label="Zone name (e.g., Outdoor Perimeter)" type="text" x-model="zone.name" class="text-xs font-bold text-white bg-transparent border-0 border-b border-dashed border-slate-700 focus:ring-0 focus:border-amber-400 p-0 w-full" placeholder="Zone name (e.g., Outdoor Perimeter)">
                                         </div>
 
                                         <div class="flex items-center gap-3">
                                             <div class="flex items-center gap-1.5 bg-[#0F172A] px-2.5 py-1 rounded-lg border border-slate-700">
                                                 <label class="text-sm font-mono text-slate-300">Qty:</label>
-                                                <input type="number" min="1" max="128" x-model.number="zone.quantity" @input="recalculateAll()" class="w-12 text-center font-bold text-xs p-0 border-0 bg-transparent text-amber-400 focus:ring-0">
+                                                <input aria-label="Qty:" type="number" min="1" max="128" x-model.number="zone.quantity" @input="recalculateAll()" class="w-12 text-center font-bold text-xs p-0 border-0 bg-transparent text-amber-400 focus:ring-0">
                                             </div>
 
                                             <button type="button" @click="removeCameraZone(index)" :disabled="cameraZones.length === 1" class="text-slate-500 hover:text-rose-400 disabled:opacity-30 p-1 transition">
@@ -197,7 +197,7 @@
                                         
                                         <div>
                                             <label class="block text-sm font-semibold text-slate-300 mb-1.5">Resolution</label>
-                                            <select x-model="zone.resolution" @change="recalculateAll()" class="w-full text-xs rounded-lg border border-slate-700 py-1.5 px-2 bg-[#0F172A] text-white focus:border-amber-400 focus:outline-none">
+                                            <select aria-label="Resolution" x-model="zone.resolution" @change="recalculateAll()" class="w-full text-xs rounded-lg border border-slate-700 py-1.5 px-2 bg-[#0F172A] text-white focus:border-amber-400 focus:outline-none">
                                                 <option value="2MP">2 MP (1080p FHD)</option>
                                                 <option value="3MP">3 MP (2K)</option>
                                                 <option value="4MP">4 MP (2.5K Ultra)</option>
@@ -208,7 +208,7 @@
 
                                         <div>
                                             <label class="block text-sm font-semibold text-slate-300 mb-1.5">Compression</label>
-                                            <select x-model="zone.codec" @change="recalculateAll()" class="w-full text-xs rounded-lg border border-slate-700 py-1.5 px-2 bg-[#0F172A] text-white focus:border-amber-400 focus:outline-none">
+                                            <select aria-label="Compression" x-model="zone.codec" @change="recalculateAll()" class="w-full text-xs rounded-lg border border-slate-700 py-1.5 px-2 bg-[#0F172A] text-white focus:border-amber-400 focus:outline-none">
                                                 <option value="H265_PLUS">H.265+ (Smart 70%)</option>
                                                 <option value="H265">H.265 (HEVC 50%)</option>
                                                 <option value="H264_PLUS">H.264+ (Enhanced)</option>
@@ -218,7 +218,7 @@
 
                                         <div>
                                             <label class="block text-sm font-semibold text-slate-300 mb-1.5">Frame Rate</label>
-                                            <select x-model.number="zone.fps" @change="recalculateAll()" class="w-full text-xs rounded-lg border border-slate-700 py-1.5 px-2 bg-[#0F172A] text-white focus:border-amber-400 focus:outline-none">
+                                            <select aria-label="Frame Rate" x-model.number="zone.fps" @change="recalculateAll()" class="w-full text-xs rounded-lg border border-slate-700 py-1.5 px-2 bg-[#0F172A] text-white focus:border-amber-400 focus:outline-none">
                                                 <option value="12">12 FPS (Storage Saver)</option>
                                                 <option value="15">15 FPS (Commercial)</option>
                                                 <option value="20">20 FPS (Smooth)</option>
@@ -229,7 +229,7 @@
 
                                         <div>
                                             <label class="block text-sm font-semibold text-slate-300 mb-1.5">Recording Mode</label>
-                                            <select x-model.number="zone.hoursPerDay" @change="recalculateAll()" class="w-full text-xs rounded-lg border border-slate-700 py-1.5 px-2 bg-[#0F172A] text-white focus:border-amber-400 focus:outline-none">
+                                            <select aria-label="Recording Mode" x-model.number="zone.hoursPerDay" @change="recalculateAll()" class="w-full text-xs rounded-lg border border-slate-700 py-1.5 px-2 bg-[#0F172A] text-white focus:border-amber-400 focus:outline-none">
                                                 <option value="24">24/7 Continuous (24h)</option>
                                                 <option value="16">Extended Motion (16h)</option>
                                                 <option value="12">Office / Store (12h)</option>
@@ -422,8 +422,8 @@
                                     
                                     <td class="py-3 px-4">
                                         <div class="space-y-1">
-                                            <input type="text" x-model="item.item_name" class="w-full text-xs font-bold text-white rounded-lg border border-slate-700 bg-[#060913] focus:border-amber-400 focus:outline-none p-1.5">
-                                            <input type="text" x-model="item.description" placeholder="Specification details / notes" class="w-full text-[11px] text-slate-400 rounded-lg border border-slate-800 bg-[#060913] focus:border-amber-400 focus:outline-none p-1 font-mono">
+                                            <input aria-label="Item item name" type="text" x-model="item.item_name" class="w-full text-xs font-bold text-white rounded-lg border border-slate-700 bg-[#060913] focus:border-amber-400 focus:outline-none p-1.5">
+                                            <input aria-label="Specification details / notes" type="text" x-model="item.description" placeholder="Specification details / notes" class="w-full text-[11px] text-slate-400 rounded-lg border border-slate-800 bg-[#060913] focus:border-amber-400 focus:outline-none p-1 font-mono">
                                         </div>
                                     </td>
 
@@ -432,7 +432,7 @@
                                     </td>
 
                                     <td class="py-3 px-4 text-center">
-                                        <input type="text" x-model="item.unit" class="w-16 text-center text-xs rounded-lg border border-slate-700 bg-[#060913] focus:border-amber-400 focus:outline-none p-1.5 font-mono text-slate-300">
+                                        <input aria-label="Item unit" type="text" x-model="item.unit" class="w-16 text-center text-xs rounded-lg border border-slate-700 bg-[#060913] focus:border-amber-400 focus:outline-none p-1.5 font-mono text-slate-300">
                                     </td>
 
                                     <td class="py-3 px-4 text-right">
@@ -444,7 +444,7 @@
                                     </td>
 
                                     <td class="py-3 px-4 text-center print:hidden">
-                                        <button type="button" @click="removeBomItem(index)" class="text-rose-400 hover:text-rose-300 p-1 transition" title="Delete item">
+                                        <button aria-label="Delete item" type="button" @click="removeBomItem(index)" class="text-rose-400 hover:text-rose-300 p-1 transition" title="Delete item">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                                         </button>
                                     </td>
@@ -461,7 +461,7 @@
                         {{-- Notes & Terms --}}
                         <div class="lg:col-span-6 space-y-2">
                             <label class="block text-sm font-semibold text-slate-300 mb-1">Quotation Remarks / Engineering Notes</label>
-                            <textarea x-model="quotationNotes" rows="4" class="w-full text-xs font-mono rounded-xl border border-slate-700 bg-[#060913] focus:border-amber-400 focus:outline-none p-3 text-slate-300" placeholder="e.g., Includes 1-year warranty, Cat6 cable conduits, and mobile app configuration."></textarea>
+                            <textarea aria-label="Quotation Remarks / Engineering Notes" x-model="quotationNotes" rows="4" class="w-full text-xs font-mono rounded-xl border border-slate-700 bg-[#060913] focus:border-amber-400 focus:outline-none p-3 text-slate-300" placeholder="e.g., Includes 1-year warranty, Cat6 cable conduits, and mobile app configuration."></textarea>
                         </div>
 
                         {{-- Calculation Totals Summary --}}
@@ -914,13 +914,13 @@
 
                 async submitQuotationConversion() {
                     if (!this.selectedLeadId) {
-                        alert('Please select a Target Customer / Lead at the top before generating the Quotation.');
+                        crmAlert('Please select a Target Customer / Lead at the top before generating the Quotation.');
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                         return;
                     }
 
                     if (this.bomItems.length === 0) {
-                        alert('Bill of Materials cannot be empty.');
+                        crmAlert('Bill of Materials cannot be empty.');
                         return;
                     }
 
@@ -959,12 +959,12 @@
                         if (response.ok && data.success) {
                             window.location.href = data.redirect_url;
                         } else {
-                            alert(data.message || 'Error generating quotation. Please check the inputs.');
+                            crmAlert(data.message || 'Error generating quotation. Please check the inputs.');
                             this.isSubmitting = false;
                         }
                     } catch (err) {
                         console.error(err);
-                        alert('An unexpected network error occurred while generating the quotation.');
+                        crmAlert('An unexpected network error occurred while generating the quotation.');
                         this.isSubmitting = false;
                     }
                 }

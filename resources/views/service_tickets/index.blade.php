@@ -103,13 +103,13 @@
                 <form method="GET" action="{{ route('service-tickets.index') }}" class="flex flex-wrap items-center gap-2.5 text-xs">
                     <div class="relative w-72 min-w-[220px] flex items-center shrink-0">
                         <svg class="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                        <input type="text" name="search" value="{{ request('search') }}" 
+                        <input aria-label="Search ticket #, issue, customer, phone" type="text" name="search" value="{{ request('search') }}" 
                             placeholder="Search ticket #, issue, customer, phone..."
                             style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important; padding-left: 36px !important;"
                             class="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-blue-600">
                     </div>
 
-                    <select name="status" style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important; min-width: 140px;" class="text-xs px-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 shrink-0">
+                    <select aria-label="Status" name="status" style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important; min-width: 140px;" class="text-xs px-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 shrink-0">
                         <option value="">All Statuses</option>
                         <option value="open" @selected(request('status') === 'open')>Open</option>
                         <option value="assigned" @selected(request('status') === 'assigned')>Assigned</option>
@@ -255,7 +255,7 @@
                                             <a href="{{ route('service-tickets.edit', $ticket) }}" class="action-link">Edit</a>
                                             @if(auth()->user()->isAdmin())
                                                 <form method="POST" action="{{ route('service-tickets.destroy', $ticket) }}" class="inline"
-                                                      onsubmit="return confirm('Delete service ticket {{ addslashes($ticket->ticket_no) }}?')">
+                                                      data-confirm="Delete service ticket {{ $ticket->ticket_no }}?">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="danger-link">Delete</button>
@@ -338,12 +338,12 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
                                     <label class="block text-sm font-semibold text-slate-300 mb-1.5">Customer Full Name *</label>
-                                    <input type="text" name="customer_name" required placeholder="e.g. Ramesh Kumar" value="Ramesh Kumar"
+                                    <input aria-label="Customer Full Name" type="text" name="customer_name" required placeholder="e.g. Ramesh Kumar" value="Ramesh Kumar"
                                         class="w-full text-xs rounded-[4px] border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
                                 </div>
                                 <div>
                                     <label class="block text-sm font-semibold text-slate-300 mb-1.5">Customer Email Address *</label>
-                                    <input type="email" name="email" required placeholder="e.g. ramesh@techcorp.com" value="customer@example.com"
+                                    <input aria-label="Customer Email Address" type="email" name="email" required placeholder="e.g. ramesh@techcorp.com" value="customer@example.com"
                                         class="w-full text-xs rounded-[4px] border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
                                 </div>
                             </div>
@@ -351,12 +351,12 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
                                     <label class="block text-sm font-semibold text-slate-300 mb-1.5">Phone Number (Optional)</label>
-                                    <input type="tel" name="phone" placeholder="e.g. +91 98765 43210" value="+91 98765 43210"
+                                    <input aria-label="Phone Number (Optional)" type="tel" name="phone" placeholder="e.g. +91 98765 43210" value="+91 98765 43210"
                                         class="w-full text-xs rounded-[4px] border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
                                 </div>
                                 <div>
                                     <label class="block text-sm font-semibold text-slate-300 mb-1.5">Priority Override</label>
-                                    <select name="priority" class="w-full text-xs rounded-[4px] border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
+                                    <select aria-label="Priority Override" name="priority" class="w-full text-xs rounded-[4px] border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
                                         <option value="">Auto-Detect from Email Keywords</option>
                                         <option value="critical">Critical / Emergency</option>
                                         <option value="high">High</option>
@@ -368,13 +368,13 @@
 
                             <div>
                                 <label class="block text-sm font-semibold text-slate-300 mb-1.5">Email Subject *</label>
-                                <input type="text" name="subject" required placeholder="e.g. Camera 3 offline" value="Camera 3 offline and NVR beeping sound at Sector 18 site"
+                                <input aria-label="Email Subject" type="text" name="subject" required placeholder="e.g. Camera 3 offline" value="Camera 3 offline and NVR beeping sound at Sector 18 site"
                                     class="w-full text-xs rounded-[4px] border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
                             </div>
 
                             <div>
                                 <label class="block text-sm font-semibold text-slate-300 mb-1.5">Email Body Description *</label>
-                                <textarea name="body" required rows="3" placeholder="Describe the fault..."
+                                <textarea aria-label="Email Body Description" name="body" required rows="3" placeholder="Describe the fault..."
                                     class="w-full text-xs rounded-[4px] border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">Hi Support Team, Our main entrance camera #3 went black this morning and the NVR recorder has started making a continuous beeping alert sound. Please dispatch a technician urgently.</textarea>
                             </div>
 

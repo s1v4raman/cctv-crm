@@ -64,7 +64,7 @@ Route::get('/site-surveys/photos/{photo}', [SiteSurveyController::class, 'showPh
 
 // Public Worker & Attendance Photo Streaming Endpoints (persistent across Local and OnRender)
 Route::get('/attendance-photos/{attendance}', [WorkerAttendanceController::class, 'streamPhoto'])->name('workers.attendance.photo');
-Route::get('/worker-photos/{worker}', [WorkerController::class, 'streamPhoto'])->name('workers.photo');
+Route::get('/worker-photos/{worker}', [WorkerController::class, 'streamPhoto'])->withTrashed()->name('workers.photo');
 Route::get('/storage/attendance_photos/{filename}', [WorkerAttendanceController::class, 'serveStoragePhoto'])->where('filename', '.*');
 Route::get('/storage/worker_photos/{filename}', [WorkerController::class, 'serveStoragePhoto'])->where('filename', '.*');
 
@@ -360,7 +360,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/workers/attendance/{attendance}', [WorkerAttendanceController::class, 'destroy'])->name('workers.attendance.destroy');
         Route::post('/workers/quick-store', [WorkerController::class, 'quickStore'])->name('workers.quick-store');
         Route::post('/workers/quick-add', [WorkerController::class, 'quickStore'])->name('workers.quick-add');
-        Route::resource('workers', WorkerController::class);
+        Route::resource('workers', WorkerController::class)->withTrashed(['show']);
 
         // Work Days & Attendance Logger
         Route::post('/projects/{project}/work-days', [WorkDayController::class, 'store'])->name('projects.work-days.store');

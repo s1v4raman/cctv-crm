@@ -483,7 +483,7 @@
                                 <div class="flex gap-1">
                                     <input type="number" id="material_qty" name="material_qty" step="0.1" min="0" placeholder="Qty" 
                                            class="w-16 px-2 py-1.5 text-xs rounded-[4px] border border-slate-300 dark:border-slate-700 focus:outline-none focus:border-blue-600 bg-white dark:bg-[#0b132b] text-slate-900 dark:text-white">
-                                    <select name="material_unit" class="flex-1 px-2 py-1.5 text-xs rounded-[4px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-900 dark:text-white">
+                                    <select aria-label="Material unit" name="material_unit" class="flex-1 px-2 py-1.5 text-xs rounded-[4px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-900 dark:text-white">
                                         <option value="nos">nos</option>
                                         <option value="meters">meters</option>
                                         <option value="boxes">boxes</option>
@@ -680,11 +680,11 @@
                             this.$refs.videoElement.srcObject = this.mediaStream;
                         } catch (err) {
                             console.error('Camera error: ', err);
-                            alert('Unable to access camera: ' + err.message + '. Please use the Choose File / Phone Gallery button below.');
+                            crmAlert('Unable to access camera: ' + err.message + '. Please use the Choose File / Phone Gallery button below.');
                             this.cameraActive = false;
                         }
                     } else {
-                        alert('Your browser does not support live camera capture. Please choose a photo using the file upload button.');
+                        crmAlert('Your browser does not support live camera capture. Please choose a photo using the file upload button.');
                     }
                 },
 

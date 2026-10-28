@@ -292,7 +292,7 @@
              },
              async createSite() {
                  if (!this.newSite.name || !this.newSite.address) {
-                     alert('Site Name and Address are required.');
+                     crmAlert('Site Name and Address are required.');
                      return;
                  }
                  try {
@@ -311,7 +311,7 @@
                          this.siteModalOpen = false;
                      }
                  } catch (e) {
-                     alert('Error creating site');
+                     crmAlert('Error creating site');
                  }
              },
              draftSaved: false,
@@ -426,7 +426,7 @@
                     <div x-show="!selectedSite" class="space-y-4">
                         <div class="relative flex items-center">
                             <svg class="w-4 h-4 text-slate-400 absolute left-3.5 pointer-events-none shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                            <input type="text" x-model="siteSearch" @input.debounce.300ms="searchSites()" placeholder="Search existing sites by name, code, phone, address..." style="padding-left: 2.75rem !important;" class="w-full pl-11 pr-4 py-2.5 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
+                            <input aria-label="Search existing sites by name, code, phone, address" type="text" x-model="siteSearch" @input.debounce.300ms="searchSites()" placeholder="Search existing sites by name, code, phone, address..." style="padding-left: 2.75rem !important;" class="w-full pl-11 pr-4 py-2.5 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
 
                         {{-- Search Results --}}
@@ -448,7 +448,7 @@
                     <a href="{{ route('projects.index') }}" class="btn-secondary text-sm">Back</a>
                     <div class="flex items-center gap-2">
                         <button type="button" @click="saveDraft()" class="btn-secondary text-sm">Save Draft</button>
-                        <button type="button" @click="if(!selectedSite){ alert('Please pick a site first.'); } else { step = 2; }" class="btn-primary text-sm px-6 py-2.5">Next</button>
+                        <button type="button" @click="if(!selectedSite){ crmAlert('Please pick a site first.'); } else { step = 2; }" class="btn-primary text-sm px-6 py-2.5">Next</button>
                     </div>
                 </div>
             </div>
@@ -471,12 +471,12 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div class="sm:col-span-2">
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Project Title *</label>
-                            <input type="text" name="title" x-model="title" required placeholder="e.g. 16-Camera IP Surveillance Installation" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 font-bold">
+                            <input aria-label="Project Title" type="text" name="title" x-model="title" required placeholder="e.g. 16-Camera IP Surveillance Installation" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 font-bold">
                         </div>
 
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Project Type *</label>
-                            <select name="project_type" x-model="project_type" @change="applyTemplate(project_type, true)" required class="w-full px-3.5 py-2.5 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
+                            <select aria-label="Project Type" name="project_type" x-model="project_type" @change="applyTemplate(project_type, true)" required class="w-full px-3.5 py-2.5 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
                                 @foreach($projectTypes as $val => $lbl)
                                     <option value="{{ $val }}">{{ $lbl }}</option>
                                 @endforeach
@@ -492,7 +492,7 @@
                                     <span class="text-white font-semibold" style="color: #ffffff !important;">+ Add New Technician</span>
                                 </a>
                             </div>
-                            <select name="lead_technician_id" x-model="lead_technician_id" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                            <select aria-label="Lead Technician In-Charge" name="lead_technician_id" x-model="lead_technician_id" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
                                 <option value="">Select Technician...</option>
                                 @foreach($technicians as $tech)
                                     <option value="{{ $tech->id }}" @selected(session('new_technician_id') == $tech->id)>{{ $tech->name }} ({{ ucfirst($tech->role) }})</option>
@@ -502,22 +502,22 @@
 
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Client PO Number (Optional)</label>
-                            <input type="text" name="po_number" x-model="po_number" placeholder="e.g. PO/2026/0889" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono outline-none">
+                            <input aria-label="Client PO Number (Optional)" type="text" name="po_number" x-model="po_number" placeholder="e.g. PO/2026/0889" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono outline-none">
                         </div>
 
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Project Estimated Budget / Value (₹)</label>
-                            <input type="number" step="0.5" name="budget" x-model="budget" placeholder="125000" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono font-bold outline-none">
+                            <input aria-label="Project Estimated Budget / Value (₹)" type="number" step="0.5" name="budget" x-model="budget" placeholder="125000" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono font-bold outline-none">
                         </div>
 
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Commencement Start Date</label>
-                            <input type="date" name="start_date" x-model="start_date" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                            <input aria-label="Commencement Start Date" type="date" name="start_date" x-model="start_date" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
                         </div>
 
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Target Completion Deadline</label>
-                            <input type="date" name="deadline" x-model="deadline" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                            <input aria-label="Target Completion Deadline" type="date" name="deadline" x-model="deadline" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
                         </div>
 
                         <div class="sm:col-span-2">
@@ -534,7 +534,7 @@
 
                         <div class="sm:col-span-2">
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Overview Description</label>
-                            <textarea name="description" x-model="description" rows="2" placeholder="Brief scope of installation..." class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none"></textarea>
+                            <textarea aria-label="Overview Description" name="description" x-model="description" rows="2" placeholder="Brief scope of installation..." class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none"></textarea>
                         </div>
                     </div>
                 </div>
@@ -543,7 +543,7 @@
                     <button type="button" @click="step = 1" class="btn-secondary text-sm">Back</button>
                     <div class="flex items-center gap-2">
                         <button type="button" @click="saveDraft()" class="btn-secondary text-sm">Save Draft</button>
-                        <button type="button" @click="if(!title){ alert('Project title is required'); } else { step = 3; }" class="btn-primary text-sm px-6 py-2.5">Next</button>
+                        <button type="button" @click="if(!title){ crmAlert('Project title is required'); } else { step = 3; }" class="btn-primary text-sm px-6 py-2.5">Next</button>
                     </div>
                 </div>
             </div>
@@ -598,7 +598,7 @@
                                 <template x-for="(mat, idx) in materials" :key="idx">
                                     <tr>
                                         <td class="py-2 pr-2 align-top">
-                                            <input type="text"
+                                            <input aria-label="Item description" type="text"
                                                    :name="`materials[${idx}][item_name]`"
                                                    x-model="mat.item_name"
                                                    list="bom-products-list"
@@ -611,10 +611,10 @@
                                             </div>
                                         </td>
                                         <td class="py-2 pr-2 align-top">
-                                            <input type="number" step="any" min="0.01" :name="`materials[${idx}][quantity]`" x-model="mat.quantity" required class="w-full px-2 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg font-mono font-bold outline-none">
+                                            <input aria-label="Mat quantity" type="number" step="any" min="0.01" :name="`materials[${idx}][quantity]`" x-model="mat.quantity" required class="w-full px-2 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg font-mono font-bold outline-none">
                                         </td>
                                         <td class="py-2 pr-2 align-top">
-                                            <select :name="`materials[${idx}][unit]`" x-model="mat.unit" class="w-full px-2 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none">
+                                            <select aria-label="Mat unit" :name="`materials[${idx}][unit]`" x-model="mat.unit" class="w-full px-2 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none">
                                                 <option value="nos">nos</option>
                                                 <option value="mtr">mtr</option>
                                                 <option value="box">box</option>
@@ -624,13 +624,13 @@
                                             </select>
                                         </td>
                                         <td class="py-2 pr-2 align-top">
-                                            <select :name="`materials[${idx}][source]`" x-model="mat.source" class="w-full px-2 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none font-semibold">
+                                            <select aria-label="Mat source" :name="`materials[${idx}][source]`" x-model="mat.source" class="w-full px-2 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none font-semibold">
                                                 <option value="warehouse">Warehouse</option>
                                                 <option value="local_purchase">Local Purchase</option>
                                             </select>
                                         </td>
                                         <td class="py-2 pr-2 align-top">
-                                            <input type="text"
+                                            <input aria-label="Shop name if local" type="text"
                                                    :name="`materials[${idx}][shop_name]`"
                                                    x-model="mat.shop_name"
                                                    list="bom-vendors-list"
@@ -691,7 +691,7 @@
                             <svg class="w-4 h-4 shrink-0 inline-block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                             Site / Premises Name <span class="required-marker text-rose-500">*</span>
                         </label>
-                        <input type="text" x-model="newSite.name" placeholder="e.g. Al-Falah Spinning Mills" class="crm-input">
+                        <input aria-label="Site / Premises Name" type="text" x-model="newSite.name" placeholder="e.g. Al-Falah Spinning Mills" class="crm-input">
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
@@ -699,14 +699,14 @@
                                 <svg class="w-4 h-4 shrink-0 inline-block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                                 Client Name
                             </label>
-                            <input type="text" x-model="newSite.client_name" placeholder="Organization or Owner" class="crm-input">
+                            <input aria-label="Client Name" type="text" x-model="newSite.client_name" placeholder="Organization or Owner" class="crm-input">
                         </div>
                         <div>
                             <label class="crm-label">
                                 <svg class="w-4 h-4 shrink-0 inline-block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
                                 Client Phone
                             </label>
-                            <input type="text" x-model="newSite.client_phone" placeholder="+91 98765 43210" class="crm-input">
+                            <input aria-label="Client Phone" type="text" x-model="newSite.client_phone" placeholder="+91 98765 43210" class="crm-input">
                         </div>
                     </div>
                     <div>
@@ -714,14 +714,14 @@
                             <svg class="w-4 h-4 shrink-0 inline-block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                             Full Physical Address <span class="required-marker text-rose-500">*</span>
                         </label>
-                        <textarea x-model="newSite.address" rows="2" placeholder="Building, Street, Landmark..." class="crm-input h-auto py-2.5"></textarea>
+                        <textarea aria-label="Full Physical Address" x-model="newSite.address" rows="2" placeholder="Building, Street, Landmark..." class="crm-input h-auto py-2.5"></textarea>
                     </div>
                     <div>
                         <label class="crm-label">
                             <svg class="w-4 h-4 shrink-0 inline-block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                             City
                         </label>
-                        <input type="text" x-model="newSite.city" placeholder="e.g. Coimbatore" class="crm-input">
+                        <input aria-label="City" type="text" x-model="newSite.city" placeholder="e.g. Coimbatore" class="crm-input">
                     </div>
                 </div>
 

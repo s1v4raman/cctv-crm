@@ -36,7 +36,7 @@ class WorkDay extends Model
 
     public function project(): BelongsTo
     {
-        return $this->belongsTo(Project::class);
+        return $this->belongsTo(Project::class)->withTrashed();
     }
 
     public function logger(): BelongsTo

@@ -291,13 +291,13 @@
                         <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                             <circle cx="11" cy="11" r="7"/><line x1="21" x2="16.65" y1="21" y2="16.65"/>
                         </svg>
-                        <input type="text" x-model="searchQuery" placeholder="Filter events..." 
+                        <input aria-label="Filter events" type="text" x-model="searchQuery" placeholder="Filter events..." 
                                class="crm-cal-input w-full h-9 pl-9 pr-3 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 transition"
                                style="padding-left: 36px !important;">
                     </div>
 
                     @if(!$isWorker)
-                        <select x-model="filterTech"
+                        <select aria-label="Tech" x-model="filterTech"
                                 class="crm-cal-select h-9 px-3 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500 transition cursor-pointer shrink-0">
                             <option value="all">All Assignees</option>
                             @foreach($assignees as $tech)
@@ -306,7 +306,7 @@
                         </select>
                     @endif
 
-                    <select x-model="filterStatus"
+                    <select aria-label="Status" x-model="filterStatus"
                             class="crm-cal-select h-9 px-3 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500 transition cursor-pointer shrink-0">
                         <option value="all">All Statuses</option>
                         <option value="pending">Pending</option>
@@ -515,7 +515,7 @@
                     <div class="flex-1 min-w-[220px]">
                         <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Search</label>
                         <div class="relative">
-                            <input type="text" name="search" value="{{ $filters['search'] }}" placeholder="Task, scope, or location..."
+                            <input aria-label="Search" type="text" name="search" value="{{ $filters['search'] }}" placeholder="Task, scope, or location..."
                                    class="crm-cal-input w-full h-9 pl-9 pr-3 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 transition"
                                    style="padding-left: 36px !important;">
                             <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" x2="16.65" y1="21" y2="16.65"/></svg>
@@ -525,7 +525,7 @@
                     {{-- Status filter --}}
                     <div class="w-36 shrink-0">
                         <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Status</label>
-                        <select name="status" class="crm-cal-select w-full h-9 px-3 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500 transition">
+                        <select aria-label="Status" name="status" class="crm-cal-select w-full h-9 px-3 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500 transition">
                             <option value="">All Statuses</option>
                             @foreach($statuses as $k => $label)
                                 <option value="{{ $k }}" {{ $filters['status'] === $k ? 'selected' : '' }}>{{ $label }}</option>
@@ -536,7 +536,7 @@
                     {{-- Category / Phase filter --}}
                     <div class="w-36 shrink-0">
                         <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Category</label>
-                        <select name="category" class="crm-cal-select w-full h-9 px-3 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500 transition">
+                        <select aria-label="Category" name="category" class="crm-cal-select w-full h-9 px-3 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500 transition">
                             <option value="">All Categories</option>
                             @foreach($categories as $cat)
                                 <option value="{{ $cat }}" {{ $filters['category'] === $cat ? 'selected' : '' }}>{{ $cat }}</option>
@@ -547,7 +547,7 @@
                     {{-- Assignee filter (hidden in My Tasks) --}}
                     <div x-show="activeTab === 'overall_tasks'" class="w-44 shrink-0">
                         <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Assignee</label>
-                        <select name="assignee" class="crm-cal-select w-full h-9 px-3 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500 transition">
+                        <select aria-label="Assignee" name="assignee" class="crm-cal-select w-full h-9 px-3 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500 transition">
                             <option value="">All Team Members</option>
                             @foreach($assignees as $assignee)
                                 <option value="{{ $assignee->id }}" {{ $filters['assignee'] == $assignee->id ? 'selected' : '' }}>
@@ -560,13 +560,13 @@
                     {{-- From Date --}}
                     <div class="w-36 shrink-0">
                         <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">From Date</label>
-                        <input type="date" name="from_date" value="{{ $filters['from_date'] }}" class="crm-cal-input w-full h-9 px-2 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-800 dark:text-white">
+                        <input aria-label="From Date" type="date" name="from_date" value="{{ $filters['from_date'] }}" class="crm-cal-input w-full h-9 px-2 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-800 dark:text-white">
                     </div>
 
                     {{-- To Date --}}
                     <div class="w-36 shrink-0">
                         <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">To Date</label>
-                        <input type="date" name="to_date" value="{{ $filters['to_date'] }}" class="crm-cal-input w-full h-9 px-2 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-800 dark:text-white">
+                        <input aria-label="To Date" type="date" name="to_date" value="{{ $filters['to_date'] }}" class="crm-cal-input w-full h-9 px-2 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-800 dark:text-white">
                     </div>
 
                     {{-- Action Buttons --}}
@@ -756,7 +756,7 @@
                             <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                                 Project <span class="text-rose-500">*</span>
                             </label>
-                            <select name="project_id" required class="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-900 dark:text-white p-2.5">
+                            <select aria-label="Project" name="project_id" required class="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-900 dark:text-white p-2.5">
                                 <option value="">-- Choose Associated Project --</option>
                                 @foreach($projects as $p)
                                     <option value="{{ $p->id }}">{{ $p->title }} ({{ $p->company_name ?? 'Client' }})</option>
@@ -768,26 +768,26 @@
                             <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                                 Work Title <span class="text-rose-500">*</span>
                             </label>
-                            <input type="text" name="title" required placeholder="e.g. Cat6 Cabling & Conduit Routing on 2nd Floor"
+                            <input aria-label="Work Title" type="text" name="title" required placeholder="e.g. Cat6 Cabling & Conduit Routing on 2nd Floor"
                                    class="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-900 dark:text-white p-2.5">
                         </div>
 
                         <div>
                             <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Category / Phase</label>
-                            <input type="text" name="phase_name" placeholder="e.g. Cabling, Installation, NVR Setup, Testing..."
+                            <input aria-label="Category / Phase" type="text" name="phase_name" placeholder="e.g. Cabling, Installation, NVR Setup, Testing..."
                                    class="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-900 dark:text-white p-2.5">
                         </div>
 
                         <div>
                             <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Work Description / Instructions</label>
-                            <textarea name="description" rows="2" placeholder="Specific technical guidelines, tools required, or scope details..."
+                            <textarea aria-label="Work Description / Instructions" name="description" rows="2" placeholder="Specific technical guidelines, tools required, or scope details..."
                                       class="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-900 dark:text-white p-2.5"></textarea>
                         </div>
 
                         <div class="grid grid-cols-2 gap-3">
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Assignee</label>
-                                <select name="assigned_to" class="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-900 dark:text-white p-2.5">
+                                <select aria-label="Assignee" name="assigned_to" class="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-900 dark:text-white p-2.5">
                                     <option value="">-- Unassigned --</option>
                                     @foreach($assignees as $u)
                                         <option value="{{ $u->id }}">{{ $u->name }} ({{ ucfirst($u->role) }})</option>
@@ -796,7 +796,7 @@
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Shift</label>
-                                <select name="shift" class="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-900 dark:text-white p-2.5">
+                                <select aria-label="Shift" name="shift" class="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-900 dark:text-white p-2.5">
                                     @foreach($shifts as $k => $label)
                                         <option value="{{ $k }}">{{ $label }}</option>
                                     @endforeach
@@ -807,12 +807,12 @@
                         <div class="grid grid-cols-2 gap-3">
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Start Date</label>
-                                <input type="date" name="start_date" value="{{ now()->format('Y-m-d') }}"
+                                <input aria-label="Start Date" type="date" name="start_date" value="{{ now()->format('Y-m-d') }}"
                                        class="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-900 dark:text-white p-2.5">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Due Date</label>
-                                <input type="date" name="due_date" value="{{ now()->format('Y-m-d') }}"
+                                <input aria-label="Due Date" type="date" name="due_date" value="{{ now()->format('Y-m-d') }}"
                                        class="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-900 dark:text-white p-2.5">
                             </div>
                         </div>
@@ -820,12 +820,12 @@
                         <div class="grid grid-cols-3 gap-3">
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Estimated Hours</label>
-                                <input type="number" step="0.5" name="estimated_hours" value="4.0"
+                                <input aria-label="Estimated Hours" type="number" step="0.5" name="estimated_hours" value="4.0"
                                        class="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-900 dark:text-white p-2.5">
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Priority</label>
-                                <select name="priority" class="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-900 dark:text-white p-2.5">
+                                <select aria-label="Priority" name="priority" class="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-900 dark:text-white p-2.5">
                                     <option value="low">Low</option>
                                     <option value="medium" selected>Medium</option>
                                     <option value="high">High</option>
@@ -834,7 +834,7 @@
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Status</label>
-                                <select name="status" class="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-900 dark:text-white p-2.5">
+                                <select aria-label="Status" name="status" class="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-900 dark:text-white p-2.5">
                                     <option value="pending" selected>Pending</option>
                                     <option value="in_progress">In Progress</option>
                                 </select>
@@ -843,7 +843,7 @@
 
                         <div>
                             <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Location / Site Address</label>
-                            <input type="text" name="location" placeholder="e.g. Server Room, Ground Floor, Main Block"
+                            <input aria-label="Location / Site Address" type="text" name="location" placeholder="e.g. Server Room, Ground Floor, Main Block"
                                    class="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-900 dark:text-white p-2.5">
                         </div>
 

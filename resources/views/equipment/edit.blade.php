@@ -29,7 +29,7 @@
                         {{-- Customer / Site --}}
                         <div class="sm:col-span-2">
                             <label class="crm-label text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2 block">Customer Site / Lead <span class="required-marker text-rose-500">*</span></label>
-                            <select name="lead_id" data-no-tom="true" class="crm-select w-full h-[44px] text-sm rounded-lg" required>
+                            <select aria-label="Customer Site / Lead" name="lead_id" data-no-tom="true" class="crm-select w-full h-[44px] text-sm rounded-lg" required>
                                 <option value="">-- Select Customer / Lead (or General Estimate) --</option>
                                 @foreach($leads as $l)
                                     <option value="{{ $l->id }}" @selected(old('lead_id', $equipment->lead_id) == $l->id)>
@@ -42,7 +42,7 @@
                         {{-- Installation Job --}}
                         <div>
                             <label class="crm-label text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2 block">Associated Installation Job</label>
-                            <select name="installation_job_id" data-no-tom="true" class="crm-select w-full h-[44px] text-sm rounded-lg">
+                            <select aria-label="Associated Installation Job" name="installation_job_id" data-no-tom="true" class="crm-select w-full h-[44px] text-sm rounded-lg">
                                 <option value="">-- None (Direct Entry / Existing Site) --</option>
                                 @foreach($jobs as $j)
                                     <option value="{{ $j->id }}" @selected(old('installation_job_id', $equipment->installation_job_id) == $j->id)>
@@ -55,7 +55,7 @@
                         {{-- Product Catalog Reference --}}
                         <div>
                             <label class="crm-label text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2 block">Product Model (Catalog)</label>
-                            <select name="product_id" data-no-tom="true" class="crm-select w-full h-[44px] text-sm rounded-lg">
+                            <select aria-label="Product Model (Catalog)" name="product_id" data-no-tom="true" class="crm-select w-full h-[44px] text-sm rounded-lg">
                                 <option value="">-- Select Product Model (Catalog) --</option>
                                 @foreach($products as $p)
                                     <option value="{{ $p->id }}" @selected(old('product_id', $equipment->product_id) == $p->id)>
@@ -69,20 +69,20 @@
                     {{-- Equipment Name --}}
                     <div class="mb-5">
                         <label class="crm-label text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2 block">Equipment Name / Description <span class="required-marker text-rose-500">*</span></label>
-                        <input type="text" name="equipment_name" value="{{ old('equipment_name', $equipment->equipment_name) }}" required class="crm-input w-full h-[44px] text-sm rounded-lg">
+                        <input aria-label="Equipment Name / Description" type="text" name="equipment_name" value="{{ old('equipment_name', $equipment->equipment_name) }}" required class="crm-input w-full h-[44px] text-sm rounded-lg">
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
                         {{-- Serial Number --}}
                         <div>
                             <label class="crm-label text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2 block">Hardware Serial Number (S/N) <span class="required-marker text-rose-500">*</span></label>
-                            <input type="text" id="serial_number_input" name="serial_number" value="{{ old('serial_number', $equipment->serial_number) }}" required class="crm-input font-mono w-full h-[44px] text-sm rounded-lg">
+                            <input aria-label="Hardware Serial Number (S/N)" type="text" id="serial_number_input" name="serial_number" value="{{ old('serial_number', $equipment->serial_number) }}" required class="crm-input font-mono w-full h-[44px] text-sm rounded-lg">
                         </div>
 
                         {{-- MAC Address --}}
                         <div>
                             <label class="crm-label text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2 block">MAC / IP Address (Optional)</label>
-                            <input type="text" id="mac_address_input" name="mac_address" value="{{ old('mac_address', $equipment->mac_address) }}" class="crm-input font-mono w-full h-[44px] text-sm rounded-lg">
+                            <input aria-label="MAC / IP Address (Optional)" type="text" id="mac_address_input" name="mac_address" value="{{ old('mac_address', $equipment->mac_address) }}" class="crm-input font-mono w-full h-[44px] text-sm rounded-lg">
                         </div>
                     </div>
 
@@ -90,13 +90,13 @@
                         {{-- Location Tag --}}
                         <div>
                             <label class="crm-label text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2 block">Location / Channel Placement</label>
-                            <input type="text" name="location_tag" value="{{ old('location_tag', $equipment->location_tag) }}" class="crm-input w-full h-[44px] text-sm rounded-lg">
+                            <input aria-label="Location / Channel Placement" type="text" name="location_tag" value="{{ old('location_tag', $equipment->location_tag) }}" class="crm-input w-full h-[44px] text-sm rounded-lg">
                         </div>
 
                         {{-- Status --}}
                         <div>
                             <label class="crm-label text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2 block">Operational Status</label>
-                            <select name="status" class="crm-select w-full h-[44px] text-sm rounded-lg">
+                            <select aria-label="Operational Status" name="status" class="crm-select w-full h-[44px] text-sm rounded-lg">
                                 <option value="active" @selected(old('status', $equipment->status) == 'active')>Active</option>
                                 <option value="under_repair" @selected(old('status', $equipment->status) == 'under_repair')>Under Repair</option>
                                 <option value="replaced" @selected(old('status', $equipment->status) == 'replaced')>Replaced</option>
@@ -110,22 +110,22 @@
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-5">
                         <div>
                             <label class="crm-label text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2 block">Installation Date</label>
-                            <input type="date" name="installation_date" value="{{ old('installation_date', $equipment->installation_date?->format('Y-m-d')) }}" class="crm-input w-full h-[44px] text-sm rounded-lg">
+                            <input aria-label="Installation Date" type="date" name="installation_date" value="{{ old('installation_date', $equipment->installation_date?->format('Y-m-d')) }}" class="crm-input w-full h-[44px] text-sm rounded-lg">
                         </div>
                         <div>
                             <label class="crm-label text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2 block">Mfg Warranty Expiry</label>
-                            <input type="date" name="manufacturer_warranty_expiry" value="{{ old('manufacturer_warranty_expiry', $equipment->manufacturer_warranty_expiry?->format('Y-m-d')) }}" class="crm-input w-full h-[44px] text-sm rounded-lg">
+                            <input aria-label="Mfg Warranty Expiry" type="date" name="manufacturer_warranty_expiry" value="{{ old('manufacturer_warranty_expiry', $equipment->manufacturer_warranty_expiry?->format('Y-m-d')) }}" class="crm-input w-full h-[44px] text-sm rounded-lg">
                         </div>
                         <div>
                             <label class="crm-label text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2 block">Service Warranty Expiry</label>
-                            <input type="date" name="service_warranty_expiry" value="{{ old('service_warranty_expiry', $equipment->service_warranty_expiry?->format('Y-m-d')) }}" class="crm-input w-full h-[44px] text-sm rounded-lg">
+                            <input aria-label="Service Warranty Expiry" type="date" name="service_warranty_expiry" value="{{ old('service_warranty_expiry', $equipment->service_warranty_expiry?->format('Y-m-d')) }}" class="crm-input w-full h-[44px] text-sm rounded-lg">
                         </div>
                     </div>
 
                     {{-- Notes --}}
                     <div class="mb-6">
                         <label class="crm-label text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2 block">Technical Notes / Config Details</label>
-                        <textarea name="notes" rows="3" class="crm-input w-full p-3 text-sm rounded-lg" style="height: auto;">{{ old('notes', $equipment->notes) }}</textarea>
+                        <textarea aria-label="Technical Notes / Config Details" name="notes" rows="3" class="crm-input w-full p-3 text-sm rounded-lg" style="height: auto;">{{ old('notes', $equipment->notes) }}</textarea>
                     </div>
 
                     <div class="flex items-center gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">

@@ -167,13 +167,13 @@
                 <form method="GET" action="{{ route('quotations.index') }}" class="filter-bar flex items-center gap-2.5 flex-wrap p-2.5 text-xs">
                     <div class="relative w-72 min-w-[220px] flex items-center shrink-0">
                         <svg class="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                        <input type="text" name="search" id="q-search" value="{{ request('search') }}" 
+                        <input aria-label="Search quotation no, customer, phone" type="text" name="search" id="q-search" value="{{ request('search') }}" 
                                placeholder="Search quotation no, customer, phone…" 
                                oninput="filterQuotes()" 
                                style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important; padding-left: 36px !important;"
                                class="w-full text-xs">
                     </div>
-                    <select name="status" id="q-status" onchange="this.form.submit()" 
+                    <select aria-label="Status" name="status" id="q-status" onchange="this.form.submit()" 
                             style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important; min-width: 140px;"
                             class="text-xs shrink-0">
                         <option value="">All Statuses</option>
@@ -274,7 +274,7 @@
                                         <a href="{{ route('quotations.edit', $quotation) }}" class="action-link">Edit</a>
                                         @if($quotation->status === 'draft')
                                             <form method="POST" action="{{ route('quotations.destroy', $quotation) }}" class="inline"
-                                                  onsubmit="return confirm('Delete {{ addslashes($quotation->quotation_no) }}? This cannot be undone.')">
+                                                  data-confirm="Delete {{ $quotation->quotation_no }}? This cannot be undone.">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="danger-link">Delete</button>
