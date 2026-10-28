@@ -24,7 +24,7 @@
     $crmPageTitles = [
         'dashboard' => 'Dashboard',
         'technician.*' => 'Field Work Orders',
-        'calendar.*' => 'Calendar',
+        'calendar.*' => 'Calendar and Tasks',
         'leads.*' => 'Leads & Inquiries',
         'site-surveys.*' => 'Site Surveys',
         'quotations.*' => 'Quotations',
@@ -1241,6 +1241,16 @@
                 }
             });
         </script>
+        @if(request()->routeIs('calendar.*'))
+        <style>
+            body, body * {
+                font-family: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            }
+            body {
+                font-size: 14px;
+            }
+        </style>
+        @endif
     </head>
     <body class="h-full font-sans antialiased text-slate-800 dark:text-slate-100 bg-[var(--page-bg)] selection:bg-blue-600 selection:text-white" 
           x-data="{ 
@@ -1518,6 +1528,7 @@
                             </button>
 
                             {{-- Universal 1-Click Dark/Light Mode Button on Every Page for All Users --}}
+                            @if(!request()->routeIs('calendar.*'))
                             <button @click="toggleThemeMode()" 
                                     type="button" 
                                     id="header-theme-toggle-btn"
@@ -1541,8 +1552,10 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
                                 </svg>
                             </button>
+                            @endif
 
                             {{-- Modern Notification Bell & Popover Module --}}
+                            @if(!request()->routeIs('calendar.*'))
                             <div x-data="{
                                 notifOpen: false,
                                 unreadCount: {{ $headerNotifs['unread_count'] }},
@@ -1673,6 +1686,7 @@
                                     </div>
                                 </div>
                             </div>
+                            @endif
 
                             {{-- Pill-Shaped User Profile Capsule & Dropdown Menu --}}
                             <div x-data="{ userMenuOpen: false }" class="relative"
@@ -1686,17 +1700,21 @@
                                         aria-controls="crm-user-panel"
                                         :aria-expanded="userMenuOpen.toString()"
                                         aria-label="Account menu for {{ Auth::user()->name }}"
-                                        class="flex items-center gap-2 pl-1.5 pr-2.5 py-1 rounded-[6px] border border-[var(--card-border)] bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/60 transition cursor-pointer select-none shadow-2xs">
-                                    @if(Auth::user()->avatar_url)
-                                        <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->name }}" class="w-7 h-7 rounded-full object-cover shrink-0 ring-1 ring-slate-200 dark:ring-slate-700">
-                                    @else
-                                        <div class="w-7 h-7 rounded-full text-white flex items-center justify-center font-bold text-xs shrink-0" style="background-color: var(--crm-accent, #2563eb);">
-                                            {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                                        </div>
+                                        class="flex items-center gap-2 @if(request()->routeIs('calendar.*')) px-3 rounded-[4px] @else pl-1.5 pr-2.5 rounded-[6px] @endif border border-[var(--card-border)] bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/60 transition cursor-pointer select-none shadow-2xs">
+                                    @if(!request()->routeIs('calendar.*'))
+                                        @if(Auth::user()->avatar_url)
+                                            <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->name }}" class="w-7 h-7 rounded-full object-cover shrink-0 ring-1 ring-slate-200 dark:ring-slate-700">
+                                        @else
+                                            <div class="w-7 h-7 rounded-full text-white flex items-center justify-center font-bold text-xs shrink-0" style="background-color: var(--crm-accent, #2563eb);">
+                                                {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                                            </div>
+                                        @endif
                                     @endif
-                                    <div class="text-left hidden sm:block min-w-0 pr-0.5">
-                                        <span class="block text-xs font-bold text-slate-900 dark:text-slate-100 leading-tight truncate max-w-[120px]">{{ Auth::user()->name }}</span>
-                                        <span class="block text-[11px] text-blue-600 dark:text-blue-400 font-semibold leading-tight truncate">{{ Auth::user()->role_title }}</span>
+                                    <div class="text-left min-w-0 pr-0.5">
+                                        <span class="block text-xs font-bold text-slate-900 dark:text-slate-100 leading-tight truncate max-w-[140px]">{{ Auth::user()->name }}</span>
+                                        @if(!request()->routeIs('calendar.*'))
+                                            <span class="block text-[11px] text-blue-600 dark:text-blue-400 font-semibold leading-tight truncate">{{ Auth::user()->role_title }}</span>
+                                        @endif
                                     </div>
                                     <svg class="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 shrink-0 transition-transform duration-150" :class="{ 'rotate-180': userMenuOpen }" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />

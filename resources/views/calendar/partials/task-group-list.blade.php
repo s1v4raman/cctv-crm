@@ -35,14 +35,14 @@
             $meta = $groupMeta[$groupName];
         @endphp
 
-        <div class="bg-white dark:bg-[#0f172a] rounded-xl border border-[var(--card-border)] dark:border-slate-700 overflow-hidden shadow-xs">
+        <div class="bg-white dark:bg-[#0f172a] rounded-[4px] border border-[var(--card-border)] dark:border-slate-700 overflow-hidden shadow-xs">
             
             {{-- Group Header --}}
             <div class="px-5 py-3.5 bg-slate-50/80 dark:bg-slate-800/40 border-b border-slate-200/80 dark:border-slate-800 flex items-center justify-between">
                 <div class="flex items-center gap-2.5">
                     <span class="text-base">{{ $meta['icon'] }}</span>
                     <h3 class="text-sm font-extrabold text-slate-900 dark:text-white tracking-tight">{{ $groupName }}</h3>
-                    <span class="text-[11px] font-bold px-2.5 py-0.5 rounded border {{ $meta['badge'] }}">
+                    <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-[4px] border {{ $meta['badge'] }}">
                         {{ $groupTasks->count() }} {{ Str::plural('Task', $groupTasks->count()) }}
                     </span>
                 </div>
@@ -55,7 +55,7 @@
                         
                         {{-- Rejection Notice (if task was rejected) --}}
                         @if(!empty($task['rejection_reason']))
-                            <div class="mb-3.5 p-3 rounded-lg bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800/80 text-rose-800 dark:text-rose-200 text-xs">
+                            <div class="mb-3.5 p-3 rounded-[4px] bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800/80 text-rose-800 dark:text-rose-200 text-xs">
                                 <div class="flex items-start justify-between gap-3">
                                     <div class="flex items-start gap-2">
                                         <span class="text-base">⚠️</span>
@@ -78,7 +78,7 @@
                                     @if($isAdmin)
                                         <button type="button" 
                                                 @click="openReassignModal({{ json_encode($task) }})" 
-                                                class="px-3 py-1.5 rounded-md bg-rose-600 text-white text-[11px] font-bold hover:bg-rose-700 transition shrink-0 cursor-pointer shadow-xs">
+                                                class="px-3 py-1.5 rounded-[4px] bg-rose-600 text-white text-[11px] font-bold hover:bg-rose-700 transition shrink-0 cursor-pointer shadow-xs">
                                             Reassign Task
                                         </button>
                                     @endif
@@ -93,12 +93,12 @@
                                 
                                 {{-- Badges row --}}
                                 <div class="flex flex-wrap items-center gap-2">
-                                    <span class="text-[11px] font-bold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                                    <span class="text-[11px] font-bold px-2 py-0.5 rounded-[4px] bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
                                         {{ $task['phase_name'] ?: 'General' }}
                                     </span>
 
                                     {{-- Priority Badge --}}
-                                    <span class="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded
+                                    <span class="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-[4px]
                                         {{ $task['priority'] === 'urgent' ? 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300' : 
                                            ($task['priority'] === 'high' ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300' : 
                                            ($task['priority'] === 'medium' ? 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300' : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300')) }}">
@@ -106,7 +106,7 @@
                                     </span>
 
                                     {{-- Status Badge --}}
-                                    <span class="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded
+                                    <span class="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-[4px]
                                         {{ $task['status'] === 'completed' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' :
                                            ($task['status'] === 'in_progress' ? 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300' :
                                            ($task['status'] === 'rejected' ? 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300' : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300')) }}">
@@ -114,14 +114,14 @@
                                     </span>
 
                                     {{-- Shift badge --}}
-                                    <span class="text-[11px] font-bold px-2 py-0.5 rounded bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-200/60 dark:border-amber-800/60 inline-flex items-center gap-1">
+                                    <span class="text-[11px] font-bold px-2 py-0.5 rounded-[4px] bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-200/60 dark:border-amber-800/60 inline-flex items-center gap-1">
                                         <span>☀️</span>
                                         <span>{{ $task['shift'] }}</span>
                                     </span>
 
                                     {{-- Accepted indicator --}}
                                     @if(!empty($task['accepted_at']))
-                                        <span class="text-[11px] font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 dark:bg-emerald-950/80 dark:text-emerald-300 inline-flex items-center gap-1">
+                                        <span class="text-[11px] font-bold px-2 py-0.5 rounded-[4px] bg-emerald-50 text-emerald-700 dark:bg-emerald-950/80 dark:text-emerald-300 inline-flex items-center gap-1">
                                             <span>✓ Accepted</span>
                                             <span class="font-normal">({{ $task['accepted_at'] }})</span>
                                         </span>
@@ -179,7 +179,7 @@
                                     {{-- Assignee (Non-workers only) --}}
                                     @if(empty($task['is_worker_view']) && !empty($task['assigned_user']))
                                         <div class="inline-flex items-center gap-1.5 font-medium">
-                                            <div class="w-5 h-5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/60 dark:text-blue-300 font-bold flex items-center justify-center text-[11px]">
+                                            <div class="w-5 h-5 rounded-[4px] bg-blue-100 text-blue-700 dark:bg-blue-900/60 dark:text-blue-300 font-bold flex items-center justify-center text-[11px]">
                                                 {{ substr($task['assigned_user']['name'], 0, 1) }}
                                             </div>
                                             <span>{{ $task['assigned_user']['name'] }}</span>
@@ -199,7 +199,7 @@
                                         <form method="POST" action="{{ route('calendar.tasks.accept', $task['id']) }}">
                                             @csrf
                                             <button type="submit" 
-                                                    class="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition shadow-xs flex items-center gap-1 cursor-pointer">
+                                                    class="px-3.5 py-1.5 rounded-[4px] bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition shadow-xs flex items-center gap-1 cursor-pointer">
                                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                                                 <span>Accept</span>
                                             </button>
@@ -208,7 +208,7 @@
                                         {{-- Reject Button (Opens Modal requiring reason) --}}
                                         <button type="button" 
                                                 @click="openRejectModal({{ json_encode($task) }})"
-                                                class="px-3 py-1.5 rounded-lg border border-rose-300 dark:border-rose-800/80 text-rose-700 dark:text-rose-300 bg-rose-50/60 dark:bg-rose-950/40 hover:bg-rose-100 text-xs font-bold transition flex items-center gap-1 cursor-pointer">
+                                                class="px-3 py-1.5 rounded-[4px] border border-rose-300 dark:border-rose-800/80 text-rose-700 dark:text-rose-300 bg-rose-50/60 dark:bg-rose-950/40 hover:bg-rose-100 text-xs font-bold transition flex items-center gap-1 cursor-pointer">
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                                             <span>Reject</span>
                                         </button>
@@ -219,7 +219,7 @@
                                 @if($isAdmin)
                                     <button type="button" 
                                             @click="openReassignModal({{ json_encode($task) }})"
-                                            class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold shadow-2xs transition flex items-center gap-1 cursor-pointer">
+                                            class="px-3 py-1.5 rounded-[4px] border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold shadow-2xs transition flex items-center gap-1 cursor-pointer">
                                         <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                                         <span>{{ empty($task['assigned_to']) ? 'Assign' : 'Reassign' }}</span>
                                     </button>
