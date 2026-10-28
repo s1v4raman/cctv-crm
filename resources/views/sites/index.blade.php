@@ -55,7 +55,7 @@
 
         {{-- Sites Table with 1px Solid Border & 4px Radius --}}
         <div class="overflow-x-auto w-full border border-[#ddd] dark:border-slate-800 rounded-[4px] bg-white dark:bg-[#0f172a]">
-            <table class="leads-table w-full text-left text-sm text-slate-700 dark:text-slate-200">
+            <table class="leads-table w-full text-left text-sm text-slate-700 dark:text-slate-200 crm-responsive">
                 <thead>
                     <tr>
                         <th style="min-width: 220px;">Site Code &amp; Name</th>

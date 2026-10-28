@@ -169,7 +169,7 @@
 
             {{-- Table --}}
             <div class="bg-white dark:bg-[#0f172a] rounded-2xl shadow-xs border border-slate-200 dark:border-white/5 overflow-hidden">
-                <table class="min-w-full divide-y divide-slate-200 dark:divide-white/5 text-xs">
+                <table class="min-w-full divide-y divide-slate-200 dark:divide-white/5 text-xs crm-responsive">
                     <thead class="bg-slate-100 dark:bg-[#0b1120]">
                         <tr>
                             <th class="px-4 py-3.5 text-left font-bold text-slate-700 dark:text-slate-400 uppercase tracking-wider text-[11px]">Channel & Event</th>

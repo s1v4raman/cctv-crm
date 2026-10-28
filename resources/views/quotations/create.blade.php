@@ -108,7 +108,7 @@
                         </div>
 
                         <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
-                            <table class="min-w-full border-collapse">
+                            <table class="min-w-full border-collapse crm-responsive crm-responsive-form">
                                 <thead class="bg-slate-50 dark:bg-slate-800/90 border-b border-slate-200 dark:border-slate-800">
                                     <tr>
                                         <th class="min-w-64 px-3 py-3 text-left text-[11px] font-extrabold uppercase tracking-wider text-slate-600 dark:text-slate-400">

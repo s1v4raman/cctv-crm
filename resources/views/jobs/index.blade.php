@@ -223,7 +223,7 @@
                 </form>
 
                 <div style="overflow-x:auto">
-                    <table class="jobs-table" id="jobs-table">
+                    <table class="jobs-table crm-responsive" id="jobs-table">
                         <thead>
                             <tr>
                                 <th>Job No</th>

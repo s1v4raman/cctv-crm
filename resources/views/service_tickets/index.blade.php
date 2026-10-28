@@ -148,7 +148,7 @@
                     </div>
                 @else
                     <div class="overflow-x-auto">
-                        <table class="p-table">
+                        <table class="p-table crm-responsive">
                             <thead>
                                 <tr>
                                     <th>Ticket # & SLA</th>

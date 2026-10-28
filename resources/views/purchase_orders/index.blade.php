@@ -57,7 +57,7 @@
 
         {{-- Table Section (5.3) --}}
         <div class="crm-section p-0 overflow-x-auto">
-            <table class="crm-table">
+            <table class="crm-table crm-responsive">
                 <thead>
                     <tr>
                         <th class="nowrap">PO Number</th>

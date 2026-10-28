@@ -112,7 +112,7 @@
                 </form>
 
                 <div class="overflow-x-auto">
-                    <table class="crm-table p-table">
+                    <table class="crm-table p-table crm-responsive">
                         <thead>
                             <tr>
                                 <th>Invoice No</th>

@@ -199,7 +199,7 @@
                 </form>
 
                 <div style="overflow-x:auto">
-                    <table class="q-table">
+                    <table class="q-table crm-responsive">
                         <thead>
                             <tr>
                                 <th>Quotation No</th>

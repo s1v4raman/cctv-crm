@@ -1848,7 +1848,7 @@
                         <div class="crm-content max-w-[1200px] mx-auto w-full">
                             {{-- Page Heading (One h2 at top of content area, with main action button on right) --}}
                             @isset($header)
-                                <div class="mb-[20px]">
+                                <div class="crm-page-header mb-[20px]">
                                     {{ $header }}
                                 </div>
                             @endisset

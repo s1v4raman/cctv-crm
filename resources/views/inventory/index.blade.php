@@ -177,7 +177,7 @@
 
                 {{-- Table --}}
                 <div class="overflow-x-auto">
-                    <table class="p-table">
+                    <table class="p-table crm-responsive">
                         <thead>
                             <tr>
                                 <th class="col-name" style="min-width: 200px;">Product / Model</th>
@@ -274,7 +274,7 @@
                     <a href="{{ route('inventory.movements') }}" class="text-xs font-semibold text-blue-600 hover:underline">View All Logs &rarr;</a>
                 </div>
                 <div class="overflow-x-auto">
-                    <table class="p-table">
+                    <table class="p-table crm-responsive">
                         <thead>
                             <tr>
                                 <th>Date & Time</th>

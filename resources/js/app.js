@@ -1,5 +1,6 @@
 import Alpine from 'alpinejs';
 import './a11y';
+import './responsive-tables';
 
 window.Alpine = Alpine;
 

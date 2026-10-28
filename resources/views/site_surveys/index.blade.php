@@ -52,7 +52,7 @@
 
                 {{-- Table container with only 1px border --}}
                 <div class="overflow-x-auto w-full border border-[#ddd] dark:border-slate-800 rounded-[4px] bg-white dark:bg-[#0f172a]">
-                    <table class="crm-table w-full">
+                    <table class="crm-table w-full crm-responsive">
                         <thead>
                             <tr>
                                 <th class="min-w-[200px]" style="min-width: 200px;">Customer</th>

@@ -126,7 +126,7 @@
 
                 {{-- Table with proper theme variables and 1px borders --}}
                 <div class="overflow-x-auto">
-                    <table class="leads-table">
+                    <table class="leads-table crm-responsive">
                         <thead>
                             <tr>
                                 <th style="width: 38%; min-width: 260px;">Customer</th>
