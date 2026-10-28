@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex flex-wrap items-center justify-between gap-4">
             <div>
-                <h1 class="text-2xl font-bold text-[#222222]">
+                <h1 class="text-2xl font-bold text-[var(--text-main)]">
                     Employee Attendance Management System
                 </h1>
             </div>
@@ -10,29 +10,6 @@
                 <a href="{{ route('leaves.index') }}" class="btn-secondary">
                     Leaves &amp; Approvals
                 </a>
-                {{-- Mark Unmarked as Present --}}
-                <form method="POST" action="{{ route('attendance.batch-store') }}" class="inline" data-confirm="Mark all unmarked employees as Present (Full Day 8h) for {{ \Carbon\Carbon::parse($selectedDate)->format('d M Y') }}?">
-                    @csrf
-                    <input type="hidden" name="mode" value="bulk_day">
-                    <input type="hidden" name="date" value="{{ $selectedDate }}">
-                    <input type="hidden" name="status" value="present">
-                    <input type="hidden" name="target" value="unmarked">
-                    <button type="submit" class="btn-secondary">
-                        Mark Present
-                    </button>
-                </form>
-
-                {{-- Mark Unmarked as Absent --}}
-                <form method="POST" action="{{ route('attendance.batch-store') }}" class="inline" data-confirm="Mark all unmarked employees as Absent (0h) for {{ \Carbon\Carbon::parse($selectedDate)->format('d M Y') }}?">
-                    @csrf
-                    <input type="hidden" name="mode" value="bulk_day">
-                    <input type="hidden" name="date" value="{{ $selectedDate }}">
-                    <input type="hidden" name="status" value="absent">
-                    <input type="hidden" name="target" value="unmarked">
-                    <button type="submit" class="btn-secondary">
-                        Mark Absent
-                    </button>
-                </form>
                 <button type="button" 
                         onclick="openCreateModal()"
                         class="btn-primary">
