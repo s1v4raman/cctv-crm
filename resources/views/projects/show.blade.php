@@ -427,13 +427,13 @@
                 <button type="button" @click="currentTab = 'materials'" :class="currentTab === 'materials' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 dark:text-slate-400 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'" class="inline-flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
                     <span>2. Materials &bull; BOM ({{ $project->materials->count() }})</span>
                     @if($totalCableMeters > 0)
-                        <span class="px-1.5 py-0.5 text-[10px] rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 font-bold">{{ number_format($totalCableMeters, 0) }}m</span>
+                        <span class="px-1.5 py-0.5 text-[11px] rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 font-bold">{{ number_format($totalCableMeters, 0) }}m</span>
                     @endif
                 </button>
                 <button type="button" @click="currentTab = 'documents'" :class="currentTab === 'documents' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 dark:text-slate-400 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'" class="inline-flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
                     <span>3. Documents &bull; DCs ({{ $project->documents->count() }})</span>
                     @if($uninvoicedDcCount > 0)
-                        <span class="px-1.5 py-0.5 text-[10px] rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300 font-bold">{{ $uninvoicedDcCount }} unbilled</span>
+                        <span class="px-1.5 py-0.5 text-[11px] rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300 font-bold">{{ $uninvoicedDcCount }} unbilled</span>
                     @endif
                 </button>
                 <button type="button" @click="currentTab = 'work_days'" :class="currentTab === 'work_days' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 dark:text-slate-400 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'" class="inline-flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
@@ -445,9 +445,9 @@
                 <button type="button" @click="currentTab = 'tasks'" :class="currentTab === 'tasks' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 dark:text-slate-400 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'" class="inline-flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
                     <span>6. Tasks &bull; Workflow ({{ $tasksCount }})</span>
                     @if($tasksCount > 0)
-                        <span class="px-1.5 py-0.5 text-[10px] rounded-full {{ $taskCompletionPercentage === 100 ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300' }} font-bold">{{ $taskCompletionPercentage }}%</span>
+                        <span class="px-1.5 py-0.5 text-[11px] rounded-full {{ $taskCompletionPercentage === 100 ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300' }} font-bold">{{ $taskCompletionPercentage }}%</span>
                     @else
-                        <span class="px-1.5 py-0.5 text-[10px] rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300 font-bold">Templates</span>
+                        <span class="px-1.5 py-0.5 text-[11px] rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300 font-bold">Templates</span>
                     @endif
                 </button>
             </nav>
@@ -693,7 +693,7 @@
                                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                                     @foreach($customRequirements as $cKey => $cVal)
                                         <div class="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-800">
-                                            <span class="text-[10px] text-slate-400 uppercase block font-semibold">{{ ucwords(str_replace('_', ' ', $cKey)) }}</span>
+                                            <span class="text-[11px] text-slate-400 uppercase block font-semibold">{{ ucwords(str_replace('_', ' ', $cKey)) }}</span>
                                             <span class="text-xs font-bold text-slate-800 dark:text-slate-200">{{ is_array($cVal) ? json_encode($cVal) : $cVal }}</span>
                                         </div>
                                     @endforeach
@@ -855,7 +855,7 @@
                             {{-- Lead Technician --}}
                             <div x-data="{ showAssignForm: false }" class="p-3 rounded-xl bg-blue-50/50 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/40">
                                 <div class="flex items-center justify-between mb-1">
-                                    <span class="text-[10px] text-blue-600 dark:text-blue-400 uppercase tracking-wider block font-bold">Lead Technician (In-Charge)</span>
+                                    <span class="text-[11px] text-blue-600 dark:text-blue-400 uppercase tracking-wider block font-bold">Lead Technician (In-Charge)</span>
                                     <button type="button" @click="showAssignForm = !showAssignForm" class="text-[11px] text-blue-600 dark:text-blue-400 font-semibold hover:underline">
                                         <span x-text="showAssignForm ? 'Cancel' : '{{ $project->leadTechnician ? 'Change' : '+ Assign' }}'"></span>
                                     </button>
@@ -869,7 +869,7 @@
                                                 <span class="text-slate-500 text-[11px]">{{ $project->leadTechnician->email }}</span>
                                             </div>
                                             @if($project->leadTechnician->phone)
-                                                <a href="tel:{{ $project->leadTechnician->phone }}" class="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-[10px] shadow-xs">
+                                                <a href="tel:{{ $project->leadTechnician->phone }}" class="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-[11px] shadow-xs">
                                                     Call
                                                 </a>
                                             @endif
@@ -920,7 +920,7 @@
 
                             {{-- Assigned Staff / Employee --}}
                             <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800">
-                                <span class="text-[10px] text-slate-400 uppercase tracking-wider block font-bold mb-1">Assigned Staff / Employee</span>
+                                <span class="text-[11px] text-slate-400 uppercase tracking-wider block font-bold mb-1">Assigned Staff / Employee</span>
                                 <div class="flex items-center justify-between">
                                     <div>
                                         <span class="font-bold text-slate-900 dark:text-white text-xs block">{{ $project->assignedUser?->name ?? 'Unassigned' }}</span>
@@ -928,7 +928,7 @@
                                     </div>
                                     @if($project->creator)
                                         <div class="text-right">
-                                            <span class="text-[10px] text-slate-400 block">Created By</span>
+                                            <span class="text-[11px] text-slate-400 block">Created By</span>
                                             <span class="font-semibold text-slate-700 dark:text-slate-300 text-[11px]">{{ $project->creator->name }}</span>
                                         </div>
                                     @endif
@@ -937,7 +937,7 @@
 
                             {{-- Executing Entity --}}
                             <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800">
-                                <span class="text-[10px] text-slate-400 uppercase tracking-wider block font-bold mb-1">Executing Entity</span>
+                                <span class="text-[11px] text-slate-400 uppercase tracking-wider block font-bold mb-1">Executing Entity</span>
                                 @if($project->company)
                                     <div class="flex items-center justify-between">
                                         <div>
@@ -945,7 +945,7 @@
                                             <span class="text-[11px] text-emerald-600 font-semibold">✓ Admin Approved</span>
                                         </div>
                                         @if($project->approved_on)
-                                            <span class="text-[10px] text-slate-400 font-mono">{{ \Carbon\Carbon::parse($project->approved_on)->format('d M Y') }}</span>
+                                            <span class="text-[11px] text-slate-400 font-mono">{{ \Carbon\Carbon::parse($project->approved_on)->format('d M Y') }}</span>
                                         @endif
                                     </div>
                                 @else
@@ -996,7 +996,7 @@
                                 <div class="text-xs border-l-2 border-blue-500 pl-3 py-1">
                                     <div class="font-bold text-slate-800 dark:text-slate-200">{{ $log->action_label }}</div>
                                     <div class="text-[11px] text-slate-500">{{ $log->notes }}</div>
-                                    <div class="text-[10px] text-slate-400 mt-0.5">{{ $log->user?->name ?? 'System' }} &bull; {{ $log->created_at->diffForHumans() }}</div>
+                                    <div class="text-[11px] text-slate-400 mt-0.5">{{ $log->user?->name ?? 'System' }} &bull; {{ $log->created_at->diffForHumans() }}</div>
                                 </div>
                             @empty
                                 <div class="text-xs text-slate-400 italic">No activity logged yet.</div>
@@ -1087,7 +1087,7 @@
                     <div>
                         <h3 class="font-extrabold text-slate-900 dark:text-white text-base flex items-center gap-2">
                             <span>Bill of Materials (BOM) &amp; Variance Reconciliation</span>
-                            <span class="px-2 py-0.5 text-[10px] rounded-full bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 font-bold">Planned vs Actual</span>
+                            <span class="px-2 py-0.5 text-[11px] rounded-full bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 font-bold">Planned vs Actual</span>
                         </h3>
                         <p class="text-xs text-slate-500 mt-0.5">Track allocated equipment against real-time consumption logged from field tasks</p>
                     </div>
@@ -1130,7 +1130,7 @@
                                         <div class="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
                                             <span>{{ $mat->item_name }}</span>
                                             @if($mat->product)
-                                                <span class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                                                <span class="px-1.5 py-0.5 rounded text-[11px] font-mono bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
                                                     {{ $mat->product->sku }}
                                                 </span>
                                             @endif
@@ -1217,7 +1217,7 @@
                     <div>
                         <h3 class="font-extrabold text-slate-900 dark:text-white text-base flex items-center gap-2">
                             <span>Field Execution &amp; Cable Consumption Log</span>
-                            <span class="px-2 py-0.5 text-[10px] rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 font-bold font-mono">
+                            <span class="px-2 py-0.5 text-[11px] rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 font-bold font-mono">
                                 {{ $project->materialConsumptions->count() }} Entries Logged
                             </span>
                         </h3>
@@ -1249,7 +1249,7 @@
                                 <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition">
                                     <td class="px-5 py-3.5 whitespace-nowrap text-xs text-slate-500">
                                         <span class="font-bold text-slate-700 dark:text-slate-300 block">{{ $cLog->consumed_at ? $cLog->consumed_at->format('d M Y') : $cLog->created_at->format('d M Y') }}</span>
-                                        <span class="text-[10px] text-slate-400">{{ $cLog->consumed_at ? $cLog->consumed_at->format('h:i A') : $cLog->created_at->format('h:i A') }}</span>
+                                        <span class="text-[11px] text-slate-400">{{ $cLog->consumed_at ? $cLog->consumed_at->format('h:i A') : $cLog->created_at->format('h:i A') }}</span>
                                     </td>
                                     <td class="px-5 py-3.5">
                                         <div class="flex items-center gap-1.5 font-bold text-slate-800 dark:text-slate-200 text-xs">
@@ -1257,7 +1257,7 @@
                                             <span>{{ $cLog->task?->title ?? 'General Project Task' }}</span>
                                         </div>
                                         @if($cLog->task?->phase_name)
-                                            <span class="text-[10px] text-slate-400 block mt-0.5">{{ $cLog->task->phase_name }}</span>
+                                            <span class="text-[11px] text-slate-400 block mt-0.5">{{ $cLog->task->phase_name }}</span>
                                         @endif
                                     </td>
                                     <td class="px-5 py-3.5 font-bold text-slate-900 dark:text-white">
@@ -1281,7 +1281,7 @@
                                     </td>
                                     <td class="px-5 py-3.5 whitespace-nowrap text-xs">
                                         <div class="flex items-center gap-1.5">
-                                            <span class="w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-[10px] font-bold flex items-center justify-center">
+                                            <span class="w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-[11px] font-bold flex items-center justify-center">
                                                 {{ strtoupper(substr($cLog->consumedBy?->name ?? 'T', 0, 1)) }}
                                             </span>
                                             <span class="font-medium text-slate-700 dark:text-slate-300">{{ $cLog->consumedBy?->name ?? 'Technician' }}</span>
@@ -1289,11 +1289,11 @@
                                     </td>
                                     <td class="px-5 py-3.5 whitespace-nowrap text-xs">
                                         @if($cLog->deduct_from_stock)
-                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                                            <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
                                                 ✓ Warehouse Deducted
                                             </span>
                                         @else
-                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+                                            <span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400">
                                                 Site Direct
                                             </span>
                                         @endif
@@ -1660,25 +1660,25 @@
                                             <td class="px-5 py-3 text-center">
                                                 @if($att->is_paid)
                                                     <div class="inline-flex items-center gap-1">
-                                                        <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
+                                                        <span class="px-2 py-0.5 text-[11px] font-bold rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
                                                             Paid &amp; Locked
                                                         </span>
                                                         @if(auth()->user()->isAdmin())
                                                             <form method="POST" action="{{ route('projects.attendances.unlock', $att) }}" class="inline-block" onsubmit="return confirm('Unlock this attendance record?')">
                                                                 @csrf
-                                                                <button type="submit" class="text-[10px] text-rose-500 hover:underline">Unlock</button>
+                                                                <button type="submit" class="text-[11px] text-rose-500 hover:underline">Unlock</button>
                                                             </form>
                                                         @endif
                                                     </div>
                                                 @else
                                                     <div class="inline-flex items-center gap-1.5 flex-wrap justify-center">
-                                                        <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300">
+                                                        <span class="px-2 py-0.5 text-[11px] font-bold rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300">
                                                             Unpaid
                                                         </span>
                                                         @if(auth()->user()->isAdmin())
                                                             <form method="POST" action="{{ route('projects.attendances.pay', $att) }}" class="inline-block" onsubmit="return confirm('Disburse daily wage payout of ₹{{ number_format($att->total_amount, 2) }} now to {{ addslashes($att->worker?->name ?? 'Worker') }}?')">
                                                                 @csrf
-                                                                <button type="submit" class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs cursor-pointer transition">
+                                                                <button type="submit" class="px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs cursor-pointer transition">
                                                                     Pay Shift (₹{{ number_format($att->total_amount, 0) }})
                                                                 </button>
                                                             </form>
@@ -1784,7 +1784,7 @@
                                         </div>
                                     </td>
                                     <td class="px-5 py-3.5 text-center">
-                                        <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
+                                        <span class="px-2 py-0.5 text-[11px] font-bold rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
                                             {{ ucfirst($dev->status ?? 'Configured') }}
                                         </span>
                                     </td>
@@ -1869,27 +1869,27 @@
                 {{-- 5-Column + Total KPI Metric Bar --}}
                 <div class="grid grid-cols-2 sm:grid-cols-6 gap-3 pt-2 border-t border-slate-100 dark:border-slate-800/80 text-center">
                     <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
-                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Total Tasks</span>
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">Total Tasks</span>
                         <span class="text-xl font-extrabold text-slate-900 dark:text-white">{{ $tasksCount }}</span>
                     </div>
                     <div class="p-3 rounded-xl bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
-                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 block">Pending / Backlog</span>
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 block">Pending / Backlog</span>
                         <span class="text-xl font-extrabold text-slate-700 dark:text-slate-300">{{ $pendingTasksCount }}</span>
                     </div>
                     <div class="p-3 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-900/50">
-                        <span class="text-[10px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 block">Assigned / In Progress</span>
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 block">Assigned / In Progress</span>
                         <span class="text-xl font-extrabold text-blue-700 dark:text-blue-300">{{ $inProgressTasksCount }}</span>
                     </div>
                     <div class="p-3 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-100 dark:border-purple-900/50">
-                        <span class="text-[10px] font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 block">Review / QA</span>
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 block">Review / QA</span>
                         <span class="text-xl font-extrabold text-purple-700 dark:text-purple-300">{{ $underReviewTasksCount }}</span>
                     </div>
                     <div class="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-900/50">
-                        <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 block">Completed</span>
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 block">Completed</span>
                         <span class="text-xl font-extrabold text-emerald-700 dark:text-emerald-300">{{ $completedTasksCount }}</span>
                     </div>
                     <div class="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 relative overflow-hidden">
-                        <span class="text-[10px] font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400 block">Blocked</span>
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400 block">Blocked</span>
                         <span class="text-xl font-extrabold text-rose-700 dark:text-rose-300">{{ $blockedTasksCount }}</span>
                         @if($blockedTasksCount > 0)
                             <span class="absolute top-1.5 right-1.5 flex h-2 w-2">
@@ -1928,7 +1928,7 @@
                         <div>
                             <h4 class="font-extrabold text-rose-950 dark:text-rose-200 text-sm flex items-center gap-2">
                                 <span>{{ $blockedTasksCount }} Critical Blocker(s) Active</span>
-                                <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-rose-600 text-white">Action Required</span>
+                                <span class="px-2 py-0.5 rounded-full text-[11px] font-extrabold bg-rose-600 text-white">Action Required</span>
                             </h4>
                             <p class="text-xs text-rose-700 dark:text-rose-400 mt-0.5">
                                 Dependencies or site bottlenecks are impeding installation. Review reasons below and alert stakeholders.
@@ -2000,7 +2000,7 @@
                     <div class="p-5 rounded-2xl bg-white dark:bg-[#0b1329] border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-4">
                         <div class="space-y-2.5">
                             <div class="flex items-center justify-between">
-                                <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wide bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                                <span class="px-2 py-0.5 rounded-md text-[11px] font-extrabold uppercase tracking-wide bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
                                     {{ count($tpl['phases']) }} Phases &bull; ~{{ $tpl['estimated_days'] }} Days
                                 </span>
                             </div>
@@ -2020,7 +2020,7 @@
                                     </div>
                                 @endforeach
                                 @if(count($tpl['phases']) > 3)
-                                    <div class="text-[10px] text-slate-400 italic">+ {{ count($tpl['phases']) - 3 }} more phases</div>
+                                    <div class="text-[11px] text-slate-400 italic">+ {{ count($tpl['phases']) - 3 }} more phases</div>
                                 @endif
                             </div>
                         </div>
@@ -2049,7 +2049,7 @@
                         <button type="button" @click="activeTaskView = 'kanban'" :class="activeTaskView === 'kanban' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-300 shadow-xs font-extrabold' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 font-semibold'" class="px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1.5">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"/></svg>
                             <span>Visual Kanban</span>
-                            <span class="px-1.5 py-0.2 rounded-full text-[10px] bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300 font-bold">5 Cols</span>
+                            <span class="px-1.5 py-0.2 rounded-full text-[11px] bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300 font-bold">5 Cols</span>
                         </button>
                         <button type="button" @click="activeTaskView = 'gantt'" :class="activeTaskView === 'gantt' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-300 shadow-xs font-extrabold' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 font-semibold'" class="px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1.5">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
@@ -2153,7 +2153,7 @@
                                     <h4 class="font-extrabold text-xs text-slate-900 dark:text-white uppercase tracking-wider">
                                         {{ $colDef['title'] }}
                                     </h4>
-                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold {{ $colDef['badge'] }}">
+                                    <span class="px-2 py-0.5 rounded-full text-[11px] font-extrabold {{ $colDef['badge'] }}">
                                         {{ $colTasks->count() }}
                                     </span>
                                 </div>
@@ -2179,12 +2179,12 @@
                                     {{-- Card Top Row: Priority Pill, Phase, & Drag Handle --}}
                                     <div class="flex items-center justify-between gap-1.5">
                                         {{-- Priority Pill matching project schema --}}
-                                        <span class="px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide rounded-md border {{ $task->priority_badge_classes }}">
+                                        <span class="px-2 py-0.5 text-[11px] font-extrabold uppercase tracking-wide rounded-md border {{ $task->priority_badge_classes }}">
                                             {{ ucfirst($task->priority) }}
                                         </span>
 
                                         <div class="flex items-center gap-1">
-                                            <span class="text-[10px] text-slate-400 font-semibold truncate max-w-[110px]" title="{{ $task->phase_name }}">
+                                            <span class="text-[11px] text-slate-400 font-semibold truncate max-w-[110px]" title="{{ $task->phase_name }}">
                                                 {{ Str::limit($task->phase_name, 16) }}
                                             </span>
                                             {{-- Drag Handle --}}
@@ -2212,14 +2212,14 @@
                                     {{-- BLOCKER BANNER (If Task is Blocked) --}}
                                     @if($task->status === 'blocked')
                                     <div class="p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-900/60 space-y-1.5">
-                                        <div class="flex items-start gap-1.5 text-rose-700 dark:text-rose-300 font-extrabold text-[10px] uppercase tracking-wide">
+                                        <div class="flex items-start gap-1.5 text-rose-700 dark:text-rose-300 font-extrabold text-[11px] uppercase tracking-wide">
                                             <span>⛔</span>
                                             <span>Blocked Dependency</span>
                                         </div>
                                         <p class="text-xs font-semibold text-rose-950 dark:text-rose-100 leading-snug">
                                             "{{ $task->blocker_reason ?? 'Awaiting site clearance' }}"
                                         </p>
-                                        <div class="flex items-center justify-between pt-1 border-t border-rose-200/60 dark:border-rose-900/40 text-[10px] text-rose-600 dark:text-rose-400">
+                                        <div class="flex items-center justify-between pt-1 border-t border-rose-200/60 dark:border-rose-900/40 text-[11px] text-rose-600 dark:text-rose-400">
                                             <span>By: {{ $task->blockedByUser?->name ?? 'Technician' }}</span>
                                             <button type="button" @click.stop="unblockTask({{ $task->id }})" class="font-bold underline hover:text-rose-800">
                                                 Resolve
@@ -2239,7 +2239,7 @@
                                             default => 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300'
                                         };
                                     @endphp
-                                    <div class="p-1.5 rounded-lg border text-[10px] {{ $depColor }} flex items-center justify-between gap-1" title="Depends on: {{ $dep->title }}">
+                                    <div class="p-1.5 rounded-lg border text-[11px] {{ $depColor }} flex items-center justify-between gap-1" title="Depends on: {{ $dep->title }}">
                                         <div class="flex items-center gap-1 truncate">
                                             <span class="font-bold">🔗 Depends:</span>
                                             <span class="truncate font-medium">{{ Str::limit($dep->title, 20) }}</span>
@@ -2259,7 +2259,7 @@
                                     {{-- Quality Assurance SOP Checklist Mini Progress --}}
                                     @if($task->checklists->isNotEmpty())
                                     <div class="space-y-1 pt-1 border-t border-slate-100 dark:border-slate-800/60">
-                                        <div class="flex items-center justify-between text-[10px] text-slate-500 font-semibold">
+                                        <div class="flex items-center justify-between text-[11px] text-slate-500 font-semibold">
                                             <span>SOP Checkpoints</span>
                                             <span class="font-bold text-blue-600 dark:text-blue-400">{{ $chkProg['completed'] }}/{{ $chkProg['total'] }}</span>
                                         </div>
@@ -2271,24 +2271,24 @@
 
                                     {{-- Task Consumed Materials & Cable Badge --}}
                                     @if($task->materialConsumptions->isNotEmpty())
-                                    <div class="p-2 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/60 dark:border-indigo-900/60 text-[10px] space-y-1">
+                                    <div class="p-2 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/60 dark:border-indigo-900/60 text-[11px] space-y-1">
                                         <div class="flex items-center justify-between text-indigo-700 dark:text-indigo-300 font-extrabold">
                                             <span class="flex items-center gap-1">
                                                 <span>📦</span>
                                                 <span>Consumed ({{ $task->materialConsumptions->count() }})</span>
                                             </span>
-                                            <button type="button" @click.stop="openConsumeModal({{ $task->id }}, '{{ addslashes($task->title) }}')" class="hover:underline text-[10px] text-indigo-600 dark:text-indigo-400 font-bold">
+                                            <button type="button" @click.stop="openConsumeModal({{ $task->id }}, '{{ addslashes($task->title) }}')" class="hover:underline text-[11px] text-indigo-600 dark:text-indigo-400 font-bold">
                                                 + Log More
                                             </button>
                                         </div>
                                         <div class="flex flex-wrap gap-1">
                                             @foreach($task->materialConsumptions->take(2) as $mUsed)
-                                                <span class="px-1.5 py-0.5 rounded bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 font-mono text-[9px] font-semibold">
+                                                <span class="px-1.5 py-0.5 rounded bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 font-mono text-[11px] font-semibold">
                                                     {{ number_format($mUsed->quantity_used, 1) }}{{ $mUsed->unit }} {{ Str::limit($mUsed->item_name, 14) }}
                                                 </span>
                                             @endforeach
                                             @if($task->materialConsumptions->count() > 2)
-                                                <span class="text-[9px] text-indigo-500 font-bold self-center">+{{ $task->materialConsumptions->count() - 2 }}</span>
+                                                <span class="text-[11px] text-indigo-500 font-bold self-center">+{{ $task->materialConsumptions->count() - 2 }}</span>
                                             @endif
                                         </div>
                                     </div>
@@ -2298,7 +2298,7 @@
                                     <div class="pt-2 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs text-slate-500">
                                         {{-- Assignee Avatar & Name --}}
                                         <div class="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-300 text-[11px] truncate max-w-[120px]">
-                                            <span class="w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-[10px] font-bold flex items-center justify-center shrink-0">
+                                            <span class="w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-[11px] font-bold flex items-center justify-center shrink-0">
                                                 {{ strtoupper(substr($task->assignedUser?->name ?? 'U', 0, 1)) }}
                                             </span>
                                             <span class="truncate">{{ $task->assignedUser?->name ?? 'Unassigned' }}</span>
@@ -2349,7 +2349,7 @@
                             <div>
                                 <h4 class="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-2">
                                     <span>Gantt Chart &amp; Dependency Timeline</span>
-                                    <span class="px-2 py-0.5 rounded-full text-[10px] bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 font-bold">Chronological Schedule</span>
+                                    <span class="px-2 py-0.5 rounded-full text-[11px] bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 font-bold">Chronological Schedule</span>
                                 </h4>
                                 <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                                     Track phase milestones, dependency prerequisites, and identify schedule bottlenecks at a glance.
@@ -2385,7 +2385,7 @@
                                             $currDate = $ganttStart->copy()->addDays($d);
                                             $isToday = $currDate->isSameDay($today);
                                         @endphp
-                                        <div class="py-1 px-0.5 rounded text-[10px] {{ $isToday ? 'bg-blue-600 text-white font-extrabold shadow-xs' : 'text-slate-500 dark:text-slate-400' }}">
+                                        <div class="py-1 px-0.5 rounded text-[11px] {{ $isToday ? 'bg-blue-600 text-white font-extrabold shadow-xs' : 'text-slate-500 dark:text-slate-400' }}">
                                             <div>{{ $currDate->format('D') }}</div>
                                             <div>{{ $currDate->format('d') }}</div>
                                         </div>
@@ -2400,7 +2400,7 @@
                                     {{-- Phase Label Row --}}
                                     <div class="py-1 px-2 rounded-lg bg-slate-100/80 dark:bg-slate-800/80 text-xs font-extrabold text-slate-700 dark:text-slate-300 flex items-center justify-between">
                                         <span>{{ $pName }}</span>
-                                        <span class="text-[10px] font-normal text-slate-500">{{ $pTasks->count() }} milestones</span>
+                                        <span class="text-[11px] font-normal text-slate-500">{{ $pTasks->count() }} milestones</span>
                                     </div>
 
                                     {{-- Tasks in this Phase --}}
@@ -2439,27 +2439,27 @@
                                                     @endif
                                                     <span class="truncate">{{ $task->title }}</span>
                                                 </div>
-                                                <div class="text-[10px] text-slate-400 flex items-center gap-1 mt-0.5">
+                                                <div class="text-[11px] text-slate-400 flex items-center gap-1 mt-0.5">
                                                     <span>{{ $task->assignedUser?->name ?? 'Unassigned' }}</span>
                                                     @if($task->dependsOnTask)
                                                         <span class="text-amber-500 font-semibold">&bull; Req: #{{ $task->dependsOnTask->id }}</span>
                                                     @endif
                                                 </div>
                                             </div>
-                                            <span class="px-1.5 py-0.2 rounded text-[9px] font-extrabold uppercase {{ $task->priority_badge_classes }} shrink-0">
+                                            <span class="px-1.5 py-0.2 rounded text-[11px] font-extrabold uppercase {{ $task->priority_badge_classes }} shrink-0">
                                                 {{ substr($task->priority, 0, 3) }}
                                             </span>
                                         </div>
 
                                         {{-- Right Timeline Bar Grid --}}
                                         <div class="col-span-8 relative h-7 bg-slate-50/50 dark:bg-slate-900/30 rounded-lg flex items-center px-1 border border-dashed border-slate-200/60 dark:border-slate-800/60">
-                                            <div class="absolute h-5 rounded-md px-2 flex items-center text-[10px] font-bold shadow-xs truncate cursor-pointer transition hover:brightness-110 {{ $barColor }}"
+                                            <div class="absolute h-5 rounded-md px-2 flex items-center text-[11px] font-bold shadow-xs truncate cursor-pointer transition hover:brightness-110 {{ $barColor }}"
                                                  style="left: {{ ($dayOffset / $totalTimelineDays) * 100 }}%; width: {{ max(6, ($dayDuration / $totalTimelineDays) * 100) }}%;"
                                                  @click="openEditTaskModal({{ json_encode($task) }})"
                                                  title="{{ $task->title }} ({{ ucfirst(str_replace('_', ' ', $task->status)) }}) - Click to inspect">
                                                 <span class="truncate">{{ $task->title }}</span>
                                                 @if($task->status === 'blocked')
-                                                    <span class="ml-1 text-[9px] font-extrabold bg-rose-900 px-1 rounded shrink-0">BLOCKED</span>
+                                                    <span class="ml-1 text-[11px] font-extrabold bg-rose-900 px-1 rounded shrink-0">BLOCKED</span>
                                                 @endif
                                             </div>
                                         </div>
@@ -2484,7 +2484,7 @@
                         @foreach($tasksByPhase as $phaseName => $phaseTasks)
                         <button type="button" @click="activePhaseFilter = '{{ md5($phaseName) }}'" :class="activePhaseFilter === '{{ md5($phaseName) }}' ? 'bg-blue-600 text-white shadow-xs' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'" class="px-3.5 py-1.5 rounded-xl transition shrink-0 flex items-center gap-1.5">
                             <span>{{ $phaseName }}</span>
-                            <span class="px-1.5 py-0.2 rounded-full text-[10px] {{ $phaseTasks->where('status', 'completed')->count() === $phaseTasks->count() ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-200' }}">
+                            <span class="px-1.5 py-0.2 rounded-full text-[11px] {{ $phaseTasks->where('status', 'completed')->count() === $phaseTasks->count() ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-200' }}">
                                 {{ $phaseTasks->where('status', 'completed')->count() }}/{{ $phaseTasks->count() }}
                             </span>
                         </button>
@@ -2543,7 +2543,7 @@
                                 {{-- Top Bar: Priority & Status Dropdown --}}
                                 <div class="space-y-3">
                                     <div class="flex items-center justify-between gap-2">
-                                        <span class="px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide rounded-md border {{ $task->priority_badge_classes }}">
+                                        <span class="px-2 py-0.5 text-[11px] font-extrabold uppercase tracking-wide rounded-md border {{ $task->priority_badge_classes }}">
                                             {{ ucfirst($task->priority) }} Priority
                                         </span>
 
@@ -2582,14 +2582,14 @@
                                         <p class="text-xs font-semibold text-rose-900 dark:text-rose-200">
                                             "{{ $task->blocker_reason }}"
                                         </p>
-                                        <span class="text-[10px] text-rose-500 block">Flagged by {{ $task->blockedByUser?->name ?? 'Staff' }} on {{ $task->blocked_at?->format('d M Y, h:i A') }}</span>
+                                        <span class="text-[11px] text-rose-500 block">Flagged by {{ $task->blockedByUser?->name ?? 'Staff' }} on {{ $task->blocked_at?->format('d M Y, h:i A') }}</span>
                                     </div>
                                     @endif
 
                                     {{-- Metadata Row --}}
                                     <div class="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400 flex-wrap pt-1">
                                         <div class="flex items-center gap-1.5 font-semibold text-slate-700 dark:text-slate-300">
-                                            <span class="w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-[10px] font-bold flex items-center justify-center">
+                                            <span class="w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-[11px] font-bold flex items-center justify-center">
                                                 {{ strtoupper(substr($task->assignedUser?->name ?? 'U', 0, 1)) }}
                                             </span>
                                             <span>{{ $task->assignedUser?->name ?? 'Unassigned' }}</span>
@@ -3270,7 +3270,7 @@
                         <div x-show="showNewWorkerModal" x-transition class="p-3.5 rounded-xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800/80 space-y-3">
                             <div class="flex items-center justify-between pb-1.5 border-b border-blue-200/60 dark:border-blue-800/60">
                                 <div class="flex items-center gap-1.5">
-                                    <span class="w-4 h-4 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] font-bold">+</span>
+                                    <span class="w-4 h-4 rounded-full bg-blue-600 text-white flex items-center justify-center text-[11px] font-bold">+</span>
                                     <h4 class="text-xs font-bold text-blue-950 dark:text-blue-200 uppercase tracking-wide">Register New Daily Worker</h4>
                                 </div>
                                 <button type="button" @click="showNewWorkerModal = false" class="text-slate-400 hover:text-slate-600 text-xs font-bold">&times; Close</button>
@@ -3281,11 +3281,11 @@
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                                 <div>
-                                    <label class="block text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Full Name *</label>
+                                    <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Full Name *</label>
                                     <input type="text" x-model="newWorkerName" placeholder="e.g. Ramesh Kumar" class="w-full px-2.5 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg outline-none font-semibold text-slate-900 dark:text-white">
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Daily Wage Rate (₹) *</label>
+                                    <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Daily Wage Rate (₹) *</label>
                                     <div class="flex items-center rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 overflow-hidden">
                                         <span class="px-2.5 py-1.5 text-xs font-bold text-slate-500 bg-slate-100 dark:bg-slate-800 border-r border-slate-300 dark:border-slate-700 select-none">₹</span>
                                         <input type="number" step="10" min="0" x-model="newWorkerDailyRate" placeholder="750" class="w-full px-2 py-1.5 text-xs bg-transparent outline-none font-mono font-bold text-blue-600 dark:text-blue-400">
@@ -3295,11 +3295,11 @@
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                                 <div>
-                                    <label class="block text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Phone Number</label>
+                                    <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Phone Number</label>
                                     <input type="text" x-model="newWorkerPhone" placeholder="e.g. 9876543210" class="w-full px-2.5 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg outline-none font-mono text-slate-900 dark:text-white">
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Role / Notes</label>
+                                    <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Role / Notes</label>
                                     <input type="text" x-model="newWorkerNotes" placeholder="e.g. Cable puller" class="w-full px-2.5 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg outline-none text-slate-900 dark:text-white">
                                 </div>
                             </div>
@@ -3320,7 +3320,7 @@
                             <div class="flex items-center justify-between pb-0.5">
                                 <div class="flex items-center gap-2">
                                     <span class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Workers on Shift</span>
-                                    <span class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-slate-100 dark:bg-slate-800 text-slate-500" x-text="`${workersList.length} saved`"></span>
+                                    <span class="text-[11px] px-2 py-0.5 rounded-full font-bold bg-slate-100 dark:bg-slate-800 text-slate-500" x-text="`${workersList.length} saved`"></span>
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <button type="button" @click="openNewWorkerModal(null)" class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 hover:bg-blue-100 transition inline-flex items-center gap-1 cursor-pointer">
@@ -3339,10 +3339,10 @@
                                     {{-- Row Subheader --}}
                                     <div class="flex items-center justify-between pb-1.5 border-b border-slate-100 dark:border-slate-800">
                                         <div class="flex items-center gap-2">
-                                            <span class="w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[10px] font-bold flex items-center justify-center" x-text="idx + 1"></span>
+                                            <span class="w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[11px] font-bold flex items-center justify-center" x-text="idx + 1"></span>
                                             <span class="text-xs font-bold text-slate-800 dark:text-slate-200" x-text="r.worker_id ? (workersList.find(w => w.id == r.worker_id)?.name || 'Worker') : `Worker #${idx + 1}`"></span>
                                             <template x-if="r.daily_rate > 0">
-                                                <span class="text-[10px] font-mono font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-1.5 py-0.5 rounded border border-emerald-200 dark:border-emerald-800" x-text="`₹${r.daily_rate}/day`"></span>
+                                                <span class="text-[11px] font-mono font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-1.5 py-0.5 rounded border border-emerald-200 dark:border-emerald-800" x-text="`₹${r.daily_rate}/day`"></span>
                                             </template>
                                         </div>
                                         <div class="flex items-center gap-2.5">
@@ -3358,7 +3358,7 @@
                                     {{-- Row Fields Grid --}}
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                                         <div>
-                                            <label class="block text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Worker *</label>
+                                            <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Worker *</label>
                                             <select :name="`attendances[${idx}][worker_id]`" x-model="r.worker_id" @change="updateRate(r)" required class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg outline-none font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
                                                 <option value="">-- Select Worker --</option>
                                                 <template x-for="w in workersList" :key="w.id">
@@ -3368,7 +3368,7 @@
                                         </div>
 
                                         <div>
-                                            <label class="block text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Shift Duration *</label>
+                                            <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Shift Duration *</label>
                                             <select :name="`attendances[${idx}][attendance_type]`" x-model="r.attendance_type" @change="calcRow(r)" class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg outline-none font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
                                                 <option value="full_day">Full Day (1.0 Shift • 100%)</option>
                                                 <option value="half_day">Half Day (0.5 Shift • 50%)</option>
@@ -3378,14 +3378,14 @@
 
                                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                                         <div>
-                                            <label class="block text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">
+                                            <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">
                                                 Cabling (Metres)
                                             </label>
                                             <input type="number" step="1" min="0" :name="`attendances[${idx}][cabling_metres]`" x-model="r.cabling_metres" @input="calcRow(r)" placeholder="0" class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg font-mono font-bold outline-none text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
                                         </div>
 
                                         <div>
-                                            <label class="block text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Extra Allowance</label>
+                                            <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Extra Allowance</label>
                                             <div class="flex items-center rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 overflow-hidden focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500">
                                                 <span class="px-2 py-1 text-xs font-bold text-slate-500 bg-slate-100 dark:bg-slate-700/60 border-r border-slate-300 dark:border-slate-700 select-none">₹</span>
                                                 <input type="number" step="0.5" min="0" :name="`attendances[${idx}][extra_amount]`" x-model="r.extra_amount" @input="calcRow(r)" placeholder="0" class="w-full px-2 py-1 text-xs bg-transparent outline-none font-mono text-slate-900 dark:text-white">
@@ -3393,7 +3393,7 @@
                                         </div>
 
                                         <div>
-                                            <label class="block text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Reason for Extra</label>
+                                            <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Reason for Extra</label>
                                             <input type="text" :name="`attendances[${idx}][extra_description]`" x-model="r.extra_description" placeholder="Overtime / travel" class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg outline-none text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
                                         </div>
                                     </div>
@@ -3416,19 +3416,19 @@
                         {{-- Real-time Shift Summary Bar (Compact) --}}
                         <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 grid grid-cols-4 gap-2 text-center">
                             <div>
-                                <span class="text-[10px] font-bold uppercase text-slate-400 block">Workers</span>
+                                <span class="text-[11px] font-bold uppercase text-slate-400 block">Workers</span>
                                 <span class="text-sm font-bold font-mono text-slate-800 dark:text-slate-200" x-text="rows.filter(r => r.worker_id).length"></span>
                             </div>
                             <div>
-                                <span class="text-[10px] font-bold uppercase text-slate-400 block">Man-Days</span>
+                                <span class="text-[11px] font-bold uppercase text-slate-400 block">Man-Days</span>
                                 <span class="text-sm font-bold font-mono text-slate-800 dark:text-slate-200" x-text="totalManDays.toFixed(1)"></span>
                             </div>
                             <div>
-                                <span class="text-[10px] font-bold uppercase text-slate-400 block">Cabling</span>
+                                <span class="text-[11px] font-bold uppercase text-slate-400 block">Cabling</span>
                                 <span class="text-sm font-bold font-mono text-slate-800 dark:text-slate-200" x-text="`${totalCablingMtrs}m`"></span>
                             </div>
                             <div>
-                                <span class="text-[10px] font-bold uppercase text-emerald-600 dark:text-emerald-400 block">Total Wages</span>
+                                <span class="text-[11px] font-bold uppercase text-emerald-600 dark:text-emerald-400 block">Total Wages</span>
                                 <span class="text-sm font-bold font-mono text-emerald-600 dark:text-emerald-400" x-text="`₹${totalWagePayout.toFixed(2)}`"></span>
                             </div>
                         </div>
@@ -3737,7 +3737,7 @@
 
                 {{-- Task Context --}}
                 <div class="p-3 rounded-xl bg-rose-50/70 dark:bg-rose-950/40 border border-rose-200/80 dark:border-rose-900/50">
-                    <span class="text-[10px] font-extrabold uppercase tracking-wide text-rose-600 block">Affected Task</span>
+                    <span class="text-[11px] font-extrabold uppercase tracking-wide text-rose-600 block">Affected Task</span>
                     <h5 class="text-xs font-extrabold text-slate-900 dark:text-white mt-0.5" x-text="blockerTaskTitle"></h5>
                 </div>
 
@@ -3752,10 +3752,10 @@
 
                     {{-- Quick Select Preset Reasons --}}
                     <div class="space-y-1.5">
-                        <span class="text-[10px] font-bold uppercase text-slate-400 block">Common CCTV Installation Blockers (Click to Fill):</span>
+                        <span class="text-[11px] font-bold uppercase text-slate-400 block">Common CCTV Installation Blockers (Click to Fill):</span>
                         <div class="flex flex-wrap gap-1.5">
                             <template x-for="chip in quickBlockers" :key="chip">
-                                <button type="button" @click="setBlockerReason(chip)" class="text-[10px] px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-rose-50 hover:text-rose-700 dark:bg-slate-800 dark:hover:bg-rose-950/50 dark:hover:text-rose-300 border border-slate-200 dark:border-slate-700 transition text-left">
+                                <button type="button" @click="setBlockerReason(chip)" class="text-[11px] px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-rose-50 hover:text-rose-700 dark:bg-slate-800 dark:hover:bg-rose-950/50 dark:hover:text-rose-300 border border-slate-200 dark:border-slate-700 transition text-left">
                                     <span x-text="chip"></span>
                                 </button>
                             </template>
@@ -3768,7 +3768,7 @@
                             <span class="text-emerald-500">✓</span>
                             <span>Automated Multi-Channel Dispatch Enabled</span>
                         </div>
-                        <p class="text-[10px] text-slate-500 leading-relaxed">
+                        <p class="text-[11px] text-slate-500 leading-relaxed">
                             Upon submitting, a high-priority alert is saved to the topbar notification bell for Project Managers and Admins, and a formatted WhatsApp dispatch message is generated automatically.
                         </p>
                     </div>
