@@ -1,6 +1,6 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-DH3S_w73.css",
+    "file": "assets/app-AW1UQRRD.css",
     "name": "app",
     "names": [
       "app.css"
@@ -9,7 +9,7 @@
     "isEntry": true
   },
   "resources/css/standalone.css": {
-    "file": "assets/standalone-DzgqlQHd.css",
+    "file": "assets/standalone-BygBMZnr.css",
     "name": "standalone",
     "names": [
       "standalone.css"
@@ -18,9 +18,12 @@
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app-CdA5b4KA.js",
+    "file": "assets/app-ch62p92s.js",
     "name": "app",
     "src": "resources/js/app.js",
-    "isEntry": true
+    "isEntry": true,
+    "css": [
+      "assets/app-CcIQ8ne3.css"
+    ]
   }
 }

@@ -1279,6 +1279,7 @@
           @shortcuts-open.window="shortcutsModalOpen = true"
           @shortcuts-close.window="shortcutsModalOpen = false"
           @open-mobile-search.window="mobileSearchOpen = true; $nextTick(() => $refs.mobileSearchInput?.focus())">
+            <a href="#main-content" class="crm-skip-link">Skip to main content</a>
         
             {{-- ════════════════════════════════════════════════════════════════ --}}
             {{-- SECUREVISION UNIFIED ENTERPRISE SAAS CRM SUITE (ALL ROLES)        --}}
@@ -1458,6 +1459,7 @@
                                     </svg>
                                     <input type="text" 
                                            x-ref="searchInput"
+                                           aria-label="Search leads, jobs, quotes and equipment"
                                            x-model="query"
                                            @input.debounce.250ms="search()"
                                            @focus="if(query.length >= 2) open = true"
@@ -1564,10 +1566,16 @@
                                     this.unreadCount = 0;
                                     try { localStorage.setItem('crm_notif_read_timestamp', Date.now()); } catch(e){}
                                 }
-                            }" class="relative">
-                                <button @click="notifOpen = !notifOpen" 
-                                        type="button" 
+                            }" class="relative"
+                                 x-init="$watch('notifOpen', open => open && $nextTick(() => crmFocusFirst($refs.notifPanel)))"
+                                 @keydown.escape="if (notifOpen) { notifOpen = false; $refs.notifBtn.focus(); }">
+                                <button @click="notifOpen = !notifOpen"
+                                        type="button"
                                         id="header-notification-btn"
+                                        x-ref="notifBtn"
+                                        aria-haspopup="true"
+                                        aria-controls="crm-notif-panel"
+                                        :aria-expanded="notifOpen.toString()"
                                         class="relative inline-flex items-center justify-center w-8 h-8 rounded-[6px] border border-[var(--button-border)] bg-[var(--card-bg)] text-[var(--text-main)] hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer shrink-0 shadow-2xs" 
                                         title="Notifications & System Alerts" 
                                         aria-label="View notifications">
@@ -1581,8 +1589,13 @@
                                 </button>
 
                                 {{-- Notification Popover Dropdown --}}
-                                <div x-show="notifOpen" 
-                                     @click.away="notifOpen = false" 
+                                <div x-show="notifOpen"
+                                     x-ref="notifPanel"
+                                     id="crm-notif-panel"
+                                     role="region"
+                                     aria-label="Notifications"
+                                     @keydown.tab="crmTrapTab($event, $refs.notifPanel)"
+                                     @click.away="notifOpen = false"
                                      x-transition:enter="transition ease-out duration-100"
                                      x-transition:enter-start="transform opacity-0 scale-95"
                                      x-transition:enter-end="transform opacity-100 scale-100"
@@ -1667,10 +1680,17 @@
                             </div>
 
                             {{-- Pill-Shaped User Profile Capsule & Dropdown Menu --}}
-                            <div x-data="{ userMenuOpen: false }" class="relative">
-                                <button @click="userMenuOpen = !userMenuOpen" 
+                            <div x-data="{ userMenuOpen: false }" class="relative"
+                                 x-init="$watch('userMenuOpen', open => open && $nextTick(() => crmFocusFirst($refs.userPanel)))"
+                                 @keydown.escape="if (userMenuOpen) { userMenuOpen = false; $refs.userBtn.focus(); }">
+                                <button @click="userMenuOpen = !userMenuOpen"
                                         type="button"
                                         id="header-user-profile-pill"
+                                        x-ref="userBtn"
+                                        aria-haspopup="true"
+                                        aria-controls="crm-user-panel"
+                                        :aria-expanded="userMenuOpen.toString()"
+                                        aria-label="Account menu for {{ Auth::user()->name }}"
                                         class="flex items-center gap-2 pl-1.5 pr-2.5 py-1 rounded-[6px] border border-[var(--card-border)] bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/60 transition cursor-pointer select-none shadow-2xs">
                                     @if(Auth::user()->avatar_url)
                                         <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->name }}" class="w-7 h-7 rounded-full object-cover shrink-0 ring-1 ring-slate-200 dark:ring-slate-700">
@@ -1689,8 +1709,13 @@
                                 </button>
 
                                 {{-- User dropdown menu (contains settings, theme switcher, logout) --}}
-                                <div x-show="userMenuOpen" 
-                                     @click.away="userMenuOpen = false" 
+                                <div x-show="userMenuOpen"
+                                     x-ref="userPanel"
+                                     id="crm-user-panel"
+                                     role="region"
+                                     aria-label="Account menu"
+                                     @keydown.tab="crmTrapTab($event, $refs.userPanel)"
+                                     @click.away="userMenuOpen = false"
                                      x-transition:enter="transition ease-out duration-100"
                                      x-transition:enter-start="transform opacity-0 scale-95"
                                      x-transition:enter-end="transform opacity-100 scale-100"
@@ -1819,7 +1844,7 @@
                     </header>
 
                     {{-- Main Content Area: Responsive padding p-3 on mobile, p-5 on desktop --}}
-                    <main class="flex-1 overflow-y-auto overflow-x-hidden bg-[var(--page-bg)] p-3 sm:p-5 transition-colors duration-200 pb-28 lg:pb-8">
+                    <main id="main-content" tabindex="-1" class="flex-1 outline-none overflow-y-auto overflow-x-hidden bg-[var(--page-bg)] p-3 sm:p-5 transition-colors duration-200 pb-28 lg:pb-8">
                         <div class="crm-content max-w-[1200px] mx-auto w-full">
                             {{-- Page Heading (One h2 at top of content area, with main action button on right) --}}
                             @isset($header)
@@ -1892,9 +1917,16 @@
                         </button>
 
                         {{-- Elevated Center Action Button (+) with Mobile Quick Action Sheet --}}
-                        <div x-data="{ mobileActionOpen: false }" class="relative -mt-5">
-                            <button @click="mobileActionOpen = !mobileActionOpen" 
+                        <div x-data="{ mobileActionOpen: false }" class="relative -mt-5"
+                             x-init="$watch('mobileActionOpen', open => open && $nextTick(() => crmFocusFirst($refs.actionPanel)))"
+                             @keydown.escape="if (mobileActionOpen) { mobileActionOpen = false; $refs.actionBtn.focus(); }">
+                            <button @click="mobileActionOpen = !mobileActionOpen"
                                     type="button"
+                                    x-ref="actionBtn"
+                                    aria-haspopup="true"
+                                    aria-controls="crm-quick-actions"
+                                    :aria-expanded="mobileActionOpen.toString()"
+                                    aria-label="Quick actions"
                                     class="w-12 h-12 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center shadow-lg shadow-blue-500/35 border-2 border-white dark:border-[#0f172a] active:scale-95 transition-transform cursor-pointer"
                                     title="Quick Action">
                                 <svg class="w-6 h-6 transition-transform duration-200" :class="mobileActionOpen ? 'rotate-45' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
@@ -1902,8 +1934,13 @@
                             <span class="block text-center text-[11px] font-bold text-blue-600 dark:text-blue-400 mt-0.5">Create</span>
 
                             {{-- Mobile Quick Action Bottom Sheet --}}
-                            <div x-show="mobileActionOpen" 
-                                 @click.away="mobileActionOpen = false" 
+                            <div x-show="mobileActionOpen"
+                                 x-ref="actionPanel"
+                                 id="crm-quick-actions"
+                                 role="region"
+                                 aria-label="Quick actions"
+                                 @keydown.tab="crmTrapTab($event, $refs.actionPanel)"
+                                 @click.away="mobileActionOpen = false"
                                  x-transition:enter="transition ease-out duration-200"
                                  x-transition:enter-start="opacity-0 translate-y-4 scale-95"
                                  x-transition:enter-end="opacity-100 translate-y-0 scale-100"
@@ -1964,6 +2001,7 @@
                  })"
                  x-transition.opacity.duration.150ms
                  @click.self="shortcutsModalOpen = false"
+                 @keydown.tab="crmTrapTab($event, $el.querySelector('[role=dialog]'))"
                  class="crm-shortcuts-overlay fixed inset-0 z-[70] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
                 <div role="dialog" aria-modal="true" aria-labelledby="crm-shortcuts-title" class="crm-shortcuts-panel w-full max-w-md rounded-xl bg-[var(--card-bg)] text-[var(--text-main)]">
                     <div class="flex items-center justify-between px-5 py-3.5 border-b border-[var(--card-border)]">
