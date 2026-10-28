@@ -874,7 +874,7 @@
                 
                 <div class="px-5 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
                     <span class="text-xs font-bold text-blue-600 uppercase tracking-wider" x-text="selectedEvent ? selectedEvent.badge : ''"></span>
-                    <button type="button" @click="closeDrawer()" class="text-slate-400 hover:text-slate-600 cursor-pointer">
+                    <button aria-label="Close" type="button" @click="closeDrawer()" class="text-slate-400 hover:text-slate-600 cursor-pointer">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                     </button>
                 </div>

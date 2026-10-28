@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <div class="flex items-center space-x-3">
-                <a href="{{ route('finance.petty_cash.index') }}" class="inline-flex items-center p-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 transition">
+                <a aria-label="Back" href="{{ route('finance.petty_cash.index') }}" class="inline-flex items-center p-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 transition">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
                 </a>
                 <div>

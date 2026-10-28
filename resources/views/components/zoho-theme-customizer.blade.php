@@ -116,7 +116,7 @@
             
             <div class="grid grid-cols-7 gap-1.5 sm:gap-2 items-center justify-between">
                 <template x-for="c in colors" :key="c.hex">
-                    <button type="button" 
+                    <button :aria-label="'Use accent colour ' + c.hex" type="button" 
                             @click="setAccent(c.hex)" 
                             :title="c.name"
                             class="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition-transform hover:scale-115 active:scale-95 cursor-pointer shadow-xs focus:outline-none ring-offset-2 ring-offset-white dark:ring-offset-[#0f172a]"

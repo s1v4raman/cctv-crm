@@ -186,7 +186,7 @@
                                                 <input aria-label="Qty:" type="number" min="1" max="128" x-model.number="zone.quantity" @input="recalculateAll()" class="w-12 text-center font-bold text-xs p-0 border-0 bg-transparent text-amber-400 focus:ring-0">
                                             </div>
 
-                                            <button type="button" @click="removeCameraZone(index)" :disabled="cameraZones.length === 1" class="text-slate-500 hover:text-rose-400 disabled:opacity-30 p-1 transition">
+                                            <button aria-label="Remove camera zone" type="button" @click="removeCameraZone(index)" :disabled="cameraZones.length === 1" class="text-slate-500 hover:text-rose-400 disabled:opacity-30 p-1 transition">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                             </button>
                                         </div>
