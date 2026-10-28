@@ -158,4 +158,49 @@ class CalendarTest extends TestCase
         $this->assertEquals($this->technician->name, $jobEvent['tech']);
         $this->assertEquals('blue', $jobEvent['color']);
     }
+
+    public function test_calendar_handles_soft_deleted_and_missing_project_tasks_safely(): void
+    {
+        $this->actingAs($this->admin);
+
+        $project = \App\Models\Project::create([
+            'project_code' => 'PRJ-CAL-TEST',
+            'title'        => 'Test Deletable Project',
+            'company_name' => 'Acme Inc',
+            'site_address' => '100 Industrial Road',
+            'status'       => 'active',
+            'budget'       => 50000,
+        ]);
+
+        $task = \App\Models\ProjectTask::create([
+            'project_id'   => $project->id,
+            'phase_name'   => 'Phase 1',
+            'title'        => 'Task Under Deleted Project',
+            'priority'     => 'medium',
+            'status'       => 'in_progress',
+            'due_date'     => now()->toDateString(),
+            'start_date'   => now()->toDateString(),
+            'order_column' => 1,
+        ]);
+
+        // Soft-delete the project
+        $project->delete();
+
+        // Also add an orphan task whose project does not exist at all
+        \App\Models\ProjectTask::create([
+            'project_id'   => 999999,
+            'phase_name'   => 'Phase 2',
+            'title'        => 'Task With Missing Project Record',
+            'priority'     => 'high',
+            'status'       => 'pending',
+            'due_date'     => now()->toDateString(),
+            'start_date'   => now()->toDateString(),
+            'order_column' => 2,
+        ]);
+
+        $response = $this->get(route('calendar.index'));
+        $response->assertOk();
+        $response->assertSee('Task Under Deleted Project');
+        $response->assertSee('Task With Missing Project Record');
+    }
 }

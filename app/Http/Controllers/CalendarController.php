@@ -485,7 +485,7 @@ class CalendarController extends Controller
             'start_date'       => $task->start_date?->format('Y-m-d'),
             'due_date'         => $task->due_date?->format('Y-m-d'),
             'shift'            => $task->shift ?? 'Day Shift',
-            'location'         => $task->location ?: ($task->project->site_address ?? 'Assigned Work Site'),
+            'location'         => $task->location ?: ($task->project?->site_address ?? 'Assigned Work Site'),
             'estimated_hours'  => $task->estimated_hours,
             'actual_hours'     => $task->actual_hours,
             'status'           => $task->status,
@@ -519,7 +519,7 @@ class CalendarController extends Controller
             'start_date'       => $task->start_date?->format('Y-m-d'),
             'due_date'         => $task->due_date?->format('Y-m-d'),
             'shift'            => $task->shift ?? 'Day Shift',
-            'location'         => $task->location ?: ($task->project->site_address ?? 'Site Location'),
+            'location'         => $task->location ?: ($task->project?->site_address ?? 'Site Location'),
             'estimated_hours'  => $task->estimated_hours,
             'actual_hours'     => $task->actual_hours,
             'status'           => $task->status,
@@ -538,10 +538,10 @@ class CalendarController extends Controller
                 'name' => $task->rejectedByUser->name,
             ] : null,
             'project_id'       => $task->project_id,
-            'project_name'     => $task->project->title ?? 'Project #' . $task->project_id,
-            'client'           => $task->project->company_name ?? ($task->project->contact_person ?? 'Client'),
-            'customer_name'    => $task->project->company_name ?? ($task->project->contact_person ?? 'Client'),
-            'budget'           => $task->project->budget,
+            'project_name'     => $task->project?->title ?? ($task->project_id ? 'Project #' . $task->project_id : 'General Task'),
+            'client'           => $task->project?->company_name ?? ($task->project?->contact_person ?? 'Client'),
+            'customer_name'    => $task->project?->company_name ?? ($task->project?->contact_person ?? 'Client'),
+            'budget'           => $task->project?->budget ?? 0,
             'is_worker_view'   => false,
         ];
     }
@@ -571,23 +571,25 @@ class CalendarController extends Controller
             if (!$eventDate) continue;
 
             $isWorker = $user->isWorker();
+            $projectTitle = $t->project?->company_name ?? $t->project?->title;
+            $titleSuffix = $projectTitle ? ' (' . $projectTitle . ')' : '';
 
             $events[] = [
                 'id'          => 'task-' . $t->id,
                 'raw_id'      => $t->id,
                 'type'        => 'task',
                 'badge'       => 'Task: ' . ($t->shift ?? 'Day Shift'),
-                'title'       => $isWorker ? $t->title : ($t->title . ($t->project ? ' (' . ($t->project->company_name ?? 'Client') . ')' : '')),
+                'title'       => $isWorker ? $t->title : ($t->title . $titleSuffix),
                 'date'        => $eventDate,
                 'time'        => $t->shift ?? 'Day Shift',
                 'status'      => $t->status,
-                'customer'    => $isWorker ? null : ($t->project->company_name ?? '—'),
-                'phone'       => $isWorker ? null : ($t->project->contact_phone ?? '—'),
-                'address'     => $t->location ?: ($t->project->site_address ?? 'Assigned Work Site'),
+                'customer'    => $isWorker ? null : ($t->project?->company_name ?? '—'),
+                'phone'       => $isWorker ? null : ($t->project?->contact_phone ?? '—'),
+                'address'     => $t->location ?: ($t->project?->site_address ?? 'Assigned Work Site'),
                 'tech_id'     => $t->assigned_to,
-                'tech'        => $t->assignedUser->name ?? 'Unassigned',
+                'tech'        => $t->assignedUser?->name ?? 'Unassigned',
                 'assigned_to' => $t->assigned_to,
-                'url'         => $isWorker ? route('calendar.index', ['tab' => 'my_tasks']) : route('projects.show', [$t->project_id, 'tab' => 'tasks']),
+                'url'         => $isWorker ? route('calendar.index', ['tab' => 'my_tasks']) : ($t->project_id ? route('projects.show', [$t->project_id, 'tab' => 'tasks']) : route('calendar.index', ['tab' => 'overall_tasks'])),
                 'color'       => $t->status === 'completed' ? 'emerald' : ($t->status === 'rejected' ? 'rose' : ($t->status === 'in_progress' ? 'blue' : 'amber')),
                 'notes'       => $t->description,
                 'hours'       => $t->estimated_hours,
@@ -614,15 +616,15 @@ class CalendarController extends Controller
                 'raw_id'      => $s->id,
                 'type'        => 'survey',
                 'badge'       => 'Site Survey',
-                'title'       => 'Survey: ' . ($s->lead->customer_name ?? 'Premises Audit'),
+                'title'       => 'Survey: ' . ($s->lead?->customer_name ?? 'Premises Audit'),
                 'date'        => $s->survey_date->format('Y-m-d'),
                 'time'        => $s->survey_date->format('H:i') !== '00:00' ? $s->survey_date->format('h:i A') : 'Full Day',
                 'status'      => $s->status,
-                'customer'    => $s->lead->customer_name ?? '—',
-                'phone'       => $s->contact_phone ?: ($s->lead->phone ?? '—'),
-                'address'     => $s->site_address ?: ($s->lead->site_address ?? '—'),
+                'customer'    => $s->lead?->customer_name ?? '—',
+                'phone'       => $s->contact_phone ?: ($s->lead?->phone ?? '—'),
+                'address'     => $s->site_address ?: ($s->lead?->site_address ?? '—'),
                 'tech_id'     => $s->surveyed_by,
-                'tech'        => $s->surveyedBy->name ?? 'Unassigned',
+                'tech'        => $s->surveyedBy?->name ?? 'Unassigned',
                 'assigned_to' => $s->surveyed_by,
                 'url'         => route('site-surveys.show', $s),
                 'color'       => 'amber',
@@ -637,7 +639,7 @@ class CalendarController extends Controller
             ->get();
 
         foreach ($jobs as $j) {
-            $customerName = $j->quotation->lead->customer_name ?? 'Client';
+            $customerName = $j->quotation?->lead?->customer_name ?? 'Client';
             $events[] = [
                 'id'          => 'job-' . $j->id,
                 'raw_id'      => $j->id,
@@ -648,10 +650,10 @@ class CalendarController extends Controller
                 'time'        => '09:00 AM',
                 'status'      => $j->status,
                 'customer'    => $customerName,
-                'phone'       => $j->quotation->lead->phone ?? '—',
-                'address'     => $j->quotation->lead->site_address ?? '—',
+                'phone'       => $j->quotation?->lead?->phone ?? '—',
+                'address'     => $j->quotation?->lead?->site_address ?? '—',
                 'tech_id'     => $j->assigned_technician_id,
-                'tech'        => $j->assignedTechnician->name ?? 'Unassigned',
+                'tech'        => $j->assignedTechnician?->name ?? 'Unassigned',
                 'assigned_to' => $j->assigned_technician_id,
                 'url'         => route('jobs.show', $j),
                 'color'       => 'blue',
@@ -667,7 +669,7 @@ class CalendarController extends Controller
                 ->get();
 
             foreach ($amcVisits as $v) {
-                $customerName = $v->amcContract->lead->customer_name ?? 'Client';
+                $customerName = $v->amcContract?->lead?->customer_name ?? 'Client';
                 $events[] = [
                     'id'          => 'amc-' . $v->id,
                     'raw_id'      => $v->id,
@@ -678,10 +680,10 @@ class CalendarController extends Controller
                     'time'        => '11:00 AM',
                     'status'      => $v->status,
                     'customer'    => $customerName,
-                    'phone'       => $v->amcContract->lead->phone ?? '—',
-                    'address'     => $v->amcContract->lead->site_address ?? '—',
+                    'phone'       => $v->amcContract?->lead?->phone ?? '—',
+                    'address'     => $v->amcContract?->lead?->site_address ?? '—',
                     'tech_id'     => $v->assigned_technician_id,
-                    'tech'        => $v->assignedTechnician->name ?? 'Unassigned',
+                    'tech'        => $v->assignedTechnician?->name ?? 'Unassigned',
                     'assigned_to' => $v->assigned_technician_id,
                     'url'         => route('amcs.show', $v->amc_contract_id),
                     'color'       => 'purple',
@@ -698,7 +700,7 @@ class CalendarController extends Controller
                 ->get();
 
             foreach ($tickets as $t) {
-                $customerName = $t->lead->customer_name ?? 'Client';
+                $customerName = $t->lead?->customer_name ?? 'Client';
                 $events[] = [
                     'id'          => 'ticket-' . $t->id,
                     'raw_id'      => $t->id,
@@ -709,10 +711,10 @@ class CalendarController extends Controller
                     'time'        => '02:00 PM',
                     'status'      => $t->status,
                     'customer'    => $customerName,
-                    'phone'       => $t->lead->phone ?? '—',
-                    'address'     => $t->lead->site_address ?? '—',
+                    'phone'       => $t->lead?->phone ?? '—',
+                    'address'     => $t->lead?->site_address ?? '—',
                     'tech_id'     => $t->assigned_technician_id,
-                    'tech'        => $t->assignedTechnician->name ?? 'Unassigned',
+                    'tech'        => $t->assignedTechnician?->name ?? 'Unassigned',
                     'assigned_to' => $t->assigned_technician_id,
                     'url'         => route('service-tickets.show', $t),
                     'color'       => 'rose',
