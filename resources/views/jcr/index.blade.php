@@ -44,7 +44,7 @@
 
         {{-- Filter Section --}}
         <div class="crm-section">
-            <form method="GET" action="{{ route('jcr.index') }}" class="flex items-center gap-3 flex-wrap">
+            <form data-auto-submit method="GET" action="{{ route('jcr.index') }}" class="flex items-center gap-3 flex-wrap">
                 <input aria-label="Search" type="text" name="search" value="{{ request('search') }}" placeholder="e.g. JCR-2026-001" class="crm-input" style="width: 240px;">
 
                 <select aria-label="Type" name="type" class="crm-select" style="width: 180px;">
@@ -122,7 +122,7 @@
                     @empty
                     <tr>
                         <td colspan="7" class="text-center py-6 text-slate-500 text-sm">
-                            No Job Completion Reports yet
+                            <x-empty-message empty="No Job Completion Reports yet" filtered="No job completion reports match these filters." :filters="['search', 'technician_id', 'type']" />
                         </td>
                     </tr>
                     @endforelse

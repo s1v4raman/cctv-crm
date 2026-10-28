@@ -27,7 +27,7 @@
 
         {{-- Filter Section (Single Filter Row) --}}
         <div class="crm-section p-3">
-            <form method="GET" action="{{ route('workers.index') }}" class="flex items-center gap-2 flex-wrap">
+            <form data-auto-submit method="GET" action="{{ route('workers.index') }}" class="flex items-center gap-2 flex-wrap">
                 <input aria-label="Search worker name or phone" type="text" name="search" value="{{ request('search') }}" placeholder="Search worker name or phone…" 
                        style="height: 38px; min-height: 38px; max-height: 38px; border-radius: 4px; box-sizing: border-box;"
                        class="crm-input flex-1 min-w-[220px]">
@@ -134,7 +134,7 @@
                     @empty
                     <tr>
                         <td colspan="7" class="text-center py-6 text-slate-500 text-sm">
-                            No workers yet
+                            <x-empty-message empty="No workers yet" filtered="No workers match these filters." :filters="['search', 'status']" />
                         </td>
                     </tr>
                     @endforelse

@@ -3993,3 +3993,8 @@ a.btn-primary {
         width: 100% !important;
     }
 }
+
+/* <x-filter-bar> search field: leave room for the magnifier icon */
+input.crm-filter-search {
+    padding-left: 36px !important;
+}

@@ -132,7 +132,7 @@
 
             <div class="pg-card">
                 {{-- Filter Bar (Medium 38px Height Level) --}}
-                <form method="GET" action="{{ route('inventory.index') }}" class="filter-bar flex items-center gap-2.5 flex-wrap p-2.5 text-xs">
+                <form data-auto-submit method="GET" action="{{ route('inventory.index') }}" class="filter-bar flex items-center gap-2.5 flex-wrap p-2.5 text-xs">
                     <div class="relative w-72 min-w-[220px] flex items-center shrink-0">
                         <svg class="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                         <input aria-label="Search product name, SKU" type="text" name="search" value="{{ request('search') }}" 

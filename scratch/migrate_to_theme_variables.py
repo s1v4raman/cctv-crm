@@ -449,7 +449,6 @@ view_files = [
     'resources/views/attendance/index.blade.php',
     'resources/views/dashboard.blade.php',
     'resources/views/calendar/index.blade.php',
-    'resources/views/estimator/index.blade.php',
     'resources/views/admin/users/index.blade.php',
     'resources/views/finance/payables/index.blade.php',
     'resources/views/finance/expenses/index.blade.php',

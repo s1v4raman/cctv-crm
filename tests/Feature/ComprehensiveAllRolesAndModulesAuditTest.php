@@ -277,9 +277,9 @@ class ComprehensiveAllRolesAndModulesAuditTest extends TestCase
     }
 
     /**
-     * Audit 1A: Admin Leads, Quotations & Estimator Workflows.
+     * Audit 1A: Admin Leads & Quotations Workflows.
      */
-    public function test_admin_leads_quotations_and_estimator(): void
+    public function test_admin_leads_and_quotations(): void
     {
         $this->actingAs($this->admin);
 
@@ -310,19 +310,6 @@ class ComprehensiveAllRolesAndModulesAuditTest extends TestCase
         $this->post(route('quotations.accept', $this->quotation))->assertRedirect();
         $this->get(route('quotations.pdf', ['quotation' => $this->quotation, 'format' => 'compact']))->assertOk();
         $this->getJson(route('quotations.send-whatsapp', $this->quotation))->assertOk()->assertJsonStructure(['success', 'whatsapp_url']);
-
-        // 5. Estimator & Conversion
-        $this->get(route('estimator.index'))->assertOk();
-        $estimatorResponse = $this->post(route('estimator.convert'), [
-            'lead_id' => $this->lead->id,
-            'camera_count' => 4,
-            'recording_days' => 30,
-            'resolution' => '4mp',
-            'cable_length_meters' => 120,
-            'storage_tb' => 2,
-            'estimated_total' => 35000,
-        ]);
-        $estimatorResponse->assertRedirect();
     }
 
     /**

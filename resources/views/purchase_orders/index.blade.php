@@ -24,7 +24,7 @@
 
         {{-- Filter Section --}}
         <div class="crm-section">
-            <form method="GET" action="{{ route('purchase-orders.index') }}" class="flex items-center gap-3 flex-wrap">
+            <form data-auto-submit method="GET" action="{{ route('purchase-orders.index') }}" class="flex items-center gap-3 flex-wrap">
                 <input aria-label="Search" type="text" name="search" value="{{ request('search') }}" placeholder="e.g. PO-2026-001" class="crm-input" style="width: 240px;">
 
                 <select aria-label="Status" name="status" class="crm-select" style="width: 180px;">
@@ -127,7 +127,7 @@
                     @empty
                     <tr>
                         <td colspan="8" class="text-center py-6 text-slate-500 text-sm">
-                            No purchase orders yet
+                            <x-empty-message empty="No purchase orders yet" filtered="No purchase orders match these filters." :filters="['search', 'status', 'payment_status']" />
                         </td>
                     </tr>
                     @endforelse

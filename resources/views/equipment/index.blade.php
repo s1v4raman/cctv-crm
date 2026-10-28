@@ -153,7 +153,7 @@
 
             <div class="pg-card">
                 {{-- Filters --}}
-                <form method="GET" action="{{ route('equipment.index') }}" class="filter-bar">
+                <form data-auto-submit method="GET" action="{{ route('equipment.index') }}" class="filter-bar">
                     <input aria-label="Search Serial No, MAC, Device" type="text" name="search" value="{{ request('search') }}" placeholder="Search Serial No, MAC, Device..." style="min-width: 220px;" />
 
                     <select aria-label="Lead" name="lead_id" data-no-tom>
@@ -291,7 +291,7 @@
                             @empty
                             <tr>
                                 <td colspan="7" class="text-center py-6 text-sm text-slate-500">
-                                    No equipment yet
+                                    <x-empty-message empty="No equipment yet" filtered="No equipment match these filters." :filters="['search', 'status', 'warranty', 'lead_id']" />
                                 </td>
                             </tr>
                             @endforelse

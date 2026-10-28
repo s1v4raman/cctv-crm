@@ -48,6 +48,7 @@ class HeaderNotificationService
                 'time'        => $log->created_at ? $log->created_at->diffForHumans(null, true) . ' ago' : 'Recently',
                 'timestamp'   => $log->created_at ? $log->created_at->timestamp : time(),
                 'icon'        => 'log',
+                'activity_at' => $log->created_at?->timestamp,
                 'url'         => route('alerts.index'),
                 'is_unread'   => $log->created_at && $log->created_at->isToday(),
             ]);
@@ -70,6 +71,7 @@ class HeaderNotificationService
                     'timestamp'   => $job->created_at ? $job->created_at->timestamp : time(),
                     'icon'        => 'job',
                     'url'         => route('jobs.show', $job->id),
+                    'activity_at' => ($job->updated_at ?? $job->created_at)?->timestamp,
                     'is_unread'   => true,
                 ]);
             }
@@ -89,6 +91,7 @@ class HeaderNotificationService
                     'timestamp'   => time(),
                     'icon'        => 'survey',
                     'url'         => route('site-surveys.show', $survey->id),
+                    'activity_at' => ($survey->updated_at ?? $survey->created_at)?->timestamp,
                     'is_unread'   => true,
                 ]);
             }
@@ -109,6 +112,7 @@ class HeaderNotificationService
                     'timestamp'   => time(),
                     'icon'        => 'job',
                     'url'         => route('technician.dashboard'),
+                    'activity_at' => ($job->updated_at ?? $job->created_at)?->timestamp,
                     'is_unread'   => true,
                 ]);
             }
@@ -126,6 +130,18 @@ class HeaderNotificationService
                 'url'         => route('dashboard'),
                 'is_unread'   => false,
             ]);
+        }
+
+        // Anything that has not changed since the user last pressed "Mark all as read" counts as read
+        $readAt = $user->notifications_read_at?->timestamp;
+        if ($readAt !== null) {
+            $now = now()->timestamp;
+            $items = $items->map(function (array $item) use ($readAt, $now) {
+                // future-dated records (bad imports / demo data) cannot be newer than the read time
+                $activity = $item['activity_at'] ?? 0;
+                $item['is_unread'] = $item['is_unread'] && $activity > $readAt && $activity <= $now;
+                return $item;
+            });
         }
 
         // Sort by timestamp desc and limit to 6 items

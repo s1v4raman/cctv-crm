@@ -297,10 +297,7 @@ class KesavanEmployeeModuleRealtimeTest extends TestCase
         $this->get(route('quotations.show', $this->quotation))->assertOk();
         $this->get(route('quotations.pdf', ['quotation' => $this->quotation, 'format' => 'compact']))->assertOk();
 
-        // 5. CCTV Storage & Estimator
-        $this->get(route('estimator.index'))->assertOk();
-
-        // 6. Installation Jobs
+        // 5. Installation Jobs
         $this->get(route('jobs.index'))->assertOk()->assertSee('JOB-2026-TEST01');
         $this->get(route('jobs.show', $this->job))->assertOk();
 

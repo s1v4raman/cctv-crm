@@ -93,7 +93,7 @@
 
             <div class="pg-card">
                 {{-- Search & filter bar (Medium 38px Height Level) --}}
-                <form method="GET" action="{{ route('amcs.index') }}" class="p-3 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0b1120] flex items-center gap-2.5 flex-wrap text-xs">
+                <form data-auto-submit method="GET" action="{{ route('amcs.index') }}" class="p-3 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0b1120] flex items-center gap-2.5 flex-wrap text-xs">
                     <div class="relative flex-1 min-w-[220px] max-w-md flex items-center">
                         <svg class="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                         <input aria-label="Search contract #, customer, phone" type="text" name="search" value="{{ request('search') }}" 
@@ -191,7 +191,7 @@
                             @empty
                                 <tr>
                                     <td colspan="7" class="text-center py-6 text-slate-500">
-                                        No AMC contracts yet
+                                        <x-empty-message empty="No AMC contracts yet" filtered="No AMC contracts match these filters." :filters="['search', 'status']" />
                                     </td>
                                 </tr>
                             @endforelse

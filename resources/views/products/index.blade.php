@@ -214,7 +214,7 @@
                 </div>
 
                 {{-- Search & Category Filter --}}
-                <form method="GET" action="{{ route('products.index') }}" class="filter-bar flex items-center gap-2 flex-wrap">
+                <form data-auto-submit method="GET" action="{{ route('products.index') }}" class="filter-bar flex items-center gap-2 flex-wrap">
                     <input type="hidden" name="status" value="{{ $statusFilter ?? 'all' }}">
                     <div class="relative flex-1 min-w-[220px]">
                         <input aria-label="Search product name, SKU, model, brand" type="text" name="search" id="p-search" value="{{ request('search') }}" placeholder="Search product name, SKU, model, brand…" oninput="filterProducts()" class="w-full">
@@ -374,7 +374,7 @@
                                 <tr>
                                     <td colspan="9">
                                         <div class="empty-state">
-                                            No products found matching the criteria.
+                                            <x-empty-message empty="No products yet" filtered="No products match these filters." :filters="['search', 'category']" />
                                         </div>
                                     </td>
                                 </tr>

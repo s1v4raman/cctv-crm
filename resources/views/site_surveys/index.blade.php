@@ -19,7 +19,7 @@
             @endif
 
             {{-- Search & filter bar in one simple row without outer box --}}
-            <form method="GET" action="{{ route('site-surveys.index') }}" class="mb-4 flex items-center gap-2.5 flex-wrap text-xs">
+            <form data-auto-submit method="GET" action="{{ route('site-surveys.index') }}" class="mb-4 flex items-center gap-2.5 flex-wrap text-xs">
                 <div class="relative flex-1 min-w-[220px] max-w-md flex items-center">
                     <svg class="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                     <input aria-label="Search customer, address, contact, technician" type="text" name="search" value="{{ request('search') }}" placeholder="Search customer, address, contact, technician…" 
@@ -124,7 +124,7 @@
                             @empty
                                 <tr>
                                     <td colspan="7" class="text-center py-6 text-slate-500">
-                                        No site surveys yet
+                                        <x-empty-message empty="No site surveys yet" filtered="No site surveys match these filters." :filters="['search', 'status']" />
                                     </td>
                                 </tr>
                             @endforelse

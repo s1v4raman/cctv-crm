@@ -159,15 +159,6 @@
                         </svg>
                         <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">Deals & Quotations</span>
                     </a>
-
-                    {{-- CCTV Storage Estimator (Lightbulb icon) --}}
-                    <a :title="sidebarCollapsed ? $el.textContent.trim() : null" :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('estimator.index') }}" 
-                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('estimator.*') ? 'crm-active-link' : '' }}" @if(request()->routeIs('estimator.*')) aria-current="page" @endif>
-                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 18h6m-4 4h2M12 2a7 7 0 0 0-4.5 12.35c.95.83 1.5 2 1.5 3.15h6c0-1.15.55-2.32 1.5-3.15A7 7 0 0 0 12 2z"/>
-                        </svg>
-                        <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">CCTV Storage Estimator</span>
-                    </a>
                 </div>
             </div>
 

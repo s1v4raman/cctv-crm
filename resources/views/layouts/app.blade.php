@@ -28,7 +28,6 @@
         'leads.*' => 'Leads & Inquiries',
         'site-surveys.*' => 'Site Surveys',
         'quotations.*' => 'Quotations',
-        'estimator.*' => 'CCTV Storage Estimator',
         'projects.*' => 'Projects',
         'sites.*' => 'Installation Sites',
         'workers.attendance.*' => 'Worker Attendance',
@@ -1197,21 +1196,7 @@
                     return;
                 }
 
-                // 2. Ctrl+K / Cmd+K: Focus Global Search (Always active)
-                if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    if (window.innerWidth < 768) {
-                        window.dispatchEvent(new CustomEvent('open-mobile-search'));
-                    } else {
-                        const searchInput = document.querySelector('[x-ref="searchInput"], #job-search, input[name="search"], #searchModalInput');
-                        if (searchInput) {
-                            searchInput.focus();
-                            searchInput.select?.();
-                        }
-                    }
-                    return;
-                }
+                // Ctrl+K / Cmd+K (search) is handled once, by the header component (globalHeader)
 
                 // 3. Shortcuts Modal: '?' (when not typing in form field) OR Ctrl+/
                 const isQuestionKey = (e.key === '?' || (e.shiftKey && (e.key === '/' || e.code === 'Slash')));
@@ -1277,8 +1262,7 @@
           @shortcuts-toggle-action.window="shortcutsModalOpen = !shortcutsModalOpen"
           @shortcuts-toggle.window="shortcutsModalOpen = (typeof $event.detail?.open === 'boolean') ? $event.detail.open : !shortcutsModalOpen"
           @shortcuts-open.window="shortcutsModalOpen = true"
-          @shortcuts-close.window="shortcutsModalOpen = false"
-          @open-mobile-search.window="mobileSearchOpen = true; $nextTick(() => $refs.mobileSearchInput?.focus())">
+          @shortcuts-close.window="shortcutsModalOpen = false">
             <a href="#main-content" class="crm-skip-link">Skip to main content</a>
         
             {{-- ════════════════════════════════════════════════════════════════ --}}
@@ -1562,9 +1546,20 @@
                             <div x-data="{
                                 notifOpen: false,
                                 unreadCount: {{ $headerNotifs['unread_count'] }},
-                                markAllRead() {
+                                async markAllRead() {
+                                    const previous = this.unreadCount;
                                     this.unreadCount = 0;
-                                    try { localStorage.setItem('crm_notif_read_timestamp', Date.now()); } catch(e){}
+                                    try {
+                                        const res = await fetch('{{ route('notifications.read-all') }}', {
+                                            method: 'POST',
+                                            headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content, 'Accept': 'application/json' },
+                                        });
+                                        if (!res.ok) throw new Error(res.status);
+                                        this.unreadCount = (await res.json()).unread_count ?? 0;
+                                    } catch (e) {
+                                        this.unreadCount = previous;
+                                        window.crmAlert?.('Could not mark notifications as read. Please try again.', 'error');
+                                    }
                                 }
                             }" class="relative"
                                  x-init="$watch('notifOpen', open => open && $nextTick(() => crmFocusFirst($refs.notifPanel)))"

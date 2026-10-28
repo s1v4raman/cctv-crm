@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "crm-uiverify",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": ["/c", "C:\\Users\\ADMIN\\AppData\\Local\\Temp\\claude\\C--Users-ADMIN-Projects-cctv-crm\\2b73f887-a8b4-4ebc-a4ba-1f5c648e6406\\scratchpad\\serve-uiverify.bat"],
+      "port": 8010,
+      "autoPort": false
+    }
+  ]
+}

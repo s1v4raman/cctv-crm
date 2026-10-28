@@ -19,7 +19,7 @@
 
         {{-- Filter Section --}}
         <div class="crm-section">
-            <form method="GET" action="{{ route('suppliers.index') }}" class="flex items-center gap-3 flex-wrap">
+            <form data-auto-submit method="GET" action="{{ route('suppliers.index') }}" class="flex items-center gap-3 flex-wrap">
                 <input aria-label="Search" type="text" name="search" value="{{ request('search') }}" placeholder="e.g. Hikvision India" class="crm-input" style="width: 280px;">
                 <button type="submit" class="btn-primary">
                     Search
@@ -102,7 +102,7 @@
                     @empty
                     <tr>
                         <td colspan="7" class="text-center py-6 text-slate-500 text-sm">
-                            No suppliers yet
+                            <x-empty-message empty="No suppliers yet" filtered="No suppliers match these filters." :filters="['search']" />
                         </td>
                     </tr>
                     @endforelse

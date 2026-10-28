@@ -100,7 +100,7 @@
 
             <!-- Filters Bar (Medium 38px Height Level) -->
             <div class="mb-3 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-2.5 shadow-xs">
-                <form method="GET" action="{{ route('service-tickets.index') }}" class="flex flex-wrap items-center gap-2.5 text-xs">
+                <form data-auto-submit method="GET" action="{{ route('service-tickets.index') }}" class="flex flex-wrap items-center gap-2.5 text-xs">
                     <div class="relative w-72 min-w-[220px] flex items-center shrink-0">
                         <svg class="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                         <input aria-label="Search ticket #, issue, customer, phone" type="text" name="search" value="{{ request('search') }}" 

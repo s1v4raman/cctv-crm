@@ -187,7 +187,7 @@
 
             <div class="pg-card">
 
-                <form method="GET" action="{{ route('jobs.index') }}" class="filter-bar flex items-center gap-2.5 flex-wrap p-2.5 text-xs">
+                <form data-auto-submit method="GET" action="{{ route('jobs.index') }}" class="filter-bar flex items-center gap-2.5 flex-wrap p-2.5 text-xs">
                     <div class="relative w-72 min-w-[220px] flex items-center shrink-0">
                         <svg class="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                         <input aria-label="Search job no, customer, tech" type="text" name="search" id="job-search" value="{{ request('search') }}" 
@@ -298,7 +298,7 @@
                                 <tr>
                                     <td colspan="6">
                                         <div class="empty-state">
-                                            No jobs yet
+                                            <x-empty-message empty="No jobs yet" filtered="No jobs match these filters." :filters="['search', 'status']" />
                                         </div>
                                     </td>
                                 </tr>

@@ -16,7 +16,6 @@ use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\InstalledEquipmentController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\PurchaseOrderController;
-use App\Http\Controllers\CctvEstimatorController;
 use App\Http\Controllers\JobCompletionReportController;
 use App\Http\Controllers\RmaClaimController;
 use App\Http\Controllers\AlertNotificationController;
@@ -38,6 +37,7 @@ use App\Http\Controllers\AccountsReceivableController;
 use App\Http\Controllers\AccountsPayableController;
 use App\Http\Controllers\PettyCashController;
 use App\Http\Controllers\ModuleHubController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\SiteController;
 use App\Http\Controllers\WorkerController;
@@ -115,6 +115,7 @@ Route::get('/view-jcr/{jobCompletionReport}', [JobCompletionReportController::cl
 // Universal theme preference persistence (all authenticated users)
 Route::middleware(['auth'])->group(function () {
     Route::post('/profile/theme', [ProfileController::class, 'updateTheme'])->name('profile.theme');
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead'])->name('notifications.read-all');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -409,10 +410,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/quotations/{quotation}/send-whatsapp', [QuotationController::class, 'sendWhatsApp'])->name('quotations.send-whatsapp');
         Route::get('/quotations/{quotation}/pdf/{format}', [QuotationController::class, 'downloadPdf'])->name('quotations.pdf');
         Route::get('/quotations/{quotation}/vcard', [QuotationController::class, 'downloadVcard'])->name('quotations.vcard');
-
-        // CCTV Storage & Cable Estimator (View & Convert)
-        Route::get('/estimator', [CctvEstimatorController::class, 'index'])->name('estimator.index');
-        Route::post('/estimator/convert-quotation', [CctvEstimatorController::class, 'convertToQuotation'])->name('estimator.convert');
 
         // Invoices & Payments Write
         Route::get('/jobs/{job}/invoice/create', [InvoiceController::class, 'create'])->name('invoices.create');
