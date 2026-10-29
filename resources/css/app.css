@@ -21,7 +21,7 @@
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
     --radius-control: 6px;   /* inputs, selects, buttons, square badges */
-    --radius-card: 10px;     /* cards, panels, dropdowns, modals */
+    --radius-card: 8px;      /* cards, panels, dropdowns, modals */
     --radius-pill: 9999px;   /* status pills, avatars, dots */
 
     --control-height: 38px;  /* every input, select and button */
@@ -515,13 +515,13 @@ html.dark ::-webkit-scrollbar-thumb:hover {
 .saas-card {
     background: #ffffff;
     border: 1px solid var(--card-border) !important;
-    border-radius: 1rem;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+    border-radius: var(--radius-card);
+    box-shadow: none;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .saas-card:hover {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+    box-shadow: none;
 }
 
 html.dark .saas-card {
@@ -537,8 +537,8 @@ html.dark .saas-card {
     font-weight: 600;
     font-size: 0.875rem;
     padding: 0.625rem 1.25rem;
-    border-radius: 0.75rem;
-    box-shadow: 0 1px 2px 0 rgba(37, 99, 235, 0.2);
+    border-radius: var(--radius-control);
+    box-shadow: none;
     transition: all 0.15s ease;
     display: inline-flex;
     align-items: center;
@@ -550,7 +550,7 @@ html.dark .saas-card {
 .btn-primary:hover, .btn-blue:hover {
     background-color: var(--crm-accent-hover, #1d4ed8);
     border-color: var(--crm-accent-hover, #1d4ed8);
-    box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3);
+    box-shadow: none;
 }
 .btn-primary:active,
 .btn-blue:active,
@@ -579,8 +579,8 @@ a[role="button"]:active {
     font-size: 0.9375rem;
     min-height: var(--control-height);
     padding: 0.55rem 1.25rem;
-    border-radius: 0.75rem;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    border-radius: var(--radius-control);
+    box-shadow: none;
     transition: all 0.15s ease;
     display: inline-flex;
     align-items: center;
@@ -614,8 +614,8 @@ html.dark .btn-dark:hover {
     font-size: 0.9375rem;
     min-height: 44px;
     padding: 0.625rem 1.35rem;
-    border-radius: 0.75rem;
-    box-shadow: 0 1px 2px 0 var(--crm-accent-shadow, rgba(190, 18, 60, 0.25));
+    border-radius: var(--radius-control);
+    box-shadow: none;
     transition: all 0.15s ease;
     display: inline-flex;
     align-items: center;
@@ -643,7 +643,7 @@ select {
     border: 1px solid var(--card-border) !important;
     border-color: var(--card-border) !important;
     color: #0f172a;
-    border-radius: 0.75rem;
+    border-radius: var(--radius-control);
     font-size: 0.9375rem;
     line-height: 1.5;
     min-height: 44px;
@@ -687,7 +687,7 @@ textarea {
     border: 1px solid var(--card-border) !important;
     border-color: var(--card-border) !important;
     color: #0f172a;
-    border-radius: 0.75rem;
+    border-radius: var(--radius-control);
     font-size: 0.9375rem;
     line-height: 1.5;
     padding: 0.75rem 0.95rem;
@@ -774,9 +774,9 @@ html.dark label {
     background: #f8fafc;
     color: #64748b;
     font-weight: 700;
-    text-transform: uppercase;
+    text-transform: none;
     font-size: 0.7rem;
-    letter-spacing: 0.05em;
+    letter-spacing: normal;
     padding: 0.85rem 1.25rem;
     border-bottom: 1px solid #e2e8f0;
 }
@@ -871,8 +871,8 @@ html.dark .header-slot-container p.text-slate-400 {
 .pip-card {
     background: var(--card-bg) !important;
     border: 1px solid #e2e8f0 !important;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05) !important;
-    border-radius: 1rem !important;
+    box-shadow: none !important;
+    border-radius: var(--radius-card) !important;
     color: var(--text-main) !important;
     transition: all 0.2s ease;
 }
@@ -887,7 +887,7 @@ html.dark .header-slot-container p.text-slate-400 {
 }
 .pg-card:hover,
 .pip-card:hover {
-    box-shadow: 0 6px 12px -2px rgba(0, 0, 0, 0.06), 0 3px 6px -3px rgba(0, 0, 0, 0.04) !important;
+    box-shadow: none !important;
 }
 .stat-card:hover {
     box-shadow: none !important;
@@ -898,7 +898,7 @@ html.dark .pg-card,
 html.dark .pip-card {
     background: var(--card-bg) !important;
     border-color: var(--card-border) !important;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5) !important;
+    box-shadow: none !important;
     color: var(--text-main) !important;
 }
 html.dark .stat-card {
@@ -1087,8 +1087,8 @@ table.pg-table thead th {
     padding: 0.8rem 1.25rem !important;
     font-size: var(--text-sm) !important;
     font-weight: 700 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.05em !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
     color: var(--text-main) !important;
     text-align: left !important;
     border-bottom: 1px solid var(--table-border) !important;
@@ -1483,8 +1483,8 @@ html.dark .pg-links {
     display: block !important;
     font-size: 0.75rem !important;
     font-weight: 700 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.05em !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
     color: #334155 !important;
     margin-bottom: 0.4rem !important;
 }
@@ -1534,20 +1534,20 @@ html.dark .form-textarea:focus {
     justify-content: center !important;
     gap: 0.5rem !important;
     padding: 0.65rem 1.5rem !important;
-    border-radius: 0.75rem !important;
+    border-radius: var(--radius-control) !important;
     font-size: 0.875rem !important;
     font-weight: 700 !important;
     background-color: var(--primary-btn-bg) !important;
     color: var(--text-main) !important;
     border: 1px solid #1d4ed8 !important;
     cursor: pointer !important;
-    box-shadow: 0 2px 4px rgba(37, 99, 235, 0.25) !important;
+    box-shadow: none !important;
     transition: all 0.15s ease-in-out !important;
 }
 .btn-submit-primary:hover {
     background-color: #1d4ed8 !important;
     transform: translateY(-1px) !important;
-    box-shadow: 0 4px 8px rgba(37, 99, 235, 0.35) !important;
+    box-shadow: none !important;
 }
 
 .btn-cancel,
@@ -1556,7 +1556,7 @@ html.dark .form-textarea:focus {
     align-items: center !important;
     justify-content: center !important;
     padding: 0.55rem 1.25rem !important;
-    border-radius: 0.75rem !important;
+    border-radius: var(--radius-control) !important;
     font-size: 0.875rem !important;
     font-weight: 600 !important;
     background-color: var(--card-bg) !important;
@@ -1757,14 +1757,14 @@ html.dark .crm-app-container .border-slate-700 {
 html:not(.dark) .cyber-card {
     background: var(--card-bg) !important;
     border: 1px solid #e2e8f0 !important;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05) !important;
-    border-radius: 1rem !important;
+    box-shadow: none !important;
+    border-radius: var(--radius-card) !important;
     color: var(--text-main) !important;
 }
 html.dark .cyber-card {
     background: var(--card-bg) !important;
     border-color: var(--card-border) !important;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5) !important;
+    box-shadow: none !important;
     color: var(--text-main) !important;
 }
 
@@ -1842,7 +1842,7 @@ html.dark .filter-tab.active {
 .btn-filter, .btn-adjust {
     background: var(--crm-accent, #be123c) !important;
     color: var(--text-main) !important;
-    box-shadow: 0 1px 2px 0 var(--crm-accent-shadow, rgba(190, 18, 60, 0.25)) !important;
+    box-shadow: none !important;
 }
 .btn-filter:hover, .btn-adjust:hover {
     background: var(--crm-accent-hover, #9f1239) !important;
@@ -2139,7 +2139,7 @@ html:not(.dark) .tech-stat {
 .ts-dropdown {
     background-color: var(--card-bg) !important;
     border: 1px solid #cbd5e1 !important;
-    border-radius: 0.75rem !important;
+    border-radius: var(--radius-card) !important;
     box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.15) !important;
     font-size: 0.8125rem !important;
     z-index: 99999 !important;
@@ -2421,7 +2421,7 @@ html.dark .crm-customer-icon-box {
     color: var(--text-main) !important;
     padding: 0 0.875rem !important;
     outline: none !important;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+    box-shadow: none !important;
     transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
 }
 
@@ -3137,8 +3137,8 @@ table th {
     color: var(--text-main) !important;
     font-size: var(--text-sm) !important;
     font-weight: 600 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.04em !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
     border-bottom: 1px solid var(--table-border) !important;
     border-top: none !important;
     border-right: 1px solid var(--table-border) !important;
@@ -3964,8 +3964,8 @@ a.btn-primary {
         max-width: 45%;
         font-size: var(--text-min);
         font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
+        text-transform: none;
+        letter-spacing: normal;
         text-align: left;
         color: var(--text-muted);
     }
@@ -4003,4 +4003,27 @@ a.btn-primary {
    (:not(#id) outranks the long :not() chain on the generic input rule) */
 input.crm-filter-search:not(#crm-no-pad) {
     padding-left: 36px !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   CALM UI (2026-10-29): one font with aligned digits, labels in normal
+   case. Corner sizes, shadows, weights and the colour palette are set in
+   tailwind.config.js, so utility classes already follow them.
+   ═══════════════════════════════════════════════════════════════════════ */
+body {
+    font-variant-numeric: tabular-nums;
+}
+
+/* Small labels read as normal text instead of spaced-out capitals.
+   Inputs keep it: some force capitals on purpose (GSTIN, PAN). */
+.crm-content .uppercase:not(input):not(textarea),
+.crm-page-header .uppercase:not(input):not(textarea) {
+    text-transform: none;
+}
+.crm-content .tracking-wide,
+.crm-content .tracking-wider,
+.crm-content .tracking-widest,
+.crm-page-header .tracking-wider,
+.crm-page-header .tracking-widest {
+    letter-spacing: normal;
 }

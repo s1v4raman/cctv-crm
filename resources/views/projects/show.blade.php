@@ -1,4 +1,5 @@
 <x-app-layout>
+    @php $qty = fn ($n) => rtrim(rtrim(number_format((float) $n, 2), '0'), '.'); @endphp
     <x-slot name="header">
         <div>
             <a href="{{ route('projects.index') }}" class="back-link">&larr; Back</a>
@@ -389,12 +390,12 @@
             <div class="p-5 rounded-2xl bg-amber-50/80 dark:bg-amber-950/40 border-2 border-amber-300 dark:border-amber-700/60 shadow-md flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div class="flex items-start gap-3">
                     <div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center font-bold text-lg shrink-0">
-                        ⏳
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     </div>
                     <div>
-                        <h4 class="font-extrabold text-amber-900 dark:text-amber-200 text-sm">Project Pending Administrator Approval</h4>
+                        <h4 class="font-extrabold text-amber-900 dark:text-amber-200 text-sm">Waiting for admin approval</h4>
                         <p class="text-xs text-amber-700 dark:text-amber-300 mt-0.5">
-                            Created by {{ $project->creator?->name ?? 'Staff' }} on {{ $project->created_at->format('d M Y') }}. Assign an executing company and per-metre cabling rate to approve.
+                            Created by {{ $project->creator?->name ?? 'Staff' }} on {{ $project->created_at->format('d M Y') }}. The admin sets the executing company and cabling rate when approving.
                         </p>
                     </div>
                 </div>
@@ -405,11 +406,9 @@
                             Reject
                         </button>
                         <button type="button" @click="approveModalOpen = true" class="px-4 py-1.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-md transition">
-                            ✓ Approve Project
+                            Approve
                         </button>
                     </div>
-                @else
-                    <span class="text-xs font-semibold text-amber-600 italic">Waiting for Admin sign-off</span>
                 @endif
             </div>
         @elseif($project->status === 'rejected')
@@ -422,32 +421,30 @@
         <div class="bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200/80 dark:border-slate-800 px-6 pt-3 shadow-xs overflow-hidden">
             <nav class="flex items-center space-x-6 text-sm font-bold overflow-x-auto whitespace-nowrap scrollbar-none">
                 <button type="button" @click="currentTab = 'overview'" :class="currentTab === 'overview' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 dark:text-slate-400 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'" class="inline-flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
-                    <span>1. Overview</span>
+                    <span>Overview</span>
                 </button>
                 <button type="button" @click="currentTab = 'materials'" :class="currentTab === 'materials' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 dark:text-slate-400 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'" class="inline-flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
-                    <span>2. Materials &bull; BOM ({{ $project->materials->count() }})</span>
+                    <span>Materials</span> <span class="text-slate-400 font-normal">{{ $project->materials->count() }}</span>
                     @if($totalCableMeters > 0)
                         <span class="px-1.5 py-0.5 text-[11px] rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 font-bold">{{ number_format($totalCableMeters, 0) }}m</span>
                     @endif
                 </button>
                 <button type="button" @click="currentTab = 'documents'" :class="currentTab === 'documents' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 dark:text-slate-400 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'" class="inline-flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
-                    <span>3. Documents &bull; DCs ({{ $project->documents->count() }})</span>
+                    <span>Documents</span> <span class="text-slate-400 font-normal">{{ $project->documents->count() }}</span>
                     @if($uninvoicedDcCount > 0)
                         <span class="px-1.5 py-0.5 text-[11px] rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300 font-bold">{{ $uninvoicedDcCount }} unbilled</span>
                     @endif
                 </button>
                 <button type="button" @click="currentTab = 'work_days'" :class="currentTab === 'work_days' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 dark:text-slate-400 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'" class="inline-flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
-                    <span>4. Work Days &bull; Wages ({{ $project->workDays->count() }})</span>
+                    <span>Work days</span> <span class="text-slate-400 font-normal">{{ $project->workDays->count() }}</span>
                 </button>
                 <button type="button" @click="currentTab = 'ip_devices'" :class="currentTab === 'ip_devices' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 dark:text-slate-400 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'" class="inline-flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
-                    <span>5. IP Devices ({{ $project->ipDevices->count() }})</span>
+                    <span>IP devices</span> <span class="text-slate-400 font-normal">{{ $project->ipDevices->count() }}</span>
                 </button>
                 <button type="button" @click="currentTab = 'tasks'" :class="currentTab === 'tasks' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 dark:text-slate-400 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'" class="inline-flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
-                    <span>6. Tasks &bull; Workflow ({{ $tasksCount }})</span>
+                    <span>Tasks</span> <span class="text-slate-400 font-normal">{{ $tasksCount }}</span>
                     @if($tasksCount > 0)
                         <span class="px-1.5 py-0.5 text-[11px] rounded-full {{ $taskCompletionPercentage === 100 ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300' }} font-bold">{{ $taskCompletionPercentage }}%</span>
-                    @else
-                        <span class="px-1.5 py-0.5 text-[11px] rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300 font-bold">Templates</span>
                     @endif
                 </button>
             </nav>
@@ -468,11 +465,11 @@
                             <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                                 <h3 class="font-extrabold text-slate-900 dark:text-white text-sm flex items-center gap-2">
                                     <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                                    Installation Site Details
+                                    Site
                                 </h3>
                                 <a href="{{ $project->site->navigate_url }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100 transition">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                                    <span>Get GPS Directions</span>
+                                    <span>Directions</span>
                                 </a>
                             </div>
 
@@ -508,13 +505,13 @@
                                     <span>Access Control &amp; Security Scope</span>
                                 @elseif($project->project_type === 'hardware_attendance')
                                     <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
-                                    <span>Biometric Attendance Scope</span>
+                                    <span>Scope</span>
                                 @elseif($project->project_type === 'hybrid')
                                     <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
-                                    <span>Hybrid Turnkey Scope &amp; Architecture</span>
+                                    <span>Scope</span>
                                 @else
                                     <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
-                                    <span>CCTV Surveillance Scope &amp; Specs</span>
+                                    <span>Scope</span>
                                 @endif
                             </h3>
                             <span class="text-[11px] font-bold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200/70 dark:border-slate-700">
@@ -522,6 +519,8 @@
                             </span>
                         </div>
 
+                        @php $scopeFilled = collect($project->requirements ?? [])->filter(fn ($v) => filled($v))->isNotEmpty(); @endphp
+                        @if($scopeFilled)
                         {{-- Dynamic Scope Metric Grid based on Project Type --}}
                         <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm">
                             @if($project->project_type === 'software_web')
@@ -549,53 +548,53 @@
                             @elseif($project->project_type === 'networking')
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
                                     <span class="text-xs text-slate-400 block">Network Drops</span>
-                                    <span class="font-extrabold text-slate-900 dark:text-white text-base">{{ $project->requirements['network_drops'] ?? 'N/A' }} Drops</span>
+                                    <span class="font-extrabold text-slate-900 dark:text-white text-base">{{ isset($project->requirements['network_drops']) ? $project->requirements['network_drops'] . ' drops' : 'Not set' }}</span>
                                 </div>
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
                                     <span class="text-xs text-slate-400 block">Wi-Fi Access Points</span>
-                                    <span class="font-extrabold text-slate-900 dark:text-white text-base">{{ $project->requirements['wifi_access_points'] ?? 'N/A' }} APs</span>
+                                    <span class="font-extrabold text-slate-900 dark:text-white text-base">{{ isset($project->requirements['wifi_access_points']) ? $project->requirements['wifi_access_points'] . ' aps' : 'Not set' }}</span>
                                 </div>
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
                                     <span class="text-xs text-slate-400 block">Est. Cabling</span>
-                                    <span class="font-extrabold text-slate-900 dark:text-white text-base">{{ $project->requirements['cabling_metres'] ?? 'N/A' }} m</span>
+                                    <span class="font-extrabold text-slate-900 dark:text-white text-base">{{ isset($project->requirements['cabling_metres']) ? $project->requirements['cabling_metres'] . ' m' : 'Not set' }}</span>
                                 </div>
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
                                     <span class="text-xs text-slate-400 block">Server Rack Size</span>
-                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['server_rack_size'] ?? 'N/A' }}</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['server_rack_size'] ?? 'Not set' }}</span>
                                 </div>
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
                                     <span class="text-xs text-slate-400 block">Switch Specification</span>
-                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['switch_spec'] ?? 'N/A' }}</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['switch_spec'] ?? 'Not set' }}</span>
                                 </div>
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
                                     <span class="text-xs text-slate-400 block">Router / Gateway</span>
-                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['router_gateway'] ?? 'N/A' }}</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['router_gateway'] ?? 'Not set' }}</span>
                                 </div>
 
                             @elseif($project->project_type === 'access_control')
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
                                     <span class="text-xs text-slate-400 block">Controlled Doors</span>
-                                    <span class="font-extrabold text-slate-900 dark:text-white text-base">{{ $project->requirements['doors_count'] ?? 'N/A' }} Doors</span>
+                                    <span class="font-extrabold text-slate-900 dark:text-white text-base">{{ isset($project->requirements['doors_count']) ? $project->requirements['doors_count'] . ' doors' : 'Not set' }}</span>
                                 </div>
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
                                     <span class="text-xs text-slate-400 block">Auth Method</span>
-                                    <span class="font-extrabold text-slate-900 dark:text-white text-sm">{{ $project->requirements['auth_method'] ?? 'N/A' }}</span>
+                                    <span class="font-extrabold text-slate-900 dark:text-white text-sm">{{ $project->requirements['auth_method'] ?? 'Not set' }}</span>
                                 </div>
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
                                     <span class="text-xs text-slate-400 block">Lock Hardware</span>
-                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['lock_type'] ?? 'N/A' }}</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['lock_type'] ?? 'Not set' }}</span>
                                 </div>
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
                                     <span class="text-xs text-slate-400 block">Exit Device</span>
-                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['exit_device'] ?? 'N/A' }}</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['exit_device'] ?? 'Not set' }}</span>
                                 </div>
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
                                     <span class="text-xs text-slate-400 block">Controller Spec</span>
-                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['controller_spec'] ?? 'N/A' }}</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['controller_spec'] ?? 'Not set' }}</span>
                                 </div>
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
                                     <span class="text-xs text-slate-400 block">Power Backup</span>
-                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['backup_battery'] ?? 'N/A' }}</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['backup_battery'] ?? 'Not set' }}</span>
                                 </div>
 
                             @elseif($project->project_type === 'hardware_attendance')
@@ -623,7 +622,7 @@
                             @elseif($project->project_type === 'hybrid')
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
                                     <span class="text-xs text-slate-400 block">Hardware Endpoints</span>
-                                    <span class="font-extrabold text-slate-900 dark:text-white text-base">{{ $project->requirements['hardware_endpoints'] ?? 'N/A' }} Devices</span>
+                                    <span class="font-extrabold text-slate-900 dark:text-white text-base">{{ isset($project->requirements['hardware_endpoints']) ? $project->requirements['hardware_endpoints'] . ' devices' : 'Not set' }}</span>
                                 </div>
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
                                     <span class="text-xs text-slate-400 block">Edge Gateway</span>
@@ -646,30 +645,38 @@
                                 {{-- Default CCTV Surveillance Scope --}}
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
                                     <span class="text-xs text-slate-400 block">CCTV Cameras</span>
-                                    <span class="font-extrabold text-slate-900 dark:text-white text-base">{{ $project->requirements['cctv_count'] ?? 'N/A' }} Nos</span>
+                                    <span class="font-extrabold text-slate-900 dark:text-white text-base">{{ isset($project->requirements['cctv_count']) ? $project->requirements['cctv_count'] . ' nos' : 'Not set' }}</span>
                                 </div>
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
                                     <span class="text-xs text-slate-400 block">NVR Channels</span>
-                                    <span class="font-extrabold text-slate-900 dark:text-white text-base">{{ $project->requirements['nvr_channels'] ?? 'N/A' }} Ch</span>
+                                    <span class="font-extrabold text-slate-900 dark:text-white text-base">{{ isset($project->requirements['nvr_channels']) ? $project->requirements['nvr_channels'] . ' ch' : 'Not set' }}</span>
                                 </div>
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
                                     <span class="text-xs text-slate-400 block">Est. Cabling</span>
-                                    <span class="font-extrabold text-slate-900 dark:text-white text-base">{{ $project->requirements['cabling_metres'] ?? 'N/A' }} m</span>
+                                    <span class="font-extrabold text-slate-900 dark:text-white text-base">{{ isset($project->requirements['cabling_metres']) ? $project->requirements['cabling_metres'] . ' m' : 'Not set' }}</span>
                                 </div>
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
                                     <span class="text-xs text-slate-400 block">Power Supply</span>
-                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['power_supply'] ?? 'N/A' }}</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['power_supply'] ?? 'Not set' }}</span>
                                 </div>
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
                                     <span class="text-xs text-slate-400 block">Storage HDD</span>
-                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['storage_hdd'] ?? 'N/A' }}</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['storage_hdd'] ?? 'Not set' }}</span>
                                 </div>
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
                                     <span class="text-xs text-slate-400 block">Display / Screen</span>
-                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['display_screen'] ?? 'N/A' }}</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['display_screen'] ?? 'Not set' }}</span>
                                 </div>
                             @endif
                         </div>
+                        @else
+                            <p class="text-sm text-slate-500 dark:text-slate-400">
+                                Scope not filled in yet.
+                                @can('update', $project)
+                                    <a href="{{ route('projects.edit', $project) }}" class="action-link">Add the scope</a>
+                                @endcan
+                            </p>
+                        @endif
 
                         {{-- Additional dynamic custom attributes if any other keys exist in requirements --}}
                         @php
@@ -878,7 +885,7 @@
                                         </div>
                                     @else
                                         <div class="flex items-center justify-between pt-1">
-                                            <span class="text-slate-400 italic">No Lead Technician Assigned</span>
+                                            <span class="text-slate-500">Not assigned yet</span>
                                             @if(auth()->user()->isAdmin())
                                             <a href="{{ route('admin.users.create', ['role' => 'technician', 'return_to' => route('projects.show', [$project->id, 'tab' => 'overview'])]) }}" 
                                                class="btn-subtle text-white font-semibold"
@@ -955,7 +962,7 @@
                                         @endif
                                     </div>
                                 @else
-                                    <span class="text-amber-600 font-semibold italic text-xs">Pending Admin Company Assignment</span>
+                                    <span class="text-slate-500 text-xs">Set by the admin on approval</span>
                                 @endif
                             </div>
                         </div>
@@ -964,13 +971,13 @@
 
                     {{-- Audit Trail Log --}}
                     <div class="p-6 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-3">
-                        <h3 class="font-extrabold text-slate-900 dark:text-white text-sm">Project History &amp; Audit Trail</h3>
+                        <h3 class="font-extrabold text-slate-900 dark:text-white text-sm">History</h3>
 
                         <div class="space-y-3 max-h-60 overflow-y-auto pr-1">
                             @forelse($project->auditLogs as $log)
                                 <div class="text-xs border-l-2 border-blue-500 pl-3 py-1">
                                     <div class="font-bold text-slate-800 dark:text-slate-200">{{ $log->action_label }}</div>
-                                    <div class="text-[11px] text-slate-500">{{ $log->notes }}</div>
+                                    @if($log->reason)<div class="text-[11px] text-slate-500">{{ $log->reason }}</div>@endif
                                     <div class="text-[11px] text-slate-400 mt-0.5">{{ $log->user?->name ?? 'System' }} &bull; {{ $log->created_at->diffForHumans() }}</div>
                                 </div>
                             @empty
@@ -989,71 +996,36 @@
         {{-- ════════════════════════════════════════════════════════════════ --}}
         <div x-show="currentTab === 'materials'" x-cloak class="space-y-6">
 
-            {{-- Top KPI Cards for Materials & Cable Tracking --}}
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {{-- Total BOM Allocation --}}
-                <div class="p-5 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs flex items-center justify-between">
-                    <div>
-                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">BOM Allocation</span>
-                        <span class="text-2xl font-black text-slate-900 dark:text-white mt-1 block">
-                            {{ $project->materials->count() }} <span class="text-sm font-semibold text-slate-400">Items</span>
-                        </span>
-                        <span class="text-[11px] text-blue-600 dark:text-blue-400 font-semibold mt-0.5 block">
-                            {{ number_format($totalBomQuantity, 1) }} total planned units
-                        </span>
-                    </div>
-                    <div class="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-900 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-xl shrink-0">
-                        📋
-                    </div>
-                </div>
-
-                {{-- Cable Laid / Consumed --}}
-                <div class="p-5 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs flex items-center justify-between">
-                    <div>
-                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Cable Pulled in Field</span>
-                        <span class="text-2xl font-black text-indigo-600 dark:text-indigo-400 mt-1 block font-mono">
-                            {{ number_format($totalCableMeters, 1) }} <span class="text-sm font-semibold">mtrs</span>
-                        </span>
-                        <span class="text-[11px] text-slate-500 font-semibold mt-0.5 block">
-                            Cat6 / Cat5 &amp; 3+1 Power cabling
-                        </span>
-                    </div>
-                    <div class="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-900 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-xl shrink-0">
-                        🔌
-                    </div>
-                </div>
-
-                {{-- Hardware Units Installed --}}
-                <div class="p-5 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs flex items-center justify-between">
-                    <div>
-                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Hardware Installed</span>
-                        <span class="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1 block font-mono">
-                            {{ number_format($project->materialConsumptions->where('unit', '!=', 'meters')->sum('quantity_used'), 1) }} <span class="text-sm font-semibold">units</span>
-                        </span>
-                        <span class="text-[11px] text-emerald-600/80 font-semibold mt-0.5 block">
-                            Cameras, NVRs &amp; Accessories
-                        </span>
-                    </div>
-                    <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-900 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-xl shrink-0">
-                        📹
-                    </div>
-                </div>
-
-                {{-- Scrap & Cut Wastage --}}
-                <div class="p-5 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs flex items-center justify-between">
-                    <div>
-                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Scrap &amp; Wastage</span>
-                        <span class="text-2xl font-black text-amber-600 dark:text-amber-400 mt-1 block font-mono">
-                            {{ number_format($totalWastageQuantity, 1) }} <span class="text-sm font-semibold">mtrs/units</span>
-                        </span>
-                        <span class="text-[11px] text-amber-600/80 font-semibold mt-0.5 block">
-                            Cut-offs &amp; off-cuts logged
-                        </span>
-                    </div>
-                    <div class="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-900 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold text-xl shrink-0">
-                        ✂️
-                    </div>
-                </div>
+            {{-- Materials summary: one line until something has been used --}}
+            @php
+                $hardwareInstalled = $project->materialConsumptions->where('unit', '!=', 'meters')->sum('quantity_used');
+                $nothingUsedYet = $totalCableMeters == 0 && $hardwareInstalled == 0 && $totalWastageQuantity == 0;
+            @endphp
+            <div class="rounded-lg bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 px-5 py-4">
+                @if($nothingUsedYet)
+                    <p class="text-sm text-slate-600 dark:text-slate-300">
+                        {{ $project->materials->count() }} {{ Str::plural('item', $project->materials->count()) }} planned ({{ $qty($totalBomQuantity) }} units) · nothing used yet
+                    </p>
+                @else
+                    <dl class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        <div>
+                            <dt class="text-xs text-slate-500 dark:text-slate-400">Planned</dt>
+                            <dd class="text-lg font-semibold text-slate-900 dark:text-white">{{ $project->materials->count() }} {{ Str::plural('item', $project->materials->count()) }} <span class="text-sm font-normal text-slate-500">· {{ $qty($totalBomQuantity) }} units</span></dd>
+                        </div>
+                        <div>
+                            <dt class="text-xs text-slate-500 dark:text-slate-400">Cable pulled</dt>
+                            <dd class="text-lg font-semibold text-slate-900 dark:text-white">{{ $qty($totalCableMeters) }} m</dd>
+                        </div>
+                        <div>
+                            <dt class="text-xs text-slate-500 dark:text-slate-400">Hardware installed</dt>
+                            <dd class="text-lg font-semibold text-slate-900 dark:text-white">{{ $qty($hardwareInstalled) }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-xs text-slate-500 dark:text-slate-400">Wastage</dt>
+                            <dd class="text-lg font-semibold {{ $totalWastageQuantity > 0 ? 'text-amber-700 dark:text-amber-400' : 'text-slate-900 dark:text-white' }}">{{ $qty($totalWastageQuantity) }}</dd>
+                        </div>
+                    </dl>
+                @endif
             </div>
 
             {{-- 1. Bill of Materials (BOM) & Reconciliation Table --}}
@@ -1061,18 +1033,17 @@
                 <div class="p-5 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
                         <h3 class="font-extrabold text-slate-900 dark:text-white text-base flex items-center gap-2">
-                            <span>Bill of Materials (BOM) &amp; Variance Reconciliation</span>
-                            <span class="px-2 py-0.5 text-[11px] rounded-full bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 font-bold">Planned vs Actual</span>
+                            <span>Materials</span>
                         </h3>
-                        <p class="text-xs text-slate-500 mt-0.5">Track allocated equipment against real-time consumption logged from field tasks</p>
+                        <p class="text-xs text-slate-500 mt-0.5">What was planned for this site and how much has been used.</p>
                     </div>
 
                     <div class="flex items-center gap-2.5 flex-wrap">
                         <button type="button" @click="openConsumeModal()" class="btn-primary text-xs shadow-md">
-                            Log Material / Cable Used
+                            Log usage
                         </button>
                         <button type="button" @click="materialModalOpen = true" class="btn-secondary text-xs">
-                            Add BOM Item
+                            Add item
                         </button>
                     </div>
                 </div>
@@ -1115,37 +1086,40 @@
                                         @endif
                                     </td>
                                     <td class="px-5 py-3.5">
-                                        <span class="px-2 py-0.5 text-xs font-semibold rounded {{ in_array($mat->source, ['warehouse', 'company_stock']) ? 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300' : 'bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300' }}">
-                                            {{ in_array($mat->source, ['warehouse', 'company_stock']) ? 'Warehouse Stock' : 'Local Purchase' }}
+                                        <span class="text-sm text-slate-700 dark:text-slate-300">
+                                            {{ in_array($mat->source, ['warehouse', 'company_stock']) ? 'Warehouse' : 'Local purchase' }}
                                         </span>
                                         @if($mat->shop_name)
                                             <span class="block text-[11px] text-slate-400 mt-0.5">{{ $mat->shop_name }}</span>
                                         @endif
                                     </td>
                                     <td class="px-5 py-3.5 text-center font-bold font-mono text-slate-900 dark:text-white">
-                                        {{ number_format($mat->quantity, 1) }} <span class="text-xs font-normal text-slate-400 uppercase">{{ $mat->unit }}</span>
+                                        {{ $qty($mat->quantity) }} <span class="text-xs font-normal text-slate-400 uppercase">{{ $mat->unit }}</span>
                                     </td>
-                                    <td class="px-5 py-3.5 text-center font-bold font-mono {{ $isOver ? 'text-rose-600 dark:text-rose-400' : 'text-blue-600 dark:text-blue-400' }}">
-                                        {{ number_format($consumed, 1) }} <span class="text-xs font-normal text-slate-400 uppercase">{{ $mat->unit }}</span>
+                                    <td class="px-5 py-3.5 text-center font-bold font-mono {{ $isOver ? 'text-rose-600 dark:text-rose-400' : 'text-slate-900 dark:text-white' }}">
+                                        {{ $qty($consumed) }} <span class="text-xs font-normal text-slate-400 uppercase">{{ $mat->unit }}</span>
                                     </td>
                                     <td class="px-5 py-3.5 text-center font-bold font-mono">
                                         @if($isOver)
-                                            <span class="text-rose-600 dark:text-rose-400 font-extrabold">+{{ number_format($consumed - $allocated, 1) }} over</span>
+                                            <span class="text-rose-600 dark:text-rose-400 font-extrabold">+{{ $qty($consumed - $allocated) }} over</span>
                                         @else
-                                            <span class="text-emerald-600 dark:text-emerald-400">{{ number_format($remaining, 1) }} {{ $mat->unit }}</span>
+                                            <span class="text-slate-700 dark:text-slate-300">{{ $qty($remaining) }} {{ $mat->unit }}</span>
                                         @endif
                                     </td>
                                     <td class="px-5 py-3.5 text-center font-mono text-xs text-slate-500">
-                                        {{ number_format($mat->total_wastage, 1) }} {{ $mat->unit }}
+                                        {{ $qty($mat->total_wastage) }} {{ $mat->unit }}
                                     </td>
                                     <td class="px-5 py-3.5">
+                                        @if($consumed <= 0)
+                                            <span class="text-xs text-slate-500 dark:text-slate-400">Not started</span>
+                                        @else
                                         <div class="space-y-1">
                                             <div class="flex items-center justify-between text-xs font-bold">
                                                 <span class="{{ $isOver ? 'text-rose-600' : ($percent >= 100 ? 'text-emerald-600' : 'text-blue-600') }}">
                                                     @if($isOver)
-                                                        ⚠️ Exceeded ({{ round(($consumed / $allocated) * 100) }}%)
+                                                        Over by {{ round(($consumed / $allocated) * 100) - 100 }}%
                                                     @elseif($percent >= 100)
-                                                        ✓ 100% Installed
+                                                        Installed
                                                     @else
                                                         {{ $percent }}% Installed
                                                     @endif
@@ -1155,11 +1129,12 @@
                                                 <div class="h-2 rounded-full transition-all {{ $isOver ? 'bg-rose-500' : ($percent >= 100 ? 'bg-emerald-500' : 'bg-blue-600') }}" style="width: {{ min(100, $percent) }}%"></div>
                                             </div>
                                         </div>
+                                        @endif
                                     </td>
                                     <td class="px-5 py-3.5 text-right whitespace-nowrap">
                                         <div class="inline-flex items-center gap-1.5">
-                                            <button type="button" @click="openConsumeModal(null, '', {{ $mat->id }}, '{{ addslashes($mat->item_name) }}', '{{ $mat->unit }}', '{{ $mat->product_id }}')" class="px-2 py-1 rounded text-xs font-bold bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition" title="Log usage for this BOM item">
-                                                + Log Usage
+                                            <button type="button" @click="openConsumeModal(null, '', {{ $mat->id }}, '{{ addslashes($mat->item_name) }}', '{{ $mat->unit }}', '{{ $mat->product_id }}')" class="action-link text-xs" title="Log usage for this item">
+                                                Log usage
                                             </button>
 
                                             @if(auth()->user()->isAdmin())
@@ -1177,7 +1152,7 @@
                             @empty
                                 <tr>
                                     <td colspan="8" class="px-5 py-12 text-center text-slate-400 text-xs">
-                                        No materials recorded in the Bill of Materials yet. Click <strong>+ Add BOM Item</strong> to set up planned hardware and cables.
+                                        No materials planned yet. Use <strong>Add item</strong> to list the hardware and cable for this site.
                                     </td>
                                 </tr>
                             @endforelse
@@ -1191,7 +1166,7 @@
                 <div class="p-5 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div>
                         <h3 class="font-extrabold text-slate-900 dark:text-white text-base flex items-center gap-2">
-                            <span>Field Execution &amp; Cable Consumption Log</span>
+                            <span>Usage log</span>
                             <span class="px-2 py-0.5 text-[11px] rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 font-bold font-mono">
                                 {{ $project->materialConsumptions->count() }} Entries Logged
                             </span>
@@ -1228,7 +1203,7 @@
                                     </td>
                                     <td class="px-5 py-3.5">
                                         <div class="flex items-center gap-1.5 font-bold text-slate-800 dark:text-slate-200 text-xs">
-                                            <span>📌</span>
+                                            
                                             <span>{{ $cLog->task?->title ?? 'General Project Task' }}</span>
                                         </div>
                                         @if($cLog->task?->phase_name)
@@ -1242,11 +1217,11 @@
                                         @endif
                                     </td>
                                     <td class="px-5 py-3.5 text-center font-bold font-mono text-indigo-600 dark:text-indigo-400 text-sm">
-                                        {{ number_format($cLog->quantity_used, 1) }} <span class="text-xs uppercase text-slate-400 font-normal">{{ $cLog->unit }}</span>
+                                        {{ $qty($cLog->quantity_used) }} <span class="text-xs uppercase text-slate-400 font-normal">{{ $cLog->unit }}</span>
                                     </td>
                                     <td class="px-5 py-3.5 text-center font-mono text-xs text-slate-500">
                                         @if($cLog->wastage_quantity > 0)
-                                            <span class="text-amber-600 dark:text-amber-400 font-bold">{{ number_format($cLog->wastage_quantity, 1) }} {{ $cLog->unit }}</span>
+                                            <span class="text-amber-600 dark:text-amber-400 font-bold">{{ $qty($cLog->wastage_quantity) }} {{ $cLog->unit }}</span>
                                         @else
                                             <span class="text-slate-400">—</span>
                                         @endif
@@ -1395,6 +1370,7 @@
         {{-- ════════════════════════════════════════════════════════════════ --}}
         <div x-show="currentTab === 'work_days'" x-cloak class="space-y-6">
 
+            @if($project->workDays->isNotEmpty())
             {{-- Summary KPI Cards --}}
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
                 <div class="p-4 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs">
@@ -1418,6 +1394,7 @@
                     <div class="text-xl font-black text-rose-600 dark:text-rose-400 mt-1 font-mono">₹{{ number_format($totalLaborPendingPay, 2) }}</div>
                 </div>
             </div>
+            @endif
 
             {{-- Worker-wise Project Cost & Settlement Analysis Table --}}
             @if(!empty($workerAnalysis))
@@ -1470,7 +1447,7 @@
                                                     {{ $wrkName }}
                                                 </span>
                                             @endif
-                                            <span class="text-[11px] text-slate-500 font-mono">₹{{ number_format($wrk?->daily_rate ?? 0, 2) }}/day &bull; 📞 {{ $wrk?->phone ?? '—' }}</span>
+                                            <span class="text-[11px] text-slate-500 font-mono">₹{{ number_format($wrk?->daily_rate ?? 0, 2) }}/day &bull; <svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg> {{ $wrk?->phone ?? '—' }}</span>
                                         </td>
                                         <td class="px-5 py-3.5 text-center font-medium">
                                             {{ $wData['man_days'] }} <span class="text-xs text-slate-400">({{ $wData['shifts_count'] }} {{ Str::plural('shift', $wData['shifts_count']) }})</span>
@@ -1510,12 +1487,12 @@
             @endif
 
             <div class="flex justify-between items-center pt-2">
-                <h3 class="font-extrabold text-slate-900 dark:text-white text-base">Work Day Logs &amp; Attendance Records</h3>
-                @if(!auth()->user()->isStaff())
-                    <button type="button" @click="workDayModalOpen = true" class="btn-primary text-xs shadow-md">
-                        Log Daily Work Day
+                <h3 class="font-extrabold text-slate-900 dark:text-white text-base">Work days</h3>
+                @can('logWorkDay', $project)
+                    <button type="button" @click="workDayModalOpen = true" class="btn-primary text-xs">
+                        Log work day
                     </button>
-                @endif
+                @endcan
             </div>
 
             <div class="space-y-4">
@@ -1584,7 +1561,7 @@
                                                             @endif
                                                         </div>
                                                         <div class="text-[11px] text-slate-500 font-mono mt-0.5 flex items-center gap-2">
-                                                            <span>📞 {{ $att->worker?->phone ?? '—' }}</span>
+                                                            <span><svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg> {{ $att->worker?->phone ?? '—' }}</span>
                                                             @if($att->check_in_at)
                                                                 <span class="text-emerald-600 dark:text-emerald-400 font-semibold">• {{ $att->check_in_at->format('h:i A') }}</span>
                                                             @endif
@@ -1609,7 +1586,7 @@
                                                 </div>
                                                 @if($att->cameras_installed > 0)
                                                     <div class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 mt-0.5">
-                                                        📹 {{ $att->cameras_installed }} cameras installed
+                                                        {{ $att->cameras_installed }} cameras installed
                                                     </div>
                                                 @endif
                                             </td>
@@ -1671,7 +1648,7 @@
                     </div>
                 @empty
                     <div class="p-12 text-center rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 text-slate-400 text-xs">
-                        No daily work shifts logged yet. Click "+ Log Daily Work Day" to record technician &amp; worker shifts.
+                        No work days logged yet.@can('logWorkDay', $project) Use <strong>Log work day</strong> to record who worked on site and what they did.@endcan
                     </div>
                 @endforelse
             </div>
@@ -1801,7 +1778,7 @@
             @if(session('whatsapp_blocker_url'))
             <div class="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-300 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-md animate-fade-in">
                 <div class="flex items-center gap-3">
-                    <span class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-xl shrink-0">💬</span>
+                    <span class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-xl shrink-0"><svg class="w-5 h-5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg></span>
                     <div>
                         <strong class="font-extrabold text-sm block">Task Blocked Alert Dispatched to Dashboard &amp; WhatsApp</strong>
                         <p class="text-xs text-emerald-700 dark:text-emerald-300 mt-0.5">The blocker has been logged. Click below to launch WhatsApp and notify the Project Manager with the pre-formatted alert.</p>
@@ -1820,60 +1797,27 @@
                     <div>
                         <h3 class="font-extrabold text-slate-900 dark:text-white text-base flex items-center gap-2">
                             <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
-                            Interactive Kanban Board &amp; Timeline (Gantt)
+                            Tasks
                         </h3>
                         <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                            Visual 5-column Kanban with drag-and-drop status changes, Gantt dependencies, and instant WhatsApp blocker alerts.
+                            Drag a card to another column to change its status.
                         </p>
                     </div>
 
                     <div class="flex items-center gap-2 flex-wrap">
-                        <button type="button" @click="templateModalOpen = true" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-xs hover:from-blue-700 hover:to-indigo-700 transition">
+                        <button type="button" @click="taskModalOpen = true" class="btn-primary text-xs">
+                            <span>Add task</span>
+                        </button>
+
+                        <button type="button" @click="templateModalOpen = true" class="btn-secondary text-xs inline-flex items-center gap-1.5">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                            <span>Apply Workflow Template</span>
+                            <span>Use a template</span>
                         </button>
 
-                        <button type="button" @click="openBlockerModal(null, null)" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200 dark:border-rose-800 hover:bg-rose-100 dark:hover:bg-rose-900/40 transition">
-                            <span>🚩 Flag Blocker</span>
+                        <button type="button" @click="openBlockerModal(null, null)" class="btn-secondary text-xs inline-flex items-center gap-1.5">
+                            <span>Flag a blocker</span>
                         </button>
 
-                        <button type="button" @click="taskModalOpen = true" class="inline-flex items-center justify-center px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition cursor-pointer">
-                            <span>Add Custom Task</span>
-                        </button>
-                    </div>
-                </div>
-
-                {{-- 5-Column + Total KPI Metric Bar --}}
-                <div class="grid grid-cols-2 sm:grid-cols-6 gap-3 pt-2 border-t border-slate-100 dark:border-slate-800/80 text-center">
-                    <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
-                        <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">Total Tasks</span>
-                        <span class="text-xl font-extrabold text-slate-900 dark:text-white">{{ $tasksCount }}</span>
-                    </div>
-                    <div class="p-3 rounded-xl bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
-                        <span class="text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 block">Pending / Backlog</span>
-                        <span class="text-xl font-extrabold text-slate-700 dark:text-slate-300">{{ $pendingTasksCount }}</span>
-                    </div>
-                    <div class="p-3 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-900/50">
-                        <span class="text-[11px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 block">Assigned / In Progress</span>
-                        <span class="text-xl font-extrabold text-blue-700 dark:text-blue-300">{{ $inProgressTasksCount }}</span>
-                    </div>
-                    <div class="p-3 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-100 dark:border-purple-900/50">
-                        <span class="text-[11px] font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 block">Review / QA</span>
-                        <span class="text-xl font-extrabold text-purple-700 dark:text-purple-300">{{ $underReviewTasksCount }}</span>
-                    </div>
-                    <div class="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-900/50">
-                        <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 block">Completed</span>
-                        <span class="text-xl font-extrabold text-emerald-700 dark:text-emerald-300">{{ $completedTasksCount }}</span>
-                    </div>
-                    <div class="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 relative overflow-hidden">
-                        <span class="text-[11px] font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400 block">Blocked</span>
-                        <span class="text-xl font-extrabold text-rose-700 dark:text-rose-300">{{ $blockedTasksCount }}</span>
-                        @if($blockedTasksCount > 0)
-                            <span class="absolute top-1.5 right-1.5 flex h-2 w-2">
-                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
-                                <span class="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
-                            </span>
-                        @endif
                     </div>
                 </div>
 
@@ -1900,7 +1844,7 @@
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-xl bg-rose-600 text-white flex items-center justify-center font-bold text-lg shadow-sm shrink-0 animate-pulse">
-                            ⛔
+                            <svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
                         </div>
                         <div>
                             <h4 class="font-extrabold text-rose-950 dark:text-rose-200 text-sm flex items-center gap-2">
@@ -1962,7 +1906,7 @@
             <div class="p-8 rounded-2xl bg-gradient-to-br from-blue-50/60 via-white to-indigo-50/40 dark:from-slate-900 dark:via-[#0f172a] dark:to-indigo-950/20 border-2 border-dashed border-blue-200 dark:border-blue-900/50 space-y-6 text-center">
                 <div class="max-w-xl mx-auto space-y-2">
                     <div class="w-14 h-14 mx-auto rounded-2xl bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center text-2xl font-bold shadow-xs">
-                        ⚡
+                        <svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                     </div>
                     <h4 class="text-lg font-extrabold text-slate-900 dark:text-white">
                         Fast-Track Execution with Pre-Built Industry Workflows
@@ -2025,12 +1969,11 @@
                     <div class="inline-flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800/80 rounded-xl">
                         <button type="button" @click="activeTaskView = 'kanban'" :class="activeTaskView === 'kanban' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-300 shadow-xs font-extrabold' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 font-semibold'" class="px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1.5">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"/></svg>
-                            <span>Visual Kanban</span>
-                            <span class="px-1.5 py-0.2 rounded-full text-[11px] bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300 font-bold">5 Cols</span>
+                            <span>Board</span>
                         </button>
                         <button type="button" @click="activeTaskView = 'gantt'" :class="activeTaskView === 'gantt' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-300 shadow-xs font-extrabold' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 font-semibold'" class="px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1.5">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                            <span>Timeline (Gantt)</span>
+                            <span>Timeline</span>
                         </button>
                         <button type="button" @click="activeTaskView = 'list'" :class="activeTaskView === 'list' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-300 shadow-xs font-extrabold' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 font-semibold'" class="px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1.5">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
@@ -2064,10 +2007,6 @@
                 {{-- ════════════════════════════════════════════════════════════ --}}
                 <div x-show="activeTaskView === 'kanban'" class="space-y-4">
                     <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 px-1">
-                        <span class="flex items-center gap-1.5">
-                            <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11"/></svg>
-                            <strong>Drag-and-Drop Enabled:</strong> Grab cards by handle to change status across columns. Dropping into "Blocked" prompts for blocker reason and notifies the PM.
-                        </span>
                         <span>Showing {{ $tasksCount }} tasks</span>
                     </div>
 
@@ -2190,7 +2129,7 @@
                                     @if($task->status === 'blocked')
                                     <div class="p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-900/60 space-y-1.5">
                                         <div class="flex items-start gap-1.5 text-rose-700 dark:text-rose-300 font-extrabold text-[11px] uppercase tracking-wide">
-                                            <span>⛔</span>
+                                            <span><svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg></span>
                                             <span>Blocked Dependency</span>
                                         </div>
                                         <p class="text-xs font-semibold text-rose-950 dark:text-rose-100 leading-snug">
@@ -2218,14 +2157,14 @@
                                     @endphp
                                     <div class="p-1.5 rounded-lg border text-[11px] {{ $depColor }} flex items-center justify-between gap-1" title="Depends on: {{ $dep->title }}">
                                         <div class="flex items-center gap-1 truncate">
-                                            <span class="font-bold">🔗 Depends:</span>
+                                            <span class="font-bold">Depends:</span>
                                             <span class="truncate font-medium">{{ Str::limit($dep->title, 20) }}</span>
                                         </div>
                                         <span class="font-extrabold uppercase shrink-0">
                                             @if($dep->status === 'completed')
                                                 ✓ Ready
                                             @elseif($dep->status === 'blocked')
-                                                ⛔ Blocked
+                                                <svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg> Blocked
                                             @else
                                                 ⏳ {{ ucfirst(str_replace('_', ' ', $dep->status)) }}
                                             @endif
@@ -2251,7 +2190,7 @@
                                     <div class="p-2 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/60 dark:border-indigo-900/60 text-[11px] space-y-1">
                                         <div class="flex items-center justify-between text-indigo-700 dark:text-indigo-300 font-extrabold">
                                             <span class="flex items-center gap-1">
-                                                <span>📦</span>
+                                                <span><svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg></span>
                                                 <span>Consumed ({{ $task->materialConsumptions->count() }})</span>
                                             </span>
                                             <button type="button" @click.stop="openConsumeModal({{ $task->id }}, '{{ addslashes($task->title) }}')" class="hover:underline text-[11px] text-indigo-600 dark:text-indigo-400 font-bold">
@@ -2261,7 +2200,7 @@
                                         <div class="flex flex-wrap gap-1">
                                             @foreach($task->materialConsumptions->take(2) as $mUsed)
                                                 <span class="px-1.5 py-0.5 rounded bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 font-mono text-[11px] font-semibold">
-                                                    {{ number_format($mUsed->quantity_used, 1) }}{{ $mUsed->unit }} {{ Str::limit($mUsed->item_name, 14) }}
+                                                    {{ $qty($mUsed->quantity_used) }}{{ $mUsed->unit }} {{ Str::limit($mUsed->item_name, 14) }}
                                                 </span>
                                             @endforeach
                                             @if($task->materialConsumptions->count() > 2)
@@ -2285,12 +2224,12 @@
                                         <div class="flex items-center gap-1 shrink-0">
                                             {{-- Log Material / Cable Used --}}
                                             <button type="button" @click.stop="openConsumeModal({{ $task->id }}, '{{ addslashes($task->title) }}')" class="p-1 rounded text-slate-400 hover:text-indigo-600 transition" title="Log Cable / Material Used on this task">
-                                                📦
+                                                <svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
                                             </button>
 
                                             @if($task->status !== 'blocked')
                                                 <button type="button" @click.stop="openBlockerModal({{ $task->id }}, '{{ addslashes($task->title) }}')" class="p-1 rounded text-slate-400 hover:text-rose-600 transition" title="Flag Blocker on this task">
-                                                    🚩
+                                                    <svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 21V4m0 0h13l-2 4 2 4H3"/></svg>
                                                 </button>
                                             @endif
 
@@ -2410,7 +2349,7 @@
                                             <div class="truncate">
                                                 <div class="text-xs font-bold text-slate-900 dark:text-white truncate flex items-center gap-1.5">
                                                     @if($task->status === 'blocked')
-                                                        <span class="text-rose-500">⛔</span>
+                                                        <span class="text-rose-500"><svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg></span>
                                                     @elseif($task->status === 'completed')
                                                         <span class="text-emerald-500 font-extrabold">✓</span>
                                                     @endif
@@ -2553,7 +2492,7 @@
                                     @if($task->status === 'blocked')
                                     <div class="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900/60 space-y-1">
                                         <div class="flex items-center justify-between text-xs font-bold text-rose-700 dark:text-rose-300">
-                                            <span>⛔ Flagged Blocker</span>
+                                            <span><svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg> Flagged Blocker</span>
                                             <button type="button" @click="unblockTask({{ $task->id }})" class="underline text-[11px] font-extrabold">Mark Resolved</button>
                                         </div>
                                         <p class="text-xs font-semibold text-rose-900 dark:text-rose-200">
@@ -2621,7 +2560,7 @@
 
                                     <div class="flex items-center gap-1">
                                         <button type="button" @click="openBlockerModal({{ $task->id }}, '{{ addslashes($task->title) }}')" class="text-xs p-1 text-slate-400 hover:text-rose-600" title="Flag Blocker">
-                                            🚩
+                                            <svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 21V4m0 0h13l-2 4 2 4H3"/></svg>
                                         </button>
                                         <button type="button" @click="openEditTaskModal({{ json_encode($task) }})" class="text-xs p-1 text-slate-400 hover:text-blue-600" title="Edit Task">
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
@@ -2808,7 +2747,7 @@
                 <div class="px-6 pt-5 pb-3 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between shrink-0">
                     <div>
                         <h3 class="font-bold text-slate-900 dark:text-white text-base flex items-center gap-2">
-                            <span>📦</span>
+                            <span><svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg></span>
                             <span>Log Material / Cable Used</span>
                         </h3>
                         <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Record actual meters laid or hardware installed for a specific task</p>
@@ -3005,7 +2944,7 @@
                                 <span>Back to Step 1</span>
                             </button>
                             <button type="submit" class="btn-primary text-xs shadow-md inline-flex items-center gap-1.5 cursor-pointer">
-                                <span>📦</span>
+                                <span><svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg></span>
                                 <span>Record Consumption</span>
                             </button>
                         </div>
@@ -3536,7 +3475,7 @@
             <div @click.away="templateModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                     <div class="flex items-center gap-2">
-                        <span class="w-7 h-7 rounded-lg bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-sm">⚡</span>
+                        <span class="w-7 h-7 rounded-lg bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-sm"><svg class="w-5 h-5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></span>
                         <h3 class="font-bold text-slate-900 dark:text-white text-base">Apply Pre-Built Workflow Template</h3>
                     </div>
                     <button type="button" @click="templateModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
@@ -3703,7 +3642,7 @@
             <div @click.away="blockerModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-lg w-full p-6 shadow-2xl border-2 border-rose-300 dark:border-rose-800 space-y-4">
                 <div class="flex items-center justify-between pb-3 border-b border-rose-100 dark:border-rose-900/60">
                     <div class="flex items-center gap-2">
-                        <span class="w-8 h-8 rounded-xl bg-rose-600 text-white flex items-center justify-center font-bold text-base shadow-xs">⛔</span>
+                        <span class="w-8 h-8 rounded-xl bg-rose-600 text-white flex items-center justify-center font-bold text-base shadow-xs"><svg class="w-5 h-5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg></span>
                         <div>
                             <h3 class="font-extrabold text-slate-900 dark:text-white text-base">Flag Blocker on Task</h3>
                             <p class="text-[11px] text-slate-400">Instantly alerts Project Managers via Dashboard Notification &amp; WhatsApp</p>
@@ -3858,7 +3797,7 @@
                     <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
                         <span class="text-xs text-slate-500 font-medium">Field Material / Cable Logging:</span>
                         <button type="button" @click="editTaskModalOpen = false; openConsumeModal(editTaskId, editTaskTitle)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100">
-                            📦 Log Materials on this Task
+                            <svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg> Log Materials on this Task
                         </button>
                     </div>
 

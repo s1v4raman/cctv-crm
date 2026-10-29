@@ -40,6 +40,30 @@ class ProjectAuditLog extends Model
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * What happened, in words, for the project history list.
+     */
+    public function getActionLabelAttribute(): string
+    {
+        return match ($this->action) {
+            'created' => 'Created the project',
+            'approved' => 'Approved the project',
+            'rejected' => 'Rejected the project',
+            'deleted' => 'Deleted the project',
+            'status_changed' => 'Changed the status',
+            'status_request' => 'Asked for a status change',
+            'technician_assigned' => 'Assigned the lead technician',
+            'material_added' => 'Added a material',
+            'material_deleted' => 'Removed a material',
+            'created_task' => 'Added a task',
+            'updated_task' => 'Updated a task',
+            'deleted_task' => 'Deleted a task',
+            'flagged_blocker' => 'Flagged a blocker',
+            'unblocked_task' => 'Unblocked a task',
+            default => \Illuminate\Support\Str::ucfirst(str_replace('_', ' ', (string) $this->action)),
+        };
+    }
+
     public static function logChange($model, string $action, $oldValues = null, $newValues = null, ?string $reason = null): ?self
     {
         try {

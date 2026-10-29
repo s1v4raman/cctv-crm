@@ -177,7 +177,7 @@
                 background-color: ${hex} !important;
                 background-image: none !important;
                 color: #ffffff !important;
-                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+                box-shadow: none !important;
             }
 
             /* Clean Outline Icon System: Proper size, linear stroke, no color boxes or shades */
@@ -244,7 +244,7 @@
                 background-image: none !important;
                 border: 1px solid ${hex} !important;
                 color: #ffffff !important;
-                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+                box-shadow: none !important;
             }
 
             .btn-primary *:not(svg):not(path),
@@ -473,7 +473,7 @@
                 text-decoration: none !important;
                 white-space: nowrap !important;
                 transition: all 0.15s ease !important;
-                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08) !important;
+                box-shadow: none !important;
                 cursor: pointer !important;
             }
             .btn-subtle:hover,
@@ -527,7 +527,7 @@
                 background-image: none !important;
                 border: 1px solid ${hex} !important;
                 color: #ffffff !important;
-                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+                box-shadow: none !important;
             }
 
             .btn-search *,
@@ -638,7 +638,7 @@
                 background-image: none !important;
                 border-color: ${hex} !important;
                 color: #ffffff !important;
-                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+                box-shadow: none !important;
             }
 
             /* 9. TABLE VIEW DETAILS ACTION BUTTONS */

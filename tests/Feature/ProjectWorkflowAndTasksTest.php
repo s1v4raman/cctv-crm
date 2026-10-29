@@ -546,9 +546,9 @@ class ProjectWorkflowAndTasksTest extends TestCase
         $response = $this->actingAs($admin)->get(route('projects.show', ['project' => $project, 'tab' => 'materials']));
 
         $response->assertOk();
-        $response->assertSee('Bill of Materials (BOM) &amp; Variance Reconciliation', false);
-        $response->assertSee('Cable Pulled in Field');
-        $response->assertSee('200.0');
+        $response->assertSee('What was planned for this site and how much has been used.');
+        $response->assertSee('Cable pulled');
+        $response->assertSee('200 m');
         $response->assertSee('Cat6 Cable Reel');
         $response->assertSee('Reel-A01');
     }
