@@ -100,6 +100,24 @@ class User extends Authenticatable
     }
 
     /**
+     * Office users (admin and staff) add and edit records in every module.
+     * Admin-only: adding projects, deleting records, user accounts,
+     * payroll & salaries (incl. worker wage payouts) and system settings.
+     */
+    public function isOffice(): bool
+    {
+        return in_array($this->role, ['admin', 'staff']);
+    }
+
+    /**
+     * Approving leave or expense claims: admin for anyone, staff for everyone but themselves.
+     */
+    public function canDecideFor(?int $ownerId): bool
+    {
+        return $this->isAdmin() || ($this->isStaff() && (int) $ownerId !== (int) $this->id);
+    }
+
+    /**
      * Get avatar URL or null if none uploaded.
      */
     public function getAvatarUrlAttribute(): ?string
@@ -120,7 +138,7 @@ class User extends Authenticatable
     {
         return match ($this->role) {
             'admin'      => 'Administrator',
-            'staff'      => 'Sales Manager',
+            'staff'      => 'Staff',
             'technician' => 'Field Engineer',
             'worker'     => 'Field Worker',
             'customer'   => 'Client Account',

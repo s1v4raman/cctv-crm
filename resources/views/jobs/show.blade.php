@@ -187,7 +187,7 @@
             </div>
 
             {{-- 3. Update Work Order Form (Admin Control) --}}
-            @if(auth()->user()->isAdmin())
+            @if(auth()->user()->isOffice())
             <div class="crm-section">
                 <h3>Update Work Order</h3>
                 

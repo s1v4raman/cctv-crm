@@ -29,11 +29,11 @@ class AccountsReceivableAndDebtorsAgingTest extends TestCase
         $this->technician = User::factory()->create(['role' => 'technician', 'name' => 'Field Tech']);
     }
 
-    public function test_non_admin_is_forbidden_from_accounts_receivable(): void
+    public function test_staff_can_open_accounts_receivable_but_technicians_cannot(): void
     {
         $this->actingAs($this->staff)
             ->get(route('finance.receivables.index'))
-            ->assertForbidden();
+            ->assertOk();
 
         $this->actingAs($this->technician)
             ->get(route('finance.receivables.index'))

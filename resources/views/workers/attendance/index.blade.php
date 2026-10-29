@@ -14,9 +14,11 @@
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                     <span>Mark Attendance</span>
                 </button>
+                @if(auth()->user()->isAdmin())
                 <a href="{{ route('wages.index') }}" class="btn-secondary">
                     Sunday Payday Console
                 </a>
+                @endif
                 <a href="{{ route('workers.index') }}" class="btn-secondary">
                     Workers List
                 </a>
@@ -213,9 +215,11 @@
                     <div class="text-[11px] text-slate-500 mt-0.5">Total weekly payable</div>
                 </div>
                 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-3 shadow-sm flex flex-col justify-center items-start">
+                    @if(auth()->user()->isAdmin())
                     <a href="{{ route('wages.index', ['week' => $weekStart->toDateString()]) }}" class="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1">
                         <span>Open Sunday Payday &rarr;</span>
                     </a>
+                    @endif
                     <div class="text-[11px] text-slate-500 mt-1">Settle weekly disbursements</div>
                 </div>
             @else
@@ -312,7 +316,7 @@
                                                         @if(method_exists($w, 'trashed') && $w->trashed())
                                                             <span class="text-[9px] px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 font-medium" title="This worker profile is archived/deleted">Archived</span>
                                                         @endif
-                                                        @if(!$w->photo_url && auth()->user()->isAdmin())
+                                                        @if(!$w->photo_url && auth()->user()->isOffice())
                                                             <a href="{{ route('workers.edit', $w) }}" class="text-[10px] text-indigo-500 hover:underline" title="Upload master profile photo">+ Photo</a>
                                                         @endif
                                                     @else
@@ -493,9 +497,11 @@
                         <span class="font-bold text-sm text-slate-900 dark:text-white">Weekly Attendance Matrix (Monday &ndash; Sunday)</span>
                         <span class="text-xs text-slate-500 block sm:inline sm:ml-2">&bull; Week: {{ $weekStart->format('d M') }} to {{ $weekEnd->format('d M Y') }}</span>
                     </div>
+                    @if(auth()->user()->isAdmin())
                     <a href="{{ route('wages.index', ['week' => $weekStart->toDateString()]) }}" class="btn-primary text-xs py-1 px-2.5">
                         Open Sunday Payday &rarr;
                     </a>
+                    @endif
                 </div>
 
                 <div class="overflow-x-auto">

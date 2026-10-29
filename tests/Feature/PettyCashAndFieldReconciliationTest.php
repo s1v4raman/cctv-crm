@@ -32,11 +32,11 @@ class PettyCashAndFieldReconciliationTest extends TestCase
         $this->technician = User::factory()->create(['role' => 'technician', 'name' => 'Field Engineer']);
     }
 
-    public function test_non_admin_is_forbidden_from_petty_cash_module(): void
+    public function test_staff_can_open_petty_cash_but_technicians_cannot(): void
     {
         $this->actingAs($this->staff)
             ->get(route('finance.petty_cash.index'))
-            ->assertForbidden();
+            ->assertOk();
 
         $this->actingAs($this->technician)
             ->get(route('finance.petty_cash.index'))

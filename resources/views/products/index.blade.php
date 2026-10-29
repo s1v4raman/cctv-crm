@@ -10,7 +10,7 @@
                     </span>
                 @endif
             </div>
-            @if(auth()->user()->isAdmin())
+            @if(auth()->user()->isOffice())
             <a href="{{ route('products.create') }}" class="btn-primary">
                 + Add Product
             </a>
@@ -328,7 +328,7 @@
                                     </td>
 
                                     <td class="right whitespace-nowrap text-sm table-actions" style="text-align:right;">
-                                        @if(auth()->user()->isAdmin())
+                                        @if(auth()->user()->isOffice())
                                             <div class="inline-flex items-center gap-1.5">
                                                 @if($isPending)
                                                     <button type="button"
@@ -345,6 +345,7 @@
                                                     </button>
                                                 @endif
 
+                                                @if(auth()->user()->isAdmin())
                                                 <button type="button"
                                                         @click="openMerge({
                                                             id: {{ $product->id }},
@@ -355,15 +356,18 @@
                                                         class="inline-flex items-center px-2 py-1 rounded border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-semibold transition">
                                                     Merge
                                                 </button>
+                                                @endif
 
                                                 <a href="{{ route('products.edit', $product) }}" class="action-link text-xs">Edit</a>
 
+                                                @if(auth()->user()->isAdmin())
                                                 <form method="POST" action="{{ route('products.destroy', $product) }}" class="inline"
                                                       data-confirm="Delete {{ $product->name }}? This cannot be undone.">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="danger-link text-xs">Delete</button>
                                                 </form>
+                                                @endif
                                             </div>
                                         @else
                                             <span class="text-slate-400 text-xs">—</span>

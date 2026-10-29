@@ -301,7 +301,9 @@
                             </h3>
                             <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Automatically computed wages deducted from the operating profit</p>
                         </div>
+                        @if(auth()->user()->isAdmin())
                         <a href="{{ route('finance.salaries.index') }}" class="text-[11px] text-blue-600 font-bold hover:underline">Manage Salaries →</a>
+                        @endif
                     </div>
                     
                     <div class="overflow-x-auto max-h-80 overflow-y-auto">

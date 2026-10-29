@@ -8,12 +8,16 @@
                 <a href="{{ route('workers.attendance.index') }}" class="btn-secondary">
                     📅 Attendance Maintenance
                 </a>
+                @if(auth()->user()->isAdmin())
                 <a href="{{ route('wages.index') }}" class="btn-secondary">
                     Sunday Payday Console
                 </a>
+                @endif
+                @if(auth()->user()->isOffice())
                 <a href="{{ route('workers.create') }}" class="btn-primary">
                     Add Worker
                 </a>
+                @endif
             </div>
         </div>
     </x-slot>
@@ -163,7 +167,9 @@
                         </td>
                         <td class="nowrap">
                             <a href="{{ route('workers.show', $worker) }}" class="action-link">View</a>
+                            @if(auth()->user()->isOffice())
                             <a href="{{ route('workers.edit', $worker) }}" class="action-link">Edit</a>
+                            @endif
                             @if(auth()->user()->isAdmin())
                                 <form method="POST" action="{{ route('workers.destroy', $worker) }}" class="inline" data-confirm="Delete worker {{ $worker->name }}? This cannot be undone.">
                                     @csrf

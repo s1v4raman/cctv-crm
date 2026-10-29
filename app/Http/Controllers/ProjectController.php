@@ -137,6 +137,8 @@ class ProjectController extends Controller
      */
     public function create()
     {
+        $this->authorizeAddingProjects();
+
         $teamMembers = User::whereIn('role', ['admin', 'staff', 'technician'])->orderBy('name')->get();
         $technicians = User::where('role', 'technician')->orWhere('role', 'admin')->orderBy('name')->get();
         $companies = $this->getExecutingCompanies();
@@ -190,6 +192,8 @@ class ProjectController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorizeAddingProjects();
+
         $isDraft = $request->input('action') === 'save_draft';
 
         $rules = [
@@ -526,8 +530,8 @@ class ProjectController extends Controller
      */
     public function approve(Request $request, Project $project)
     {
-        if (!Auth::user()->isAdmin()) {
-            abort(403, 'Only administrators can approve projects.');
+        if (!Auth::user()->isOffice()) {
+            abort(403, 'Only office users can approve projects.');
         }
 
         $validated = $request->validate([
@@ -595,8 +599,8 @@ class ProjectController extends Controller
      */
     public function reject(Request $request, Project $project)
     {
-        if (!Auth::user()->isAdmin()) {
-            abort(403, 'Only administrators can reject projects.');
+        if (!Auth::user()->isOffice()) {
+            abort(403, 'Only office users can reject projects.');
         }
 
         $validated = $request->validate([
@@ -683,7 +687,7 @@ class ProjectController extends Controller
      */
     public function edit(Project $project)
     {
-        if (!Auth::user()->isAdmin()) {
+        if (!Auth::user()->isOffice()) {
             if ($project->created_by !== Auth::id()) {
                 abort(403, 'You can only edit projects created by yourself.');
             }
@@ -706,7 +710,7 @@ class ProjectController extends Controller
      */
     public function update(Request $request, Project $project)
     {
-        if (!Auth::user()->isAdmin()) {
+        if (!Auth::user()->isOffice()) {
             if ($project->created_by !== Auth::id()) {
                 abort(403, 'You can only edit projects created by yourself.');
             }
@@ -812,7 +816,7 @@ class ProjectController extends Controller
             'progress_percentage' => 'nullable|integer|min:0|max:100',
         ]);
 
-        if (!Auth::user()->isAdmin()) {
+        if (!Auth::user()->isOffice()) {
             if (Auth::user()->isTechnician()) {
                 // Technician: Request only per permission spec
                 ProjectAuditLog::logChange(
@@ -824,7 +828,7 @@ class ProjectController extends Controller
                 );
                 return back()->with('status', "Status change request submitted to Administrator for review.");
             }
-            abort(403, 'Employees cannot change project status. Only administrators can approve or transition status.');
+            abort(403, 'Only office users can change project status.');
         }
 
         $oldStatus = $project->status;
@@ -926,6 +930,15 @@ class ProjectController extends Controller
     /**
      * Retrieve active executing companies with fallback auto-seeding.
      */
+    /**
+     * Only admins add projects; technicians submit them for approval. Staff can open and
+     * update projects but not add them.
+     */
+    protected function authorizeAddingProjects(): void
+    {
+        abort_unless(Auth::user()->can('create', Project::class), 403, 'Only administrators can add projects.');
+    }
+
     protected function getExecutingCompanies()
     {
         $companies = Company::where('is_active', true)->get();

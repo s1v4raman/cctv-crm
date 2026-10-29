@@ -185,11 +185,11 @@ class CalendarController extends Controller
     }
 
     /**
-     * Store a new task (Admin Only - server-side enforced).
+     * Store a new task (admin and staff - server-side enforced).
      */
     public function storeTask(Request $request): RedirectResponse|JsonResponse
     {
-        abort_unless(Auth::user()->isAdmin(), 403, 'Only administrators can create tasks.');
+        abort_unless(Auth::user()->isOffice(), 403, 'Only office users can create tasks.');
 
         $validated = $request->validate([
             'title'           => 'required|string|max:255',
@@ -249,11 +249,11 @@ class CalendarController extends Controller
     }
 
     /**
-     * Assign or reassign a task (Admin Only - server-side enforced).
+     * Assign or reassign a task (admin and staff - server-side enforced).
      */
     public function assignTask(Request $request, ProjectTask $task): RedirectResponse|JsonResponse
     {
-        abort_unless(Auth::user()->isAdmin(), 403, 'Only administrators can assign or reassign tasks.');
+        abort_unless(Auth::user()->isOffice(), 403, 'Only office users can assign or reassign tasks.');
 
         $validated = $request->validate([
             'assigned_to' => 'nullable|exists:users,id',

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\InstallationJob;
+use App\Models\Invoice;
 use App\Models\Lead;
 use App\Models\Quotation;
 use App\Models\SiteSurvey;
@@ -146,6 +147,10 @@ class DashboardController extends Controller
                     });
                 })
                 ->sum('total'),
+            // Money billed and collected on tax invoices, and the value of quotes still open
+            'invoiced_total' => (float) Invoice::sum('total'),
+            'collected_total' => (float) Invoice::sum('amount_paid'),
+            'pipeline_value' => (float) Quotation::whereIn('status', ['draft', 'sent'])->sum('total'),
             'draft_quotations' => Quotation::where('status', 'draft')->count(),
             'sent_quotations' => Quotation::where('status', 'sent')->count(),
             'accepted_quotations' => Quotation::where('status', 'accepted')->count(),

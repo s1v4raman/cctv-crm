@@ -16,27 +16,34 @@
                 </div>
             </div>
             <div class="flex items-center gap-2 flex-wrap">
+                @if(auth()->user()->isAdmin())
                 <a href="{{ route('admin.users.create', ['return_to' => route('employee.hub')]) }}" class="btn-primary">
                     Add New Employee
                 </a>
+                @endif
                 <a href="{{ route('attendance.index') }}" 
                    class="crm-hub-action-btn inline-flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all duration-200 shadow-xs cursor-pointer"
                    style="background-color: rgba(var(--crm-accent-rgb, 190, 18, 60), 0.1); color: var(--crm-accent, #be123c); border: 1px solid rgba(var(--crm-accent-rgb, 190, 18, 60), 0.3);">
                     <svg class="w-3.5 h-3.5 transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     <span>Attendance</span>
                 </a>
+                @if($canSeePay)
                 <a href="{{ route('finance.salaries.index') }}" 
                    class="crm-hub-action-btn inline-flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all duration-200 shadow-xs cursor-pointer"
                    style="background-color: rgba(var(--crm-accent-rgb, 190, 18, 60), 0.1); color: var(--crm-accent, #be123c); border: 1px solid rgba(var(--crm-accent-rgb, 190, 18, 60), 0.3);">
                     <svg class="w-3.5 h-3.5 transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                     <span>Salaries</span>
                 </a>
+                @endif
+                @if($canSeePay)
                 <a href="{{ route('finance.payroll.index') }}" 
                    class="crm-hub-action-btn inline-flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all duration-200 shadow-xs cursor-pointer"
                    style="background-color: rgba(var(--crm-accent-rgb, 190, 18, 60), 0.1); color: var(--crm-accent, #be123c); border: 1px solid rgba(var(--crm-accent-rgb, 190, 18, 60), 0.3);">
                     <svg class="w-3.5 h-3.5 transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/></svg>
                     <span>Payroll</span>
                 </a>
+                @endif
+                @if(auth()->user()->isOffice())
                 <a href="{{ route('finance.hub') }}" 
                    class="crm-hub-primary-btn inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold text-white transition-all duration-200 shadow-xs hover:opacity-95 cursor-pointer"
                    style="background-color: var(--crm-accent, #2563eb); border: 1px solid var(--crm-accent, #2563eb); box-shadow: 0 4px 14px -1px var(--crm-accent-shadow, rgba(37,99,235,0.35));">
@@ -44,6 +51,7 @@
                     <span class="text-white font-bold">Finance Hub</span>
                     <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                 </a>
+                @endif
             </div>
         </div>
     </x-slot>
@@ -89,6 +97,7 @@
                 <div class="text-[11px] text-slate-400 mt-0.5">{{ $leaveCount }} on leave today</div>
             </div>
 
+            @if($canSeePay)
             {{-- Salary Burn --}}
             <div class="col-span-1 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm">
                 <div class="flex items-center justify-between mb-2">
@@ -100,6 +109,7 @@
                 <div class="text-xl font-black text-slate-900 dark:text-white">₹{{ number_format($monthlySalaryBurn / 1000, 0) }}K</div>
                 <div class="text-[11px] text-slate-400 mt-0.5">₹{{ number_format($monthlySalaryBurn / 26, 0) }}/day burn rate</div>
             </div>
+            @endif
 
             {{-- Pending Actions --}}
             <div class="col-span-1 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm">
@@ -113,6 +123,7 @@
                 <div class="text-[11px] text-slate-400 mt-0.5">{{ $pendingLeavesCount }} leaves · {{ $pendingExpensesCount }} expenses</div>
             </div>
 
+            @if($canSeePay)
             {{-- Payroll Status --}}
             <div class="col-span-1 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm">
                 <div class="flex items-center justify-between mb-2">
@@ -126,6 +137,7 @@
                 </div>
                 <div class="text-[11px] text-slate-400 mt-0.5">{{ $payrollPaidCount }} paid · ₹{{ number_format($payrollTotalAmount, 0) }}</div>
             </div>
+            @endif
         </div>
 
         {{-- ═══════════════════ ROW 2: CHARTS + ATTENDANCE TREND ═══════════════════ --}}
@@ -209,6 +221,7 @@
             </div>
         </div>
 
+        @if($canSeePay)
         {{-- ═══════════════════ ROW 3: SALARY ANALYTICS ═══════════════════ --}}
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
@@ -251,7 +264,9 @@
                         <h3 class="text-sm font-bold text-slate-900 dark:text-white">Payroll History (6 Months)</h3>
                         <p class="text-[11px] text-slate-400">Net salary disbursed per month</p>
                     </div>
+                    @if($canSeePay)
                     <a href="{{ route('finance.payroll.index') }}" class="text-[11px] font-bold text-indigo-600 hover:underline">Manage Payroll →</a>
+                    @endif
                 </div>
                 @php $maxPayroll = max(1, $payrollHistory->max('total')); @endphp
                 <div class="flex items-end gap-3 h-32">
@@ -269,6 +284,7 @@
                 </div>
             </div>
         </div>
+        @endif
 
         {{-- ═══════════════════ ROW 4: EMPLOYEE ROSTER TABLE ═══════════════════ --}}
         <div class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm overflow-hidden">
@@ -278,9 +294,11 @@
                     <p class="text-[11px] text-slate-400">{{ $totalEmployees }} employees · attendance as of {{ now()->format('d M Y') }}</p>
                 </div>
                 <div class="flex items-center gap-2 flex-wrap">
+                    @if(auth()->user()->isAdmin())
                     <a href="{{ route('admin.users.create', ['return_to' => route('employee.hub')]) }}" class="btn-primary" style="height: 32px !important; min-height: 32px !important; font-size: 13px !important; padding: 0 14px !important;">
                         Add New Employee
                     </a>
+                    @endif
                     <a href="{{ route('attendance.index') }}" class="text-[11px] font-bold text-emerald-600 hover:underline">Mark Attendance →</a>
                 </div>
             </div>
@@ -294,8 +312,12 @@
                             <th class="text-left px-4 py-3 text-[11px] font-extrabold uppercase tracking-wider text-slate-400">Today</th>
                             <th class="text-left px-4 py-3 text-[11px] font-extrabold uppercase tracking-wider text-slate-400">Clock In</th>
                             <th class="text-left px-4 py-3 text-[11px] font-extrabold uppercase tracking-wider text-slate-400">Clock Out</th>
+                            @if($canSeePay)
                             <th class="text-right px-4 py-3 text-[11px] font-extrabold uppercase tracking-wider text-slate-400">Salary/mo</th>
+                            @endif
+                            @if($canSeePay)
                             <th class="text-right px-5 py-3 text-[11px] font-extrabold uppercase tracking-wider text-slate-400">Actions</th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
@@ -341,6 +363,7 @@
                             </td>
                             <td class="px-4 py-3 text-slate-600 dark:text-slate-300 font-mono text-[11px]">{{ $emp['clock_in'] }}</td>
                             <td class="px-4 py-3 text-slate-600 dark:text-slate-300 font-mono text-[11px]">{{ $emp['clock_out'] }}</td>
+                            @if($canSeePay)
                             <td class="px-4 py-3 text-right">
                                 @if($emp['salary'] > 0)
                                     <span class="font-bold text-slate-900 dark:text-white">₹{{ number_format($emp['salary'], 0) }}</span>
@@ -348,6 +371,8 @@
                                     <span class="text-slate-400 italic">—</span>
                                 @endif
                             </td>
+                            @endif
+                            @if($canSeePay)
                             <td class="px-5 py-3 text-right whitespace-nowrap">
                                 <div class="flex items-center justify-end gap-1">
                                     {{-- View Profile --}}
@@ -380,6 +405,7 @@
                                     @endif
                                 </div>
                             </td>
+                            @endif
                         </tr>
                         @endforeach
                     </tbody>
@@ -440,6 +466,7 @@
                     <p class="text-[11px] text-slate-400">Workforce management shortcuts</p>
                 </div>
                 <div class="p-4 space-y-2">
+                    @if(auth()->user()->isAdmin())
                     <a href="{{ route('admin.users.create', ['return_to' => route('employee.hub')]) }}" class="flex items-center gap-3 p-3 rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-950/30 group transition-colors border border-emerald-100 dark:border-emerald-900/40">
                         <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center group-hover:scale-110 shadow-xs transition-transform">
                             <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
@@ -453,6 +480,7 @@
                         </div>
                         <svg class="w-4 h-4 text-slate-300 ml-auto" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
                     </a>
+                    @endif
                     <a href="{{ route('attendance.index') }}" class="flex items-center gap-3 p-3 rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-950/30 group transition-colors">
                         <div class="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-950/50 text-emerald-600 flex items-center justify-center group-hover:scale-110 transition-transform">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -473,6 +501,7 @@
                         </div>
                         <svg class="w-4 h-4 text-slate-300 ml-auto" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
                     </a>
+                    @if($canSeePay)
                     <a href="{{ route('finance.salaries.index') }}" class="flex items-center gap-3 p-3 rounded-xl hover:bg-teal-50 dark:hover:bg-teal-950/30 group transition-colors">
                         <div class="w-9 h-9 rounded-xl bg-teal-100 dark:bg-teal-950/50 text-teal-600 flex items-center justify-center group-hover:scale-110 transition-transform">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
@@ -483,6 +512,8 @@
                         </div>
                         <svg class="w-4 h-4 text-slate-300 ml-auto" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
                     </a>
+                    @endif
+                    @if($canSeePay)
                     <a href="{{ route('finance.payroll.index') }}" class="flex items-center gap-3 p-3 rounded-xl hover:bg-indigo-50 dark:hover:bg-indigo-950/30 group transition-colors">
                         <div class="w-9 h-9 rounded-xl bg-indigo-100 dark:bg-indigo-950/50 text-indigo-600 flex items-center justify-center group-hover:scale-110 transition-transform">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/></svg>
@@ -495,6 +526,7 @@
                         </div>
                         <svg class="w-4 h-4 text-slate-300 ml-auto" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
                     </a>
+                    @endif
                     <a href="{{ route('finance.expenses.index') }}" class="flex items-center gap-3 p-3 rounded-xl hover:bg-pink-50 dark:hover:bg-pink-950/30 group transition-colors">
                         <div class="w-9 h-9 rounded-xl bg-pink-100 dark:bg-pink-950/50 text-pink-600 flex items-center justify-center group-hover:scale-110 transition-transform">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>

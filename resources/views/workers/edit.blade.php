@@ -101,15 +101,19 @@
                     </div>
                 </form>
 
+                @if(auth()->user()->isAdmin())
                 <form id="delete-worker-form" method="POST" action="{{ route('workers.destroy', $worker) }}" class="hidden">
                     @csrf
                     @method('DELETE')
                 </form>
+                @endif
 
                 <div class="flex items-center justify-between pt-4 border-t border-[#ddd] mt-4">
+                    @if(auth()->user()->isAdmin())
                     <button type="submit" form="delete-worker-form" data-confirm="Are you sure you want to delete this worker?" class="danger-link" style="background: none; border: none; cursor: pointer;">
                         Delete
                     </button>
+                    @endif
 
                     <div class="flex items-center gap-3">
                         <a href="{{ route('workers.show', $worker) }}" class="btn-secondary">Cancel</a>

@@ -173,13 +173,15 @@
                     </div>
                 </form>
 
+                @if(auth()->user()->isAdmin())
                 <form id="delete-site-form" method="POST" action="{{ route('sites.destroy', $site) }}" class="hidden">
                     @csrf
                     @method('DELETE')
                 </form>
+                @endif
 
                 <div class="flex items-center justify-between pt-4 border-t border-[#ddd] mt-4">
-                    @if(!$site->projects()->exists())
+                    @if(auth()->user()->isAdmin() && !$site->projects()->exists())
                         <button type="submit" form="delete-site-form" data-confirm="Are you sure you want to delete this site?" class="danger-link" style="background: none; border: none; cursor: pointer;">
                             Delete
                         </button>

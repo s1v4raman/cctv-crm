@@ -11,12 +11,16 @@
                 </div>
 
                 <div class="flex items-center gap-2 flex-wrap">
+                    @if(auth()->user()->isAdmin())
                     <a href="{{ route('wages.index') }}" class="btn-secondary">
                         Sunday Payday Console
                     </a>
+                    @endif
+                    @if(auth()->user()->isOffice())
                     <a href="{{ route('workers.edit', $worker) }}" class="btn-secondary">
                         Edit Details
                     </a>
+                    @endif
                     @if(auth()->user()->isAdmin())
                         <form method="POST" action="{{ route('workers.destroy', $worker) }}" data-confirm="Are you sure you want to delete worker {{ $worker->name }}?" class="inline">
                             @csrf

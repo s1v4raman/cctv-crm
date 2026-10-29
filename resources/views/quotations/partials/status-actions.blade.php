@@ -84,6 +84,7 @@
                         View Job {{ $quotation->installationJob->job_no }}
                     </a>
                 @else
+                    @if(auth()->user()->isOffice())
                     <form method="POST"
                           action="{{ route('jobs.store', $quotation) }}">
                         @csrf
@@ -93,6 +94,7 @@
                             Create Installation Job
                         </button>
                     </form>
+                    @endif
                 @endif
             @endif
 

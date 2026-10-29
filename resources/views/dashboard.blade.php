@@ -71,9 +71,9 @@
                         <h3 class="text-sm font-bold text-[var(--text-main)]">Revenue Overview</h3>
                         <div class="flex items-center gap-3">
                             <select class="h-[32px] px-2.5 text-xs rounded-md border border-[var(--input-border)] bg-[var(--card-bg)] text-[var(--text-main)] focus:outline-none focus:ring-2 focus:ring-blue-500/30">
-                                <option value="6">Past 6 Months</option>
-                                <option value="12">Past 12 Months</option>
                                 <option value="3">Past 3 Months</option>
+                                <option value="6" selected>Past 6 Months</option>
+                                <option value="12">Past 12 Months</option>
                             </select>
                         </div>
                     </div>
@@ -97,16 +97,16 @@
                     {{-- Sales Mini Metrics Footer: clean columns, no card inside card --}}
                     <div class="grid grid-cols-3 gap-[12px] pt-[16px] mt-[16px] border-t border-[var(--card-border)] text-center sm:text-left">
                         <div>
-                            <div class="text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]">Total Invoiced</div>
+                            <div class="text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]">Invoiced</div>
                             <div class="text-base font-bold text-[var(--text-main)] mt-0.5" id="stat-footer-rev">₹0</div>
                         </div>
                         <div>
-                            <div class="text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]">Won Ratio</div>
-                            <div class="text-base font-bold text-[var(--text-main)] mt-0.5"><span id="stat-footer-ratio">0</span>%</div>
+                            <div class="text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]">Collected</div>
+                            <div class="text-base font-bold text-[var(--text-main)] mt-0.5" id="stat-footer-collected">₹0</div>
                         </div>
                         <div>
-                            <div class="text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]">Active Pipeline</div>
-                            <div class="text-base font-bold text-[var(--text-main)] mt-0.5"><span id="stat-footer-active">0</span> Quotes</div>
+                            <div class="text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]">Open Quotes</div>
+                            <div class="text-base font-bold text-[var(--text-main)] mt-0.5" id="stat-footer-active">0</div>
                         </div>
                     </div>
                 </div>
@@ -155,7 +155,7 @@
 
                     {{-- Pipeline Total Summary --}}
                     <div class="pt-4 mt-4 border-t border-[var(--card-border)] flex items-center justify-between text-xs">
-                        <span class="font-medium text-[var(--text-muted)]">Total Live Pipeline Value</span>
+                        <span class="font-medium text-[var(--text-muted)]">Value of open quotes (draft + sent)</span>
                         <span class="font-bold text-[var(--text-main)] text-sm" id="stat-pipeline-total">₹0</span>
                     </div>
                 </div>
@@ -546,13 +546,14 @@
             if (elExp) elExp.textContent = s.expired_quotations || 0;
 
             const elFootRev = document.getElementById('stat-footer-rev');
-            if (elFootRev) elFootRev.textContent = money(s.revenue_accepted);
-            const elFootRat = document.getElementById('stat-footer-ratio');
-            if (elFootRat) elFootRat.textContent = s.conversion_rate || 0;
+            if (elFootRev) elFootRev.textContent = money(s.invoiced_total);
+            const elFootCol = document.getElementById('stat-footer-collected');
+            if (elFootCol) elFootCol.textContent = money(s.collected_total);
             const elFootAct = document.getElementById('stat-footer-active');
-            if (elFootAct) elFootAct.textContent = ((s.draft_quotations || 0) + (s.sent_quotations || 0));
+            const openQuotes = (s.draft_quotations || 0) + (s.sent_quotations || 0);
+            if (elFootAct) elFootAct.textContent = openQuotes + (openQuotes === 1 ? ' quote' : ' quotes');
             const elPipeTot = document.getElementById('stat-pipeline-total');
-            if (elPipeTot) elPipeTot.textContent = money(s.revenue_accepted);
+            if (elPipeTot) elPipeTot.textContent = money(s.pipeline_value);
         } else {
             // Staff / Technician view
             const elStaffJobs = document.getElementById('staff-open-jobs');

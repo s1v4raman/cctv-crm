@@ -486,11 +486,13 @@
                         <div>
                             <div class="flex items-center justify-between mb-1.5">
                                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-500">Lead Technician In-Charge</label>
+                                @if(auth()->user()->isAdmin())
                                 <a href="{{ route('admin.users.create', ['role' => 'technician', 'return_to' => route('projects.create', ['step' => 2])]) }}" 
                                    class="btn-subtle text-white font-semibold"
                                    style="color: #ffffff !important;">
                                     <span class="text-white font-semibold" style="color: #ffffff !important;">+ Add New Technician</span>
                                 </a>
+                                @endif
                             </div>
                             <select aria-label="Lead Technician In-Charge" name="lead_technician_id" x-model="lead_technician_id" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
                                 <option value="">Select Technician...</option>

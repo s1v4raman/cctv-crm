@@ -33,11 +33,13 @@
                         <div class="sm:col-span-2">
                             <div class="flex items-center justify-between mb-2">
                                 <label class="crm-label mb-0 text-sm font-semibold text-slate-800 dark:text-slate-200">Customer Site / Lead <span class="required-marker text-rose-500">*</span></label>
+                                @if(auth()->user()->isOffice())
                                 <a href="{{ route('leads.create', ['return_to' => 'equipment']) }}" 
                                    class="btn-subtle text-white font-semibold"
                                    style="color: #ffffff !important;">
                                     <span class="text-white font-semibold" style="color: #ffffff !important;">Add New Customer</span>
                                 </a>
+                                @endif
                             </div>
                             <select aria-label="Customer Site / Lead" name="lead_id" data-no-tom="true" class="crm-select w-full h-[44px] text-sm rounded-lg" required>
                                 <option value="">-- Select Customer / Lead (or General Estimate) --</option>

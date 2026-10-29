@@ -108,7 +108,7 @@ class SecurityHardeningAndAuditTest extends TestCase
         $this->assertEquals('paid', $invoice->status);
     }
 
-    public function test_staff_can_view_products_catalog_but_cannot_create_or_modify_products(): void
+    public function test_staff_can_add_products_but_cannot_delete_them(): void
     {
         $staff = User::factory()->create(['role' => 'staff']);
         $product = Product::create([
@@ -127,14 +127,9 @@ class SecurityHardeningAndAuditTest extends TestCase
         $this->get(route('products.index'))->assertOk();
         $this->get(route('products.search', ['q' => 'Bullet']))->assertOk();
 
-        // Blocked from creating or deleting products
-        $this->get(route('products.create'))->assertStatus(403);
-        $this->post(route('products.store'), [
-            'name' => 'Hacked Product',
-            'sku' => 'HACK-01',
-            'category' => 'camera',
-            'unit_price' => 100,
-        ])->assertStatus(403);
+        // Staff add products; deleting stays admin-only
+        $this->get(route('products.create'))->assertOk();
         $this->delete(route('products.destroy', $product))->assertStatus(403);
+        $this->assertNotNull($product->fresh());
     }
 }

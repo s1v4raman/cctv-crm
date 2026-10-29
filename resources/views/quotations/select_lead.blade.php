@@ -15,9 +15,11 @@
             @if($leads->isEmpty())
                 <p class="text-sm text-slate-500 my-4">You must create a customer lead first before making a quotation.</p>
                 <div class="mt-4">
+                    @if(auth()->user()->isOffice())
                     <a href="{{ route('leads.create', ['return_to' => 'quotation', 'for_quote' => 1]) }}" class="btn-primary">
                         + Add New Customer
                     </a>
+                    @endif
                 </div>
             @else
                 <form method="GET" id="lead-select-form">
@@ -26,11 +28,13 @@
                             <label for="lead_id" class="crm-label mb-0 font-semibold text-slate-800 dark:text-slate-200">
                                 Customer Lead <span class="required-marker">*</span>
                             </label>
+                            @if(auth()->user()->isOffice())
                             <a href="{{ route('leads.create', ['return_to' => 'quotation', 'for_quote' => 1]) }}" 
                                class="btn-subtle text-white font-semibold"
                                style="color: #ffffff !important;">
                                 <span class="text-white font-semibold" style="color: #ffffff !important;">+ Add New Customer</span>
                             </a>
+                            @endif
                         </div>
                         <select id="lead_id" name="lead_id" class="crm-select w-full" required>
                             <option value="">Select customer</option>

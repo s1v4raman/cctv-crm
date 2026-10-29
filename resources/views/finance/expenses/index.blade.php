@@ -6,7 +6,7 @@
                     <h2 class="text-xl font-bold text-slate-900 dark:text-white">
                         Field Expenses &amp; Travel Claims Hub
                     </h2>
-                    @if($isAdmin && $pendingCount > 0)
+                    @if($canManage && $pendingCount > 0)
                         <span class="text-xs font-bold text-[#d97706]">
                             ({{ $pendingCount }} Pending: ₹{{ number_format($pendingTotalAmount, 2) }})
                         </span>
@@ -14,9 +14,11 @@
                 </div>
             </div>
             <div class="flex items-center gap-2 flex-wrap">
+                @if(auth()->user()->isAdmin())
                 <a href="{{ route('finance.payroll.index') }}" class="btn-secondary">
                     Payroll
                 </a>
+                @endif
 
                 <button type="button" 
                         onclick="document.getElementById('submitExpenseModal').classList.remove('hidden')"
@@ -124,7 +126,7 @@
             </div>
 
             {{-- 2. Admin Pending Approval & Disbursal Queue --}}
-            @if($isAdmin && $pendingClaims->count() > 0)
+            @if($canManage && $pendingClaims->count() > 0)
                 <div id="pendingQueueSection" class="pg-card mb-6" style="border-radius: 4px;">
                     <div class="p-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/60 flex items-center justify-between">
                         <div class="flex items-center gap-2">
@@ -187,6 +189,7 @@
                                     </div>
 
                                     {{-- Approve Form --}}
+                                    @if(auth()->user()->canDecideFor($c->user_id))
                                     <form action="{{ route('finance.expenses.approve', $c) }}" method="POST" data-confirm="Approve expense claim #{{ $c->claim_no }} for ₹{{ number_format((float) $c->amount, 2) }}?">
                                         @csrf
                                         @method('PATCH')
@@ -195,13 +198,16 @@
                                             Approve
                                         </button>
                                     </form>
+                                    @endif
 
                                     {{-- Reject Trigger Button --}}
+                                    @if(auth()->user()->canDecideFor($c->user_id))
                                     <button type="button" 
                                             onclick="openRejectClaimModal('{{ $c->id }}', '{{ $c->claim_no }}', '{{ addslashes($c->user?->name) }}', '₹{{ number_format((float) $c->amount, 2) }}')"
                                             class="px-3 py-1.5 rounded border border-rose-300 dark:border-rose-700 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-xs font-semibold transition" style="border-radius: 4px;">
                                         Reject
                                     </button>
+                                    @endif
                                 </div>
                             </div>
                         @endforeach
@@ -218,7 +224,7 @@
                             My Claims ({{ $myClaims->total() }})
                         </a>
 
-                        @if($isAdmin)
+                        @if($canManage)
                             <a href="{{ route('finance.expenses.index', ['tab' => 'all_claims', 'month' => $selectedMonth]) }}" 
                                class="px-3 py-1.5 text-xs font-semibold rounded transition {{ $tab === 'all_claims' ? 'bg-blue-600 text-white' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800' }}" style="border-radius: 4px;">
                                 Workforce Claims Ledger ({{ $allClaims->total() }})
@@ -251,7 +257,7 @@
                             <option value="cancelled" {{ $statusFilter === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
                         </select>
 
-                        @if($tab === 'all_claims' && $isAdmin)
+                        @if($tab === 'all_claims' && $canManage)
                             <select aria-label="Employee" name="employee_id" onchange="this.form.submit()" class="text-sm min-h-[44px] rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 py-1.5 pl-3 pr-8">
                                 <option value="">All Employees</option>
                                 @foreach($workforce as $emp)
@@ -366,7 +372,7 @@
                 @endif
 
                 {{-- Tab 2: All Workforce Claims Ledger (Admin Only) --}}
-                @if($tab === 'all_claims' && $isAdmin)
+                @if($tab === 'all_claims' && $canManage)
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-800 text-left text-xs">
                             <thead class="bg-slate-50 dark:bg-slate-900/60 text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">
@@ -423,7 +429,7 @@
                                         </td>
                                         <td class="py-4 px-4 text-right whitespace-nowrap">
                                             <div class="flex items-center justify-end gap-1.5">
-                                                @if($ac->status === 'pending')
+                                                @if($ac->status === 'pending' && auth()->user()->canDecideFor($ac->user_id))
                                                     <form action="{{ route('finance.expenses.approve', $ac) }}" method="POST">
                                                         @csrf
                                                         @method('PATCH')
@@ -436,7 +442,7 @@
                                                             class="min-h-[38px] px-3.5 py-2 bg-rose-50 text-rose-600 border border-rose-200 rounded-lg text-sm font-semibold hover:bg-rose-100 transition">
                                                         Reject
                                                     </button>
-                                                @elseif($ac->status === 'approved')
+                                                @elseif($ac->status === 'approved' && auth()->user()->canDecideFor($ac->user_id))
                                                     <button type="button" 
                                                             onclick="openPayClaimModal('{{ $ac->id }}', '{{ $ac->claim_no }}', '{{ addslashes($ac->user?->name) }}', '{{ number_format((float) $ac->amount, 2) }}')"
                                                             class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition flex items-center gap-1">

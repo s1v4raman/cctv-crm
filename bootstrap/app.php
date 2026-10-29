@@ -31,6 +31,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminOnly::class,
+            'office' => \App\Http\Middleware\OfficeUserOnly::class,
             'internal' => \App\Http\Middleware\InternalUserOnly::class,
             'technician' => \App\Http\Middleware\TechnicianMiddleware::class,
             'customer' => \App\Http\Middleware\CustomerAccess::class,

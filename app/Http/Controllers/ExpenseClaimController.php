@@ -22,13 +22,14 @@ class ExpenseClaimController extends Controller
     public function index(Request $request): View
     {
         $user = Auth::user();
-        $isAdmin = $user->isAdmin();
+        // Admin and staff manage everyone's requests (User::canDecideFor stops self-approval)
+        $canManage = $user->isOffice();
 
         $selectedMonth = $request->input('month', now()->format('Y-m'));
         $categoryFilter = $request->input('category');
         $statusFilter = $request->input('status');
         $employeeFilter = $request->input('employee_id');
-        $tab = $request->input('tab', $isAdmin ? 'pending' : 'my_claims');
+        $tab = $request->input('tab', $canManage ? 'pending' : 'my_claims');
 
         $monthCarbon = Carbon::parse($selectedMonth . '-01');
         $monthStart = $monthCarbon->copy()->startOfMonth();
@@ -95,7 +96,7 @@ class ExpenseClaimController extends Controller
 
         return view('finance.expenses.index', compact(
             'user',
-            'isAdmin',
+            'canManage',
             'tab',
             'pendingClaims',
             'pendingCount',
@@ -199,8 +200,8 @@ class ExpenseClaimController extends Controller
      */
     public function approve(ExpenseClaim $claim): RedirectResponse
     {
-        if (!Auth::user()->isAdmin()) {
-            abort(403, 'Unauthorized. Only Administrators can approve expense claims.');
+        if (!Auth::user()->canDecideFor($claim->user_id)) {
+            abort(403, 'You cannot approve this expense claim.');
         }
 
         if ($claim->status !== 'pending') {
@@ -239,8 +240,8 @@ class ExpenseClaimController extends Controller
      */
     public function reject(Request $request, ExpenseClaim $claim): RedirectResponse
     {
-        if (!Auth::user()->isAdmin()) {
-            abort(403, 'Unauthorized. Only Administrators can reject expense claims.');
+        if (!Auth::user()->canDecideFor($claim->user_id)) {
+            abort(403, 'You cannot reject this expense claim.');
         }
 
         if ($claim->status !== 'pending') {
@@ -284,8 +285,8 @@ class ExpenseClaimController extends Controller
      */
     public function markPaid(Request $request, ExpenseClaim $claim): RedirectResponse
     {
-        if (!Auth::user()->isAdmin()) {
-            abort(403, 'Unauthorized. Only Administrators can mark claims as paid.');
+        if (!Auth::user()->canDecideFor($claim->user_id)) {
+            abort(403, 'You cannot mark this expense claim as paid.');
         }
 
         $validated = $request->validate([

@@ -80,7 +80,7 @@ class RoleBasedAccessTest extends TestCase
         $response->assertOk();
     }
 
-    public function test_staff_can_view_data_but_cannot_perform_admin_writes(): void
+    public function test_staff_add_records_but_cannot_manage_users(): void
     {
         $this->actingAs($this->staff);
 
@@ -90,9 +90,10 @@ class RoleBasedAccessTest extends TestCase
         $this->get(route('jobs.index'))->assertOk();
         $this->get(route('products.index'))->assertOk();
 
-        // CANNOT create leads, edit products, or see admin pages
-        $this->get(route('leads.create'))->assertStatus(403);
-        $this->get(route('products.create'))->assertStatus(403);
+        // CAN add leads and products, CANNOT add projects or manage user accounts
+        $this->get(route('leads.create'))->assertOk();
+        $this->get(route('products.create'))->assertOk();
+        $this->get(route('projects.create'))->assertStatus(403);
         $this->get(route('admin.users.index'))->assertStatus(403);
 
         // CAN manage quotations

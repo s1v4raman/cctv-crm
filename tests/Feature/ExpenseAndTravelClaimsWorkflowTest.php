@@ -257,7 +257,7 @@ class ExpenseAndTravelClaimsWorkflowTest extends TestCase
     /**
      * 9. Non-admin cannot approve or reject claims.
      */
-    public function test_non_admin_cannot_approve_or_pay_claims(): void
+    public function test_staff_approve_others_claims_but_not_their_own_and_technicians_cannot(): void
     {
         $claim = ExpenseClaim::create([
             'claim_no'         => 'EXP-202609-006',
@@ -268,13 +268,27 @@ class ExpenseAndTravelClaimsWorkflowTest extends TestCase
             'description'      => 'Fuel',
             'status'           => 'pending',
         ]);
-
-        $this->actingAs($this->employee)
-            ->patch(route('finance.expenses.approve', $claim))
-            ->assertStatus(403);
+        $ownClaim = ExpenseClaim::create([
+            'claim_no'         => 'EXP-202609-007',
+            'user_id'          => $this->employee->id,
+            'expense_category' => 'fuel_travel',
+            'expense_date'     => now()->toDateString(),
+            'amount'           => 80.00,
+            'description'      => 'Fuel',
+            'status'           => 'pending',
+        ]);
 
         $this->actingAs($this->technician)
             ->post(route('finance.expenses.pay', $claim), ['payment_method' => 'cash'])
             ->assertStatus(403);
+
+        $this->actingAs($this->employee)
+            ->patch(route('finance.expenses.approve', $ownClaim))
+            ->assertStatus(403);
+
+        $this->actingAs($this->employee)
+            ->patch(route('finance.expenses.approve', $claim))
+            ->assertRedirect();
+        $this->assertSame('approved', $claim->fresh()->status);
     }
 }

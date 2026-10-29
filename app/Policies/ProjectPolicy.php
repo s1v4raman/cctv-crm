@@ -17,14 +17,15 @@ class ProjectPolicy
         return $user->isInternal();
     }
 
+    // Admins add projects and technicians submit them for approval; staff cannot add them
     public function create(User $user): bool
     {
-        return $user->isInternal();
+        return $user->isAdmin() || $user->isTechnician();
     }
 
     public function update(User $user, Project $project): bool
     {
-        if ($user->isAdmin()) {
+        if ($user->isOffice()) {
             return true;
         }
 
@@ -34,17 +35,17 @@ class ProjectPolicy
 
     public function approve(User $user, Project $project): bool
     {
-        return $user->isAdmin();
+        return $user->isOffice();
     }
 
     public function reject(User $user, Project $project): bool
     {
-        return $user->isAdmin();
+        return $user->isOffice();
     }
 
     public function updateStatus(User $user, Project $project): bool
     {
-        return $user->isAdmin();
+        return $user->isOffice();
     }
 
     public function delete(User $user, Project $project): bool
@@ -64,11 +65,11 @@ class ProjectPolicy
 
     public function logWorkDay(User $user, Project $project): bool
     {
-        return $user->isAdmin() || $user->isTechnician();
+        return $user->isOffice() || $user->isTechnician();
     }
 
     public function manageDevices(User $user, Project $project): bool
     {
-        return $user->isAdmin() || $user->isTechnician();
+        return $user->isOffice() || $user->isTechnician();
     }
 }

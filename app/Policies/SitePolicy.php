@@ -24,7 +24,7 @@ class SitePolicy
 
     public function update(User $user, Site $site): bool
     {
-        return $user->isAdmin() || $site->created_by === $user->id;
+        return $user->isOffice() || $site->created_by === $user->id;
     }
 
     public function delete(User $user, Site $site): bool

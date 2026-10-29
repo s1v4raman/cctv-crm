@@ -23,13 +23,14 @@ class LeaveRequestController extends Controller
     public function index(Request $request): View
     {
         $user = Auth::user();
-        $isAdmin = $user->isAdmin();
+        // Admin and staff manage everyone's requests (User::canDecideFor stops self-approval)
+        $canManage = $user->isOffice();
         
         $selectedYear = (int) $request->input('year', now()->format('Y'));
         $selectedMonth = $request->input('month', now()->format('Y-m'));
         $statusFilter = $request->input('status');
         $employeeFilter = $request->input('employee_id');
-        $tab = $request->input('tab', $isAdmin ? 'pending' : 'my_leaves');
+        $tab = $request->input('tab', $canManage ? 'pending' : 'my_leaves');
 
         // Leave Quotas for current user
         $leaveSummary = $user->getLeaveSummary($selectedYear);
@@ -83,7 +84,7 @@ class LeaveRequestController extends Controller
 
         return view('attendance.leaves', compact(
             'user',
-            'isAdmin',
+            'canManage',
             'leaveSummary',
             'pendingRequests',
             'pendingCount',
@@ -176,8 +177,8 @@ class LeaveRequestController extends Controller
      */
     public function approve(LeaveRequest $leave): RedirectResponse
     {
-        if (!Auth::user()->isAdmin()) {
-            abort(403, 'Unauthorized. Only Administrators can approve leave requests.');
+        if (!Auth::user()->canDecideFor($leave->user_id)) {
+            abort(403, 'You cannot approve this leave request.');
         }
 
         if ($leave->status !== 'pending') {
@@ -256,8 +257,8 @@ class LeaveRequestController extends Controller
      */
     public function reject(Request $request, LeaveRequest $leave): RedirectResponse
     {
-        if (!Auth::user()->isAdmin()) {
-            abort(403, 'Unauthorized. Only Administrators can reject leave requests.');
+        if (!Auth::user()->canDecideFor($leave->user_id)) {
+            abort(403, 'You cannot reject this leave request.');
         }
 
         if ($leave->status !== 'pending') {

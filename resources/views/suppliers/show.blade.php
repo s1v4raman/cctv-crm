@@ -19,12 +19,16 @@
                 </div>
 
                 <div class="flex items-center gap-2 flex-wrap">
+                    @if(auth()->user()->isOffice())
                     <a href="{{ route('suppliers.edit', $supplier) }}" class="btn-secondary">
                         Edit
                     </a>
+                    @endif
+                    @if(auth()->user()->isOffice())
                     <a href="{{ route('purchase-orders.create', ['supplier_id' => $supplier->id]) }}" class="btn-primary">
                         New Purchase Order
                     </a>
+                    @endif
                     @if(auth()->user()->isAdmin())
                         <form method="POST" action="{{ route('suppliers.destroy', $supplier) }}" data-confirm="Are you sure you want to delete supplier {{ $supplier->name }}?" class="inline">
                             @csrf

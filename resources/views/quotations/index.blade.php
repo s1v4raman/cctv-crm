@@ -273,12 +273,14 @@
                                         <a href="{{ route('quotations.show', $quotation) }}" class="action-link">View</a>
                                         <a href="{{ route('quotations.edit', $quotation) }}" class="action-link">Edit</a>
                                         @if($quotation->status === 'draft')
+                                            @if(auth()->user()->isAdmin())
                                             <form method="POST" action="{{ route('quotations.destroy', $quotation) }}" class="inline"
                                                   data-confirm="Delete {{ $quotation->quotation_no }}? This cannot be undone.">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="danger-link">Delete</button>
                                             </form>
+                                            @endif
                                         @endif
                                     </td>
                                 </tr>

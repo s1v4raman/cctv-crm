@@ -260,11 +260,11 @@
                 <div :class="sidebarCollapsed ? 'lg:hidden' : ''" class="px-3 mb-1.5 text-[11px] font-bold tracking-wider uppercase text-slate-400 dark:text-slate-500">Inventory & Procurement</div>
                 <div :class="sidebarCollapsed ? 'hidden lg:block' : 'hidden'" class="my-2 border-t border-slate-100 dark:border-slate-800"></div>
                 <div class="space-y-1">
-                    @if(auth()->user()->isAdmin())
+                    @if(auth()->user()->isOffice())
                     {{-- Products & Pricing (Bento 4-squares icon) --}}
                     <a :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('products.index') }}" 
                        class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('products.*') ? 'crm-active-link' : '' }}" @if(request()->routeIs('products.*')) aria-current="page" @endif
-                       title="Product Catalogue & Pricing (Admin Only)">
+                       title="Product Catalogue & Pricing">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                             <rect width="7" height="7" x="3" y="3" rx="2"/>
                             <rect width="7" height="7" x="14" y="3" rx="2"/>
@@ -336,12 +336,13 @@
                 </div>
             </div>
 
-            {{-- 7. Analytics & Intelligence (Admin Only) --}}
-            @if(auth()->user()->isAdmin())
+            {{-- 7. Analytics & Automation (analytics for office users; alerts and user accounts admin-only) --}}
+            @if(auth()->user()->isOffice())
                 <div>
                     <div :class="sidebarCollapsed ? 'lg:hidden' : ''" class="px-3 mb-1.5 text-[11px] font-bold tracking-wider uppercase text-slate-400 dark:text-slate-500">Analytics & Automation</div>
                     <div :class="sidebarCollapsed ? 'hidden lg:block' : 'hidden'" class="my-2 border-t border-slate-100 dark:border-slate-800"></div>
                     <div class="space-y-1">
+                        @if(auth()->user()->isAdmin())
                         {{-- Automated Alerts & SMS (Megaphone icon) --}}
                         <a :title="sidebarCollapsed ? $el.textContent.trim() : null" :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('alerts.index') }}" 
                            class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('alerts.*') ? 'crm-active-link' : '' }}" @if(request()->routeIs('alerts.*')) aria-current="page" @endif>
@@ -351,6 +352,7 @@
                             </svg>
                             <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">Automated Alerts & SMS</span>
                         </a>
+                        @endif
 
                         {{-- Executive Analytics (Sliders/Controls icon) --}}
                         <a :title="sidebarCollapsed ? $el.textContent.trim() : null" :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('analytics.index') }}" 
@@ -366,6 +368,7 @@
                             <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">Executive Analytics</span>
                         </a>
 
+                        @if(auth()->user()->isAdmin())
                         {{-- User Accounts & Settings (Sliders/Controls icon) --}}
                         <a :title="sidebarCollapsed ? $el.textContent.trim() : null" :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('admin.users.index') }}" 
                            class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('admin.users.*') ? 'crm-active-link' : '' }}" @if(request()->routeIs('admin.users.*')) aria-current="page" @endif>
@@ -379,6 +382,7 @@
                             </svg>
                             <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">User Accounts &amp; Settings</span>
                         </a>
+                        @endif
                     </div>
                 </div>
             @endif

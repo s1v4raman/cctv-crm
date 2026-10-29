@@ -9,9 +9,11 @@
                     Export CSV
                 </a>
                 @if(auth()->user()->isAdmin() || auth()->user()->isStaff())
+                @if(auth()->user()->can('create', \App\Models\Project::class))
                 <a href="{{ route('projects.create') }}" class="btn-primary">
                     New Project
                 </a>
+                @endif
                 @endif
             </div>
         </div>
@@ -128,9 +130,11 @@
                     @if($search || $statusFilter !== 'all' || $priorityFilter !== 'all' || ($typeFilter && $typeFilter !== 'all'))
                         <a href="{{ route('projects.index') }}" class="px-3 py-1.5 rounded border border-slate-300 bg-white text-slate-700 text-xs font-medium">Reset Filter</a>
                     @endif
+                    @if(auth()->user()->can('create', \App\Models\Project::class))
                     <a href="{{ route('projects.create') }}" class="px-3 py-1.5 rounded bg-blue-600 text-white text-xs font-semibold">
                         Create Project
                     </a>
+                    @endif
                 </div>
             </div>
         @else

@@ -14,17 +14,17 @@ class WorkerPolicy
 
     public function view(User $user, Worker $worker): bool
     {
-        return $user->isAdmin();
+        return $user->isInternal();
     }
 
     public function create(User $user): bool
     {
-        return $user->isAdmin() || $user->isTechnician();
+        return $user->isOffice() || $user->isTechnician();
     }
 
     public function update(User $user, Worker $worker): bool
     {
-        return $user->isAdmin();
+        return $user->isOffice();
     }
 
     public function delete(User $user, Worker $worker): bool

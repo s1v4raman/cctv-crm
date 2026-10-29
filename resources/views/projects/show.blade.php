@@ -816,11 +816,13 @@
                                 Project Team
                             </h3>
                             <div class="flex items-center gap-1.5">
+                                @if(auth()->user()->isAdmin())
                                 <a href="{{ route('admin.users.create', ['role' => 'technician', 'return_to' => route('projects.show', [$project->id, 'tab' => 'overview'])]) }}" 
                                    class="inline-flex items-center px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs transition"
                                    title="Add and register a new technician for this project">
                                     Add Technician
                                 </a>
+                                @endif
                                 @if(auth()->user()->isAdmin() || ($project->created_by === auth()->id() && in_array($project->status, ['draft', 'pending_approval'])))
                                     <a href="{{ route('projects.edit', $project) }}" class="text-xs text-blue-600 dark:text-blue-400 font-semibold hover:underline px-1 py-0.5">
                                         Edit
@@ -877,11 +879,13 @@
                                     @else
                                         <div class="flex items-center justify-between pt-1">
                                             <span class="text-slate-400 italic">No Lead Technician Assigned</span>
+                                            @if(auth()->user()->isAdmin())
                                             <a href="{{ route('admin.users.create', ['role' => 'technician', 'return_to' => route('projects.show', [$project->id, 'tab' => 'overview'])]) }}" 
                                                class="btn-subtle text-white font-semibold"
                                                style="color: #ffffff !important;">
                                                 <span class="text-white font-semibold" style="color: #ffffff !important;">+ Add New Technician</span>
                                             </a>
+                                            @endif
                                         </div>
                                     @endif
                                 </div>
@@ -901,10 +905,12 @@
                                             </select>
                                         </div>
                                         <div class="flex items-center justify-between pt-1">
+                                            @if(auth()->user()->isAdmin())
                                             <a href="{{ route('admin.users.create', ['role' => 'technician', 'return_to' => route('projects.show', [$project->id, 'tab' => 'overview'])]) }}" 
                                                class="text-[11px] text-blue-600 dark:text-blue-400 font-semibold hover:underline flex items-center gap-1">
                                                 <span>Create New Technician</span>
                                             </a>
+                                            @endif
                                             <div class="flex gap-2">
                                                 <button type="button" @click="showAssignForm = false" class="px-2.5 py-1 text-xs text-slate-500 hover:text-slate-700">
                                                     Cancel
@@ -1426,9 +1432,11 @@
                                 Breakdown of man-days, cabling metrics, wages earned, amounts settled, and pending costs to pay for this project.
                             </p>
                         </div>
+                        @if(auth()->user()->isAdmin())
                         <a href="{{ route('wages.index') }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition">
                             <span>Open Sunday Wage Console &rarr;</span>
                         </a>
+                        @endif
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-sm text-slate-600 dark:text-slate-300">

@@ -46,11 +46,11 @@ class GstComplianceTest extends TestCase
         ]);
     }
 
-    public function test_non_admin_cannot_access_gst_compliance_center(): void
+    public function test_staff_can_open_gst_compliance_but_technicians_cannot(): void
     {
         $this->actingAs($this->staff)
             ->get(route('finance.gst.index'))
-            ->assertForbidden();
+            ->assertOk();
 
         $this->actingAs($this->technician)
             ->get(route('finance.gst.index'))

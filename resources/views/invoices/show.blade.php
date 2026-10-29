@@ -112,14 +112,20 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($invoice->quotation->items as $item)
+                            @forelse ($invoice->quotation->items as $item)
                                 <tr>
                                     <td class="font-bold text-slate-900">{{ $item->item_name }}</td>
                                     <td class="text-right font-medium" style="white-space: nowrap;">{{ $item->quantity }} {{ $item->unit }}</td>
                                     <td class="text-right" style="white-space: nowrap;">₹{{ number_format($item->unit_price, 2) }}</td>
                                     <td class="text-right font-bold text-slate-900" style="white-space: nowrap;">₹{{ number_format($item->total, 2) }}</td>
                                 </tr>
-                            @endforeach
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="text-center py-6 text-slate-500 text-sm">
+                                        No items on the linked quotation.
+                                    </td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
@@ -188,12 +194,14 @@
                                         <a href="{{ URL::signedRoute('payments.receipt.pdf', $payment) }}" target="_blank" class="action-link mr-2">
                                             Receipt
                                         </a>
+                                        @if(auth()->user()->isAdmin())
                                         <form method="POST" action="{{ route('payments.destroy', $payment) }}"
                                               data-confirm="Remove payment of ₹{{ number_format($payment->amount, 2) }}?" class="inline">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="danger-link text-xs cursor-pointer">Delete</button>
                                         </form>
+                                        @endif
                                     </td>
                                 </tr>
                             @empty

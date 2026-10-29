@@ -27,6 +27,9 @@ class ModuleHubController extends Controller
         $today = now()->toDateString();
         $currentMonth = now()->format('Y-m');
 
+        // Salaries and payroll are admin-only: staff and technicians get the workforce view without them
+        $canSeePay = $request->user()->isAdmin();
+
         // ── Workforce roster with today's attendance ─────────────────────────
         $allInternal = User::whereIn('role', ['admin', 'staff', 'technician'])
             ->with(['salaryStructure', 'attendances' => fn($q) => $q->where('date', $today)])
@@ -47,14 +50,14 @@ class ModuleHubController extends Controller
         $unmarkedCount      = max(0, $totalEmployees - $todayAttendance->count());
 
         // ── Employee Roster for table ─────────────────────────────────────────
-        $employeeRoster = $allInternal->map(function ($user) use ($today) {
+        $employeeRoster = $allInternal->map(function ($user) use ($today, $canSeePay) {
             $att = $user->attendances->first();
             return [
                 'id'       => $user->id,
                 'name'     => $user->name,
                 'email'    => $user->email,
                 'role'     => $user->role,
-                'salary'   => $user->salaryStructure?->base_salary_monthly ?? 0,
+                'salary'   => $canSeePay ? ($user->salaryStructure?->base_salary_monthly ?? 0) : 0,
                 'status'   => $att?->status ?? 'unmarked',
                 'clock_in' => $att?->clock_in ? \Carbon\Carbon::parse($att->clock_in)->format('h:i A') : '—',
                 'clock_out'=> $att?->clock_out ? \Carbon\Carbon::parse($att->clock_out)->format('h:i A') : '—',
@@ -105,6 +108,13 @@ class ModuleHubController extends Controller
             return ['month' => $label, 'total' => $total];
         });
 
+        if (!$canSeePay) {
+            $monthlySalaryBurn = 0.0;
+            $salaryByRole = ['admin' => 0.0, 'staff' => 0.0, 'technician' => 0.0];
+            $payrollTotalAmount = 0.0;
+            $payrollHistory = collect();
+        }
+
         // ── Recent Leave Requests ─────────────────────────────────────────────
         $recentLeaves = LeaveRequest::with('user')
             ->latest()
@@ -118,7 +128,7 @@ class ModuleHubController extends Controller
             'monthlySalaryBurn', 'configuredSalariesCount', 'salaryByRole',
             'pendingLeavesCount', 'pendingExpensesCount', 'pendingExpensesAmount',
             'isPayrollGenerated', 'payrollPaidCount', 'payrollTotalAmount',
-            'payrollHistory', 'recentLeaves'
+            'payrollHistory', 'recentLeaves', 'canSeePay'
         ));
     }
 

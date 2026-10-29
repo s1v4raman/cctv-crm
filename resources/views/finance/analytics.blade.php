@@ -7,14 +7,18 @@
                 </h1>
             </div>
             <div class="flex items-center gap-2">
+                @if(auth()->user()->isAdmin())
                 <a href="{{ route('finance.salaries.index') }}"
                    class="inline-flex items-center px-3 py-1.5 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition">
                     Salary Master
                 </a>
+                @endif
+                @if(auth()->user()->isAdmin())
                 <a href="{{ route('finance.payroll.index') }}"
                    class="inline-flex items-center px-3 py-1.5 rounded bg-[#2563eb] hover:bg-blue-700 text-white text-xs font-medium transition">
                     Payrolls
                 </a>
+                @endif
             </div>
         </div>
     </x-slot>
@@ -194,9 +198,11 @@
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-4 space-y-3">
             <div class="flex items-center justify-between">
                 <h2 class="font-bold text-slate-900 dark:text-white text-sm">Employee Wage Rates Comparison</h2>
+                @if(auth()->user()->isAdmin())
                 <a href="{{ route('finance.salaries.index') }}" class="text-xs text-blue-600 hover:underline">
                     Configure Rates &rarr;
                 </a>
+                @endif
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-xs text-slate-600 dark:text-slate-300">

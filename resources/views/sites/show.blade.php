@@ -18,9 +18,11 @@
                 <a href="{{ route('sites.edit', $site) }}" class="btn-secondary text-xs">
                     Edit Details
                 </a>
+                @if(auth()->user()->can('create', \App\Models\Project::class))
                 <a href="{{ route('projects.create', ['site_id' => $site->id]) }}" class="btn-primary text-xs">
                     New Project
                 </a>
+                @endif
                 @if(auth()->user()->isAdmin())
                     <form method="POST" action="{{ route('sites.destroy', $site) }}" data-confirm="Are you sure you want to delete this installation site?" class="inline">
                         @csrf

@@ -40,11 +40,11 @@ class JobCostingAndProjectProfitLossTest extends TestCase
         ]);
     }
 
-    public function test_non_admin_is_forbidden_from_job_costing(): void
+    public function test_staff_can_open_job_costing_but_technicians_cannot(): void
     {
         $this->actingAs($this->staff)
             ->get(route('finance.job-costing.index'))
-            ->assertForbidden();
+            ->assertOk();
 
         $this->actingAs($this->technician)
             ->get(route('finance.job-costing.index'))

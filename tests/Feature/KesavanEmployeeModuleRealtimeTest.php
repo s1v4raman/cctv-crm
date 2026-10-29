@@ -396,13 +396,13 @@ class KesavanEmployeeModuleRealtimeTest extends TestCase
         // 3. Blocked from Finance & Salaries Configuration
         $this->get(route('finance.salaries.index'))->assertStatus(403);
         $this->get(route('finance.payroll.index'))->assertStatus(403);
-        $this->get(route('finance.analytics'))->assertStatus(403);
 
-        // 4. Blocked from Executive Analytics
-        $this->get(route('analytics.index'))->assertStatus(403);
-        $this->get(route('analytics.cost-profit'))->assertStatus(403);
-        $this->get(route('analytics.technicians'))->assertStatus(403);
-        $this->get(route('analytics.mrr-retention'))->assertStatus(403);
+        // 4. Staff now open finance and executive analytics
+        $this->get(route('finance.analytics'))->assertOk();
+        $this->get(route('analytics.index'))->assertOk();
+        $this->get(route('analytics.cost-profit'))->assertOk();
+        $this->get(route('analytics.technicians'))->assertOk();
+        $this->get(route('analytics.mrr-retention'))->assertOk();
     }
 
     /**

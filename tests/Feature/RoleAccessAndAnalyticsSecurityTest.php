@@ -54,17 +54,19 @@ class RoleAccessAndAnalyticsSecurityTest extends TestCase
         $this->get(route('alerts.index'))->assertOk();
     }
 
-    public function test_staff_employee_cannot_access_analytics_finance_or_alerts(): void
+    public function test_staff_open_analytics_but_not_payroll_or_alerts(): void
     {
         $this->actingAs($this->staff);
 
-        $this->get(route('analytics.index'))->assertForbidden();
-        $this->get(route('analytics.cost-profit'))->assertForbidden();
-        $this->get(route('analytics.technicians'))->assertForbidden();
-        $this->get(route('analytics.mrr-retention'))->assertForbidden();
+        $this->get(route('analytics.index'))->assertOk();
+        $this->get(route('analytics.cost-profit'))->assertOk();
+        $this->get(route('analytics.technicians'))->assertOk();
+        $this->get(route('analytics.mrr-retention'))->assertOk();
+        $this->get(route('finance.analytics'))->assertOk();
+
+        // Payroll & salaries and system settings stay admin-only
         $this->get(route('finance.salaries.index'))->assertForbidden();
         $this->get(route('finance.payroll.index'))->assertForbidden();
-        $this->get(route('finance.analytics'))->assertForbidden();
         $this->get(route('alerts.index'))->assertForbidden();
     }
 

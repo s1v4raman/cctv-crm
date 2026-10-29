@@ -17,8 +17,8 @@ class IpDeviceController extends Controller
      */
     public function store(Request $request, Project $project)
     {
-        if (!Auth::user()->isAdmin() && !Auth::user()->isTechnician()) {
-            abort(403, 'Employees have view-only access to the IP device register. Only technicians and administrators can add or edit devices.');
+        if (!Auth::user()->isOffice() && !Auth::user()->isTechnician()) {
+            abort(403, 'Only office users and technicians can add or edit devices.');
         }
 
         $validated = $request->validate([
@@ -69,8 +69,8 @@ class IpDeviceController extends Controller
      */
     public function bulkStore(Request $request, Project $project)
     {
-        if (!Auth::user()->isAdmin() && !Auth::user()->isTechnician()) {
-            abort(403, 'Employees have view-only access to the IP device register. Only technicians and administrators can add or edit devices.');
+        if (!Auth::user()->isOffice() && !Auth::user()->isTechnician()) {
+            abort(403, 'Only office users and technicians can add or edit devices.');
         }
 
         $validated = $request->validate([
@@ -152,8 +152,8 @@ class IpDeviceController extends Controller
      */
     public function update(Request $request, Project $project, IpDevice $device)
     {
-        if (!Auth::user()->isAdmin() && !Auth::user()->isTechnician()) {
-            abort(403, 'Employees have view-only access to the IP device register. Only technicians and administrators can add or edit devices.');
+        if (!Auth::user()->isOffice() && !Auth::user()->isTechnician()) {
+            abort(403, 'Only office users and technicians can add or edit devices.');
         }
 
         $validated = $request->validate([

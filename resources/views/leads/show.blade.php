@@ -24,7 +24,7 @@
 
             {{-- Right: Status dropdown, navigation buttons, and Delete link --}}
             <div class="flex items-center gap-2 flex-wrap">
-                @if(auth()->user()->isAdmin())
+                @if(auth()->user()->isOffice())
                     <form method="POST" action="{{ route('leads.status', $lead) }}" class="inline">
                         @csrf
                         <select aria-label="Status" name="status" onchange="this.form.submit()"
@@ -47,7 +47,7 @@
                     <span>Save Contact</span>
                 </a>
 
-                @if(auth()->user()->isAdmin())
+                @if(auth()->user()->isOffice())
                     <a href="{{ route('leads.edit', $lead) }}" class="btn-secondary text-xs inline-flex items-center gap-1.5">
                         <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                         <span>Edit</span>

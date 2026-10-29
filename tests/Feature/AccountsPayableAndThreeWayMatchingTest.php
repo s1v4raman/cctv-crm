@@ -29,11 +29,11 @@ class AccountsPayableAndThreeWayMatchingTest extends TestCase
         $this->technician = User::factory()->create(['role' => 'technician', 'name' => 'Field Technician']);
     }
 
-    public function test_non_admin_is_forbidden_from_accounts_payable(): void
+    public function test_staff_can_open_accounts_payable_but_technicians_cannot(): void
     {
         $this->actingAs($this->staff)
             ->get(route('finance.payables.index'))
-            ->assertForbidden();
+            ->assertOk();
 
         $this->actingAs($this->technician)
             ->get(route('finance.payables.index'))

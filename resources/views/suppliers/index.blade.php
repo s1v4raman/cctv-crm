@@ -4,9 +4,11 @@
             <div>
                 <h2 class="text-xl font-bold text-slate-900 dark:text-white">Suppliers</h2>
             </div>
+            @if(auth()->user()->isOffice())
             <a href="{{ route('suppliers.create') }}" class="btn-primary">
                 Register Supplier
             </a>
+            @endif
         </div>
     </x-slot>
 
@@ -89,7 +91,9 @@
                         </td>
                         <td class="nowrap">
                             <a href="{{ route('suppliers.show', $supplier) }}" class="action-link">View</a>
+                            @if(auth()->user()->isOffice())
                             <a href="{{ route('suppliers.edit', $supplier) }}" class="action-link">Edit</a>
+                            @endif
                             @if(auth()->user()->isAdmin())
                                 <form method="POST" action="{{ route('suppliers.destroy', $supplier) }}" data-confirm="Are you sure you want to delete this supplier?" class="inline">
                                     @csrf

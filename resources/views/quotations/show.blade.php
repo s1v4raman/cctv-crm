@@ -35,17 +35,17 @@
 
             <div class="flex items-center gap-2 flex-wrap">
                 {{-- PDF Downloads --}}
-                <a href="{{ route('quotations.pdf', [$quotation, '1']) }}" class="btn-secondary text-xs inline-flex items-center gap-1.5 shadow-2xs">
+                <a href="{{ route('quotations.pdf', [$quotation, '1']) }}" title="Download the Executive Modern quotation PDF" class="btn-secondary text-xs inline-flex items-center gap-1.5 shadow-2xs">
                     <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v6h6"/></svg>
-                    <span>Format 1</span>
+                    <span>Modern PDF</span>
                 </a>
-                <a href="{{ route('quotations.pdf', [$quotation, '2']) }}" class="btn-secondary text-xs inline-flex items-center gap-1.5 shadow-2xs">
+                <a href="{{ route('quotations.pdf', [$quotation, '2']) }}" title="Download the Technical Detailed quotation PDF" class="btn-secondary text-xs inline-flex items-center gap-1.5 shadow-2xs">
                     <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                    <span>Format 2</span>
+                    <span>Detailed PDF</span>
                 </a>
-                <a href="{{ route('quotations.pdf', [$quotation, '3']) }}" class="btn-secondary text-xs inline-flex items-center gap-1.5 shadow-2xs">
+                <a href="{{ route('quotations.pdf', [$quotation, '3']) }}" title="Download the Classic Formal quotation PDF" class="btn-secondary text-xs inline-flex items-center gap-1.5 shadow-2xs">
                     <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
-                    <span>Format 3</span>
+                    <span>Classic PDF</span>
                 </a>
 
                 {{-- Action Modals & Links --}}
@@ -74,6 +74,7 @@
                             <span>Mark as Sent</span>
                         </button>
                     </form>
+                    @if(auth()->user()->isAdmin())
                     <form method="POST" action="{{ route('quotations.destroy', $quotation) }}"
                           data-confirm="Delete {{ $quotation->quotation_no }}?" class="inline">
                         @csrf @method('DELETE')
@@ -82,6 +83,7 @@
                             <span>Delete</span>
                         </button>
                     </form>
+                    @endif
                 @endif
 
                 @if($quotation->status === 'sent')
@@ -105,6 +107,7 @@
                             <span>View Job</span>
                         </a>
                     @else
+                        @if(auth()->user()->isOffice())
                         <form method="POST" action="{{ route('jobs.store', $quotation) }}" class="inline">
                             @csrf
                             <button type="submit" class="btn-primary text-xs cursor-pointer inline-flex items-center gap-1.5 shadow-2xs">
@@ -112,6 +115,7 @@
                                 <span>Create Job</span>
                             </button>
                         </form>
+                        @endif
                     @endif
                 @endif
             </div>
@@ -210,7 +214,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($quotation->items as $i => $item)
+                            @forelse ($quotation->items as $i => $item)
                                 <tr>
                                     <td>{{ $i + 1 }}</td>
                                     <td class="font-bold text-slate-900">{{ $item->item_name }}</td>
@@ -229,7 +233,13 @@
                                         </td>
                                     @endif
                                 </tr>
-                            @endforeach
+                            @empty
+                                <tr>
+                                    <td colspan="{{ $quotation->status === 'draft' ? 8 : 7 }}" class="text-center py-6 text-slate-500 text-sm">
+                                        No items on this quotation yet. Edit the quotation to add items.
+                                    </td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
@@ -424,10 +434,12 @@
                 </div>
 
                 <div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800">
+                    @if(auth()->user()->isAdmin())
                     <a href="{{ route('alerts.gateways') }}" target="_blank" class="action-link text-xs inline-flex items-center gap-1.5">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                         <span>SMTP Settings</span>
                     </a>
+                    @endif
                     <div class="flex items-center gap-2.5">
                         <button type="button" onclick="closeEmailModal()" class="btn-secondary text-xs py-2 px-4">Cancel</button>
                         <button type="submit" class="btn-primary text-xs py-2 px-5 flex items-center justify-center gap-2">

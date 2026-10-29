@@ -229,9 +229,22 @@ class ProjectsModuleRedesignSpecTest extends TestCase
         ]);
     }
 
+    public function test_staff_cannot_add_projects(): void
+    {
+        $this->actingAs($this->staff)->get(route('projects.create'))->assertForbidden();
+        $this->actingAs($this->staff)->post(route('projects.store'), [
+            'action' => 'save_draft',
+            'title' => 'Staff Draft',
+            'project_type' => 'hardware_cctv',
+            'priority' => 'medium',
+        ])->assertForbidden();
+
+        $this->assertNull(Project::where('title', 'Staff Draft')->first());
+    }
+
     public function test_can_save_project_as_draft(): void
     {
-        $response = $this->actingAs($this->staff)->post(route('projects.store'), [
+        $response = $this->actingAs($this->admin)->post(route('projects.store'), [
             'action' => 'save_draft',
             'title' => 'Preliminary CCTV Proposal for TechCorp',
             'project_type' => 'hardware_cctv',

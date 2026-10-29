@@ -114,17 +114,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // ================================================================
-    // ADMIN ONLY â€” Full Read + Write + Delete for all modules
-    // Staff & Technician are blocked from all routes in this group.
+    // OFFICE (Admin + Staff): add and edit records in every module.
+    // Admin-only actions are in the next group (see User::isOffice()).
     // ================================================================
-    Route::middleware(['admin'])->group(function () {
-
+    Route::middleware(['office'])->group(function () {
         // Leads Write
         Route::get('/leads/create', [LeadController::class, 'create'])->name('leads.create');
         Route::post('/leads', [LeadController::class, 'store'])->name('leads.store');
         Route::get('/leads/{lead}/edit', [LeadController::class, 'edit'])->name('leads.edit');
         Route::put('/leads/{lead}', [LeadController::class, 'update'])->name('leads.update');
-        Route::delete('/leads/{lead}', [LeadController::class, 'destroy'])->name('leads.destroy');
         Route::post('/leads/{lead}/status', [LeadController::class, 'updateStatus'])->name('leads.status');
 
         // Jobs Write
@@ -132,55 +130,30 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/quotations/{quotation}/job', [InstallationJobController::class, 'store'])->name('jobs.store');
         Route::patch('/jobs/{job}', [InstallationJobController::class, 'update'])->name('jobs.update');
 
-        // Products Management (Admin Only writes)
+        // Products Management
         Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
         Route::post('/products', [ProductController::class, 'store'])->name('products.store');
         Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
         Route::put('/products/{product}', [ProductController::class, 'update'])->name('products.update');
         Route::post('/products/{product}/approve', [ProductController::class, 'approve'])->name('products.approve');
-        Route::post('/products/{product}/merge', [ProductController::class, 'merge'])->name('products.merge');
-        Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
 
         // Inventory Stock Adjustments
         Route::post('/inventory/{product}/adjust', [InventoryController::class, 'adjustStock'])->name('inventory.adjust');
-
-        // Installed Equipment Delete
-        Route::delete('/equipment/{equipment}', [InstalledEquipmentController::class, 'destroy'])->name('equipment.destroy');
-
-        // User Accounts CRUD
-        Route::prefix('admin')->name('admin.')->group(function () {
-            Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
-        });
 
         // Suppliers & Vendors Write
         Route::get('/suppliers/create', [SupplierController::class, 'create'])->name('suppliers.create');
         Route::post('/suppliers', [SupplierController::class, 'store'])->name('suppliers.store');
         Route::get('/suppliers/{supplier}/edit', [SupplierController::class, 'edit'])->name('suppliers.edit');
         Route::put('/suppliers/{supplier}', [SupplierController::class, 'update'])->name('suppliers.update');
-        Route::delete('/suppliers/{supplier}', [SupplierController::class, 'destroy'])->name('suppliers.destroy');
 
         // Purchase Orders Write
         Route::get('/purchase-orders/create', [PurchaseOrderController::class, 'create'])->name('purchase-orders.create');
         Route::post('/purchase-orders', [PurchaseOrderController::class, 'store'])->name('purchase-orders.store');
         Route::get('/purchase-orders/{purchase_order}/edit', [PurchaseOrderController::class, 'edit'])->name('purchase-orders.edit');
         Route::put('/purchase-orders/{purchase_order}', [PurchaseOrderController::class, 'update'])->name('purchase-orders.update');
-        Route::delete('/purchase-orders/{purchase_order}', [PurchaseOrderController::class, 'destroy'])->name('purchase-orders.destroy');
         Route::post('/purchase-orders/{purchase_order}/receive', [PurchaseOrderController::class, 'receiveItems'])->name('purchase-orders.receive');
         Route::patch('/purchase-orders/{purchase_order}/status', [PurchaseOrderController::class, 'updateStatus'])->name('purchase-orders.updateStatus');
         Route::patch('/purchase-orders/{purchase_order}/payment', [PurchaseOrderController::class, 'updatePayment'])->name('purchase-orders.updatePayment');
-        Route::patch('/purchase-orders/{purchase_order}/payment', [PurchaseOrderController::class, 'updatePayment'])->name('purchase-orders.updatePayment');
-
-        // Automated Alerts & Notification Engine (Admin Only)
-        Route::get('/alerts', [AlertNotificationController::class, 'index'])->name('alerts.index');
-        Route::get('/alerts/templates', [AlertNotificationController::class, 'templates'])->name('alerts.templates');
-        Route::get('/alerts/gateways', [AlertNotificationController::class, 'gateways'])->name('alerts.gateways');
-        Route::put('/alerts/templates/{template}', [AlertNotificationController::class, 'updateTemplate'])->name('alerts.templates.update');
-        Route::put('/alerts/gateways', [AlertNotificationController::class, 'updateGateways'])->name('alerts.gateways.update');
-        Route::post('/alerts/gateways/test-sms', [AlertNotificationController::class, 'testSmsGateway'])->name('alerts.gateways.test-sms');
-        Route::post('/alerts/gateways/test-otp', [AlertNotificationController::class, 'testOtp'])->name('alerts.gateways.test-otp');
-        Route::post('/alerts/gateways/test-email', [AlertNotificationController::class, 'testEmailGateway'])->name('alerts.gateways.test-email');
-        Route::post('/alerts/broadcast', [AlertNotificationController::class, 'sendManualBroadcast'])->name('alerts.broadcast');
-        Route::post('/alerts/run-sweep', [AlertNotificationController::class, 'runAutomatedSweep'])->name('alerts.run-sweep');
 
         // Attendance Admin Write (managing other employees' records)
         Route::post('/attendance', [AttendanceController::class, 'store'])->name('attendance.store');
@@ -188,28 +161,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/attendance/batch-store', [AttendanceController::class, 'batchStore'])->name('attendance.batch-store');
         Route::put('/attendance/{attendance}', [AttendanceController::class, 'update'])->name('attendance.update');
 
-        // Leave Requests Admin Approvals (Admin Only)
+        // Leave Requests Admin Approvals
         Route::patch('/attendance/leaves/{leave}/approve', [LeaveRequestController::class, 'approve'])->name('leaves.approve');
         Route::patch('/attendance/leaves/{leave}/reject', [LeaveRequestController::class, 'reject'])->name('leaves.reject');
-
-        // Finance & Salary (Admin Only)
-        Route::get('/finance/salaries', [FinanceController::class, 'salaries'])->name('finance.salaries.index');
-        Route::post('/finance/salaries/{user}', [FinanceController::class, 'updateSalary'])->name('finance.salaries.update');
-        Route::get('/finance/payroll', [FinanceController::class, 'payrollIndex'])->name('finance.payroll.index');
-        Route::post('/finance/payroll/generate', [FinanceController::class, 'generatePayroll'])->name('finance.payroll.generate');
-        Route::get('/finance/payroll/{payroll}', [FinanceController::class, 'showPayroll'])->name('finance.payroll.show');
-        Route::get('/finance/payroll/{payroll}/pdf', [FinanceController::class, 'downloadPayslipPdf'])->name('finance.payroll.pdf');
-        Route::get('/finance/payroll/{payroll}/view-pdf', [FinanceController::class, 'streamPayslipPdf'])->name('finance.payroll.viewPdf');
-        Route::match(['get', 'post'], '/finance/payroll/{payroll}/send-whatsapp', [FinanceController::class, 'sendWhatsApp'])->name('finance.payroll.sendWhatsApp');
-        Route::post('/finance/payroll/{payroll}/status', [FinanceController::class, 'updatePayrollStatus'])->name('finance.payroll.updateStatus');
         Route::get('/finance/analytics', [FinanceController::class, 'analytics'])->name('finance.analytics');
-        
-        // Expense & Travel Claims Admin Approvals & Payouts (Admin Only)
+
+        // Expense & Travel Claims Admin Approvals & Payouts
         Route::patch('/finance/expenses/{claim}/approve', [ExpenseClaimController::class, 'approve'])->name('finance.expenses.approve');
         Route::patch('/finance/expenses/{claim}/reject', [ExpenseClaimController::class, 'reject'])->name('finance.expenses.reject');
         Route::post('/finance/expenses/{claim}/pay', [ExpenseClaimController::class, 'markPaid'])->name('finance.expenses.pay');
 
-        // GST & Tax Compliance Center (Admin Only)
+        // GST & Tax Compliance Center
         Route::get('/finance/gst', [GstComplianceController::class, 'index'])->name('finance.gst.index');
         Route::post('/finance/gst/settings', [GstComplianceController::class, 'updateCompanyGst'])->name('finance.gst.settings.update');
         Route::post('/finance/gst/filing', [GstComplianceController::class, 'recordFiling'])->name('finance.gst.filing.record');
@@ -218,14 +180,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/finance/gst/export-itc-csv', [GstComplianceController::class, 'exportItcCsv'])->name('finance.gst.export-itc-csv');
         Route::get('/finance/gst/export-pdf', [GstComplianceController::class, 'exportPdf'])->name('finance.gst.export-pdf');
 
-        // Job Costing & Per-Project Profit & Loss (Admin Only)
+        // Job Costing & Per-Project Profit & Loss
         Route::get('/finance/job-costing', [JobCostingController::class, 'index'])->name('finance.job-costing.index');
         Route::get('/finance/job-costing/export-csv', [JobCostingController::class, 'exportPortfolioCsv'])->name('finance.job-costing.export-csv');
         Route::get('/finance/job-costing/{job}', [JobCostingController::class, 'show'])->name('finance.job-costing.show');
         Route::post('/finance/job-costing/{job}', [JobCostingController::class, 'updateCosting'])->name('finance.job-costing.update');
         Route::get('/finance/job-costing/{job}/pdf', [JobCostingController::class, 'exportPdf'])->name('finance.job-costing.pdf');
 
-        // Accounts Receivable & Debtors Aging (Admin Only)
+        // Accounts Receivable & Debtors Aging
         Route::get('/finance/receivables', [AccountsReceivableController::class, 'index'])->name('finance.receivables.index');
         Route::get('/finance/receivables/export-csv', [AccountsReceivableController::class, 'exportAgingCsv'])->name('finance.receivables.export-csv');
         Route::get('/finance/receivables/export-pdf', [AccountsReceivableController::class, 'exportAgingPdf'])->name('finance.receivables.export-pdf');
@@ -234,7 +196,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/finance/receivables/customer/{lead}', [AccountsReceivableController::class, 'customerLedger'])->name('finance.receivables.customer');
         Route::get('/finance/receivables/customer/{lead}/pdf', [AccountsReceivableController::class, 'customerStatementPdf'])->name('finance.receivables.customer.pdf');
 
-        // Vendor Accounts Payable & 3-Way Matching (Admin Only)
+        // Vendor Accounts Payable & 3-Way Matching
         Route::get('/finance/payables', [AccountsPayableController::class, 'index'])->name('finance.payables.index');
         Route::post('/finance/payables/payment', [AccountsPayableController::class, 'recordPayment'])->name('finance.payables.payment');
         Route::get('/finance/payables/export-csv', [AccountsPayableController::class, 'exportApCsv'])->name('finance.payables.export-csv');
@@ -243,7 +205,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/finance/payables/supplier/{supplier}', [AccountsPayableController::class, 'supplierLedger'])->name('finance.payables.supplier');
         Route::get('/finance/payables/supplier/{supplier}/pdf', [AccountsPayableController::class, 'supplierStatementPdf'])->name('finance.payables.supplier.pdf');
 
-        // Petty Cash & Daily Field Cash Reconciliation (Admin Only)
+        // Petty Cash & Daily Field Cash Reconciliation
         Route::get('/finance/petty-cash', [PettyCashController::class, 'index'])->name('finance.petty_cash.index');
         Route::post('/finance/petty-cash/advance', [PettyCashController::class, 'issueAdvance'])->name('finance.petty_cash.advance');
         Route::post('/finance/petty-cash/collection', [PettyCashController::class, 'recordCollection'])->name('finance.petty_cash.collection');
@@ -256,27 +218,69 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/finance/petty-cash/export-pdf', [PettyCashController::class, 'exportPdf'])->name('finance.petty_cash.export-pdf');
         Route::get('/finance/petty-cash/export-csv', [PettyCashController::class, 'exportCsv'])->name('finance.petty_cash.export-csv');
 
-        // Executive Business Analytics (Admin Only)
+        // Executive Business Analytics
         Route::get('/analytics', [ExecutiveAnalyticsController::class, 'index'])->name('analytics.index');
         Route::get('/analytics/api', [ExecutiveAnalyticsController::class, 'apiData'])->name('analytics.api');
         Route::get('/analytics/export-pdf', [ExecutiveAnalyticsController::class, 'exportPdf'])->name('analytics.export-pdf');
         Route::get('/analytics/cost-profit', [ExecutiveAnalyticsController::class, 'costProfit'])->name('analytics.cost-profit');
         Route::get('/analytics/cost-profit/export-pdf', [ExecutiveAnalyticsController::class, 'exportCostProfitPdf'])->name('analytics.cost-profit.export-pdf');
 
-        // Technician Performance Dashboard (Admin Only)
+        // Technician Performance Dashboard
         Route::get('/analytics/technicians', [ExecutiveAnalyticsController::class, 'technicians'])->name('analytics.technicians');
         Route::get('/analytics/technicians/export-pdf', [ExecutiveAnalyticsController::class, 'exportTechniciansPdf'])->name('analytics.technicians.export-pdf');
         Route::get('/analytics/api/technicians', [ExecutiveAnalyticsController::class, 'apiTechnicians'])->name('analytics.api.technicians');
 
-        // Monthly Recurring Revenue & AMC Retention Report (Admin Only)
+        // Monthly Recurring Revenue & AMC Retention Report
         Route::get('/analytics/mrr-retention', [ExecutiveAnalyticsController::class, 'mrrRetention'])->name('analytics.mrr-retention');
         Route::get('/analytics/mrr-retention/export-pdf', [ExecutiveAnalyticsController::class, 'exportMrrRetentionPdf'])->name('analytics.mrr-retention.export-pdf');
         Route::get('/analytics/api/mrr-retention', [ExecutiveAnalyticsController::class, 'apiMrrRetention'])->name('analytics.api.mrr-retention');
     });
 
     // ================================================================
-    // ALL INTERNAL USERS (Admin + Staff + Technician) — Read-Only Views
-    // All write actions & executive analytics are gated by admin middleware.
+    // ADMIN ONLY: deleting records, user accounts, payroll & salaries
+    // and system settings (alerts, SMS / WhatsApp / email gateways).
+    // ================================================================
+    Route::middleware(['admin'])->group(function () {
+        // Deleting records (merging products removes the duplicate)
+        Route::delete('/leads/{lead}', [LeadController::class, 'destroy'])->name('leads.destroy');
+        Route::post('/products/{product}/merge', [ProductController::class, 'merge'])->name('products.merge');
+        Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
+        Route::delete('/equipment/{equipment}', [InstalledEquipmentController::class, 'destroy'])->name('equipment.destroy');
+        Route::delete('/suppliers/{supplier}', [SupplierController::class, 'destroy'])->name('suppliers.destroy');
+        Route::delete('/purchase-orders/{purchase_order}', [PurchaseOrderController::class, 'destroy'])->name('purchase-orders.destroy');
+
+        // User Accounts CRUD
+        Route::prefix('admin')->name('admin.')->group(function () {
+            Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
+        });
+
+        // Automated Alerts & Notification Engine
+        Route::get('/alerts', [AlertNotificationController::class, 'index'])->name('alerts.index');
+        Route::get('/alerts/templates', [AlertNotificationController::class, 'templates'])->name('alerts.templates');
+        Route::get('/alerts/gateways', [AlertNotificationController::class, 'gateways'])->name('alerts.gateways');
+        Route::put('/alerts/templates/{template}', [AlertNotificationController::class, 'updateTemplate'])->name('alerts.templates.update');
+        Route::put('/alerts/gateways', [AlertNotificationController::class, 'updateGateways'])->name('alerts.gateways.update');
+        Route::post('/alerts/gateways/test-sms', [AlertNotificationController::class, 'testSmsGateway'])->name('alerts.gateways.test-sms');
+        Route::post('/alerts/gateways/test-otp', [AlertNotificationController::class, 'testOtp'])->name('alerts.gateways.test-otp');
+        Route::post('/alerts/gateways/test-email', [AlertNotificationController::class, 'testEmailGateway'])->name('alerts.gateways.test-email');
+        Route::post('/alerts/broadcast', [AlertNotificationController::class, 'sendManualBroadcast'])->name('alerts.broadcast');
+        Route::post('/alerts/run-sweep', [AlertNotificationController::class, 'runAutomatedSweep'])->name('alerts.run-sweep');
+
+        // Finance & Salary
+        Route::get('/finance/salaries', [FinanceController::class, 'salaries'])->name('finance.salaries.index');
+        Route::post('/finance/salaries/{user}', [FinanceController::class, 'updateSalary'])->name('finance.salaries.update');
+        Route::get('/finance/payroll', [FinanceController::class, 'payrollIndex'])->name('finance.payroll.index');
+        Route::post('/finance/payroll/generate', [FinanceController::class, 'generatePayroll'])->name('finance.payroll.generate');
+        Route::get('/finance/payroll/{payroll}', [FinanceController::class, 'showPayroll'])->name('finance.payroll.show');
+        Route::get('/finance/payroll/{payroll}/pdf', [FinanceController::class, 'downloadPayslipPdf'])->name('finance.payroll.pdf');
+        Route::get('/finance/payroll/{payroll}/view-pdf', [FinanceController::class, 'streamPayslipPdf'])->name('finance.payroll.viewPdf');
+        Route::match(['get', 'post'], '/finance/payroll/{payroll}/send-whatsapp', [FinanceController::class, 'sendWhatsApp'])->name('finance.payroll.sendWhatsApp');
+        Route::post('/finance/payroll/{payroll}/status', [FinanceController::class, 'updatePayrollStatus'])->name('finance.payroll.updateStatus');
+    });
+
+    // ================================================================
+    // ALL INTERNAL USERS (Admin + Staff + Technician)
+    // Writes in here are checked in the controllers / policies (isOffice, isAdmin).
     // ================================================================
     Route::middleware(['internal'])->group(function () {
 
@@ -284,7 +288,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/dashboard/data', [DashboardController::class, 'data'])->name('dashboard.data');
         Route::get('/employee-workforce', [ModuleHubController::class, 'employeeHub'])->name('employee.hub');
-        Route::get('/finance-accounting', [ModuleHubController::class, 'financeHub'])->name('finance.hub');
+        // Finance figures are for office users (admin + staff), not technicians
+        Route::get('/finance-accounting', [ModuleHubController::class, 'financeHub'])->middleware('office')->name('finance.hub');
 
         // Operations Calendar & Unified Tasks Hub
         Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
@@ -320,7 +325,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::patch('/projects/{project}/tasks/{task}/status', [ProjectTaskController::class, 'updateStatus'])->name('projects.tasks.status');
         Route::post('/projects/{project}/tasks/{task}/flag-blocker', [ProjectTaskController::class, 'flagBlocker'])->name('projects.tasks.flag-blocker');
         Route::post('/projects/{project}/tasks/{task}/unblock', [ProjectTaskController::class, 'unblock'])->name('projects.tasks.unblock');
-        Route::delete('/projects/{project}/tasks/{task}', [ProjectTaskController::class, 'destroy'])->name('projects.tasks.destroy');
+        Route::delete('/projects/{project}/tasks/{task}', [ProjectTaskController::class, 'destroy'])->middleware('admin')->name('projects.tasks.destroy');
         Route::post('/tasks/checklists/{checklist}/toggle', [ProjectTaskController::class, 'toggleChecklist'])->name('tasks.checklists.toggle');
         Route::post('/tasks/{task}/checklists', [ProjectTaskController::class, 'addChecklistItem'])->name('tasks.checklists.store');
         Route::delete('/tasks/checklists/{checklist}', [ProjectTaskController::class, 'deleteChecklistItem'])->name('tasks.checklists.destroy');
@@ -341,7 +346,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Client Installation Sites
         Route::get('/sites/search', [SiteController::class, 'search'])->name('sites.search');
         Route::post('/sites/check-duplicate', [SiteController::class, 'checkDuplicate'])->name('sites.check-duplicate');
-        Route::resource('sites', SiteController::class);
+        Route::resource('sites', SiteController::class)->middlewareFor('destroy', 'admin');
 
         // Daily-Wage Workers & Attendance Maintenance
         Route::get('/workers/attendance', [WorkerAttendanceController::class, 'index'])->name('workers.attendance.index');
@@ -388,7 +393,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/quotations/create', [QuotationController::class, 'createGeneral'])->name('quotations.create-general');
         Route::get('/quotations/{quotation}/edit', [QuotationController::class, 'edit'])->name('quotations.edit');
         Route::put('/quotations/{quotation}', [QuotationController::class, 'update'])->name('quotations.update');
-        Route::delete('/quotations/{quotation}', [QuotationController::class, 'destroy'])->name('quotations.destroy');
+        Route::delete('/quotations/{quotation}', [QuotationController::class, 'destroy'])->middleware('admin')->name('quotations.destroy');
         Route::post('/quotations/{quotation}/accept', [QuotationController::class, 'markAccepted'])->name('quotations.accept');
         Route::post('/quotations/{quotation}/reject', [QuotationController::class, 'markRejected'])->name('quotations.reject');
         Route::patch('/quotations/{quotation}/sent', [QuotationController::class, 'markSent'])->name('quotations.markSent');
@@ -406,7 +411,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/jobs/{job}/invoice/create', [InvoiceController::class, 'create'])->name('invoices.create');
         Route::post('/jobs/{job}/invoice', [InvoiceController::class, 'store'])->name('invoices.store');
         Route::post('/invoices/{invoice}/payments', [InvoiceController::class, 'storePayment'])->name('payments.store');
-        Route::delete('/payments/{payment}', [InvoiceController::class, 'destroyPayment'])->name('payments.destroy');
+        Route::delete('/payments/{payment}', [InvoiceController::class, 'destroyPayment'])->middleware('admin')->name('payments.destroy');
 
         // AMC Contracts Write
         Route::get('/amcs/create', [AmcContractController::class, 'create'])->name('amcs.create');
@@ -421,7 +426,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/site-surveys', [SiteSurveyController::class, 'store'])->name('site-surveys.store');
         Route::get('/site-surveys/{site_survey}/edit', [SiteSurveyController::class, 'edit'])->name('site-surveys.edit');
         Route::put('/site-surveys/{site_survey}', [SiteSurveyController::class, 'update'])->name('site-surveys.update');
-        Route::delete('/site-surveys/{site_survey}', [SiteSurveyController::class, 'destroy'])->name('site-surveys.destroy');
+        Route::delete('/site-surveys/{site_survey}', [SiteSurveyController::class, 'destroy'])->middleware('admin')->name('site-surveys.destroy');
         Route::post('/site-surveys/{site_survey}/photos', [SiteSurveyController::class, 'uploadPhotos'])->name('site-surveys.photos.upload');
         Route::delete('/site-surveys/photos/{photo}', [SiteSurveyController::class, 'destroyPhoto'])->name('site-surveys.photos.destroy');
 
@@ -430,7 +435,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/service-tickets', [ServiceTicketController::class, 'store'])->name('service-tickets.store');
         Route::get('/service-tickets/{service_ticket}/edit', [ServiceTicketController::class, 'edit'])->name('service-tickets.edit');
         Route::put('/service-tickets/{service_ticket}', [ServiceTicketController::class, 'update'])->name('service-tickets.update');
-        Route::delete('/service-tickets/{service_ticket}', [ServiceTicketController::class, 'destroy'])->name('service-tickets.destroy');
+        Route::delete('/service-tickets/{service_ticket}', [ServiceTicketController::class, 'destroy'])->middleware('admin')->name('service-tickets.destroy');
         Route::patch('/service-tickets/{service_ticket}/status', [ServiceTicketController::class, 'updateStatus'])->name('service-tickets.updateStatus');
         Route::post('/service-tickets/{service_ticket}/assign', [ServiceTicketController::class, 'assignTechnician'])->name('service-tickets.assign');
         Route::post('/service-tickets/{service_ticket}/accept', [ServiceTicketController::class, 'acceptRequest'])->name('service-tickets.accept');
@@ -442,7 +447,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/rma', [RmaClaimController::class, 'store'])->name('rma.store');
         Route::get('/rma/{rma}/edit', [RmaClaimController::class, 'edit'])->name('rma.edit');
         Route::put('/rma/{rma}', [RmaClaimController::class, 'update'])->name('rma.update');
-        Route::delete('/rma/{rma}', [RmaClaimController::class, 'destroy'])->name('rma.destroy');
+        Route::delete('/rma/{rma}', [RmaClaimController::class, 'destroy'])->middleware('admin')->name('rma.destroy');
         Route::post('/rma/{rma}/dispatch', [RmaClaimController::class, 'dispatchToVendor'])->name('rma.dispatch');
         Route::post('/rma/{rma}/vendor-status', [RmaClaimController::class, 'updateVendorStatus'])->name('rma.vendor-status');
         Route::post('/rma/{rma}/resolution', [RmaClaimController::class, 'recordResolution'])->name('rma.resolution');

@@ -111,6 +111,7 @@
                                             <svg class="w-3 h-3 text-slate-700 dark:text-slate-300 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
                                             <span>Edit</span>
                                         </a>
+                                        @if(auth()->user()->isAdmin())
                                         <form method="POST" action="{{ route('site-surveys.destroy', $survey) }}" class="inline ml-2"
                                               data-confirm="Delete this survey and all photos?">
                                             @csrf @method('DELETE')
@@ -119,6 +120,7 @@
                                                 <span>Delete</span>
                                             </button>
                                         </form>
+                                        @endif
                                     </td>
                                 </tr>
                             @empty

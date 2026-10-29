@@ -122,8 +122,8 @@ class ProductController extends Controller
 
     public function approve(Request $request, Product $product): RedirectResponse
     {
-        if (!Auth::user()->isAdmin()) {
-            abort(403, 'Only administrators can approve products.');
+        if (!Auth::user()->isOffice()) {
+            abort(403, 'Only office users can approve products.');
         }
 
         $validated = $request->validate([

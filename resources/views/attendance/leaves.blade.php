@@ -6,7 +6,7 @@
                     <h2 class="text-xl font-bold text-slate-900 dark:text-white tracking-tight font-heading">
                         Employee Leave Management &amp; Approvals
                     </h2>
-                    @if($isAdmin && $pendingCount > 0)
+                    @if($canManage && $pendingCount > 0)
                         <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-400 border border-amber-200 dark:border-amber-800 animate-pulse">
                             {{ $pendingCount }} Pending Approval
                         </span>
@@ -138,7 +138,7 @@
                 </div>
 
                 {{-- Total Paid Balance Card / Admin Queue --}}
-                @if($isAdmin)
+                @if($canManage)
                     <div class="bg-white dark:bg-[#0f172a] rounded-2xl p-4 border border-amber-200 dark:border-amber-900/60 bg-gradient-to-br from-white to-amber-50/40 dark:from-[#0f172a] dark:to-amber-950/20 shadow-xs">
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400">Admin Approval Queue</span>
@@ -200,7 +200,7 @@
             @endif
 
             {{-- 3. Admin Pending Approval Queue (If Admin and has pending requests) --}}
-            @if($isAdmin && $pendingRequests->count() > 0)
+            @if($canManage && $pendingRequests->count() > 0)
                 <div id="pendingQueueSection" class="bg-white dark:bg-[#0f172a] rounded-2xl border border-amber-200 dark:border-amber-900/60 shadow-md overflow-hidden">
                     <div class="p-4 sm:p-5 border-b border-amber-100 dark:border-amber-900/40 bg-amber-50/50 dark:bg-amber-950/30 flex items-center justify-between">
                         <div class="flex items-center gap-2">
@@ -244,6 +244,7 @@
 
                                 <div class="flex items-center gap-2 flex-shrink-0">
                                     {{-- Approve Form --}}
+                                    @if(auth()->user()->canDecideFor($req->user_id))
                                     <form action="{{ route('leaves.approve', $req) }}" method="POST" data-confirm="Approve this leave request for {{ $req->user->name }}? Attendance records will be marked on_leave.">
                                         @csrf
                                         @method('PATCH')
@@ -255,8 +256,10 @@
                                             <span>Approve</span>
                                         </button>
                                     </form>
+                                    @endif
 
                                     {{-- Reject Trigger Button --}}
+                                    @if(auth()->user()->canDecideFor($req->user_id))
                                     <button type="button" 
                                             onclick="openRejectModal('{{ $req->id }}', '{{ addslashes($req->user->name) }}', '{{ $req->leave_type_label }}')"
                                             class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white dark:bg-[#0f172a] hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900/50 text-xs font-bold transition">
@@ -265,6 +268,7 @@
                                         </svg>
                                         <span>Reject</span>
                                     </button>
+                                    @endif
                                 </div>
                             </div>
                         @endforeach
@@ -281,7 +285,7 @@
                             📝 My Leave Applications ({{ $myLeaves->total() }})
                         </a>
 
-                        @if($isAdmin)
+                        @if($canManage)
                             <a href="{{ route('leaves.index', ['tab' => 'all_leaves', 'year' => $selectedYear, 'month' => $selectedMonth]) }}" 
                                class="pb-3 px-3 text-xs font-bold border-b-2 transition {{ $tab === 'all_leaves' ? 'border-blue-600 text-blue-600 dark:text-blue-400' : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300' }}">
                                 👥 All Workforce Leaves Directory ({{ $allLeaves->total() }})
@@ -301,7 +305,7 @@
                             <option value="cancelled" {{ $statusFilter === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
                         </select>
 
-                        @if($tab === 'all_leaves' && $isAdmin)
+                        @if($tab === 'all_leaves' && $canManage)
                             <select aria-label="Employee" name="employee_id" onchange="this.form.submit()" class="text-xs rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 py-1.5 px-3">
                                 <option value="">All Employees</option>
                                 @foreach($workforce as $emp)
@@ -409,7 +413,7 @@
                 @endif
 
                 {{-- Tab 2: All Workforce Leaves Directory (Admin Only) --}}
-                @if($tab === 'all_leaves' && $isAdmin)
+                @if($tab === 'all_leaves' && $canManage)
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-800 text-left text-xs">
                             <thead class="bg-slate-50 dark:bg-slate-900/60 text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">
@@ -464,7 +468,7 @@
                                             @endif
                                         </td>
                                         <td class="py-4 px-4 text-right whitespace-nowrap">
-                                            @if($al->status === 'pending')
+                                            @if($al->status === 'pending' && auth()->user()->canDecideFor($al->user_id))
                                                 <div class="flex items-center justify-end gap-1.5">
                                                     <form action="{{ route('leaves.approve', $al) }}" method="POST">
                                                         @csrf

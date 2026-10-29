@@ -216,9 +216,11 @@
                         </div>
 
                         <div class="flex items-center justify-between pt-2">
+                            @if(auth()->user()->isOffice())
                             <a href="{{ route('leads.create', ['return_to' => 'survey']) }}" class="text-[11px] text-blue-600 hover:underline">
                                 Full Registration Form &rarr;
                             </a>
+                            @endif
                             <div class="flex items-center gap-2">
                                 <button type="button" @click="newCustomerModalOpen = false" class="px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 rounded-lg">
                                     Cancel

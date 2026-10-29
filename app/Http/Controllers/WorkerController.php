@@ -68,8 +68,8 @@ class WorkerController extends Controller
      */
     public function create()
     {
-        if (!Auth::user()->isAdmin()) {
-            abort(403, 'Only administrators can create worker records with defined wage rates.');
+        if (!Auth::user()->isOffice()) {
+            abort(403, 'Only office users can create worker records with defined wage rates.');
         }
 
         return view('workers.create');
@@ -138,8 +138,8 @@ class WorkerController extends Controller
      */
     public function quickStore(Request $request)
     {
-        if (!Auth::user()->isAdmin() && !Auth::user()->isTechnician()) {
-            abort(403, 'Employees cannot add workers. Only technicians and administrators can register workers.');
+        if (!Auth::user()->isOffice() && !Auth::user()->isTechnician()) {
+            abort(403, 'Only office users and technicians can register workers.');
         }
 
         if (Auth::user()->isTechnician()) {
@@ -215,8 +215,8 @@ class WorkerController extends Controller
      */
     public function edit(Worker $worker)
     {
-        if (!Auth::user()->isAdmin()) {
-            abort(403, 'Only administrators can edit worker profiles and modify wage rates.');
+        if (!Auth::user()->isOffice()) {
+            abort(403, 'Only office users can edit worker profiles and wage rates.');
         }
 
         return view('workers.edit', compact('worker'));
@@ -227,8 +227,8 @@ class WorkerController extends Controller
      */
     public function update(Request $request, Worker $worker)
     {
-        if (!Auth::user()->isAdmin()) {
-            abort(403, 'Only administrators can update worker wage rates.');
+        if (!Auth::user()->isOffice()) {
+            abort(403, 'Only office users can update worker wage rates.');
         }
 
         $validated = $request->validate([

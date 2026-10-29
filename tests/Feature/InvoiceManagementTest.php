@@ -151,11 +151,13 @@ class InvoiceManagementTest extends TestCase
         $this->assertEquals(1062.00, $invoice->amount_paid);
         $this->assertEquals('paid', $invoice->status);
 
-        // 3. Remove a payment
+        // 3. Remove a payment: deleting records is admin-only
         $payment = Payment::where('method', 'cash')->first();
         $this->assertNotNull($payment);
 
-        $response = $this->delete(route('payments.destroy', $payment));
+        $this->delete(route('payments.destroy', $payment))->assertForbidden();
+
+        $response = $this->actingAs($this->admin)->delete(route('payments.destroy', $payment));
         $response->assertRedirect();
 
         $invoice->refresh();

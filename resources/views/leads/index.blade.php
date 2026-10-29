@@ -145,8 +145,9 @@
                                     <td class="text-right whitespace-nowrap">
                                         <div class="inline-flex items-center gap-2 justify-end">
                                             <a href="{{ route('leads.show', $lead) }}" class="action-link text-[var(--crm-accent)] hover:underline">View</a>
-                                            @if(auth()->user()->isAdmin())
+                                            @if(auth()->user()->isOffice())
                                                 <a href="{{ route('leads.edit', $lead) }}" class="action-link text-[var(--crm-accent)] hover:underline">Edit</a>
+                                                @if(auth()->user()->isAdmin())
                                                 <form method="POST" action="{{ route('leads.destroy', $lead) }}"
                                                       class="inline"
                                                       data-confirm="Delete lead {{ $lead->customer_name }}?">
@@ -154,6 +155,7 @@
                                                     @method('DELETE')
                                                     <button type="submit" class="danger-link text-[var(--status-red)] hover:underline">Delete</button>
                                                 </form>
+                                                @endif
                                             @endif
                                         </div>
                                     </td>

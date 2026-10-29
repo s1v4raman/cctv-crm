@@ -45,12 +45,14 @@
                                 <label for="surveyed_by" class="crm-label mb-0">
                                     Technician <span class="required-marker">*</span>
                                 </label>
+                                @if(auth()->user()->isAdmin())
                                 <a href="{{ route('admin.users.create', ['return_to' => url()->current(), 'role' => 'technician']) }}"
                                    id="btn-add-new-technician"
                                    class="btn-subtle text-white font-semibold"
                                    style="color: #ffffff !important;">
                                     <span class="text-white font-semibold" style="color: #ffffff !important;">Add New Technician</span>
                                 </a>
+                                @endif
                             </div>
                             <select name="surveyed_by" id="surveyed_by" class="crm-select w-full" required>
                                 <option value="">Select technician</option>

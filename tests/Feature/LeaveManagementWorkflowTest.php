@@ -229,7 +229,7 @@ class LeaveManagementWorkflowTest extends TestCase
     /**
      * 9. Staff or Technician cannot approve or reject leaves (403 Forbidden).
      */
-    public function test_non_admin_cannot_approve_or_reject_leaves(): void
+    public function test_staff_approve_others_leave_but_not_their_own_and_technicians_cannot(): void
     {
         $leave = LeaveRequest::create([
             'user_id'    => $this->technician->id,
@@ -241,14 +241,29 @@ class LeaveManagementWorkflowTest extends TestCase
             'status'     => 'pending',
         ]);
 
-        // Attempt approve as staff
-        $this->actingAs($this->employee)
-            ->patch(route('leaves.approve', $leave))
-            ->assertStatus(403);
-
-        // Attempt reject as technician
+        // Technicians cannot decide leave
         $this->actingAs($this->technician)
             ->patch(route('leaves.reject', $leave), ['rejection_reason' => 'No reason'])
             ->assertStatus(403);
+
+        // Staff cannot approve their own leave
+        $ownLeave = LeaveRequest::create([
+            'user_id'    => $this->employee->id,
+            'leave_type' => 'casual',
+            'start_date' => now()->addDays(8)->toDateString(),
+            'end_date'   => now()->addDays(8)->toDateString(),
+            'days_count' => 1.0,
+            'reason'     => 'Own leave',
+            'status'     => 'pending',
+        ]);
+        $this->actingAs($this->employee)
+            ->patch(route('leaves.approve', $ownLeave))
+            ->assertStatus(403);
+
+        // Staff approve someone else's leave
+        $this->actingAs($this->employee)
+            ->patch(route('leaves.approve', $leave))
+            ->assertRedirect();
+        $this->assertSame('approved', $leave->fresh()->status);
     }
 }
