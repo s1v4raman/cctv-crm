@@ -11,6 +11,8 @@ use Illuminate\View\View;
 
 class InstallationJobController extends Controller
 {
+    use \App\Http\Controllers\Concerns\ListsRecords;
+
     public function index(Request $request)
     {
         $query = InstallationJob::with('quotation.lead', 'assignedTechnician');
@@ -33,9 +35,22 @@ class InstallationJobController extends Controller
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
+        if ($request->filled('technician_id')) {
+            $query->where('assigned_technician_id', $request->technician_id);
+        }
 
-        $jobs = $query->orderByDesc('created_at')->paginate(20)->withQueryString();
-        return view('jobs.index', compact('jobs'));
+        $this->applyListSort($query, $request, [
+            'date_desc'      => ['created_at', 'desc'],
+            'date_asc'       => ['created_at', 'asc'],
+            'scheduled_asc'  => ['scheduled_date', 'asc'],
+            'scheduled_desc' => ['scheduled_date', 'desc'],
+            'job_no'         => ['job_no', 'asc'],
+        ]);
+
+        $jobs = $query->paginate($this->listPerPage($request))->withQueryString();
+        $technicians = User::where('role', 'technician')->orderBy('name')->get(['id', 'name']);
+
+        return view('jobs.index', compact('jobs', 'technicians'));
     }
 
     public function createGeneral(): View

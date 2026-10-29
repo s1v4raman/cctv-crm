@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Storage;
 
 class WorkerController extends Controller
 {
+    use \App\Http\Controllers\Concerns\ListsRecords;
+
     /**
      * Display a listing of daily-wage workers with financial balance highlights.
      */
@@ -38,10 +40,14 @@ class WorkerController extends Controller
             $query->where('is_active', false);
         }
 
-        $workers = $query->withCount('attendances')
-            ->orderBy('name')
-            ->paginate(15)
-            ->withQueryString();
+        $query->withCount('attendances');
+        $this->applyListSort($query, $request, [
+            'name'      => ['name', 'asc'],
+            'rate_desc' => ['daily_rate', 'desc'],
+            'newest'    => ['created_at', 'desc'],
+            'days_desc' => ['attendances_count', 'desc'],
+        ]);
+        $workers = $query->paginate($this->listPerPage($request))->withQueryString();
 
         $activeWorkersCount = Worker::where('is_active', true)->count();
         $totalWorkersCount = Worker::approved()->count();

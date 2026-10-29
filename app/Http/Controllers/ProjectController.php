@@ -24,6 +24,8 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ProjectController extends Controller
 {
+    use \App\Http\Controllers\Concerns\ListsRecords;
+
     /**
      * Display a listing of projects with company search, status filtering, and KPIs.
      */
@@ -85,19 +87,25 @@ class ProjectController extends Controller
             });
         }
 
-        $projects = $query->orderByRaw("
-            CASE 
-                WHEN status = 'pending_approval' THEN 1
-                WHEN status = 'in_progress' THEN 2 
-                WHEN status = 'approved' THEN 3
-                WHEN status = 'draft' THEN 4
-                WHEN status = 'on_hold' THEN 5 
-                WHEN status = 'completed' THEN 6 
-                ELSE 7 
-            END
-        ")->latest('updated_at')
-          ->paginate(12)
-          ->withQueryString();
+        // Sort menu; by default open work first (approval, in progress, approved, draft, on hold, done)
+        match ($request->get('sort')) {
+            'newest'       => $query->latest('created_at'),
+            'updated'      => $query->latest('updated_at'),
+            'deadline_asc' => $query->orderByRaw('deadline is null')->orderBy('deadline'),
+            'budget_desc'  => $query->orderByDesc('budget'),
+            default        => $query->orderByRaw("
+                CASE
+                    WHEN status = 'pending_approval' THEN 1
+                    WHEN status = 'in_progress' THEN 2
+                    WHEN status = 'approved' THEN 3
+                    WHEN status = 'draft' THEN 4
+                    WHEN status = 'on_hold' THEN 5
+                    WHEN status = 'completed' THEN 6
+                    ELSE 7
+                END
+            ")->latest('updated_at'),
+        };
+        $projects = $query->paginate($this->listPerPage($request))->withQueryString();
 
         $companies = $this->getExecutingCompanies();
         $teamMembers = User::whereIn('role', ['admin', 'staff', 'technician'])->orderBy('name')->get();

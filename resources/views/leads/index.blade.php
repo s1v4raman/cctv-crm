@@ -14,155 +14,9 @@
         $here = fn (array $change) => request()->fullUrlWithQuery(array_merge(['page' => null], $change));
     @endphp
 
-    {{-- This page uses the whole width under the top bar: a white band for views and tools,
-         then the filter panel and the list on the grey page. --}}
-    <style>
-        #main-content { padding: 0 0 7rem !important; }
-        @media (min-width: 1024px) { #main-content { padding-bottom: 0 !important; } }
-        .crm-content { max-width: none !important; }
+    <x-list-page-assets />
 
-        .ld-root {
-            --ld-page: #f4f5f7; --ld-card: #ffffff; --ld-border: #e2e5e9; --ld-line: #eceef1;
-            --ld-text: #313949; --ld-muted: #6b7280; --ld-hover: #f7f8fa; --ld-input: #c8cdd4;
-            --ld-grey-btn: #eef0f3;
-            /* buttons and switched-on toggles follow the accent colour picked in Profile → Theme */
-            --ld-accent: var(--crm-accent, #2563eb); --ld-accent-hover: var(--crm-accent-hover, #1d4ed8);
-            --ld-accent-edge: color-mix(in srgb, var(--ld-accent) 82%, #000);
-            --ld-accent-soft: color-mix(in srgb, var(--ld-accent) 12%, #fff);
-            --ld-chip: var(--ld-accent-soft);
-            background: var(--ld-page); color: var(--ld-text); font-size: 14px; line-height: 1.45;
-        }
-        html.dark .ld-root {
-            --ld-page: #0f141c; --ld-card: #161c26; --ld-border: #273141; --ld-line: #1f2835;
-            --ld-text: #e5e7eb; --ld-muted: #9aa4b2; --ld-hover: #1b2230; --ld-input: #364152;
-            --ld-grey-btn: #222a36; --ld-accent-soft: color-mix(in srgb, var(--ld-accent) 22%, #161c26);
-        }
-
-        /* app-wide buttons take their height and corners from --control-height and --radius-control */
-        .ld-root { --control-height: 30px; --radius-control: 4px; }
-        .ld-root .ld-accent, .ld-root .ld-outline { --control-height: 32px; }
-        .ld-band { background: var(--ld-card); border-bottom: 1px solid var(--ld-border); }
-        .ld-views { display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-bottom: 1px solid var(--ld-border); }
-        .ld-chip { display: inline-flex; align-items: center; height: 28px; padding: 0 10px; border-radius: 4px; background: var(--ld-chip); font-size: 13px; font-weight: 600; color: var(--ld-text); }
-        .ld-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 16px; min-height: 48px; flex-wrap: wrap; }
-
-        .ld-tool { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 9px; border-radius: 4px; font-size: 14px; color: var(--ld-text); background: transparent; border: 0; cursor: pointer; }
-        .ld-tool:hover, .ld-tool[aria-expanded="true"] { background: var(--ld-grey-btn); }
-        .ld-tool.is-on { background: var(--ld-accent-soft); color: var(--ld-accent); }
-        .ld-tool svg { width: 16px; height: 16px; flex-shrink: 0; }
-        .ld-icon-btn { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 4px; color: var(--ld-muted); }
-        .ld-icon-btn:hover { background: var(--ld-grey-btn); color: var(--ld-text); }
-        .ld-icon-btn.is-on { background: var(--ld-accent-soft); color: var(--ld-accent); }
-        .ld-icon-btn svg { width: 18px; height: 18px; }
-        .ld-sep { width: 1px; height: 22px; background: var(--ld-border); margin: 0 4px; }
-
-        .ld-accent { display: inline-flex; align-items: center; height: 32px; padding: 0 14px; background: var(--ld-accent) !important; color: #fff !important; font-size: 14px; font-weight: 600; border: 1px solid var(--ld-accent-edge) !important; text-decoration: none !important; cursor: pointer; }
-        .ld-accent:hover { background: var(--ld-accent-hover) !important; }
-        /* an id outranks the app-wide rule that paints every filter-form submit button blue */
-        #ld-apply { background: var(--ld-accent) !important; border-color: var(--ld-accent-edge) !important; color: #fff !important; }
-        #ld-apply:hover { background: var(--ld-accent-hover) !important; }
-        .ld-split { --control-height: 30px; --radius-control: 0px; display: inline-flex; height: 32px; border: 1px solid var(--ld-accent-edge); border-radius: 4px; overflow: hidden; background: var(--ld-accent); }
-        .ld-split > a, .ld-split > button { display: inline-flex; align-items: center; height: 100% !important; margin: 0; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; background: var(--ld-accent) !important; color: #fff !important; font-size: 14px; font-weight: 600; text-decoration: none !important; cursor: pointer; }
-        .ld-split > a { padding: 0 14px; }
-        .ld-split > button { width: 30px; justify-content: center; padding: 0 !important; border-left: 1px solid rgba(255, 255, 255, .35) !important; }
-        .ld-split > a:hover, .ld-split > button:hover, .ld-split > button[aria-expanded="true"] { background: var(--ld-accent-hover) !important; }
-        .ld-outline { display: inline-flex; align-items: center; justify-content: center; height: 32px; min-width: 40px; padding: 0 10px; background: var(--ld-card) !important; color: var(--ld-text) !important; border: 1px solid var(--ld-input) !important; border-radius: 4px; font-size: 14px; cursor: pointer; text-decoration: none !important; }
-        .ld-outline:hover { background: var(--ld-hover) !important; }
-
-        .ld-menu { position: absolute; z-index: 40; min-width: 190px; margin-top: 4px; padding: 4px 0; background: var(--ld-card); border: 1px solid var(--ld-border); border-radius: 6px; box-shadow: 0 8px 24px rgba(15, 23, 42, .12); }
-        .ld-menu a, .ld-menu button, .ld-menu label { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 10px; padding: 7px 12px; font-size: 14px; color: var(--ld-text) !important; text-align: left; text-decoration: none !important; background: transparent; border: 0; cursor: pointer; }
-        .ld-menu a:hover, .ld-menu button:hover, .ld-menu label:hover { background: var(--ld-hover); }
-        .ld-menu .is-current { font-weight: 600; }
-        .ld-menu hr { border: 0; border-top: 1px solid var(--ld-line); margin: 4px 0; }
-
-        .ld-body { display: flex; gap: 12px; padding: 12px; align-items: stretch; }
-        .ld-card { background: var(--ld-card); border: 1px solid var(--ld-border); border-radius: 6px; }
-
-        .ld-filter { width: 202px; flex-shrink: 0; display: flex; flex-direction: column; min-height: 0; }
-        .ld-filter-scroll { flex: 1; overflow-y: auto; padding: 16px 18px; }
-        .ld-filter h2 { font-size: 14px; font-weight: 700; margin-bottom: 14px; color: var(--ld-text); }
-        .ld-filter summary { list-style: none; display: flex; align-items: center; gap: 6px; font-weight: 700; font-size: 14px; cursor: pointer; margin: 16px 0 10px; color: var(--ld-text); }
-        .ld-filter summary::-webkit-details-marker { display: none; }
-        .ld-filter summary svg { width: 10px; height: 10px; flex-shrink: 0; transition: transform .15s; }
-        .ld-filter summary span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .ld-filter details:not([open]) summary svg { transform: rotate(-90deg); }
-        .ld-filter .ld-sub { font-size: 12px; color: var(--ld-muted); margin: 10px 0 6px; }
-        .ld-check { display: flex; align-items: flex-start; gap: 8px; padding: 4px 0; font-size: 14px; color: var(--ld-text); cursor: pointer; }
-        .ld-check input { width: 14px; height: 14px; margin-top: 3px; flex-shrink: 0; border: 1px solid #9aa3af; border-radius: 2px; accent-color: var(--ld-accent); }
-        .ld-check .ld-count { margin-left: auto; color: var(--ld-muted); font-size: 12px; }
-        .ld-input { width: 100%; height: 32px; padding: 0 10px; border: 1px solid var(--ld-input) !important; border-radius: 4px; background: var(--ld-card) !important; color: var(--ld-text) !important; font-size: 14px; }
-        .ld-filter-actions { display: flex; gap: 8px; padding: 10px 18px; border-top: 1px solid var(--ld-line); }
-
-        .ld-main { flex: 1; min-width: 0; display: flex; flex-direction: column; min-height: 0; }
-        .ld-scroll { flex: 1; overflow: auto; min-height: 0; }
-        .ld-root .ld-scroll table.ld-table { width: 100%; border: 0 !important; border-collapse: separate !important; border-spacing: 0 !important; }
-        .ld-root .ld-scroll table.ld-table thead, .ld-root .ld-scroll table.ld-table thead tr { background: transparent !important; border: 0 !important; }
-        .ld-root .ld-scroll table.ld-table th { position: sticky; top: 0; z-index: 2; background: var(--ld-card) !important; height: 40px; padding: 0 14px; text-align: left; font-size: 14px; font-weight: 500; color: var(--ld-text); white-space: nowrap; border: 0 !important; box-shadow: inset 0 -1px 0 var(--ld-border), inset -1px 0 0 var(--ld-line); }
-        .ld-root .ld-scroll table.ld-table th:last-child { box-shadow: inset 0 -1px 0 var(--ld-border); }
-        .ld-root .ld-scroll table.ld-table td { padding: 14px; font-size: 14px; color: var(--ld-text); vertical-align: top; border: 0 !important; border-bottom: 1px solid var(--ld-line) !important; background: var(--ld-card) !important; }
-        .ld-root .ld-scroll table.ld-table tbody tr:hover td { background: var(--ld-hover) !important; }
-        .ld-root .ld-scroll table.ld-table tbody tr.is-picked td { background: var(--ld-accent-soft) !important; }
-        .ld-root .ld-scroll table.ld-table .ld-box { width: 48px; min-width: 48px !important; padding-left: 18px; padding-right: 0; }
-        .ld-root .ld-scroll table.ld-table .ld-box input { width: 14px; height: 14px; border: 1px solid #9aa3af; border-radius: 2px; accent-color: var(--ld-accent); cursor: pointer; }
-        .ld-root .ld-scroll table.ld-table td a.ld-name { color: var(--ld-text) !important; font-size: 14px !important; }
-        .ld-root .ld-scroll table.ld-table td a.ld-name:hover { text-decoration: underline !important; }
-        .ld-root .ld-wrap { overflow-wrap: anywhere; max-width: 240px; }
-        .ld-root .ld-row-actions { display: flex; justify-content: flex-end; gap: 2px; opacity: 0; }
-        .ld-root tr:hover .ld-row-actions, .ld-root .ld-row-actions:focus-within { opacity: 1; }
-        @media (hover: none) { .ld-root .ld-row-actions { opacity: 1; } }
-        .ld-root .ld-scroll table.ld-table td .ld-row-actions a, .ld-root .ld-row-actions button { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 4px; color: var(--ld-muted) !important; background: transparent !important; border: 0 !important; cursor: pointer; }
-        .ld-root .ld-scroll table.ld-table td .ld-row-actions a:hover, .ld-root .ld-row-actions button:hover { background: var(--ld-grey-btn) !important; color: var(--ld-text) !important; }
-
-        .ld-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 10px 16px; border-top: 1px solid var(--ld-border); font-size: 14px; }
-        .ld-foot select { height: 28px; padding: 0 26px 0 8px; border: 1px solid var(--ld-input) !important; border-radius: 4px; background-color: var(--ld-card) !important; color: var(--ld-text) !important; font-size: 13px; }
-        .ld-page-arrow { display: inline-flex; width: 26px; height: 26px; align-items: center; justify-content: center; border-radius: 4px; color: var(--ld-muted) !important; }
-        a.ld-page-arrow:hover { background: var(--ld-grey-btn); color: var(--ld-text) !important; }
-        span.ld-page-arrow { opacity: .35; }
-
-        .ld-board { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 4px; flex: 1; min-height: 0; }
-        .ld-lane { width: 260px; flex-shrink: 0; display: flex; flex-direction: column; background: var(--ld-card); border: 1px solid var(--ld-border); border-radius: 6px; min-height: 0; }
-        .ld-lane h3 { display: flex; justify-content: space-between; padding: 10px 12px; font-size: 14px; font-weight: 600; border-bottom: 1px solid var(--ld-line); }
-        .ld-lane-list { padding: 8px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; }
-        .ld-card-item { display: block; padding: 10px 12px; border: 1px solid var(--ld-line); border-radius: 4px; background: var(--ld-card); color: var(--ld-text) !important; text-decoration: none !important; }
-        .ld-card-item:hover { border-color: var(--ld-input); background: var(--ld-hover); }
-
-        .ld-letters { display: grid; grid-template-columns: repeat(6, 1fr); gap: 2px; padding: 6px; width: 228px; }
-        .ld-letters a { justify-content: center !important; padding: 6px 0 !important; border-radius: 4px; }
-        .ld-letters a.is-current { background: var(--ld-accent-soft); font-weight: 600; }
-    </style>
-
-    <script>
-        window.leadsPage = (pageIds) => ({
-            showFilter: true,
-            selected: [],
-            pageIds,
-            menu: null,
-            filterQuery: '',
-            cols: { company: true, email: true, phone: true, source: true, status: true, created: true },
-            init() {
-                try { Object.assign(this.cols, JSON.parse(localStorage.getItem('leads.columns') || '{}')); } catch (e) {}
-                let open = null;
-                try { open = localStorage.getItem('leads.filterOpen'); } catch (e) {}
-                this.showFilter = open === null ? window.innerWidth >= 1024 : open === '1';
-                this.$watch('cols', (v) => { try { localStorage.setItem('leads.columns', JSON.stringify(v)); } catch (e) {} });
-                this.$watch('showFilter', (v) => { try { localStorage.setItem('leads.filterOpen', v ? '1' : '0'); } catch (e) {} });
-                this.$nextTick(() => this.fit());
-                window.addEventListener('resize', () => this.fit());
-            },
-            // On a desktop the panels fill the window and scroll inside, so the footer stays in view
-            fit() {
-                const body = this.$refs.body;
-                if (!body) return;
-                body.style.height = window.innerWidth < 1024 ? '' : Math.max(420, window.innerHeight - body.getBoundingClientRect().top) + 'px';
-            },
-            get allPicked() { return this.pageIds.length > 0 && this.pageIds.every((id) => this.selected.includes(id)); },
-            toggleAll() { this.selected = this.allPicked ? [] : [...this.pageIds]; },
-            open(name) { this.menu = this.menu === name ? null : name; },
-            shows(label) { return label.toLowerCase().includes(this.filterQuery.trim().toLowerCase()); },
-        });
-    </script>
-
-    <div class="ld-root" x-data="leadsPage(@js($leads->pluck('id')))" @keydown.escape.window="menu = null">
+    <div class="ld-root" x-data="listPage(@js($leads->pluck('id')), 'leads', { company: true, email: true, phone: true, source: true, status: true, created: true })" @keydown.escape.window="menu = null">
 
         @if (session('status'))
             <div class="px-4 py-2 text-sm bg-emerald-50 text-emerald-800 border-b border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-900">{{ session('status') }}</div>
@@ -174,7 +28,7 @@
                 <span class="ld-chip">{{ $viewLabels[$view] }}</span>
                 <div class="relative" @click.outside="menu === 'views' && (menu = null)">
                     <button type="button" class="ld-icon-btn" title="Other views" aria-label="Other views" :aria-expanded="menu === 'views'" @click="open('views')">
-                        <svg fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><circle cx="4" cy="10" r="1.6"/><circle cx="10" cy="10" r="1.6"/><circle cx="16" cy="10" r="1.6"/></svg>
+                        <svg class="icon-solid" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><circle cx="4" cy="10" r="1.6"/><circle cx="10" cy="10" r="1.6"/><circle cx="16" cy="10" r="1.6"/></svg>
                     </button>
                     <div class="ld-menu left-0" x-show="menu === 'views'" x-cloak>
                         @foreach($viewLabels as $key => $label)
@@ -259,7 +113,7 @@
                             <div class="ld-split">
                                 <a href="{{ route('leads.create') }}" class="plain-link">Create Lead</a>
                                 <button type="button" aria-label="More ways to create a lead" :aria-expanded="menu === 'create'" @click="open('create')">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"/></svg>
+                                    <span class="ld-caret" aria-hidden="true"></span>
                                 </button>
                             </div>
                             <div class="ld-menu right-0 top-full" x-show="menu === 'create'" x-cloak>
@@ -271,7 +125,7 @@
 
                     <div class="relative" @click.outside="menu === 'more' && (menu = null)">
                         <button type="button" class="ld-outline" title="More actions" aria-label="More actions" :aria-expanded="menu === 'more'" @click="open('more')">
-                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><circle cx="4" cy="10" r="1.6"/><circle cx="10" cy="10" r="1.6"/><circle cx="16" cy="10" r="1.6"/></svg>
+                            <svg class="w-4 h-4 icon-solid" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><circle cx="4" cy="10" r="1.6"/><circle cx="10" cy="10" r="1.6"/><circle cx="16" cy="10" r="1.6"/></svg>
                         </button>
                         <div class="ld-menu right-0" x-show="menu === 'more'" x-cloak>
                             @if($isOffice)
@@ -300,7 +154,7 @@
                         </div>
 
                         <details open>
-                            <summary><svg fill="currentColor" viewBox="0 0 10 10" aria-hidden="true"><path d="M0 2h10L5 8z"/></svg><span title="System Defined Filters">System Defined Filters</span></summary>
+                            <summary><span class="ld-caret ld-caret-sm" aria-hidden="true"></span><span title="System Defined Filters">System Defined Filters</span></summary>
                             @foreach($quickFilters as $key => $label)
                                 <label class="ld-check" x-show="shows(@js($label))">
                                     <input type="checkbox" name="only[]" value="{{ $key }}" @checked(in_array($key, $only, true))>
@@ -310,7 +164,7 @@
                         </details>
 
                         <details open>
-                            <summary><svg fill="currentColor" viewBox="0 0 10 10" aria-hidden="true"><path d="M0 2h10L5 8z"/></svg><span>Filter By Fields</span></summary>
+                            <summary><span class="ld-caret ld-caret-sm" aria-hidden="true"></span><span>Filter By Fields</span></summary>
 
                             <div x-show="shows('name phone email search')">
                                 <div class="ld-sub">Name, phone or email</div>
@@ -388,7 +242,7 @@
                                                 <div class="relative" @click.outside="menu === 'letter' && (menu = null)">
                                                     <button type="button" class="inline-flex items-center gap-1 text-xs font-semibold" :aria-expanded="menu === 'letter'" @click="open('letter')" aria-label="Show names starting with a letter">
                                                         {{ $letter ?? 'All' }}
-                                                        <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 10 10" aria-hidden="true"><path d="M0 2.5h10L5 8z"/></svg>
+                                                        <span class="ld-caret ld-caret-sm" aria-hidden="true"></span>
                                                     </button>
                                                     <div class="ld-menu ld-letters left-0" x-show="menu === 'letter'" x-cloak>
                                                         <a href="{{ $here(['letter' => null]) }}" class="plain-link {{ $letter ? '' : 'is-current' }}" style="grid-column: span 2">All</a>

@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Auth;
 
 class SiteController extends Controller
 {
+    use \App\Http\Controllers\Concerns\ListsRecords;
+
     /**
      * Display a listing of client installation sites.
      */
@@ -35,7 +37,13 @@ class SiteController extends Controller
             $query->where('city', $cityFilter);
         }
 
-        $sites = $query->latest()->paginate(15)->withQueryString();
+        $this->applyListSort($query, $request, [
+            'date_desc'     => ['created_at', 'desc'],
+            'name'          => ['name', 'asc'],
+            'city'          => ['city', 'asc'],
+            'projects_desc' => ['projects_count', 'desc'],
+        ]);
+        $sites = $query->paginate($this->listPerPage($request))->withQueryString();
 
         $cities = Site::select('city')
             ->whereNotNull('city')

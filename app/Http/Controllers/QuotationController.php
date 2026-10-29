@@ -527,29 +527,168 @@ class QuotationController extends Controller
         return back()->with('status', 'Item removed.');
     }
 
+    /** Saved views shown in the view menu. */
+    public const VIEWS = [
+        'all'  => 'All Quotations',
+        'open' => 'Open Deals',
+        'won'  => 'Won Deals',
+        'lost' => 'Lost Deals',
+    ];
+
+    /** Quick filters in the filter panel's first section. */
+    public const QUICK_FILTERS = [
+        'recent'   => 'Created in last 7 days',
+        'expiring' => 'Expiring in 7 days',
+        'overdue'  => 'Past valid date, still open',
+        'no_job'   => 'Accepted, no job yet',
+        'has_job'  => 'Has an installation job',
+    ];
+
+    public const SORTS = [
+        'date_desc'   => 'Newest first',
+        'date_asc'    => 'Oldest first',
+        'total_desc'  => 'Total, high to low',
+        'total_asc'   => 'Total, low to high',
+        'valid_asc'   => 'Valid until, soonest',
+        'customer_asc' => 'Customer, A to Z',
+    ];
+
     public function index(Request $request)
     {
+        $view = array_key_exists($request->get('view'), self::VIEWS) ? $request->get('view') : 'all';
+        $sort = array_key_exists($request->get('sort'), self::SORTS) ? $request->get('sort') : 'date_desc';
+        $layout = $request->get('layout') === 'board' ? 'board' : 'list';
+        $perPage = in_array((int) $request->get('per_page'), [10, 20, 50, 100], true) ? (int) $request->get('per_page') : 20;
+
+        $query = $this->filteredQuery($request);
+        $quotations = (clone $query)->paginate($perPage)->withQueryString();
+
+        // The board is the deals pipeline: everything that matches (up to 200) by status
+        $board = $layout === 'board'
+            ? (clone $query)->limit(200)->get()->groupBy('status')
+            : collect();
+
+        $statusCounts = Quotation::selectRaw('status, count(*) as count')->groupBy('status')->pluck('count', 'status');
+
+        return view('quotations.index', compact('quotations', 'board', 'statusCounts', 'view', 'sort', 'layout', 'perPage'));
+    }
+
+    /** The current list as a CSV file, with the same filters and order as the screen. */
+    public function export(Request $request)
+    {
+        $quotations = $this->filteredQuery($request)->get();
+
+        return response()->streamDownload(function () use ($quotations) {
+            $out = fopen('php://output', 'w');
+            fputcsv($out, ['Quotation no', 'Customer', 'Phone', 'Quotation date', 'Valid until', 'Subtotal', 'Tax', 'Total', 'Status']);
+            foreach ($quotations as $q) {
+                fputcsv($out, [
+                    $q->quotation_no, $q->lead?->customer_name, $q->lead?->phone, $q->quotation_date?->format('Y-m-d'),
+                    $q->valid_until?->format('Y-m-d'), $q->subtotal, $q->tax_amount, $q->total, ucfirst($q->status),
+                ]);
+            }
+            fclose($out);
+        }, 'quotations-' . now()->format('Y-m-d') . '.csv', ['Content-Type' => 'text/csv']);
+    }
+
+    /**
+     * Ticked quotations: mark drafts as sent (with the same status history as the single
+     * button), or, for admins, delete drafts. Other quotations in the selection are skipped.
+     */
+    public function bulk(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'ids'    => 'required|array|min:1|max:500',
+            'ids.*'  => 'integer|exists:quotations,id',
+            'action' => 'required|in:sent,delete',
+        ]);
+
+        $drafts = Quotation::whereIn('id', $data['ids'])->where('status', 'draft')->get();
+        $skipped = count($data['ids']) - $drafts->count();
+        $note = $skipped > 0 ? " {$skipped} skipped (only drafts can be " . ($data['action'] === 'sent' ? 'marked sent' : 'deleted') . ').' : '';
+
+        if ($data['action'] === 'delete') {
+            abort_unless($request->user()->isAdmin(), 403);
+            $drafts->each->delete();
+            return back()->with('status', $drafts->count() . ' ' . str('quotation')->plural($drafts->count()) . ' deleted.' . $note);
+        }
+
+        DB::transaction(function () use ($drafts) {
+            foreach ($drafts as $quotation) {
+                $quotation->update(['status' => 'sent', 'sent_at' => now()]);
+                $quotation->statusHistories()->create([
+                    'changed_by' => Auth::id(),
+                    'from_status' => 'draft',
+                    'to_status' => 'sent',
+                    'notes' => 'Quotation marked as sent to customer.',
+                ]);
+            }
+        });
+
+        return back()->with('status', $drafts->count() . ' ' . str('quotation')->plural($drafts->count()) . ' marked sent.' . $note);
+    }
+
+    /** Search, view, quick filters, field filters, customer letter and sort, shared by list and export. */
+    private function filteredQuery(Request $request)
+    {
         $query = Quotation::with('lead');
+        $like = $query->getConnection()->getDriverName() === 'pgsql' ? 'ilike' : 'like';
+        $today = now()->toDateString();
 
         if ($request->filled('search')) {
             $search = trim($request->search);
-            $query->where(function($q) use ($search) {
-                $q->where('quotation_no', 'like', "%{$search}%")
-                  ->orWhereHas('lead', function($l) use ($search) {
-                      $l->where('customer_name', 'like', "%{$search}%")
-                        ->orWhere('phone', 'like', "%{$search}%")
-                        ->orWhere('email', 'like', "%{$search}%")
-                        ->orWhere('site_address', 'like', "%{$search}%");
+            $query->where(function ($q) use ($search, $like) {
+                $q->where('quotation_no', $like, "%{$search}%")
+                  ->orWhereHas('lead', function ($l) use ($search, $like) {
+                      $l->where('customer_name', $like, "%{$search}%")
+                        ->orWhere('phone', $like, "%{$search}%")
+                        ->orWhere('email', $like, "%{$search}%")
+                        ->orWhere('site_address', $like, "%{$search}%");
                   });
             });
         }
 
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
+        match ($request->get('view')) {
+            'open'  => $query->whereIn('status', ['draft', 'sent']),
+            'won'   => $query->where('status', 'accepted'),
+            'lost'  => $query->whereIn('status', ['rejected', 'expired']),
+            default => null,
+        };
+
+        foreach ((array) $request->get('only', []) as $quick) {
+            match ($quick) {
+                'recent'   => $query->where('created_at', '>=', now()->subDays(7)),
+                'expiring' => $query->whereIn('status', ['draft', 'sent'])->whereBetween('valid_until', [$today, now()->addDays(7)->toDateString()]),
+                'overdue'  => $query->whereIn('status', ['draft', 'sent'])->whereDate('valid_until', '<', $today),
+                'no_job'   => $query->where('status', 'accepted')->doesntHave('installationJob'),
+                'has_job'  => $query->has('installationJob'),
+                default    => null,
+            };
         }
 
-        $quotations = $query->orderByDesc('created_at')->paginate(20)->withQueryString();
-        return view('quotations.index', compact('quotations'));
+        if ($request->filled('status')) {
+            $query->whereIn('status', (array) $request->status);
+        }
+        if (is_numeric($request->get('min_total'))) {
+            $query->where('total', '>=', (float) $request->get('min_total'));
+        }
+        if (is_numeric($request->get('max_total'))) {
+            $query->where('total', '<=', (float) $request->get('max_total'));
+        }
+        if (preg_match('/^[A-Z]$/', (string) $request->get('letter'))) {
+            $query->whereHas('lead', fn ($l) => $l->where('customer_name', $like, $request->get('letter') . '%'));
+        }
+
+        match ($request->get('sort')) {
+            'date_asc'     => $query->orderBy('created_at'),
+            'total_desc'   => $query->orderByDesc('total'),
+            'total_asc'    => $query->orderBy('total'),
+            'valid_asc'    => $query->orderByRaw('valid_until is null')->orderBy('valid_until'),
+            'customer_asc' => $query->orderBy(Lead::select('customer_name')->whereColumn('leads.id', 'quotations.lead_id')),
+            default        => $query->orderByDesc('created_at'),
+        };
+
+        return $query->orderByDesc('id');
     }
 
     /**

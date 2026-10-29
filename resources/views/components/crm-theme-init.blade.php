@@ -272,8 +272,8 @@
             html.dark a.btn-secondary svg,
             html.dark .crm-label svg,
             html.dark label svg {
-                stroke: #cbd5e1 !important;
-                color: #cbd5e1 !important;
+                stroke: #ffffff !important;
+                color: #ffffff !important;
                 fill: none !important;
             }
             html.dark .btn-secondary svg *,
@@ -282,7 +282,7 @@
             html.dark .tech-card button svg *,
             html.dark .crm-label svg *,
             html.dark label svg * {
-                stroke: #cbd5e1 !important;
+                stroke: #ffffff !important;
                 fill: none !important;
             }
 

@@ -28,6 +28,7 @@
         'leads.index' => 'Leads',
         'leads.*' => 'Leads & Inquiries',
         'site-surveys.*' => 'Site Surveys',
+        'quotations.index' => 'Deals & Quotations',
         'quotations.*' => 'Quotations',
         'projects.*' => 'Projects',
         'sites.*' => 'Installation Sites',
@@ -78,7 +79,7 @@
     $crmPageTitle ??= \Illuminate\Support\Str::headline(\Illuminate\Support\Str::before((string) request()->route()?->getName(), '.')) ?: 'Dashboard';
 @endphp
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full overflow-x-hidden max-w-full {{ $isDarkServer ? 'dark' : '' }}" data-theme="{{ $isDarkServer ? 'dark' : 'light' }}" style="background-color: var(--page-bg); color: var(--text-main);">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full max-w-full {{ $isDarkServer ? 'dark' : '' }}" data-theme="{{ $isDarkServer ? 'dark' : 'light' }}" style="background-color: var(--page-bg); color: var(--text-main);">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
@@ -98,99 +99,7 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
         <style>
-            /* ═══════════════════════════════════════════════════════════════════════
-               SECUREVISION AI CRM — THEME VARIABLES SYSTEM
-               ═══════════════════════════════════════════════════════════════════════ */
-            :root,
-            [data-theme='light'],
-            html:not(.dark) {
-                --page-bg: #f1f5f9;
-                --bg-canvas: #f1f5f9;
-
-                --card-bg: #ffffff;
-                --bg-card: #ffffff;
-
-                --card-border: #cbd5e1;
-                --border-card: #cbd5e1;
-
-                --input-border: #94a3b8;
-                --border-input: #94a3b8;
-                --button-border: #94a3b8;
-
-                --table-header-bg: #e2e8f0;
-                --bg-table-header: #e2e8f0;
-
-                --table-border: #cbd5e1;
-                --border-table: #cbd5e1;
-                --border-dark-line: #cbd5e1;
-
-                --text-main: #0f172a;
-                --text-muted: #64748b;
-                --text-secondary: #475569;
-                --text-hint: #64748b;
-
-                --status-green: #16a34a;
-                --status-orange: #d97706;
-                --status-red: #dc2626;
-                --status-success: #16a34a;
-                --status-warning: #d97706;
-                --status-danger: #dc2626;
-
-                --primary-btn-bg: #2563eb;
-                --primary-btn-hover: #1d4ed8;
-                --primary-btn-text: #ffffff;
-                --crm-accent: #2563eb;
-                --crm-accent-hover: #1d4ed8;
-                --crm-accent-light: #eff6ff;
-                --brand-blue: #2563eb;
-                --brand-blue-hover: #1d4ed8;
-            }
-
-            [data-theme='dark'],
-            html.dark,
-            html[data-theme='dark'] {
-                --page-bg: #0f172a;
-                --bg-canvas: #0f172a;
-
-                --card-bg: #1e293b;
-                --bg-card: #1e293b;
-
-                --card-border: #334155;
-                --border-card: #334155;
-
-                --input-border: #334155;
-                --border-input: #334155;
-                --button-border: #334155;
-
-                --table-header-bg: #1e293b;
-                --bg-table-header: #1e293b;
-
-                --table-border: #334155;
-                --border-table: #334155;
-                --border-dark-line: #334155;
-
-                --text-main: #e2e8f0; /* strictly no pure white */
-                --text-muted: #94a3b8;
-                --text-secondary: #94a3b8;
-                --text-hint: #94a3b8;
-
-                --status-green: #4ade80;
-                --status-orange: #fbbf24;
-                --status-red: #f87171;
-                --status-success: #4ade80;
-                --status-warning: #fbbf24;
-                --status-danger: #f87171;
-
-                --primary-btn-bg: #2563eb; /* primary button stays #2563eb */
-                --primary-btn-hover: #1d4ed8;
-                --primary-btn-text: #ffffff;
-                --crm-accent: #2563eb;
-                --crm-accent-hover: #1d4ed8;
-                --crm-accent-light: rgba(37, 99, 235, 0.15);
-                --brand-blue: #2563eb;
-                --brand-blue-hover: #1d4ed8;
-            }
-
+            /* Colour, size and corner tokens live in resources/css/app.css (one source for every page) */
 
             html {
                 font-family: var(--font-sans);
@@ -603,16 +512,30 @@
                 border-top: 1px solid var(--card-border) !important;
             }
 
-            /* Header Bar: Defined Dark Border Bottom */
+            /* Header Bar: Defined Dark Border Bottom & Fixed Sticky Positioning */
             header.crm-topbar,
             .crm-topbar {
                 background-color: var(--card-bg) !important;
                 border-bottom: 1px solid var(--table-border) !important;
+                position: sticky !important;
+                top: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                z-index: 30 !important;
+                flex-shrink: 0 !important;
+                width: 100% !important;
             }
             html.dark header.crm-topbar,
             html.dark .crm-topbar {
                 background-color: var(--card-bg) !important;
                 border-bottom: 1px solid var(--table-border) !important;
+                position: sticky !important;
+                top: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                z-index: 30 !important;
+                flex-shrink: 0 !important;
+                width: 100% !important;
             }
 
             /* Dashboard & Page Name Font in Header */
@@ -1253,7 +1176,7 @@
         </style>
         @endif
     </head>
-    <body class="h-full font-sans antialiased text-slate-800 dark:text-slate-100 bg-[var(--page-bg)] selection:bg-blue-600 selection:text-white" 
+    <body class="h-full overflow-x-hidden font-sans antialiased text-slate-800 dark:text-slate-100 bg-[var(--page-bg)] selection:bg-blue-600 selection:text-white" 
           x-data="{ 
               sidebarOpen: false, 
               sidebarCollapsed: window.crmSidebar ? window.crmSidebar.collapsed : false,
@@ -1279,7 +1202,7 @@
             {{-- ════════════════════════════════════════════════════════════════ --}}
             {{-- SECUREVISION UNIFIED ENTERPRISE SAAS CRM SUITE (ALL ROLES)        --}}
             {{-- ════════════════════════════════════════════════════════════════ --}}
-            <div class="crm-app-container min-h-screen flex bg-[var(--page-bg)] text-[var(--text-main)] transition-colors duration-200">
+            <div class="crm-app-container min-h-screen lg:h-screen lg:overflow-hidden flex bg-[var(--page-bg)] text-[var(--text-main)] transition-colors duration-200">
                 
                 {{-- Mobile Drawer Overlay --}}
                 <div x-show="sidebarOpen" 
@@ -1306,7 +1229,7 @@
                 </div>
 
                 {{-- Main Application Wrapper --}}
-                <div class="flex-1 flex flex-col min-w-0 min-h-screen bg-[var(--page-bg)] text-[var(--text-main)] transition-colors duration-200">
+                <div class="flex-1 flex flex-col min-w-0 min-h-screen lg:min-h-0 lg:h-full lg:overflow-hidden bg-[var(--page-bg)] text-[var(--text-main)] transition-colors duration-200">
                     
                     {{-- Modern SaaS Top Navigation Bar matching Image 3 --}}
                     <script>
@@ -1408,7 +1331,7 @@
                     </script>
 
                     {{-- Fixed Top Bar: 56px high --}}
-                    <header class="crm-topbar h-[56px] min-h-[56px] max-h-[56px] bg-[var(--card-bg)] text-[var(--text-main)] border-b border-[var(--card-border)] px-5 flex items-center justify-between sticky top-0 z-10"
+                    <header class="crm-topbar h-[56px] min-h-[56px] max-h-[56px] shrink-0 bg-[var(--card-bg)] text-[var(--text-main)] border-b border-[var(--card-border)] px-5 flex items-center justify-between sticky top-0 z-30"
                             x-data="globalHeader()"
                             @theme-mode-changed.window="isDarkMode = $event.detail.isDark"
                             @theme-changed.window="if ($event.detail && typeof $event.detail.isDark === 'boolean') isDarkMode = $event.detail.isDark"

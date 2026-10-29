@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Storage;
 
 class SiteSurveyController extends Controller
 {
+    use \App\Http\Controllers\Concerns\ListsRecords;
+
     public function index(Request $request)
     {
         if (auth()->user()?->role === 'technician') {
@@ -40,9 +42,12 @@ class SiteSurveyController extends Controller
             $query->where('status', $request->status);
         }
 
-        $surveys = $query->orderByDesc('survey_date')
-            ->paginate(20)
-            ->withQueryString();
+        $this->applyListSort($query, $request, [
+            'date_desc' => ['survey_date', 'desc'],
+            'date_asc'  => ['survey_date', 'asc'],
+            'added'     => ['created_at', 'desc'],
+        ]);
+        $surveys = $query->paginate($this->listPerPage($request))->withQueryString();
 
         return view('site_surveys.index', compact('surveys'));
     }

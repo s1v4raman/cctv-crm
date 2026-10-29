@@ -77,7 +77,7 @@ class RmaManagementTest extends TestCase
     {
         $response = $this->actingAs($this->admin)->get(route('rma.index'));
         $response->assertOk();
-        $response->assertSee('Warranty Claims');
+        $response->assertSee('RMA Claims | Precision IT Systems', false);
 
         $createResponse = $this->actingAs($this->admin)->get(route('rma.create', ['equipment_id' => $this->equipment->id]));
         $createResponse->assertOk();

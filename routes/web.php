@@ -122,6 +122,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/leads/create', [LeadController::class, 'create'])->name('leads.create');
         Route::get('/leads/export', [LeadController::class, 'export'])->name('leads.export');
         Route::post('/leads/bulk', [LeadController::class, 'bulk'])->name('leads.bulk');
+        Route::get('/quotations/export', [QuotationController::class, 'export'])->name('quotations.export');
+        Route::post('/quotations/bulk', [QuotationController::class, 'bulk'])->name('quotations.bulk');
         Route::post('/leads', [LeadController::class, 'store'])->name('leads.store');
         Route::get('/leads/{lead}/edit', [LeadController::class, 'edit'])->name('leads.edit');
         Route::put('/leads/{lead}', [LeadController::class, 'update'])->name('leads.update');

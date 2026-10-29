@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\DB;
 
 class InvoiceController extends Controller
 {
+    use \App\Http\Controllers\Concerns\ListsRecords;
+
     public function index(Request $request)
     {
         $query = Invoice::with('quotation.lead');
@@ -32,7 +34,13 @@ class InvoiceController extends Controller
             $query->where('status', $request->status);
         }
 
-        $invoices = $query->orderByDesc('created_at')->paginate(20)->withQueryString();
+        $this->applyListSort($query, $request, [
+            'date_desc'  => ['invoice_date', 'desc'],
+            'date_asc'   => ['invoice_date', 'asc'],
+            'due_asc'    => ['due_date', 'asc'],
+            'total_desc' => ['total', 'desc'],
+        ]);
+        $invoices = $query->paginate($this->listPerPage($request))->withQueryString();
         return view('invoices.index', compact('invoices'));
     }
 

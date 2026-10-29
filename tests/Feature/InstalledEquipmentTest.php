@@ -43,7 +43,7 @@ class InstalledEquipmentTest extends TestCase
             ->get(route('equipment.index'));
 
         $response->assertOk();
-        $response->assertSee('Installed Equipment & Serial Tracking', false);
+        $response->assertSee('Cameras &amp; Assets | Precision IT Systems', false);
         $response->assertSee('SN-PTZ-889900');
         $response->assertSee('Apex Corporate Hub');
         $response->assertSee('Main Gate PTZ Camera 4K');

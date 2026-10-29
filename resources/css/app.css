@@ -20,15 +20,15 @@
     --font-sans: "Roboto", ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
-    --radius-control: 6px;   /* inputs, selects, buttons, square badges */
-    --radius-card: 8px;      /* cards, panels, dropdowns, modals */
+    --radius-control: 4px;   /* inputs, selects, buttons, square badges */
+    --radius-card: 6px;      /* cards, panels, dropdowns, modals */
     --radius-pill: 9999px;   /* status pills, avatars, dots */
 
-    --control-height: 38px;  /* every input, select and button */
+    --control-height: 32px;  /* every input, select and button */
 
     --text-min: 11px;        /* smallest text anywhere (uppercase micro-labels) */
-    --text-sm: 12px;         /* meta text, table headers, badges */
-    --text-base: 13px;       /* table cells, dense UI */
+    --text-sm: 13px;         /* meta text, table headers, badges */
+    --text-base: 14px;       /* table cells, dense UI */
     --text-md: 14px;         /* body text, inputs */
 
     --status-success-fg: #047857; --status-success-bg: #ecfdf5; --status-success-bd: #a7f3d0;
@@ -55,30 +55,32 @@ html.dark {
 :root,
 [data-theme='light'],
 html:not(.dark) {
-    --page-bg: #f1f5f9;
-    --bg-canvas: #f1f5f9;
+    --page-bg: #f4f5f7;
+    --bg-canvas: #f4f5f7;
 
     --card-bg: #ffffff;
     --bg-card: #ffffff;
 
-    --card-border: #cbd5e1;
-    --border-card: #cbd5e1;
+    --card-border: #e2e5e9;
+    --border-card: #e2e5e9;
 
-    --input-border: #94a3b8;
-    --border-input: #94a3b8;
-    --button-border: #94a3b8;
+    --input-border: #c8cdd4;
+    --border-input: #c8cdd4;
+    --button-border: #c8cdd4;
 
-    --table-header-bg: #e2e8f0;
-    --bg-table-header: #e2e8f0;
+    --table-header-bg: #ffffff;
+    --bg-table-header: #ffffff;
 
-    --table-border: #cbd5e1;
-    --border-table: #cbd5e1;
-    --border-dark-line: #cbd5e1;
+    --table-border: #eceef1;
+    --border-table: #eceef1;
+    --border-dark-line: #e2e5e9;
+    --row-hover: #f7f8fa;
+    --tool-hover: #eef0f3;
 
-    --text-main: #0f172a;
-    --text-muted: #64748b;
-    --text-secondary: #475569;
-    --text-hint: #64748b;
+    --text-main: #313949;
+    --text-muted: #6b7280;
+    --text-secondary: #4b5563;
+    --text-hint: #6b7280;
 
     --status-green: #16a34a;
     --status-orange: #d97706;
@@ -100,25 +102,27 @@ html:not(.dark) {
 [data-theme='dark'],
 html.dark,
 html[data-theme='dark'] {
-    --page-bg: #0f172a;
-    --bg-canvas: #0f172a;
+    --page-bg: #0b1120;
+    --bg-canvas: #0b1120;
 
-    --card-bg: #1e293b;
-    --bg-card: #1e293b;
+    --card-bg: #0f172a;
+    --bg-card: #0f172a;
 
-    --card-border: #334155;
-    --border-card: #334155;
+    --card-border: #1e293b;
+    --border-card: #1e293b;
 
     --input-border: #334155;
     --border-input: #334155;
     --button-border: #334155;
 
-    --table-header-bg: #1e293b;
-    --bg-table-header: #1e293b;
+    --table-header-bg: #0f172a;
+    --bg-table-header: #0f172a;
 
-    --table-border: #334155;
-    --border-table: #334155;
-    --border-dark-line: #334155;
+    --table-border: #1a2436;
+    --border-table: #1a2436;
+    --border-dark-line: #1e293b;
+    --row-hover: #131c2e;
+    --tool-hover: #1e293b;
 
     --text-main: #e2e8f0; /* strictly no pure white */
     --text-muted: #94a3b8;
@@ -4037,4 +4041,152 @@ body {
 }
 .crm-content :is(div, span)[class*="w-"][class*="h-"][class*="justify-center"]:has(> svg:only-child) > svg {
     color: inherit !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ONE LOOK FOR EVERY PAGE, DAY AND NIGHT (the Leads list design)
+   Colours, sizes and corners come from the tokens at the top of this file;
+   this last layer only makes the shared pieces use them consistently.
+   Cell padding and text size inside tables are left to each page, so dense
+   grids (attendance month, timesheets) keep their layout.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Page titles: 18px, semibold, the main text colour */
+.crm-page-header h1,
+.crm-page-header h2 {
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0 !important;
+    color: var(--text-main) !important;
+}
+
+/* Main button: the theme accent, white text, 32px, 4px corners */
+html body .btn-primary,
+html body .btn-blue {
+    min-height: var(--control-height) !important;
+    height: var(--control-height);
+    padding: 0 14px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    line-height: 1 !important;
+    border-radius: var(--radius-control) !important;
+    background-color: var(--crm-accent, #2563eb) !important;
+    border: 1px solid color-mix(in srgb, var(--crm-accent, #2563eb) 82%, #000) !important;
+    color: #ffffff !important;
+    box-shadow: none !important;
+}
+html body .btn-primary:hover,
+html body .btn-blue:hover {
+    background-color: var(--crm-accent-hover, #1d4ed8) !important;
+}
+
+/* Second button: white (night: card colour) with a grey outline */
+html body .btn-secondary,
+html body .btn-dark,
+html body .crm-btn-secondary,
+html body .btn-white {
+    min-height: var(--control-height) !important;
+    height: var(--control-height);
+    padding: 0 12px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    line-height: 1 !important;
+    border-radius: var(--radius-control) !important;
+    background-color: var(--card-bg) !important;
+    border: 1px solid var(--input-border) !important;
+    color: var(--text-main) !important;
+    box-shadow: none !important;
+}
+html body .btn-secondary:hover,
+html body .btn-dark:hover,
+html body .crm-btn-secondary:hover,
+html body .btn-white:hover {
+    background-color: var(--row-hover) !important;
+}
+
+/* Cards and panels: one border colour, 6px corners, no shadow */
+html body .saas-card,
+html body .stat-card,
+html body .crm-card,
+html body .crm-card-surface,
+html body .card,
+html body .pip-card,
+html body .pg-card {
+    background-color: var(--card-bg) !important;
+    border: 1px solid var(--card-border) !important;
+    border-radius: var(--radius-card) !important;
+    box-shadow: none !important;
+}
+
+/* Tables: the card is the frame, white header with column dividers, single row lines */
+html body .crm-app-container table:not(.ld-table) {
+    border: 0 !important;
+}
+html body .crm-app-container table:not(.ld-table) thead,
+html body .crm-app-container table:not(.ld-table) thead tr,
+html body .crm-app-container table:not(.ld-table) th {
+    background-color: var(--table-header-bg) !important;
+}
+html body .crm-app-container table:not(.ld-table) th {
+    color: var(--text-main) !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+    border-bottom: 1px solid var(--card-border) !important;
+}
+html body .crm-app-container table:not(.ld-table) th:not(:last-child) {
+    border-right: 1px solid var(--table-border) !important;
+}
+html body .crm-app-container table:not(.ld-table) td {
+    border-right: 0 !important;
+    border-bottom: 1px solid var(--table-border) !important;
+}
+html body .crm-app-container table:not(.ld-table) tbody tr:hover td {
+    background-color: var(--row-hover) !important;
+}
+
+/* Inputs, selects and text areas: 32px, grey outline, 4px corners, 14px text */
+html body .crm-app-container :is(input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], input[type="tel"], input[type="date"], input[type="month"], input[type="time"], input[type="url"], select, textarea):not([class*="bg-transparent"]):not([class*="border-0"]) {
+    border-color: var(--input-border) !important;
+    border-radius: var(--radius-control) !important;
+    background-color: var(--card-bg) !important;
+    color: var(--text-main) !important;
+    font-size: 14px !important;
+    box-shadow: none !important;
+}
+html body .crm-app-container :is(input, select, textarea):focus {
+    border-color: var(--crm-accent, #2563eb) !important;
+    outline: none !important;
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--crm-accent, #2563eb) 20%, transparent) !important;
+}
+
+/* Night mode: the darker inset surfaces some pages hard-code follow the page colour */
+html.dark body .crm-app-container :is(.bg-\[\#060913\], .bg-\[\#080d1a\], .dark\:bg-\[\#060913\], .dark\:bg-\[\#080d1a\]) {
+    background-color: var(--page-bg) !important;
+}
+html.dark body .crm-app-container :is(.dark\:bg-\[\#0b132b\], .dark\:bg-\[\#0b1120\], .dark\:bg-\[\#0b1329\]) {
+    background-color: var(--page-bg) !important;
+}
+
+/* Solid icons (WhatsApp, the ··· dots) keep their fill: the theme's button rule draws every
+   button icon as an outline, which left these hollow and faint. Inside buttons they are
+   full black by day and white at night, like the text beside them. */
+html body svg.icon-solid.icon-solid,
+html body svg.icon-solid.icon-solid * {
+    fill: currentColor !important;
+    stroke: none !important;
+}
+html body svg.icon-solid.icon-solid [fill="#ffffff"] {
+    fill: #ffffff !important;
+}
+html:not(.dark) body :is(button, a[class*="btn"], .btn-secondary, .ld-outline) svg.icon-solid.icon-solid {
+    color: #000000 !important;
+}
+html.dark body :is(button, a[class*="btn"], .btn-secondary, .ld-outline) svg.icon-solid.icon-solid {
+    color: #ffffff !important;
+}
+/* ...and in a plain icon tile (dialog headers) a solid icon uses the main text colour, not grey */
+.crm-content :is(div, span)[class*="w-"][class*="h-"][class*="justify-center"]:has(> svg.icon-solid:only-child) > svg.icon-solid.icon-solid {
+    color: var(--text-main) !important;
 }

@@ -14,6 +14,8 @@ use Illuminate\View\View;
 
 class UserController extends Controller
 {
+    use \App\Http\Controllers\Concerns\ListsRecords;
+
     /**
      * Display a listing of the resource.
      */
@@ -47,7 +49,17 @@ class UserController extends Controller
             $query->where('role', $roleFilter);
         }
 
-        $users = $query->with('worker')->orderBy('name')->paginate(15)->withQueryString();
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+            $query->where(fn ($q) => $q->where('name', 'like', "%{$search}%")->orWhere('email', 'like', "%{$search}%"));
+        }
+        $query->with('worker');
+        $this->applyListSort($query, $request, [
+            'name'   => ['name', 'asc'],
+            'newest' => ['created_at', 'desc'],
+            'role'   => ['role', 'asc'],
+        ]);
+        $users = $query->paginate($this->listPerPage($request))->withQueryString();
 
         return view('admin.users.index', compact('users', 'roleFilter'));
     }

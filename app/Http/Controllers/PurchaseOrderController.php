@@ -13,6 +13,8 @@ use Illuminate\View\View;
 
 class PurchaseOrderController extends Controller
 {
+    use \App\Http\Controllers\Concerns\ListsRecords;
+
     public function index(Request $request): View
     {
         if (auth()->user()?->role === 'technician') {
@@ -22,7 +24,7 @@ class PurchaseOrderController extends Controller
         $supplierId = $request->input('supplier_id');
         $status = $request->input('status');
 
-        $query = PurchaseOrder::with(['supplier', 'items', 'createdBy'])->latest();
+        $query = PurchaseOrder::with(['supplier', 'items', 'createdBy']);
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
@@ -45,8 +47,17 @@ class PurchaseOrderController extends Controller
         if ($status) {
             $query->where('status', $status);
         }
+        if ($request->filled('payment_status')) {
+            $query->where('payment_status', $request->input('payment_status'));
+        }
 
-        $purchaseOrders = $query->paginate(15)->withQueryString();
+        $this->applyListSort($query, $request, [
+            'date_desc'  => ['order_date', 'desc'],
+            'date_asc'   => ['order_date', 'asc'],
+            'total_desc' => ['total', 'desc'],
+            'po_number'  => ['po_number', 'asc'],
+        ]);
+        $purchaseOrders = $query->paginate($this->listPerPage($request))->withQueryString();
 
         // Metrics
         $totalOrders = PurchaseOrder::count();

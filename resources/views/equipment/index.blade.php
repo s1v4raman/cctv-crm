@@ -1,315 +1,113 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-                <h2 class="text-xl font-bold text-slate-900 dark:text-white font-heading tracking-tight">Installed Equipment & Serial Tracking</h2>
-            </div>
-            @if(auth()->user()->isAdmin() || auth()->user()->isStaff())
-            <a href="{{ route('equipment.create') }}" class="btn-primary">
-                Register Equipment
-            </a>
-            @endif
-        </div>
-    </x-slot>
+    @php
+        $statuses = ['active' => 'Active', 'under_repair' => 'Under Repair', 'replaced' => 'Replaced', 'decommissioned' => 'Decommissioned'];
+        $warranties = ['active' => 'Under warranty', 'expiring_soon' => 'Expiring in 30 days', 'expired' => 'Expired'];
+        $views = collect(['' => 'All Equipment'] + $statuses)->map(fn ($label, $value) => [
+            'label' => $value === '' ? $label : $label . ' Equipment',
+            'url' => route('equipment.index', array_filter(['status' => $value ?: null])),
+            'active' => (string) request('status', '') === (string) $value,
+        ])->values()->all();
+        $filterCount = collect(['search', 'status', 'warranty', 'lead_id'])->filter(fn ($f) => request()->filled($f) && request($f) !== 'all')->count();
+        $warrantyCell = function (?string $state, $days, $expiry) {
+            return match ($state) {
+                'active'        => ['Active, ' . $days . ' days left', '', $expiry],
+                'expiring_soon' => ['Expiring Soon (' . $days . ' days)', 'text-amber-700 dark:text-amber-400', $expiry],
+                'expired'       => ['Expired', 'text-rose-700 dark:text-rose-400', $expiry],
+                default         => ['—', '', null],
+            };
+        };
+    @endphp
 
-    <style>
-        .stat-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-        @media (min-width: 1024px) {
-            .stat-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-        }
+    <x-list-page key="equipment" :paginator="$equipments" :views="$views"
+        :sorts="['date_desc' => 'Newest first', 'mfg_warranty_asc' => 'Maker warranty ends soonest', 'service_warranty_asc' => 'Service warranty ends soonest', 'serial' => 'Serial number']"
+        :create-url="auth()->user()->isOffice() ? route('equipment.create') : null" create-label="Add Equipment"
+        filter-title="Filter Equipment by" :filter-action="route('equipment.index')" :keep="['sort' => request('sort'), 'per_page' => request('per_page')]"
+        :filter-count="$filterCount" :clear-url="route('equipment.index')"
+        :columns="['equipment' => 'Equipment', 'customer' => 'Customer', 'mfg' => 'Maker warranty', 'service' => 'Service warranty', 'status' => 'Status']"
+        empty-text="No equipment recorded yet." filtered-text="No equipment matches these filters.">
 
-        .stat-card {
-            background: #ffffff;
-            border-radius: 8px;
-            padding: 12px 16px;
-            border: 1px solid var(--card-border);
-        }
-        html.dark .stat-card {
-            background: #0f172a;
-            border-color: var(--card-border);
-        }
-        .stat-label { font-size: 14px; font-weight: normal; color: var(--text-muted); margin-bottom: 0.25rem; }
-        .stat-value { font-size: 26px; font-weight: bold; color: var(--text-main); line-height: 1.2; }
+        <x-slot name="filters">
+            <div class="ld-sub">Serial, MAC, name, location or customer</div>
+            <input type="text" name="search" value="{{ request('search') }}" class="ld-input" aria-label="Serial, MAC, name, location or customer">
 
-        .pg-card {
-            background: #ffffff;
-            border-radius: 8px;
-            border: 1px solid var(--card-border);
-            overflow: hidden;
-        }
-        html.dark .pg-card {
-            background: #0f172a;
-            border-color: var(--card-border);
-        }
+            <div class="ld-sub">Status</div>
+            <select name="status" class="ld-input" aria-label="Status">
+                <option value="">Any status</option>
+                @foreach($statuses as $value => $label)
+                    <option value="{{ $value }}" @selected(request('status') === $value)>{{ $label }}</option>
+                @endforeach
+            </select>
 
-        .filter-bar {
-            display: flex; align-items: center; gap: 0.75rem;
-            padding: 0.75rem 1rem; border-bottom: 1px solid var(--card-border); flex-wrap: wrap;
-            background: #ffffff;
-        }
-        html.dark .filter-bar {
-            border-bottom: 1px solid var(--card-border);
-            background: #0f172a;
-        }
-        .filter-bar input, .filter-bar select {
-            border: 1px solid var(--card-border); border-radius: 6px;
-            height: 38px; min-height: 38px; padding: 0 0.875rem; font-size: 14px; color: var(--text-main);
-            background: #ffffff; outline: none; font-family: inherit;
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            transition: border-color 0.15s ease, box-shadow 0.15s ease;
-        }
-        html.dark .filter-bar input, html.dark .filter-bar select {
-            border: 1px solid #475569;
-            background: #0b1120;
-            color: var(--text-main);
-        }
-        .filter-bar select {
-            padding-right: 2.25rem;
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%231e293b' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-            background-position: right 0.75rem center;
-            background-repeat: no-repeat;
-            background-size: 1.25em 1.25em;
-            appearance: none;
-            -webkit-appearance: none;
-            cursor: pointer;
-        }
-        html.dark .filter-bar select {
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-        }
-        .filter-bar input:focus, .filter-bar select:focus {
-            border-color: #2563eb;
-            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
-        }
+            <div class="ld-sub">Warranty</div>
+            <select name="warranty" class="ld-input" aria-label="Warranty">
+                <option value="">Any warranty</option>
+                @foreach($warranties as $value => $label)
+                    <option value="{{ $value }}" @selected(request('warranty') === $value)>{{ $label }}</option>
+                @endforeach
+            </select>
 
-        .p-table { width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; border: none !important; }
-        .p-table thead { background: #f0f0f0; border-top: none !important; border-bottom: 1px solid var(--card-border); }
-        html.dark .p-table thead { background: var(--card-border); border-bottom: 1px solid var(--card-border); }
-        .p-table thead th {
-            padding: 0.75rem 1rem;
-            font-size: 14px; font-weight: bold; text-transform: none;
-            color: var(--text-main); text-align: left; white-space: nowrap;
-            border-top: none !important;
-            border-bottom: 1px solid var(--card-border);
-        }
-        html.dark .p-table thead th {
-            color: var(--text-main);
-            border-bottom: 1px solid var(--card-border);
-        }
-        .p-table thead th.center { text-align: center; }
-        .p-table thead th.right { text-align: right; }
-        .p-table tbody tr { border-bottom: 1px solid var(--card-border); background: #ffffff; }
-        html.dark .p-table tbody tr { border-bottom: 1px solid var(--card-border); background: #0f172a; }
-        .p-table tbody tr:last-child,
-        .p-table tbody tr:last-child td { border-bottom: none !important; }
-        .p-table tbody tr:hover { background: #f5f5f5; }
-        html.dark .p-table tbody tr:hover { background: var(--card-border); }
-        .p-table tbody td { padding: 0.75rem 1rem; vertical-align: middle; font-size: 14px; color: var(--text-main); border-bottom: 1px solid var(--card-border); }
-        html.dark .p-table tbody td { color: var(--text-main); border-bottom: 1px solid var(--card-border); }
-        .p-table tbody td.center { text-align: center; }
-        .p-table tbody td.right { text-align: right; }
+            <div class="ld-sub">Customer</div>
+            <select name="lead_id" class="ld-input" aria-label="Customer">
+                <option value="">Any customer</option>
+                @foreach($leads as $lead)
+                    <option value="{{ $lead->id }}" @selected((string) request('lead_id') === (string) $lead->id)>{{ $lead->customer_name }}</option>
+                @endforeach
+            </select>
+        </x-slot>
 
-        .sn-link { font-family: Arial, sans-serif; font-size: 14px; font-weight: normal; color: #2563eb; text-decoration: none; }
-        .sn-link:hover { text-decoration: underline; color: #1d4ed8; }
-        .mac-text { font-family: Arial, sans-serif; font-size: 12px; color: #666666; }
-        html.dark .mac-text { color: var(--text-muted); }
+        <x-slot name="head">
+            <th style="min-width: 170px">Serial No</th>
+            <th x-show="cols.equipment" style="min-width: 230px">Equipment</th>
+            <th x-show="cols.customer" style="min-width: 220px">Customer</th>
+            <th x-show="cols.mfg" style="min-width: 170px">Maker warranty</th>
+            <th x-show="cols.service" style="min-width: 170px">Service warranty</th>
+            <th x-show="cols.status" style="min-width: 130px">Status</th>
+        </x-slot>
 
-        /* Status: Clean 1px single border badge matching Image 4 */
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            font-size: 12px;
-            font-weight: 700;
-            padding: 2px 8px !important;
-            border-radius: 4px;
-            border: 1px solid var(--card-border) !important;
-            background: #ffffff;
-        }
-        html.dark .status-badge {
-            border-color: #475569 !important;
-            background: #0f172a;
-        }
-        .status-active         { color: #16a34a !important; }
-        .status-under_repair   { color: #d97706 !important; }
-        .status-replaced       { color: #2563eb !important; }
-        .status-decommissioned { color: #555555 !important; }
-
-        .pg-links { padding: 0.75rem 1rem; border-top: 1px solid var(--card-border); }
-        html.dark .pg-links { border-top: 1px solid var(--card-border); }
-    </style>
-
-    <div class="pg-wrap">
-        <div class="pg-inner">
-
-            @if (session('status'))
-                <div class="mb-4 p-3 rounded bg-white border border-[#dddddd] text-[#16a34a] text-sm">
-                    {{ session('status') }}
-                </div>
-            @endif
-
-            <div class="pg-card">
-                {{-- Filters --}}
-                <form data-auto-submit method="GET" action="{{ route('equipment.index') }}" class="filter-bar">
-                    <input aria-label="Search Serial No, MAC, Device" type="text" name="search" value="{{ request('search') }}" placeholder="Search Serial No, MAC, Device..." style="min-width: 220px;" />
-
-                    <select aria-label="Lead" name="lead_id" data-no-tom>
-                        <option value="">All Customer Sites</option>
-                        @foreach($leads as $l)
-                            <option value="{{ $l->id }}" @selected(request('lead_id') == $l->id)>{{ $l->customer_name }}</option>
-                        @endforeach
-                    </select>
-
-                    <select aria-label="Warranty" name="warranty">
-                        <option value="">All Warranty States</option>
-                        <option value="active" @selected(request('warranty') == 'active')>Active Warranty</option>
-                        <option value="expiring_soon" @selected(request('warranty') == 'expiring_soon')>Expiring Soon (&le; 30 days)</option>
-                        <option value="expired" @selected(request('warranty') == 'expired')>Expired Warranty</option>
-                    </select>
-
-                    <select aria-label="Status" name="status">
-                        <option value="">All Device Status</option>
-                        <option value="active" @selected(request('status') == 'active')>Active</option>
-                        <option value="under_repair" @selected(request('status') == 'under_repair')>Under Repair</option>
-                        <option value="replaced" @selected(request('status') == 'replaced')>Replaced</option>
-                        <option value="decommissioned" @selected(request('status') == 'decommissioned')>Decommissioned</option>
-                    </select>
-
-                    <button type="submit" class="h-[42px] px-5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold shadow-xs transition inline-flex items-center justify-center cursor-pointer">
-                        Search
-                    </button>
-                    @if(request()->hasAny(['search', 'lead_id', 'warranty', 'status']))
-                        <a href="{{ route('equipment.index') }}" class="h-[42px] px-4 inline-flex items-center rounded-lg border border-[var(--card-border)] dark:border-slate-600 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm font-semibold transition shadow-xs">Clear</a>
-                    @endif
-                </form>
-
-                {{-- Table --}}
-                <div class="overflow-x-auto">
-                    <table class="p-table crm-responsive">
-                        <thead>
-                            <tr>
-                                <th>Serial Number &amp; MAC</th>
-                                <th>Equipment / Model</th>
-                                <th>Customer &amp; Site</th>
-                                <th>Mfg Warranty</th>
-                                <th>Service Warranty</th>
-                                <th class="center">Status</th>
-                                <th class="right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($equipments as $item)
-                            <tr>
-                                <td>
-                                    <a href="{{ route('equipment.show', $item) }}" class="sn-link">
-                                        {{ $item->serial_number }}
-                                    </a>
-                                    @if($item->mac_address)
-                                        <div class="mac-text mt-0.5">MAC: {{ $item->mac_address }}</div>
-                                    @endif
-                                </td>
-                                <td>
-                                    <div class="font-semibold text-slate-900 dark:text-white text-sm">{{ $item->equipment_name }}</div>
-                                    <div class="text-xs text-slate-500 mt-0.5">
-                                        {{ $item->product?->brand ?? '' }} {{ $item->product?->model_no ?? '' }}
-                                        @if($item->location_tag)
-                                            &middot; <span>{{ $item->location_tag }}</span>
-                                        @endif
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="font-semibold text-sm text-slate-900 dark:text-white">
-                                        <a href="{{ route('leads.show', $item->lead) }}" class="hover:text-blue-600">
-                                            {{ $item->lead?->customer_name }}
-                                        </a>
-                                    </div>
-                                    @if($item->installationJob)
-                                        <div class="text-xs text-slate-500 mt-0.5">
-                                            Job: <a href="{{ route('jobs.show', $item->installationJob) }}" class="hover:underline">{{ $item->installationJob->job_no }}</a>
-                                        </div>
-                                    @endif
-                                </td>
-                                <td>
-                                    @php $mfgStatus = $item->mfg_warranty_status; @endphp
-                                    @if($mfgStatus === 'active')
-                                        <div class="text-xs text-emerald-600 font-medium">Active ({{ $item->mfg_days_remaining }}d left)</div>
-                                        <div class="text-[11px] text-slate-400">Exp: {{ $item->manufacturer_warranty_expiry?->format('d M Y') }}</div>
-                                    @elseif($mfgStatus === 'expiring_soon')
-                                        <div class="text-xs text-amber-600 font-medium">Expiring ({{ $item->mfg_days_remaining }}d)</div>
-                                        <div class="text-[11px] text-slate-400">Exp: {{ $item->manufacturer_warranty_expiry?->format('d M Y') }}</div>
-                                    @elseif($mfgStatus === 'expired')
-                                        <div class="text-xs text-red-600 font-medium">Expired</div>
-                                        <div class="text-[11px] text-slate-400">{{ $item->manufacturer_warranty_expiry?->format('d M Y') }}</div>
-                                    @else
-                                        <span class="text-xs text-slate-400">—</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    @php $svcStatus = $item->service_warranty_status; @endphp
-                                    @if($svcStatus === 'active')
-                                        <div class="text-xs text-emerald-600 font-medium">Active ({{ $item->service_days_remaining }}d left)</div>
-                                        <div class="text-[11px] text-slate-400">Exp: {{ $item->service_warranty_expiry?->format('d M Y') }}</div>
-                                    @elseif($svcStatus === 'expiring_soon')
-                                        <div class="text-xs text-amber-600 font-medium">Expiring ({{ $item->service_days_remaining }}d)</div>
-                                        <div class="text-[11px] text-slate-400">Exp: {{ $item->service_warranty_expiry?->format('d M Y') }}</div>
-                                    @elseif($svcStatus === 'expired')
-                                        <div class="text-xs text-red-600 font-medium">Expired</div>
-                                        <div class="text-[11px] text-slate-400">{{ $item->service_warranty_expiry?->format('d M Y') }}</div>
-                                    @else
-                                        <span class="text-xs text-slate-400">—</span>
-                                    @endif
-                                </td>
-                                <td class="center">
-                                    @php
-                                        $eqStatusColors = [
-                                            'active'         => '#16a34a',
-                                            'under_repair'   => '#d97706',
-                                            'replaced'       => '#2563eb',
-                                            'decommissioned' => '#555555',
-                                        ];
-                                        $sColor = $eqStatusColors[strtolower($item->status)] ?? '#555555';
-                                    @endphp
-                                    <span class="status-text" style="color: {{ $sColor }}; font-weight: bold;">
-                                        {{ ucfirst(str_replace('_', ' ', $item->status)) }}
-                                    </span>
-                                </td>
-                                <td class="right whitespace-nowrap text-sm table-actions" style="text-align:right;">
-                                    <a href="{{ route('equipment.show', $item) }}" class="action-link">View</a>
-                                    <a href="{{ route('equipment.edit', $item) }}" class="action-link">Edit</a>
-                                    @if(auth()->user()->isAdmin())
-                                        <form method="POST" action="{{ route('equipment.destroy', $item) }}" data-confirm="Are you sure you want to delete this equipment record?" class="inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="danger-link">Delete</button>
-                                        </form>
-                                    @endif
-                                </td>
-                            </tr>
-                            @empty
-                            <tr>
-                                <td colspan="7" class="text-center py-6 text-sm text-slate-500">
-                                    <x-empty-message empty="No equipment yet" filtered="No equipment match these filters." :filters="['search', 'status', 'warranty', 'lead_id']" />
-                                </td>
-                            </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-
-                {{-- Total count shown below the table --}}
-                <div class="px-4 py-2.5 border-t border-[#ddd] dark:border-slate-800 bg-[#fbfbfb] dark:bg-slate-900/60 flex items-center justify-between text-xs text-slate-500">
-                    <span class="font-medium">Total: {{ $equipments->total() }}</span>
-                    @if($equipments->hasPages())
-                        <div class="text-xs">
-                            {{ $equipments->links() }}
-                        </div>
-                    @endif
-                </div>
-            </div>
-
-        </div>
-    </div>
+        @foreach($equipments as $item)
+            @php
+                [$mfgText, $mfgClass, $mfgDate] = $warrantyCell($item->mfg_warranty_status, $item->mfg_days_remaining, $item->manufacturer_warranty_expiry);
+                [$svcText, $svcClass, $svcDate] = $warrantyCell($item->service_warranty_status, $item->service_days_remaining, $item->service_warranty_expiry);
+            @endphp
+            <tr>
+                <td class="whitespace-nowrap">
+                    <a href="{{ route('equipment.show', $item) }}" class="ld-name plain-link">{{ $item->serial_number }}</a>
+                    @if($item->mac_address)<div class="text-xs mt-0.5" style="color: var(--ld-muted)">MAC {{ $item->mac_address }}</div>@endif
+                </td>
+                <td x-show="cols.equipment">
+                    <div>{{ $item->equipment_name }}</div>
+                    <div class="text-xs mt-0.5" style="color: var(--ld-muted)">{{ trim(($item->product?->brand ?? '') . ' ' . ($item->product?->model_no ?? '')) }}@if($item->location_tag) · {{ $item->location_tag }}@endif</div>
+                </td>
+                <td x-show="cols.customer">
+                    @if($item->lead)<a href="{{ route('leads.show', $item->lead) }}" class="ld-name plain-link">{{ $item->lead->customer_name }}</a>@endif
+                    @if($item->installationJob)<div class="text-xs mt-0.5" style="color: var(--ld-muted)">Job {{ $item->installationJob->job_no }}</div>@endif
+                </td>
+                <td x-show="cols.mfg">
+                    <div class="{{ $mfgClass }}">{{ $mfgText }}</div>
+                    @if($mfgDate)<div class="text-xs mt-0.5" style="color: var(--ld-muted)">{{ $mfgDate->format('d/m/Y') }}</div>@endif
+                </td>
+                <td x-show="cols.service">
+                    <div class="{{ $svcClass }}">{{ $svcText }}</div>
+                    @if($svcDate)<div class="text-xs mt-0.5" style="color: var(--ld-muted)">{{ $svcDate->format('d/m/Y') }}</div>@endif
+                </td>
+                <td x-show="cols.status">{{ $statuses[$item->status] ?? ucfirst(str_replace('_', ' ', $item->status)) }}</td>
+                <td>
+                    <div class="ld-row-actions">
+                        <a href="{{ route('equipment.edit', $item) }}" class="plain-link" title="Edit" aria-label="Edit {{ $item->serial_number }}">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.2 5.2l3.6 3.6M4 20l4.5-1 10.3-10.3a2.5 2.5 0 00-3.5-3.5L5 15.5 4 20z"/></svg>
+                        </a>
+                        @if(auth()->user()->isAdmin())
+                            <form method="POST" action="{{ route('equipment.destroy', $item) }}" data-confirm="Delete equipment {{ $item->serial_number }}?">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn-cancel" title="Delete" aria-label="Delete {{ $item->serial_number }}">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 7h14M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>
+                                </button>
+                            </form>
+                        @endif
+                    </div>
+                </td>
+            </tr>
+        @endforeach
+    </x-list-page>
 </x-app-layout>

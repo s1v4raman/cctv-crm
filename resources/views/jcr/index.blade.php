@@ -1,139 +1,84 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-                <h2 class="text-xl font-bold text-slate-900 dark:text-white">Job Completion Reports</h2>
-            </div>
-            <div class="flex items-center gap-2">
-                <a href="{{ route('jobs.index') }}" class="btn-secondary">
-                    Installation Jobs
-                </a>
-            </div>
-        </div>
-    </x-slot>
+    @php
+        $types = ['installation' => 'Installation', 'service' => 'Service Ticket', 'amc' => 'AMC Maintenance'];
+        $views = collect(['' => 'All Job Reports'] + $types)->map(fn ($label, $value) => [
+            'label' => $value === '' ? $label : $label . ' Reports',
+            'url' => route('jcr.index', array_filter(['type' => $value ?: null])),
+            'active' => (string) request('type', '') === (string) $value,
+        ])->values()->all();
+        $filterCount = collect(['search', 'type', 'technician_id'])->filter(fn ($f) => request()->filled($f))->count();
+    @endphp
 
-    <div class="max-w-[1200px] mx-auto space-y-6">
-        @if (session('status'))
-            <div class="p-3 bg-white dark:bg-slate-900 border border-emerald-500 text-emerald-700 dark:text-emerald-300 rounded text-xs">
-                {{ session('status') }}
-            </div>
-        @endif
+    <x-list-page key="jcr" :paginator="$reports" :views="$views"
+        :sorts="['date_desc' => 'Completed, newest', 'date_asc' => 'Completed, oldest', 'report_no' => 'Report number']"
+        filter-title="Filter Reports by" :filter-action="route('jcr.index')" :keep="['sort' => request('sort'), 'per_page' => request('per_page')]"
+        :filter-count="$filterCount" :clear-url="route('jcr.index')"
+        :columns="['job' => 'Job', 'technician' => 'Technician', 'checklist' => 'Checklist', 'completed' => 'Completed']"
+        empty-text="No job completion reports yet." filtered-text="No job completion reports match these filters.">
 
-        {{-- Stat Cards: Gray label and bold number only (5.5) --}}
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="stat-card">
-                <div class="stat-label">Total Reports</div>
-                <div class="stat-value">{{ $stats['total'] ?? 0 }}</div>
-            </div>
+        <x-slot name="actions">
+            <a href="{{ route('jobs.index') }}" class="ld-outline plain-link">Installation Jobs</a>
+        </x-slot>
 
-            <div class="stat-card">
-                <div class="stat-label">Installation Signoffs</div>
-                <div class="stat-value">{{ $stats['installation'] ?? 0 }}</div>
-            </div>
+        <x-slot name="filters">
+            <div class="ld-sub">Report no, signer or customer</div>
+            <input type="text" name="search" value="{{ request('search') }}" class="ld-input" aria-label="Report number, signer or customer">
 
-            <div class="stat-card">
-                <div class="stat-label">Service Reports</div>
-                <div class="stat-value">{{ $stats['service'] ?? 0 }}</div>
-            </div>
+            <div class="ld-sub">Job type</div>
+            <select name="type" class="ld-input" aria-label="Job type">
+                <option value="">Any type</option>
+                @foreach($types as $value => $label)
+                    <option value="{{ $value }}" @selected(request('type') === $value)>{{ $label }}</option>
+                @endforeach
+            </select>
 
-            <div class="stat-card">
-                <div class="stat-label">Average Rating</div>
-                <div class="stat-value">{{ number_format($stats['avg_rating'] ?? 5, 1) }} / 5</div>
-            </div>
-        </div>
+            <div class="ld-sub">Technician</div>
+            <select name="technician_id" class="ld-input" aria-label="Technician">
+                <option value="">Anyone</option>
+                @foreach($technicians as $tech)
+                    <option value="{{ $tech->id }}" @selected((string) request('technician_id') === (string) $tech->id)>{{ $tech->name }}</option>
+                @endforeach
+            </select>
+        </x-slot>
 
-        {{-- Filter Section --}}
-        <div class="crm-section">
-            <form data-auto-submit method="GET" action="{{ route('jcr.index') }}" class="flex items-center gap-3 flex-wrap">
-                <input aria-label="Search" type="text" name="search" value="{{ request('search') }}" placeholder="e.g. JCR-2026-001" class="crm-input" style="width: 240px;">
+        <x-slot name="head">
+            <th style="min-width: 150px">Report No</th>
+            <th style="min-width: 230px">Customer</th>
+            <th x-show="cols.job" style="min-width: 170px">Job</th>
+            <th x-show="cols.technician" style="min-width: 150px">Technician</th>
+            <th x-show="cols.checklist" style="min-width: 110px">Checklist</th>
+            <th x-show="cols.completed" style="min-width: 130px">Completed</th>
+        </x-slot>
 
-                <select aria-label="Type" name="type" class="crm-select" style="width: 180px;">
-                    <option value="">All Job Types</option>
-                    <option value="installation" @selected(request('type') === 'installation')>Installation</option>
-                    <option value="service" @selected(request('type') === 'service')>Service Ticket</option>
-                    <option value="amc" @selected(request('type') === 'amc')>AMC Maintenance</option>
-                </select>
-
-                <select aria-label="Technician" name="technician_id" class="crm-select" style="width: 180px;">
-                    <option value="">All Technicians</option>
-                    @foreach($technicians as $tech)
-                        <option value="{{ $tech->id }}" @selected(request('technician_id') == $tech->id)>{{ $tech->name }}</option>
-                    @endforeach
-                </select>
-
-                <button type="submit" class="btn-primary">
-                    Search
-                </button>
-                @if(request()->anyFilled(['search', 'type', 'technician_id']))
-                    <a href="{{ route('jcr.index') }}" class="btn-secondary">
-                        Clear
-                    </a>
-                @endif
-            </form>
-        </div>
-
-        {{-- Table Section (5.3) --}}
-        <div class="crm-section p-0 overflow-x-auto">
-            <table class="crm-table crm-responsive">
-                <thead>
-                    <tr>
-                        <th class="nowrap">Report No</th>
-                        <th class="col-name">Customer & Site Location</th>
-                        <th class="nowrap">Job Type & Ref</th>
-                        <th class="nowrap">Technician</th>
-                        <th class="nowrap">QA Passed</th>
-                        <th class="nowrap">Date Signed</th>
-                        <th class="nowrap">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($reports as $report)
-                    <tr>
-                        <td class="nowrap">
-                            <a href="{{ route('jcr.show', $report) }}" class="action-link font-mono">
-                                {{ $report->report_no }}
-                            </a>
-                        </td>
-                        <td class="col-name">
-                            <a href="{{ route('leads.show', $report->lead) }}" class="action-link font-bold">
-                                {{ $report->lead->customer_name }}
-                            </a>
-                            <div class="text-xs text-slate-500">{{ $report->lead->site_address ?? $report->lead->phone }}</div>
-                        </td>
-                        <td class="nowrap">
-                            <div class="font-bold text-slate-900 dark:text-white">{{ $report->job_type_label }}</div>
-                            <div class="text-xs text-slate-500 font-mono">{{ $report->reference_no }}</div>
-                        </td>
-                        <td class="nowrap font-medium text-slate-900 dark:text-white">
-                            {{ $report->technician->name }}
-                        </td>
-                        <td class="nowrap">
-                            <span class="status-won">{{ $report->passed_checklist_count }}/8 Passed</span>
-                        </td>
-                        <td class="nowrap">
-                            <div class="text-slate-900 dark:text-white">{{ $report->completion_date->format('d M Y') }}</div>
-                            <div class="text-xs text-slate-500">{{ $report->completion_date->format('h:i A') }}</div>
-                        </td>
-                        <td class="nowrap">
-                            <a href="{{ route('jcr.show', $report) }}" class="action-link">View</a>
-                            <a href="{{ route('jcr.download-pdf', $report) }}" class="action-link">PDF</a>
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="7" class="text-center py-6 text-slate-500 text-sm">
-                            <x-empty-message empty="No Job Completion Reports yet" filtered="No job completion reports match these filters." :filters="['search', 'technician_id', 'type']" />
-                        </td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-
-        @if($reports->hasPages())
-            <div class="mt-4">
-                {{ $reports->links() }}
-            </div>
-        @endif
-    </div>
+        @foreach($reports as $report)
+            <tr>
+                <td class="whitespace-nowrap"><a href="{{ route('jcr.show', $report) }}" class="ld-name plain-link">{{ $report->report_no }}</a></td>
+                <td>
+                    @if($report->lead)
+                        <a href="{{ route('leads.show', $report->lead) }}" class="ld-name plain-link">{{ $report->lead->customer_name }}</a>
+                        <div class="text-xs mt-0.5" style="color: var(--ld-muted)">{{ $report->lead->site_address ?? $report->lead->phone }}</div>
+                    @else
+                        —
+                    @endif
+                </td>
+                <td x-show="cols.job">
+                    <div>{{ $report->job_type_label }}</div>
+                    <div class="text-xs mt-0.5" style="color: var(--ld-muted)">{{ $report->reference_no }}</div>
+                </td>
+                <td x-show="cols.technician" class="whitespace-nowrap">{{ $report->technician->name ?? '—' }}</td>
+                <td x-show="cols.checklist" class="whitespace-nowrap"><span class="{{ $report->passed_checklist_count < 8 ? 'text-amber-700 dark:text-amber-400' : '' }}">{{ $report->passed_checklist_count }} of 8 passed</span></td>
+                <td x-show="cols.completed" class="whitespace-nowrap">
+                    <div>{{ $report->completion_date?->format('d/m/Y') }}</div>
+                    <div class="text-xs mt-0.5" style="color: var(--ld-muted)">{{ $report->completion_date?->format('h:i A') }}</div>
+                </td>
+                <td>
+                    <div class="ld-row-actions">
+                        <a href="{{ route('jcr.download-pdf', $report) }}" class="plain-link" title="Download PDF" aria-label="Download PDF of {{ $report->report_no }}">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v11m0 0l-4-4m4 4l4-4M5 19h14"/></svg>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+        @endforeach
+    </x-list-page>
 </x-app-layout>

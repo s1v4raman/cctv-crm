@@ -15,10 +15,11 @@ use Illuminate\Support\Facades\Storage;
 
 class JobCompletionReportController extends Controller
 {
+    use \App\Http\Controllers\Concerns\ListsRecords;
+
     public function index(Request $request)
     {
-        $query = JobCompletionReport::with(['lead', 'technician', 'installationJob', 'serviceTicket', 'amcVisit'])
-            ->orderByDesc('completion_date');
+        $query = JobCompletionReport::with(['lead', 'technician', 'installationJob', 'serviceTicket', 'amcVisit']);
 
         if ($request->filled('search')) {
             $search = $request->input('search');
@@ -44,7 +45,12 @@ class JobCompletionReportController extends Controller
             }
         }
 
-        $reports = $query->paginate(15)->withQueryString();
+        $this->applyListSort($query, $request, [
+            'date_desc' => ['completion_date', 'desc'],
+            'date_asc'  => ['completion_date', 'asc'],
+            'report_no' => ['report_no', 'asc'],
+        ]);
+        $reports = $query->paginate($this->listPerPage($request))->withQueryString();
         $technicians = \App\Models\User::whereIn('role', ['technician', 'admin'])->orderBy('name')->get();
 
         return view('jcr.index', compact('reports', 'technicians'));

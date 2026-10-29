@@ -61,7 +61,7 @@ class ProjectHardwareAndSoftwareModulesTest extends TestCase
         $response = $this->actingAs($this->admin)->get(route('projects.index'));
 
         $response->assertStatus(200);
-        $response->assertSee('Project Handling &amp; Tracking', false);
+        $response->assertSee('Projects | Precision IT Systems', false);
         $response->assertSee('Terminal Attendance');
         $response->assertSee('Webpage &amp; Apps', false);
         $response->assertSee('Metro Retail Corp');

@@ -18,6 +18,8 @@ use Illuminate\View\View;
 
 class RmaClaimController extends Controller
 {
+    use \App\Http\Controllers\Concerns\ListsRecords;
+
     public function index(Request $request): View
     {
         $search = trim((string) $request->input('search', ''));
@@ -25,8 +27,7 @@ class RmaClaimController extends Controller
         $supplierId = $request->input('supplier_id');
         $warrantyFilter = $request->input('warranty');
 
-        $query = RmaClaim::with(['supplier', 'product', 'installedEquipment', 'lead', 'creator'])
-            ->latest();
+        $query = RmaClaim::with(['supplier', 'product', 'installedEquipment', 'lead', 'creator']);
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
@@ -51,7 +52,12 @@ class RmaClaimController extends Controller
             $query->where('warranty_status_at_claim', $warrantyFilter);
         }
 
-        $claims = $query->paginate(15)->withQueryString();
+        $this->applyListSort($query, $request, [
+            'date_desc' => ['created_at', 'desc'],
+            'date_asc'  => ['created_at', 'asc'],
+            'rma_no'    => ['rma_no', 'asc'],
+        ]);
+        $claims = $query->paginate($this->listPerPage($request))->withQueryString();
 
         // Metrics Summary
         $stats = [

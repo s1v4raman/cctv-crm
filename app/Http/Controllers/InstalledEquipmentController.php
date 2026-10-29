@@ -15,6 +15,8 @@ use Illuminate\View\View;
 
 class InstalledEquipmentController extends Controller
 {
+    use \App\Http\Controllers\Concerns\ListsRecords;
+
     public function index(Request $request): View
     {
         $this->authorizeInternalOrTechnician();
@@ -24,7 +26,7 @@ class InstalledEquipmentController extends Controller
         $status = $request->input('status'); // active, under_repair, replaced, decommissioned
         $warrantyFilter = $request->input('warranty'); // all, active, expiring_soon, expired
 
-        $query = InstalledEquipment::with(['lead', 'installationJob', 'product'])->latest();
+        $query = InstalledEquipment::with(['lead', 'installationJob', 'product']);
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
@@ -76,7 +78,13 @@ class InstalledEquipmentController extends Controller
             });
         }
 
-        $equipments = $query->paginate(20)->withQueryString();
+        $this->applyListSort($query, $request, [
+            'date_desc'            => ['created_at', 'desc'],
+            'mfg_warranty_asc'     => ['manufacturer_warranty_expiry', 'asc'],
+            'service_warranty_asc' => ['service_warranty_expiry', 'asc'],
+            'serial'               => ['serial_number', 'asc'],
+        ]);
+        $equipments = $query->paginate($this->listPerPage($request))->withQueryString();
 
         // Metrics
         $totalDevices = InstalledEquipment::count();

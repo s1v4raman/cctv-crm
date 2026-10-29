@@ -48,7 +48,7 @@ class UserManagementTest extends TestCase
 
         $response = $this->actingAs($this->admin)->get(route('admin.users.index'));
         $response->assertOk();
-        $response->assertSee('User Accounts Management');
+        $response->assertSee('User Accounts | Precision IT Systems', false);
         $response->assertSee('John Tech');
         $response->assertSee('Mary Client');
 
@@ -170,7 +170,7 @@ class UserManagementTest extends TestCase
         $response->assertSee('Ramesh Worker');
         $response->assertSee('Suresh Laborer');
         $response->assertSee('Workers');
-        $response->assertSee('850.00');
+        $response->assertSee('₹850', false);
         $response->assertDontSee('Deepak Tech');
     }
 

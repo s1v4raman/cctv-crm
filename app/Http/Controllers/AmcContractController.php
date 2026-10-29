@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\DB;
 
 class AmcContractController extends Controller
 {
+    use \App\Http\Controllers\Concerns\ListsRecords;
+
     public function index(Request $request)
     {
         $query = AmcContract::with('lead');
@@ -33,7 +35,13 @@ class AmcContractController extends Controller
             $query->where('status', $request->status);
         }
 
-        $amcs = $query->orderByDesc('created_at')->paginate(20)->withQueryString();
+        $this->applyListSort($query, $request, [
+            'date_desc'   => ['created_at', 'desc'],
+            'renewal_asc' => ['end_date', 'asc'],
+            'value_desc'  => ['value', 'desc'],
+            'contract_no' => ['contract_no', 'asc'],
+        ]);
+        $amcs = $query->paginate($this->listPerPage($request))->withQueryString();
         return view('amcs.index', compact('amcs'));
     }
 

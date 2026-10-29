@@ -1,286 +1,127 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-                <h2 class="text-xl font-bold text-slate-900 dark:text-white font-heading tracking-tight">Service Tickets</h2>
-            </div>
-            <div class="flex items-center gap-2 flex-wrap">
-                <button type="button" @click="$dispatch('open-email-modal')" class="btn-secondary">
-                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                    <span>Email Gateway</span>
-                </button>
-                <a href="{{ route('service-tickets.export-pdf', request()->query()) }}" class="btn-secondary">
-                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                    <span>PDF Export</span>
-                </a>
-                <a href="{{ route('service-tickets.create') }}" class="btn-primary">
-                    Log Ticket
-                </a>
-            </div>
-        </div>
-    </x-slot>
+    @php
+        $tabs = ['all' => 'All Tickets', 'critical' => 'Critical Tickets', 'open' => 'Open Tickets', 'in_progress' => 'In Progress', 'resolved' => 'Resolved Tickets', 'closed' => 'Closed Tickets'];
+        $views = collect($tabs)->map(fn ($label, $tab) => [
+            'label' => $label . ' (' . ($tabCounts[$tab] ?? 0) . ')',
+            'url' => route('service-tickets.index', array_filter(['tab' => $tab === 'all' ? null : $tab])),
+            'active' => $activeTab === $tab,
+        ])->values()->all();
+        $statusOptions = \App\Models\ServiceTicket::statusOptions();
+        $priorityOptions = \App\Models\ServiceTicket::priorityOptions();
+        $issueOptions = \App\Models\ServiceTicket::issueTypeOptions();
+        $filterCount = collect(['search', 'status', 'priority', 'technician_id', 'issue_type'])->filter(fn ($f) => request()->filled($f))->count();
+    @endphp
 
-    <style>
-        .status-tab {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.4rem 0.75rem;
-            border-radius: 4px;
-            font-size: 0.82rem;
-            font-weight: 500;
-            color: #475569;
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            text-decoration: none;
-            transition: border-color 0.15s;
-        }
-        html.dark .status-tab {
-            background: #0f172a;
-            border-color: var(--text-main);
-            color: var(--text-muted);
-        }
-        .status-tab.active {
-            background: #2563eb !important;
-            color: #ffffff !important;
-            border-color: #2563eb !important;
-            font-weight: 600;
-        }
-        .status-tab .count-badge {
-            font-size: 0.75rem;
-            padding: 0.1rem 0.4rem;
-            border-radius: 4px;
-            background: #f1f5f9;
-            color: #475569;
-        }
-        .status-tab.active .count-badge {
-            background: rgba(255, 255, 255, 0.25) !important;
-            color: #ffffff !important;
-        }
+    <x-list-page key="tickets" :paginator="$tickets" :views="$views"
+        :sorts="['date_desc' => 'Newest first', 'date_asc' => 'Oldest first', 'scheduled_asc' => 'Scheduled, soonest', 'ticket_no' => 'Ticket number']"
+        :create-url="route('service-tickets.create')" create-label="Log Ticket"
+        :export-url="null"
+        filter-title="Filter Tickets by" :filter-action="route('service-tickets.index')"
+        :keep="['tab' => $activeTab === 'all' ? null : $activeTab, 'sort' => request('sort'), 'per_page' => request('per_page')]"
+        :filter-count="$filterCount" :clear-url="route('service-tickets.index', array_filter(['tab' => $activeTab === 'all' ? null : $activeTab]))"
+        :columns="['complaint' => 'Complaint', 'priority' => 'Priority', 'technician' => 'Technician', 'schedule' => 'Schedule', 'status' => 'Status']"
+        empty-text="No tickets yet." filtered-text="No tickets match these filters.">
 
-        .cell-no { font-weight: 600; color: #2563eb; text-decoration: none; }
-        .cell-no:hover { text-decoration: underline; }
+        <x-slot name="more">
+            <a href="{{ route('service-tickets.export-pdf', request()->query()) }}" class="plain-link">Export PDF</a>
+            <button type="button" @click="menu = null; $dispatch('open-email-modal')">Email gateway</button>
+        </x-slot>
 
-        .stat-card {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 4px;
-            padding: 10px 14px;
-        }
-        html.dark .stat-card {
-            background: #0f172a;
-            border-color: var(--text-main);
-        }
+        <x-slot name="filters">
+            <div class="ld-sub">Ticket no, issue, customer or phone</div>
+            <input type="text" name="search" value="{{ request('search') }}" class="ld-input" aria-label="Ticket number, issue, customer or phone">
 
-        /* Priority: plain bold colored text */
-        .badge-priority { font-size: 0.85rem; font-weight: 700; background: transparent !important; border: none !important; padding: 0 !important; }
-        .priority-critical { color: #dc2626 !important; }
-        .priority-high     { color: #ea580c !important; }
-        .priority-medium   { color: #d97706 !important; }
-        .priority-low      { color: #64748b !important; }
+            <div class="ld-sub">Status</div>
+            <select name="status" class="ld-input" aria-label="Status">
+                <option value="">Any status</option>
+                @foreach($statusOptions as $value => $label)
+                    <option value="{{ $value }}" @selected(request('status') === $value)>{{ $label }}</option>
+                @endforeach
+            </select>
 
-        /* Status: plain bold colored text */
-        .badge-status { font-size: 0.85rem; font-weight: 700; background: transparent !important; border: none !important; padding: 0 !important; }
-        .status-open        { color: #dc2626 !important; }
-        .status-assigned    { color: #7e22ce !important; }
-        .status-in_progress { color: #d97706 !important; }
-        .status-resolved    { color: #16a34a !important; }
-        .status-closed      { color: #64748b !important; }
-        .status-cancelled   { color: #64748b !important; }
-    </style>
+            <div class="ld-sub">Priority</div>
+            <select name="priority" class="ld-input" aria-label="Priority">
+                <option value="">Any priority</option>
+                @foreach($priorityOptions as $value => $label)
+                    <option value="{{ $value }}" @selected(request('priority') === $value)>{{ $label }}</option>
+                @endforeach
+            </select>
 
-    <div class="pg-wrap" x-data="{ emailModalOpen: false }" @open-email-modal.window="emailModalOpen = true">
-        <div class="pg-inner">
-            
-            @if (session('success'))
-                <div class="mb-4 p-3 rounded bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs font-semibold">
-                    {{ session('success') }}
-                </div>
-            @endif
+            <div class="ld-sub">Issue type</div>
+            <select name="issue_type" class="ld-input" aria-label="Issue type">
+                <option value="">Any issue</option>
+                @foreach($issueOptions as $value => $label)
+                    <option value="{{ $value }}" @selected(request('issue_type') === $value)>{{ $label }}</option>
+                @endforeach
+            </select>
 
-            <!-- Filters Bar (Medium 38px Height Level) -->
-            <div class="mb-3 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-2.5 shadow-xs">
-                <form data-auto-submit method="GET" action="{{ route('service-tickets.index') }}" class="flex flex-wrap items-center gap-2.5 text-xs">
-                    <div class="relative w-72 min-w-[220px] flex items-center shrink-0">
-                        <svg class="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                        <input aria-label="Search ticket #, issue, customer, phone" type="text" name="search" value="{{ request('search') }}" 
-                            placeholder="Search ticket #, issue, customer, phone..."
-                            style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important; padding-left: 36px !important;"
-                            class="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-blue-600">
+            <div class="ld-sub">Technician</div>
+            <select name="technician_id" class="ld-input" aria-label="Technician">
+                <option value="">Anyone</option>
+                @foreach($technicians as $tech)
+                    <option value="{{ $tech->id }}" @selected((string) request('technician_id') === (string) $tech->id)>{{ $tech->name }}</option>
+                @endforeach
+            </select>
+        </x-slot>
+
+        <x-slot name="head">
+            <th style="min-width: 150px">Ticket No</th>
+            <th style="min-width: 230px">Customer</th>
+            <th x-show="cols.complaint" style="min-width: 220px">Complaint</th>
+            <th x-show="cols.priority" style="min-width: 100px">Priority</th>
+            <th x-show="cols.technician" style="min-width: 150px">Technician</th>
+            <th x-show="cols.schedule" style="min-width: 120px">Schedule</th>
+            <th x-show="cols.status" style="min-width: 120px">Status</th>
+        </x-slot>
+
+        @foreach ($tickets as $ticket)
+            @php $isDelayed = in_array($ticket->status, ['open', 'assigned', 'in_progress']) && $ticket->created_at->diffInHours(now()) >= 48; @endphp
+            <tr>
+                <td class="whitespace-nowrap">
+                    <a href="{{ route('service-tickets.show', $ticket) }}" class="ld-name plain-link">{{ $ticket->ticket_no }}</a>
+                    <div class="text-xs mt-0.5 {{ $isDelayed ? 'text-amber-700 dark:text-amber-400' : '' }}" style="{{ $isDelayed ? '' : 'color: var(--ld-muted)' }}">
+                        {{ $isDelayed ? 'open ' . $ticket->created_at->diffForHumans(null, true) : $ticket->created_at->diffForHumans() }}@if($ticket->amc_contract_id) · AMC @endif
                     </div>
-
-                    <select aria-label="Status" name="status" style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important; min-width: 140px;" class="text-xs px-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 shrink-0">
-                        <option value="">All Statuses</option>
-                        <option value="open" @selected(request('status') === 'open')>Open</option>
-                        <option value="assigned" @selected(request('status') === 'assigned')>Assigned</option>
-                        <option value="in_progress" @selected(request('status') === 'in_progress')>In Progress</option>
-                        <option value="resolved" @selected(request('status') === 'resolved')>Resolved</option>
-                        <option value="closed" @selected(request('status') === 'closed')>Closed</option>
-                    </select>
-                    
-                    <button type="submit"
-                            style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important;"
-                            class="px-4 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition inline-flex items-center justify-center shrink-0 shadow-xs cursor-pointer">
-                        Filter
-                    </button>
-
-                    @if(request()->hasAny(['search', 'status', 'priority', 'technician_id', 'issue_type']))
-                        <a href="{{ route('service-tickets.index', ['tab' => $activeTab]) }}"
-                           style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important;"
-                           class="px-3.5 inline-flex items-center rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-medium transition shrink-0">
-                            Reset
-                        </a>
+                </td>
+                <td>
+                    @if($ticket->lead)
+                        <a href="{{ route('leads.show', $ticket->lead) }}" class="ld-name plain-link">{{ $ticket->lead->customer_name }}</a>
+                        <div class="text-xs mt-0.5" style="color: var(--ld-muted)">{{ $ticket->lead->phone }}</div>
+                    @else
+                        <span style="color: var(--ld-muted)">No customer linked</span>
                     @endif
-                </form>
-            </div>
-
-            <!-- Tickets Table -->
-            <div class="pg-card">
-                @if($tickets->isEmpty())
-                    <div class="text-center py-12 px-4">
-                        <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-3 text-slate-400">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                            </svg>
-                        </div>
-                        <h3 class="text-sm font-semibold text-slate-800">No Tickets in this Queue</h3>
-                        <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">No tickets match the selected filters or tab.</p>
-                    </div>
-                @else
-                    <div class="overflow-x-auto">
-                        <table class="p-table crm-responsive">
-                            <thead>
-                                <tr>
-                                    <th>Ticket # & SLA</th>
-                                    <th>Customer & Site</th>
-                                    <th>Complaint / Fault</th>
-                                    <th>Priority</th>
-                                    <th>Assigned Tech</th>
-                                    <th>Schedule</th>
-                                    <th>Status</th>
-                                    <th style="text-align:right">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($tickets as $ticket)
-                                    @php
-                                        $isDelayed = in_array($ticket->status, ['open', 'assigned', 'in_progress']) && $ticket->created_at->diffInHours(now()) >= 48;
-                                        $isEmailInbound = str_starts_with($ticket->description ?? '', '--- Inbound') || ($ticket->lead && $ticket->lead->source === 'email');
-                                    @endphp
-                                    <tr>
-                                        <td>
-                                            <a href="{{ route('service-tickets.show', $ticket) }}" class="cell-no font-mono flex items-center gap-1.5">
-                                                {{ $ticket->ticket_no }}
-                                                @if($isEmailInbound)
-                                                    <span class="text-[11px] text-slate-500 font-medium">
-                                                        [Email]
-                                                    </span>
-                                                @endif
-                                            </a>
-                                            <div class="flex items-center gap-1.5 mt-0.5">
-                                                @if($isDelayed)
-                                                    <span class="text-xs text-red-600 font-semibold">
-                                                        {{ $ticket->created_at->diffForHumans(null, true) }} open
-                                                    </span>
-                                                @else
-                                                    <span class="text-xs text-slate-400">
-                                                        {{ $ticket->created_at->diffForHumans() }}
-                                                    </span>
-                                                @endif
-                                            </div>
-                                            @if($ticket->amc_contract_id)
-                                                <div class="text-xs text-emerald-600 font-medium mt-0.5">
-                                                    AMC Covered
-                                                </div>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if($ticket->lead)
-                                                <a href="{{ route('leads.show', $ticket->lead) }}" class="font-semibold text-slate-900 dark:text-white hover:text-blue-600 text-xs">
-                                                    {{ $ticket->lead->customer_name }}
-                                                </a>
-                                                <div class="text-[11px] text-slate-500 mt-0.5 flex items-center gap-2">
-                                                    @if($ticket->lead->phone)
-                                                        <span>{{ $ticket->lead->phone }}</span>
-                                                    @endif
-                                                    @if($ticket->lead->email)
-                                                        <span class="text-slate-500">{{ $ticket->lead->email }}</span>
-                                                    @endif
-                                                </div>
-                                                @if($ticket->lead->site_address)
-                                                    <div class="text-[11px] text-slate-400 truncate max-w-[200px]" title="{{ $ticket->lead->site_address }}">
-                                                        {{ $ticket->lead->site_address }}
-                                                    </div>
-                                                @endif
-                                            @else
-                                                <span class="text-xs text-slate-400">Unlinked Customer</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <div class="font-medium text-slate-800 text-xs">{{ $ticket->title }}</div>
-                                            <div class="text-[11px] text-slate-500 mt-0.5">
-                                                {{ $ticket->issue_type_label }}
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <span class="badge-priority priority-{{ $ticket->priority }}">
-                                                {{ ucfirst($ticket->priority) }}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            @if($ticket->assignedTechnician)
-                                                <div class="text-xs text-slate-700 dark:text-slate-300">
-                                                    {{ $ticket->assignedTechnician->name }}
-                                                </div>
-                                            @else
-                                                <span class="text-xs text-slate-400">Unassigned</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if($ticket->scheduled_date)
-                                                <span class="text-xs text-slate-600 dark:text-slate-400">
-                                                    {{ $ticket->scheduled_date->format('d M Y') }}
-                                                </span>
-                                            @else
-                                                <span class="text-xs text-slate-400">Not set</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <span class="badge-status status-{{ $ticket->status }}">
-                                                {{ $ticket->status_label }}
-                                            </span>
-                                        </td>
-                                        <td class="whitespace-nowrap text-right text-sm table-actions" style="text-align:right;">
-                                            <a href="{{ route('service-tickets.show', $ticket) }}" class="action-link">View</a>
-                                            <a href="{{ route('service-tickets.edit', $ticket) }}" class="action-link">Edit</a>
-                                            @if(auth()->user()->isAdmin())
-                                                <form method="POST" action="{{ route('service-tickets.destroy', $ticket) }}" class="inline"
-                                                      data-confirm="Delete service ticket {{ $ticket->ticket_no }}?">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="danger-link">Delete</button>
-                                                </form>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    {{-- Total count shown below the table --}}
-                    <div class="px-4 py-2.5 border-t border-[#ddd] dark:border-slate-800 bg-[#fbfbfb] dark:bg-slate-900/60 flex items-center justify-between text-xs text-slate-500">
-                        <span class="font-medium">Total: {{ $tickets->total() }}</span>
-                        @if($tickets->hasPages())
-                            <div class="text-xs">
-                                {{ $tickets->links() }}
-                            </div>
+                </td>
+                <td x-show="cols.complaint">
+                    <div>{{ $ticket->title }}</div>
+                    <div class="text-xs mt-0.5" style="color: var(--ld-muted)">{{ $ticket->issue_type_label }}</div>
+                </td>
+                <td x-show="cols.priority">
+                    <span class="{{ $ticket->priority === 'critical' ? 'text-rose-700 dark:text-rose-400 font-medium' : ($ticket->priority === 'high' ? 'text-amber-700 dark:text-amber-400' : '') }}">{{ $ticket->priority_label }}</span>
+                </td>
+                <td x-show="cols.technician" class="whitespace-nowrap">{{ $ticket->assignedTechnician?->name ?? 'Unassigned' }}</td>
+                <td x-show="cols.schedule" class="whitespace-nowrap">{{ $ticket->scheduled_date?->format('d/m/Y') ?? 'Not set' }}</td>
+                <td x-show="cols.status">{{ $ticket->status_label }}</td>
+                <td>
+                    <div class="ld-row-actions">
+                        <a href="{{ route('service-tickets.edit', $ticket) }}" class="plain-link" title="Edit" aria-label="Edit {{ $ticket->ticket_no }}">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.2 5.2l3.6 3.6M4 20l4.5-1 10.3-10.3a2.5 2.5 0 00-3.5-3.5L5 15.5 4 20z"/></svg>
+                        </a>
+                        @if(auth()->user()->isAdmin())
+                            <form method="POST" action="{{ route('service-tickets.destroy', $ticket) }}" data-confirm="Delete service ticket {{ $ticket->ticket_no }}?">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn-cancel" title="Delete" aria-label="Delete {{ $ticket->ticket_no }}">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 7h14M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>
+                                </button>
+                            </form>
                         @endif
                     </div>
-                @endif
-            </div>
-        </div>
+                </td>
+            </tr>
+        @endforeach
+    </x-list-page>
 
+    <div x-data="{ emailModalOpen: false }" @open-email-modal.window="emailModalOpen = true">
         <!-- Inbound Email Gateway Modal -->
         <div x-show="emailModalOpen" 
              style="display: none;"
@@ -395,6 +236,5 @@
                 </div>
             </div>
         </div>
-
     </div>
 </x-app-layout>

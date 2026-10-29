@@ -1,202 +1,108 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-                <h2 class="text-xl font-bold text-slate-900 dark:text-white">Workers</h2>
-            </div>
-            <div class="flex items-center gap-2">
-                <a href="{{ route('workers.attendance.index') }}" class="btn-secondary">
-                    Attendance Maintenance
-                </a>
-                @if(auth()->user()->isAdmin())
-                <a href="{{ route('wages.index') }}" class="btn-secondary">
-                    Sunday Payday Console
-                </a>
-                @endif
-                @if(auth()->user()->isOffice())
-                <a href="{{ route('workers.create') }}" class="btn-primary">
-                    Add Worker
-                </a>
-                @endif
-            </div>
-        </div>
-    </x-slot>
+    @php
+        $views = [
+            ['label' => 'Active Workers (' . $activeWorkersCount . ')', 'url' => route('workers.index'), 'active' => $statusFilter === 'active'],
+            ['label' => 'Inactive Workers', 'url' => route('workers.index', ['status' => 'inactive']), 'active' => $statusFilter === 'inactive'],
+            ['label' => 'All Workers (' . $totalWorkersCount . ')', 'url' => route('workers.index', ['status' => 'all']), 'active' => $statusFilter === 'all'],
+        ];
+        $filterCount = $search !== '' ? 1 : 0;
+    @endphp
 
-    <div class="max-w-[1200px] mx-auto space-y-6">
-        @if (session('status'))
-            <div class="p-3 bg-white dark:bg-slate-900 border border-emerald-500 text-emerald-700 dark:text-emerald-300 rounded text-xs">
-                {{ session('status') }}
-            </div>
-        @endif
+    <x-list-page key="workers" :paginator="$workers" :views="$views"
+        :sorts="['name' => 'Name, A to Z', 'rate_desc' => 'Daily rate, high to low', 'days_desc' => 'Most days logged', 'newest' => 'Newest first']"
+        :create-url="auth()->user()->isOffice() ? route('workers.create') : null" create-label="Add Worker"
+        filter-title="Filter Workers by" :filter-action="route('workers.index')"
+        :keep="['status' => $statusFilter === 'active' ? null : $statusFilter, 'sort' => request('sort'), 'per_page' => request('per_page')]"
+        :filter-count="$filterCount" :clear-url="route('workers.index', array_filter(['status' => $statusFilter === 'active' ? null : $statusFilter]))"
+        :columns="['phone' => 'Phone', 'rate' => 'Daily Rate', 'skills' => 'Skills', 'balance' => 'Balance', 'status' => 'Status']"
+        empty-text="No workers yet." filtered-text="No workers match these filters.">
 
-        {{-- Sign-up requests from the worker login page --}}
         @if (auth()->user()->isAdmin() && $pendingWorkers->isNotEmpty())
-            <div class="crm-section p-0" id="signup-requests">
-                <div class="px-4 py-3 border-b border-[var(--card-border)]">
-                    <h3 class="text-sm font-bold text-[var(--text-main)]">Sign-up requests ({{ $pendingWorkers->count() }})</h3>
-                    <p class="text-xs text-[var(--text-muted)] mt-0.5">These people signed up on the worker login page. Approve them to let them sign in and see their attendance and work.</p>
-                </div>
-                <table class="crm-table crm-responsive">
-                    <thead>
-                        <tr>
-                            <th scope="col">Name</th>
-                            <th scope="col">Mobile</th>
-                            <th scope="col">Requested</th>
-                            <th scope="col" class="text-right">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($pendingWorkers as $request)
-                            <tr>
-                                <td class="font-semibold">{{ $request->name }}</td>
-                                <td>{{ $request->phone }}</td>
-                                <td>{{ $request->created_at->format('d M Y, h:i A') }}</td>
-                                <td class="text-right whitespace-nowrap">
-                                    <form method="POST" action="{{ route('workers.approve', $request) }}" class="inline">
-                                        @csrf
-                                        @method('PATCH')
-                                        <button type="submit" class="btn-primary text-xs">Approve</button>
-                                    </form>
-                                    <form method="POST" action="{{ route('workers.reject', $request) }}" class="inline"
-                                          data-confirm="Reject the sign-up request from {{ $request->name }}?">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn-secondary text-xs text-rose-700 dark:text-rose-300">Reject</button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        @endif
-
-        {{-- Filter Section (Single Filter Row) --}}
-        <div class="crm-section p-3">
-            <form data-auto-submit method="GET" action="{{ route('workers.index') }}" class="flex items-center gap-2 flex-wrap">
-                <input aria-label="Search worker name or phone" type="text" name="search" value="{{ request('search') }}" placeholder="Search worker name or phone…" 
-                       style="height: 38px; min-height: 38px; max-height: 38px; border-radius: 4px; box-sizing: border-box;"
-                       class="crm-input flex-1 min-w-[220px]">
-
-                <select aria-label="Status" name="status" 
-                        style="height: 38px; min-height: 38px; max-height: 38px; border-radius: 4px; box-sizing: border-box;"
-                        class="crm-select min-w-[140px]">
-                    <option value="">All Statuses</option>
-                    <option value="active" @selected(request('status') === 'active')>Active</option>
-                    <option value="inactive" @selected(request('status') === 'inactive')>Inactive</option>
-                </select>
-
-                <button type="submit" 
-                        style="height: 38px; min-height: 38px; max-height: 38px; border-radius: 4px; box-sizing: border-box;"
-                        class="crm-btn-primary px-4 text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white transition">
-                    Search
-                </button>
-                @if(request()->anyFilled(['search', 'status']))
-                    <a href="{{ route('workers.index') }}" 
-                       style="height: 38px; min-height: 38px; max-height: 38px; border-radius: 4px; box-sizing: border-box;"
-                       class="crm-btn-secondary px-3 inline-flex items-center text-xs">
-                        Clear
-                    </a>
-                @endif
-            </form>
-        </div>
-
-        {{-- Table Section (5.3) --}}
-        <div class="crm-section p-0 overflow-x-auto">
-            <table class="crm-table crm-responsive">
-                <thead>
-                    <tr>
-                        <th class="col-name">Worker Name</th>
-                        <th class="nowrap">Phone Number</th>
-                        <th class="nowrap">Daily Rate</th>
-                        <th>Skills</th>
-                        <th>Current Balance</th>
-                        <th class="nowrap">Status</th>
-                        <th class="nowrap">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($workers as $worker)
-                    @php
-                        $balance = $worker->getRunningBalance();
-                    @endphp
-                    <tr>
-                        <td class="col-name">
-                            <div class="flex items-center gap-2.5">
-                                @if($worker->photo_url)
-                                    <img src="{{ $worker->photo_url }}" alt="{{ $worker->name }}" class="w-8 h-8 rounded-full object-cover border border-slate-300 shrink-0">
-                                @else
-                                    <div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs flex items-center justify-center shrink-0 border border-slate-300 dark:border-slate-600">
-                                        {{ strtoupper(substr($worker->name, 0, 1)) }}
-                                    </div>
-                                @endif
-                                <div>
-                                    <a href="{{ route('workers.show', $worker) }}" class="action-link font-bold">
-                                        {{ $worker->name }}
-                                    </a>
-                                    <div class="text-xs text-slate-500">{{ $worker->attendances_count }} days logged</div>
-                                </div>
+            <x-slot name="above">
+                {{-- Sign-up requests from the worker login page --}}
+                <div id="signup-requests" class="my-3 rounded border" style="border-color: var(--ld-border)">
+                    <div class="px-4 py-2.5 border-b" style="border-color: var(--ld-line)">
+                        <h3 class="text-sm font-semibold">Sign-up requests ({{ $pendingWorkers->count() }})</h3>
+                        <p class="text-xs mt-0.5" style="color: var(--ld-muted)">These people signed up on the worker login page. Approve them to let them sign in and see their attendance and work.</p>
+                    </div>
+                    @foreach ($pendingWorkers as $request)
+                        <div class="flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 border-b last:border-b-0 text-sm" style="border-color: var(--ld-line)">
+                            <div>
+                                <span class="font-medium">{{ $request->name }}</span>
+                                <span class="ml-2" style="color: var(--ld-muted)">{{ $request->phone }} · {{ $request->created_at->format('d/m/Y, h:i A') }}</span>
                             </div>
-                        </td>
-                        <td class="nowrap">
-                            @if($worker->phone)
-                                <a href="tel:{{ $worker->phone }}" class="action-link">{{ $worker->phone }}</a>
-                            @else
-                                Not specified
-                            @endif
-                        </td>
-                        <td class="nowrap font-bold text-slate-900 dark:text-white">
-                            &#8377;{{ number_format($worker->daily_rate, 2) }}
-                        </td>
-                        <td>
-                            @if($worker->skills && is_array($worker->skills))
-                                {{ implode(', ', array_map('ucfirst', $worker->skills)) }}
-                            @else
-                                General Assistant
-                            @endif
-                        </td>
-                        <td class="font-bold {{ $balance > 0 ? 'text-red-600' : 'text-slate-900 dark:text-white' }}">
-                            &#8377;{{ number_format($balance, 2) }}
-                        </td>
-                        <td class="nowrap">
-                            @if($worker->is_active)
-                                <span class="status-won">Active</span>
-                            @else
-                                <span class="status-lost">Inactive</span>
-                            @endif
-                        </td>
-                        <td class="nowrap">
-                            <a href="{{ route('workers.show', $worker) }}" class="action-link">View</a>
-                            @if(auth()->user()->isOffice())
-                            <a href="{{ route('workers.edit', $worker) }}" class="action-link">Edit</a>
-                            @endif
-                            @if(auth()->user()->isAdmin())
-                                <form method="POST" action="{{ route('workers.destroy', $worker) }}" class="inline" data-confirm="Delete worker {{ $worker->name }}? This cannot be undone.">
+                            <div class="flex items-center gap-2">
+                                <form method="POST" action="{{ route('workers.approve', $request) }}">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button type="submit" class="btn-primary">Approve</button>
+                                </form>
+                                <form method="POST" action="{{ route('workers.reject', $request) }}" data-confirm="Reject the sign-up request from {{ $request->name }}?">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="danger-link p-0 bg-transparent border-0 cursor-pointer text-xs">Delete</button>
+                                    <button type="submit" class="btn-secondary">Reject</button>
                                 </form>
-                            @endif
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="7" class="text-center py-6 text-slate-500 text-sm">
-                            <x-empty-message empty="No workers yet" filtered="No workers match these filters." :filters="['search', 'status']" />
-                        </td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
-            {{-- Total count shown below the table --}}
-            <div class="px-4 py-2.5 border-t border-[#ddd] dark:border-slate-800 bg-[#fbfbfb] dark:bg-slate-900/60 flex items-center justify-between text-xs text-slate-500">
-                <span class="font-medium">Total: {{ $workers->total() }}</span>
-                @if($workers->hasPages())
-                    <div class="text-xs">
-                        {{ $workers->links() }}
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </x-slot>
+        @endif
+
+        <x-slot name="actions">
+            <a href="{{ route('workers.attendance.index') }}" class="ld-outline plain-link">Attendance</a>
+            @if(auth()->user()->isAdmin())
+                <a href="{{ route('wages.index') }}" class="ld-outline plain-link">Weekly wages</a>
+            @endif
+        </x-slot>
+
+        <x-slot name="filters">
+            <div class="ld-sub">Name, phone or notes</div>
+            <input type="text" name="search" value="{{ $search }}" class="ld-input" aria-label="Name, phone or notes">
+        </x-slot>
+
+        <x-slot name="head">
+            <th style="min-width: 220px">Worker</th>
+            <th x-show="cols.phone" style="min-width: 140px">Phone</th>
+            <th x-show="cols.rate" style="min-width: 110px; text-align: right">Daily Rate</th>
+            <th x-show="cols.skills" style="min-width: 180px">Skills</th>
+            <th x-show="cols.balance" style="min-width: 120px; text-align: right">Balance</th>
+            <th x-show="cols.status" style="min-width: 90px">Status</th>
+        </x-slot>
+
+        @foreach($workers as $worker)
+            @php $balance = $worker->getRunningBalance(); @endphp
+            <tr>
+                <td>
+                    <a href="{{ route('workers.show', $worker) }}" class="ld-name plain-link">{{ $worker->name }}</a>
+                    <div class="text-xs mt-0.5" style="color: var(--ld-muted)">{{ $worker->attendances_count }} {{ Str::plural('day', $worker->attendances_count) }} logged</div>
+                </td>
+                <td x-show="cols.phone" class="whitespace-nowrap">{{ $worker->phone ?: '—' }}</td>
+                <td x-show="cols.rate" class="whitespace-nowrap" style="text-align: right">{{ \App\Support\Inr::money($worker->daily_rate) }}</td>
+                <td x-show="cols.skills">{{ $worker->skills && is_array($worker->skills) ? implode(', ', array_map('ucfirst', $worker->skills)) : 'General assistant' }}</td>
+                <td x-show="cols.balance" class="whitespace-nowrap" style="text-align: right">
+                    <span class="{{ $balance > 0 ? 'text-amber-700 dark:text-amber-400 font-medium' : '' }}">{{ \App\Support\Inr::money($balance) }}</span>
+                </td>
+                <td x-show="cols.status">{!! $worker->is_active ? 'Active' : '<span style="color: var(--ld-muted)">Inactive</span>' !!}</td>
+                <td>
+                    <div class="ld-row-actions">
+                        @if(auth()->user()->isOffice())
+                            <a href="{{ route('workers.edit', $worker) }}" class="plain-link" title="Edit" aria-label="Edit {{ $worker->name }}">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.2 5.2l3.6 3.6M4 20l4.5-1 10.3-10.3a2.5 2.5 0 00-3.5-3.5L5 15.5 4 20z"/></svg>
+                            </a>
+                        @endif
+                        @if(auth()->user()->isAdmin())
+                            <form method="POST" action="{{ route('workers.destroy', $worker) }}" data-confirm="Delete worker {{ $worker->name }}? This cannot be undone.">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn-cancel" title="Delete" aria-label="Delete {{ $worker->name }}">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 7h14M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>
+                                </button>
+                            </form>
+                        @endif
                     </div>
-                @endif
-            </div>
-        </div>
-    </div>
+                </td>
+            </tr>
+        @endforeach
+    </x-list-page>
 </x-app-layout>

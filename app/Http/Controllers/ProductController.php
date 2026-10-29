@@ -13,6 +13,8 @@ use Illuminate\View\View;
 
 class ProductController extends Controller
 {
+    use \App\Http\Controllers\Concerns\ListsRecords;
+
     public function index(Request $request): View
     {
         $statusFilter = $request->input('status', 'all');
@@ -47,10 +49,15 @@ class ProductController extends Controller
         })->count();
         $totalCount = Product::count();
 
-        $products = $query->orderByRaw("CASE WHEN status = 'pending' THEN 0 ELSE 1 END")
-            ->orderBy('name')
-            ->paginate(20)
-            ->withQueryString();
+        // Sort menu; by default items waiting for review first, then by name
+        match ($request->get('sort')) {
+            'name'       => $query->orderBy('name'),
+            'price_desc' => $query->orderByDesc('unit_price'),
+            'price_asc'  => $query->orderBy('unit_price'),
+            'newest'     => $query->latest(),
+            default      => $query->orderByRaw("CASE WHEN status = 'pending' THEN 0 ELSE 1 END")->orderBy('name'),
+        };
+        $products = $query->paginate($this->listPerPage($request))->withQueryString();
 
         $allProducts = Product::select('id', 'name', 'sku', 'status')
             ->orderBy('name')

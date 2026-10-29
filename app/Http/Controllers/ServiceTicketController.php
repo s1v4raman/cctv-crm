@@ -14,6 +14,8 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ServiceTicketController extends Controller
 {
+    use \App\Http\Controllers\Concerns\ListsRecords;
+
     public function index(Request $request)
     {
         $query = ServiceTicket::with(['lead', 'amcContract', 'assignedTechnician', 'createdBy']);
@@ -62,7 +64,13 @@ class ServiceTicketController extends Controller
             });
         }
 
-        $tickets = $query->latest()->paginate(15)->withQueryString();
+        $this->applyListSort($query, $request, [
+            'date_desc'      => ['created_at', 'desc'],
+            'date_asc'       => ['created_at', 'asc'],
+            'scheduled_asc'  => ['scheduled_date', 'asc'],
+            'ticket_no'      => ['ticket_no', 'asc'],
+        ]);
+        $tickets = $query->paginate($this->listPerPage($request))->withQueryString();
 
         // Metrics & Tab Counts
         $tabCounts = [

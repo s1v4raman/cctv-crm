@@ -10,13 +10,18 @@ use Illuminate\View\View;
 
 class SupplierController extends Controller
 {
+    use \App\Http\Controllers\Concerns\ListsRecords;
+
     public function index(Request $request): View
     {
         if (auth()->user()?->role === 'technician') {
             abort(403, 'Technicians are not authorized to view supplier records.');
         }
         $search = trim((string) $request->input('search', ''));
-        $query = Supplier::query()->withCount('purchaseOrders')->latest();
+        $query = Supplier::query()->withCount('purchaseOrders');
+        if (in_array($request->input('active'), ['yes', 'no'], true)) {
+            $query->where('is_active', $request->input('active') === 'yes');
+        }
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
@@ -28,7 +33,12 @@ class SupplierController extends Controller
             });
         }
 
-        $suppliers = $query->paginate(15)->withQueryString();
+        $this->applyListSort($query, $request, [
+            'date_desc'   => ['created_at', 'desc'],
+            'name'        => ['name', 'asc'],
+            'orders_desc' => ['purchase_orders_count', 'desc'],
+        ]);
+        $suppliers = $query->paginate($this->listPerPage($request))->withQueryString();
 
         $totalSuppliers = Supplier::count();
         $activeSuppliers = Supplier::where('is_active', true)->count();
