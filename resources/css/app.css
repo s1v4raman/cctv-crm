@@ -3326,11 +3326,11 @@ html.dark .detail-table td:last-child {
 
 /* 5.6 LINKS AND NAVIGATION */
 /* Links are blue #2563eb, no underline, underline on hover */
-a:not(.btn):not(.btn-primary):not(.btn-secondary):not(.btn-subtle):not(.btn-inline-add):not([class*="btn-subtle"]):not(aside a):not(.crm-active-link):not(.crm-brand-logo):not(.text-white):not([class*="text-white"]):not(.crm-filter-tab):not(.filter-tab):not(.active):not([class*="active"]):not(.filter-tabs a):not(.section-nav-link) {
+a:not(.btn):not(.btn-primary):not(.btn-secondary):not(.btn-subtle):not(.btn-inline-add):not([class*="btn-subtle"]):not(aside a):not(.crm-active-link):not(.crm-brand-logo):not(.text-white):not([class*="text-white"]):not(.crm-filter-tab):not(.filter-tab):not(.active):not([class*="active"]):not(.filter-tabs a):not(.section-nav-link):not(.plain-link) {
     color: #2563eb !important;
     text-decoration: none !important;
 }
-a:not(.btn):not(.btn-primary):not(.btn-secondary):not(.btn-subtle):not(.btn-inline-add):not([class*="btn-subtle"]):not(aside a):not(.text-white):not([class*="text-white"]):not(.crm-filter-tab):not(.filter-tab):not(.active):not([class*="active"]):not(.filter-tabs a):not(.section-nav-link):hover {
+a:not(.btn):not(.btn-primary):not(.btn-secondary):not(.btn-subtle):not(.btn-inline-add):not([class*="btn-subtle"]):not(aside a):not(.text-white):not([class*="text-white"]):not(.crm-filter-tab):not(.filter-tab):not(.active):not([class*="active"]):not(.filter-tabs a):not(.section-nav-link):not(.plain-link):hover {
     text-decoration: underline !important;
 }
 

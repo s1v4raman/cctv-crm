@@ -10,27 +10,149 @@ use Illuminate\Http\Request;
 
 class LeadController extends Controller
 {
+    /** Saved views shown in the view menu, and what each one keeps. */
+    public const VIEWS = [
+        'all'  => 'All Leads',
+        'open' => 'Open Leads',
+        'won'  => 'Won Leads',
+        'lost' => 'Lost Leads',
+    ];
+
+    /** Quick filters in the filter panel's first section. */
+    public const QUICK_FILTERS = [
+        'recent'     => 'Added in last 7 days',
+        'untouched'  => 'Untouched for 30 days',
+        'quoted'     => 'Has a quotation',
+        'not_quoted' => 'No quotation yet',
+        'business'   => 'Business (has GSTIN)',
+    ];
+
+    public const SORTS = [
+        'date_desc'   => 'Newest first',
+        'date_asc'    => 'Oldest first',
+        'name_asc'    => 'Lead name, A to Z',
+        'name_desc'   => 'Lead name, Z to A',
+        'company_asc' => 'Company, A to Z',
+    ];
+
     public function index(Request $request)
     {
+        $view = array_key_exists($request->get('view'), self::VIEWS) ? $request->get('view') : 'all';
+        $sort = array_key_exists($request->get('sort'), self::SORTS) ? $request->get('sort') : 'date_desc';
+        $layout = $request->get('layout') === 'board' ? 'board' : 'list';
+        $perPage = in_array((int) $request->get('per_page'), [10, 20, 50, 100], true) ? (int) $request->get('per_page') : 20;
+
+        $query = $this->filteredQuery($request);
+        $leads = (clone $query)->paginate($perPage)->withQueryString();
+
+        // The board groups everything that matches (up to 200) by status, not just one page
+        $board = $layout === 'board'
+            ? (clone $query)->limit(200)->get()->groupBy('status')
+            : collect();
+
+        $statusCounts = Lead::selectRaw('status, count(*) as count')->groupBy('status')->pluck('count', 'status');
+        $sources = Lead::whereNotNull('source')->where('source', '!=', '')
+            ->distinct()->orderBy('source')->pluck('source');
+
+        return view('leads.index', compact('leads', 'board', 'statusCounts', 'sources', 'view', 'sort', 'layout', 'perPage'));
+    }
+
+    /** The current list as a CSV file, with the same filters and order as the screen. */
+    public function export(Request $request)
+    {
+        $leads = $this->filteredQuery($request)->get();
+        $filename = 'leads-' . now()->format('Y-m-d') . '.csv';
+
+        return response()->streamDownload(function () use ($leads) {
+            $out = fopen('php://output', 'w');
+            fputcsv($out, ['Lead name', 'Company', 'Email', 'Phone', 'Lead source', 'Status', 'GSTIN', 'Site address', 'Added on']);
+            foreach ($leads as $lead) {
+                fputcsv($out, [
+                    $lead->customer_name, $lead->company_name, $lead->email, $lead->phone, $lead->source,
+                    ucfirst($lead->status), $lead->gstin, $lead->site_address, $lead->created_at?->format('Y-m-d'),
+                ]);
+            }
+            fclose($out);
+        }, $filename, ['Content-Type' => 'text/csv']);
+    }
+
+    /** Change the status of, or (admins only) delete, the leads ticked in the list. */
+    public function bulk(Request $request)
+    {
+        $data = $request->validate([
+            'ids'    => 'required|array|min:1|max:500',
+            'ids.*'  => 'integer|exists:leads,id',
+            'action' => 'required|in:status,delete',
+            'status' => 'required_if:action,status|nullable|in:new,contacted,quoted,won,lost',
+        ]);
+
+        $leads = Lead::whereIn('id', $data['ids']);
+        $count = count($data['ids']);
+
+        if ($data['action'] === 'delete') {
+            abort_unless($request->user()->isAdmin(), 403);
+            $leads->get()->each->delete();
+            return back()->with('status', $count . ' ' . str('lead')->plural($count) . ' deleted.');
+        }
+
+        $leads->update(['status' => $data['status']]);
+        return back()->with('status', $count . ' ' . str('lead')->plural($count) . ' marked ' . $data['status'] . '.');
+    }
+
+    /** Search, view, quick filters, field filters, first letter and sort, shared by the list and the export. */
+    private function filteredQuery(Request $request)
+    {
         $query = Lead::query();
+        $like = $query->getConnection()->getDriverName() === 'pgsql' ? 'ilike' : 'like';
 
         if ($request->filled('search')) {
             $search = trim($request->search);
-            $query->where(function($q) use ($search) {
-                $q->where('customer_name', 'like', "%{$search}%")
-                  ->orWhere('phone', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('site_address', 'like', "%{$search}%")
-                  ->orWhere('company_name', 'like', "%{$search}%");
+            $query->where(function ($q) use ($search, $like) {
+                $q->where('customer_name', $like, "%{$search}%")
+                  ->orWhere('phone', $like, "%{$search}%")
+                  ->orWhere('email', $like, "%{$search}%")
+                  ->orWhere('site_address', $like, "%{$search}%")
+                  ->orWhere('company_legal_name', $like, "%{$search}%");
             });
         }
 
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
+        match ($request->get('view')) {
+            'open'  => $query->whereIn('status', ['new', 'contacted', 'quoted']),
+            'won'   => $query->where('status', 'won'),
+            'lost'  => $query->where('status', 'lost'),
+            default => null,
+        };
+
+        foreach ((array) $request->get('only', []) as $quick) {
+            match ($quick) {
+                'recent'     => $query->where('created_at', '>=', now()->subDays(7)),
+                'untouched'  => $query->where('updated_at', '<', now()->subDays(30)),
+                'quoted'     => $query->has('quotations'),
+                'not_quoted' => $query->doesntHave('quotations'),
+                'business'   => $query->whereNotNull('gstin')->where('gstin', '!=', ''),
+                default      => null,
+            };
         }
 
-        $leads = $query->orderByDesc('created_at')->paginate(20)->withQueryString();
-        return view('leads.index', compact('leads'));
+        if ($request->filled('status')) {
+            $query->whereIn('status', (array) $request->status);
+        }
+        if ($request->filled('source')) {
+            $query->whereIn('source', (array) $request->source);
+        }
+        if (preg_match('/^[A-Z]$/', (string) $request->get('letter'))) {
+            $query->where('customer_name', $like, $request->get('letter') . '%');
+        }
+
+        match ($request->get('sort')) {
+            'name_asc'    => $query->orderBy('customer_name'),
+            'name_desc'   => $query->orderByDesc('customer_name'),
+            'date_asc'    => $query->orderBy('created_at'),
+            'company_asc' => $query->orderBy('company_legal_name')->orderBy('customer_name'),
+            default       => $query->orderByDesc('created_at'),
+        };
+
+        return $query->orderByDesc('id');
     }
 
     public function create()

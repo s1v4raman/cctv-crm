@@ -168,6 +168,7 @@ window.zohoThemeManager = function(cfg = {}) {
             { name: 'Teal', hex: '#0d9488' },
             { name: 'Forest Green', hex: '#16a34a' },
             { name: 'Olive Green', hex: '#65a30d' },
+            { name: 'Gold', hex: '#c89c14' },
             { name: 'Amber Gold', hex: '#d97706' },
             { name: 'Terracotta Rust', hex: '#c2410c' },
             { name: 'Ruby Red', hex: '#be123c' },

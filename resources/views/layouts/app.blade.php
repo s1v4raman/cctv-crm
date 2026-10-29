@@ -25,6 +25,7 @@
         'dashboard' => 'Dashboard',
         'technician.*' => 'Field Work Orders',
         'calendar.*' => 'Calendar and Tasks',
+        'leads.index' => 'Leads',
         'leads.*' => 'Leads & Inquiries',
         'site-surveys.*' => 'Site Surveys',
         'quotations.*' => 'Quotations',

@@ -12,6 +12,11 @@ class Lead extends Model
         'state', 'state_code', 'source', 'status', 'notes',
     ];
 
+    public function getCompanyNameAttribute(): ?string
+    {
+        return $this->attributes['company_legal_name'] ?? $this->attributes['company_name'] ?? null;
+    }
+
     public function isB2b(): bool
     {
         return !empty(trim((string) $this->gstin));
