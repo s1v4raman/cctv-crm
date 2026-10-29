@@ -2,34 +2,21 @@
     <x-slot name="header">
         <div class="flex flex-wrap items-center justify-between gap-4">
             <div>
-                <h2 class="text-2xl font-bold leading-tight text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
-                    <span class="w-2.5 h-2.5 rounded-full bg-amber-400 shadow-[0_0_10px_#f59e0b]"></span>
-                    Alerts
-                </h2>
-                <p class="mt-1 text-sm text-slate-500 dark:text-slate-400 font-medium">Multi-channel WhatsApp, SMS & Email communication telemetry, dispatch logs & triggers</p>
+                <h1 class="text-xl font-semibold text-slate-900 dark:text-white">Alerts</h1>
+                <p class="mt-0.5 text-sm text-slate-500 dark:text-slate-400">WhatsApp, SMS and email messages sent to customers and staff</p>
             </div>
             <div class="flex items-center gap-2">
-                <a href="{{ route('alerts.gateways') }}"
-                   class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-300 dark:border-white/10 bg-white dark:bg-[#0f172a] hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold shadow-xs transition">
-                    SMS & Webhook Gateways
-                </a>
-                <a href="{{ route('alerts.templates') }}"
-                   class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-300 dark:border-white/10 bg-white dark:bg-[#0f172a] hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold shadow-xs transition">
-                    Templates
-                </a>
-                <form method="POST" action="{{ route('alerts.run-sweep') }}">
+                <a href="{{ route('alerts.gateways') }}" class="btn-secondary">Gateways</a>
+                <a href="{{ route('alerts.templates') }}" class="btn-secondary">Templates</a>
+                <form method="POST" action="{{ route('alerts.run-sweep') }}" data-confirm="Send payment reminders for all overdue invoices now?">
                     @csrf
-                    <button type="submit"
-                            class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-white text-xs font-bold shadow-xs transition cursor-pointer"
-                            style="background-color: var(--crm-accent, #2563eb);">
-                        Run Reminder Sweep
-                    </button>
+                    <button type="submit" class="btn-primary">Send reminders</button>
                 </form>
             </div>
         </div>
     </x-slot>
 
-    <div class="py-8 bg-slate-50 dark:bg-[#060913] min-h-screen font-['Plus_Jakarta_Sans']">
+    <div class="py-8 bg-slate-50 dark:bg-[#060913] min-h-screen">
         <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
 
             @if (session('status'))
@@ -38,48 +25,32 @@
                 </div>
             @endif
 
-            {{-- Summary Cards --}}
-            <div class="grid grid-cols-1 sm:grid-cols-5 gap-4 mb-6">
-                <div class="bg-white dark:bg-[#0f172a] p-4 rounded-2xl border border-slate-200 dark:border-white/5 shadow-xs">
-                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Alerts Sent</span>
-                    <div class="text-2xl font-extrabold text-slate-900 dark:text-white mt-1 font-heading">{{ $stats['total'] }}</div>
-                    <span class="text-[11px] text-slate-400 dark:text-slate-500">All channels combined</span>
-                </div>
-                <div class="bg-white dark:bg-[#0f172a] p-4 rounded-2xl border border-slate-200 dark:border-white/5 shadow-xs">
-                    <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">WhatsApp Messages</span>
-                    <div class="text-2xl font-extrabold text-emerald-700 dark:text-emerald-400 mt-1 font-heading">{{ $stats['whatsapp'] }}</div>
-                    <span class="text-[11px] text-slate-400 dark:text-slate-500">Chat dispatches</span>
-                </div>
-                <div class="bg-white dark:bg-[#0f172a] p-4 rounded-2xl border border-slate-200 dark:border-white/5 shadow-xs">
-                    <span class="text-[11px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400">SMS Alerts</span>
-                    <div class="text-2xl font-extrabold text-amber-700 dark:text-amber-400 mt-1 font-heading">{{ $stats['sms'] }}</div>
-                    <span class="text-[11px] text-slate-400 dark:text-slate-500">SMS gateway logs</span>
-                </div>
-                <div class="bg-white dark:bg-[#0f172a] p-4 rounded-2xl border border-slate-200 dark:border-white/5 shadow-xs">
-                    <span class="text-[11px] font-bold uppercase tracking-wider text-sky-700 dark:text-sky-400">Email Notifications</span>
-                    <div class="text-2xl font-extrabold text-sky-700 dark:text-sky-400 mt-1 font-heading">{{ $stats['email'] }}</div>
-                    <span class="text-[11px] text-slate-400 dark:text-slate-500">HTML emails delivered</span>
-                </div>
-                <div class="bg-white dark:bg-[#0f172a] p-4 rounded-2xl border border-slate-200 dark:border-white/5 shadow-xs">
-                    <span class="text-[11px] font-bold uppercase tracking-wider text-rose-700 dark:text-rose-400">Delivery Failures</span>
-                    <div class="text-2xl font-extrabold {{ $stats['failed'] > 0 ? 'text-rose-700 dark:text-rose-400' : 'text-slate-400 dark:text-slate-500' }} mt-1 font-heading">{{ $stats['failed'] }}</div>
-                    <span class="text-[11px] text-slate-400 dark:text-slate-500">Unreachable recipients</span>
-                </div>
-            </div>
-
-            {{-- Quick Send Ad-hoc Alert Card --}}
-            <div class="bg-white dark:bg-[#0f172a] rounded-2xl p-5 mb-6 shadow-xs border border-slate-200 dark:border-white/5" x-data="{ open: false }">
-                <div class="flex items-center justify-between cursor-pointer" @click="open = !open">
-                    <div class="flex items-center gap-2">
-                        <span class="w-7 h-7 rounded-lg bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-500/20 flex items-center justify-center text-sm font-bold"><svg class="w-5 h-5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg></span>
-                        <div>
-                            <h3 class="text-sm font-bold text-slate-900 dark:text-white">Send Instant Ad-hoc Notification / Broadcast</h3>
-                            <p class="text-xs text-slate-500 dark:text-slate-400">Dispatch a custom WhatsApp message, SMS, or Email directly to a client or technician.</p>
-                        </div>
+            {{-- Messages sent, by channel --}}
+            <dl class="grid grid-cols-2 sm:grid-cols-5 gap-px rounded border border-slate-200 dark:border-slate-800 bg-slate-200 dark:bg-slate-800 overflow-hidden mb-6">
+                @foreach([
+                    ['Sent', $stats['total']],
+                    ['WhatsApp', $stats['whatsapp']],
+                    ['SMS', $stats['sms']],
+                    ['Email', $stats['email']],
+                    ['Failed', $stats['failed']],
+                ] as [$label, $value])
+                    <div class="bg-white dark:bg-slate-900 px-4 py-3">
+                        <dt class="text-xs text-slate-500 dark:text-slate-400">{{ $label }}</dt>
+                        <dd class="text-xl font-semibold mt-0.5 {{ $label === 'Failed' && $value > 0 ? 'text-rose-700 dark:text-rose-400' : 'text-slate-900 dark:text-white' }}">{{ $value }}</dd>
                     </div>
-                    <button type="button" class="text-xs font-bold hover:underline cursor-pointer" style="color: var(--crm-accent, #2563eb);">
-                        <span x-show="!open">+ Open Composer</span>
-                        <span x-show="open">&minus; Hide Composer</span>
+                @endforeach
+            </dl>
+
+            {{-- Send one message by hand --}}
+            <div class="bg-white dark:bg-[#0f172a] rounded p-4 mb-6 border border-slate-200 dark:border-white/5" x-data="{ open: false }">
+                <div class="flex items-center justify-between gap-3">
+                    <div>
+                        <h3 class="text-sm font-semibold text-slate-900 dark:text-white">Send a message</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">One WhatsApp, SMS or email to a customer or technician.</p>
+                    </div>
+                    <button type="button" @click="open = !open" class="btn-secondary" :aria-expanded="open">
+                        <span x-show="!open">Write message</span>
+                        <span x-show="open" x-cloak>Close</span>
                     </button>
                 </div>
 
@@ -121,8 +92,8 @@
                         </div>
 
                         <div class="sm:col-span-3 flex justify-end">
-                            <button type="submit" class="btn-amber min-h-[44px] px-6 py-2.5 text-sm font-bold rounded-xl shadow-xs transition cursor-pointer">
-                                Dispatch Message Now &rarr;
+                            <button type="submit" class="btn-primary">
+                                Send message
                             </button>
                         </div>
                     </form>
@@ -184,7 +155,7 @@
                         @forelse($logs as $log)
                             <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
                                 <td class="px-4 py-3.5 whitespace-nowrap">
-                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold border {{ $log->channel_badge_class }} mb-1">
+                                    <span class="inline-flex items-center gap-1.5 text-sm text-slate-900 dark:text-white">
                                         @if($log->channel === 'whatsapp')
                                             <x-icon.whatsapp class="w-3.5 h-3.5 text-black dark:text-white shrink-0" />
                                             <span>WhatsApp</span>
@@ -195,7 +166,7 @@
                                             <span>Email</span>
                                         @endif
                                     </span>
-                                    <div class="text-[11px] font-semibold text-slate-700 dark:text-slate-300 capitalize">
+                                    <div class="text-xs text-slate-500 dark:text-slate-400 first-letter:uppercase">
                                         {{ str_replace('_', ' ', $log->event_type) }}
                                     </div>
                                 </td>
@@ -212,33 +183,22 @@
                                     @endif
                                 </td>
                                 <td class="px-4 py-3.5 whitespace-nowrap">
-                                    @php
-                                        $st = strtolower($log->status ?? 'sent');
-                                        $badgeStyles = match($st) {
-                                            'sent'      => 'background-color: #d1fae5; color: #065f46; border: 1px solid #6ee7b7;',
-                                            'delivered' => 'background-color: #dbeafe; color: #1e40af; border: 1px solid #93c5fd;',
-                                            'queued'    => 'background-color: #e0f2fe; color: #0369a1; border: 1px solid #7dd3fc;',
-                                            'failed'    => 'background-color: #ffe4e6; color: #9f1239; border: 1px solid #fda4af;',
-                                            default     => 'background-color: #f1f5f9; color: #334155; border: 1px solid #cbd5e1;',
-                                        };
-                                    @endphp
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-extrabold uppercase tracking-wider" style="{{ $badgeStyles }}">
-                                        {{ strtoupper($log->status) }}
-                                    </span>
+                                    @php $st = strtolower($log->status ?? 'sent'); @endphp
+                                    <span class="text-sm {{ $st === 'failed' ? 'text-rose-700 dark:text-rose-400 font-medium' : 'text-slate-600 dark:text-slate-300' }}">{{ ucfirst($st) }}</span>
                                 </td>
                                 <td class="px-4 py-3.5 whitespace-nowrap">
                                     <div class="font-semibold text-slate-900 dark:text-slate-100">{{ $log->sent_at?->format('d M Y') ?? $log->created_at->format('d M Y') }}</div>
                                     <div class="text-[11px] text-slate-500 dark:text-slate-400">{{ $log->sent_at?->format('h:i A') ?? $log->created_at->format('h:i A') }}</div>
                                 </td>
                                 <td class="px-4 py-3.5 whitespace-nowrap text-right font-medium">
-                                    <div class="flex items-center justify-end gap-1.5">
+                                    <div class="flex items-center justify-end gap-3">
                                         @if($log->action_url)
-                                            <a href="{{ $log->action_url }}" target="_blank" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-sky-100 dark:bg-sky-500/10 hover:bg-sky-200 dark:hover:bg-sky-500/20 text-sky-800 dark:text-sky-400 border border-sky-300 dark:border-sky-500/30 text-[11px] font-bold transition" title="View Proposal PDF">
+                                            <a href="{{ $log->action_url }}" target="_blank" class="text-sm" title="View Proposal PDF">
                                                 PDF
                                             </a>
                                         @endif
                                         @if($log->channel === 'whatsapp' && $log->whats_app_web_url)
-                                            <a href="{{ $log->whats_app_web_url }}" target="_blank" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-100 dark:bg-emerald-500/10 hover:bg-emerald-200 dark:hover:bg-emerald-500/20 text-emerald-800 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-500/30 text-[11px] font-bold transition" title="Open in WhatsApp Web / App">
+                                            <a href="{{ $log->whats_app_web_url }}" target="_blank" class="inline-flex items-center gap-1 text-sm" title="Open in WhatsApp Web / App">
                                                 <x-icon.whatsapp class="w-3.5 h-3.5 text-black dark:text-white shrink-0" />
                                                 <span>Chat</span>
                                             </a>
@@ -249,7 +209,7 @@
                         @empty
                             <tr>
                                 <td colspan="6" class="px-4 py-8 text-center text-slate-500">
-                                    No notification logs found. Click "Run Reminder Sweep" to execute automated checks.
+                                    No messages sent yet. Use Send reminders to send payment reminders for overdue invoices.
                                 </td>
                             </tr>
                         @endforelse

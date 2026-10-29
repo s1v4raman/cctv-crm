@@ -507,14 +507,14 @@
             }
 
             /* 6. GENERAL FORM SUBMIT BUTTONS (Create/Edit records) */
-            form button[type="submit"]:not(.btn-cancel):not(.btn-clear):not(.btn-submit):not([class*="bg-rose"]):not([class*="bg-red"]):not([class*="bg-slate"]):not([class*="bg-gray"]):not([class*="text-rose"]):not([class*="bg-transparent"]) {
+            form button[type="submit"]:not(.btn-cancel):not(.btn-clear):not(.btn-submit):not([class*="bg-rose"]):not([class*="bg-red"]):not([class*="bg-slate"]):not([class*="bg-gray"]):not([class*="text-rose"]):not([class*="bg-transparent"]):not(.btn-secondary) {
                 background: ${hex} !important;
                 background-color: ${hex} !important;
                 background-image: none !important;
                 border-color: ${hex} !important;
                 color: #ffffff !important;
             }
-            form button[type="submit"]:not(.btn-cancel):not(.btn-clear):not(.btn-submit):not([class*="bg-rose"]):not([class*="bg-red"]):not([class*="bg-slate"]):not([class*="bg-gray"]):not([class*="text-rose"]):not([class*="bg-transparent"]):hover {
+            form button[type="submit"]:not(.btn-cancel):not(.btn-clear):not(.btn-submit):not([class*="bg-rose"]):not([class*="bg-red"]):not([class*="bg-slate"]):not([class*="bg-gray"]):not([class*="text-rose"]):not([class*="bg-transparent"]):not(.btn-secondary):hover {
                 background: ${hoverHex} !important;
                 background-color: ${hoverHex} !important;
                 background-image: none !important;

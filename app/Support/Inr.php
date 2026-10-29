@@ -22,4 +22,10 @@ class Inr
 
         return $sign . '₹' . $lastThree . ($fraction !== null ? '.' . $fraction : '');
     }
+
+    /** Whole rupees, with paise only when the amount has some: ₹1,60,000 or ₹1,234.50. */
+    public static function money(float|int|string|null $amount): string
+    {
+        return self::format($amount, fmod(round((float) $amount, 2), 1) != 0.0 ? 2 : 0);
+    }
 }

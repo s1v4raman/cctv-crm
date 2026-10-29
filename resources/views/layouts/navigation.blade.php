@@ -224,7 +224,7 @@
                             <polyline stroke-linecap="round" stroke-linejoin="round" points="7 10 12 15 17 10"/>
                             <line stroke-linecap="round" stroke-linejoin="round" x1="12" x2="12" y1="15" y2="3"/>
                         </svg>
-                        <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">Sunday Payday Hub</span>
+                        <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">Weekly wages</span>
                     </a>
                     @endif
 
@@ -313,12 +313,12 @@
                     {{-- Employee & Workspace (User outline icon) --}}
                     <a :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('employee.hub') }}" 
                        class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('employee.*') || request()->routeIs('attendance.*') || request()->routeIs('leaves.*') ? 'crm-active-link' : '' }}" @if(request()->routeIs('employee.*') || request()->routeIs('attendance.*') || request()->routeIs('leaves.*')) aria-current="page" @endif
-                       title="Employee & Workspace">
+                       title="Employees">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                             <circle cx="12" cy="7" r="4.5"/>
                             <path stroke-linecap="round" stroke-linejoin="round" d="M5.5 21a6.5 6.5 0 0 1 13 0"/>
                         </svg>
-                        <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">Employee & Workspace</span>
+                        <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">Employees</span>
                     </a>
                 </div>
             </div>
@@ -331,13 +331,13 @@
                     {{-- Finance & Accounting (Briefcase icon) --}}
                     <a :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('finance.hub') }}" 
                        class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('finance.*') || request()->routeIs('invoices.*') ? 'crm-active-link' : '' }}" @if(request()->routeIs('finance.*') || request()->routeIs('invoices.*')) aria-current="page" @endif
-                       title="Finance & Accounting">
+                       title="Finance">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                             <rect width="20" height="14" x="2" y="7" rx="3"/>
                             <path stroke-linecap="round" stroke-linejoin="round" d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
                             <line stroke-linecap="round" stroke-linejoin="round" x1="2" x2="22" y1="13" y2="13"/>
                         </svg>
-                        <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">Finance & Accounting</span>
+                        <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">Finance</span>
                     </a>
                 </div>
             </div>
@@ -356,7 +356,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" d="m3 11 18-5v12L3 14v-3z"/>
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>
                             </svg>
-                            <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">Automated Alerts & SMS</span>
+                            <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">Alerts</span>
                         </a>
                         @endif
 
@@ -371,7 +371,7 @@
                                 <line stroke-linecap="round" stroke-linejoin="round" x1="4" x2="20" y1="18" y2="18"/>
                                 <circle cx="10" cy="18" r="2.5"/>
                             </svg>
-                            <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">Executive Analytics</span>
+                            <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">Analytics</span>
                         </a>
 
                         @if(auth()->user()->isAdmin())

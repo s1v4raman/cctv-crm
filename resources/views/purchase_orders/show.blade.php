@@ -270,7 +270,7 @@
                 </div>
 
                 <div class="form-actions">
-                    <button type="submit" class="btn-secondary">
+                    <button type="submit" class="btn-primary">
                         Save
                     </button>
                 </div>

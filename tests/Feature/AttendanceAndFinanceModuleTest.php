@@ -327,8 +327,8 @@ class AttendanceAndFinanceModuleTest extends TestCase
 
         $response = $this->get(route('attendance.index', ['tab' => 'weekly', 'week_date' => $weekStart]));
         $response->assertStatus(200);
-        $response->assertSee('Weekly Workforce Hours');
-        $response->assertSee('Weekly Workforce Hours');
+        $response->assertSee('Hours logged');
+        $response->assertSee('Average turnout');
         $response->assertSee('Hours this week');
         $response->assertSee($this->technician->name);
     }
@@ -351,9 +351,9 @@ class AttendanceAndFinanceModuleTest extends TestCase
 
         $response = $this->get(route('attendance.index', ['tab' => 'monthly', 'month' => $currentMonth]));
         $response->assertStatus(200);
-        $response->assertSee('Punctuality Score');
-        $response->assertSee('Monthly Attendance Matrix &amp; Heatmap', false);
-        $response->assertSee('Punctuality Score');
+        $response->assertSee('Late arrivals');
+        $response->assertSee('Timesheet for the month');
+        $response->assertSee('Leave and absence');
         $response->assertSee($this->staff->name);
     }
 

@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h2 class="text-xl font-bold text-slate-900 dark:text-white font-heading tracking-tight">Invoices</h2>
+                <h2 class="text-xl font-semibold text-slate-900 dark:text-white">Invoices</h2>
             </div>
             <a href="{{ route('jobs.index') }}" class="btn-secondary">
                 Jobs to Invoice
@@ -64,7 +64,7 @@
         html.dark .p-table tbody td { color: var(--text-muted); }
         .p-table tbody td.right { text-align: right; }
 
-        .cell-no { font-weight: 600; font-family: ui-monospace,monospace; color: #2563eb; text-decoration: none; }
+        .cell-no { font-weight: 500; color: #2563eb; text-decoration: none; }
         .cell-no:hover { text-decoration: underline; }
         .cell-name { font-weight: 600; color: var(--text-main); }
         html.dark .cell-name { color: #ffffff; }
@@ -115,62 +115,53 @@
                     <table class="crm-table p-table crm-responsive">
                         <thead>
                             <tr>
-                                <th>Invoice No</th>
+                                <th>Invoice</th>
                                 <th class="col-name" style="min-width: 200px;">Customer</th>
-                                <th class="col-date whitespace-nowrap">Invoice &amp; Due Date</th>
-                                <th class="right">Total (Incl. Tax)</th>
-                                <th class="right">Amount Paid</th>
-                                <th class="right">Balance Due</th>
+                                <th class="col-date whitespace-nowrap">Date</th>
+                                <th class="right">Total</th>
+                                <th class="right">Balance</th>
                                 <th>Status</th>
-                                <th class="right">Action</th>
                             </tr>
                         </thead>
                         <tbody>
+                            {{-- Rupees without paise unless the amount has some --}}
+                            @php $money = fn ($v) => \App\Support\Inr::format($v, fmod((float) $v, 1) != 0.0 ? 2 : 0); @endphp
                             @forelse ($invoices as $invoice)
+                                @php
+                                    $balance = $invoice->balanceDue();
+                                    $isOverdue = $balance > 0 && $invoice->due_date && $invoice->due_date->isPast();
+                                    $statusLabel = match (strtolower($invoice->status)) {
+                                        'partially_paid' => 'Partly paid',
+                                        default => ucfirst(str_replace('_', ' ', $invoice->status)),
+                                    };
+                                @endphp
                                 <tr>
-                                    <td>
+                                    <td class="whitespace-nowrap">
                                         <a href="{{ route('invoices.show', $invoice) }}" class="cell-no">{{ $invoice->invoice_no }}</a>
                                     </td>
                                     <td class="col-name" style="min-width: 200px;">
                                         <span class="cell-name">{{ $invoice->quotation->lead->customer_name ?? '—' }}</span>
                                         @if($invoice->installationJob)
-                                            <div class="text-xs text-slate-500 mt-0.5">Job: {{ $invoice->installationJob->job_no }}</div>
+                                            <div class="text-xs text-slate-500 mt-0.5">Job {{ $invoice->installationJob->job_no }}</div>
                                         @endif
                                     </td>
                                     <td class="col-date whitespace-nowrap">
-                                        <div class="text-xs text-slate-800 dark:text-slate-200">{{ $invoice->invoice_date->format('d M Y') }}</div>
-                                        <div class="text-[11px] text-slate-500">Due: {{ $invoice->due_date?->format('d M Y') ?? 'Immediate' }}</div>
+                                        <div class="text-slate-800 dark:text-slate-200">{{ $invoice->invoice_date->format('j M Y') }}</div>
+                                        <div class="text-xs {{ $isOverdue ? 'text-amber-700 dark:text-amber-400' : 'text-slate-500' }}">
+                                            {{ $invoice->due_date ? ($isOverdue ? 'was due ' : 'due ') . $invoice->due_date->format('j M') : 'due on receipt' }}
+                                        </div>
                                     </td>
-                                    <td class="right font-semibold text-slate-900 dark:text-white">
-                                        ₹{{ number_format($invoice->total, 2) }}
+                                    <td class="right whitespace-nowrap text-slate-900 dark:text-white">{{ $money($invoice->total) }}</td>
+                                    <td class="right whitespace-nowrap {{ $balance > 0 ? 'font-medium text-slate-900 dark:text-white' : 'text-slate-400' }}">
+                                        {{ $balance > 0 ? $money($balance) : '—' }}
                                     </td>
-                                    <td class="right font-semibold text-emerald-600">
-                                        ₹{{ number_format($invoice->amount_paid, 2) }}
-                                    </td>
-                                    <td class="right font-semibold">
-                                        ₹{{ number_format($invoice->balanceDue(), 2) }}
-                                    </td>
-                                    <td>
-                                        @php
-                                            $invStatusColors = [
-                                                'paid'           => '#16a34a',
-                                                'partially_paid' => '#d97706',
-                                                'unpaid'         => '#555555',
-                                                'overdue'        => '#dc2626',
-                                            ];
-                                            $sColor = $invStatusColors[strtolower($invoice->status)] ?? '#555555';
-                                        @endphp
-                                        <span class="status-text" style="color: {{ $sColor }}; font-weight: bold;">
-                                            {{ ucfirst(str_replace('_',' ',$invoice->status)) }}
-                                        </span>
-                                    </td>
-                                    <td class="right whitespace-nowrap text-sm table-actions" style="text-align:right;">
-                                        <a href="{{ route('invoices.show', $invoice) }}" class="action-link">View</a>
+                                    <td class="whitespace-nowrap">
+                                        <span class="{{ $isOverdue ? 'text-amber-700 dark:text-amber-400' : 'text-slate-600 dark:text-slate-300' }}">{{ $isOverdue && strtolower($invoice->status) !== 'overdue' ? $statusLabel . ', overdue' : $statusLabel }}</span>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="8" class="text-center py-6 text-slate-500 text-sm">
+                                    <td colspan="6" class="text-center py-6 text-slate-500 text-sm">
                                         <x-empty-message empty="No invoices yet" filtered="No invoices match these filters." :filters="['search', 'status']" />
                                     </td>
                                 </tr>

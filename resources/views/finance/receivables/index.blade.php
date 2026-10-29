@@ -83,85 +83,42 @@
             {{-- Finance Category Sub-Navigation --}}
             <x-finance-subnav active="receivables" />
 
-            <!-- KPI Metric Cards Grid -->
-            <div class="stat-grid">
-                <!-- 1. Total Outstanding -->
-                <div class="stat-card">
-                    <div class="stat-label">Still to collect</div>
-                    <div class="stat-value">
-                        ₹{{ number_format($summary['total_outstanding'], 2) }}
-                    </div>
-                    <div class="mt-2 text-xs text-slate-500">
-                        {{ $summary['total_invoices_count'] }} {{ Str::plural('invoice', $summary['total_invoices_count']) }} · {{ $summary['total_debtors_count'] }} {{ Str::plural('customer', $summary['total_debtors_count']) }}
-                    </div>
+            {{-- Ageing: how long the money has been waiting --}}
+            <dl class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-px rounded border border-slate-200 dark:border-slate-800 bg-slate-200 dark:bg-slate-800 overflow-hidden">
+                <div class="bg-white dark:bg-slate-900 px-4 py-3">
+                    <dt class="text-xs text-slate-500 dark:text-slate-400">Still to collect</dt>
+                    <dd class="text-xl font-semibold text-slate-900 dark:text-white mt-0.5">{{ \App\Support\Inr::money($summary['total_outstanding']) }}</dd>
+                    <dd class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{{ $summary['total_invoices_count'] . ' ' . Str::plural('invoice', $summary['total_invoices_count']) . ' · ' . $summary['total_debtors_count'] . ' ' . Str::plural('customer', $summary['total_debtors_count']) }}</dd>
                 </div>
-
-                <!-- 2. Current (0-30 Days) -->
-                <div class="stat-card">
-                    <div class="stat-label">0–30 Days</div>
-                    <div class="stat-value">
-                        ₹{{ number_format($summary['current_0_30'], 2) }}
+                @foreach([
+                    ['0–30 days', $summary['current_0_30'], false],
+                    ['31–60 days', $summary['overdue_31_60'], true],
+                    ['61–90 days', $summary['critical_61_90'], true],
+                    ['Over 90 days', $summary['high_risk_90_plus'], true],
+                ] as [$label, $amt, $late])
+                    <div class="bg-white dark:bg-slate-900 px-4 py-3">
+                        <dt class="text-xs text-slate-500 dark:text-slate-400">{{ $label }}</dt>
+                        <dd class="text-xl font-semibold mt-0.5 {{ $late && $amt > 0 ? 'text-amber-700 dark:text-amber-400' : 'text-slate-900 dark:text-white' }}">{{ \App\Support\Inr::money($amt) }}</dd>
+                        <dd class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{{ $summary['total_outstanding'] > 0 ? round($amt / $summary['total_outstanding'] * 100) : 0 }}%</dd>
                     </div>
-                    <div class="mt-2 text-xs text-slate-500">
-                        {{ $summary['total_outstanding'] > 0 ? round(($summary['current_0_30'] / $summary['total_outstanding']) * 100, 1) : 0 }}% of total
-                    </div>
+                @endforeach
+                <div class="bg-white dark:bg-slate-900 px-4 py-3">
+                    <dt class="text-xs text-slate-500 dark:text-slate-400">Average days to collect</dt>
+                    <dd class="text-xl font-semibold text-slate-900 dark:text-white mt-0.5">{{ $summary['dso_days'] }} <span class="text-xs font-normal text-slate-500">days</span></dd>
+                    <dd class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{{ $summary['total_invoices_count'] > 0 ? 'invoice to payment' : 'no invoices yet' }}</dd>
                 </div>
-
-                <!-- 3. Overdue (31-60 Days) -->
-                <div class="stat-card">
-                    <div class="stat-label">31–60 Days</div>
-                    <div class="stat-value">
-                        ₹{{ number_format($summary['overdue_31_60'], 2) }}
-                    </div>
-                    <div class="mt-2 text-xs text-slate-500">
-                        {{ $summary['total_outstanding'] > 0 ? round(($summary['overdue_31_60'] / $summary['total_outstanding']) * 100, 1) : 0 }}% of total
-                    </div>
-                </div>
-
-                <!-- 4. Critical (61-90 Days) -->
-                <div class="stat-card">
-                    <div class="stat-label">61–90 Days</div>
-                    <div class="stat-value">
-                        ₹{{ number_format($summary['critical_61_90'], 2) }}
-                    </div>
-                    <div class="mt-2 text-xs text-slate-500">
-                        {{ $summary['total_outstanding'] > 0 ? round(($summary['critical_61_90'] / $summary['total_outstanding']) * 100, 1) : 0 }}% of total
-                    </div>
-                </div>
-
-                <!-- 5. High Risk (90+ Days) -->
-                <div class="stat-card">
-                    <div class="stat-label">90+ Days</div>
-                    <div class="stat-value">
-                        ₹{{ number_format($summary['high_risk_90_plus'], 2) }}
-                    </div>
-                    <div class="mt-2 text-xs text-slate-500">
-                        {{ $summary['total_outstanding'] > 0 ? round(($summary['high_risk_90_plus'] / $summary['total_outstanding']) * 100, 1) : 0 }}% of total
-                    </div>
-                </div>
-
-                <!-- 6. Days Sales Outstanding (DSO) -->
-                <div class="stat-card">
-                    <div class="stat-label">Average days to collect</div>
-                    <div class="stat-value">
-                        {{ $summary['dso_days'] }} <span class="text-xs font-normal text-slate-500">Days</span>
-                    </div>
-                    <div class="mt-2 text-xs text-slate-500">
-                        {{ $summary['total_invoices_count'] > 0 ? 'from invoice to payment' : 'no invoices yet' }}
-                    </div>
-                </div>
-            </div>
+            </dl>
 
             <!-- Tab Navigation -->
-            <div class="flex items-center gap-6 border-b border-slate-200 dark:border-slate-800 overflow-x-auto whitespace-nowrap">
+            <div class="flex items-center gap-6 border-b border-slate-200 dark:border-slate-800 overflow-x-auto overflow-y-hidden whitespace-nowrap">
                 <button @click="activeTab = 'debtors'"
                         :class="activeTab === 'debtors' ? 'border-blue-600 text-slate-900 dark:text-white font-medium' : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'"
-                        class="py-2.5 -mb-px border-b-2 text-sm transition">
+                        class="py-2.5 border-b-2 text-sm transition">
                     By customer
                 </button>
                 <button @click="activeTab = 'overdue'"
                         :class="activeTab === 'overdue' ? 'border-blue-600 text-slate-900 dark:text-white font-medium' : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'"
-                        class="py-2.5 -mb-px border-b-2 text-sm transition flex items-center gap-1.5">
+                        class="py-2.5 border-b-2 text-sm transition flex items-center gap-1.5">
                     <span>Overdue invoices</span>
                     @if($summary['overdue_invoices_count'] > 0)
                         <span class="font-bold text-rose-500">({{ $summary['overdue_invoices_count'] }})</span>
@@ -205,20 +162,20 @@
                                         <td class="px-4 py-3 text-center font-semibold text-slate-700 dark:text-slate-300">
                                             {{ $debtor['unpaid_invoices_count'] }}
                                         </td>
-                                        <td class="px-4 py-3 text-right font-medium text-emerald-600 dark:text-emerald-400">
-                                            {{ $debtor['days_0_30'] > 0 ? '₹' . number_format($debtor['days_0_30'], 2) : '-' }}
+                                        <td class="px-4 py-3 text-right font-medium text-slate-900 dark:text-white">
+                                            {{ $debtor['days_0_30'] > 0 ? \App\Support\Inr::money($debtor['days_0_30']) : '-' }}
                                         </td>
                                         <td class="px-4 py-3 text-right font-medium text-amber-600 dark:text-amber-400">
-                                            {{ $debtor['days_31_60'] > 0 ? '₹' . number_format($debtor['days_31_60'], 2) : '-' }}
+                                            {{ $debtor['days_31_60'] > 0 ? \App\Support\Inr::money($debtor['days_31_60']) : '-' }}
                                         </td>
                                         <td class="px-4 py-3 text-right font-medium text-orange-600 dark:text-orange-400">
-                                            {{ $debtor['days_61_90'] > 0 ? '₹' . number_format($debtor['days_61_90'], 2) : '-' }}
+                                            {{ $debtor['days_61_90'] > 0 ? \App\Support\Inr::money($debtor['days_61_90']) : '-' }}
                                         </td>
                                         <td class="px-4 py-3 text-right font-medium text-rose-600 dark:text-rose-400">
-                                            {{ $debtor['days_90_plus'] > 0 ? '₹' . number_format($debtor['days_90_plus'], 2) : '-' }}
+                                            {{ $debtor['days_90_plus'] > 0 ? \App\Support\Inr::money($debtor['days_90_plus']) : '-' }}
                                         </td>
                                         <td class="px-4 py-3 text-right font-bold text-slate-900 dark:text-white">
-                                            ₹{{ number_format($debtor['total_due'], 2) }}
+                                            {{ \App\Support\Inr::money($debtor['total_due']) }}
                                         </td>
                                         <td class="px-4 py-3 text-right whitespace-nowrap text-sm">
                                             <div class="inline-flex items-center gap-1.5 justify-end">
@@ -295,17 +252,17 @@
                                             </span>
                                         </td>
                                         <td class="px-4 py-3 text-right font-medium text-slate-700 dark:text-slate-300">
-                                            ₹{{ number_format($inv['total_amount'], 2) }}
+                                            {{ \App\Support\Inr::money($inv['total_amount']) }}
                                         </td>
                                         <td class="px-4 py-3 text-right font-bold text-rose-600 dark:text-rose-400">
-                                            ₹{{ number_format($inv['balance_due'], 2) }}
+                                            {{ \App\Support\Inr::money($inv['balance_due']) }}
                                         </td>
                                         <td class="px-4 py-3 text-slate-500 text-xs">
                                             {{ $inv['last_reminder_at'] }}
                                         </td>
                                         <td class="px-4 py-3 text-right whitespace-nowrap text-sm">
                                             <div class="inline-flex items-center gap-1.5 justify-end">
-                                                <button @click="reminderModal = true; reminderInvoice = '{{ $inv['invoice_no'] }}'; reminderCustomer = '{{ addslashes($inv['customer_name']) }}'; reminderBalance = '₹{{ number_format($inv['balance_due'], 2) }}'; reminderRoute = '{{ route('finance.receivables.reminder', $inv['invoice_id']) }}';"
+                                                <button @click="reminderModal = true; reminderInvoice = '{{ $inv['invoice_no'] }}'; reminderCustomer = '{{ addslashes($inv['customer_name']) }}'; reminderBalance = '{{ \App\Support\Inr::money($inv['balance_due']) }}'; reminderRoute = '{{ route('finance.receivables.reminder', $inv['invoice_id']) }}';"
                                                         class="text-blue-600 dark:text-blue-400 hover:underline bg-transparent border-0 p-0 font-medium cursor-pointer">
                                                     Send Reminder
                                                 </button>

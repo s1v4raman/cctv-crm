@@ -102,95 +102,52 @@
             {{-- Finance Category Sub-Navigation --}}
             <x-finance-subnav active="payables" />
 
-            <!-- KPI Metric Cards Grid -->
-            <div class="stat-grid">
-                <!-- 1. Total Outstanding Payables -->
-                <div class="stat-card">
-                    <div class="stat-label">Total Payables</div>
-                    <div class="stat-value">
-                        ₹{{ number_format($summary['total_payable_balance'], 2) }}
-                    </div>
-                    <div class="mt-2 text-xs text-slate-500">
-                        {{ $summary['unpaid_pos_count'] }} POs • {{ $summary['suppliers_count'] }} Vendors
-                    </div>
+            {{-- Ageing: how long the money has been waiting --}}
+            <dl class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-px rounded border border-slate-200 dark:border-slate-800 bg-slate-200 dark:bg-slate-800 overflow-hidden">
+                <div class="bg-white dark:bg-slate-900 px-4 py-3">
+                    <dt class="text-xs text-slate-500 dark:text-slate-400">We owe suppliers</dt>
+                    <dd class="text-xl font-semibold text-slate-900 dark:text-white mt-0.5">{{ \App\Support\Inr::money($summary['total_payable_balance']) }}</dd>
+                    <dd class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{{ $summary['unpaid_pos_count'] . ' unpaid ' . ($summary['unpaid_pos_count'] == 1 ? 'PO' : 'POs') . ' · ' . $summary['suppliers_count'] . ' ' . Str::plural('supplier', $summary['suppliers_count']) }}</dd>
                 </div>
-
-                <!-- 2. Current (0-30 Days) -->
-                <div class="stat-card">
-                    <div class="stat-label">0–30 Days (Current)</div>
-                    <div class="stat-value">
-                        ₹{{ number_format($summary['current_0_30'], 2) }}
+                @foreach([
+                    ['0–30 days', $summary['current_0_30'], false],
+                    ['31–60 days', $summary['overdue_31_60'], true],
+                    ['61–90 days', $summary['critical_61_90'], true],
+                    ['Over 90 days', $summary['high_risk_90_plus'], true],
+                ] as [$label, $amt, $late])
+                    <div class="bg-white dark:bg-slate-900 px-4 py-3">
+                        <dt class="text-xs text-slate-500 dark:text-slate-400">{{ $label }}</dt>
+                        <dd class="text-xl font-semibold mt-0.5 {{ $late && $amt > 0 ? 'text-amber-700 dark:text-amber-400' : 'text-slate-900 dark:text-white' }}">{{ \App\Support\Inr::money($amt) }}</dd>
+                        <dd class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{{ $summary['total_payable_balance'] > 0 ? round($amt / $summary['total_payable_balance'] * 100) : 0 }}%</dd>
                     </div>
-                    <div class="mt-2 text-xs text-slate-500">
-                        {{ $summary['total_payable_balance'] > 0 ? round(($summary['current_0_30'] / $summary['total_payable_balance']) * 100, 1) : 0 }}% of Total
-                    </div>
-                </div>
-
-                <!-- 3. Overdue (31-60 Days) -->
-                <div class="stat-card">
-                    <div class="stat-label">31–60 Days</div>
-                    <div class="stat-value">
-                        ₹{{ number_format($summary['overdue_31_60'], 2) }}
-                    </div>
-                    <div class="mt-2 text-xs text-slate-500">
-                        {{ $summary['total_payable_balance'] > 0 ? round(($summary['overdue_31_60'] / $summary['total_payable_balance']) * 100, 1) : 0 }}% of Total
-                    </div>
-                </div>
-
-                <!-- 4. Critical (61-90 Days) -->
-                <div class="stat-card">
-                    <div class="stat-label">61–90 Days</div>
-                    <div class="stat-value">
-                        ₹{{ number_format($summary['critical_61_90'], 2) }}
-                    </div>
-                    <div class="mt-2 text-xs text-slate-500">
-                        {{ $summary['total_payable_balance'] > 0 ? round(($summary['critical_61_90'] / $summary['total_payable_balance']) * 100, 1) : 0 }}% of Total
-                    </div>
-                </div>
-
-                <!-- 5. 90+ Days Critical -->
-                <div class="stat-card">
-                    <div class="stat-label">90+ Days</div>
-                    <div class="stat-value">
-                        ₹{{ number_format($summary['high_risk_90_plus'], 2) }}
-                    </div>
-                    <div class="mt-2 text-xs text-slate-500">
-                        {{ $summary['total_payable_balance'] > 0 ? round(($summary['high_risk_90_plus'] / $summary['total_payable_balance']) * 100, 1) : 0 }}% of Total
-                    </div>
-                </div>
-
-                <!-- 6. Days Payable Outstanding (DPO) -->
-                <div class="stat-card">
-                    <div class="stat-label">Average days to pay</div>
-                    <div class="stat-value">
-                        {{ $summary['dpo_days'] }} <span class="text-xs font-normal text-slate-500">Days</span>
-                    </div>
-                    <div class="mt-2 text-xs text-slate-500">
-                        @if($summary['total_pos_count'] > 0)
+                @endforeach
+                <div class="bg-white dark:bg-slate-900 px-4 py-3">
+                    <dt class="text-xs text-slate-500 dark:text-slate-400">Average days to pay</dt>
+                    <dd class="text-xl font-semibold text-slate-900 dark:text-white mt-0.5">{{ $summary['dpo_days'] }} <span class="text-xs font-normal text-slate-500">days</span></dd>
+                    <dd class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">@if($summary['total_pos_count'] > 0)
                             {{ $summary['three_way_match_pass_rate'] }}% of POs match their bills and deliveries
                         @else
                             no purchase orders yet
-                        @endif
-                    </div>
+                        @endif</dd>
                 </div>
-            </div>
+            </dl>
 
             <!-- Tab Controls & Filter Bar -->
-            <div class="flex items-center gap-6 border-b border-slate-200 dark:border-slate-800 overflow-x-auto whitespace-nowrap">
+            <div class="flex items-center gap-6 border-b border-slate-200 dark:border-slate-800 overflow-x-auto overflow-y-hidden whitespace-nowrap">
                 <button @click="activeTab = 'aging'"
                         :class="activeTab === 'aging' ? 'border-blue-600 text-slate-900 dark:text-white font-medium' : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'"
-                        class="py-2.5 -mb-px border-b-2 text-sm transition">
+                        class="py-2.5 border-b-2 text-sm transition">
                     By supplier
                 </button>
                 <button @click="activeTab = 'three_way'"
                         :class="activeTab === 'three_way' ? 'border-blue-600 text-slate-900 dark:text-white font-medium' : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'"
-                        class="py-2.5 -mb-px border-b-2 text-sm transition flex items-center gap-1.5">
+                        class="py-2.5 border-b-2 text-sm transition flex items-center gap-1.5">
                     <span>PO matching</span>
                     <span class="text-slate-400">{{ $summary['three_way_stats']['matched'] }}/{{ $summary['total_pos_count'] }}</span>
                 </button>
                 <button @click="activeTab = 'disbursements'"
                         :class="activeTab === 'disbursements' ? 'border-blue-600 text-slate-900 dark:text-white font-medium' : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'"
-                        class="py-2.5 -mb-px border-b-2 text-sm transition flex items-center gap-1.5">
+                        class="py-2.5 border-b-2 text-sm transition flex items-center gap-1.5">
                     <span>Upcoming payments</span>
                     @if(count($disbursements) > 0)
                         <span class="font-bold text-amber-600">({{ count($disbursements) }})</span>
@@ -234,20 +191,20 @@
                                         <td class="px-4 py-3 text-center font-semibold text-slate-700 dark:text-slate-300">
                                             {{ $s['unpaid_po_count'] }}
                                         </td>
-                                        <td class="px-4 py-3 text-right font-medium text-blue-600 dark:text-blue-400">
-                                            {{ $s['days_0_30'] > 0 ? '₹' . number_format($s['days_0_30'], 2) : '-' }}
+                                        <td class="px-4 py-3 text-right font-medium text-slate-900 dark:text-white">
+                                            {{ $s['days_0_30'] > 0 ? \App\Support\Inr::money($s['days_0_30']) : '-' }}
                                         </td>
                                         <td class="px-4 py-3 text-right font-medium text-amber-600 dark:text-amber-400">
-                                            {{ $s['days_31_60'] > 0 ? '₹' . number_format($s['days_31_60'], 2) : '-' }}
+                                            {{ $s['days_31_60'] > 0 ? \App\Support\Inr::money($s['days_31_60']) : '-' }}
                                         </td>
                                         <td class="px-4 py-3 text-right font-medium text-orange-600 dark:text-orange-400">
-                                            {{ $s['days_61_90'] > 0 ? '₹' . number_format($s['days_61_90'], 2) : '-' }}
+                                            {{ $s['days_61_90'] > 0 ? \App\Support\Inr::money($s['days_61_90']) : '-' }}
                                         </td>
                                         <td class="px-4 py-3 text-right font-medium text-rose-600 dark:text-rose-400">
-                                            {{ $s['days_90_plus'] > 0 ? '₹' . number_format($s['days_90_plus'], 2) : '-' }}
+                                            {{ $s['days_90_plus'] > 0 ? \App\Support\Inr::money($s['days_90_plus']) : '-' }}
                                         </td>
                                         <td class="px-4 py-3 text-right font-bold text-slate-900 dark:text-white">
-                                            ₹{{ number_format($s['total_due'], 2) }}
+                                            {{ \App\Support\Inr::money($s['total_due']) }}
                                         </td>
                                         <td class="px-4 py-3 text-right whitespace-nowrap text-sm">
                                             <div class="inline-flex items-center gap-1.5 justify-end">
@@ -328,7 +285,7 @@
                                             @endif
                                         </td>
                                         <td class="px-4 py-3 text-right font-medium text-slate-900 dark:text-white">
-                                            ₹{{ number_format($item['total_amount'], 2) }}
+                                            {{ \App\Support\Inr::money($item['total_amount']) }}
                                         </td>
                                         <td class="px-4 py-3 text-center">
                                             @php
@@ -413,10 +370,10 @@
                                             @endif
                                         </td>
                                         <td class="px-4 py-3 text-right font-medium text-slate-700 dark:text-slate-300">
-                                            ₹{{ number_format($d['total_amount'], 2) }}
+                                            {{ \App\Support\Inr::money($d['total_amount']) }}
                                         </td>
                                         <td class="px-4 py-3 text-right font-bold text-rose-600 dark:text-rose-400">
-                                            ₹{{ number_format($d['balance_due'], 2) }}
+                                            {{ \App\Support\Inr::money($d['balance_due']) }}
                                         </td>
                                         <td class="px-4 py-3 text-right whitespace-nowrap text-sm">
                                             <button type="button" @click="$dispatch('open-pay-modal', { supplierId: '{{ $d['supplier_id'] }}', poId: '{{ $d['po_id'] }}', supplierName: '{{ addslashes($d['supplier_name']) }}', poNumber: '{{ $d['po_number'] }}', amount: '{{ $d['balance_due'] }}' })"

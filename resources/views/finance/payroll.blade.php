@@ -105,111 +105,81 @@
             <div class="flex items-center justify-between">
                 <h2 class="font-bold text-slate-900 dark:text-white text-sm">Salary slips</h2>
                 <span class="text-xs text-slate-500 dark:text-slate-400">
-                    {{ $payrolls->total() }} Records
+                    {{ $payrolls->total() }} {{ Str::plural('slip', $payrolls->total()) }}
                 </span>
             </div>
 
+            {{-- Rupees without paise unless the amount has some --}}
+            @php $money = fn ($v) => \App\Support\Inr::format($v, fmod((float) $v, 1) != 0.0 ? 2 : 0); @endphp
             <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs text-slate-600 dark:text-slate-300">
-                    <thead class="bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-300 text-[11px] font-bold">
-                        <tr>
-                            <th class="py-3 px-3">Payroll #</th>
-                            <th class="py-3 px-3">Employee</th>
-                            <th class="py-3 px-3">Period</th>
-                            <th class="py-3 px-3 text-center">Attendance</th>
-                            <th class="py-3 px-3 text-right">Basic Pay</th>
-                            <th class="py-3 px-3 text-right">OT Pay</th>
-                            <th class="py-3 px-3 text-right">Allowances</th>
-                            <th class="py-3 px-3 text-right">Deductions</th>
-                            <th class="py-3 px-3 text-right font-bold">Net Salary</th>
-                            <th class="py-3 px-3 text-center">Status</th>
-                            <th class="py-3 px-3 text-center">Actions</th>
+                <table class="w-full text-left text-sm text-slate-600 dark:text-slate-300">
+                    <thead class="text-xs text-slate-500 dark:text-slate-400">
+                        <tr class="border-b border-slate-100 dark:border-slate-800">
+                            <th class="py-2 px-3 font-medium">Employee</th>
+                            <th class="py-2 px-3 font-medium">Days</th>
+                            <th class="py-2 px-3 font-medium text-right">Basic</th>
+                            <th class="py-2 px-3 font-medium text-right">Overtime</th>
+                            <th class="py-2 px-3 font-medium text-right">Allowances</th>
+                            <th class="py-2 px-3 font-medium text-right">Deductions</th>
+                            <th class="py-2 px-3 font-medium text-right">Net pay</th>
+                            <th class="py-2 px-3 font-medium">Status</th>
+                            <th class="py-2 px-3 font-medium"><span class="sr-only">Actions</span></th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
                         @forelse($payrolls as $p)
-                            <tr class="hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition">
-                                <td class="py-3 px-3 font-bold text-slate-900 dark:text-white">
-                                    {{ $p->payroll_number }}
+                            @php
+                                $start = \Carbon\Carbon::parse($p->period_start);
+                                $end = \Carbon\Carbon::parse($p->period_end);
+                                $period = $start->isSameMonth($end) ? $start->format('j') . '–' . $end->format('j M') : $start->format('j M') . '–' . $end->format('j M');
+                                $days = collect([
+                                    ($p->present_days + 0) . ' present',
+                                    $p->half_days > 0 ? ($p->half_days + 0) . ' half' : null,
+                                    $p->leave_days > 0 ? ($p->leave_days + 0) . ' leave' : null,
+                                    $p->absent_days > 0 ? ($p->absent_days + 0) . ' absent' : null,
+                                ])->filter()->implode(' · ');
+                            @endphp
+                            <tr class="align-top">
+                                <td class="py-2.5 px-3">
+                                    <div class="font-medium text-slate-900 dark:text-white whitespace-nowrap">{{ $p->user?->name ?? 'Unknown' }}</div>
+                                    <div class="text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">{{ $p->payroll_number }} · {{ $period }}</div>
                                 </td>
-                                <td class="py-3 px-3">
-                                    <div class="font-bold text-slate-900 dark:text-white">{{ $p->user?->name ?? 'Unknown' }}</div>
-                                    <div class="text-[11px] text-slate-400">{{ ucfirst($p->user?->role ?? '') }}</div>
-                                </td>
-                                <td class="py-3 px-3">
-                                    <div class="text-slate-800 dark:text-slate-200">
-                                        {{ \Carbon\Carbon::parse($p->period_start)->format('d M') }} - {{ \Carbon\Carbon::parse($p->period_end)->format('d M Y') }}
-                                    </div>
-                                    <div class="text-[11px] text-slate-400">{{ ucfirst($p->period_type) }}</div>
-                                </td>
-                                <td class="py-3 px-3 text-center">
-                                    <div>
-                                        <span class="text-emerald-600 dark:text-emerald-400 font-medium">{{ $p->present_days }}P</span>
-                                        @if($p->half_days > 0)
-                                            <span class="text-amber-600 dark:text-amber-400 ml-1 font-medium">{{ $p->half_days }}H</span>
-                                        @endif
-                                        @if($p->leave_days > 0)
-                                            <span class="text-blue-600 dark:text-blue-400 ml-1 font-medium">{{ $p->leave_days }}L</span>
-                                        @endif
-                                        @if($p->absent_days > 0)
-                                            <span class="text-rose-600 dark:text-rose-400 ml-1 font-medium">{{ $p->absent_days }}A</span>
-                                        @endif
-                                    </div>
+                                <td class="py-2.5 px-3">
+                                    <div class="whitespace-nowrap">{{ $days }}</div>
                                     @if($p->overtime_hours > 0)
-                                        <div class="text-[11px] text-slate-500 mt-0.5">
-                                            +{{ $p->overtime_hours }}h OT
-                                        </div>
+                                        <div class="text-xs text-slate-500 dark:text-slate-400">+{{ $p->overtime_hours + 0 }}h overtime</div>
                                     @endif
                                 </td>
-                                <td class="py-3 px-3 text-right text-slate-700 dark:text-slate-300">
-                                    &#8377;{{ number_format($p->basic_pay, 2) }}
-                                </td>
-                                <td class="py-3 px-3 text-right text-slate-700 dark:text-slate-300">
-                                    &#8377;{{ number_format($p->overtime_pay, 2) }}
-                                </td>
-                                <td class="py-3 px-3 text-right text-emerald-600 dark:text-emerald-400">
-                                    +&#8377;{{ number_format($p->allowances, 2) }}
-                                </td>
-                                <td class="py-3 px-3 text-right text-rose-600 dark:text-rose-400">
-                                    -&#8377;{{ number_format($p->deductions, 2) }}
-                                </td>
-                                <td class="py-3 px-3 text-right font-bold text-slate-900 dark:text-white">
-                                    &#8377;{{ number_format($p->net_salary, 2) }}
-                                </td>
-                                <td class="py-3 px-3 text-center">
-                                    @if($p->status === 'paid')
-                                        <span class="font-bold text-emerald-600 dark:text-emerald-400">Paid</span>
-                                    @elseif($p->status === 'approved')
-                                        <span class="font-bold text-blue-600 dark:text-blue-400">Approved</span>
-                                    @else
-                                        <span class="font-bold text-amber-600 dark:text-amber-400">Draft</span>
-                                    @endif
+                                <td class="py-2.5 px-3 text-right whitespace-nowrap">{{ $money($p->basic_pay) }}</td>
+                                <td class="py-2.5 px-3 text-right whitespace-nowrap">{{ $p->overtime_pay > 0 ? $money($p->overtime_pay) : '—' }}</td>
+                                <td class="py-2.5 px-3 text-right whitespace-nowrap">{{ $p->allowances > 0 ? '+ ' . $money($p->allowances) : '—' }}</td>
+                                <td class="py-2.5 px-3 text-right whitespace-nowrap">{{ $p->deductions > 0 ? '− ' . $money($p->deductions) : '—' }}</td>
+                                <td class="py-2.5 px-3 text-right whitespace-nowrap font-semibold text-slate-900 dark:text-white">{{ $money($p->net_salary) }}</td>
+                                <td class="py-2.5 px-3 whitespace-nowrap">
+                                    <button type="button" title="Change status"
+                                            onclick="openStatusModal({{ $p->id }}, '{{ $p->payroll_number }}', '{{ $p->status }}', '{{ $p->payment_reference ?? '' }}', '{{ $p->notes ?? '' }}')"
+                                            class="inline-flex items-center gap-1 hover:underline {{ $p->status === 'paid' ? 'text-slate-900 dark:text-white' : ($p->status === 'approved' ? 'text-slate-600 dark:text-slate-300' : 'text-amber-700 dark:text-amber-400') }}">
+                                        {{ $p->status === 'paid' ? 'Paid' : ($p->status === 'approved' ? 'Approved' : 'Draft') }}
+                                        <svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                                    </button>
                                     @if($p->payment_date)
-                                        <div class="text-[11px] text-slate-400">{{ \Carbon\Carbon::parse($p->payment_date)->format('d M') }}</div>
+                                        <div class="text-xs text-slate-500 dark:text-slate-400">{{ \Carbon\Carbon::parse($p->payment_date)->format('j M') }}</div>
                                     @endif
                                 </td>
-                                <td class="py-3 px-3 text-center">
-                                    <div class="flex items-center justify-center gap-1.5">
-                                        <a href="{{ route('finance.payroll.show', $p->id) }}" class="text-blue-600 hover:underline">View</a>
-                                        <span class="text-slate-300 dark:text-slate-600">|</span>
-                                        <a href="{{ route('finance.payroll.pdf', $p->id) }}" class="text-blue-600 hover:underline">PDF</a>
-                                        <span class="text-slate-300 dark:text-slate-600">|</span>
-                                        <a href="{{ route('finance.payroll.sendWhatsApp', $p->id) }}" target="_blank" class="text-blue-600 hover:underline inline-flex items-center gap-1">
+                                <td class="py-2.5 px-3">
+                                    <div class="flex items-center gap-3 whitespace-nowrap text-sm">
+                                        <a href="{{ route('finance.payroll.show', $p->id) }}">View</a>
+                                        <a href="{{ route('finance.payroll.pdf', $p->id) }}">PDF</a>
+                                        <a href="{{ route('finance.payroll.sendWhatsApp', $p->id) }}" target="_blank" class="inline-flex items-center gap-1">
                                             <x-icon.whatsapp class="w-3.5 h-3.5 text-black dark:text-white shrink-0" />
                                             <span>WhatsApp</span>
                                         </a>
-                                        <span class="text-slate-300 dark:text-slate-600">|</span>
-                                        <button type="button" 
-                                                onclick="openStatusModal({{ $p->id }}, '{{ $p->payroll_number }}', '{{ $p->status }}', '{{ $p->payment_reference ?? '' }}', '{{ $p->notes ?? '' }}')"
-                                                class="text-blue-600 hover:underline">
-                                            Status
-                                        </button>
                                     </div>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="11" class="py-8 text-center text-slate-400">
+                                <td colspan="9" class="py-8 text-center text-slate-400">
                                     No salary slips for this month yet. Use <strong>Generate Payroll</strong> to create them from attendance and salaries.
                                 </td>
                             </tr>

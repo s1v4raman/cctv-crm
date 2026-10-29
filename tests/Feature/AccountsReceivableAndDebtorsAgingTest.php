@@ -122,7 +122,7 @@ class AccountsReceivableAndDebtorsAgingTest extends TestCase
         $response->assertSee('By customer', false);
         $response->assertSee('Tech Park Chennai');
         $response->assertSee('Sunrise Hospital');
-        $response->assertSee('160,000.00'); // Total outstanding (40,000 + 120,000)
+        $response->assertSee('₹1,60,000'); // Total outstanding (40,000 + 120,000)
     }
 
     public function test_export_aging_csv(): void

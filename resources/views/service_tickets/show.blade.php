@@ -188,7 +188,7 @@
                     </div>
                 </div>
                 <div class="form-actions mt-4">
-                    <button type="submit" class="btn-secondary">
+                    <button type="submit" class="btn-primary">
                         Save
                     </button>
                 </div>

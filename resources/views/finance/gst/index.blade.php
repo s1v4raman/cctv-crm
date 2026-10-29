@@ -155,10 +155,10 @@
             <div class="stat-card">
                 <div class="stat-label">Gross Sales Turnover</div>
                 <div class="stat-value">
-                    ₹{{ number_format($gstr1Data['total_gross_turnover'], 2) }}
+                    {{ \App\Support\Inr::format($gstr1Data['total_gross_turnover'], 2) }}
                 </div>
                 <div class="text-xs text-slate-500 mt-2">
-                    Taxable: ₹{{ number_format($gstr1Data['total_taxable_turnover'], 2) }} • {{ $gstr1Data['total_invoices_count'] }} Invoices
+                    Taxable: {{ \App\Support\Inr::format($gstr1Data['total_taxable_turnover'], 2) }} • {{ $gstr1Data['total_invoices_count'] }} Invoices
                 </div>
             </div>
 
@@ -166,10 +166,10 @@
             <div class="stat-card">
                 <div class="stat-label">Output GST (Sales)</div>
                 <div class="stat-value text-slate-900 dark:text-white">
-                    ₹{{ number_format($gstr1Data['total_output_tax'], 2) }}
+                    {{ \App\Support\Inr::format($gstr1Data['total_output_tax'], 2) }}
                 </div>
                 <div class="text-xs text-slate-500 mt-2">
-                    CGST+SGST: ₹{{ number_format($gstr1Data['total_output_cgst'] + $gstr1Data['total_output_sgst'], 2) }} • IGST: ₹{{ number_format($gstr1Data['total_output_igst'], 2) }}
+                    CGST+SGST: {{ \App\Support\Inr::format($gstr1Data['total_output_cgst'] + $gstr1Data['total_output_sgst'], 2) }} • IGST: {{ \App\Support\Inr::format($gstr1Data['total_output_igst'], 2) }}
                 </div>
             </div>
 
@@ -177,10 +177,10 @@
             <div class="stat-card">
                 <div class="stat-label">Input Tax Credit (ITC)</div>
                 <div class="stat-value">
-                    ₹{{ number_format($itcData['grand_total_itc'], 2) }}
+                    {{ \App\Support\Inr::format($itcData['grand_total_itc'], 2) }}
                 </div>
                 <div class="text-xs text-slate-500 mt-2">
-                    POs: ₹{{ number_format($itcData['total_po_itc'], 2) }} • Expenses: ₹{{ number_format($itcData['total_expense_itc'], 2) }}
+                    POs: {{ \App\Support\Inr::format($itcData['total_po_itc'], 2) }} • Expenses: {{ \App\Support\Inr::format($itcData['total_expense_itc'], 2) }}
                 </div>
             </div>
 
@@ -188,11 +188,11 @@
             <div class="stat-card">
                 <div class="stat-label">Net Cash Tax Payable</div>
                 <div class="stat-value">
-                    ₹{{ number_format($gstr3bData['net_tax_payable_cash']['total'], 2) }}
+                    {{ \App\Support\Inr::format($gstr3bData['net_tax_payable_cash']['total'], 2) }}
                 </div>
                 <div class="text-xs text-slate-500 mt-2">
                     @if($gstr3bData['itc_carry_forward']['total'] > 0)
-                        <span class="text-emerald-600 font-bold">ITC C/F: ₹{{ number_format($gstr3bData['itc_carry_forward']['total'], 2) }}</span>
+                        <span class="text-emerald-600 font-bold">ITC C/F: {{ \App\Support\Inr::format($gstr3bData['itc_carry_forward']['total'], 2) }}</span>
                     @else
                         <span class="text-amber-600 font-bold">To Pay in Cash</span>
                     @endif
@@ -250,11 +250,11 @@
                                         <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
                                         <span>(A) Total Output Tax Liability (Sales)</span>
                                     </td>
-                                    <td class="py-3.5 px-4 text-right font-mono">₹{{ number_format($gstr3bData['output_tax']['igst'], 2) }}</td>
-                                    <td class="py-3.5 px-4 text-right font-mono">₹{{ number_format($gstr3bData['output_tax']['cgst'], 2) }}</td>
-                                    <td class="py-3.5 px-4 text-right font-mono">₹{{ number_format($gstr3bData['output_tax']['sgst'], 2) }}</td>
+                                    <td class="py-3.5 px-4 text-right font-mono">{{ \App\Support\Inr::format($gstr3bData['output_tax']['igst'], 2) }}</td>
+                                    <td class="py-3.5 px-4 text-right font-mono">{{ \App\Support\Inr::format($gstr3bData['output_tax']['cgst'], 2) }}</td>
+                                    <td class="py-3.5 px-4 text-right font-mono">{{ \App\Support\Inr::format($gstr3bData['output_tax']['sgst'], 2) }}</td>
                                     <td class="py-3.5 px-4 text-right font-mono font-bold text-indigo-700 dark:text-indigo-400 bg-indigo-100/40 dark:bg-indigo-950/40">
-                                        ₹{{ number_format($gstr3bData['output_tax']['total'], 2) }}
+                                        {{ \App\Support\Inr::format($gstr3bData['output_tax']['total'], 2) }}
                                     </td>
                                 </tr>
 
@@ -264,11 +264,11 @@
                                         <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
                                         <span>(B) Eligible Input Tax Credit (Purchases & Expenses)</span>
                                     </td>
-                                    <td class="py-3.5 px-4 text-right font-mono text-emerald-700 dark:text-emerald-400">₹{{ number_format($gstr3bData['input_tax_credit']['igst'], 2) }}</td>
-                                    <td class="py-3.5 px-4 text-right font-mono text-emerald-700 dark:text-emerald-400">₹{{ number_format($gstr3bData['input_tax_credit']['cgst'], 2) }}</td>
-                                    <td class="py-3.5 px-4 text-right font-mono text-emerald-700 dark:text-emerald-400">₹{{ number_format($gstr3bData['input_tax_credit']['sgst'], 2) }}</td>
+                                    <td class="py-3.5 px-4 text-right font-mono text-emerald-700 dark:text-emerald-400">{{ \App\Support\Inr::format($gstr3bData['input_tax_credit']['igst'], 2) }}</td>
+                                    <td class="py-3.5 px-4 text-right font-mono text-emerald-700 dark:text-emerald-400">{{ \App\Support\Inr::format($gstr3bData['input_tax_credit']['cgst'], 2) }}</td>
+                                    <td class="py-3.5 px-4 text-right font-mono text-emerald-700 dark:text-emerald-400">{{ \App\Support\Inr::format($gstr3bData['input_tax_credit']['sgst'], 2) }}</td>
                                     <td class="py-3.5 px-4 text-right font-mono font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-100/40 dark:bg-emerald-950/40">
-                                        ₹{{ number_format($gstr3bData['input_tax_credit']['total'], 2) }}
+                                        {{ \App\Support\Inr::format($gstr3bData['input_tax_credit']['total'], 2) }}
                                     </td>
                                 </tr>
 
@@ -279,27 +279,27 @@
                                         <span>(C) Net Tax Payable in Cash (A - B after Set-off)</span>
                                     </td>
                                     <td class="py-4 px-4 text-right font-mono text-amber-700 dark:text-amber-400 text-sm">
-                                        ₹{{ number_format($gstr3bData['net_tax_payable_cash']['igst'], 2) }}
+                                        {{ \App\Support\Inr::format($gstr3bData['net_tax_payable_cash']['igst'], 2) }}
                                     </td>
                                     <td class="py-4 px-4 text-right font-mono text-amber-700 dark:text-amber-400 text-sm">
-                                        ₹{{ number_format($gstr3bData['net_tax_payable_cash']['cgst'], 2) }}
+                                        {{ \App\Support\Inr::format($gstr3bData['net_tax_payable_cash']['cgst'], 2) }}
                                     </td>
                                     <td class="py-4 px-4 text-right font-mono text-amber-700 dark:text-amber-400 text-sm">
-                                        ₹{{ number_format($gstr3bData['net_tax_payable_cash']['sgst'], 2) }}
+                                        {{ \App\Support\Inr::format($gstr3bData['net_tax_payable_cash']['sgst'], 2) }}
                                     </td>
                                     <td class="py-4 px-4 text-right font-mono text-base font-black text-amber-800 dark:text-amber-300 bg-amber-100 dark:bg-amber-900/60">
-                                        ₹{{ number_format($gstr3bData['net_tax_payable_cash']['total'], 2) }}
+                                        {{ \App\Support\Inr::format($gstr3bData['net_tax_payable_cash']['total'], 2) }}
                                     </td>
                                 </tr>
 
                                 <!-- Row 4: Closing ITC Carry Forward -->
                                 <tr class="text-slate-500 dark:text-slate-400 text-[11px]">
                                     <td class="py-3 px-4 font-semibold">(D) Closing ITC Balance (Carry Forward to Next Month)</td>
-                                    <td class="py-3 px-4 text-right font-mono">₹{{ number_format($gstr3bData['itc_carry_forward']['igst'], 2) }}</td>
-                                    <td class="py-3 px-4 text-right font-mono">₹{{ number_format($gstr3bData['itc_carry_forward']['cgst'], 2) }}</td>
-                                    <td class="py-3 px-4 text-right font-mono">₹{{ number_format($gstr3bData['itc_carry_forward']['sgst'], 2) }}</td>
+                                    <td class="py-3 px-4 text-right font-mono">{{ \App\Support\Inr::format($gstr3bData['itc_carry_forward']['igst'], 2) }}</td>
+                                    <td class="py-3 px-4 text-right font-mono">{{ \App\Support\Inr::format($gstr3bData['itc_carry_forward']['cgst'], 2) }}</td>
+                                    <td class="py-3 px-4 text-right font-mono">{{ \App\Support\Inr::format($gstr3bData['itc_carry_forward']['sgst'], 2) }}</td>
                                     <td class="py-3 px-4 text-right font-mono font-bold text-emerald-600 dark:text-emerald-400">
-                                        ₹{{ number_format($gstr3bData['itc_carry_forward']['total'], 2) }}
+                                        {{ \App\Support\Inr::format($gstr3bData['itc_carry_forward']['total'], 2) }}
                                     </td>
                                 </tr>
                             </tbody>
@@ -368,12 +368,12 @@
                                                     {{ $b2b['pos_state'] }} ({{ $b2b['pos_code'] }})
                                                 </span>
                                             </td>
-                                            <td class="py-3 px-3 text-right font-mono">₹{{ number_format($b2b['taxable_value'], 2) }}</td>
-                                            <td class="py-3 px-3 text-right font-mono">₹{{ number_format($b2b['cgst'], 2) }}</td>
-                                            <td class="py-3 px-3 text-right font-mono">₹{{ number_format($b2b['sgst'], 2) }}</td>
-                                            <td class="py-3 px-3 text-right font-mono">₹{{ number_format($b2b['igst'], 2) }}</td>
+                                            <td class="py-3 px-3 text-right font-mono">{{ \App\Support\Inr::format($b2b['taxable_value'], 2) }}</td>
+                                            <td class="py-3 px-3 text-right font-mono">{{ \App\Support\Inr::format($b2b['cgst'], 2) }}</td>
+                                            <td class="py-3 px-3 text-right font-mono">{{ \App\Support\Inr::format($b2b['sgst'], 2) }}</td>
+                                            <td class="py-3 px-3 text-right font-mono">{{ \App\Support\Inr::format($b2b['igst'], 2) }}</td>
                                             <td class="py-3 px-3 text-right font-mono font-bold text-slate-900 dark:text-white">
-                                                ₹{{ number_format($b2b['total_value'], 2) }}
+                                                {{ \App\Support\Inr::format($b2b['total_value'], 2) }}
                                             </td>
                                         </tr>
                                     @empty
@@ -426,12 +426,12 @@
                                             </td>
                                             <td class="py-3 px-3 text-center font-bold">{{ $b2cs['tax_rate'] }}%</td>
                                             <td class="py-3 px-3 text-center">{{ $b2cs['invoice_count'] }}</td>
-                                            <td class="py-3 px-3 text-right font-mono">₹{{ number_format($b2cs['taxable_value'], 2) }}</td>
-                                            <td class="py-3 px-3 text-right font-mono">₹{{ number_format($b2cs['cgst'], 2) }}</td>
-                                            <td class="py-3 px-3 text-right font-mono">₹{{ number_format($b2cs['sgst'], 2) }}</td>
-                                            <td class="py-3 px-3 text-right font-mono">₹{{ number_format($b2cs['igst'], 2) }}</td>
+                                            <td class="py-3 px-3 text-right font-mono">{{ \App\Support\Inr::format($b2cs['taxable_value'], 2) }}</td>
+                                            <td class="py-3 px-3 text-right font-mono">{{ \App\Support\Inr::format($b2cs['cgst'], 2) }}</td>
+                                            <td class="py-3 px-3 text-right font-mono">{{ \App\Support\Inr::format($b2cs['sgst'], 2) }}</td>
+                                            <td class="py-3 px-3 text-right font-mono">{{ \App\Support\Inr::format($b2cs['igst'], 2) }}</td>
                                             <td class="py-3 px-3 text-right font-mono font-bold text-slate-900 dark:text-white">
-                                                ₹{{ number_format($b2cs['total_value'], 2) }}
+                                                {{ \App\Support\Inr::format($b2cs['total_value'], 2) }}
                                             </td>
                                         </tr>
                                     @empty
@@ -459,7 +459,7 @@
                                     <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-400 rounded-md text-[11px] font-black">GSTR-2B</span>
                                     <span>Vendor Inward Supplies (Purchase Orders)</span>
                                 </h3>
-                                <p class="text-xs text-slate-500 dark:text-slate-400">Total PO ITC: ₹{{ number_format($itcData['total_po_itc'], 2) }}</p>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Total PO ITC: {{ \App\Support\Inr::format($itcData['total_po_itc'], 2) }}</p>
                             </div>
                         </div>
 
@@ -491,12 +491,12 @@
                                             <td class="py-3 px-3 text-slate-500 whitespace-nowrap">{{ $po['supplier_inv_date'] }}</td>
                                             <td class="py-3 px-3 font-semibold">{{ $po['supplier_name'] }}</td>
                                             <td class="py-3 px-3 font-mono text-xs">{{ $po['supplier_gstin'] }}</td>
-                                            <td class="py-3 px-3 text-right font-mono">₹{{ number_format($po['taxable_value'], 2) }}</td>
-                                            <td class="py-3 px-3 text-right font-mono">₹{{ number_format($po['cgst'], 2) }}</td>
-                                            <td class="py-3 px-3 text-right font-mono">₹{{ number_format($po['sgst'], 2) }}</td>
-                                            <td class="py-3 px-3 text-right font-mono">₹{{ number_format($po['igst'], 2) }}</td>
+                                            <td class="py-3 px-3 text-right font-mono">{{ \App\Support\Inr::format($po['taxable_value'], 2) }}</td>
+                                            <td class="py-3 px-3 text-right font-mono">{{ \App\Support\Inr::format($po['cgst'], 2) }}</td>
+                                            <td class="py-3 px-3 text-right font-mono">{{ \App\Support\Inr::format($po['sgst'], 2) }}</td>
+                                            <td class="py-3 px-3 text-right font-mono">{{ \App\Support\Inr::format($po['igst'], 2) }}</td>
                                             <td class="py-3 px-3 text-right font-mono font-bold text-emerald-600 dark:text-emerald-400">
-                                                ₹{{ number_format($po['itc_amount'], 2) }}
+                                                {{ \App\Support\Inr::format($po['itc_amount'], 2) }}
                                             </td>
                                         </tr>
                                     @empty
@@ -519,7 +519,7 @@
                                     <span class="px-2 py-0.5 bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-400 rounded-md text-[11px] font-black">EXPENSES</span>
                                     <span>Hardware Tools & Site Materials (ITC Eligible)</span>
                                 </h3>
-                                <p class="text-xs text-slate-500 dark:text-slate-400">Total Expense ITC: ₹{{ number_format($itcData['total_expense_itc'], 2) }}</p>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Total Expense ITC: {{ \App\Support\Inr::format($itcData['total_expense_itc'], 2) }}</p>
                             </div>
                         </div>
 
@@ -546,11 +546,11 @@
                                             <td class="py-3 px-3 font-semibold">{{ $exp['employee_name'] }}</td>
                                             <td class="py-3 px-3 text-slate-600 dark:text-slate-300">{{ $exp['category'] }}</td>
                                             <td class="py-3 px-3 text-slate-500 max-w-xs truncate">{{ $exp['description'] }}</td>
-                                            <td class="py-3 px-3 text-right font-mono">₹{{ number_format($exp['taxable_value'], 2) }}</td>
-                                            <td class="py-3 px-3 text-right font-mono">₹{{ number_format($exp['cgst'], 2) }}</td>
-                                            <td class="py-3 px-3 text-right font-mono">₹{{ number_format($exp['sgst'], 2) }}</td>
+                                            <td class="py-3 px-3 text-right font-mono">{{ \App\Support\Inr::format($exp['taxable_value'], 2) }}</td>
+                                            <td class="py-3 px-3 text-right font-mono">{{ \App\Support\Inr::format($exp['cgst'], 2) }}</td>
+                                            <td class="py-3 px-3 text-right font-mono">{{ \App\Support\Inr::format($exp['sgst'], 2) }}</td>
                                             <td class="py-3 px-3 text-right font-mono font-bold text-emerald-600 dark:text-emerald-400">
-                                                ₹{{ number_format($exp['itc_amount'], 2) }}
+                                                {{ \App\Support\Inr::format($exp['itc_amount'], 2) }}
                                             </td>
                                         </tr>
                                     @empty
@@ -605,12 +605,12 @@
                                         <td class="py-3.5 px-4 text-center font-mono font-bold">{{ $hsn['uqc'] }}</td>
                                         <td class="py-3.5 px-4 text-center font-bold">{{ number_format($hsn['total_qty'], 1) }}</td>
                                         <td class="py-3.5 px-4 text-center font-bold">{{ $hsn['tax_rate'] }}%</td>
-                                        <td class="py-3.5 px-4 text-right font-mono font-bold">₹{{ number_format($hsn['taxable_value'], 2) }}</td>
-                                        <td class="py-3.5 px-4 text-right font-mono">₹{{ number_format($hsn['cgst'], 2) }}</td>
-                                        <td class="py-3.5 px-4 text-right font-mono">₹{{ number_format($hsn['sgst'], 2) }}</td>
-                                        <td class="py-3.5 px-4 text-right font-mono">₹{{ number_format($hsn['igst'], 2) }}</td>
+                                        <td class="py-3.5 px-4 text-right font-mono font-bold">{{ \App\Support\Inr::format($hsn['taxable_value'], 2) }}</td>
+                                        <td class="py-3.5 px-4 text-right font-mono">{{ \App\Support\Inr::format($hsn['cgst'], 2) }}</td>
+                                        <td class="py-3.5 px-4 text-right font-mono">{{ \App\Support\Inr::format($hsn['sgst'], 2) }}</td>
+                                        <td class="py-3.5 px-4 text-right font-mono">{{ \App\Support\Inr::format($hsn['igst'], 2) }}</td>
                                         <td class="py-3.5 px-4 text-right font-mono font-black text-slate-900 dark:text-white">
-                                            ₹{{ number_format($hsn['total_value'], 2) }}
+                                            {{ \App\Support\Inr::format($hsn['total_value'], 2) }}
                                         </td>
                                     </tr>
                                 @empty
@@ -667,9 +667,9 @@
                                                 {{ $hist->gstr3b_status }}
                                             </span>
                                         </td>
-                                        <td class="py-3.5 px-4 text-right font-mono">₹{{ number_format($hist->total_turnover, 2) }}</td>
+                                        <td class="py-3.5 px-4 text-right font-mono">{{ \App\Support\Inr::format($hist->total_turnover, 2) }}</td>
                                         <td class="py-3.5 px-4 text-right font-mono font-bold text-emerald-600 dark:text-emerald-400">
-                                            ₹{{ number_format($hist->tax_paid, 2) }}
+                                            {{ \App\Support\Inr::format($hist->tax_paid, 2) }}
                                         </td>
                                         <td class="py-3.5 px-4 font-mono text-[11px]">
                                             <div>{{ $hist->challan_no ?: '—' }}</div>
