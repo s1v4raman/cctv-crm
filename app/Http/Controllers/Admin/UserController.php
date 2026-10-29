@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
@@ -24,9 +25,9 @@ class UserController extends Controller
 
         if (in_array($roleFilter, ['admin', 'staff', 'technician', 'customer', 'worker'])) {
             if ($roleFilter === 'worker') {
-                // Ensure all registered workers have associated user records
-                $unlinkedWorkers = \App\Models\Worker::whereNull('user_id')
-                    ->orWhereDoesntHave('user')
+                // Ensure all approved workers have associated user records (not sign-up requests)
+                $unlinkedWorkers = \App\Models\Worker::approved()
+                    ->where(fn ($q) => $q->whereNull('user_id')->orWhereDoesntHave('user'))
                     ->get();
                 foreach ($unlinkedWorkers as $w) {
                     $cleanPhone = preg_replace('/[^0-9]/', '', (string) $w->phone);
@@ -35,7 +36,8 @@ class UserController extends Controller
                         ['email' => $email],
                         [
                             'name'     => $w->name,
-                            'password' => Hash::make('worker123!'),
+                            // Workers sign in with their phone, so no shared password
+                            'password' => Hash::make(Str::random(40)),
                             'role'     => 'worker',
                         ]
                     );

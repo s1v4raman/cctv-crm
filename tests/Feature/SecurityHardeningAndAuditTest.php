@@ -26,26 +26,12 @@ class SecurityHardeningAndAuditTest extends TestCase
         $response->assertHeader('Permissions-Policy', 'camera=(self), microphone=(), geolocation=()');
     }
 
-    public function test_payment_verify_rejects_unauthorized_payment_methods(): void
+    public function test_public_payment_endpoints_no_longer_exist(): void
     {
-        $response = $this->postJson(route('payment.verify'), [
-            'amount' => 5000,
-            'method' => 'unverified_bank_transfer',
-        ]);
-
-        $response->assertStatus(422);
-        $response->assertJsonValidationErrors(['method']);
-    }
-
-    public function test_payment_verify_requires_razorpay_signature_attributes(): void
-    {
-        $response = $this->postJson(route('payment.verify'), [
-            'amount' => 5000,
-            'method' => 'razorpay',
-        ]);
-
-        $response->assertStatus(422);
-        $this->assertFalse($response->json('success'));
+        // Customers never pay on the site, so nobody can post a payment from outside
+        $this->postJson('/api/payment/verify', ['amount' => 5000, 'method' => 'cash'])->assertNotFound();
+        $this->postJson('/api/payment/create-order', ['amount' => 5000])->assertNotFound();
+        $this->postJson('/webhook/razorpay', ['event' => 'payment.captured'])->assertNotFound();
     }
 
     public function test_invoice_recalculate_payment_status_only_counts_completed_payments(): void

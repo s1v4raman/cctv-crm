@@ -15,8 +15,10 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class WorkerPortalController extends Controller
@@ -34,22 +36,31 @@ class WorkerPortalController extends Controller
         $cleanPhone = preg_replace('/[^0-9]/', '', (string) $validated['phone']);
         $name = trim($validated['name']);
 
-        // Find existing worker by phone or create a new worker record
         $worker = Worker::where('phone', $cleanPhone)->first();
 
+        // A new number is only a sign-up request: an admin approves it on the Workers page
         if (!$worker) {
-            $worker = Worker::create([
+            Worker::create([
                 'name' => $name,
                 'phone' => $cleanPhone,
                 'daily_rate' => 750.00,
-                'is_active' => true,
+                'is_active' => false,
+                'registration_status' => 'pending',
                 'notes' => 'Self-registered via Daily Wages Worker Portal Login',
             ]);
-        } else {
-            // Update name if changed
-            if (!empty($name) && $worker->name !== $name) {
-                $worker->update(['name' => $name]);
-            }
+
+            return back()->withInput()->with('login_portal', 'worker')
+                ->with('status', "Thanks, {$name}. Your request has been sent to the office. You can sign in once the admin approves it.");
+        }
+
+        if ($worker->isPendingApproval()) {
+            return back()->withInput()->with('login_portal', 'worker')
+                ->withErrors(['phone' => 'Your request is waiting for the admin to approve it. Please try again later.']);
+        }
+
+        if (!$worker->is_active) {
+            return back()->withInput()->with('login_portal', 'worker')
+                ->withErrors(['phone' => 'This worker account is turned off. Please contact the office.']);
         }
 
         // Find or create associated user account with 'worker' role
@@ -62,11 +73,18 @@ class WorkerPortalController extends Controller
                 [
                     'name' => $worker->name,
                     'role' => 'worker',
-                    'password' => bcrypt('worker_' . $cleanPhone),
+                    // Workers sign in with their phone here, so the password is never used
+                    'password' => Hash::make(Str::random(40)),
                 ]
             );
 
             $worker->update(['user_id' => $user->id]);
+        }
+
+        // The phone sign-in must never open an office account
+        if (!$user->isWorker()) {
+            return back()->withInput()->with('login_portal', 'worker')
+                ->withErrors(['phone' => 'This number cannot be used for the worker sign-in. Please contact the office.']);
         }
 
         // Authenticate user session
@@ -84,24 +102,7 @@ class WorkerPortalController extends Controller
      */
     public function portal(Request $request): View
     {
-        $user = Auth::user();
-        $worker = $user->worker;
-
-        if (!$worker) {
-            $cleanPhone = preg_replace('/[^0-9]/', '', (string) $user->email);
-            $worker = Worker::where('phone', $cleanPhone)->first()
-                ?? Worker::where('is_active', true)->first();
-
-            if (!$worker) {
-                $worker = Worker::create([
-                    'user_id' => $user->id,
-                    'name' => $user->name,
-                    'phone' => '9876543210',
-                    'daily_rate' => 750.00,
-                    'is_active' => true,
-                ]);
-            }
-        }
+        $worker = $this->currentWorker();
 
         $todayDate = now()->toDateString();
 
@@ -127,17 +128,22 @@ class WorkerPortalController extends Controller
         $todayCamerasCount = (int) ($todayAttendance?->cameras_installed ?? 0);
         $todayEarnings = (float) ($todayAttendance?->total_amount ?? 0);
 
-        // Recent 7 days of attendance history for this worker
+        // Last 30 attendance days for this worker, with the work logged on each day
         $recentAttendances = ProjectWorkerAttendance::with(['workDay.project'])
             ->where('worker_id', $worker->id)
             ->latest()
-            ->take(7)
+            ->take(30)
             ->get();
 
         // Total meters pulled across all projects
         $lifetimeCablingMetres = (float) $worker->attendances()->sum('cabling_metres');
         $lifetimeCamerasInstalled = (int) $worker->attendances()->sum('cameras_installed');
+
+        // Money: what the worker has earned, what the office has paid them, and what is still due
+        $totalEarned = $worker->getTotalEarnedLifetime();
+        $totalPaid = $worker->getTotalPaidLifetime();
         $runningBalance = $worker->getRunningBalance();
+        $recentPayments = $worker->wagePayments()->take(10)->get();
 
         return view('worker.portal', compact(
             'worker',
@@ -149,7 +155,10 @@ class WorkerPortalController extends Controller
             'recentAttendances',
             'lifetimeCablingMetres',
             'lifetimeCamerasInstalled',
-            'runningBalance'
+            'totalEarned',
+            'totalPaid',
+            'runningBalance',
+            'recentPayments'
         ));
     }
 
@@ -166,13 +175,7 @@ class WorkerPortalController extends Controller
             'notes' => 'nullable|string|max:255',
         ]);
 
-        $user = Auth::user();
-        $worker = $user->worker;
-
-        if (!$worker) {
-            $cleanPhone = preg_replace('/[^0-9]/', '', (string) $user->email);
-            $worker = Worker::where('phone', $cleanPhone)->firstOrFail();
-        }
+        $worker = $this->currentWorker();
 
         $project = Project::findOrFail($validated['project_id']);
         $photoPath = null;
@@ -282,13 +285,7 @@ class WorkerPortalController extends Controller
             'work_notes' => 'nullable|string|max:500',
         ]);
 
-        $user = Auth::user();
-        $worker = $user->worker;
-
-        if (!$worker) {
-            $cleanPhone = preg_replace('/[^0-9]/', '', (string) $user->email);
-            $worker = Worker::where('phone', $cleanPhone)->firstOrFail();
-        }
+        $worker = $this->currentWorker();
 
         $project = Project::findOrFail($validated['project_id']);
         $todayDate = now()->toDateString();
@@ -394,6 +391,29 @@ class WorkerPortalController extends Controller
 
             return back()->with('error', 'Failed to log work data: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * The worker record of the signed-in daily-wage worker. Other roles have no portal.
+     */
+    protected function currentWorker(): Worker
+    {
+        $user = Auth::user();
+        abort_unless($user->isWorker(), 403, 'The worker portal is only for daily-wage workers.');
+
+        $worker = $user->worker;
+
+        if (!$worker) {
+            // Older accounts were matched by the phone number in their sign-in email
+            $cleanPhone = preg_replace('/[^0-9]/', '', (string) $user->email);
+            $worker = $cleanPhone === '' ? null : Worker::where('phone', $cleanPhone)->whereNull('user_id')->first();
+        }
+
+        abort_unless($worker, 403, 'No worker record is linked to this account. Please contact the office.');
+        abort_if($worker->isPendingApproval(), 403, 'Your sign-up is waiting for the admin to approve it.');
+        abort_unless($worker->is_active, 403, 'This worker account is turned off. Please contact the office.');
+
+        return $worker;
     }
 
     /**

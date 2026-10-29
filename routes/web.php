@@ -23,7 +23,7 @@ use App\Http\Controllers\ExecutiveAnalyticsController;
 use App\Http\Controllers\InboundEmailSupportController;
 use App\Http\Controllers\Api\EquipmentLookupController;
 use App\Http\Controllers\Api\GlobalSearchController;
-use App\Http\Controllers\OnlinePaymentController;
+use App\Http\Controllers\PaymentReceiptController;
 use App\Http\Controllers\StorefrontController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\MobileScannerSyncController;
@@ -81,35 +81,23 @@ Route::post('/api/inbound-email', [InboundEmailSupportController::class, 'webhoo
 Route::post('/webhook/support-email', [InboundEmailSupportController::class, 'webhook'])
     ->name('webhook.support-email');
 
-// Razorpay Asynchronous Payment Webhook
-Route::post('/webhook/razorpay', [OnlinePaymentController::class, 'webhook'])
-    ->name('webhook.razorpay');
-
-// Public Online Payment Checkout Gateway (Invoices & Quotation Advances)
-Route::get('/pay/invoice/{invoice}', [OnlinePaymentController::class, 'checkoutInvoice'])
-    ->name('payment.checkout.invoice');
-Route::get('/pay/quotation/{quotation}', [OnlinePaymentController::class, 'checkoutQuotation'])
-    ->name('payment.checkout.quotation');
-Route::post('/api/payment/create-order', [OnlinePaymentController::class, 'createOrder'])
-    ->middleware('throttle:30,1')
-    ->name('payment.create-order');
-Route::post('/api/payment/verify', [OnlinePaymentController::class, 'verifyPayment'])
-    ->middleware('throttle:30,1')
-    ->name('payment.verify');
+// Customer-facing links below need no sign-in, so they only open with a signed URL
+// (URL::signedRoute). A plain /view-quotation/5 cannot be guessed or walked through.
+// Customers do not pay on this site: staff record each payment on the invoice page.
 
 // Public Official Payment Receipt PDF (Downloaded via WhatsApp / Email links)
-Route::get('/payments/{payment}/receipt', [OnlinePaymentController::class, 'downloadReceipt'])
-    ->middleware('throttle:60,1')
+Route::get('/payments/{payment}/receipt', [PaymentReceiptController::class, 'download'])
+    ->middleware(['signed', 'throttle:60,1'])
     ->name('payments.receipt.pdf');
 
 // Public customer Quotation PDF viewer (accessible from WhatsApp links)
 Route::get('/view-quotation/{quotation}/{format?}', [QuotationController::class, 'publicPdf'])
-    ->middleware('throttle:60,1')
+    ->middleware(['signed', 'throttle:60,1'])
     ->name('quotations.public-pdf');
 
 // Public customer JCR PDF viewer (accessible from WhatsApp links)
 Route::get('/view-jcr/{jobCompletionReport}', [JobCompletionReportController::class, 'publicPdf'])
-    ->middleware('throttle:60,1')
+    ->middleware(['signed', 'throttle:60,1'])
     ->name('jcr.public-pdf');
 
 // Universal theme preference persistence (all authenticated users)
@@ -361,6 +349,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/workers/attendance/{attendance}', [WorkerAttendanceController::class, 'destroy'])->name('workers.attendance.destroy');
         Route::post('/workers/quick-store', [WorkerController::class, 'quickStore'])->name('workers.quick-store');
         Route::post('/workers/quick-add', [WorkerController::class, 'quickStore'])->name('workers.quick-add');
+        // Sign-up requests from the worker login page (admin only, checked in the controller)
+        Route::patch('/workers/{worker}/approve', [WorkerController::class, 'approve'])->name('workers.approve');
+        Route::delete('/workers/{worker}/reject', [WorkerController::class, 'reject'])->name('workers.reject');
         Route::resource('workers', WorkerController::class)->withTrashed(['show']);
 
         // Work Days & Attendance Logger
@@ -545,11 +536,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/amc-visits/{visit}/sign-off', [JobCompletionReportController::class, 'createForAmcVisit'])->name('jcr.create-visit');
     Route::post('/jcr', [JobCompletionReportController::class, 'store'])->name('jcr.store');
 
-    // Installed Equipment & Hardware Registry (Technicians + Internal Staff â€” except destroy)
-    Route::resource('equipment', InstalledEquipmentController::class)->except(['destroy']);
+    // The equipment controller only blocks customers, so daily-wage workers need the internal check
+    Route::middleware(['internal'])->group(function () {
+        // Installed Equipment & Hardware Registry (Technicians + Internal Staff â€” except destroy)
+        Route::resource('equipment', InstalledEquipmentController::class)->except(['destroy']);
 
-    // Barcode & Serial Number Instant Lookup API
-    Route::get('/api/equipment/lookup', [EquipmentLookupController::class, 'lookup'])->name('api.equipment.lookup-serial');
+        // Barcode & Serial Number Instant Lookup API
+        Route::get('/api/equipment/lookup', [EquipmentLookupController::class, 'lookup'])->name('api.equipment.lookup-serial');
+    });
 });
 
 Route::middleware(['auth', 'technician'])->prefix('technician')->name('technician.')->group(function () {

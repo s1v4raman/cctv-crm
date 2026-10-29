@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Lead;
 use App\Models\Quotation;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\URL;
 use Tests\TestCase;
 
 class QuotationPdfTest extends TestCase
@@ -80,7 +81,7 @@ class QuotationPdfTest extends TestCase
     public function test_public_can_view_quotation_pdf_stream_via_whatsapp_link(): void
     {
         foreach (['1', '2', '3'] as $format) {
-            $response = $this->get(route('quotations.public-pdf', ['quotation' => $this->quotation->id, 'format' => $format]));
+            $response = $this->get(URL::signedRoute('quotations.public-pdf', ['quotation' => $this->quotation->id, 'format' => $format]));
             $response->assertOk();
             $response->assertHeader('content-type', 'application/pdf');
         }

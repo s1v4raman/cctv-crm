@@ -331,8 +331,6 @@ class AccountsReceivableService
                 continue;
             }
 
-            $checkoutUrl = route('payment.checkout.invoice', $inv);
-
             $latestReminder = NotificationLog::where('reference_type', Invoice::class)
                 ->where('reference_id', $inv->id)
                 ->whereIn('event_type', ['payment_overdue', 'payment_reminder'])
@@ -353,7 +351,7 @@ class AccountsReceivableService
                 'total_amount'       => (float) $inv->total,
                 'amount_paid'        => (float) $inv->amount_paid,
                 'balance_due'        => $balance,
-                'checkout_url'       => $checkoutUrl,
+                'invoice_url'        => route('invoices.show', $inv),
                 'bucket_label'       => $bucketLabel,
                 'bucket_badge_class' => $badgeClass,
                 'last_reminder_at'   => $latestReminder?->sent_at?->format('d M Y, h:i A') ?: 'Never Sent',
@@ -378,19 +376,17 @@ class AccountsReceivableService
         $balanceDue = $invoice->balanceDue();
         $dueDate = $invoice->due_date ? Carbon::parse($invoice->due_date) : Carbon::parse($invoice->invoice_date)->addDays(15);
         $daysOverdue = now()->gt($dueDate) ? now()->diffInDays($dueDate) : 0;
-        $checkoutUrl = route('payment.checkout.invoice', $invoice);
 
         $params = [
             'customer_name' => $lead->customer_name,
             'invoice_no'    => $invoice->invoice_no,
             'amount_due'    => '₹' . number_format($balanceDue, 2),
             'days_overdue'  => $daysOverdue > 0 ? "{$daysOverdue} days" : 'due today',
-            'link'          => $checkoutUrl,
             'due_date'      => $dueDate->format('d M Y'),
         ];
 
         // Format direct WhatsApp URL
-        $whatsappMessage = "Hello {$lead->customer_name},\n\nThis is a gentle payment reminder for Invoice *{$invoice->invoice_no}*.\n\nPending Balance: *₹" . number_format($balanceDue, 2) . "*\nDue Date: {$dueDate->format('d M Y')}" . ($daysOverdue > 0 ? " (Overdue by {$daysOverdue} days)" : "") . "\n\n💳 Pay Instantly Online (UPI / Card / NetBanking):\n{$checkoutUrl}\n\nThank you for choosing CCTV Security Solutions!";
+        $whatsappMessage = "Hello {$lead->customer_name},\n\nThis is a gentle payment reminder for Invoice *{$invoice->invoice_no}*.\n\nPending Balance: *₹" . number_format($balanceDue, 2) . "*\nDue Date: {$dueDate->format('d M Y')}" . ($daysOverdue > 0 ? " (Overdue by {$daysOverdue} days)" : "") . "\n\nOnce paid (GPay / bank transfer / cheque / cash), please share the payment reference with us.\n\nThank you for choosing CCTV Security Solutions!";
         
         $phoneClean = preg_replace('/[^0-9]/', '', $lead->phone);
         if (strlen($phoneClean) === 10) {
@@ -408,7 +404,7 @@ class AccountsReceivableService
                 'recipient_email' => $lead->email,
                 'subject'         => "Payment Reminder: Invoice #{$invoice->invoice_no} (Due: ₹" . number_format($balanceDue, 2) . ")",
                 'message_body'    => $whatsappMessage,
-                'action_url'      => $checkoutUrl,
+                'action_url'      => route('invoices.show', $invoice),
                 'status'          => 'sent',
                 'reference_type'  => Invoice::class,
                 'reference_id'    => $invoice->id,
@@ -422,7 +418,6 @@ class AccountsReceivableService
         return [
             'success'      => true,
             'whatsapp_url' => $whatsappUrl,
-            'checkout_url' => $checkoutUrl,
             'message'      => "Payment reminder logged for Invoice #{$invoice->invoice_no}.",
         ];
     }

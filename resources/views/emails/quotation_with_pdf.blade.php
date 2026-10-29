@@ -108,13 +108,13 @@
 
                 {{-- Action Button --}}
                 <div class="cta-center">
-                    <a href="{{ route('quotations.public-pdf', ['quotation' => $quotation, 'format' => '1']) }}" class="btn-portal" target="_blank">
+                    <a href="{{ URL::signedRoute('quotations.public-pdf', ['quotation' => $quotation, 'format' => '1']) }}" class="btn-portal" target="_blank">
                         ✓ View &amp; Download Proposal PDF
                     </a>
                 </div>
 
                 <div style="font-size: 12px; color: #64748b; text-align: center; margin-top: 15px;">
-                    Or download proposal directly: <a href="{{ route('quotations.public-pdf', ['quotation' => $quotation, 'format' => '1']) }}" style="color: #4f46e5; font-weight: 700;">Download PDF Proposal</a>
+                    Or download proposal directly: <a href="{{ URL::signedRoute('quotations.public-pdf', ['quotation' => $quotation, 'format' => '1']) }}" style="color: #4f46e5; font-weight: 700;">Download PDF Proposal</a>
                 </div>
             </div>
 

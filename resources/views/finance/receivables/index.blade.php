@@ -311,9 +311,9 @@
                                                 </button>
 
                                                 <span class="text-slate-300 dark:text-slate-600">|</span>
-                                                <a href="{{ $inv['checkout_url'] }}" target="_blank"
+                                                <a href="{{ $inv['invoice_url'] }}#record-payment"
                                                    class="text-emerald-600 dark:text-emerald-400 hover:underline">
-                                                    Payment Link
+                                                    Record Payment
                                                 </a>
                                             </div>
                                         </td>

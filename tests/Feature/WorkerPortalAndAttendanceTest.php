@@ -36,10 +36,18 @@ class WorkerPortalAndAttendanceTest extends TestCase
         $response->assertSee('/login/worker');
     }
 
-    public function test_daily_wage_worker_can_login_with_name_and_phone_only(): void
+    public function test_approved_daily_wage_worker_can_login_with_name_and_phone_only(): void
     {
         $workerName = 'Muthu Vel';
         $workerPhone = '9840123456';
+
+        // The office has added (approved) this worker
+        Worker::create([
+            'name' => $workerName,
+            'phone' => $workerPhone,
+            'daily_rate' => 750.00,
+            'is_active' => true,
+        ]);
 
         $response = $this->post(route('login.worker'), [
             'name' => $workerName,
@@ -48,11 +56,7 @@ class WorkerPortalAndAttendanceTest extends TestCase
 
         $response->assertRedirect(route('worker.portal'));
 
-        // Worker and User models created
-        $this->assertDatabaseHas('workers', [
-            'name' => $workerName,
-            'phone' => $workerPhone,
-        ]);
+        // User account created and linked on first sign-in
 
         $this->assertDatabaseHas('users', [
             'name' => $workerName,

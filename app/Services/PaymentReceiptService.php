@@ -6,6 +6,7 @@ use App\Models\GatewaySetting;
 use App\Models\Payment;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\URL;
 
 class PaymentReceiptService
 {
@@ -73,7 +74,7 @@ class PaymentReceiptService
         $balanceDue = $invoice ? $invoice->balanceDue() : 0.0;
         $invoiceNo = $invoice ? $invoice->invoice_no : ($payment->quotation ? $payment->quotation->quotation_no : 'Advance');
 
-        $receiptUrl = route('payments.receipt.pdf', ['payment' => $payment]);
+        $receiptUrl = URL::signedRoute('payments.receipt.pdf', ['payment' => $payment]);
 
         $variables = [
             'customer_name'  => $lead->customer_name,

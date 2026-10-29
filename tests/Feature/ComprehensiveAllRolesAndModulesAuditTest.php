@@ -24,6 +24,7 @@ use App\Models\Supplier;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\URL;
 use Tests\TestCase;
 
 class ComprehensiveAllRolesAndModulesAuditTest extends TestCase
@@ -376,7 +377,7 @@ class ComprehensiveAllRolesAndModulesAuditTest extends TestCase
         // 12. Invoices & Payments
         $this->get(route('invoices.index'))->assertOk()->assertSee('INV-2026-AUDIT01');
         $this->get(route('invoices.show', $this->invoice))->assertOk();
-        $this->get(route('payments.receipt.pdf', $this->payment))->assertOk();
+        $this->get(URL::signedRoute('payments.receipt.pdf', $this->payment))->assertOk();
     }
 
     /**
@@ -557,42 +558,15 @@ class ComprehensiveAllRolesAndModulesAuditTest extends TestCase
         ]);
 
         // 3. Public Quotation PDF Viewer
-        $quotePdfResponse = $this->get(route('quotations.public-pdf', $this->quotation));
+        $quotePdfResponse = $this->get(URL::signedRoute('quotations.public-pdf', $this->quotation));
         $quotePdfResponse->assertOk();
 
         // 4. Public JCR PDF Viewer
-        $jcrPdfResponse = $this->get(route('jcr.public-pdf', $this->jcr));
+        $jcrPdfResponse = $this->get(URL::signedRoute('jcr.public-pdf', $this->jcr));
         $jcrPdfResponse->assertOk();
 
-        // 5. Public Online Payment Checkout
-        $unpaidInvoice = Invoice::create([
-            'installation_job_id' => $this->job->id,
-            'quotation_id' => $this->quotation->id,
-            'invoice_no' => 'INV-2026-CHECKOUT',
-            'invoice_date' => now()->toDateString(),
-            'due_date' => now()->addDays(14)->toDateString(),
-            'subtotal' => 10000,
-            'tax_percent' => 18,
-            'tax_amount' => 1800,
-            'total' => 11800,
-            'amount_paid' => 0,
-            'status' => 'unpaid',
-        ]);
-
-        $sentQuotation = Quotation::create([
-            'lead_id' => $this->lead->id,
-            'quotation_no' => 'QT-2026-CHECKOUT',
-            'subtotal' => 20000,
-            'tax_percent' => 18,
-            'tax_amount' => 3600,
-            'total' => 23600,
-            'status' => 'sent',
-        ]);
-
-        $invoiceCheckout = $this->get(route('payment.checkout.invoice', $unpaidInvoice));
-        $invoiceCheckout->assertOk();
-
-        $quoteCheckout = $this->get(route('payment.checkout.quotation', $sentQuotation));
-        $quoteCheckout->assertOk();
+        // 5. Customers do not pay on the site: the old online checkout pages are gone
+        $this->get('/pay/invoice/' . $this->job->id)->assertNotFound();
+        $this->get('/pay/quotation/' . $this->quotation->id)->assertNotFound();
     }
 }

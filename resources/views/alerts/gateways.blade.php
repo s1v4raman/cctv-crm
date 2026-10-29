@@ -248,54 +248,20 @@
                             </div>
                         </div>
 
-                        {{-- Card 6: Online Payment Gateway & Universal UPI Settings --}}
+                        {{-- Card 6: Payment Receipts (staff record payments on the invoice page) --}}
                         <div class="bg-white dark:bg-[#0f172a] rounded-[4px] p-6 border border-[#ddd] dark:border-slate-800 space-y-4">
-                            <div class="flex items-center justify-between pb-3 border-b border-[#eee] dark:border-slate-800">
-                                <div>
-                                    <h3 class="text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white">6. Online Payment Gateway (Razorpay &amp; UPI)</h3>
-                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Enable credit/debit card, netbanking, and dynamic UPI QR links on Invoices &amp; Quotations.</p>
-                                </div>
-                                <label class="flex items-center gap-2 cursor-pointer">
-                                    <input type="checkbox" name="enable_online_payments" value="1" {{ $settings->enable_online_payments ? 'checked' : '' }} class="rounded-[4px] border-[#ccc] text-[#2563eb]">
-                                    <span class="text-xs font-semibold text-slate-700 dark:text-slate-300">Live Checkout</span>
-                                </label>
+                            <div class="pb-3 border-b border-[#eee] dark:border-slate-800">
+                                <h3 class="text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white">6. Payment Receipts</h3>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Sent to the customer when staff record a payment (GPay, card, cash, bank transfer, cheque) on an invoice.</p>
                             </div>
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="crm-label">Razorpay Key ID</label>
-                                    <input aria-label="Razorpay Key ID" type="text" name="razorpay_key_id" value="{{ old('razorpay_key_id', $settings->razorpay_key_id) }}" placeholder="rzp_live_... / rzp_test_..."
-                                           class="crm-input font-mono">
-                                </div>
-                                <div>
-                                    <label class="crm-label">Razorpay Key Secret</label>
-                                    <input aria-label="Razorpay Key Secret" type="password" name="razorpay_key_secret" value="{{ old('razorpay_key_secret', $settings->razorpay_key_secret) }}" placeholder="••••••••••••••••"
-                                           class="crm-input font-mono">
-                                </div>
-                                <div>
-                                    <label class="crm-label">Razorpay Webhook Secret (Optional)</label>
-                                    <input aria-label="Razorpay Webhook Secret (Optional)" type="text" name="razorpay_webhook_secret" value="{{ old('razorpay_webhook_secret', $settings->razorpay_webhook_secret) }}" placeholder="Secret for /webhook/razorpay"
-                                           class="crm-input font-mono">
-                                </div>
-                                <div>
-                                    <label class="crm-label">UPI VPA ID (Virtual Address)</label>
-                                    <input aria-label="UPI VPA ID (Virtual Address)" type="text" name="upi_vpa_id" value="{{ old('upi_vpa_id', $settings->upi_vpa_id) }}" placeholder="cctvbusiness@okhdfcbank"
-                                           class="crm-input font-mono">
-                                </div>
-                                <div class="sm:col-span-2">
-                                    <label class="crm-label">Merchant / Payee Name (Shown in UPI Apps)</label>
-                                    <input aria-label="Merchant / Payee Name (Shown in UPI Apps)" type="text" name="upi_merchant_name" value="{{ old('upi_merchant_name', $settings->upi_merchant_name) }}" placeholder="Precision IT Security Solutions"
-                                           class="crm-input">
-                                </div>
-                            </div>
-
-                            <div class="pt-3 border-t border-[#eee] dark:border-slate-800 grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <label class="flex items-start gap-3 p-3.5 rounded-[4px] border border-[#ddd] dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 cursor-pointer">
                                     <input type="checkbox" name="auto_receipt_whatsapp_enabled" value="1" {{ $settings->auto_receipt_whatsapp_enabled ? 'checked' : '' }}
                                            class="mt-0.5 rounded-[4px] border-[#ccc] text-[#2563eb]">
                                     <div>
                                         <span class="text-xs font-bold text-slate-900 dark:text-white">Auto-WhatsApp Payment Receipts</span>
-                                        <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Generate receipt confirmation with PDF link immediately after customer payment.</p>
+                                        <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Send the receipt with its PDF link as soon as a payment is recorded.</p>
                                     </div>
                                 </label>
                                 <label class="flex items-start gap-3 p-3.5 rounded-[4px] border border-[#ddd] dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 cursor-pointer">

@@ -22,6 +22,7 @@ use App\Models\Supplier;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\URL;
 use Tests\TestCase;
 
 class KesavanEmployeeModuleRealtimeTest extends TestCase
@@ -329,7 +330,7 @@ class KesavanEmployeeModuleRealtimeTest extends TestCase
         // 13. Invoices & Receipts
         $this->get(route('invoices.index'))->assertOk()->assertSee('INV-2026-TEST01');
         $this->get(route('invoices.show', $this->invoice))->assertOk();
-        $this->get(route('payments.receipt.pdf', $this->payment))->assertOk();
+        $this->get(URL::signedRoute('payments.receipt.pdf', $this->payment))->assertOk();
 
         // 14. AMC Contracts
         $this->get(route('amcs.index'))->assertOk()->assertSee('AMC-2026-TEST01');

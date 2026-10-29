@@ -10,6 +10,7 @@ use App\Models\Quotation;
 use App\Services\AlertNotificationService;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\URL;
 
 class SendAutomatedRemindersCommand extends Command
 {
@@ -55,7 +56,7 @@ class SendAutomatedRemindersCommand extends Command
                     'quote_no'      => $quote->quotation_no,
                     'total_amount'  => '₹' . number_format($quote->total, 2),
                     'valid_until'   => $quote->valid_until ? $quote->valid_until->format('d M Y') : '3 days',
-                    'link'          => route('quotations.public-pdf', ['quotation' => $quote, 'format' => '1']),
+                    'link'          => URL::signedRoute('quotations.public-pdf', ['quotation' => $quote, 'format' => '1']),
                 ], $quote);
                 $stats['quotation_expiries']++;
             }

@@ -491,7 +491,7 @@
                         <svg class="w-4 h-4 shrink-0 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/></svg>
                         1. Choose Quotation PDF Format &amp; Style
                     </label>
-                    <a id="btn-preview-selected-pdf" href="{{ route('quotations.public-pdf', ['quotation' => $quotation, 'format' => '1']) }}" target="_blank" class="action-link text-xs inline-flex items-center gap-1">
+                    <a id="btn-preview-selected-pdf" href="{{ URL::signedRoute('quotations.public-pdf', ['quotation' => $quotation, 'format' => '1']) }}" target="_blank" class="action-link text-xs inline-flex items-center gap-1">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                         <span>Preview Live PDF</span>
                     </a>
@@ -625,9 +625,9 @@
             '3': @json(route('quotations.pdf', [$quotation, 3])),
         },
         previewUrls: {
-            '1': @json(route('quotations.public-pdf', ['quotation' => $quotation, 'format' => '1'])),
-            '2': @json(route('quotations.public-pdf', ['quotation' => $quotation, 'format' => '2'])),
-            '3': @json(route('quotations.public-pdf', ['quotation' => $quotation, 'format' => '3'])),
+            '1': @json(URL::signedRoute('quotations.public-pdf', ['quotation' => $quotation, 'format' => '1'])),
+            '2': @json(URL::signedRoute('quotations.public-pdf', ['quotation' => $quotation, 'format' => '2'])),
+            '3': @json(URL::signedRoute('quotations.public-pdf', ['quotation' => $quotation, 'format' => '3'])),
         },
         vcardUrl: @json(route('quotations.vcard', $quotation)),
         sendUrl: @json(route('quotations.send-whatsapp', $quotation))

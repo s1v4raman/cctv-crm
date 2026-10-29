@@ -13,7 +13,7 @@
                 </div>
 
                 <div class="flex items-center gap-2 flex-wrap">
-                    <a href="https://api.whatsapp.com/send?phone={{ preg_replace('/[^0-9]/', '', $jobCompletionReport->lead->phone ?? '') }}&text={{ urlencode('Hello ' . ($jobCompletionReport->lead->customer_name ?? 'Customer') . ', here is your signed CCTV Job Completion Certificate: ' . route('jcr.public-pdf', $jobCompletionReport)) }}" target="_blank" class="btn-secondary">
+                    <a href="https://api.whatsapp.com/send?phone={{ preg_replace('/[^0-9]/', '', $jobCompletionReport->lead->phone ?? '') }}&text={{ urlencode('Hello ' . ($jobCompletionReport->lead->customer_name ?? 'Customer') . ', here is your signed CCTV Job Completion Certificate: ' . URL::signedRoute('jcr.public-pdf', $jobCompletionReport)) }}" target="_blank" class="btn-secondary">
                         WhatsApp
                     </a>
                     <a href="{{ route('jcr.download-pdf', $jobCompletionReport) }}" class="btn-primary">

@@ -28,6 +28,23 @@ class Payment extends Model
         'recorded_by',
     ];
 
+    /**
+     * How the customer paid. Staff pick one when recording a payment on an invoice;
+     * customers never pay on the site itself.
+     */
+    public const METHODS = [
+        'cash'          => 'Cash',
+        'gpay'          => 'Google Pay (GPay)',
+        'phonepe'       => 'PhonePe',
+        'paytm'         => 'Paytm',
+        'upi'           => 'UPI (other app)',
+        'credit_card'   => 'Credit card',
+        'debit_card'    => 'Debit card',
+        'bank_transfer' => 'Bank transfer (NEFT / IMPS / RTGS)',
+        'cheque'        => 'Cheque',
+        'other'         => 'Other',
+    ];
+
     protected $casts = [
         'paid_on' => 'date',
         'amount'  => 'decimal:2',
@@ -63,15 +80,12 @@ class Payment extends Model
      */
     public function getFormattedMethodAttribute(): string
     {
-        return match ($this->method) {
-            'razorpay'      => 'Razorpay Online',
-            'upi'           => 'UPI Transfer (GPay/PhonePe)',
-            'bank_transfer' => 'NEFT / RTGS Bank Transfer',
-            'card'          => 'Credit / Debit Card',
-            'netbanking'    => 'Net Banking',
-            'cash'          => 'Cash Payment',
-            'cheque'        => 'Cheque Clearance',
-            default         => ucfirst(str_replace('_', ' ', $this->method ?? 'Online')),
+        return self::METHODS[$this->method] ?? match ($this->method) {
+            // Older records from before online payment was removed
+            'razorpay'   => 'Razorpay (online)',
+            'card'       => 'Card',
+            'netbanking' => 'Net banking',
+            default      => ucfirst(str_replace('_', ' ', $this->method ?? 'Other')),
         };
     }
 

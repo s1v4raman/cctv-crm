@@ -200,7 +200,7 @@
                     class="flex-1 py-3 px-4 text-xs font-bold text-center border-b-2 flex items-center justify-center gap-2 transition-colors cursor-pointer"
                     :class="activeTab === 'history' ? 'border-blue-600 text-blue-600 dark:text-blue-400 bg-blue-50/40 dark:bg-blue-950/40' : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50'">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                <span>3. Attendance History</span>
+                <span>3. My Work &amp; Pay</span>
             </button>
         </div>
 
@@ -524,14 +524,64 @@
         </div>
 
         {{-- ========================================================= --}}
-        {{-- SECTION 3: RECENT 7-DAY ATTENDANCE & WORK HISTORY          --}}
+        {{-- SECTION 3: MY WORK & PAY (attendance, work logged, money)  --}}
         {{-- ========================================================= --}}
         <div x-show="activeTab === 'history'" class="space-y-4">
             <div class="bg-white dark:bg-[#0f172a] rounded-b-[4px] border border-t-0 border-slate-200 dark:border-slate-800 p-4 sm:p-6 space-y-4">
-                
-                <div class="border-b border-slate-100 dark:border-slate-800 pb-3">
-                    <h3 class="text-sm font-bold text-slate-900 dark:text-white">Your Recent Attendance &amp; Wage Records</h3>
-                    <p class="text-xs text-slate-500 dark:text-slate-400">Summary of your attendance shifts, verified selfie photos, and cabling payouts.</p>
+
+                {{-- Pay summary --}}
+                <div>
+                    <h3 class="text-sm font-bold text-slate-900 dark:text-white">Your pay</h3>
+                    <div class="grid grid-cols-3 gap-2.5 mt-2 text-center">
+                        <div class="p-2.5 bg-slate-50 dark:bg-slate-800/60 rounded-[4px] border border-slate-200 dark:border-slate-700">
+                            <span class="block text-[11px] font-bold text-slate-500 dark:text-slate-400">Earned</span>
+                            <span class="text-sm sm:text-base font-bold text-slate-900 dark:text-white">₹{{ number_format($totalEarned, 0) }}</span>
+                        </div>
+                        <div class="p-2.5 bg-slate-50 dark:bg-slate-800/60 rounded-[4px] border border-slate-200 dark:border-slate-700">
+                            <span class="block text-[11px] font-bold text-slate-500 dark:text-slate-400">Paid to you</span>
+                            <span class="text-sm sm:text-base font-bold text-emerald-700 dark:text-emerald-400">₹{{ number_format($totalPaid, 0) }}</span>
+                        </div>
+                        <div class="p-2.5 bg-slate-50 dark:bg-slate-800/60 rounded-[4px] border border-slate-200 dark:border-slate-700">
+                            <span class="block text-[11px] font-bold text-slate-500 dark:text-slate-400">Balance due</span>
+                            <span class="text-sm sm:text-base font-bold text-blue-700 dark:text-blue-400">₹{{ number_format(max($runningBalance, 0), 0) }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Payments received from the office --}}
+                <div>
+                    <h3 class="text-sm font-bold text-slate-900 dark:text-white">Payments received</h3>
+                    @if ($recentPayments->isNotEmpty())
+                        <div class="mt-2 overflow-x-auto border border-slate-200 dark:border-slate-800 rounded-[4px]">
+                            <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-800 text-xs">
+                                <thead class="bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-bold text-[11px]">
+                                    <tr>
+                                        <th class="py-2 px-3 text-left">Date</th>
+                                        <th class="py-2 px-3 text-left">For</th>
+                                        <th class="py-2 px-3 text-left">Paid by</th>
+                                        <th class="py-2 px-3 text-right">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
+                                    @foreach ($recentPayments as $wagePayment)
+                                        <tr>
+                                            <td class="py-2 px-3 whitespace-nowrap text-slate-900 dark:text-white">{{ $wagePayment->payment_date?->format('d M Y') }}</td>
+                                            <td class="py-2 px-3 text-slate-700 dark:text-slate-300">{{ $wagePayment->payment_type === 'advance' ? 'Advance' : 'Wages' }}</td>
+                                            <td class="py-2 px-3 text-slate-700 dark:text-slate-300">{{ ['cash' => 'Cash', 'upi' => 'UPI / GPay', 'bank' => 'Bank'][$wagePayment->payment_mode] ?? ucfirst((string) $wagePayment->payment_mode) }}</td>
+                                            <td class="py-2 px-3 text-right font-bold text-emerald-700 dark:text-emerald-400 whitespace-nowrap">₹{{ number_format($wagePayment->amount, 0) }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">No payments recorded yet.</p>
+                    @endif
+                </div>
+
+                <div class="border-b border-slate-100 dark:border-slate-800 pb-3 pt-2">
+                    <h3 class="text-sm font-bold text-slate-900 dark:text-white">Your attendance &amp; work (last 30 days)</h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Each day you punched in, the site, your shift, the work you logged and the pay for that day.</p>
                 </div>
 
                 @if ($recentAttendances->count() > 0)

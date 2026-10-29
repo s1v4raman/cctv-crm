@@ -10,6 +10,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\URL;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -194,7 +195,7 @@ class QuotationController extends Controller
                 'recipient_email' => $quotation->lead?->email,
                 'subject'         => "Quotation #{$quotation->quotation_no} (Format {$format})",
                 'message_body'    => $message,
-                'action_url'      => route('quotations.public-pdf', ['quotation' => $quotation, 'format' => $format]),
+                'action_url'      => URL::signedRoute('quotations.public-pdf', ['quotation' => $quotation, 'format' => $format]),
                 'status'          => 'sent',
                 'reference_type'  => get_class($quotation),
                 'reference_id'    => $quotation->id,
@@ -279,7 +280,7 @@ class QuotationController extends Controller
             'recipient_email' => $recipientEmail,
             'subject'         => $subject ?: "Official Quotation #{$quotation->quotation_no}",
             'message_body'    => $customMessage ?: "Quotation #{$quotation->quotation_no} with PDF attached emailed to customer.",
-            'action_url'      => route('quotations.public-pdf', ['quotation' => $quotation, 'format' => $pdfFormat]),
+            'action_url'      => URL::signedRoute('quotations.public-pdf', ['quotation' => $quotation, 'format' => $pdfFormat]),
             'status'          => $emailStatus,
             'error_message'   => $errorMessage,
             'reference_type'  => get_class($quotation),

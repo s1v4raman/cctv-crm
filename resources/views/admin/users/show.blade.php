@@ -380,7 +380,7 @@
                                 </li>
                                 <li class="flex items-center gap-2 text-slate-600 dark:text-slate-300">
                                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                    View Invoices &amp; Online Payment Gateway
+                                    View Invoices &amp; Payment Receipts
                                 </li>
                                 <li class="flex items-center gap-2 text-slate-600 dark:text-slate-300">
                                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>

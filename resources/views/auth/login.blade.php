@@ -331,11 +331,11 @@
 
 <body class="h-full antialiased"
       x-data="{ 
-          portal: 'admin',
+          portal: {{ Js::from(session('login_portal') === 'worker' || old('phone') !== null ? 'worker' : 'admin') }},
           showPassword: false,
           isDarkMode: document.documentElement.classList.contains('dark'),
-          workerName: '',
-          workerPhone: '',
+          workerName: {{ Js::from(old('name', '')) }},
+          workerPhone: {{ Js::from(old('phone', '')) }},
           setRole(role) {
               this.portal = role;
           }

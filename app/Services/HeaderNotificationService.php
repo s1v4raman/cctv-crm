@@ -6,6 +6,7 @@ use App\Models\InstallationJob;
 use App\Models\NotificationLog;
 use App\Models\SiteSurvey;
 use App\Models\User;
+use App\Models\Worker;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
@@ -52,6 +53,23 @@ class HeaderNotificationService
                 'url'         => route('alerts.index'),
                 'is_unread'   => $log->created_at && $log->created_at->isToday(),
             ]);
+        }
+
+        // Worker sign-up requests waiting for an admin to approve them
+        if ($user->isAdmin()) {
+            foreach (Worker::pendingApproval()->latest()->take(3)->get() as $request) {
+                $items->push([
+                    'id'          => 'worker-request-' . $request->id,
+                    'title'       => "Worker sign-up: {$request->name}",
+                    'description' => "{$request->phone} is waiting for your approval",
+                    'time'        => $request->created_at->diffForHumans(null, true) . ' ago',
+                    'timestamp'   => $request->created_at->timestamp,
+                    'icon'        => 'info',
+                    'url'         => route('workers.index') . '#signup-requests',
+                    'activity_at' => $request->created_at->timestamp,
+                    'is_unread'   => true,
+                ]);
+            }
         }
 
         // 2. Role-specific operational actionable items

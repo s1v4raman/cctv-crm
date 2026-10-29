@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Payment;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StorePaymentRequest extends FormRequest
 {
@@ -16,7 +18,7 @@ class StorePaymentRequest extends FormRequest
         return [
             'amount' => ['required', 'numeric', 'min:0.01'],
             'paid_on' => ['required', 'date'],
-            'method' => ['required', 'in:cash,bank_transfer,upi,cheque,razorpay,card,netbanking,other'],
+            'method' => ['required', Rule::in(array_keys(Payment::METHODS))],
             'reference_no' => ['nullable', 'string', 'max:255'],
             'notes' => ['nullable', 'string', 'max:1000'],
         ];

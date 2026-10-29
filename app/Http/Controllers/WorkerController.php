@@ -20,7 +20,9 @@ class WorkerController extends Controller
         $search = trim($request->input('search', ''));
         $statusFilter = $request->input('status', 'active');
 
-        $query = Worker::query();
+        // Sign-up requests are listed separately until an admin approves them
+        $query = Worker::approved();
+        $pendingWorkers = Worker::pendingApproval()->latest()->get();
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
@@ -42,7 +44,7 @@ class WorkerController extends Controller
             ->withQueryString();
 
         $activeWorkersCount = Worker::where('is_active', true)->count();
-        $totalWorkersCount = Worker::count();
+        $totalWorkersCount = Worker::approved()->count();
 
         // Calculate aggregate outstanding labor wage liability
         $totalOutstandingLiability = 0;
@@ -52,6 +54,7 @@ class WorkerController extends Controller
 
         return view('workers.index', compact(
             'workers',
+            'pendingWorkers',
             'search',
             'statusFilter',
             'activeWorkersCount',
@@ -283,6 +286,35 @@ class WorkerController extends Controller
 
         return redirect()->route('workers.index')
             ->with('status', "Worker '{$name}' removed.");
+    }
+
+    /**
+     * Accept a sign-up request from the worker login page: the worker can sign in from now on.
+     */
+    public function approve(Worker $worker)
+    {
+        abort_unless(Auth::user()->isAdmin(), 403, 'Only administrators can approve worker sign-ups.');
+        abort_unless($worker->isPendingApproval(), 404);
+
+        $worker->update(['registration_status' => 'approved', 'is_active' => true]);
+
+        return redirect()->route('workers.index')
+            ->with('status', "{$worker->name} is approved and can now sign in with {$worker->phone}.");
+    }
+
+    /**
+     * Turn down a sign-up request. Only requests can be rejected, never approved workers.
+     */
+    public function reject(Worker $worker)
+    {
+        abort_unless(Auth::user()->isAdmin(), 403, 'Only administrators can reject worker sign-ups.');
+        abort_unless($worker->isPendingApproval(), 404);
+
+        $name = $worker->name;
+        $worker->delete();
+
+        return redirect()->route('workers.index')
+            ->with('status', "Sign-up request from {$name} was rejected.");
     }
 
     /**

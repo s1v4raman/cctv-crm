@@ -21,6 +21,7 @@ class Worker extends Model
         'photo_data',
         'daily_rate',
         'is_active',
+        'registration_status',
         'notes',
         'created_by',
     ];
@@ -33,6 +34,24 @@ class Worker extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Signed up on the worker login page and not yet approved by an admin.
+     */
+    public function isPendingApproval(): bool
+    {
+        return $this->registration_status === 'pending';
+    }
+
+    public function scopePendingApproval($query)
+    {
+        return $query->where('registration_status', 'pending');
+    }
+
+    public function scopeApproved($query)
+    {
+        return $query->where('registration_status', 'approved');
     }
 
     public function getPhotoUrlAttribute(): ?string

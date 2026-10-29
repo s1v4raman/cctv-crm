@@ -22,12 +22,12 @@
 
             <div class="flex items-center gap-2 flex-wrap">
                 @if ($invoice->balanceDue() > 0)
-                    <a href="{{ route('payment.checkout.invoice', $invoice) }}" target="_blank" class="btn-primary text-xs">
-                        Pay Online
+                    <a href="#record-payment" class="btn-primary text-xs">
+                        Record Payment
                     </a>
                 @endif
                 @if($invoice->quotation->lead->phone)
-                    <a href="https://api.whatsapp.com/send?phone={{ $invoice->quotation->getWhatsAppPhone() }}&text={{ urlencode("Hello " . $invoice->quotation->lead->customer_name . ",\n\nPlease find your secure online payment link for Tax Invoice *" . $invoice->invoice_no . "* (Balance Due: ₹" . number_format($invoice->balanceDue(), 2) . "):\n\nPay Online:\n" . route('payment.checkout.invoice', $invoice) . "\n\nThank you!") }}"
+                    <a href="https://api.whatsapp.com/send?phone={{ $invoice->quotation->getWhatsAppPhone() }}&text={{ urlencode("Hello " . $invoice->quotation->lead->customer_name . ",\n\nThis is a reminder for Tax Invoice *" . $invoice->invoice_no . "*.\nBalance due: ₹" . number_format($invoice->balanceDue(), 2) . "\n\nOnce paid (GPay / bank transfer / cheque / cash), please share the payment reference with us.\n\nThank you!") }}"
                        target="_blank" class="btn-secondary text-xs">
                         WhatsApp
                     </a>
@@ -185,7 +185,7 @@
                                     <td style="white-space: nowrap;">{{ $payment->recordedBy->name ?? 'System' }}</td>
                                     <td class="text-right font-bold text-slate-900" style="white-space: nowrap;">₹{{ number_format($payment->amount, 2) }}</td>
                                     <td class="text-right" style="white-space: nowrap;">
-                                        <a href="{{ route('payments.receipt.pdf', $payment) }}" target="_blank" class="action-link mr-2">
+                                        <a href="{{ URL::signedRoute('payments.receipt.pdf', $payment) }}" target="_blank" class="action-link mr-2">
                                             Receipt
                                         </a>
                                         <form method="POST" action="{{ route('payments.destroy', $payment) }}"
@@ -209,7 +209,7 @@
 
                 {{-- Record Payment Form --}}
                 @if ($invoice->balanceDue() > 0)
-                    <div class="mt-6 pt-6 border-t border-[#ddd]">
+                    <div id="record-payment" class="mt-6 pt-6 border-t border-[#ddd] scroll-mt-20">
                         <h4 class="text-sm font-bold text-slate-900 mb-4">
                             Record Payment
                         </h4>
@@ -230,21 +230,17 @@
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <label class="crm-label">Payment Method<span class="required-marker">*</span></label>
-                                    <select aria-label="Payment Method" name="method" class="crm-select w-full" required>
-                                        <option value="cash" @selected(old('method') === 'cash')>Cash</option>
-                                        <option value="upi" @selected(old('method') === 'upi')>UPI</option>
-                                        <option value="razorpay" @selected(old('method') === 'razorpay')>Razorpay</option>
-                                        <option value="bank_transfer" @selected(old('method') === 'bank_transfer')>Bank Transfer</option>
-                                        <option value="card" @selected(old('method') === 'card')>Card</option>
-                                        <option value="cheque" @selected(old('method') === 'cheque')>Cheque</option>
-                                        <option value="other" @selected(old('method') === 'other')>Other</option>
+                                    <label class="crm-label">Paid By<span class="required-marker">*</span></label>
+                                    <select aria-label="Paid By" name="method" class="crm-select w-full" required>
+                                        @foreach (\App\Models\Payment::METHODS as $value => $label)
+                                            <option value="{{ $value }}" @selected(old('method', 'cash') === $value)>{{ $label }}</option>
+                                        @endforeach
                                     </select>
                                     @error('method') <div class="error-text">{{ $message }}</div> @enderror
                                 </div>
                                 <div>
-                                    <label class="crm-label">Reference / UTR No.</label>
-                                    <input aria-label="Reference / UTR No." type="text" name="reference_no" value="{{ old('reference_no') }}" placeholder="e.g. UPI-987214" class="crm-input w-full">
+                                    <label class="crm-label">Transaction / Reference No.</label>
+                                    <input aria-label="Transaction / Reference No." type="text" name="reference_no" value="{{ old('reference_no') }}" placeholder="e.g. GPay UTR, card slip or cheque no." class="crm-input w-full">
                                     @error('reference_no') <div class="error-text">{{ $message }}</div> @enderror
                                 </div>
                             </div>

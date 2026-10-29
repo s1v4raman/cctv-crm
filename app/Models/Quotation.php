@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\URL;
 
 class Quotation extends Model
 {
@@ -223,10 +224,9 @@ class Quotation extends Model
             }
         }
 
-        $pdfUrl = route('quotations.public-pdf', ['quotation' => $this, 'format' => $format]);
-        $payUrl = route('payment.checkout.quotation', $this);
+        $pdfUrl = URL::signedRoute('quotations.public-pdf', ['quotation' => $this, 'format' => $format]);
 
-        $msg = "📹 CCTV INSTALLATION & SECURITY PROPOSAL\n"
+        $msg ="📹 CCTV INSTALLATION & SECURITY PROPOSAL\n"
              . "----------------------------------------------\n"
              . "Dear *{$leadName}*,\n\n"
              . "Thank you for contacting {$companyName}. Please find your official *{$formatName}* details below:\n\n"
@@ -249,7 +249,6 @@ class Quotation extends Model
         $msg .= "💵 *Grand Total:* ₹" . number_format((float)$this->total, 2) . "\n\n"
              . "----------------------------------------------\n"
              . "📄 *Download & View PDF Proposal:*\n{$pdfUrl}\n\n"
-             . "💳 *Pay 50% Advance Online (UPI / Card):*\n{$payUrl}\n\n"
              . "Please review the attached proposal PDF. Reply directly to this chat for any questions or customization.\n\n"
              . "Best Regards,\n"
              . "*{$companyName}*";
@@ -308,7 +307,7 @@ class Quotation extends Model
     public function getSmsUrl(string $format = '1', ?string $customPhone = null, ?string $customMsg = null): string
     {
         $phone = $this->getWhatsAppPhone($customPhone);
-        $pdfUrl = route('quotations.public-pdf', ['quotation' => $this, 'format' => $format]);
+        $pdfUrl = URL::signedRoute('quotations.public-pdf', ['quotation' => $this, 'format' => $format]);
         $leadName = $this->lead?->customer_name ?? 'Customer';
         $company = config('app.name', 'Precision IT Systems');
         $defaultMsg = "Hello {$leadName}, your CCTV Quotation #{$this->quotation_no} (Grand Total: Rs. " . number_format((float)$this->total, 2) . ") is ready. View PDF: {$pdfUrl} - {$company}";
@@ -347,10 +346,9 @@ class Quotation extends Model
             }
         }
 
-        $pdfUrl = route('quotations.public-pdf', ['quotation' => $this, 'format' => '1']);
-        $payUrl = route('payment.checkout.quotation', $this);
+        $pdfUrl = URL::signedRoute('quotations.public-pdf', ['quotation' => $this, 'format' => '1']);
 
-        $body = "Dear {$leadName},\n\n"
+        $body ="Dear {$leadName},\n\n"
               . "Thank you for contacting us regarding your CCTV surveillance and security requirements.\n"
               . "Please find below the official quotation and pricing summary for your installation:\n\n"
               . "Quotation Number: #{$this->quotation_no}\n"
@@ -371,8 +369,7 @@ class Quotation extends Model
         }
         $body .= "Grand Total: ₹" . number_format((float)$this->total, 2) . "\n\n"
               . "==============================================\n"
-              . "📄 View & Download Complete PDF Proposal:\n{$pdfUrl}\n\n"
-              . "💳 Pay 50% Advance Online (Razorpay / UPI):\n{$payUrl}\n"
+              . "📄 View & Download Complete PDF Proposal:\n{$pdfUrl}\n"
               . "==============================================\n\n"
               . "Please feel free to reply directly to this email or call us if you have any questions.\n\n"
               . "Best Regards,\n"

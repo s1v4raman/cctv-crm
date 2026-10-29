@@ -25,6 +25,48 @@
             </div>
         @endif
 
+        {{-- Sign-up requests from the worker login page --}}
+        @if (auth()->user()->isAdmin() && $pendingWorkers->isNotEmpty())
+            <div class="crm-section p-0" id="signup-requests">
+                <div class="px-4 py-3 border-b border-[var(--card-border)]">
+                    <h3 class="text-sm font-bold text-[var(--text-main)]">Sign-up requests ({{ $pendingWorkers->count() }})</h3>
+                    <p class="text-xs text-[var(--text-muted)] mt-0.5">These people signed up on the worker login page. Approve them to let them sign in and see their attendance and work.</p>
+                </div>
+                <table class="crm-table crm-responsive">
+                    <thead>
+                        <tr>
+                            <th scope="col">Name</th>
+                            <th scope="col">Mobile</th>
+                            <th scope="col">Requested</th>
+                            <th scope="col" class="text-right">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($pendingWorkers as $request)
+                            <tr>
+                                <td class="font-semibold">{{ $request->name }}</td>
+                                <td>{{ $request->phone }}</td>
+                                <td>{{ $request->created_at->format('d M Y, h:i A') }}</td>
+                                <td class="text-right whitespace-nowrap">
+                                    <form method="POST" action="{{ route('workers.approve', $request) }}" class="inline">
+                                        @csrf
+                                        @method('PATCH')
+                                        <button type="submit" class="btn-primary text-xs">Approve</button>
+                                    </form>
+                                    <form method="POST" action="{{ route('workers.reject', $request) }}" class="inline"
+                                          data-confirm="Reject the sign-up request from {{ $request->name }}?">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn-secondary text-xs text-rose-700 dark:text-rose-300">Reject</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @endif
+
         {{-- Filter Section (Single Filter Row) --}}
         <div class="crm-section p-3">
             <form data-auto-submit method="GET" action="{{ route('workers.index') }}" class="flex items-center gap-2 flex-wrap">
