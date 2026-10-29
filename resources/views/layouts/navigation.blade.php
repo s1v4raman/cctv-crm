@@ -2,12 +2,18 @@
 <aside class="w-full h-full flex flex-col justify-between shrink-0 bg-[var(--card-bg)] text-[var(--text-main)] select-none overflow-hidden transition-all duration-300">
     
     {{-- Sidebar Top: Brand Logo matching 56px fixed frame --}}
-    <div class="crm-sidebar-header h-[56px] min-h-[56px] max-h-[56px] shrink-0 flex items-center justify-between px-4 border-b border-[var(--card-border)] bg-[var(--card-bg)] text-[var(--text-main)] transition-colors duration-200">
-        <a href="{{ auth()->user()->role === 'technician' ? route('technician.dashboard') : route('dashboard') }}" class="flex items-center gap-2.5 group overflow-hidden">
-            <img src="{{ asset('logos/logo_' . ltrim(auth()->user()->theme_accent ?? '2563eb', '#') . '.png') }}" alt="Precision IT Systems" class="crm-brand-logo h-8 w-8 object-contain group-hover:scale-105 transition-transform shrink-0" onerror="this.src='{{ asset('logo.png') }}'">
-            <div :class="sidebarCollapsed ? 'lg:hidden' : ''" class="min-w-0">
-                <span class="block text-sm font-bold tracking-tight text-[var(--text-main)] truncate">Precision IT</span>
-                <span class="block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)] font-mono truncate">CRM SUITE</span>
+    <div class="crm-sidebar-header h-[56px] min-h-[56px] max-h-[56px] shrink-0 flex items-center justify-between px-3.5 border-b border-[var(--card-border)] bg-[var(--card-bg)] text-[var(--text-main)] transition-colors duration-200">
+        <a href="{{ auth()->user()->role === 'technician' ? route('technician.dashboard') : route('dashboard') }}" class="flex items-center group overflow-hidden min-w-0" title="Precision IT Systems">
+            {{-- EXPANDED STATE: Full horizontal brand logo (Light & Dark mode adaptive) --}}
+            <div :class="sidebarCollapsed ? 'lg:hidden' : 'flex items-center'" class="h-8 max-h-8 min-w-0">
+                <img src="{{ asset('logo.png') }}?v={{ filemtime(public_path('logo.png')) }}" alt="Precision IT Systems" class="h-7 w-auto max-w-[155px] object-contain dark:hidden group-hover:scale-105 transition-transform shrink-0">
+                <img src="{{ asset('logo-dark.png') }}?v={{ filemtime(public_path('logo-dark.png')) }}" alt="Precision IT Systems" class="h-7 w-auto max-w-[155px] object-contain hidden dark:block group-hover:scale-105 transition-transform shrink-0">
+            </div>
+
+            {{-- COLLAPSED STATE (Desktop lg:w-20): Centered square brand mark (Light & Dark mode adaptive) --}}
+            <div :class="sidebarCollapsed ? 'hidden lg:flex lg:items-center lg:justify-center' : 'hidden'" class="w-full">
+                <img src="{{ asset('logo-mark.png') }}?v={{ filemtime(public_path('logo-mark.png')) }}" alt="Precision IT Systems" class="h-8 w-8 object-contain dark:hidden group-hover:scale-105 transition-transform shrink-0">
+                <img src="{{ asset('logo-mark-dark.png') }}?v={{ filemtime(public_path('logo-mark-dark.png')) }}" alt="Precision IT Systems" class="h-8 w-8 object-contain hidden dark:block group-hover:scale-105 transition-transform shrink-0">
             </div>
         </a>
         
@@ -369,16 +375,14 @@
                         </a>
 
                         @if(auth()->user()->isAdmin())
-                        {{-- User Accounts & Settings (Sliders/Controls icon) --}}
+                        {{-- User Accounts & Settings (User & Gear Settings icon) --}}
                         <a :title="sidebarCollapsed ? $el.textContent.trim() : null" :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('admin.users.index') }}" 
                            class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('admin.users.*') ? 'crm-active-link' : '' }}" @if(request()->routeIs('admin.users.*')) aria-current="page" @endif>
-                            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                                <line stroke-linecap="round" stroke-linejoin="round" x1="4" x2="20" y1="6" y2="6"/>
-                                <circle cx="8" cy="6" r="2.5"/>
-                                <line stroke-linecap="round" stroke-linejoin="round" x1="4" x2="20" y1="12" y2="12"/>
-                                <circle cx="16" cy="12" r="2.5"/>
-                                <line stroke-linecap="round" stroke-linejoin="round" x1="4" x2="20" y1="18" y2="18"/>
-                                <circle cx="10" cy="18" r="2.5"/>
+                            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                <path d="M10 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/>
+                                <path d="M3 21v-2a6 6 0 0 1 10.3-4.3"/>
+                                <circle cx="18" cy="17" r="2.2"/>
+                                <path d="M18 13.5v1.2M18 19.3v1.2M14.5 17h1.2M20.3 17h1.2M15.5 14.5l.8.8M19.7 18.7l.8.8M15.5 19.5l.8-.8M19.7 15.3l.8-.8"/>
                             </svg>
                             <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">User Accounts &amp; Settings</span>
                         </a>

@@ -4,7 +4,7 @@
             <div>
                 <div class="flex items-center gap-2">
                     <h2 class="text-xl font-bold text-slate-900 dark:text-white tracking-tight font-heading">
-                        Employee Leave Management &amp; Approvals
+                        Leave
                     </h2>
                     @if($canManage && $pendingCount > 0)
                         <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-400 border border-amber-200 dark:border-amber-800 animate-pulse">
@@ -39,6 +39,7 @@
 
     <div class="py-6 bg-[#f8fafc] dark:bg-[#060913] min-h-[calc(100vh-4.5rem)] text-slate-800 dark:text-slate-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+            <x-employee-subnav />
 
             {{-- Flash Notification Status --}}
             @if(session('status'))
@@ -70,7 +71,7 @@
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Casual Leave (CL)</span>
                         <span class="p-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400">
-                            🌴
+                            <svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9 9 0 100-18 9 9 0 000 18z"/></svg>
                         </span>
                     </div>
                     <div class="mt-3 flex items-baseline gap-2">
@@ -94,7 +95,7 @@
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Sick Leave (SL)</span>
                         <span class="p-2 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400">
-                            💊
+                            <svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9 9 0 100-18 9 9 0 000 18z"/></svg>
                         </span>
                     </div>
                     <div class="mt-3 flex items-baseline gap-2">
@@ -118,7 +119,7 @@
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Earned / Paid Leave</span>
                         <span class="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
-                            ⭐
+                            ★
                         </span>
                     </div>
                     <div class="mt-3 flex items-baseline gap-2">
@@ -160,7 +161,7 @@
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Paid Balance</span>
                             <span class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-                                💼
+                                <svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                             </span>
                         </div>
                         <div class="mt-3 flex items-baseline gap-2">
@@ -180,7 +181,7 @@
                 <div class="p-4 rounded-2xl bg-gradient-to-r from-purple-500/10 via-blue-500/10 to-emerald-500/10 border border-purple-200/80 dark:border-purple-900/50 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div class="flex items-center gap-3">
                         <div class="w-9 h-9 rounded-xl bg-purple-600 text-white flex items-center justify-center font-bold text-sm shadow-sm">
-                            🏖️
+                            <svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9 9 0 100-18 9 9 0 000 18z"/></svg>
                         </div>
                         <div>
                             <h4 class="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">Out of Office Today ({{ now()->format('d M Y') }})</h4>
@@ -206,7 +207,7 @@
                         <div class="flex items-center gap-2">
                             <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping"></span>
                             <h3 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider font-heading">
-                                🔔 Pending Leave Approval Queue ({{ $pendingRequests->count() }})
+                                Pending Leave Approval Queue ({{ $pendingRequests->count() }})
                             </h3>
                         </div>
                         <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">1-Click Admin Decision</span>
@@ -231,7 +232,7 @@
                                         @endif
                                     </div>
                                     <div class="text-xs text-slate-600 dark:text-slate-400 flex items-center gap-2 flex-wrap">
-                                        <span>📅 <strong>{{ $req->start_date->format('d M Y') }}</strong> to <strong>{{ $req->end_date->format('d M Y') }}</strong></span>
+                                        <span><svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg> <strong>{{ $req->start_date->format('d M Y') }}</strong> to <strong>{{ $req->end_date->format('d M Y') }}</strong></span>
                                         <span>&bull;</span>
                                         <span>⏳ Duration: <strong>{{ $req->days_count }} Day(s)</strong></span>
                                         <span>&bull;</span>
@@ -282,13 +283,13 @@
                     <div class="flex space-x-2">
                         <a href="{{ route('leaves.index', ['tab' => 'my_leaves', 'year' => $selectedYear]) }}" 
                            class="pb-3 px-3 text-xs font-bold border-b-2 transition {{ $tab === 'my_leaves' ? 'border-blue-600 text-blue-600 dark:text-blue-400' : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300' }}">
-                            📝 My Leave Applications ({{ $myLeaves->total() }})
+                            My Leave Applications ({{ $myLeaves->total() }})
                         </a>
 
                         @if($canManage)
                             <a href="{{ route('leaves.index', ['tab' => 'all_leaves', 'year' => $selectedYear, 'month' => $selectedMonth]) }}" 
                                class="pb-3 px-3 text-xs font-bold border-b-2 transition {{ $tab === 'all_leaves' ? 'border-blue-600 text-blue-600 dark:text-blue-400' : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300' }}">
-                                👥 All Workforce Leaves Directory ({{ $allLeaves->total() }})
+                                All Workforce Leaves Directory ({{ $allLeaves->total() }})
                             </a>
                         @endif
                     </div>
@@ -514,7 +515,7 @@
         <div class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
             <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
                 <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 font-heading">
-                    <span>📝</span> Submit Leave Application
+                    <span><svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></span> Submit Leave Application
                 </h3>
                 <button type="button" onclick="document.getElementById('applyLeaveModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xl font-bold">
                     &times;
@@ -597,7 +598,7 @@
         <div class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-md w-full p-6 shadow-2xl border border-rose-200 dark:border-rose-900 space-y-4">
             <div class="flex items-center justify-between border-b border-rose-100 dark:border-rose-900/40 pb-3">
                 <h3 class="text-base font-bold text-rose-600 dark:text-rose-400 flex items-center gap-2 font-heading">
-                    <span>⚠️</span> Reject Leave Application
+                    <span><svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg></span> Reject Leave Application
                 </h3>
                 <button type="button" onclick="document.getElementById('rejectLeaveModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 text-xl font-bold">
                     &times;

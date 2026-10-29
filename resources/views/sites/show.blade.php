@@ -73,8 +73,9 @@
                             <td style="color: var(--text-muted); font-weight: 500;">Email Address</td>
                             <td style="color: var(--text-main); font-weight: 500;">
                                 @if($site->client_email)
-                                    <a href="mailto:{{ $site->client_email }}" class="action-link">
-                                        {{ $site->client_email }}
+                                    <a href="mailto:{{ $site->client_email }}" class="action-link inline-flex items-center gap-1.5">
+                                        <x-icon.email class="w-3.5 h-3.5 shrink-0" />
+                                        <span>{{ $site->client_email }}</span>
                                     </a>
                                 @else
                                     —

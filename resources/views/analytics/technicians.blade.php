@@ -4,7 +4,7 @@
             <div>
                 <h2 class="text-2xl font-bold leading-tight text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
                     <span class="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-[0_0_10px_#3b82f6]"></span>
-                    Technician Performance &amp; Field Operations
+                    Technician performance
                 </h2>
                 <p class="mt-1 text-sm text-slate-500 dark:text-slate-400 font-medium">First-Time Fix Rate (FTFR), Mean Time to Resolution (MTTR), completed installations &amp; engineer leaderboard</p>
             </div>
@@ -176,7 +176,7 @@
                                 <th class="px-4 py-3 text-center text-sky-600 dark:text-sky-400">Site Surveys</th>
                                 <th class="px-4 py-3 text-center text-indigo-600 dark:text-indigo-400">Projects</th>
                                 <th class="px-4 py-3 text-center">Open Backlog</th>
-                                <th class="px-4 py-3 text-right text-amber-600 dark:text-amber-400">CSAT ⭐</th>
+                                <th class="px-4 py-3 text-right text-amber-600 dark:text-amber-400">CSAT ★</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
@@ -226,7 +226,7 @@
                                     </td>
                                     <td class="px-4 py-3.5 text-right">
                                         <span class="inline-block px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30 font-bold text-xs">
-                                            ⭐ {{ $tech['average_rating'] }} / 5.0
+                                            ★ {{ $tech['average_rating'] }} / 5.0
                                         </span>
                                     </td>
                                 </tr>

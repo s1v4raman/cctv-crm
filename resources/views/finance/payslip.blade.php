@@ -23,14 +23,12 @@
                 <button type="button" 
                         onclick="document.getElementById('whatsappModal').classList.remove('hidden')"
                         class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 !text-white text-xs font-bold shadow-xs transition">
-                    <svg class="w-4 h-4 fill-current !text-white" viewBox="0 0 24 24">
-                        <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.698c.983.54 1.776.818 2.796.818 3.182 0 5.768-2.587 5.768-5.769.001-3.181-2.585-5.767-5.768-5.767zm9.969 5.766c0 5.495-4.474 9.969-9.969 9.969-1.748 0-3.385-.453-4.819-1.246l-5.212 1.367 1.391-5.084c-.887-1.493-1.391-3.238-1.391-5.006 0-5.495 4.474-9.969 9.969-9.969 5.495 0 9.969 4.474 9.969 9.969z"/>
-                    </svg>
+                    <x-icon.whatsapp class="w-4 h-4 fill-current !text-white" />
                     <span class="!text-white">Send via WhatsApp</span>
                 </button>
                 <button onclick="window.print()"
                         class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 !text-white text-xs font-bold shadow-xs transition">
-                    <span class="!text-white">🖨️ Print</span>
+                    <span class="!text-white">Print</span>
                 </button>
             </div>
         </div>
@@ -63,7 +61,7 @@
                 <div class="flex items-start justify-between border-b border-slate-200 dark:border-slate-800 pb-6">
                     <div class="flex items-center gap-3">
                         <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-black text-xl shadow-md">
-                            📹
+                            <svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9zM15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                         </div>
                         <div>
                             <h1 class="text-xl font-black text-slate-900 dark:text-white tracking-tight">CCTV CRM &amp; SECURITY SYSTEMS</h1>
@@ -286,9 +284,7 @@
                         Cancel
                     </button>
                     <button type="submit" onclick="setTimeout(() => document.getElementById('whatsappModal').classList.add('hidden'), 500)" class="btn-primary min-h-[44px] px-5 py-2.5 text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-md transition flex items-center gap-2">
-                        <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                            <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.698c.983.54 1.776.818 2.796.818 3.182 0 5.768-2.587 5.768-5.769.001-3.181-2.585-5.767-5.768-5.767zm9.969 5.766c0 5.495-4.474 9.969-9.969 9.969-1.748 0-3.385-.453-4.819-1.246l-5.212 1.367 1.391-5.084c-.887-1.493-1.391-3.238-1.391-5.006 0-5.495 4.474-9.969 9.969-9.969 5.495 0 9.969 4.474 9.969 9.969z"/>
-                        </svg>
+                        <x-icon.whatsapp class="w-4 h-4 fill-current" />
                         <span>Open in WhatsApp</span>
                     </button>
                 </div>

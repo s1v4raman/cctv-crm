@@ -242,7 +242,7 @@ class AdvancedReportingAndAnalyticsTest extends TestCase
         $response = $this->actingAs($this->admin)->get(route('analytics.mrr-retention'));
 
         $response->assertStatus(200);
-        $response->assertSee('Monthly Revenue, AMC Retention');
+        $response->assertSee('Revenue and renewals');
         $response->assertSee('Monthly Recurring (MRR)');
         $response->assertSee('AMC Contract Retention');
         $response->assertSee('Lead-to-Won Conversion');

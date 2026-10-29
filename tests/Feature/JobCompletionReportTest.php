@@ -78,7 +78,7 @@ class JobCompletionReportTest extends TestCase
             ->get(route('jcr.create-job', $this->job));
 
         $response->assertOk();
-        $response->assertSee('Digital Job Sign-Off', false);
+        $response->assertSee('Job sign-off', false);
         $response->assertSee('Tech Park Mumbai');
         $response->assertSee('Quality Assurance');
     }

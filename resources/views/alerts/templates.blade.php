@@ -3,14 +3,14 @@
         <div class="flex flex-wrap items-center justify-between gap-4">
             <div>
                 <h2 class="text-2xl font-black tracking-wider text-white uppercase font-heading flex items-center gap-2">
-                    <span class="text-amber-400">⚙️</span> Data Modules Notification & Message Templates
+                    <span class="text-amber-400"><svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065zM15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg></span> Message templates
                 </h2>
                 <p class="mt-1 text-xs text-slate-400 font-mono">Configure automated WhatsApp, SMS, and Email text alerts across all CRM data modules</p>
             </div>
             <div class="flex items-center gap-2">
                 <a href="{{ route('alerts.gateways') }}"
                    class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-700 bg-slate-800 text-slate-200 hover:bg-slate-700 text-xs font-bold transition">
-                    🔌 Gateways & SMTP
+                    Gateways & SMTP
                 </a>
                 <a href="{{ route('alerts.index') }}"
                    class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-700/60 bg-slate-800/40 text-slate-400 hover:text-white text-xs font-semibold transition">
@@ -48,7 +48,7 @@
                         <span class="text-xs font-bold text-amber-400 px-2 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/20 font-mono">{{ $templates->count() }} Templates</span>
                     </div>
                     <div class="relative w-full sm:w-72 flex items-center">
-                        <span class="absolute left-2.5 pointer-events-none text-slate-500 text-xs shrink-0">🔍</span>
+                        <span class="absolute left-2.5 pointer-events-none text-slate-500 text-xs shrink-0"><svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg></span>
                         <input aria-label="Search template title or event key" type="text" x-model="searchTerm" placeholder="Search template title or event key..." 
                                style="padding-left: 2.25rem !important;"
                                class="w-full text-xs font-mono rounded-xl border border-slate-700 bg-[#060913] text-white placeholder-slate-500 focus:border-amber-400 focus:outline-none p-2.5">
@@ -65,20 +65,20 @@
                     @php
                         $categories = $templates->pluck('category')->unique();
                         $categoryIcons = [
-                            'leads' => '👥 Leads',
-                            'quotations' => '📑 Quotations',
-                            'invoices' => '💳 Invoices',
-                            'jobs' => '🛠️ Jobs',
-                            'surveys' => '📐 Surveys',
-                            'service' => '🎫 Service',
-                            'amc' => '🔄 AMC',
-                            'expenses' => '💰 Expenses',
-                            'leave' => '🏖️ Leave',
-                            'payroll' => '💵 Payroll',
-                            'purchases' => '📦 Purchases',
-                            'inventory' => '📊 Stock',
-                            'rma' => '🔧 RMA',
-                            'general' => '🔐 Auth & OTP',
+                            'leads' => 'Leads',
+                            'quotations' => 'Quotations',
+                            'invoices' => 'Invoices',
+                            'jobs' => 'Jobs',
+                            'surveys' => 'Surveys',
+                            'service' => 'Service',
+                            'amc' => 'AMC',
+                            'expenses' => 'Expenses',
+                            'leave' => 'Leave',
+                            'payroll' => 'Payroll',
+                            'purchases' => 'Purchases',
+                            'inventory' => 'Stock',
+                            'rma' => 'RMA',
+                            'general' => 'Auth & OTP',
                         ];
                     @endphp
                     @foreach($categories as $cat)
@@ -114,9 +114,18 @@
                             </div>
                             <div class="flex items-center gap-3">
                                 <div class="flex items-center gap-1.5 text-[11px] font-mono font-bold uppercase">
-                                    <span class="px-2 py-0.5 rounded {{ $template->is_whatsapp_enabled ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'bg-slate-800 text-slate-500 border border-slate-700' }}">WA</span>
-                                    <span class="px-2 py-0.5 rounded {{ $template->is_sms_enabled ? 'bg-amber-500/10 text-amber-400 border border-amber-500/30' : 'bg-slate-800 text-slate-500 border border-slate-700' }}">SMS</span>
-                                    <span class="px-2 py-0.5 rounded {{ $template->is_email_enabled ? 'bg-sky-500/10 text-sky-400 border border-sky-500/30' : 'bg-slate-800 text-slate-500 border border-slate-700' }}">EMAIL</span>
+                                    <span class="px-2 py-0.5 rounded {{ $template->is_whatsapp_enabled ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'bg-slate-800 text-slate-500 border border-slate-700' }} inline-flex items-center gap-1">
+                                        <x-icon.whatsapp class="w-3.5 h-3.5 shrink-0" />
+                                        WA
+                                    </span>
+                                    <span class="px-2 py-0.5 rounded {{ $template->is_sms_enabled ? 'bg-amber-500/10 text-amber-400 border border-amber-500/30' : 'bg-slate-800 text-slate-500 border border-slate-700' }} inline-flex items-center gap-1">
+                                        <x-icon.sax name="sms" class="w-3.5 h-3.5 shrink-0" />
+                                        SMS
+                                    </span>
+                                    <span class="px-2 py-0.5 rounded {{ $template->is_email_enabled ? 'bg-sky-500/10 text-sky-400 border border-sky-500/30' : 'bg-slate-800 text-slate-500 border border-slate-700' }} inline-flex items-center gap-1">
+                                        <x-icon.email class="w-3.5 h-3.5 shrink-0" />
+                                        EMAIL
+                                    </span>
                                 </div>
                                 <button type="button" class="text-xs font-bold text-amber-400 hover:text-amber-300 font-mono">
                                     <span x-show="!expanded">✏️ Edit Message Alert</span>
@@ -146,32 +155,32 @@
                                     <span class="font-bold text-slate-300 uppercase tracking-wider text-[11px]">Active Channels:</span>
                                     <label class="inline-flex items-center gap-2 cursor-pointer">
                                         <input type="checkbox" name="is_whatsapp_enabled" value="1" @checked($template->is_whatsapp_enabled) class="rounded border-slate-700 text-amber-500 focus:ring-0">
-                                        <span class="font-bold text-white">💬 WhatsApp</span>
+                                        <span class="font-bold text-white inline-flex items-center gap-1.5"><x-icon.whatsapp class="w-3.5 h-3.5 shrink-0" /> WhatsApp</span>
                                     </label>
                                     <label class="inline-flex items-center gap-2 cursor-pointer">
                                         <input type="checkbox" name="is_sms_enabled" value="1" @checked($template->is_sms_enabled) class="rounded border-slate-700 text-amber-500 focus:ring-0">
-                                        <span class="font-bold text-white">📱 SMS</span>
+                                        <span class="font-bold text-white inline-flex items-center gap-1.5"><x-icon.sax name="sms" class="w-3.5 h-3.5 shrink-0" /> SMS</span>
                                     </label>
                                     <label class="inline-flex items-center gap-2 cursor-pointer">
                                         <input type="checkbox" name="is_email_enabled" value="1" @checked($template->is_email_enabled) class="rounded border-slate-700 text-amber-500 focus:ring-0">
-                                        <span class="font-bold text-white">✉️ Email</span>
+                                        <span class="font-bold text-white inline-flex items-center gap-1.5"><x-icon.email class="w-3.5 h-3.5 shrink-0" /> Email</span>
                                     </label>
                                 </div>
 
                                 {{-- WhatsApp Template --}}
                                 <div>
                                     <label class="block text-sm font-semibold text-slate-300 mb-1.5">
-                                        💬 WhatsApp Message Text (Supports *bold*, _italic_, newlines)
+                                        WhatsApp Message Text (Supports *bold*, _italic_, newlines)
                                     </label>
-                                    <textarea aria-label="💬 WhatsApp Message Text (Supports bold, _italic_, newlines)" name="whatsapp_template" rows="4" required class="w-full text-xs font-mono rounded-xl border border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:outline-none p-3 leading-relaxed">{{ $template->whatsapp_template }}</textarea>
+                                    <textarea aria-label="WhatsApp Message Text (Supports bold, _italic_, newlines)" name="whatsapp_template" rows="4" required class="w-full text-xs font-mono rounded-xl border border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:outline-none p-3 leading-relaxed">{{ $template->whatsapp_template }}</textarea>
                                 </div>
 
                                 {{-- SMS Template --}}
                                 <div>
                                     <label class="block text-sm font-semibold text-slate-300 mb-1.5">
-                                        📱 SMS Text (Single / 160-char format)
+                                        SMS Text (Single / 160-char format)
                                     </label>
-                                    <textarea aria-label="📱 SMS Text (Single / 160-char format)" name="sms_template" rows="2" class="w-full text-xs font-mono rounded-xl border border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:outline-none p-3 leading-relaxed">{{ $template->sms_template }}</textarea>
+                                    <textarea aria-label="SMS Text (Single / 160-char format)" name="sms_template" rows="2" class="w-full text-xs font-mono rounded-xl border border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:outline-none p-3 leading-relaxed">{{ $template->sms_template }}</textarea>
                                 </div>
 
                                 {{-- Email Subject & Body --}}

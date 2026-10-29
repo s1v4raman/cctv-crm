@@ -118,8 +118,8 @@ class AccountsReceivableAndDebtorsAgingTest extends TestCase
             ->get(route('finance.receivables.index'));
 
         $response->assertOk();
-        $response->assertSee('Accounts Receivable', false);
-        $response->assertSee('Debtors Aging', false);
+        $response->assertSee('Receivables', false);
+        $response->assertSee('By customer', false);
         $response->assertSee('Tech Park Chennai');
         $response->assertSee('Sunrise Hospital');
         $response->assertSee('160,000.00'); // Total outstanding (40,000 + 120,000)

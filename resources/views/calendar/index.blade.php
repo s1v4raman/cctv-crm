@@ -579,7 +579,7 @@
                 
                 <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
                     <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                        <span class="text-rose-500">⚠️</span>
+                        <span class="text-rose-500"><svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg></span>
                         <span>Reject Task &amp; Return to Admin</span>
                     </h3>
                     <button type="button" @click="rejectModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg cursor-pointer">&times;</button>
@@ -632,7 +632,7 @@
                     
                     <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
                         <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                            <span>👤</span>
+                            <span><svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg></span>
                             <span>Assign / Reassign Task</span>
                         </h3>
                         <button type="button" @click="reassignModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg cursor-pointer">&times;</button>

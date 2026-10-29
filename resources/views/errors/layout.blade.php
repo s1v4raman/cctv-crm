@@ -40,7 +40,12 @@
                background: var(--bg); color: var(--text); font: 14px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
         .card { width: 100%; max-width: 440px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 28px 24px; }
         .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; font-weight: 700; font-size: 14px; }
-        .brand img { width: 32px; height: 32px; object-fit: contain; }
+        .brand img { height: 32px; width: auto; max-width: 170px; object-fit: contain; }
+        .dark-logo { display: none; }
+        @media (prefers-color-scheme: dark) {
+            .light-logo { display: none; }
+            .dark-logo { display: inline-block; }
+        }
         .code { font-size: 13px; font-weight: 600; color: var(--muted); letter-spacing: .02em; }
         h1 { margin: 4px 0 8px; font-size: 22px; line-height: 1.25; }
         p { margin: 0 0 8px; color: var(--muted); }
@@ -56,8 +61,8 @@
 <body>
     <main class="card">
         <div class="brand">
-            <img src="{{ asset('logo.png') }}" alt="">
-            <span>{{ config('app.name', 'Precision IT Systems') }}</span>
+            <img src="{{ asset('logo.png') }}" class="light-logo" alt="Precision IT Systems">
+            <img src="{{ asset('logo-dark.png') }}" class="dark-logo" alt="Precision IT Systems">
         </div>
 
         <div class="code">Error {{ $code }}</div>

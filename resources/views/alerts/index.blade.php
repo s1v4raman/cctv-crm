@@ -4,25 +4,25 @@
             <div>
                 <h2 class="text-2xl font-bold leading-tight text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
                     <span class="w-2.5 h-2.5 rounded-full bg-amber-400 shadow-[0_0_10px_#f59e0b]"></span>
-                    Automated Alerts & Notification Hub
+                    Alerts
                 </h2>
                 <p class="mt-1 text-sm text-slate-500 dark:text-slate-400 font-medium">Multi-channel WhatsApp, SMS & Email communication telemetry, dispatch logs & triggers</p>
             </div>
             <div class="flex items-center gap-2">
                 <a href="{{ route('alerts.gateways') }}"
                    class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-300 dark:border-white/10 bg-white dark:bg-[#0f172a] hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold shadow-xs transition">
-                    🔌 SMS & Webhook Gateways
+                    SMS & Webhook Gateways
                 </a>
                 <a href="{{ route('alerts.templates') }}"
                    class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-300 dark:border-white/10 bg-white dark:bg-[#0f172a] hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold shadow-xs transition">
-                    ⚙️ Templates
+                    Templates
                 </a>
                 <form method="POST" action="{{ route('alerts.run-sweep') }}">
                     @csrf
                     <button type="submit"
                             class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-white text-xs font-bold shadow-xs transition cursor-pointer"
                             style="background-color: var(--crm-accent, #2563eb);">
-                        ⚡ Run Reminder Sweep
+                        Run Reminder Sweep
                     </button>
                 </form>
             </div>
@@ -71,7 +71,7 @@
             <div class="bg-white dark:bg-[#0f172a] rounded-2xl p-5 mb-6 shadow-xs border border-slate-200 dark:border-white/5" x-data="{ open: false }">
                 <div class="flex items-center justify-between cursor-pointer" @click="open = !open">
                     <div class="flex items-center gap-2">
-                        <span class="w-7 h-7 rounded-lg bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-500/20 flex items-center justify-center text-sm font-bold">📢</span>
+                        <span class="w-7 h-7 rounded-lg bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-500/20 flex items-center justify-center text-sm font-bold"><svg class="w-5 h-5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg></span>
                         <div>
                             <h3 class="text-sm font-bold text-slate-900 dark:text-white">Send Instant Ad-hoc Notification / Broadcast</h3>
                             <p class="text-xs text-slate-500 dark:text-slate-400">Dispatch a custom WhatsApp message, SMS, or Email directly to a client or technician.</p>
@@ -89,9 +89,9 @@
                         <div>
                             <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Dispatch Channel <span class="text-rose-500">*</span></label>
                             <select aria-label="Dispatch Channel" name="channel" required class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#060913] border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-200 focus:border-blue-500 focus:ring-blue-500 font-semibold">
-                                <option value="whatsapp">💬 WhatsApp Direct</option>
-                                <option value="email">✉️ Email Notification</option>
-                                <option value="sms">📱 SMS Text</option>
+                                <option value="whatsapp">WhatsApp Direct</option>
+                                <option value="email">Email Notification</option>
+                                <option value="sms">SMS Text</option>
                             </select>
                         </div>
 
@@ -140,9 +140,9 @@
                         <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Channel</label>
                         <select aria-label="Channel" name="channel" class="w-full text-sm min-h-[44px] px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#060913] border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-200 focus:border-amber-500 focus:ring-amber-500">
                             <option value="">All Channels</option>
-                            <option value="whatsapp" @selected(request('channel') === 'whatsapp')>💬 WhatsApp</option>
-                            <option value="sms" @selected(request('channel') === 'sms')>📱 SMS</option>
-                            <option value="email" @selected(request('channel') === 'email')>✉️ Email</option>
+                            <option value="whatsapp" @selected(request('channel') === 'whatsapp')>WhatsApp</option>
+                            <option value="sms" @selected(request('channel') === 'sms')>SMS</option>
+                            <option value="email" @selected(request('channel') === 'email')>Email</option>
                         </select>
                     </div>
                     <div>
@@ -184,10 +184,15 @@
                         @forelse($logs as $log)
                             <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
                                 <td class="px-4 py-3.5 whitespace-nowrap">
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold border {{ $log->channel_badge_class }} mb-1">
-                                        @if($log->channel === 'whatsapp') 💬 WhatsApp
-                                        @elseif($log->channel === 'sms') 📱 SMS
-                                        @else ✉️ Email
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold border {{ $log->channel_badge_class }} mb-1">
+                                        @if($log->channel === 'whatsapp')
+                                            <x-icon.whatsapp class="w-3.5 h-3.5 text-black dark:text-white shrink-0" />
+                                            <span>WhatsApp</span>
+                                        @elseif($log->channel === 'sms')
+                                            <span>SMS</span>
+                                        @else
+                                            <x-icon.email class="w-3.5 h-3.5 text-black dark:text-white shrink-0" />
+                                            <span>Email</span>
                                         @endif
                                     </span>
                                     <div class="text-[11px] font-semibold text-slate-700 dark:text-slate-300 capitalize">
@@ -203,7 +208,7 @@
                                 <td class="px-4 py-3.5 max-w-md">
                                     <div class="text-slate-800 dark:text-slate-300 line-clamp-2 leading-relaxed whitespace-pre-line text-[11px]">{{ $log->message_body }}</div>
                                     @if($log->error_message)
-                                        <div class="text-[11px] text-rose-600 dark:text-rose-400 font-medium mt-1">⚠️ {{ $log->error_message }}</div>
+                                        <div class="text-[11px] text-rose-600 dark:text-rose-400 font-medium mt-1"><svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg> {{ $log->error_message }}</div>
                                     @endif
                                 </td>
                                 <td class="px-4 py-3.5 whitespace-nowrap">
@@ -229,12 +234,13 @@
                                     <div class="flex items-center justify-end gap-1.5">
                                         @if($log->action_url)
                                             <a href="{{ $log->action_url }}" target="_blank" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-sky-100 dark:bg-sky-500/10 hover:bg-sky-200 dark:hover:bg-sky-500/20 text-sky-800 dark:text-sky-400 border border-sky-300 dark:border-sky-500/30 text-[11px] font-bold transition" title="View Proposal PDF">
-                                                📄 PDF
+                                                PDF
                                             </a>
                                         @endif
                                         @if($log->channel === 'whatsapp' && $log->whats_app_web_url)
                                             <a href="{{ $log->whats_app_web_url }}" target="_blank" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-100 dark:bg-emerald-500/10 hover:bg-emerald-200 dark:hover:bg-emerald-500/20 text-emerald-800 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-500/30 text-[11px] font-bold transition" title="Open in WhatsApp Web / App">
-                                                💬 Chat
+                                                <x-icon.whatsapp class="w-3.5 h-3.5 text-black dark:text-white shrink-0" />
+                                                <span>Chat</span>
                                             </a>
                                         @endif
                                     </div>

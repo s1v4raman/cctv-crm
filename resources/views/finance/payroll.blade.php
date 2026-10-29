@@ -40,41 +40,18 @@
         <x-employee-subnav active="payroll" />
 
         {{-- Summary Cards for Selected Month --}}
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-4">
-                <span class="text-xs font-medium text-slate-500 dark:text-slate-400 block">Net Payroll Value</span>
-                <span class="text-xl font-bold text-slate-900 dark:text-white mt-1 block">
-                    &#8377;{{ number_format($totalNetPayroll, 2) }}
-                </span>
-                <span class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 block">Month of {{ \Carbon\Carbon::parse($selectedMonth . '-01')->format('F Y') }}</span>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-4">
+                <span class="text-xs text-slate-500 dark:text-slate-400 block">Net pay for {{ \Carbon\Carbon::parse($selectedMonth . '-01')->format('F Y') }}</span>
+                <span class="text-xl font-semibold text-slate-900 dark:text-white mt-1 block">{{ \App\Support\Inr::format($totalNetPayroll) }}</span>
             </div>
-            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-4">
-                <span class="text-xs font-medium text-slate-500 dark:text-slate-400 block">Total Disbursed</span>
-                <span class="text-xl font-bold text-emerald-600 dark:text-emerald-400 mt-1 block">
-                    &#8377;{{ number_format($totalPaidPayroll, 2) }}
-                </span>
-                <span class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 block">Successfully settled</span>
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-4">
+                <span class="text-xs text-slate-500 dark:text-slate-400 block">Paid</span>
+                <span class="text-xl font-semibold text-slate-900 dark:text-white mt-1 block">{{ \App\Support\Inr::format($totalPaidPayroll) }}</span>
             </div>
-            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-4">
-                <span class="text-xs font-medium text-slate-500 dark:text-slate-400 block">Pending / Draft</span>
-                <span class="text-xl font-bold text-amber-600 dark:text-amber-400 mt-1 block">
-                    &#8377;{{ number_format($totalPendingPayroll, 2) }}
-                </span>
-                <span class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 block">Awaiting approval or payout</span>
-            </div>
-            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-4">
-                <span class="text-xs font-medium text-slate-500 dark:text-slate-400 block">Overtime Disbursed</span>
-                <span class="text-xl font-bold text-slate-900 dark:text-white mt-1 block">
-                    &#8377;{{ number_format($totalOvertimePaid, 2) }}
-                </span>
-                <span class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 block">Logged attendance</span>
-            </div>
-            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-4">
-                <span class="text-xs font-medium text-slate-500 dark:text-slate-400 block">Total Allowances</span>
-                <span class="text-xl font-bold text-slate-900 dark:text-white mt-1 block">
-                    &#8377;{{ number_format($totalAllowancesPaid, 2) }}
-                </span>
-                <span class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 block">Travel &amp; incentives</span>
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-4">
+                <span class="text-xs text-slate-500 dark:text-slate-400 block">Still to pay</span>
+                <span class="text-xl font-semibold {{ $totalPendingPayroll > 0 ? 'text-amber-700 dark:text-amber-400' : 'text-slate-900 dark:text-white' }} mt-1 block">{{ \App\Support\Inr::format($totalPendingPayroll) }}</span>
             </div>
         </div>
 
@@ -126,7 +103,7 @@
         {{-- Payroll Table --}}
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-4 space-y-3">
             <div class="flex items-center justify-between">
-                <h2 class="font-bold text-slate-900 dark:text-white text-sm">Generated Salary Slips</h2>
+                <h2 class="font-bold text-slate-900 dark:text-white text-sm">Salary slips</h2>
                 <span class="text-xs text-slate-500 dark:text-slate-400">
                     {{ $payrolls->total() }} Records
                 </span>
@@ -217,7 +194,10 @@
                                         <span class="text-slate-300 dark:text-slate-600">|</span>
                                         <a href="{{ route('finance.payroll.pdf', $p->id) }}" class="text-blue-600 hover:underline">PDF</a>
                                         <span class="text-slate-300 dark:text-slate-600">|</span>
-                                        <a href="{{ route('finance.payroll.sendWhatsApp', $p->id) }}" target="_blank" class="text-blue-600 hover:underline">WhatsApp</a>
+                                        <a href="{{ route('finance.payroll.sendWhatsApp', $p->id) }}" target="_blank" class="text-blue-600 hover:underline inline-flex items-center gap-1">
+                                            <x-icon.whatsapp class="w-3.5 h-3.5 text-black dark:text-white shrink-0" />
+                                            <span>WhatsApp</span>
+                                        </a>
                                         <span class="text-slate-300 dark:text-slate-600">|</span>
                                         <button type="button" 
                                                 onclick="openStatusModal({{ $p->id }}, '{{ $p->payroll_number }}', '{{ $p->status }}', '{{ $p->payment_reference ?? '' }}', '{{ $p->notes ?? '' }}')"
@@ -230,7 +210,7 @@
                         @empty
                             <tr>
                                 <td colspan="11" class="py-8 text-center text-slate-400">
-                                    No payroll slips generated for this period. Click "Generate Payroll" above to run batch calculations.
+                                    No salary slips for this month yet. Use <strong>Generate Payroll</strong> to create them from attendance and salaries.
                                 </td>
                             </tr>
                         @endforelse

@@ -144,7 +144,7 @@
                             @endif
                         </div>
                         <div class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-1">
-                            <span>📞 {{ $worker->phone }}</span>
+                            <span>{{ $worker->phone }}</span>
                             <span>•</span>
                             <span>Rate: <strong class="text-slate-700 dark:text-slate-200">₹{{ number_format($worker->daily_rate, 2) }}</strong>/day</span>
                             <span>•</span>

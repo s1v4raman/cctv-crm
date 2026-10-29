@@ -3,7 +3,7 @@
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <h2 class="text-xl font-bold text-slate-900 dark:text-white">
-                    Accounts Receivable &amp; Debtors Aging
+                    Receivables
                 </h2>
             </div>
 
@@ -14,13 +14,13 @@
                 </a>
 
                 <a href="{{ route('finance.receivables.export-pdf') }}" class="btn-secondary">
-                    Aging PDF
+                    Ageing PDF
                 </a>
 
                 <form action="{{ route('finance.receivables.sweep') }}" method="POST" data-confirm="Trigger payment reminder sweep for all overdue invoices? (Invoices notified within last 3 days will be skipped)" class="inline">
                     @csrf
                     <button type="submit" class="btn-primary">
-                        Dunning Sweep
+                        Send reminders
                     </button>
                 </form>
             </div>
@@ -87,19 +87,19 @@
             <div class="stat-grid">
                 <!-- 1. Total Outstanding -->
                 <div class="stat-card">
-                    <div class="stat-label">Total Receivables</div>
-                    <div class="stat-value text-blue-600 dark:text-blue-400">
+                    <div class="stat-label">Still to collect</div>
+                    <div class="stat-value">
                         ₹{{ number_format($summary['total_outstanding'], 2) }}
                     </div>
                     <div class="mt-2 text-xs text-slate-500">
-                        {{ $summary['total_invoices_count'] }} Invoices • {{ $summary['total_debtors_count'] }} Debtors
+                        {{ $summary['total_invoices_count'] }} {{ Str::plural('invoice', $summary['total_invoices_count']) }} · {{ $summary['total_debtors_count'] }} {{ Str::plural('customer', $summary['total_debtors_count']) }}
                     </div>
                 </div>
 
                 <!-- 2. Current (0-30 Days) -->
                 <div class="stat-card">
                     <div class="stat-label">0–30 Days</div>
-                    <div class="stat-value text-emerald-600 dark:text-emerald-400">
+                    <div class="stat-value">
                         ₹{{ number_format($summary['current_0_30'], 2) }}
                     </div>
                     <div class="mt-2 text-xs text-slate-500">
@@ -110,7 +110,7 @@
                 <!-- 3. Overdue (31-60 Days) -->
                 <div class="stat-card">
                     <div class="stat-label">31–60 Days</div>
-                    <div class="stat-value text-amber-600 dark:text-amber-400">
+                    <div class="stat-value">
                         ₹{{ number_format($summary['overdue_31_60'], 2) }}
                     </div>
                     <div class="mt-2 text-xs text-slate-500">
@@ -121,7 +121,7 @@
                 <!-- 4. Critical (61-90 Days) -->
                 <div class="stat-card">
                     <div class="stat-label">61–90 Days</div>
-                    <div class="stat-value text-orange-600 dark:text-orange-400">
+                    <div class="stat-value">
                         ₹{{ number_format($summary['critical_61_90'], 2) }}
                     </div>
                     <div class="mt-2 text-xs text-slate-500">
@@ -132,7 +132,7 @@
                 <!-- 5. High Risk (90+ Days) -->
                 <div class="stat-card">
                     <div class="stat-label">90+ Days</div>
-                    <div class="stat-value text-rose-600 dark:text-rose-400">
+                    <div class="stat-value">
                         ₹{{ number_format($summary['high_risk_90_plus'], 2) }}
                     </div>
                     <div class="mt-2 text-xs text-slate-500">
@@ -142,27 +142,27 @@
 
                 <!-- 6. Days Sales Outstanding (DSO) -->
                 <div class="stat-card">
-                    <div class="stat-label">DSO (Collection Speed)</div>
+                    <div class="stat-label">Average days to collect</div>
                     <div class="stat-value">
                         {{ $summary['dso_days'] }} <span class="text-xs font-normal text-slate-500">Days</span>
                     </div>
-                    <div class="mt-2 text-xs {{ $summary['dso_days'] <= 45 ? 'text-emerald-600' : ($summary['dso_days'] <= 75 ? 'text-amber-600' : 'text-rose-600') }}">
-                        {{ $summary['dso_days'] <= 45 ? 'Healthy velocity' : ($summary['dso_days'] <= 75 ? 'Moderate delay' : 'High delay') }}
+                    <div class="mt-2 text-xs text-slate-500">
+                        {{ $summary['total_invoices_count'] > 0 ? 'from invoice to payment' : 'no invoices yet' }}
                     </div>
                 </div>
             </div>
 
             <!-- Tab Navigation -->
-            <div class="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
+            <div class="flex items-center gap-6 border-b border-slate-200 dark:border-slate-800 overflow-x-auto whitespace-nowrap">
                 <button @click="activeTab = 'debtors'"
-                        :class="activeTab === 'debtors' ? 'bg-blue-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'"
-                        class="px-3.5 py-1.5 text-xs font-semibold rounded transition" style="border-radius: 4px;">
-                    Debtors Aging Matrix ({{ count($debtors) }} Clients)
+                        :class="activeTab === 'debtors' ? 'border-blue-600 text-slate-900 dark:text-white font-medium' : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'"
+                        class="py-2.5 -mb-px border-b-2 text-sm transition">
+                    By customer
                 </button>
                 <button @click="activeTab = 'overdue'"
-                        :class="activeTab === 'overdue' ? 'bg-blue-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'"
-                        class="px-3.5 py-1.5 text-xs font-semibold rounded transition flex items-center gap-1.5" style="border-radius: 4px;">
-                    <span>Overdue Invoices</span>
+                        :class="activeTab === 'overdue' ? 'border-blue-600 text-slate-900 dark:text-white font-medium' : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'"
+                        class="py-2.5 -mb-px border-b-2 text-sm transition flex items-center gap-1.5">
+                    <span>Overdue invoices</span>
                     @if($summary['overdue_invoices_count'] > 0)
                         <span class="font-bold text-rose-500">({{ $summary['overdue_invoices_count'] }})</span>
                     @endif

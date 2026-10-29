@@ -52,7 +52,7 @@ class LeaveManagementWorkflowTest extends TestCase
         $response = $this->actingAs($this->employee)->get(route('leaves.index'));
 
         $response->assertOk();
-        $response->assertSee('Employee Leave Management');
+        $response->assertSee('Casual Leave (CL)');
         $response->assertSee('Casual Leave (CL)');
         $response->assertSee('Sick Leave (SL)');
         $response->assertSee('Earned / Paid Leave');

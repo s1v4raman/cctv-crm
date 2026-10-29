@@ -62,7 +62,7 @@ class PettyCashAndFieldReconciliationTest extends TestCase
 
         $response->assertOk()
             ->assertSee('Petty Cash')
-            ->assertSee('Field Float Reconciliation')
+            ->assertSee('Petty cash')
             ->assertSee('29,500.00') // Total Liquid Cash
             ->assertSee('25,000.00') // Vault Safe
             ->assertSee('4,500.00')  // Technician Float

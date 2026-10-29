@@ -3,7 +3,7 @@
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <div class="flex items-center gap-2">
-                    <h2 class="text-xl font-extrabold text-slate-900 dark:text-white font-heading tracking-tight">Delivery Challans &bull; Ready to Invoice</h2>
+                    <h2 class="text-xl font-extrabold text-slate-900 dark:text-white font-heading tracking-tight">Ready to invoice</h2>
                     <span class="text-xs font-bold uppercase tracking-wider bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2.5 py-1 rounded border border-amber-200 dark:border-amber-500/30">Billing Queue</span>
                 </div>
                 <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Reconcile delivered materials: unbilled Delivery Challans awaiting formal customer tax invoices</p>
@@ -84,7 +84,7 @@
         {{-- Grouped DC Listings by Company --}}
         @if($groupedByCompany->isEmpty())
             <div class="p-12 text-center rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 text-slate-400">
-                <div class="text-4xl mb-2">🎉</div>
+                <div class="text-4xl mb-2"><svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9 9 0 100-18 9 9 0 000 18z"/></svg></div>
                 <h3 class="font-bold text-slate-700 dark:text-slate-200 text-base">All Caught Up!</h3>
                 <p class="text-xs mt-1">There are no pending Delivery Challans waiting to be invoiced.</p>
             </div>

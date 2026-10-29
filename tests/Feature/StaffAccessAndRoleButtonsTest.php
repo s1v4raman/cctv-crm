@@ -113,13 +113,13 @@ class StaffAccessAndRoleButtonsTest extends TestCase
     public function test_employee_hub_shows_pay_only_to_admins(): void
     {
         $this->actingAs($this->admin)->get(route('employee.hub'))
-            ->assertOk()->assertSee('Monthly Burn')->assertSee('Salary by Role')->assertSee('Salary/mo');
+            ->assertOk()->assertSee('Monthly salaries')->assertSee('No salaries set yet')->assertSee('Salary/mo');
 
         $this->actingAs($this->staff)->get(route('employee.hub'))
             ->assertOk()
-            ->assertSee('Employee Directory')
-            ->assertDontSee('Monthly Burn')
-            ->assertDontSee('Salary by Role')
+            ->assertSee('Employees today')
+            ->assertDontSee('Monthly salaries')
+            ->assertDontSee('No salaries set yet')
             ->assertDontSee('Salary/mo')
             ->assertDontSee(route('finance.payroll.index'), false);
     }

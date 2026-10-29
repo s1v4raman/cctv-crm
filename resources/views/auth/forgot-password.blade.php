@@ -31,11 +31,8 @@
             {{-- Brand Logo Header --}}
             <div class="flex items-center justify-between mb-4 lg:mb-6">
                 <a href="{{ request()->getPort() == 8001 ? route('login') : route('home') }}" class="flex items-center gap-3">
-                    <img src="{{ asset('logo.png') }}" alt="Precision IT Systems" class="crm-brand-logo h-12 w-12 object-contain shrink-0">
-                    <div>
-                        <span class="text-xl font-bold text-slate-900 tracking-tight leading-tight">Precision IT <span class="text-blue-600">Systems</span></span>
-                        <span class="block text-xs font-medium text-slate-500 mt-0.5">Surveillance &amp; Operations CRM</span>
-                    </div>
+                    <img src="{{ asset('logo.png') }}?v={{ filemtime(public_path('logo.png')) }}" alt="Precision IT Systems" class="h-9 w-auto max-w-[180px] object-contain shrink-0">
+                    <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider pl-2 border-l border-slate-300">Operations</span>
                 </a>
 
                 <a href="{{ route('login') }}" class="text-xs font-medium text-slate-600 hover:text-blue-600 hover:underline">

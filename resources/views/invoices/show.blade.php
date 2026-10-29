@@ -28,8 +28,9 @@
                 @endif
                 @if($invoice->quotation->lead->phone)
                     <a href="https://api.whatsapp.com/send?phone={{ $invoice->quotation->getWhatsAppPhone() }}&text={{ urlencode("Hello " . $invoice->quotation->lead->customer_name . ",\n\nThis is a reminder for Tax Invoice *" . $invoice->invoice_no . "*.\nBalance due: ₹" . number_format($invoice->balanceDue(), 2) . "\n\nOnce paid (GPay / bank transfer / cheque / cash), please share the payment reference with us.\n\nThank you!") }}"
-                       target="_blank" class="btn-secondary text-xs">
-                        WhatsApp
+                       target="_blank" class="btn-secondary text-xs inline-flex items-center gap-1.5 shadow-2xs">
+                        <x-icon.whatsapp class="w-4 h-4 text-black dark:text-white shrink-0" />
+                        <span>Send WhatsApp</span>
                     </a>
                 @endif
             </div>

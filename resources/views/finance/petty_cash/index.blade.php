@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-                <h2 class="text-xl font-bold text-slate-900 dark:text-white">Petty Cash &amp; Field Float Reconciliation</h2>
+                <h2 class="text-xl font-bold text-slate-900 dark:text-white">Petty cash</h2>
             </div>
             <div class="flex items-center gap-2">
                 <a href="{{ route('finance.petty_cash.export-csv') }}" class="btn-secondary">
@@ -77,7 +77,7 @@
 
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-4">
                 <div class="text-xs font-medium text-slate-500 dark:text-slate-400">Field Custodian Floats</div>
-                <div class="text-xl font-bold text-indigo-600 dark:text-indigo-400 mt-1">
+                <div class="text-xl font-semibold text-slate-900 dark:text-white mt-1">
                     &#8377;{{ number_format($summary['total_field_float'], 2) }}
                 </div>
                 <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
@@ -87,14 +87,14 @@
 
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-4">
                 <div class="text-xs font-medium text-slate-500 dark:text-slate-400">Total Liquid Cash</div>
-                <div class="text-xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">
+                <div class="text-xl font-semibold text-slate-900 dark:text-white mt-1">
                     &#8377;{{ number_format($summary['total_liquid_cash'], 2) }}
                 </div>
             </div>
 
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-4">
                 <div class="text-xs font-medium text-slate-500 dark:text-slate-400">Day Collections</div>
-                <div class="text-xl font-bold text-teal-600 dark:text-teal-400 mt-1">
+                <div class="text-xl font-semibold text-slate-900 dark:text-white mt-1">
                     &#8377;{{ number_format($summary['daily_collections'], 2) }}
                 </div>
             </div>

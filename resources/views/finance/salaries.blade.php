@@ -3,7 +3,7 @@
         <div class="flex flex-wrap items-center justify-between gap-4">
             <div>
                 <h2 class="text-xl font-bold text-slate-900 dark:text-white">
-                    Employee Salary Master
+                    Salaries
                 </h2>
             </div>
             <div class="flex items-center gap-2">
@@ -30,34 +30,14 @@
         <x-employee-subnav active="salaries" />
 
         {{-- Financial Macro Metrics --}}
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-4">
-                <span class="text-xs font-medium text-slate-500 dark:text-slate-400 block">Monthly Payroll Run-Rate</span>
-                <span class="text-xl font-bold text-slate-900 dark:text-white mt-1 block">
-                    &#8377;{{ number_format($totalMonthlyPayroll, 2) }}
-                </span>
-                <span class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 block">Base monthly commitment</span>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl">
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-4">
+                <span class="text-xs text-slate-500 dark:text-slate-400 block">Monthly salaries</span>
+                <span class="text-xl font-semibold text-slate-900 dark:text-white mt-1 block">{{ \App\Support\Inr::format($totalMonthlyPayroll) }}</span>
             </div>
-            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-4">
-                <span class="text-xs font-medium text-slate-500 dark:text-slate-400 block">Weekly Salary Budget</span>
-                <span class="text-xl font-bold text-emerald-600 dark:text-emerald-400 mt-1 block">
-                    &#8377;{{ number_format($totalWeeklyPayroll, 2) }}
-                </span>
-                <span class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 block">Weekly requirement</span>
-            </div>
-            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-4">
-                <span class="text-xs font-medium text-slate-500 dark:text-slate-400 block">Per-Day Labor Cost</span>
-                <span class="text-xl font-bold text-amber-600 dark:text-amber-400 mt-1 block">
-                    &#8377;{{ number_format($totalDailyPayroll, 2) }}
-                </span>
-                <span class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 block">Daily operational burn</span>
-            </div>
-            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-4">
-                <span class="text-xs font-medium text-slate-500 dark:text-slate-400 block">Salaried Headcount</span>
-                <span class="text-xl font-bold text-slate-900 dark:text-white mt-1 block">
-                    {{ $configuredCount }} / {{ $employees->total() }}
-                </span>
-                <span class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 block">Avg Monthly: &#8377;{{ number_format($avgMonthlySalary, 0) }}</span>
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-4">
+                <span class="text-xs text-slate-500 dark:text-slate-400 block">Salary set</span>
+                <span class="text-xl font-semibold text-slate-900 dark:text-white mt-1 block">{{ $configuredCount }} of {{ $employees->total() }} people</span>
             </div>
         </div>
 
@@ -117,7 +97,7 @@
                                     <div class="text-[11px] text-slate-400">{{ $emp->email }}</div>
                                 </td>
                                 <td class="py-3 px-3">
-                                    <span class="font-bold {{ $emp->role === 'admin' ? 'text-purple-600 dark:text-purple-400' : ($emp->role === 'technician' ? 'text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300') }}">
+                                    <span class="text-slate-700 dark:text-slate-300">
                                         {{ ucfirst($emp->role) }}
                                     </span>
                                 </td>
@@ -125,7 +105,7 @@
                                     @if($sal && $sal->base_salary_monthly > 0)
                                         &#8377;{{ number_format($sal->base_salary_monthly, 2) }}
                                     @else
-                                        <span class="text-amber-600 dark:text-amber-400 font-normal">Not Set</span>
+                                        <span class="text-slate-500 dark:text-slate-400 font-normal">Not set</span>
                                     @endif
                                 </td>
                                 <td class="py-3 px-3 text-right text-emerald-600 dark:text-emerald-400">

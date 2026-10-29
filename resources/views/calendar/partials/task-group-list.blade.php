@@ -3,22 +3,22 @@
         'Overdue' => [
             'badge'  => 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300 border-rose-300 dark:border-rose-800',
             'accent' => 'border-l-4 border-l-rose-500',
-            'icon'   => '⚠️',
+            'icon'   => '<svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg> ',
         ],
         'Today' => [
             'badge'  => 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 border-blue-300 dark:border-blue-800',
             'accent' => 'border-l-4 border-l-blue-500',
-            'icon'   => '⚡',
+            'icon'   => '',
         ],
         'Tomorrow' => [
             'badge'  => 'bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300 border-purple-300 dark:border-purple-800',
             'accent' => 'border-l-4 border-l-purple-500',
-            'icon'   => '📅',
+            'icon'   => '',
         ],
         'This week' => [
             'badge'  => 'bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300 border-sky-300 dark:border-sky-800',
             'accent' => 'border-l-4 border-l-sky-500',
-            'icon'   => '🗓️',
+            'icon'   => '',
         ],
         'Later' => [
             'badge'  => 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300 border-slate-300 dark:border-slate-700',
@@ -58,7 +58,7 @@
                             <div class="mb-3.5 p-3 rounded-[4px] bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800/80 text-rose-800 dark:text-rose-200 text-xs">
                                 <div class="flex items-start justify-between gap-3">
                                     <div class="flex items-start gap-2">
-                                        <span class="text-base">⚠️</span>
+                                        <span class="text-base"><svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg></span>
                                         <div>
                                             <div class="font-bold">
                                                 Rejected by {{ $task['rejected_user']['name'] ?? 'Assignee' }}
@@ -115,7 +115,7 @@
 
                                     {{-- Shift badge --}}
                                     <span class="text-[11px] font-bold px-2 py-0.5 rounded-[4px] bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-200/60 dark:border-amber-800/60 inline-flex items-center gap-1">
-                                        <span>☀️</span>
+                                        <span><svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9 9 0 100-18 9 9 0 000 18z"/></svg></span>
                                         <span>{{ $task['shift'] }}</span>
                                     </span>
 

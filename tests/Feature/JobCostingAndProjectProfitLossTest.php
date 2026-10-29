@@ -126,7 +126,7 @@ class JobCostingAndProjectProfitLossTest extends TestCase
         // Access Index
         $response = $this->actingAs($this->admin)->get(route('finance.job-costing.index'));
         $response->assertOk();
-        $response->assertSee('Job Costing & Per-Project Profit & Loss', false);
+        $response->assertSee('Job costing', false);
         $response->assertSee('JOB-HOTEL-01');
         $response->assertSee('Grand Palace Hotel');
         $response->assertSee('24,000.00'); // Revenue

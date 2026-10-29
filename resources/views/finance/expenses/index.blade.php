@@ -4,7 +4,7 @@
             <div>
                 <div class="flex items-center gap-2">
                     <h2 class="text-xl font-bold text-slate-900 dark:text-white">
-                        Field Expenses &amp; Travel Claims Hub
+                        Expense claims
                     </h2>
                     @if($canManage && $pendingCount > 0)
                         <span class="text-xs font-bold text-[#d97706]">
@@ -72,6 +72,7 @@
 
     <div class="py-6 bg-slate-50 dark:bg-[#060913] min-h-[calc(100vh-4.5rem)] text-slate-800 dark:text-slate-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+            <x-employee-subnav />
 
             {{-- Flash Notification Status --}}
             @if(session('status'))
@@ -293,7 +294,7 @@
                                             @if($c->receipt_path)
                                                 <div class="mt-1">
                                                     <a href="{{ asset('storage/' . $c->receipt_path) }}" target="_blank" class="text-[11px] text-blue-600 dark:text-blue-400 font-bold hover:underline">
-                                                        📎 Receipt Attached
+                                                        Receipt Attached
                                                     </a>
                                                 </div>
                                             @endif

@@ -7,7 +7,7 @@
                     <span class="text-slate-300 dark:text-slate-600">/</span>
                     <span class="text-xs font-semibold text-slate-600 dark:text-slate-400">Attendance</span>
                 </div>
-                <h2 class="text-xl font-bold text-slate-900 dark:text-white mt-0.5">Worker Attendance Maintenance</h2>
+                <h2 class="text-xl font-bold text-slate-900 dark:text-white mt-0.5">Worker attendance</h2>
             </div>
             <div class="flex items-center gap-2 flex-wrap">
                 <button type="button" onclick="openAttendanceModal()" class="btn-primary flex items-center gap-1.5 shadow-sm">
@@ -165,12 +165,12 @@
                 </div>
                 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-3 shadow-sm">
                     <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wider">Cabling Run</div>
-                    <div class="text-xl font-bold text-indigo-600 dark:text-indigo-400 mt-1">{{ number_format($metrics['total_cabling'], 1) }} <span class="text-xs font-normal text-slate-500">m</span></div>
+                    <div class="text-xl font-semibold text-slate-900 dark:text-white mt-1">{{ number_format($metrics['total_cabling'], 1) }} <span class="text-xs font-normal text-slate-500">m</span></div>
                     <div class="text-[11px] text-slate-500 mt-0.5">Physical cable meters</div>
                 </div>
                 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-3 shadow-sm">
                     <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wider">Cameras Mounted</div>
-                    <div class="text-xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">{{ $metrics['total_cameras'] }} <span class="text-xs font-normal text-slate-500">units</span></div>
+                    <div class="text-xl font-semibold text-slate-900 dark:text-white mt-1">{{ $metrics['total_cameras'] }} <span class="text-xs font-normal text-slate-500">units</span></div>
                     <div class="text-[11px] text-slate-500 mt-0.5">Installed today</div>
                 </div>
                 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-3 shadow-sm">
@@ -180,7 +180,7 @@
                 </div>
                 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-3 shadow-sm">
                     <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wider">Photos Logged</div>
-                    <div class="text-xl font-bold text-purple-600 dark:text-purple-400 mt-1">{{ $attendances->whereNotNull('photo_path')->count() }} / {{ $metrics['total_present'] }}</div>
+                    <div class="text-xl font-semibold text-slate-900 dark:text-white mt-1">{{ $attendances->whereNotNull('photo_path')->count() }} / {{ $metrics['total_present'] }}</div>
                     <div class="text-[11px] text-slate-500 mt-0.5">With selfie/punch photo</div>
                 </div>
                 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-3 shadow-sm">
@@ -201,12 +201,12 @@
                 </div>
                 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-3 shadow-sm">
                     <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wider">Weekly Cabling</div>
-                    <div class="text-xl font-bold text-indigo-600 dark:text-indigo-400 mt-1">{{ number_format($metrics['total_cabling'], 1) }} <span class="text-xs font-normal text-slate-500">m</span></div>
+                    <div class="text-xl font-semibold text-slate-900 dark:text-white mt-1">{{ number_format($metrics['total_cabling'], 1) }} <span class="text-xs font-normal text-slate-500">m</span></div>
                     <div class="text-[11px] text-slate-500 mt-0.5">Total cable pulled</div>
                 </div>
                 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-3 shadow-sm">
                     <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wider">Weekly Cameras</div>
-                    <div class="text-xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">{{ $metrics['total_cameras'] }}</div>
+                    <div class="text-xl font-semibold text-slate-900 dark:text-white mt-1">{{ $metrics['total_cameras'] }}</div>
                     <div class="text-[11px] text-slate-500 mt-0.5">Mounted this week</div>
                 </div>
                 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-3 shadow-sm">
@@ -230,12 +230,12 @@
                 </div>
                 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-3 shadow-sm">
                     <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wider">Monthly Cabling</div>
-                    <div class="text-xl font-bold text-indigo-600 dark:text-indigo-400 mt-1">{{ number_format($metrics['total_cabling'], 1) }} <span class="text-xs font-normal text-slate-500">m</span></div>
+                    <div class="text-xl font-semibold text-slate-900 dark:text-white mt-1">{{ number_format($metrics['total_cabling'], 1) }} <span class="text-xs font-normal text-slate-500">m</span></div>
                     <div class="text-[11px] text-slate-500 mt-0.5">Total metres installed</div>
                 </div>
                 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-3 shadow-sm">
                     <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wider">Monthly Cameras</div>
-                    <div class="text-xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">{{ $metrics['total_cameras'] }}</div>
+                    <div class="text-xl font-semibold text-slate-900 dark:text-white mt-1">{{ $metrics['total_cameras'] }}</div>
                     <div class="text-[11px] text-slate-500 mt-0.5">Cameras configured</div>
                 </div>
                 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-3 shadow-sm">
@@ -245,7 +245,7 @@
                 </div>
                 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-3 shadow-sm">
                     <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wider">Settled / Paid</div>
-                    <div class="text-xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">&#8377;{{ number_format($metrics['total_paid'], 2) }}</div>
+                    <div class="text-xl font-semibold text-slate-900 dark:text-white mt-1">&#8377;{{ number_format($metrics['total_paid'], 2) }}</div>
                     <div class="text-[11px] text-slate-500 mt-0.5">Cleared disbursements</div>
                 </div>
                 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-3 shadow-sm">
@@ -563,8 +563,7 @@
                                                                 onclick="showLightbox('{{ $w->name }}', '{{ $w->photo_url }}', '{{ $att->photo_url }}', '{{ $wd['label'] }}')"
                                                                 class="relative group cursor-pointer focus:outline-none mb-0.5" title="View Punch Selfie">
                                                             <span class="inline-block px-2 py-0.5 rounded text-[11px] font-bold {{ $att->attendance_type === 'half' ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300' : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300' }}">
-                                                                {{ $att->attendance_type === 'half' ? 'H' : 'P' }} 📷
-                                                            </span>
+                                                                {{ $att->attendance_type === 'half' ? 'H' : 'P' }}                                                             </span>
                                                         </button>
                                                     @else
                                                         <span class="inline-block px-2 py-0.5 rounded text-[11px] font-bold {{ $att->attendance_type === 'half' ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300' : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300' }}">
@@ -884,10 +883,10 @@
                     {{-- Capture Mode Buttons --}}
                     <div class="flex items-center gap-2 mb-2">
                         <button type="button" onclick="setPhotoTab('file')" id="tab-btn-file" class="px-2.5 py-1 text-xs font-semibold rounded bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-indigo-600 dark:text-indigo-400 shadow-xs">
-                            📁 Upload File
+                            Upload File
                         </button>
                         <button type="button" onclick="setPhotoTab('camera')" id="tab-btn-camera" class="px-2.5 py-1 text-xs font-semibold rounded bg-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900">
-                            📷 Live Camera
+                            Live Camera
                         </button>
                     </div>
 
@@ -907,7 +906,7 @@
                         </div>
                         <div class="flex items-center justify-between mt-2">
                             <button type="button" onclick="startWebcam()" id="btn-start-camera" class="btn-secondary py-1 px-2.5 text-xs">Start Camera</button>
-                            <button type="button" onclick="snapWebcamPhoto()" id="btn-snap-camera" class="btn-primary py-1 px-3 text-xs hidden">📸 Snap Photo</button>
+                            <button type="button" onclick="snapWebcamPhoto()" id="btn-snap-camera" class="btn-primary py-1 px-3 text-xs hidden">Snap Photo</button>
                             <span id="camera-status-text" class="text-[11px] text-slate-500">Click start camera to use webcam</span>
                         </div>
                         <div id="camera-snapped-preview" class="mt-2 hidden">

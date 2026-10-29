@@ -56,7 +56,7 @@ class ExecutiveAnalyticsTest extends TestCase
     {
         $response = $this->actingAs($this->admin)->get(route('analytics.index'));
         $response->assertOk();
-        $response->assertSee('Executive Business Analytics');
+        $response->assertSee('Business analytics');
         $response->assertSee('Total Revenue');
         $response->assertSee('COGS');
         $response->assertSee('Gross Profit');

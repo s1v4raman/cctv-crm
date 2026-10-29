@@ -12,9 +12,9 @@
     <title>Sign In - Precision IT Systems ERP Operations</title>
 
     <!-- Favicon / App Icon -->
-    <link rel="icon" type="image/png" href="{{ asset('logo.png') }}?v={{ filemtime(public_path('logo.png')) }}">
+    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}?v={{ filemtime(public_path('favicon.png')) }}">
     <link rel="shortcut icon" href="{{ asset('favicon.ico') }}?v={{ filemtime(public_path('favicon.ico')) }}">
-    <link rel="apple-touch-icon" href="{{ asset('logo.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('logo-mark.png') }}">
 
 
     <!-- Scripts & Styles via Vite -->
@@ -358,14 +358,9 @@
                 
                 <!-- Top: Brand -->
                 <div class="anim">
-                    <a href="{{ route('home') }}" class="flex items-center gap-3 group">
-                        <div class="w-10 h-10 rounded-xl bg-blue-600/20 border border-blue-500/20 flex items-center justify-center group-hover:bg-blue-600/30 transition-colors duration-300">
-                            <img src="{{ asset('logo.png') }}" alt="Precision IT Systems" class="crm-brand-logo h-7 w-7 object-contain">
-                        </div>
-                        <div>
-                            <span class="text-lg font-bold text-white tracking-tight">Precision IT <span class="text-blue-400">Systems</span></span>
-                            <span class="block text-[11px] font-semibold text-slate-500 tracking-widest uppercase mt-0">Operations ERP</span>
-                        </div>
+                    <a href="{{ route('home') }}" class="flex items-center gap-3.5 group" title="Precision IT Systems Operations ERP">
+                        <img src="{{ asset('logo-dark.png') }}?v={{ filemtime(public_path('logo-dark.png')) }}" alt="Precision IT Systems" class="h-9 w-auto max-w-[210px] object-contain group-hover:scale-105 transition-transform duration-200">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-white/10 text-slate-300 border border-white/10">Operations ERP</span>
                     </a>
                 </div>
 
@@ -432,8 +427,8 @@
             <div class="flex items-center justify-between px-6 sm:px-8 lg:px-10 xl:px-12 pt-6 sm:pt-8">
                 <!-- Mobile logo -->
                 <a href="{{ route('home') }}" class="flex items-center gap-2.5 lg:hidden">
-                    <img src="{{ asset('logo.png') }}" alt="Precision IT Systems" class="crm-brand-logo h-9 w-9 object-contain">
-                    <span class="text-base font-bold fp-heading tracking-tight">Precision IT <span class="text-blue-600">Systems</span></span>
+                    <img src="{{ asset('logo.png') }}?v={{ filemtime(public_path('logo.png')) }}" alt="Precision IT Systems" class="h-8 w-auto max-w-[170px] object-contain dark:hidden">
+                    <img src="{{ asset('logo-dark.png') }}?v={{ filemtime(public_path('logo-dark.png')) }}" alt="Precision IT Systems" class="h-8 w-auto max-w-[170px] object-contain hidden dark:block">
                 </a>
                 <div class="hidden lg:block"></div>
 
@@ -457,7 +452,7 @@
 
                     <span class="text-[11px] font-semibold px-2.5 py-1 rounded-md transition-colors duration-200"
                           :class="portal === 'worker' ? 'portal-badge-worker' : 'portal-badge-staff'" 
-                          x-text="portal === 'worker' ? '⚡ Daily Wage Worker' : '🔐 Staff & Admin ERP'">
+                          x-text="portal === 'worker' ? 'Daily Wage Worker' : 'Staff & Admin'">
                         Staff &amp; Admin ERP
                     </span>
                 </div>

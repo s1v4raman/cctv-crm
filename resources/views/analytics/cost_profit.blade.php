@@ -4,7 +4,7 @@
             <div>
                 <h2 class="text-2xl font-bold leading-tight text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
                     <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_10px_#10b981]"></span>
-                    Pre-Tax Cost &amp; Net Profit Analysis
+                    Cost and profit
                 </h2>
                 <p class="mt-1 text-sm text-slate-500 dark:text-slate-400 font-medium">Operating profit calculated without tax, minus employee salary disbursements &amp; hardware buy cost</p>
             </div>

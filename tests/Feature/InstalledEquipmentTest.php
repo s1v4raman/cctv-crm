@@ -135,7 +135,7 @@ class InstalledEquipmentTest extends TestCase
         $response->assertSee('SN-FISH-776655');
         $response->assertSee('Grand Hotel');
         $response->assertSee('Reception 360 Fisheye Camera');
-        $response->assertSee('⚠️ Expiring Soon');
+        $response->assertSee('Expiring Soon');
         $response->assertSee('Static IP 192.168.1.150');
     }
 

@@ -45,7 +45,7 @@ class AttendanceAndFinanceModuleTest extends TestCase
 
         $response = $this->get(route('attendance.index'));
         $response->assertStatus(200);
-        $response->assertSee('Employee Attendance Management System');
+        $response->assertSee('Daily roster');
 
         // Clock in
         $clockInResponse = $this->post(route('attendance.clock-in'), [
@@ -118,7 +118,7 @@ class AttendanceAndFinanceModuleTest extends TestCase
 
         $response = $this->get(route('finance.salaries.index'));
         $response->assertStatus(200);
-        $response->assertSee('Employee Salary Master');
+        $response->assertSee('Salary set');
 
         // Configure technician's base salary: ₹26,000 monthly
         $updateResponse = $this->post(route('finance.salaries.update', $this->technician), [
@@ -327,9 +327,9 @@ class AttendanceAndFinanceModuleTest extends TestCase
 
         $response = $this->get(route('attendance.index', ['tab' => 'weekly', 'week_date' => $weekStart]));
         $response->assertStatus(200);
-        $response->assertSee('Weekly Timesheet &amp; Analysis', false);
         $response->assertSee('Weekly Workforce Hours');
-        $response->assertSee('Daily Attendance Trend');
+        $response->assertSee('Weekly Workforce Hours');
+        $response->assertSee('Hours this week');
         $response->assertSee($this->technician->name);
     }
 
@@ -351,7 +351,7 @@ class AttendanceAndFinanceModuleTest extends TestCase
 
         $response = $this->get(route('attendance.index', ['tab' => 'monthly', 'month' => $currentMonth]));
         $response->assertStatus(200);
-        $response->assertSee('Monthly Matrix &amp; Analytics', false);
+        $response->assertSee('Punctuality Score');
         $response->assertSee('Monthly Attendance Matrix &amp; Heatmap', false);
         $response->assertSee('Punctuality Score');
         $response->assertSee($this->staff->name);

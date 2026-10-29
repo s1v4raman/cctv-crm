@@ -54,69 +54,15 @@
     window.crmStyleStorageKey = styleKey;
     window.crmUserDefaultAccent = dbAccent;
 
-    // Dynamic Instant High-Clarity Logo Color Switcher Function
+    // Official Corporate Brand Logo Manager for Precision IT Systems
     window.recolorCrmBrandLogo = function(hex) {
-        if (!hex) {
-            try { hex = localStorage.getItem(accentKey); } catch(e) {}
-            if (!hex) hex = dbAccent || '#2563eb';
-        }
-        let cleanHex = hex.replace('#', '').toLowerCase();
-        if (cleanHex.length === 3) cleanHex = cleanHex.split('').map(function(c) { return c + c; }).join('');
-        const logoUrl = '/logos/logo_' + cleanHex + '.png';
-
-        function applyLogoSrc() {
-            // Guard: Never change logo on customer storefront, customer login, or staff login pages
-            const path = window.location.pathname;
-            if (path === '/' || path === '/login' || path === '/staff/login') {
-                return;
-            }
-
-            const logoSelectors = 'img.crm-brand-logo, aside img[src*="logo"], aside img[alt*="Precision IT Systems"]';
-            document.querySelectorAll(logoSelectors).forEach(function(img) {
-                if (img.getAttribute('src') !== logoUrl) {
-                    img.src = logoUrl;
-                }
-            });
-            const favicon = document.querySelector('link[rel="icon"], link[rel="shortcut icon"]');
-            if (favicon) favicon.href = logoUrl;
-        }
-
-        applyLogoSrc();
-
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', applyLogoSrc);
+        // Keep official Precision IT Systems logo intact across all theme accents.
+        // Update favicon link to official logo if present.
+        const favicon = document.querySelector('link[rel="icon"], link[rel="shortcut icon"]');
+        if (favicon && !favicon.href.includes('favicon.ico') && !favicon.href.includes('favicon.png')) {
+            favicon.href = '/favicon.ico';
         }
     };
-
-    // DOM MutationObserver to catch late-rendered or swapped logo images
-    if (typeof MutationObserver !== 'undefined') {
-        const observer = new MutationObserver(function() {
-            const path = window.location.pathname;
-            if (path === '/' || path === '/login' || path === '/staff/login') {
-                return;
-            }
-            let hex = null;
-            try { hex = localStorage.getItem(accentKey); } catch(e) {}
-            if (!hex) hex = dbAccent || '#2563eb';
-            let cleanHex = hex.replace('#', '').toLowerCase();
-            if (cleanHex.length === 3) cleanHex = cleanHex.split('').map(function(c) { return c + c; }).join('');
-            const logoUrl = '/logos/logo_' + cleanHex + '.png';
-
-            const logoSelectors = 'img.crm-brand-logo, aside img[src*="logo"], aside img[alt*="Precision IT Systems"]';
-            document.querySelectorAll(logoSelectors).forEach(function(img) {
-                if (img.getAttribute('src') !== logoUrl) {
-                    img.src = logoUrl;
-                }
-            });
-        });
-        if (document.body) {
-            observer.observe(document.body, { childList: true, subtree: true });
-        } else {
-            document.addEventListener('DOMContentLoaded', function() {
-                observer.observe(document.body, { childList: true, subtree: true });
-            });
-        }
-    }
 
     // Universal Global Accent Injector
     window.applyGlobalCrmAccent = function(hex) {

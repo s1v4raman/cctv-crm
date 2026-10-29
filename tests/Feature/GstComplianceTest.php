@@ -61,15 +61,15 @@ class GstComplianceTest extends TestCase
     {
         $response = $this->actingAs($this->admin)->get(route('finance.gst.index'));
         $response->assertOk();
-        $response->assertSee('GST & Tax Compliance Center', false);
-        $response->assertSee('GSTR-1 & ITC Hub', false);
+        $response->assertSee('Return status:', false);
+        $response->assertSee('GSTR-3B', false);
         $response->assertSee('33AAAAA0000A1Z5');
 
         // Check tabs
         $this->actingAs($this->admin)->get(route('finance.gst.index', ['tab' => 'gstr1']))->assertOk()->assertSee('TABLE 4');
         $this->actingAs($this->admin)->get(route('finance.gst.index', ['tab' => 'itc']))->assertOk()->assertSee('GSTR-2B');
         $this->actingAs($this->admin)->get(route('finance.gst.index', ['tab' => 'hsn']))->assertOk()->assertSee('Table 12: HSN-Wise Summary');
-        $this->actingAs($this->admin)->get(route('finance.gst.index', ['tab' => 'filings']))->assertOk()->assertSee('GST Return Filing & Challan Audit Log', false);
+        $this->actingAs($this->admin)->get(route('finance.gst.index', ['tab' => 'filings']))->assertOk()->assertSee('Filings', false);
     }
 
     public function test_admin_can_update_company_gst_profile(): void

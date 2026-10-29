@@ -31,8 +31,8 @@
         'projects.*' => 'Projects',
         'sites.*' => 'Installation Sites',
         'workers.attendance.*' => 'Worker Attendance',
-        'workers.*' => 'Daily Wage Workers',
-        'wages.*' => 'Sunday Payday Hub',
+        'workers.*' => 'Workers',
+        'wages.*' => 'Weekly Wages',
         'documents.*' => 'Ready to Invoice',
         'jobs.*' => 'Tasks & Field Jobs',
         'jcr.*' => 'Job Completion Reports',
@@ -45,12 +45,12 @@
         'purchase-orders.*' => 'Purchase Orders',
         'suppliers.*' => 'Suppliers & Vendors',
         'inventory.*' => 'Inventory',
-        'employee.hub' => 'Employee & Workspace',
+        'employee.hub' => 'Employees',
         'attendance.*' => 'Attendance',
-        'leaves.*' => 'Leaves & Approvals',
-        'finance.hub' => 'Finance & Accounting',
-        'finance.analytics' => 'Finance Analytics',
-        'finance.expenses.*' => 'Expenses',
+        'leaves.*' => 'Leave',
+        'finance.hub' => 'Finance',
+        'finance.analytics' => 'Salary Analytics',
+        'finance.expenses.*' => 'Expense Claims',
         'finance.gst.*' => 'GST',
         'finance.job-costing.*' => 'Job Costing',
         'finance.payables.*' => 'Payables',
@@ -58,12 +58,12 @@
         'finance.payroll.*' => 'Payroll',
         'finance.petty_cash.*' => 'Petty Cash',
         'finance.salaries.*' => 'Salaries',
-        'finance.*' => 'Finance & Accounting',
+        'finance.*' => 'Finance',
         'invoices.*' => 'Invoices',
         'payments.*' => 'Payments',
         'payment.*' => 'Payments',
-        'alerts.*' => 'Automated Alerts & SMS',
-        'analytics.*' => 'Executive Analytics',
+        'alerts.*' => 'Alerts',
+        'analytics.*' => 'Analytics',
         'admin.users.*' => 'User Accounts',
         'profile.*' => 'Profile Settings',
     ];
@@ -86,9 +86,9 @@
         <title>{{ $crmPageTitle }} | {{ config('app.name', 'Precision IT Systems CRM') }}</title>
 
         <!-- Favicon / App Icon -->
-        <link rel="icon" type="image/png" href="{{ asset('logo.png') }}?v={{ filemtime(public_path('logo.png')) }}">
+        <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}?v={{ filemtime(public_path('favicon.png')) }}">
         <link rel="shortcut icon" href="{{ asset('favicon.ico') }}?v={{ filemtime(public_path('favicon.ico')) }}">
-        <link rel="apple-touch-icon" href="{{ asset('logo.png') }}">
+        <link rel="apple-touch-icon" href="{{ asset('logo-mark.png') }}">
 
         <!-- Dynamic Logo Engine -->
         <x-crm-theme-init :userId="auth()->id()" :userAccent="auth()->user()->theme_accent" :userMode="$activeMode" :userStyle="auth()->user()->theme_style" />

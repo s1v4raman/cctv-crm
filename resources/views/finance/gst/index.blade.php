@@ -4,11 +4,8 @@
             <div>
                 <div class="flex items-center gap-2">
                     <h2 class="text-xl font-bold text-slate-900 dark:text-white">
-                        GST & Tax Compliance Center
+                        GST
                     </h2>
-                    <span class="text-xs font-bold text-[#d97706]">
-                        GSTR-1 & ITC Hub
-                    </span>
                 </div>
                 <p class="text-xs text-[#555555] mt-0.5">
                     {{ $companyGst['trade_name'] }} • GSTIN: <strong class="text-[#222222]">{{ $companyGst['gstin'] }}</strong>
@@ -123,13 +120,13 @@
             <div>
                 <div class="text-xs text-slate-500">Period: {{ Carbon\Carbon::parse($selectedMonth.'-01')->format('F Y') }}</div>
                 <div class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 mt-0.5">
-                    <span>GST Return Summary:</span>
+                    <span>Return status:</span>
                     @if($filing && $filing->gstr3b_status === 'filed')
-                        <span class="font-bold text-emerald-600 dark:text-emerald-400">Return Filed & Discharged</span>
+                        <span class="font-semibold text-emerald-700 dark:text-emerald-400">Filed</span>
                     @elseif($filing && $filing->gstr3b_status === 'reconciled')
-                        <span class="font-bold text-blue-600 dark:text-blue-400">Reconciled & Ready to File</span>
+                        <span class="font-semibold text-slate-900 dark:text-white">Ready to file</span>
                     @else
-                        <span class="font-bold text-amber-600 dark:text-amber-400">Draft Computation Pending</span>
+                        <span class="font-semibold text-amber-700 dark:text-amber-400">Not filed yet</span>
                     @endif
                 </div>
             </div>
@@ -157,7 +154,7 @@
             <!-- 1. Total Turnover -->
             <div class="stat-card">
                 <div class="stat-label">Gross Sales Turnover</div>
-                <div class="stat-value text-blue-600 dark:text-blue-400">
+                <div class="stat-value">
                     ₹{{ number_format($gstr1Data['total_gross_turnover'], 2) }}
                 </div>
                 <div class="text-xs text-slate-500 mt-2">
@@ -179,7 +176,7 @@
             <!-- 3. Input Tax Credit (ITC Available) -->
             <div class="stat-card">
                 <div class="stat-label">Input Tax Credit (ITC)</div>
-                <div class="stat-value text-emerald-600 dark:text-emerald-400">
+                <div class="stat-value">
                     ₹{{ number_format($itcData['grand_total_itc'], 2) }}
                 </div>
                 <div class="text-xs text-slate-500 mt-2">
@@ -190,7 +187,7 @@
             <!-- 4. Net Tax Payable (Cash) -->
             <div class="stat-card">
                 <div class="stat-label">Net Cash Tax Payable</div>
-                <div class="stat-value text-amber-600 dark:text-amber-400">
+                <div class="stat-value">
                     ₹{{ number_format($gstr3bData['net_tax_payable_cash']['total'], 2) }}
                 </div>
                 <div class="text-xs text-slate-500 mt-2">
@@ -208,17 +205,17 @@
             <div class="flex flex-wrap items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-3 mb-4">
                 @php
                     $tabs = [
-                        'overview' => ['label' => 'GSTR-3B Tax Computation & Set-Off'],
-                        'gstr1'    => ['label' => 'GSTR-1 Outward Sales (' . count($gstr1Data['b2b_invoices']) . ' B2B / ' . count($gstr1Data['b2c_small_summary']) . ' B2C)'],
-                        'itc'      => ['label' => 'Input Tax Credit (' . count($itcData['purchase_orders']) . ' POs)'],
-                        'hsn'      => ['label' => 'Table 12 HSN Summary (' . count($gstr1Data['hsn_summary']) . ' HSNs)'],
-                        'filings'  => ['label' => 'Filing & Challan Audit Log'],
+                        'overview' => ['label' => 'GSTR-3B'],
+                        'gstr1'    => ['label' => 'GSTR-1 sales'],
+                        'itc'      => ['label' => 'Input tax credit'],
+                        'hsn'      => ['label' => 'HSN summary'],
+                        'filings'  => ['label' => 'Filings'],
                     ];
                 @endphp
 
                 @foreach($tabs as $key => $tab)
                     <a href="{{ route('finance.gst.index', ['month' => $selectedMonth, 'tab' => $key]) }}"
-                       class="px-3.5 py-1.5 rounded text-xs font-semibold transition {{ $activeTab === $key ? 'bg-blue-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700' }}" style="border-radius: 4px;">
+                       class="py-2.5 -mb-px border-b-2 text-sm transition {{ $activeTab === $key ? 'border-blue-600 text-slate-900 dark:text-white font-medium' : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white' }}" style="border-radius: 4px;">
                         <span>{{ $tab['label'] }}</span>
                     </a>
                 @endforeach
@@ -229,8 +226,8 @@
                 <div class="space-y-6">
                     <div class="flex items-center justify-between">
                         <div>
-                            <h3 class="text-base font-bold text-slate-900 dark:text-white">GSTR-3B Tax Computation & Set-Off Matrix</h3>
-                            <p class="text-xs text-slate-500 dark:text-slate-400">Automated Indian GST offset rules (IGST -> CGST -> SGST sequence)</p>
+                            <h3 class="text-base font-bold text-slate-900 dark:text-white">GSTR-3B: tax payable</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Input credit is set off in the legal order: IGST first, then CGST, then SGST.</p>
                         </div>
                     </div>
 
@@ -634,7 +631,7 @@
                 <div class="space-y-4">
                     <div class="flex items-center justify-between">
                         <div>
-                            <h3 class="text-base font-bold text-slate-900 dark:text-white">GST Return Filing & Challan Audit Log</h3>
+                            <h3 class="text-base font-bold text-slate-900 dark:text-white">Filings</h3>
                             <p class="text-xs text-slate-500 dark:text-slate-400">Track GSTR-1, GSTR-3B filings, Challan Identification Numbers (CIN), and tax receipts</p>
                         </div>
                     </div>

@@ -4,7 +4,7 @@
             <div>
                 <h2 class="text-2xl font-bold leading-tight text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
                     <span class="w-2.5 h-2.5 rounded-full bg-amber-400 shadow-[0_0_10px_#f59e0b]"></span>
-                    Executive Business Analytics &amp; Profitability
+                    Business analytics
                 </h2>
                 <p class="mt-1 text-sm text-slate-500 dark:text-slate-400 font-medium">Financial health, gross margin analysis, recurring revenue &amp; technician scorecard</p>
             </div>
@@ -316,7 +316,7 @@
                                 <th class="px-4 py-2.5 text-center font-bold text-slate-400">Jobs</th>
                                 <th class="px-4 py-2.5 text-center font-bold text-slate-400">Surveys</th>
                                 <th class="px-4 py-2.5 text-center font-bold text-slate-400">Projects</th>
-                                <th class="px-4 py-2.5 text-right font-bold text-slate-400">CSAT ⭐</th>
+                                <th class="px-4 py-2.5 text-right font-bold text-slate-400">CSAT ★</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-white/5">
@@ -331,7 +331,7 @@
                                     <td class="px-4 py-3 text-center font-semibold text-sky-400">{{ $tech['projects_count'] }}</td>
                                     <td class="px-4 py-3 text-right">
                                         <span class="inline-block px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30 font-bold text-[11px]">
-                                            ⭐ {{ $tech['average_rating'] }} / 5.0
+                                            ★ {{ $tech['average_rating'] }} / 5.0
                                         </span>
                                     </td>
                                 </tr>

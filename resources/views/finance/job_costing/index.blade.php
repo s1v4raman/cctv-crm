@@ -3,7 +3,7 @@
         <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
                 <h2 class="text-xl font-bold text-slate-900 dark:text-white">
-                    Job Costing & Per-Project Profit & Loss
+                    Job costing
                 </h2>
             </div>
 

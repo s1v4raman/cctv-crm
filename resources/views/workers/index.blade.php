@@ -6,7 +6,7 @@
             </div>
             <div class="flex items-center gap-2">
                 <a href="{{ route('workers.attendance.index') }}" class="btn-secondary">
-                    📅 Attendance Maintenance
+                    Attendance Maintenance
                 </a>
                 @if(auth()->user()->isAdmin())
                 <a href="{{ route('wages.index') }}" class="btn-secondary">

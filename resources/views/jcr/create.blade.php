@@ -9,7 +9,7 @@
                 </div>
                 <div>
                     <h2 class="text-xl font-black leading-tight text-white font-heading tracking-tight">
-                        Digital Job Sign-Off & Customer Handover
+                        Job sign-off
                     </h2>
                     <p class="mt-0.5 text-xs text-slate-400">Quality inspection checklist, photo proof & on-site e-signature</p>
                 </div>
@@ -201,7 +201,7 @@
                             {{-- Empty State --}}
                             <div class="slot-empty-state rounded-xl p-4 text-center flex flex-col items-center justify-center border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/40">
                                 <div class="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 flex items-center justify-center mx-auto mb-2 text-base border border-slate-200 dark:border-slate-700">
-                                    📷
+                                    <svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9zM15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                                 </div>
                                 <div class="text-xs font-bold text-slate-900 dark:text-white mb-0.5">DVR Rack / Setup Photo</div>
                                 <p class="text-[11px] text-slate-500 dark:text-slate-400 mb-3">Snap live with webcam/phone camera or choose file.</p>
@@ -209,11 +209,11 @@
                                 <div class="flex items-center justify-center gap-2 flex-wrap w-full">
                                     <button type="button" onclick="openPhotoCameraModal('slot-0', 'DVR Rack Setup')"
                                             class="btn-secondary text-xs px-3 py-1.5 inline-flex items-center gap-1.5 cursor-pointer">
-                                        <span>📷</span>
+                                        <span><svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9zM15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg></span>
                                         <span>Take Photo (Camera)</span>
                                     </button>
                                     <label class="btn-primary text-xs px-3 py-1.5 inline-flex items-center gap-1.5 cursor-pointer" style="background-color: #2563eb; color: #ffffff;">
-                                        <span>📁</span>
+                                        <span><svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg></span>
                                         <span>Choose File</span>
                                         <input type="file" name="photos[]" accept="image/*" onchange="handlePhotoFileSelected(this, 'slot-0')" style="display:none;" class="photo-file-input">
                                     </label>
@@ -264,7 +264,7 @@
                             {{-- Empty State --}}
                             <div class="slot-empty-state rounded-xl p-4 text-center flex flex-col items-center justify-center border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/40">
                                 <div class="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 flex items-center justify-center mx-auto mb-2 text-base border border-slate-200 dark:border-slate-700">
-                                    📷
+                                    <svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9zM15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                                 </div>
                                 <div class="text-xs font-bold text-slate-900 dark:text-white mb-0.5">Monitor / Camera Angle View</div>
                                 <p class="text-[11px] text-slate-500 dark:text-slate-400 mb-3">Snap live with webcam/phone camera or choose file.</p>
@@ -272,11 +272,11 @@
                                 <div class="flex items-center justify-center gap-2 flex-wrap w-full">
                                     <button type="button" onclick="openPhotoCameraModal('slot-1', 'Live Monitor View')"
                                             class="btn-secondary text-xs px-3 py-1.5 inline-flex items-center gap-1.5 cursor-pointer">
-                                        <span>📷</span>
+                                        <span><svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9zM15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg></span>
                                         <span>Take Photo (Camera)</span>
                                     </button>
                                     <label class="btn-primary text-xs px-3 py-1.5 inline-flex items-center gap-1.5 cursor-pointer" style="background-color: #2563eb; color: #ffffff;">
-                                        <span>📁</span>
+                                        <span><svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg></span>
                                         <span>Choose File</span>
                                         <input type="file" name="photos[]" accept="image/*" onchange="handlePhotoFileSelected(this, 'slot-1')" style="display:none;" class="photo-file-input">
                                     </label>
@@ -419,7 +419,7 @@
             {{-- Modal Header --}}
             <div style="padding:1rem 1.25rem;border-bottom:1px solid #1e293b;display:flex;align-items:center;justify-content:space-between;">
                 <div style="display:flex;align-items:center;gap:.6rem;">
-                    <span style="font-size:1.25rem;">📷</span>
+                    <span style="font-size:1.25rem;"><svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9zM15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg></span>
                     <div>
                         <h3 style="font-size:.95rem;font-weight:800;color:#fff;margin:0;">Take Proof Photo</h3>
                         <p id="jcrModalTargetTitle" style="font-size:.75rem;color:#f59e0b;margin:0;font-weight:600;">DVR Rack Setup</p>
@@ -467,7 +467,7 @@
 
                 {{-- Fallback File Upload Overlay if Camera Blocked --}}
                 <div id="jcrModalFallbackUpload" style="display:none;position:absolute;inset:0;background:rgba(15,23,42,0.95);flex-direction:column;align-items:center;justify-content:center;padding:1.5rem;text-align:center;z-index:20;">
-                    <div style="font-size:2.5rem;margin-bottom:0.5rem;">📁</div>
+                    <div style="font-size:2.5rem;margin-bottom:0.5rem;"><svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg></div>
                     <h4 style="color:#fff;font-size:1rem;font-weight:800;margin-bottom:0.25rem;">Camera Blocked or In Use</h4>
                     <p style="color:#94a3b8;font-size:0.75rem;margin-bottom:1.25rem;max-width:280px;">Webcam cannot be opened. You can select a photo directly from your laptop or phone:</p>
                     <label style="padding:.65rem 1.25rem;background:#2563eb;color:#fff;font-weight:800;font-size:.82rem;border-radius:.75rem;cursor:pointer;display:inline-flex;align-items:center;gap:.5rem;box-shadow:0 4px 15px rgba(37,99,235,0.4);">
@@ -498,7 +498,7 @@
                     {{-- Big Shutter Button --}}
                     <button type="button" onclick="snapJcrPhoto()"
                             style="padding:.65rem 1.5rem;background:#f59e0b;color:#0f172a;border:none;border-radius:999px;font-size:.85rem;font-weight:900;cursor:pointer;display:inline-flex;align-items:center;gap:.5rem;box-shadow:0 0 20px rgba(245,158,11,0.4);transition:all .15s ease;">
-                        <span style="font-size:1.1rem;">📸</span> Snap Photo
+                        <span style="font-size:1.1rem;"><svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9zM15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg></span> Snap Photo
                     </button>
 
                     <button type="button" onclick="switchJcrCamera()"
@@ -704,11 +704,11 @@
             } catch (err) {
                 console.warn('Camera stream error:', err);
                 jcrCameraState.lastError = err.name || 'Error';
-                let errorMsg = '⚠️ Camera blocked or in use. Use "Choose Photo from Files" below.';
+                let errorMsg = 'Camera blocked or in use. Use "Choose Photo from Files" below.';
                 if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-                    errorMsg = '🚫 Camera permission blocked! Click 🔒 in address bar and allow camera access.';
+                    errorMsg = 'Camera permission blocked! Click in address bar and allow camera access.';
                 } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
-                    errorMsg = '⚠️ Camera in use by another app (Zoom/Teams). Please close it and retry.';
+                    errorMsg = 'Camera in use by another app (Zoom/Teams). Please close it and retry.';
                 }
                 if (status) {
                     status.innerHTML = `<span style="color:#fca5a5;">${errorMsg}</span>`;
@@ -726,7 +726,7 @@
             const flipBtn = document.getElementById('jcrFlipCamBtn');
             const status = document.getElementById('jcrCameraStatusPill');
             if (flipBtn) { flipBtn.disabled = true; flipBtn.style.opacity = '0.5'; }
-            if (status) status.innerText = '🔄 Switching camera...';
+            if (status) status.innerText = 'Switching camera...';
 
             // Reset review mode back to live preview if currently showing snapshot
             const video = document.getElementById('jcrCameraVideo');
@@ -751,7 +751,7 @@
                 await startJcrCamera(target.deviceId);
             } else {
                 if (devices.length === 1 && status) {
-                    status.innerText = '🔄 Toggling camera mode... (1 physical camera detected)';
+                    status.innerText = 'Toggling camera mode... (1 physical camera detected)';
                 }
                 await startJcrCamera(null);
             }
@@ -786,9 +786,9 @@
 
             if (!jcrCameraState.stream) {
                 if (jcrCameraState.lastError === 'NotAllowedError' || jcrCameraState.lastError === 'PermissionDeniedError') {
-                    crmAlert('🚫 Camera Permission is Blocked in your browser!\n\nTo allow it:\n1. Look at the address bar (http://127.0.0.1:8000).\n2. Click the Lock/Tune icon (🔒) on the left.\n3. Change "Camera" permission to "Allow".\n4. Re-open camera or reload the page.\n\nYou can also click "📁 Choose Photo from Files" to upload directly from your computer.');
+                    crmAlert('Camera Permission is Blocked in your browser!\n\nTo allow it:\n1. Look at the address bar (http://127.0.0.1:8000).\n2. Click the Lock/Tune icon () on the left.\n3. Change "Camera" permission to "Allow".\n4. Re-open camera or reload the page.\n\nYou can also click "Choose Photo from Files" to upload directly from your computer.');
                 } else {
-                    crmAlert('⚠️ Camera stream is not connected.\n\nPlease check browser permissions or use "📁 Choose Photo from Files".');
+                    crmAlert('Camera stream is not connected.\n\nPlease check browser permissions or use "Choose Photo from Files".');
                 }
                 const fallbackUpload = document.getElementById('jcrModalFallbackUpload');
                 if (fallbackUpload) fallbackUpload.style.display = 'flex';
@@ -843,7 +843,7 @@
             document.getElementById('jcrLiveModeControls').style.display = 'none';
             document.getElementById('jcrReviewModeControls').style.display = 'flex';
 
-            if (status) status.innerText = '📸 Photo captured! Review and tap "Use This Photo" or "Retake".';
+            if (status) status.innerText = 'Photo captured! Review and tap "Use This Photo" or "Retake".';
         }
 
         function retakeJcrPhoto() {
@@ -994,7 +994,7 @@
             slotDiv.innerHTML = `
                 <div class="flex items-center justify-between mb-2.5">
                     <div class="flex items-center gap-1.5">
-                        <span class="text-xs">📸</span>
+                        <span class="text-xs"><svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9zM15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg></span>
                         <span class="slot-title font-bold text-xs text-slate-900 dark:text-white">Proof Photo #${slotIndex}</span>
                     </div>
                     <div class="flex items-center gap-2">
@@ -1005,7 +1005,7 @@
 
                 <div class="slot-empty-state rounded-xl p-4 text-center flex flex-col items-center justify-center border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/40">
                     <div class="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 flex items-center justify-center mx-auto mb-2 text-base border border-slate-200 dark:border-slate-700">
-                        📷
+                        <svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9zM15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                     </div>
                     <div class="text-xs font-bold text-slate-900 dark:text-white mb-0.5">Capture or Upload Photo</div>
                     <p class="text-[11px] text-slate-500 dark:text-slate-400 mb-3">Snap live with webcam/phone camera or choose file.</p>
@@ -1013,11 +1013,11 @@
                     <div class="flex items-center justify-center gap-2 flex-wrap w-full">
                         <button type="button" onclick="openPhotoCameraModal('${newId}', 'Proof Photo #${slotIndex}')"
                                 class="btn-secondary text-xs px-3 py-1.5 inline-flex items-center gap-1.5 cursor-pointer">
-                            <span>📷</span>
+                            <span><svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9zM15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg></span>
                             <span>Take Photo (Camera)</span>
                         </button>
                         <label class="btn-primary text-xs px-3 py-1.5 inline-flex items-center gap-1.5 cursor-pointer" style="background-color: #2563eb; color: #ffffff;">
-                            <span>📁</span>
+                            <span><svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg></span>
                             <span>Choose File</span>
                             <input type="file" name="photos[]" accept="image/*" onchange="handlePhotoFileSelected(this, '${newId}')" style="display:none;" class="photo-file-input">
                         </label>
@@ -1156,7 +1156,7 @@
             form.addEventListener('submit', function (e) {
                 if (!hasDrawn) {
                     e.preventDefault();
-                    crmAlert('⚠️ Please ask the customer to sign in the signature box before submitting.');
+                    crmAlert('Please ask the customer to sign in the signature box before submitting.');
                     canvas.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     return false;
                 }

@@ -6,7 +6,7 @@
             </div>
             <div class="flex items-center gap-2 flex-wrap">
                 <a href="{{ route('workers.attendance.index') }}" class="btn-secondary">
-                    📅 Attendance Maintenance
+                    Attendance Maintenance
                 </a>
                 <a href="{{ route('workers.index') }}" class="btn-secondary">
                     Workers

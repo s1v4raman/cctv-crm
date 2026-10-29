@@ -22,7 +22,7 @@
                 </a>
 
                 <button type="button" @click="$dispatch('open-pay-modal', { supplierId: '', poId: '', amount: '', supplierName: '' })" class="btn-primary">
-                    Record Disbursement
+                    Record payment
                 </button>
             </div>
         </div>
@@ -107,7 +107,7 @@
                 <!-- 1. Total Outstanding Payables -->
                 <div class="stat-card">
                     <div class="stat-label">Total Payables</div>
-                    <div class="stat-value text-rose-600 dark:text-rose-400">
+                    <div class="stat-value">
                         ₹{{ number_format($summary['total_payable_balance'], 2) }}
                     </div>
                     <div class="mt-2 text-xs text-slate-500">
@@ -118,7 +118,7 @@
                 <!-- 2. Current (0-30 Days) -->
                 <div class="stat-card">
                     <div class="stat-label">0–30 Days (Current)</div>
-                    <div class="stat-value text-blue-600 dark:text-blue-400">
+                    <div class="stat-value">
                         ₹{{ number_format($summary['current_0_30'], 2) }}
                     </div>
                     <div class="mt-2 text-xs text-slate-500">
@@ -129,7 +129,7 @@
                 <!-- 3. Overdue (31-60 Days) -->
                 <div class="stat-card">
                     <div class="stat-label">31–60 Days</div>
-                    <div class="stat-value text-amber-600 dark:text-amber-400">
+                    <div class="stat-value">
                         ₹{{ number_format($summary['overdue_31_60'], 2) }}
                     </div>
                     <div class="mt-2 text-xs text-slate-500">
@@ -140,7 +140,7 @@
                 <!-- 4. Critical (61-90 Days) -->
                 <div class="stat-card">
                     <div class="stat-label">61–90 Days</div>
-                    <div class="stat-value text-orange-600 dark:text-orange-400">
+                    <div class="stat-value">
                         ₹{{ number_format($summary['critical_61_90'], 2) }}
                     </div>
                     <div class="mt-2 text-xs text-slate-500">
@@ -151,7 +151,7 @@
                 <!-- 5. 90+ Days Critical -->
                 <div class="stat-card">
                     <div class="stat-label">90+ Days</div>
-                    <div class="stat-value text-rose-600 dark:text-rose-400">
+                    <div class="stat-value">
                         ₹{{ number_format($summary['high_risk_90_plus'], 2) }}
                     </div>
                     <div class="mt-2 text-xs text-slate-500">
@@ -161,33 +161,37 @@
 
                 <!-- 6. Days Payable Outstanding (DPO) -->
                 <div class="stat-card">
-                    <div class="stat-label">DPO & 3-Way Health</div>
+                    <div class="stat-label">Average days to pay</div>
                     <div class="stat-value">
                         {{ $summary['dpo_days'] }} <span class="text-xs font-normal text-slate-500">Days</span>
                     </div>
-                    <div class="mt-2 text-xs text-emerald-600 dark:text-emerald-400">
-                        {{ $summary['three_way_match_pass_rate'] }}% 3-Way Verified
+                    <div class="mt-2 text-xs text-slate-500">
+                        @if($summary['total_pos_count'] > 0)
+                            {{ $summary['three_way_match_pass_rate'] }}% of POs match their bills and deliveries
+                        @else
+                            no purchase orders yet
+                        @endif
                     </div>
                 </div>
             </div>
 
             <!-- Tab Controls & Filter Bar -->
-            <div class="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
+            <div class="flex items-center gap-6 border-b border-slate-200 dark:border-slate-800 overflow-x-auto whitespace-nowrap">
                 <button @click="activeTab = 'aging'"
-                        :class="activeTab === 'aging' ? 'bg-blue-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'"
-                        class="px-3.5 py-1.5 text-xs font-semibold rounded transition" style="border-radius: 4px;">
-                    Supplier AP Aging ({{ count($suppliers) }} Vendors)
+                        :class="activeTab === 'aging' ? 'border-blue-600 text-slate-900 dark:text-white font-medium' : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'"
+                        class="py-2.5 -mb-px border-b-2 text-sm transition">
+                    By supplier
                 </button>
                 <button @click="activeTab = 'three_way'"
-                        :class="activeTab === 'three_way' ? 'bg-blue-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'"
-                        class="px-3.5 py-1.5 text-xs font-semibold rounded transition flex items-center gap-1.5" style="border-radius: 4px;">
-                    <span>3-Way Matching Inspector</span>
-                    <span class="font-bold text-emerald-600">({{ $summary['three_way_stats']['matched'] }}/{{ $summary['total_pos_count'] }})</span>
+                        :class="activeTab === 'three_way' ? 'border-blue-600 text-slate-900 dark:text-white font-medium' : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'"
+                        class="py-2.5 -mb-px border-b-2 text-sm transition flex items-center gap-1.5">
+                    <span>PO matching</span>
+                    <span class="text-slate-400">{{ $summary['three_way_stats']['matched'] }}/{{ $summary['total_pos_count'] }}</span>
                 </button>
                 <button @click="activeTab = 'disbursements'"
-                        :class="activeTab === 'disbursements' ? 'bg-blue-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'"
-                        class="px-3.5 py-1.5 text-xs font-semibold rounded transition flex items-center gap-1.5" style="border-radius: 4px;">
-                    <span>Payment Scheduler</span>
+                        :class="activeTab === 'disbursements' ? 'border-blue-600 text-slate-900 dark:text-white font-medium' : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'"
+                        class="py-2.5 -mb-px border-b-2 text-sm transition flex items-center gap-1.5">
+                    <span>Upcoming payments</span>
                     @if(count($disbursements) > 0)
                         <span class="font-bold text-amber-600">({{ count($disbursements) }})</span>
                     @endif

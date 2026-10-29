@@ -4,7 +4,7 @@
             <div>
                 <h2 class="text-2xl font-bold leading-tight text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
                     <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 shadow-[0_0_10px_#6366f1]"></span>
-                    Monthly Revenue, AMC Retention &amp; Lead Conversion
+                    Revenue and renewals
                 </h2>
                 <p class="mt-1 text-sm text-slate-500 dark:text-slate-400 font-medium">Monthly recurring revenue (MRR), annual recurring revenue (ARR), AMC contract renewal retention, and sales funnel conversion</p>
             </div>

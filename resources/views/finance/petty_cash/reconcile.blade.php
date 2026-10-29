@@ -7,8 +7,7 @@
                 </a>
                 <div>
                     <h2 class="font-bold text-2xl text-gray-900 leading-tight flex items-center gap-2">
-                        <span>Physical Cash Reconciliation & Tally</span>
-                        <span class="text-xs px-2.5 py-1 bg-amber-100 text-amber-800 font-semibold rounded-full uppercase tracking-wider">Daily Audit</span>
+                        <span>Cash count</span>
                     </h2>
                     <p class="text-sm text-gray-500 mt-0.5">Account: <span class="font-semibold text-gray-800">{{ $account->name }}</span> ({{ $account->account_type === 'main_vault' ? 'Main Safe Vault' : 'Technician Float Wallet' }})</p>
                 </div>

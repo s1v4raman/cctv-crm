@@ -81,7 +81,7 @@ class ExpenseAndTravelClaimsWorkflowTest extends TestCase
         $response = $this->actingAs($this->technician)->get(route('finance.expenses.index'));
 
         $response->assertOk();
-        $response->assertSee('Field Expenses &amp; Travel Claims Hub', false);
+        $response->assertSee('Expense claims', false);
         $response->assertSee('Claims This Month');
     }
 
