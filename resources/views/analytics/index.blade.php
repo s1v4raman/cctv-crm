@@ -97,7 +97,7 @@
                         </div>
                     </div>
                     <div>
-                        <div class="text-base font-extrabold text-slate-900 dark:text-white mt-1 leading-tight font-['Outfit']">₹{{ number_format($overview['financials']['invoiced_revenue'], 0) }}</div>
+                        <div class="text-base font-extrabold text-slate-900 dark:text-white mt-1 leading-tight font-heading">₹{{ number_format($overview['financials']['invoiced_revenue'], 0) }}</div>
                         <span class="text-[11px] text-slate-500 dark:text-slate-400 block mt-0.5">Incl. GST billed</span>
                     </div>
                 </div>
@@ -111,7 +111,7 @@
                         </div>
                     </div>
                     <div>
-                        <div class="text-base font-extrabold text-sky-600 dark:text-sky-300 mt-1 leading-tight font-['Outfit']">₹{{ number_format($overview['financials']['revenue_without_tax'] ?? round($overview['financials']['invoiced_revenue']/1.18, 0), 0) }}</div>
+                        <div class="text-base font-extrabold text-sky-600 dark:text-sky-300 mt-1 leading-tight font-heading">₹{{ number_format($overview['financials']['revenue_without_tax'] ?? round($overview['financials']['invoiced_revenue']/1.18, 0), 0) }}</div>
                         <span class="text-[11px] text-slate-500 dark:text-slate-400 block mt-0.5">Pre-tax subtotal</span>
                     </div>
                 </div>
@@ -125,7 +125,7 @@
                         </div>
                     </div>
                     <div>
-                        <div class="text-base font-extrabold text-orange-600 dark:text-orange-300 mt-1 leading-tight font-['Outfit']">₹{{ number_format($overview['financials']['product_buy_cost'] ?? $overview['financials']['cogs'], 0) }}</div>
+                        <div class="text-base font-extrabold text-orange-600 dark:text-orange-300 mt-1 leading-tight font-heading">₹{{ number_format($overview['financials']['product_buy_cost'] ?? $overview['financials']['cogs'], 0) }}</div>
                         <span class="text-[11px] text-slate-500 dark:text-slate-400 block mt-0.5">Hardware COGS</span>
                     </div>
                 </div>
@@ -139,7 +139,7 @@
                         </div>
                     </div>
                     <div>
-                        <div class="text-base font-extrabold text-rose-600 dark:text-red-300 mt-1 leading-tight font-['Outfit']">₹{{ number_format($overview['financials']['tax_paid_cost'] ?? 0, 0) }}</div>
+                        <div class="text-base font-extrabold text-rose-600 dark:text-red-300 mt-1 leading-tight font-heading">₹{{ number_format($overview['financials']['tax_paid_cost'] ?? 0, 0) }}</div>
                         <span class="text-[11px] text-slate-500 dark:text-slate-400 block mt-0.5">Input GST on POs</span>
                     </div>
                 </div>
@@ -153,7 +153,7 @@
                         </div>
                     </div>
                     <div>
-                        <div class="text-base font-extrabold text-purple-600 dark:text-violet-300 mt-1 leading-tight font-['Outfit']">₹{{ number_format($overview['financials']['salary_credited_cost'] ?? $overview['financials']['employee_salary_cost'] ?? 0, 0) }}</div>
+                        <div class="text-base font-extrabold text-purple-600 dark:text-violet-300 mt-1 leading-tight font-heading">₹{{ number_format($overview['financials']['salary_credited_cost'] ?? $overview['financials']['employee_salary_cost'] ?? 0, 0) }}</div>
                         <span class="text-[11px] text-slate-500 dark:text-slate-400 block mt-0.5">Staff payroll cost</span>
                     </div>
                 </div>
@@ -167,7 +167,7 @@
                         </div>
                     </div>
                     <div>
-                        <div class="text-base font-extrabold text-emerald-600 dark:text-emerald-400 mt-1 leading-tight font-['Outfit']">₹{{ number_format($overview['financials']['gross_profit_without_tax'] ?? $overview['financials']['gross_profit'], 0) }}</div>
+                        <div class="text-base font-extrabold text-emerald-600 dark:text-emerald-400 mt-1 leading-tight font-heading">₹{{ number_format($overview['financials']['gross_profit_without_tax'] ?? $overview['financials']['gross_profit'], 0) }}</div>
                         <span class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 block mt-0.5">{{ $overview['financials']['gross_margin_without_tax_percent'] ?? $overview['financials']['gross_margin_percent'] }}% margin</span>
                     </div>
                 </div>
@@ -189,7 +189,7 @@
                         </div>
                     </div>
                     <div>
-                        <div class="text-base font-extrabold {{ $netColor }} mt-1 leading-tight font-['Outfit']">₹{{ number_format($netProfit, 0) }}</div>
+                        <div class="text-base font-extrabold {{ $netColor }} mt-1 leading-tight font-heading">₹{{ number_format($netProfit, 0) }}</div>
                         <span class="text-[11px] text-slate-500 dark:text-slate-400 block mt-0.5">No tax · No salary</span>
                     </div>
                 </div>
@@ -203,7 +203,7 @@
                         </div>
                     </div>
                     <div>
-                        <div class="text-base font-extrabold text-sky-600 dark:text-sky-400 mt-1 leading-tight font-['Outfit']">₹{{ number_format($overview['financials']['cash_collected'], 0) }}</div>
+                        <div class="text-base font-extrabold text-sky-600 dark:text-sky-400 mt-1 leading-tight font-heading">₹{{ number_format($overview['financials']['cash_collected'], 0) }}</div>
                         <span class="text-[11px] text-slate-500 dark:text-slate-400 block mt-0.5">Realized inflow</span>
                     </div>
                 </div>

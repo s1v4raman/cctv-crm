@@ -6,7 +6,7 @@
             </div>
             
             <div class="flex items-center gap-2 flex-wrap">
-                @if($isAdmin)
+                @if($canManageTasks)
                     <button type="button" @click="window.dispatchEvent(new CustomEvent('open-create-task-modal'))" 
                             class="inline-flex items-center justify-center px-3.5 py-2 rounded-[4px] text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition active:scale-95 cursor-pointer">
                         Create Task
@@ -30,7 +30,7 @@
             todayDate: '{{ now()->format("Y-m-d") }}',
             activeTab: '{{ $activeTab }}',
             isWorker: {{ $isWorker ? 'true' : 'false' }},
-            isAdmin: {{ $isAdmin ? 'true' : 'false' }}
+            canManageTasks: {{ $canManageTasks ? 'true' : 'false' }}
         };
     </script>
 
@@ -462,7 +462,7 @@
                     <h2 class="text-base font-bold text-slate-900 dark:text-white" x-text="activeTab === 'overall_tasks' ? 'Company Tasks Workflow' : 'My Assigned Tasks'"></h2>
                     <p class="text-xs text-slate-500 dark:text-slate-400" x-text="activeTab === 'overall_tasks' ? 'Grouped by scheduled date with full operations filtering' : 'Tasks assigned directly to you — accept or reject work items'"></p>
                 </div>
-                @if($isAdmin)
+                @if($canManageTasks)
                     <button type="button" @click="openCreateTaskModal = true" 
                             class="inline-flex items-center justify-center px-3.5 py-2 rounded-[4px] text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition active:scale-95 cursor-pointer">
                         Create Task
@@ -551,7 +551,7 @@
                     @include('calendar.partials.task-group-list', [
                         'groupList' => $overallTasksGrouped,
                         'tabName'   => 'overall_tasks',
-                        'isAdmin'   => $isAdmin,
+                        'canManageTasks'   => $canManageTasks,
                         'isWorker'  => false,
                     ])
                 </div>
@@ -561,7 +561,7 @@
                 @include('calendar.partials.task-group-list', [
                     'groupList' => $myTasksGrouped,
                     'tabName'   => 'my_tasks',
-                    'isAdmin'   => $isAdmin,
+                    'canManageTasks'   => $canManageTasks,
                     'isWorker'  => $isWorker,
                 ])
             </div>
@@ -623,7 +623,7 @@
         {{-- ══════════════════════════════════════════════════════════════
              MODALS: ADMIN REASSIGN TASK
              ══════════════════════════════════════════════════════════════ --}}
-        @if($isAdmin)
+        @if($canManageTasks)
             <div x-show="reassignModalOpen" 
                  x-cloak 
                  class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
@@ -899,7 +899,7 @@
             return {
                 activeTab: config ? config.activeTab : 'overall_calendar',
                 isWorker: config ? config.isWorker : false,
-                isAdmin: config ? config.isAdmin : false,
+                canManageTasks: config ? config.canManageTasks : false,
                 
                 currentMonth: config ? config.initialMonth : '{{ now()->format("Y-m") }}',
                 overallEvents: (config && config.overallEvents) ? config.overallEvents : [],

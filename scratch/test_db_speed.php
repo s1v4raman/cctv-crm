@@ -5,8 +5,9 @@ $options = [
     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
     PDO::ATTR_PERSISTENT => true,
 ];
-$dsn = "pgsql:host=ep-little-firefly-aolx73by-pooler.c-2.ap-southeast-1.aws.neon.tech;port=5432;dbname=neondb;sslmode=require";
-$pdo = new PDO($dsn, "neondb_owner", "npg_r3e8jnXIpKmH", $options);
+// Connection details come from the environment, never from this file
+$dsn = getenv('DB_DSN') ?: 'pgsql:host=' . getenv('DB_HOST') . ';port=5432;dbname=' . (getenv('DB_DATABASE') ?: 'neondb') . ';sslmode=require';
+$pdo = new PDO($dsn, getenv('DB_USERNAME'), getenv('DB_PASSWORD'), $options);
 $connTime = round((microtime(true) - $start) * 1000, 2);
 
 $qStart = microtime(true);

@@ -13,7 +13,9 @@ class RoleDataFlowTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        // The demo customers, quotes and tickets these checks look for come from the demo seeder
         $this->seed();
+        $this->seed(\Database\Seeders\DemoAnalyticsSeeder::class);
     }
     public function test_admin_can_access_all_executive_and_crm_modules()
     {

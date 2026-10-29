@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h2 class="text-2xl font-black tracking-wider text-white uppercase font-['Outfit']">Add New User Account</h2>
+                <h2 class="text-2xl font-black tracking-wider text-white uppercase font-heading">Add New User Account</h2>
                 <p class="mt-1 text-xs text-slate-400 font-mono">Register a new access account for an administrator, employee, or technician.</p>
             </div>
             <a href="{{ request('return_to', route('admin.users.index')) }}"

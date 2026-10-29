@@ -14,11 +14,11 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                // The CRM uses the system UI font everywhere (matches --font-sans in app.css).
-                sans: defaultTheme.fontFamily.sans,
+                // The CRM uses the bundled Roboto everywhere (matches --font-sans in app.css).
+                sans: ['Roboto', ...defaultTheme.fontFamily.sans],
                 // Outfit is only loaded by the public marketing page (welcome.blade.php);
-                // everywhere else font-heading falls back to the system font.
-                heading: ['"Outfit"', ...defaultTheme.fontFamily.sans],
+                // everywhere else font-heading falls back to Roboto.
+                heading: ['"Outfit"', 'Roboto', ...defaultTheme.fontFamily.sans],
             },
             colors: {
                 brand: {

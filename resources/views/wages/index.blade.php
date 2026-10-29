@@ -372,7 +372,7 @@
                                                 <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
                                                     Carried Forward
                                                 </span>
-                                                <form method="POST" action="{{ route('wages.settle') }}" class="inline ml-1" onsubmit="return confirm('Disburse settlement of ₹{{ number_format($row['carried_forward_balance'], 2) }} now to {{ addslashes($w->name) }}?')">
+                                                <form method="POST" action="{{ route('wages.settle') }}" class="inline ml-1" data-confirm="Disburse settlement of ₹{{ number_format($row['carried_forward_balance'], 2) }} now to {{ $w->name }}?">
                                                     @csrf
                                                     <input type="hidden" name="worker_id" value="{{ $w->id }}">
                                                     <input type="hidden" name="settlement_action" value="pay_full">
@@ -384,7 +384,7 @@
                                                 </form>
                                             @elseif($due > 0)
                                                 <span class="text-slate-300 dark:text-slate-600">|</span>
-                                                <form method="POST" action="{{ route('wages.settle') }}" class="inline" onsubmit="return confirm('Disburse full settlement of ₹{{ number_format($due, 2) }} to {{ addslashes($w->name) }}?')">
+                                                <form method="POST" action="{{ route('wages.settle') }}" class="inline" data-confirm="Disburse full settlement of ₹{{ number_format($due, 2) }} to {{ $w->name }}?">
                                                     @csrf
                                                     <input type="hidden" name="worker_id" value="{{ $w->id }}">
                                                     <input type="hidden" name="settlement_action" value="pay_full">
@@ -401,7 +401,7 @@
                                                 </button>
 
                                                 <span class="text-slate-300 dark:text-slate-600">|</span>
-                                                <form method="POST" action="{{ route('wages.settle') }}" class="inline" onsubmit="return confirm('Carry forward remaining balance of ₹{{ number_format($due, 2) }} to next week?')">
+                                                <form method="POST" action="{{ route('wages.settle') }}" class="inline" data-confirm="Carry forward remaining balance of ₹{{ number_format($due, 2) }} to next week?">
                                                     @csrf
                                                     <input type="hidden" name="worker_id" value="{{ $w->id }}">
                                                     <input type="hidden" name="settlement_action" value="carry_forward">
@@ -794,7 +794,7 @@
                                                     </span>
                                                 </template>
                                                 <template x-if="!att.is_paid">
-                                                    <form :action="'{{ url('/wages/attendances') }}/' + att.id + '/pay'" method="POST" class="inline" onsubmit="return confirm('Disburse daily shift payout for this date?')">
+                                                    <form :action="'{{ url('/wages/attendances') }}/' + att.id + '/pay'" method="POST" class="inline" data-confirm="Disburse daily shift payout for this date?">
                                                         @csrf
                                                         <input type="hidden" name="payment_mode" value="cash">
                                                         <button type="submit" class="px-2.5 py-1 rounded text-[11px] font-bold bg-blue-600 hover:bg-blue-700 text-white transition cursor-pointer shadow-xs">
@@ -986,7 +986,7 @@
                                         Pay Part
                                     </button>
 
-                                    <form method="POST" action="{{ route('wages.settle') }}" class="inline" onsubmit="return confirm('Disburse full remaining weekly settlement?')">
+                                    <form method="POST" action="{{ route('wages.settle') }}" class="inline" data-confirm="Disburse full remaining weekly settlement?">
                                         @csrf
                                         <input type="hidden" name="worker_id" :value="selectedAnalysis.id">
                                         <input type="hidden" name="settlement_action" value="pay_full">

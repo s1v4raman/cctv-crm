@@ -184,7 +184,7 @@
                                             <a href="{{ route('admin.users.edit', $user) }}" class="action-link">Edit</a>
                                             @if($user->id !== auth()->id())
                                                 <form method="POST" action="{{ route('admin.users.destroy', $user) }}" class="inline"
-                                                      onsubmit="return confirm('Delete this account ({{ addslashes($user->name) }})? This action cannot be undone.')">
+                                                      data-confirm="Delete this account ({{ $user->name }})? This action cannot be undone.">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="danger-link">Delete</button>

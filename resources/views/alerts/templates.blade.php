@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex flex-wrap items-center justify-between gap-4">
             <div>
-                <h2 class="text-2xl font-black tracking-wider text-white uppercase font-['Outfit'] flex items-center gap-2">
+                <h2 class="text-2xl font-black tracking-wider text-white uppercase font-heading flex items-center gap-2">
                     <span class="text-amber-400">⚙️</span> Data Modules Notification & Message Templates
                 </h2>
                 <p class="mt-1 text-xs text-slate-400 font-mono">Configure automated WhatsApp, SMS, and Email text alerts across all CRM data modules</p>
@@ -106,7 +106,7 @@
                                 </span>
                                 <div>
                                     <div class="flex items-center gap-2">
-                                        <h3 class="text-base font-bold text-white font-['Outfit']">{{ $template->title }}</h3>
+                                        <h3 class="text-base font-bold text-white font-heading">{{ $template->title }}</h3>
                                         <span class="px-2 py-0.5 rounded text-[11px] font-mono font-bold uppercase tracking-wider bg-slate-800 text-slate-400 border border-slate-700">{{ $template->category }}</span>
                                     </div>
                                     <span class="text-[11px] font-mono text-slate-400">Event key: <code class="text-amber-400">{{ $template->event_key }}</code></span>

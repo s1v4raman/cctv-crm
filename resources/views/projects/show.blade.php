@@ -30,7 +30,7 @@
                                 @endforeach
                             </select>
                         </form>
-                        <form method="POST" action="{{ route('projects.destroy', $project) }}" onsubmit="return confirm('Are you sure you want to delete this project? All associated records will be removed.');" class="inline">
+                        <form method="POST" action="{{ route('projects.destroy', $project) }}" data-confirm="Are you sure you want to delete this project? All associated records will be removed." class="inline">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="danger-link p-0 bg-transparent border-0 cursor-pointer text-xs ml-2">Delete</button>
@@ -112,7 +112,7 @@
 
              async submitBlockerModal() {
                  if (!this.blockerTaskId || !this.blockerReason.trim()) {
-                     alert('Please specify a blocker reason before submitting.');
+                     crmAlert('Please specify a blocker reason before submitting.', 'error');
                      return;
                  }
                  this.blockerSubmitting = true;
@@ -134,18 +134,18 @@
                          }
                          window.location.reload();
                      } else {
-                         alert(data.message || 'Error flagging blocker');
+                         crmAlert(data.message || 'Error flagging blocker', 'error');
                      }
                  } catch (e) {
                      console.error('Blocker flag error:', e);
-                     alert('Network error while flagging blocker');
+                     crmAlert('Network error while flagging blocker', 'error');
                  } finally {
                      this.blockerSubmitting = false;
                  }
              },
 
              async unblockTask(taskId) {
-                 if (!confirm('Mark this task as Unblocked and resume execution to In Progress?')) {
+                 if (!(await crmConfirm('Mark this task as Unblocked and resume execution to In Progress?'))) {
                      return;
                  }
                  try {
@@ -161,7 +161,7 @@
                      if (data.success) {
                          window.location.reload();
                      } else {
-                         alert(data.message || 'Error unblocking task');
+                         crmAlert(data.message || 'Error unblocking task', 'error');
                      }
                  } catch (e) {
                      console.error('Unblock error:', e);
@@ -249,7 +249,7 @@
                          this.revealedPasswords[deviceId] = data.password;
                      }
                  } catch (e) {
-                     alert('Error revealing password');
+                     crmAlert('Error revealing password', 'error');
                  }
              },
 
@@ -1163,7 +1163,7 @@
                                             </button>
 
                                             @if(auth()->user()->isAdmin())
-                                            <form method="POST" action="{{ route('projects.materials.destroy', ['project' => $project, 'material' => $mat]) }}" onsubmit="return confirm('Remove this material from BOM?')" class="inline-block">
+                                            <form method="POST" action="{{ route('projects.materials.destroy', ['project' => $project, 'material' => $mat]) }}" data-confirm="Remove this material from BOM?" class="inline-block">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="p-1 rounded text-slate-400 hover:text-rose-600 text-xs font-bold" title="Delete BOM Item">
@@ -1274,7 +1274,7 @@
                                         @endif
                                     </td>
                                     <td class="px-5 py-3.5 text-right whitespace-nowrap">
-                                        <form method="POST" action="{{ route('projects.material-consumptions.destroy', ['project' => $project, 'consumption' => $cLog]) }}" onsubmit="return confirm('Revert this consumption entry? If deducted from warehouse stock, inventory will be restored.')" class="inline-block">
+                                        <form method="POST" action="{{ route('projects.material-consumptions.destroy', ['project' => $project, 'consumption' => $cLog]) }}" data-confirm="Revert this consumption entry? If deducted from warehouse stock, inventory will be restored." class="inline-block">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="text-rose-500 hover:text-rose-700 text-xs font-bold" title="Revert entry and restore inventory">
@@ -1366,7 +1366,7 @@
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                                             </a>
                                             @if(auth()->user()->isAdmin())
-                                            <form method="POST" action="{{ route('projects.documents.destroy', $doc) }}" onsubmit="return confirm('Delete this document?')" class="inline-block">
+                                            <form method="POST" action="{{ route('projects.documents.destroy', $doc) }}" data-confirm="Delete this document?" class="inline-block">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 transition">
@@ -1532,7 +1532,7 @@
                             </div>
 
                             @if(auth()->user()->isAdmin())
-                            <form method="POST" action="{{ route('projects.work-days.destroy', ['project' => $project, 'workDay' => $wd]) }}" onsubmit="return confirm('Remove this work day log?')" class="inline-block">
+                            <form method="POST" action="{{ route('projects.work-days.destroy', ['project' => $project, 'workDay' => $wd]) }}" data-confirm="Remove this work day log?" class="inline-block">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="text-rose-500 hover:text-rose-700 text-xs font-semibold">Delete Work Day</button>
@@ -1641,7 +1641,7 @@
                                                             Paid &amp; Locked
                                                         </span>
                                                         @if(auth()->user()->isAdmin())
-                                                            <form method="POST" action="{{ route('projects.attendances.unlock', $att) }}" class="inline-block" onsubmit="return confirm('Unlock this attendance record?')">
+                                                            <form method="POST" action="{{ route('projects.attendances.unlock', $att) }}" class="inline-block" data-confirm="Unlock this attendance record?">
                                                                 @csrf
                                                                 <button type="submit" class="text-[11px] text-rose-500 hover:underline">Unlock</button>
                                                             </form>
@@ -1653,7 +1653,7 @@
                                                             Unpaid
                                                         </span>
                                                         @if(auth()->user()->isAdmin())
-                                                            <form method="POST" action="{{ route('projects.attendances.pay', $att) }}" class="inline-block" onsubmit="return confirm('Disburse daily wage payout of ₹{{ number_format($att->total_amount, 2) }} now to {{ addslashes($att->worker?->name ?? 'Worker') }}?')">
+                                                            <form method="POST" action="{{ route('projects.attendances.pay', $att) }}" class="inline-block" data-confirm="Disburse daily wage payout of ₹{{ number_format($att->total_amount, 2) }} now to {{ $att->worker?->name ?? 'Worker' }}?">
                                                                 @csrf
                                                                 <button type="submit" class="px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs cursor-pointer transition">
                                                                     Pay Shift (₹{{ number_format($att->total_amount, 0) }})
@@ -1767,7 +1767,7 @@
                                     </td>
                                     <td class="px-5 py-3.5 text-right">
                                         @if(auth()->user()->isAdmin())
-                                        <form method="POST" action="{{ route('projects.devices.destroy', ['project' => $project, 'device' => $dev]) }}" onsubmit="return confirm('Delete this IP device?')" class="inline-block">
+                                        <form method="POST" action="{{ route('projects.devices.destroy', ['project' => $project, 'device' => $dev]) }}" data-confirm="Delete this IP device?" class="inline-block">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="text-rose-500 hover:text-rose-700 text-xs font-bold">
@@ -2299,7 +2299,7 @@
                                             </button>
 
                                             @if(auth()->user()->isAdmin())
-                                            <form method="POST" action="{{ route('projects.tasks.destroy', ['project' => $project, 'task' => $task]) }}" onsubmit="return confirm('Delete this task?');" class="inline">
+                                            <form method="POST" action="{{ route('projects.tasks.destroy', ['project' => $project, 'task' => $task]) }}" data-confirm="Delete this task?" class="inline">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="p-1 rounded text-slate-300 hover:text-rose-600 transition" title="Delete Task">
@@ -2627,7 +2627,7 @@
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                         </button>
                                         @if(auth()->user()->isAdmin())
-                                        <form method="POST" action="{{ route('projects.tasks.destroy', ['project' => $project, 'task' => $task]) }}" onsubmit="return confirm('Delete this task?');">
+                                        <form method="POST" action="{{ route('projects.tasks.destroy', ['project' => $project, 'task' => $task]) }}" data-confirm="Delete this task?">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="text-rose-500 hover:text-rose-700 text-xs font-bold p-1" title="Delete Task">

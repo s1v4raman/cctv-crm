@@ -97,7 +97,7 @@
                         </div>
                     </div>
                     <div class="mt-3">
-                        <div class="text-2xl font-extrabold text-slate-900 dark:text-white leading-tight font-['Outfit']">₹{{ number_format($data['financials']['revenue_without_tax'], 2) }}</div>
+                        <div class="text-2xl font-extrabold text-slate-900 dark:text-white leading-tight font-heading">₹{{ number_format($data['financials']['revenue_without_tax'], 2) }}</div>
                         <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1">
                             <span>+ ₹{{ number_format($data['financials']['tax_collected_cost'], 2) }} GST</span>
                         </div>
@@ -116,7 +116,7 @@
                         </div>
                     </div>
                     <div class="mt-3">
-                        <div class="text-2xl font-extrabold text-slate-900 dark:text-slate-200 leading-tight font-['Outfit']">₹{{ number_format($data['financials']['product_buy_cost'], 2) }}</div>
+                        <div class="text-2xl font-extrabold text-slate-900 dark:text-slate-200 leading-tight font-heading">₹{{ number_format($data['financials']['product_buy_cost'], 2) }}</div>
                         <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
                             Equipment purchase cost
                         </div>
@@ -135,7 +135,7 @@
                         </div>
                     </div>
                     <div class="mt-3">
-                        <div class="text-2xl font-extrabold text-amber-600 dark:text-amber-400 leading-tight font-['Outfit']">₹{{ number_format($data['financials']['gross_profit_without_tax'], 2) }}</div>
+                        <div class="text-2xl font-extrabold text-amber-600 dark:text-amber-400 leading-tight font-heading">₹{{ number_format($data['financials']['gross_profit_without_tax'], 2) }}</div>
                         <div class="text-[11px] font-semibold text-amber-600 dark:text-amber-400 mt-1">
                             {{ $data['financials']['gross_margin_without_tax_percent'] }}% Gross Margin
                         </div>
@@ -154,7 +154,7 @@
                         </div>
                     </div>
                     <div class="mt-3">
-                        <div class="text-2xl font-extrabold text-purple-600 dark:text-purple-400 leading-tight font-['Outfit']">₹{{ number_format($data['financials']['employee_salary_cost'], 2) }}</div>
+                        <div class="text-2xl font-extrabold text-purple-600 dark:text-purple-400 leading-tight font-heading">₹{{ number_format($data['financials']['employee_salary_cost'], 2) }}</div>
                         <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
                             ₹{{ number_format($data['financials']['salary_credited_cost'], 2) }} paid • {{ $data['salary']['employee_count'] }} staff
                         </div>
@@ -173,7 +173,7 @@
                         </div>
                     </div>
                     <div class="mt-3">
-                        <div class="text-2xl font-black leading-tight font-['Outfit'] {{ $data['financials']['net_profit_without_tax'] >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400' }}">
+                        <div class="text-2xl font-black leading-tight font-heading {{ $data['financials']['net_profit_without_tax'] >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400' }}">
                             ₹{{ number_format($data['financials']['net_profit_without_tax'], 2) }}
                         </div>
                         <div class="text-[11px] font-extrabold {{ $data['financials']['net_profit_without_tax'] >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400' }} mt-1">

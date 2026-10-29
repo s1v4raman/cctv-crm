@@ -2,7 +2,12 @@ const fs = require('fs');
 const path = require('path');
 const { Client } = require('pg');
 
-const CONNECTION_STRING = 'postgresql://neondb_owner:npg_hb9lqafutc2E@ep-odd-sky-b55wmpnc.c-7.us-east-2.aws.neon.tech/neondb?sslmode=require';
+// Set DATABASE_URL in the environment; credentials must never be committed
+const CONNECTION_STRING = process.env.DATABASE_URL;
+if (!CONNECTION_STRING) {
+    console.error('Set DATABASE_URL before running this script.');
+    process.exit(1);
+}
 
 async function main() {
     const client = new Client({ connectionString: CONNECTION_STRING });

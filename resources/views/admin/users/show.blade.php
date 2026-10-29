@@ -26,7 +26,7 @@
                     Edit Account
                 </a>
                 @if($user->id !== auth()->id())
-                    <form method="POST" action="{{ route('admin.users.destroy', $user) }}" onsubmit="return confirm('Are you sure you want to permanently delete this account ({{ addslashes($user->name) }})?')">
+                    <form method="POST" action="{{ route('admin.users.destroy', $user) }}" data-confirm="Are you sure you want to permanently delete this account ({{ $user->name }})?">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl border border-rose-200 dark:border-rose-900/60 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer">

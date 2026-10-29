@@ -42,27 +42,27 @@
             <div class="grid grid-cols-1 sm:grid-cols-5 gap-4 mb-6">
                 <div class="bg-white dark:bg-[#0f172a] p-4 rounded-2xl border border-slate-200 dark:border-white/5 shadow-xs">
                     <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Alerts Sent</span>
-                    <div class="text-2xl font-extrabold text-slate-900 dark:text-white mt-1 font-['Outfit']">{{ $stats['total'] }}</div>
+                    <div class="text-2xl font-extrabold text-slate-900 dark:text-white mt-1 font-heading">{{ $stats['total'] }}</div>
                     <span class="text-[11px] text-slate-400 dark:text-slate-500">All channels combined</span>
                 </div>
                 <div class="bg-white dark:bg-[#0f172a] p-4 rounded-2xl border border-slate-200 dark:border-white/5 shadow-xs">
                     <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">WhatsApp Messages</span>
-                    <div class="text-2xl font-extrabold text-emerald-700 dark:text-emerald-400 mt-1 font-['Outfit']">{{ $stats['whatsapp'] }}</div>
+                    <div class="text-2xl font-extrabold text-emerald-700 dark:text-emerald-400 mt-1 font-heading">{{ $stats['whatsapp'] }}</div>
                     <span class="text-[11px] text-slate-400 dark:text-slate-500">Chat dispatches</span>
                 </div>
                 <div class="bg-white dark:bg-[#0f172a] p-4 rounded-2xl border border-slate-200 dark:border-white/5 shadow-xs">
                     <span class="text-[11px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400">SMS Alerts</span>
-                    <div class="text-2xl font-extrabold text-amber-700 dark:text-amber-400 mt-1 font-['Outfit']">{{ $stats['sms'] }}</div>
+                    <div class="text-2xl font-extrabold text-amber-700 dark:text-amber-400 mt-1 font-heading">{{ $stats['sms'] }}</div>
                     <span class="text-[11px] text-slate-400 dark:text-slate-500">SMS gateway logs</span>
                 </div>
                 <div class="bg-white dark:bg-[#0f172a] p-4 rounded-2xl border border-slate-200 dark:border-white/5 shadow-xs">
                     <span class="text-[11px] font-bold uppercase tracking-wider text-sky-700 dark:text-sky-400">Email Notifications</span>
-                    <div class="text-2xl font-extrabold text-sky-700 dark:text-sky-400 mt-1 font-['Outfit']">{{ $stats['email'] }}</div>
+                    <div class="text-2xl font-extrabold text-sky-700 dark:text-sky-400 mt-1 font-heading">{{ $stats['email'] }}</div>
                     <span class="text-[11px] text-slate-400 dark:text-slate-500">HTML emails delivered</span>
                 </div>
                 <div class="bg-white dark:bg-[#0f172a] p-4 rounded-2xl border border-slate-200 dark:border-white/5 shadow-xs">
                     <span class="text-[11px] font-bold uppercase tracking-wider text-rose-700 dark:text-rose-400">Delivery Failures</span>
-                    <div class="text-2xl font-extrabold {{ $stats['failed'] > 0 ? 'text-rose-700 dark:text-rose-400' : 'text-slate-400 dark:text-slate-500' }} mt-1 font-['Outfit']">{{ $stats['failed'] }}</div>
+                    <div class="text-2xl font-extrabold {{ $stats['failed'] > 0 ? 'text-rose-700 dark:text-rose-400' : 'text-slate-400 dark:text-slate-500' }} mt-1 font-heading">{{ $stats['failed'] }}</div>
                     <span class="text-[11px] text-slate-400 dark:text-slate-500">Unreachable recipients</span>
                 </div>
             </div>

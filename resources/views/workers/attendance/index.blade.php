@@ -450,7 +450,7 @@
                                     {{-- Actions --}}
                                     <td class="py-2.5 px-3 text-right nowrap">
                                         @if(!$att->is_paid && auth()->user()->isAdmin())
-                                            <form method="POST" action="{{ route('workers.attendance.destroy', $att) }}" class="inline" onsubmit="return confirm('Remove attendance record for {{ addslashes($w?->name ?? 'worker') }} on this date?')">
+                                            <form method="POST" action="{{ route('workers.attendance.destroy', $att) }}" class="inline" data-confirm="Remove attendance record for {{ $w?->name ?? 'worker' }} on this date?">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="danger-link text-xs p-0 bg-transparent border-0 cursor-pointer">

@@ -47,13 +47,12 @@ class CalendarTest extends TestCase
         $this->actingAs($this->admin);
         $response = $this->get(route('calendar.index'));
         $response->assertOk();
-        $response->assertSee('Operations Calendar');
-        $response->assertSee('Unified Schedule');
+        $response->assertSee('Calendar and Tasks');
 
         $this->actingAs($this->staff);
         $response = $this->get(route('calendar.index'));
         $response->assertOk();
-        $response->assertSee('Operations Calendar');
+        $response->assertSee('Calendar and Tasks');
     }
 
     public function test_customer_cannot_access_calendar(): void
@@ -186,7 +185,9 @@ class CalendarTest extends TestCase
         // Soft-delete the project
         $project->delete();
 
-        // Also add an orphan task whose project does not exist at all
+        // Also add an orphan task whose project does not exist at all. The foreign key check is
+        // deferred to commit, which never comes: the test transaction is rolled back.
+        \Illuminate\Support\Facades\DB::statement('PRAGMA defer_foreign_keys = ON');
         \App\Models\ProjectTask::create([
             'project_id'   => 999999,
             'phase_name'   => 'Phase 2',

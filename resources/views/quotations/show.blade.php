@@ -318,7 +318,7 @@
     {{-- Reject Modal --}}
     <div id="reject-modal" style="display:none;position:fixed;inset:0;z-index:50;background:rgba(6,9,19,0.8);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:1rem;">
         <div class="bg-[#0F172A] border border-rose-500/30 rounded-2xl p-6 max-w-md w-full shadow-2xl">
-            <h4 class="text-lg font-bold text-white uppercase font-['Outfit'] mb-1">Reject Quotation</h4>
+            <h4 class="text-lg font-bold text-white uppercase font-heading mb-1">Reject Quotation</h4>
             <p class="text-xs text-slate-400 mb-4">Please provide the reason why the customer rejected this quotation.</p>
             <form method="POST" action="{{ route('quotations.reject', $quotation) }}">
                 @csrf

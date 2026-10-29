@@ -16,7 +16,8 @@
    status colours. Rules below reference these instead of literal values.
    ═══════════════════════════════════════════════════════════════════════ */
 :root {
-    --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    /* Roboto is bundled (@fontsource above), so every device gets the same font */
+    --font-sans: "Roboto", ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
     --radius-control: 6px;   /* inputs, selects, buttons, square badges */

@@ -31,11 +31,13 @@ services:
       - key: DB_USERNAME
         value: neondb_owner
       - key: DB_PASSWORD
-        value: npg_r3e8jnXIpKmH
+        # Secret: set in the Render dashboard (Environment), never in git
+        sync: false
       - key: DB_SSLMODE
         value: require
       - key: DATABASE_URL
-        value: postgresql://neondb_owner:npg_r3e8jnXIpKmH@ep-little-firefly-aolx73by-pooler.c-2.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
+        # Secret: set in the Render dashboard (Environment), never in git
+        sync: false
       - key: DB_PERSISTENT
         value: "true"
       - key: AUTO_MIGRATE

@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h2 class="text-2xl font-black tracking-wider text-white uppercase font-['Outfit']">Edit User Account: {{ $user->name }}</h2>
+                <h2 class="text-2xl font-black tracking-wider text-white uppercase font-heading">Edit User Account: {{ $user->name }}</h2>
                 <p class="mt-1 text-xs text-slate-400 font-mono">Update account details, role and security options for this user.</p>
             </div>
             <a href="{{ request('return_to', route('admin.users.index')) }}"
@@ -48,7 +48,7 @@
                     </div>
 
                     <div class="pt-5 border-t border-white/5">
-                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-300 font-['Outfit'] mb-1">Change Password (Optional)</h4>
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-300 font-heading mb-1">Change Password (Optional)</h4>
                         <p class="text-[11px] text-slate-400 font-mono mb-4">Leave password fields blank if you do not want to change the password.</p>
                     </div>
 

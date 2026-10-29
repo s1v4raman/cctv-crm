@@ -23,7 +23,8 @@ class CalendarController extends Controller
     {
         $user = $request->user();
         $isWorker = $user->isWorker();
-        $isAdmin = $user->isAdmin();
+        // Admin and staff create and assign tasks
+        $canManageTasks = $user->isOffice();
 
         // Server-side Tab Authorization
         // Workers MUST NOT see or access Overall tabs
@@ -124,7 +125,7 @@ class CalendarController extends Controller
             ->orderBy('name')
             ->get(['id', 'name', 'role', 'email']);
 
-        $projects = $isAdmin
+        $projects = $canManageTasks
             ? Project::select('id', 'title', 'company_name', 'site_address')->orderBy('title')->get()
             : collect();
 
@@ -146,7 +147,7 @@ class CalendarController extends Controller
             'currentMonth'        => $currentMonth,
             'activeTab'           => $activeTab,
             'isWorker'            => $isWorker,
-            'isAdmin'             => $isAdmin,
+            'canManageTasks'      => $canManageTasks,
             'overallEvents'       => $overallEvents,
             'myEvents'            => $myEvents,
             'overallTasksGrouped' => $overallTasksGrouped,

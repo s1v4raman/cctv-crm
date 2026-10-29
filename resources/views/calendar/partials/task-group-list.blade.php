@@ -75,7 +75,7 @@
                                         </div>
                                     </div>
 
-                                    @if($isAdmin)
+                                    @if($canManageTasks)
                                         <button type="button" 
                                                 @click="openReassignModal({{ json_encode($task) }})" 
                                                 class="px-3 py-1.5 rounded-[4px] bg-rose-600 text-white text-[11px] font-bold hover:bg-rose-700 transition shrink-0 cursor-pointer shadow-xs">
@@ -216,7 +216,7 @@
                                 @endif
 
                                 {{-- Admin-only Assign / Reassign Button --}}
-                                @if($isAdmin)
+                                @if($canManageTasks)
                                     <button type="button" 
                                             @click="openReassignModal({{ json_encode($task) }})"
                                             class="px-3 py-1.5 rounded-[4px] border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold shadow-2xs transition flex items-center gap-1 cursor-pointer">
