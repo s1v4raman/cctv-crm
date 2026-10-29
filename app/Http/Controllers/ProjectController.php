@@ -940,9 +940,12 @@ class ProjectController extends Controller
 
     /**
      * 1-Click Interactive Demo Access Link for external testers/clients.
+     * Local development only: it signs the visitor in without a password.
      */
     public function demoAccess(Request $request)
     {
+        abort_unless(app()->environment('local'), 404);
+
         $reviewer = User::firstOrCreate(
             ['email' => 'reviewer@cctvcrm.com'],
             [

@@ -91,54 +91,29 @@ echo "=> Running database migrations..."
 php artisan migrate --force || echo "=> Warning: Migrations failed. Check database configuration."
 
 # Guarantee default Admin, Reviewer, and Demo user accounts exist
-echo "=> Ensuring Super Admin, Reviewer, and Staff accounts exist..."
-php artisan tinker --execute="
-try {
-    \App\Models\User::updateOrCreate(
-        ['email' => 'admin@cctvcrm.com'],
-        [
-            'name' => 'Suresh Prabhu (Admin)',
-            'password' => bcrypt('password'),
-            'role' => 'admin',
-            'email_verified_at' => now(),
-        ]
-    );
-    \App\Models\User::updateOrCreate(
-        ['email' => 'test@example.com'],
-        [
-            'name' => 'Admin User',
-            'password' => bcrypt('password'),
-            'role' => 'admin',
-            'email_verified_at' => now(),
-        ]
-    );
-    \App\Models\User::updateOrCreate(
-        ['email' => 'reviewer@cctvcrm.com'],
-        [
-            'name' => 'Project Reviewer & Analyst',
-            'password' => bcrypt('reviewer123'),
-            'role' => 'staff',
-            'email_verified_at' => now(),
-        ]
-    );
-    \App\Models\User::updateOrCreate(
-        ['email' => 'bob@example.com'],
-        [
-            'name' => 'Bob Technician',
-            'password' => bcrypt('password'),
-            'role' => 'technician',
-            'email_verified_at' => now(),
-        ]
-    );
-    echo '=> Admin, Reviewer, and Demo accounts verified successfully.' . PHP_EOL;
-} catch (\Throwable \$e) {
-    echo '=> Account creation note: ' . \$e->getMessage() . PHP_EOL;
+# First admin for an empty database only: set INITIAL_ADMIN_EMAIL and
+# INITIAL_ADMIN_PASSWORD as Render secrets. Nothing happens once any admin
+# exists, and existing accounts and passwords are never touched.
+if [ -n "$INITIAL_ADMIN_EMAIL" ] && [ -n "$INITIAL_ADMIN_PASSWORD" ]; then
+    echo "=> Checking for a first admin account..."
+    php artisan tinker --execute="
+if (! \App\Models\User::where('role', 'admin')->exists()) {
+    (new \App\Models\User)->forceFill([
+        'name' => 'Administrator',
+        'email' => getenv('INITIAL_ADMIN_EMAIL'),
+        'password' => getenv('INITIAL_ADMIN_PASSWORD'),
+        'role' => 'admin',
+        'email_verified_at' => now(),
+    ])->save();
+    echo '=> First admin account created.' . PHP_EOL;
 }
 " || true
+fi
 
-# Seed database with catalog products & full demo data if seeder exists
-echo "=> Running database seeders..."
-php artisan db:seed --force || echo "=> Seeders finished or already run."
+# Reference data only (companies, and the product catalogue when it is empty);
+# never user accounts. Demo data and test logins come from DatabaseSeeder locally.
+echo "=> Seeding reference data..."
+php artisan db:seed --class=ProductionSeeder --force || echo "=> Reference data seeding skipped."
 
 # Cache routes and views for production performance
 echo "=> Caching routes and views..."
