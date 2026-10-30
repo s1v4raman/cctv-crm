@@ -96,15 +96,15 @@
                 <div class="rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden">
                     <div class="px-5 py-3.5 bg-slate-50/80 dark:bg-slate-800/60 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
                         <div class="flex items-center gap-3">
-                            <span class="w-3 h-3 rounded-full bg-blue-600"></span>
+                            <span class="w-3 h-3 rounded-full" style="background-color: var(--crm-accent, #2563eb);"></span>
                             <h3 class="font-bold text-slate-900 dark:text-white text-sm font-heading">{{ $companyName }}</h3>
-                            <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300">
+                            <span class="text-xs font-semibold px-2 py-0.5 rounded-full" style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.12); color: var(--crm-accent, #2563eb);">
                                 {{ $docs->count() }} DCs
                             </span>
                         </div>
 
                         <div class="flex items-center gap-2 text-xs">
-                            <button type="button" @click="selectAll({{ json_encode($docIds) }})" class="text-blue-600 hover:underline">Select All</button>
+                            <button type="button" @click="selectAll({{ json_encode($docIds) }})" class="hover:underline font-semibold" style="color: var(--crm-accent, #2563eb);">Select All</button>
                             <span class="text-slate-300">&bull;</span>
                             <button type="button" @click="clearGroup({{ json_encode($docIds) }})" class="text-slate-400 hover:underline">Deselect</button>
                         </div>
@@ -146,7 +146,7 @@
                                             </div>
                                         </td>
                                         <td class="px-5 py-3.5">
-                                            <a href="{{ route('projects.show', $doc->project) }}" class="font-bold text-blue-600 dark:text-blue-400 hover:underline">
+                                            <a href="{{ route('projects.show', $doc->project) }}" class="font-bold hover:underline" style="color: var(--crm-accent, #2563eb);">
                                                 {{ $doc->project->project_code }}
                                             </a>
                                             <div class="text-xs text-slate-400 truncate max-w-xs">{{ $doc->project->title }}</div>

@@ -39,7 +39,7 @@
                     @if($user->isWorker() && $user->worker)
                         <div class="text-xs mt-0.5" style="color: var(--ld-muted)">
                             {{ \App\Support\Inr::money($user->worker->daily_rate) }} a day @if($user->worker->phone) · {{ $user->worker->phone }}@endif
-                            · <a href="{{ route('workers.show', $user->worker) }}" class="plain-link underline" style="color: var(--ld-muted)">worker profile</a>
+                            · <a href="{{ route('workers.show', $user->worker) }}" class="plain-link underline font-medium" style="color: var(--crm-accent, #2563eb)">worker profile</a>
                         </div>
                     @endif
                 </td>

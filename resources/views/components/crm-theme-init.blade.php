@@ -104,11 +104,18 @@
                 --crm-accent-hover: ${hoverHex} !important;
                 --crm-accent-shadow: rgba(${tr}, ${tg}, ${tb}, 0.25) !important;
                 --crm-accent-rgb: ${tr}, ${tg}, ${tb} !important;
+                --crm-accent-soft: rgba(${tr}, ${tg}, ${tb}, 0.12) !important;
+                --crm-accent-border: rgba(${tr}, ${tg}, ${tb}, 0.28) !important;
                 --brand-blue: ${hex} !important;
                 --brand-blue-hover: ${hoverHex} !important;
                 --primary-btn-bg: ${hex} !important;
                 --color-blue-600: ${hex} !important;
                 --color-blue-700: ${hoverHex} !important;
+                --color-indigo-600: ${hex} !important;
+                --color-indigo-700: ${hoverHex} !important;
+                --ld-accent: ${hex} !important;
+                --ld-accent-hover: ${hoverHex} !important;
+                --ld-accent-soft: rgba(${tr}, ${tg}, ${tb}, 0.14) !important;
             }
 
             /* Brand Logo: PRECISION wordmark mask dynamically recolored */
@@ -645,60 +652,103 @@
             .text-blue-600:not(.btn-primary):not([class*="bg-blue"]):not([class*="bg-[#2563eb]"]):not(.btn-search):not(.btn-filter):not(.text-white),
             .text-blue-500:not(.btn-primary):not([class*="bg-blue"]):not([class*="bg-[#2563eb]"]):not(.btn-search):not(.btn-filter):not(.text-white),
             .text-blue-700:not(.btn-primary):not([class*="bg-blue"]):not([class*="bg-[#2563eb]"]):not(.btn-search):not(.btn-filter):not(.text-white),
+            .text-blue-800:not(.btn-primary):not([class*="bg-blue"]):not(.text-white),
             .text-indigo-600:not(.btn-primary):not([class*="bg-indigo"]):not(.text-white),
             .text-indigo-700:not(.btn-primary):not([class*="bg-indigo"]):not(.text-white),
+            .text-indigo-800:not(.btn-primary):not([class*="bg-indigo"]):not(.text-white),
             .text-sky-600:not(.btn-primary):not([class*="bg-sky"]):not(.text-white),
             .text-sky-700:not(.btn-primary):not([class*="bg-sky"]):not(.text-white),
+            .text-purple-600:not(.btn-primary):not([class*="bg-purple"]):not(.text-white),
+            .text-purple-700:not(.btn-primary):not([class*="bg-purple"]):not(.text-white),
+            .text-purple-800:not(.btn-primary):not([class*="bg-purple"]):not(.text-white),
             html.dark .dark\:text-blue-400:not(.btn-primary):not(.text-white),
             html.dark .dark\:text-blue-300:not(.btn-primary):not(.text-white),
             html.dark .dark\:text-indigo-400:not(.btn-primary):not(.text-white),
             html.dark .dark\:text-indigo-300:not(.btn-primary):not(.text-white),
             html.dark .dark\:text-sky-400:not(.btn-primary):not(.text-white),
             html.dark .dark\:text-sky-300:not(.btn-primary):not(.text-white),
+            html.dark .dark\:text-purple-400:not(.btn-primary):not(.text-white),
+            html.dark .dark\:text-purple-300:not(.btn-primary):not(.text-white),
             .cell-name a,
             .cell-no a,
             .leads-table .cell-name a,
-            table td a:not(.btn):not([class*="btn"]):not([class*="text-emerald"]):not([class*="text-amber"]):not([class*="text-rose"]):not([class*="text-red"]):not([class*="text-slate"]):not([class*="text-gray"]),
-            a:not(.btn):not(.btn-primary):not(.btn-secondary):not(.btn-subtle):not(.btn-inline-add):not([class*="btn-"]):not(aside a):not(.crm-brand-logo):not(.text-white):not([class*="text-white"]):not(.crm-filter-tab):not(.filter-tab):not(.active):not([class*="active"]):not(.filter-tabs a):not(.section-nav-link):not(.plain-link):not([class*="text-emerald"]):not([class*="text-amber"]):not([class*="text-rose"]):not([class*="text-red"]):not([class*="text-slate"]):not([class*="text-gray"]),
+            .ld-root .ld-scroll table.ld-table td a.ld-name,
+            a.ld-name,
+            table td a:not(.btn):not([class*="btn"]):not([class*="text-emerald"]):not([class*="text-green"]):not([class*="text-amber"]):not([class*="text-yellow"]):not([class*="text-rose"]):not([class*="text-red"]):not([class*="text-slate"]):not([class*="text-gray"]):not(.text-white),
+            a:not(.btn):not(.btn-primary):not(.btn-secondary):not(.btn-subtle):not(.btn-inline-add):not([class*="btn-"]):not(aside a):not(.crm-brand-logo):not(.text-white):not([class*="text-white"]):not(.crm-filter-tab):not(.filter-tab):not(.active):not([class*="active"]):not(.filter-tabs a):not(.section-nav-link):not([class*="text-emerald"]):not([class*="text-amber"]):not([class*="text-rose"]):not([class*="text-red"]):not([class*="text-slate"]):not([class*="text-gray"]:not([class*="underline"])),
             td[x-show*="map"] a,
-            a[href*="projects/"]:not(.btn),
+            a[href*="projects/"]:not(.btn):not([class*="text-emerald"]):not([class*="text-rose"]),
             a[href*="workers/"]:not(.btn),
-            a[href*="suppliers/"]:not(.btn) {
+            a[href*="suppliers/"]:not(.btn),
+            a[href*="leads/"]:not(.btn),
+            a[href*="quotations/"]:not(.btn) {
                 color: ${hex} !important;
             }
             .cell-name a:hover,
             .cell-no a:hover,
             .leads-table .cell-name a:hover,
+            .ld-root .ld-scroll table.ld-table td a.ld-name:hover,
+            a.ld-name:hover,
             table td a:hover,
             td[x-show*="map"] a:hover {
                 color: ${hoverHex} !important;
             }
 
-            /* 13. ACCENT BADGES, STATUS PILLS & DOTS */
+            /* 13. ACCENT BADGES, STATUS PILLS, DOTS & TIMELINE */
             span.rounded-full.bg-blue-600,
+            span.rounded-full.bg-blue-500,
             span.rounded-full.bg-sky-500,
             span.rounded-full.bg-indigo-600,
-            span.w-3.h-3.rounded-full.bg-blue-600 {
+            span.rounded-full.bg-indigo-500,
+            span.w-3.h-3.rounded-full.bg-blue-600,
+            span.w-2\.5.h-2\.5.rounded-full.bg-blue-500,
+            span.w-2\.5.h-2\.5.rounded-full.bg-blue-600 {
                 background-color: ${hex} !important;
             }
 
             .bg-blue-50:not(.btn-primary):not(.btn),
+            .bg-blue-100:not(.btn-primary):not(.btn),
             .bg-indigo-50:not(.btn-primary):not(.btn),
+            .bg-indigo-100:not(.btn-primary):not(.btn),
+            .bg-purple-50:not(.btn-primary):not(.btn),
+            .bg-purple-100:not(.btn-primary):not(.btn),
             .bg-sky-50:not(.btn-primary):not(.btn),
+            .bg-sky-100:not(.btn-primary):not(.btn),
             html.dark .dark\:bg-blue-950\/60,
+            html.dark .dark\:bg-blue-950\/70,
+            html.dark .dark\:bg-blue-950\/30,
             html.dark .dark\:bg-indigo-900\/30,
             html.dark .dark\:bg-indigo-950\/30,
+            html.dark .dark\:bg-indigo-950,
+            html.dark .dark\:bg-purple-950\/30,
+            html.dark .dark\:bg-purple-950\/40,
             html.dark .dark\:bg-sky-950\/40 {
                 background-color: rgba(${tr}, ${tg}, ${tb}, 0.12) !important;
             }
 
+            .border-blue-100,
             .border-blue-200,
+            .border-blue-300,
+            .border-indigo-100,
             .border-indigo-200,
+            .border-purple-100,
+            .border-purple-200,
+            .border-sky-100,
             .border-sky-200,
             html.dark .dark\:border-blue-800,
+            html.dark .dark\:border-blue-900\/40,
             html.dark .dark\:border-indigo-800,
+            html.dark .dark\:border-purple-800,
             html.dark .dark\:border-sky-800 {
                 border-color: rgba(${tr}, ${tg}, ${tb}, 0.3) !important;
+            }
+
+            .border-l-2.border-blue-500,
+            .border-l-2.border-blue-600,
+            .border-l-2.border-indigo-500,
+            .border-b-2.border-blue-600,
+            .border-b-2.border-indigo-600 {
+                border-color: ${hex} !important;
             }
 
             /* Plain tabs (e.g. Calendar tabs) */
@@ -735,6 +785,22 @@
         // Automatically recolor all logo images on the page
         if (typeof window.recolorCrmBrandLogo === 'function') {
             window.recolorCrmBrandLogo(hex);
+
+        // Dynamically recolor any Chart.js bar and line charts live on the page
+        try {
+            if (window.Chart && window.Chart.instances) {
+                Object.values(window.Chart.instances).forEach(function(chart) {
+                    if (chart && chart.data && chart.data.datasets) {
+                        chart.data.datasets.forEach(function(ds) {
+                            if (ds.label === 'Accepted Revenue' || ds.type === 'bar' || (!ds.type && chart.config.type === 'bar')) {
+                                ds.backgroundColor = hex;
+                            }
+                        });
+                        chart.update('none');
+                    }
+                });
+            }
+        } catch(e) {}
         }
     };
 

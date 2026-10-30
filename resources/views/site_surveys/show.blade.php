@@ -6,7 +6,7 @@
                 <div class="flex items-center gap-3">
                     <h2 class="text-xl font-bold text-slate-900 dark:text-white">Site Survey #{{ $siteSurvey->id }}</h2>
                     @php
-                        $surveyStatusColor = '#2563eb';
+                        $surveyStatusColor = 'var(--crm-accent, #2563eb)';
                         if ($siteSurvey->status === 'completed') $surveyStatusColor = '#16a34a';
                         elseif ($siteSurvey->status === 'cancelled') $surveyStatusColor = '#dc2626';
                     @endphp

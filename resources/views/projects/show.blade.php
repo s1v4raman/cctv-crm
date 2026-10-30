@@ -7,7 +7,7 @@
                 <div class="flex items-center gap-3">
                     <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ $project->title }}</h2>
                     @php
-                        $projStatusColor = '#2563eb';
+                        $projStatusColor = 'var(--crm-accent, #2563eb)';
                         if ($project->status === 'completed') $projStatusColor = '#16a34a';
                         elseif (in_array($project->status, ['cancelled', 'on_hold'])) $projStatusColor = '#dc2626';
                     @endphp
@@ -426,7 +426,7 @@
                 <button type="button" @click="currentTab = 'materials'" :class="currentTab === 'materials' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 dark:text-slate-400 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'" class="inline-flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
                     <span>Materials</span> <span class="text-slate-400 font-normal">{{ $project->materials->count() }}</span>
                     @if($totalCableMeters > 0)
-                        <span class="px-1.5 py-0.5 text-[11px] rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 font-bold">{{ number_format($totalCableMeters, 0) }}m</span>
+                        <span class="px-1.5 py-0.5 text-[11px] rounded-full font-bold" style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.12); color: var(--crm-accent, #2563eb);">{{ number_format($totalCableMeters, 0) }}m</span>
                     @endif
                 </button>
                 <button type="button" @click="currentTab = 'documents'" :class="currentTab === 'documents' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 dark:text-slate-400 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'" class="inline-flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
@@ -444,7 +444,7 @@
                 <button type="button" @click="currentTab = 'tasks'" :class="currentTab === 'tasks' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 dark:text-slate-400 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'" class="inline-flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
                     <span>Tasks</span> <span class="text-slate-400 font-normal">{{ $tasksCount }}</span>
                     @if($tasksCount > 0)
-                        <span class="px-1.5 py-0.5 text-[11px] rounded-full {{ $taskCompletionPercentage === 100 ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300' }} font-bold">{{ $taskCompletionPercentage }}%</span>
+                        <span class="px-1.5 py-0.5 text-[11px] rounded-full font-bold" style="{{ $taskCompletionPercentage === 100 ? 'background-color: rgba(16, 185, 129, 0.15); color: #10b981;' : 'background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.12); color: var(--crm-accent, #2563eb);' }}">{{ $taskCompletionPercentage }}%</span>
                     @endif
                 </button>
             </nav>
@@ -819,19 +819,20 @@
                     <div class="p-6 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
                         <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                             <h3 class="font-extrabold text-slate-900 dark:text-white text-sm flex items-center gap-2">
-                                <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+                                <span class="w-2.5 h-2.5 rounded-full" style="background-color: var(--crm-accent, #2563eb);"></span>
                                 Project Team
                             </h3>
                             <div class="flex items-center gap-1.5">
                                 @if(auth()->user()->isAdmin())
                                 <a href="{{ route('admin.users.create', ['role' => 'technician', 'return_to' => route('projects.show', [$project->id, 'tab' => 'overview'])]) }}" 
-                                   class="inline-flex items-center px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs transition"
+                                   class="inline-flex items-center px-2.5 py-1 rounded-lg text-white text-xs font-semibold shadow-xs transition"
+                                   style="background-color: var(--crm-accent, #2563eb);"
                                    title="Add and register a new technician for this project">
                                     Add Technician
                                 </a>
                                 @endif
                                 @if(auth()->user()->isAdmin() || ($project->created_by === auth()->id() && in_array($project->status, ['draft', 'pending_approval'])))
-                                    <a href="{{ route('projects.edit', $project) }}" class="text-xs text-blue-600 dark:text-blue-400 font-semibold hover:underline px-1 py-0.5">
+                                    <a href="{{ route('projects.edit', $project) }}" class="text-xs font-semibold hover:underline px-1 py-0.5" style="color: var(--crm-accent, #2563eb);">
                                         Edit
                                     </a>
                                 @endif
@@ -862,10 +863,10 @@
 
                         <div class="space-y-3 text-xs">
                             {{-- Lead Technician --}}
-                            <div x-data="{ showAssignForm: false }" class="p-3 rounded-xl bg-blue-50/50 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/40">
+                            <div x-data="{ showAssignForm: false }" class="p-3 rounded-xl border" style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.08); border-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.25);">
                                 <div class="flex items-center justify-between mb-1">
-                                    <span class="text-[11px] text-blue-600 dark:text-blue-400 uppercase tracking-wider block font-bold">Lead Technician (In-Charge)</span>
-                                    <button type="button" @click="showAssignForm = !showAssignForm" class="text-[11px] text-blue-600 dark:text-blue-400 font-semibold hover:underline">
+                                    <span class="text-[11px] uppercase tracking-wider block font-bold" style="color: var(--crm-accent, #2563eb);">Lead Technician (In-Charge)</span>
+                                    <button type="button" @click="showAssignForm = !showAssignForm" class="text-[11px] font-semibold hover:underline" style="color: var(--crm-accent, #2563eb);">
                                         <span x-text="showAssignForm ? 'Cancel' : '{{ $project->leadTechnician ? 'Change' : '+ Assign' }}'"></span>
                                     </button>
                                 </div>
@@ -878,7 +879,7 @@
                                                 <span class="text-slate-500 text-[11px]">{{ $project->leadTechnician->email }}</span>
                                             </div>
                                             @if($project->leadTechnician->phone)
-                                                <a href="tel:{{ $project->leadTechnician->phone }}" class="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-[11px] shadow-xs">
+                                                <a href="tel:{{ $project->leadTechnician->phone }}" class="px-2.5 py-1 rounded-lg text-white font-bold text-[11px] shadow-xs" style="background-color: var(--crm-accent, #2563eb);">
                                                     Call
                                                 </a>
                                             @endif
@@ -975,7 +976,7 @@
 
                         <div class="space-y-3 max-h-60 overflow-y-auto pr-1">
                             @forelse($project->auditLogs as $log)
-                                <div class="text-xs border-l-2 border-blue-500 pl-3 py-1">
+                                <div class="text-xs pl-3 py-1" style="border-left: 2px solid var(--crm-accent, #2563eb);">
                                     <div class="font-bold text-slate-800 dark:text-slate-200">{{ $log->action_label }}</div>
                                     @if($log->reason)<div class="text-[11px] text-slate-500">{{ $log->reason }}</div>@endif
                                     <div class="text-[11px] text-slate-400 mt-0.5">{{ $log->user?->name ?? 'System' }} &bull; {{ $log->created_at->diffForHumans() }}</div>

@@ -77,7 +77,7 @@
         <!-- Minimal Brand Header -->
         <header class="border-b border-[#dddddd] bg-white px-6 py-3.5 flex justify-between items-center">
             <a href="/" class="flex items-center gap-3">
-                <img src="{{ asset('logo.png') }}?v={{ filemtime(public_path('logo.png')) }}" alt="Precision IT Systems" class="h-8 w-auto max-w-[175px] object-contain">
+                <x-brand-logo class="h-8 w-auto max-w-[175px] shrink-0" />
                 <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider pl-2 border-l border-slate-300">Operations</span>
             </a>
             <a href="/" class="text-xs text-[#555555] hover:text-[#2563eb] hover:underline flex items-center gap-1 font-normal">

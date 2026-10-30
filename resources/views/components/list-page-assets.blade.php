@@ -102,8 +102,8 @@
     .ld-root .ld-scroll table.ld-table tbody tr.is-picked td { background: var(--ld-accent-soft) !important; }
     .ld-root .ld-scroll table.ld-table .ld-box { width: 48px; min-width: 48px !important; padding-left: 18px; padding-right: 0; }
     .ld-root .ld-scroll table.ld-table .ld-box input { width: 14px; height: 14px; border: 1px solid #9aa3af; border-radius: 2px; accent-color: var(--ld-accent); cursor: pointer; }
-    .ld-root .ld-scroll table.ld-table td a.ld-name { color: var(--ld-text) !important; font-size: 14px !important; }
-    .ld-root .ld-scroll table.ld-table td a.ld-name:hover { text-decoration: underline !important; }
+    .ld-root .ld-scroll table.ld-table td a.ld-name { color: var(--ld-accent, var(--crm-accent, #2563eb)) !important; font-size: 14px !important; font-weight: 600 !important; }
+    .ld-root .ld-scroll table.ld-table td a.ld-name:hover { color: var(--ld-accent-hover, var(--crm-accent-hover, #1d4ed8)) !important; text-decoration: underline !important; }
     .ld-root .ld-wrap { overflow-wrap: anywhere; max-width: 240px; }
     .ld-root .ld-row-actions { display: flex; justify-content: flex-end; gap: 2px; opacity: 0; }
     .ld-root tr:hover .ld-row-actions, .ld-root .ld-row-actions:focus-within { opacity: 1; }

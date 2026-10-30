@@ -265,7 +265,7 @@
                         <span class="font-bold text-sm text-slate-900 dark:text-white">Daily Attendance Roster & Photo Verification</span>
                         <span class="text-xs text-slate-500">&bull; {{ $selectedDate->format('l, d F Y') }}</span>
                     </div>
-                    <span class="text-xs font-semibold px-2 py-0.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded border border-indigo-200 dark:border-indigo-800">
+                    <span class="text-xs font-semibold px-2 py-0.5 rounded border" style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.12); color: var(--crm-accent, #2563eb); border-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.3);">
                         {{ $attendances->count() }} Workers Punched
                     </span>
                 </div>

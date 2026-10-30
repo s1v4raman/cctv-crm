@@ -276,12 +276,12 @@
                     datasets: [{
                         label: 'Payroll Disbursement (₹)',
                         data: @json($monthlyTrendValues),
-                        borderColor: '#2563eb',
+                        borderColor: getComputedStyle(document.documentElement).getPropertyValue('--crm-accent').trim() || '#2563eb',
                         backgroundColor: 'transparent',
                         fill: false,
                         tension: 0,
                         pointRadius: 3,
-                        pointBackgroundColor: '#2563eb',
+                        pointBackgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--crm-accent').trim() || '#2563eb',
                         borderWidth: 2
                     }]
                 },
@@ -334,7 +334,7 @@
                     labels: @json($roleLabels),
                     datasets: [{
                         data: @json($roleValues),
-                        backgroundColor: ['#2563eb', '#64748b', '#059669'],
+                        backgroundColor: [getComputedStyle(document.documentElement).getPropertyValue('--crm-accent').trim() || '#2563eb', '#64748b', '#059669'],
                         borderWidth: 1,
                         borderColor: isDark ? '#0f172a' : '#ffffff'
                     }]

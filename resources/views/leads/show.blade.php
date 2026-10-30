@@ -11,7 +11,7 @@
                         {{ $lead->customer_name }}
                     </h2>
                     @php
-                        $leadStatusColor = '#2563eb';
+                        $leadStatusColor = 'var(--crm-accent, #2563eb)';
                         if ($lead->status === 'won') $leadStatusColor = '#16a34a';
                         elseif ($lead->status === 'lost') $leadStatusColor = '#dc2626';
                         elseif ($lead->status === 'quoted') $leadStatusColor = '#7c3aed';

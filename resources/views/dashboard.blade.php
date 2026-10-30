@@ -875,30 +875,31 @@
     }
 
     /* Dynamic Chart Theme Switching */
-    window.addEventListener('theme-changed', () => {
-        if (!latestChartData) return;
-
+    window.addEventListener('theme-changed', (e) => {
+        const liveAccent = (e && e.detail && e.detail.accent) ? e.detail.accent : C.primary;
         const grid = getGridColor();
         const tick = getTickColor();
         const borderColor = isDarkTheme() ? '#0f172a' : '#ffffff';
 
-        @if($isAdmin)
-        if (revenueChart) {
-            revenueChart.data.datasets[0].backgroundColor = C.primary;
-            revenueChart.options.scales.x.ticks.color = tick;
-            revenueChart.options.scales.y.ticks.color = tick;
-            revenueChart.options.scales.y.grid.color  = grid;
+        @if()
+        if (revenueChart && revenueChart.data && revenueChart.data.datasets && revenueChart.data.datasets[0]) {
+            revenueChart.data.datasets[0].backgroundColor = liveAccent;
+            if (revenueChart.options && revenueChart.options.scales) {
+                if (revenueChart.options.scales.x && revenueChart.options.scales.x.ticks) revenueChart.options.scales.x.ticks.color = tick;
+                if (revenueChart.options.scales.y && revenueChart.options.scales.y.ticks) revenueChart.options.scales.y.ticks.color = tick;
+                if (revenueChart.options.scales.y && revenueChart.options.scales.y.grid) revenueChart.options.scales.y.grid.color = grid;
+            }
             revenueChart.update();
         }
 
-        if (quotationChart) {
+        if (quotationChart && latestChartData && latestChartData.quotationChart) {
             quotationChart.data.datasets[0].borderColor = borderColor;
             quotationChart.update();
             buildLegend('quotation-legend', latestChartData.quotationChart.labels,
-                [C.slate, C.primary, C.emerald, C.rose, C.amber]);
+                [C.slate, liveAccent, C.emerald, C.rose, C.amber]);
         }
 
-        if (leadChart) {
+        if (leadChart && latestChartData && latestChartData.leadChart) {
             leadChart.data.datasets[0].borderColor = borderColor;
             leadChart.update();
             buildLegend('lead-legend', latestChartData.leadChart.labels,

@@ -1,4 +1,4 @@
-@props(['mark' => false])
+@props(['mark' => false, 'dark' => null])
 {{--
     Precision IT Systems Adaptive Brand Logo
     - "PRECISION" wordmark: dynamically recolored via CSS var(--crm-accent)
@@ -17,6 +17,12 @@
           style="-webkit-mask-image: url('{{ $url($prec) }}'); mask-image: url('{{ $url($prec) }}'); -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center; background-color: var(--crm-accent, #2563eb);"></span>
 
     {{-- Static elements: Red chevrons >>, crosshair, and IT SYSTEMS text --}}
-    <img src="{{ $url($staticLight) }}" alt="" class="h-full w-auto max-w-full object-contain pointer-events-none dark:hidden shrink-0">
-    <img src="{{ $url($staticDark) }}" alt="" class="h-full w-auto max-w-full object-contain pointer-events-none hidden dark:block shrink-0">
+    @if($dark === true)
+        <img src="{{ $url($staticDark) }}" alt="" width="{{ $mark ? 512 : 962 }}" height="{{ $mark ? 512 : 259 }}" class="h-full w-auto max-w-full object-contain pointer-events-none shrink-0">
+    @elseif($dark === false)
+        <img src="{{ $url($staticLight) }}" alt="" width="{{ $mark ? 512 : 962 }}" height="{{ $mark ? 512 : 259 }}" class="h-full w-auto max-w-full object-contain pointer-events-none shrink-0">
+    @else
+        <img src="{{ $url($staticLight) }}" alt="" width="{{ $mark ? 512 : 962 }}" height="{{ $mark ? 512 : 259 }}" class="h-full w-auto max-w-full object-contain pointer-events-none dark:hidden shrink-0">
+        <img src="{{ $url($staticDark) }}" alt="" width="{{ $mark ? 512 : 962 }}" height="{{ $mark ? 512 : 259 }}" class="h-full w-auto max-w-full object-contain pointer-events-none hidden dark:block shrink-0">
+    @endif
 </span>

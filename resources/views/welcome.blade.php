@@ -16,11 +16,11 @@
     <!-- Signature Brand Colors Permanently Locked (Independent from CRM user themes) -->
     <style>
         :root {
-            --crm-accent: #1366e2 !important;
-            --crm-accent-hover: #0e4db0 !important;
-            --crm-accent-shadow: rgba(19, 102, 226, 0.25) !important;
-            --brand-blue: #1366e2 !important;
-            --brand-blue-hover: #0e4db0 !important;
+            --crm-accent: #2563eb !important;
+            --crm-accent-hover: #1d4ed8 !important;
+            --crm-accent-shadow: rgba(37, 99, 235, 0.25) !important;
+            --brand-blue: #2563eb !important;
+            --brand-blue-hover: #1d4ed8 !important;
         }
     </style>
 
@@ -114,8 +114,7 @@
             
             <!-- Brand: the wordmark already spells the name, so it stands alone at its real shape (white version at night) -->
             <a href="{{ route('home') }}" class="crm-brand-logo flex items-center gap-4 shrink-0" aria-label="Precision IT Systems home">
-                <img src="{{ asset('logo.png') }}?v={{ filemtime(public_path('logo.png')) }}" alt="Precision IT Systems" width="149" height="40" class="h-8 sm:h-9 lg:h-10 w-auto dark:hidden">
-                <img src="{{ asset('logo-dark.png') }}?v={{ filemtime(public_path('logo-dark.png')) }}" alt="Precision IT Systems" width="149" height="40" class="h-8 sm:h-9 lg:h-10 w-auto hidden dark:block">
+                <x-brand-logo class="h-8 sm:h-9 lg:h-10 w-auto max-w-[190px] shrink-0" style="--crm-accent: #2563eb;" />
                 <span class="hidden 2xl:block pl-4 border-l border-slate-200 dark:border-slate-700 text-xs leading-snug text-slate-500 dark:text-slate-400">Security &amp; AI<br>surveillance</span>
             </a>
 
@@ -1089,8 +1088,8 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-12">
                 <!-- Col 1: Logo & Bio -->
                 <div class="lg:col-span-2 space-y-4">
-                    {{-- The footer is always dark, so it uses the white wordmark --}}
-                    <img src="{{ asset('logo-dark.png') }}?v={{ filemtime(public_path('logo-dark.png')) }}" alt="Precision IT Systems" width="164" height="44" class="h-11 w-auto">
+                    {{-- The footer is always dark, so it uses the dark variant --}}
+                    <x-brand-logo :dark="true" class="h-11 w-auto max-w-[210px] shrink-0" style="--crm-accent: #2563eb;" />
                     <p class="text-sm text-slate-300">Security &amp; AI surveillance</p>
                     <p class="text-xs text-slate-400 leading-relaxed max-w-sm">
                         Leading provider of enterprise AI video surveillance, smart security architecture, and mission-critical 24/7 maintenance engineering across modern premises.

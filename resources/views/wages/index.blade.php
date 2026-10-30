@@ -342,7 +342,7 @@
                                     </td>
                                     <td class="px-4 py-3 text-right font-mono">
                                         @if($row['is_carried_forward'])
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-blue-100 text-blue-800 dark:bg-blue-950/70 dark:text-blue-300">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold" style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.12); color: var(--crm-accent, #2563eb);">
                                                 Carried Fwd
                                             </span>
                                         @elseif($row['wages_paid'] > 0)
@@ -355,7 +355,7 @@
                                     </td>
                                     <td class="px-4 py-3 text-right font-bold font-mono text-sm {{ $due > 0 ? 'text-rose-600 dark:text-rose-400' : 'text-slate-400' }}">
                                         @if($row['is_carried_forward'])
-                                            <span class="text-xs font-semibold text-blue-600 dark:text-blue-400 block">Deferred to next week</span>
+                                            <span class="text-xs font-semibold block" style="color: var(--crm-accent, #2563eb);">Deferred to next week</span>
                                             <span class="text-xs text-slate-400 font-mono">₹{{ number_format($row['carried_forward_balance'], 2) }}</span>
                                         @else
                                             ₹{{ number_format($due, 2) }}
@@ -369,7 +369,7 @@
 
                                             @if($row['is_carried_forward'])
                                                 <span class="text-slate-300 dark:text-slate-600">|</span>
-                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold border" style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.12); color: var(--crm-accent, #2563eb); border-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.3);">
                                                     Carried Forward
                                                 </span>
                                                 <form method="POST" action="{{ route('wages.settle') }}" class="inline ml-1" data-confirm="Disburse settlement of ₹{{ number_format($row['carried_forward_balance'], 2) }} now to {{ $w->name }}?">
@@ -396,7 +396,7 @@
                                                 </form>
 
                                                 <span class="text-slate-300 dark:text-slate-600">|</span>
-                                                <button type="button" @click="openPayPart({{ $w->id }}, '{{ addslashes($w->name) }}', {{ $due }})" class="text-blue-600 hover:underline bg-transparent border-0 p-0 font-medium cursor-pointer">
+                                                <button type="button" @click="openPayPart({{ $w->id }}, '{{ addslashes($w->name) }}', {{ $due }})" class="hover:underline bg-transparent border-0 p-0 font-medium cursor-pointer" style="color: var(--crm-accent, #2563eb);">
                                                     Pay Part
                                                 </button>
 
@@ -424,7 +424,7 @@
                                             @endif
 
                                             <span class="text-slate-300 dark:text-slate-600">|</span>
-                                            <button type="button" @click='openAnalysis(@json($rowData))' class="text-blue-600 hover:underline bg-transparent border-0 p-0 text-xs font-semibold cursor-pointer">
+                                            <button type="button" @click='openAnalysis(@json($rowData))' class="hover:underline bg-transparent border-0 p-0 text-xs font-semibold cursor-pointer" style="color: var(--crm-accent, #2563eb);">
                                                 Shifts &amp; Photos
                                             </button>
                                         </div>

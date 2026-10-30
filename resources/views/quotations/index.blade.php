@@ -312,10 +312,10 @@
                                             <td colspan="10" style="padding: 48px 16px; text-align: center; color: var(--ld-muted)">
                                                 @if($filterCount > 0 || $letter || $view !== 'all')
                                                     No quotations match these filters.
-                                                    <a href="{{ route('quotations.index') }}" class="ml-1 underline plain-link" style="color: var(--ld-text)">Show all quotations</a>
+                                                    <a href="{{ route('quotations.index') }}" class="ml-1 underline plain-link" style="color: var(--ld-accent, var(--crm-accent, #2563eb)); font-weight: 600;">Show all quotations</a>
                                                 @else
                                                     No quotations yet.
-                                                    @if($isOffice)<a href="{{ route('quotations.create-general') }}" class="ml-1 underline plain-link" style="color: var(--ld-text)">Create the first one</a>@endif
+                                                    @if($isOffice)<a href="{{ route('quotations.create-general') }}" class="ml-1 underline plain-link" style="color: var(--ld-accent, var(--crm-accent, #2563eb)); font-weight: 600;">Create the first one</a>@endif
                                                 @endif
                                             </td>
                                         </tr>

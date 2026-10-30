@@ -192,10 +192,10 @@
                                     <td colspan="20" style="padding: 48px 16px; text-align: center; color: var(--ld-muted)">
                                         @if($filterCount > 0 || (request()->except('page', 'per_page', 'sort') !== []))
                                             {{ $filteredText }}
-                                            @if($clearUrl)<a href="{{ $clearUrl }}" class="ml-1 underline plain-link" style="color: var(--ld-text)">Show all</a>@endif
+                                            @if($clearUrl)<a href="{{ $clearUrl }}" class="ml-1 underline plain-link" style="color: var(--ld-accent, var(--crm-accent, #2563eb)); font-weight: 600;">Show all</a>@endif
                                         @else
                                             {{ $emptyText }}
-                                            @if($createUrl)<a href="{{ $createUrl }}" class="ml-1 underline plain-link" style="color: var(--ld-text)">{{ $createLabel }}</a>@endif
+                                            @if($createUrl)<a href="{{ $createUrl }}" class="ml-1 underline plain-link" style="color: var(--ld-accent, var(--crm-accent, #2563eb)); font-weight: 600;">{{ $createLabel }}</a>@endif
                                         @endif
                                     </td>
                                 </tr>
