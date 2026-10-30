@@ -881,7 +881,7 @@
         const tick = getTickColor();
         const borderColor = isDarkTheme() ? '#0f172a' : '#ffffff';
 
-        @if()
+        @if($isAdmin)
         if (revenueChart && revenueChart.data && revenueChart.data.datasets && revenueChart.data.datasets[0]) {
             revenueChart.data.datasets[0].backgroundColor = liveAccent;
             if (revenueChart.options && revenueChart.options.scales) {
