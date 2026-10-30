@@ -40,7 +40,8 @@
             {{-- Group Header --}}
             <div class="px-5 py-3.5 bg-slate-50/80 dark:bg-slate-800/40 border-b border-slate-200/80 dark:border-slate-800 flex items-center justify-between">
                 <div class="flex items-center gap-2.5">
-                    <span class="text-base">{{ $meta['icon'] }}</span>
+                    {{-- Icons are the fixed markup in $groupMeta above, never user input --}}
+                    <span class="text-base">{!! $meta['icon'] !!}</span>
                     <h3 class="text-sm font-extrabold text-slate-900 dark:text-white tracking-tight">{{ $groupName }}</h3>
                     <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-[4px] border {{ $meta['badge'] }}">
                         {{ $groupTasks->count() }} {{ Str::plural('Task', $groupTasks->count()) }}

@@ -163,6 +163,13 @@ class PageLinksAndFormsTest extends TestCase
             }
         }
 
+        // Markup printed as text: an icon or tag echoed with {{ }} instead of {!! !!} shows up as "<svg ..." on the page
+        foreach ($xp->query('//body//text()[not(ancestor::script or ancestor::style or ancestor::textarea or ancestor::template or ancestor::code or ancestor::pre)]') as $text) {
+            if (preg_match('/<(svg|path|span|div|strong|br|img|i)\b[^>]*>?/i', $text->nodeValue, $tag)) {
+                $this->problems[] = "{$role} {$page}: shows markup as text: " . mb_substr(trim(preg_replace('/\s+/', ' ', $text->nodeValue)), 0, 90);
+            }
+        }
+
         // Naming: fields with a label, buttons and links with a name, ids used once
         foreach ($xp->query('//input[not(@type="hidden") and not(@type="submit") and not(@type="button") and not(@type="image") and not(@type="reset")] | //select | //textarea') as $field) {
             /** @var DOMElement $field */
