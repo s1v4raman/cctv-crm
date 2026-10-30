@@ -359,7 +359,7 @@
                 <!-- Top: Brand -->
                 <div class="anim">
                     <a href="{{ route('home') }}" class="flex items-center gap-3.5 group" title="Precision IT Systems Operations ERP">
-                        <x-brand-logo class="h-9 w-auto max-w-[210px] shrink-0 group-hover:scale-105 transition-transform duration-200" />
+                        <img src="{{ asset('logo-dark.png') }}?v={{ filemtime(public_path('logo-dark.png')) }}" alt="Precision IT Systems" width="164" height="44" class="h-9 w-auto max-w-[210px] shrink-0 group-hover:scale-105 transition-transform duration-200">
                         <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-white/10 text-slate-300 border border-white/10">Operations ERP</span>
                     </a>
                 </div>
@@ -427,7 +427,8 @@
             <div class="flex items-center justify-between px-6 sm:px-8 lg:px-10 xl:px-12 pt-6 sm:pt-8">
                 <!-- Mobile logo -->
                 <a href="{{ route('home') }}" class="flex items-center gap-2.5 lg:hidden">
-                    <x-brand-logo class="h-8 w-auto max-w-[170px] shrink-0" />
+                    <img src="{{ asset('logo.png') }}?v={{ filemtime(public_path('logo.png')) }}" alt="Precision IT Systems" width="149" height="40" class="h-8 w-auto max-w-[170px] shrink-0 dark:hidden">
+                    <img src="{{ asset('logo-dark.png') }}?v={{ filemtime(public_path('logo-dark.png')) }}" alt="Precision IT Systems" width="149" height="40" class="h-8 w-auto max-w-[170px] shrink-0 hidden dark:block">
                 </a>
                 <div class="hidden lg:block"></div>
 
