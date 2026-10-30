@@ -18,6 +18,9 @@
     RewriteCond %{REQUEST_URI} (.+)/$
     RewriteRule ^ %1 [L,R=301]
 
+    # Worker ID photos and punch selfies are private: Laravel checks who is asking
+    RewriteRule ^storage/(attendance_photos|worker_photos)/ index.php [L]
+
     # Send Requests To Front Controller...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f

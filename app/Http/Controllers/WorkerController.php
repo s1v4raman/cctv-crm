@@ -333,8 +333,8 @@ class WorkerController extends Controller
             $cleanPath = ltrim(str_replace('public/', '', $worker->photo_path), '/');
             if (Storage::disk('public')->exists($cleanPath)) {
                 return response()->file(Storage::disk('public')->path($cleanPath), [
-                    'Cache-Control' => 'public, max-age=31536000, immutable',
-                ]);
+                    'Cache-Control' => 'private, max-age=31536000, immutable',
+                ])->setPrivate();
             }
         }
 
@@ -361,7 +361,7 @@ class WorkerController extends Controller
 
                 return response($binary, 200, [
                     'Content-Type' => $mime,
-                    'Cache-Control' => 'public, max-age=31536000, immutable',
+                    'Cache-Control' => 'private, max-age=31536000, immutable',
                 ]);
             }
         }
@@ -377,8 +377,8 @@ class WorkerController extends Controller
         $path = 'worker_photos/' . $filename;
         if (Storage::disk('public')->exists($path)) {
             return response()->file(Storage::disk('public')->path($path), [
-                'Cache-Control' => 'public, max-age=31536000, immutable',
-            ]);
+                'Cache-Control' => 'private, max-age=31536000, immutable',
+            ])->setPrivate();
         }
 
         $worker = Worker::where('photo_path', 'LIKE', '%' . $filename)->first();
@@ -401,7 +401,7 @@ class WorkerController extends Controller
 
                 return response($binary, 200, [
                     'Content-Type' => $mime,
-                    'Cache-Control' => 'public, max-age=31536000, immutable',
+                    'Cache-Control' => 'private, max-age=31536000, immutable',
                 ]);
             }
         }

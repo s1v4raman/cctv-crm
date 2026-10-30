@@ -288,7 +288,7 @@ class WorkerAttendanceMaintenanceTest extends TestCase
         $this->publicDisk()->assertMissing('attendance_photos/attendance_test_missing_on_local.jpg');
 
         // Requesting via streamPhoto endpoint should succeed, serve image, and cache to local disk
-        $response = $this->get(route('workers.attendance.photo', $attendance));
+        $response = $this->actingAs($this->admin)->get(route('workers.attendance.photo', $attendance));
         $response->assertOk();
         $response->assertHeader('Content-Type', 'image/jpeg');
         $this->assertEquals('fake-image-bytes-from-render', $response->getContent());
@@ -296,7 +296,7 @@ class WorkerAttendanceMaintenanceTest extends TestCase
 
         // Delete disk file again to test storage fallback route
         $this->publicDisk()->delete('attendance_photos/attendance_test_missing_on_local.jpg');
-        $storageFallbackResponse = $this->get('/storage/attendance_photos/attendance_test_missing_on_local.jpg');
+        $storageFallbackResponse = $this->actingAs($this->admin)->get('/storage/attendance_photos/attendance_test_missing_on_local.jpg');
         $storageFallbackResponse->assertOk();
         $this->assertEquals('fake-image-bytes-from-render', $storageFallbackResponse->getContent());
         $this->publicDisk()->assertExists('attendance_photos/attendance_test_missing_on_local.jpg');
