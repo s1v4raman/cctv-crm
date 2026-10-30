@@ -33,7 +33,7 @@
     <header class="sticky top-0 z-30 bg-white dark:bg-[#0f172a] border-b border-slate-200 dark:border-slate-800">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <img src="{{ asset('logo.png') }}" alt="Logo" class="h-9 w-9 object-contain shrink-0">
+                <x-brand-logo :mark="true" class="h-9 w-9 shrink-0" />
                 <div>
                     <div class="flex items-center gap-2">
                         <span class="text-base font-bold text-slate-900 dark:text-white tracking-tight leading-tight">Precision IT <span class="text-blue-600">Operations</span></span>

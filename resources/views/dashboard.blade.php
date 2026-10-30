@@ -1,4 +1,4 @@
-<x-app-layout>
+﻿<x-app-layout>
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <div>
@@ -400,9 +400,9 @@
 
     const IS_ADMIN = {{ $isAdmin ? 'true' : 'false' }};
 
-    /* Clean SaaS Colour Palette */
+    /* Clean SaaS Colour Palette — primary follows the live theme accent */
     const C = {
-        primary: '#2563eb',
+        get primary() { return getComputedStyle(document.documentElement).getPropertyValue('--crm-accent').trim() || '#2563eb'; },
         sky:     '#38bdf8',
         emerald: '#10b981',
         amber:   '#f59e0b',
@@ -693,7 +693,7 @@
                         datasets: [{
                             label: 'Accepted Revenue',
                             data: data.revenueChart.data,
-                            backgroundColor: '#2563eb',
+                            backgroundColor: C.primary,
                             borderRadius: 4,
                             maxBarThickness: 44,
                         }]
@@ -884,6 +884,7 @@
 
         @if($isAdmin)
         if (revenueChart) {
+            revenueChart.data.datasets[0].backgroundColor = C.primary;
             revenueChart.options.scales.x.ticks.color = tick;
             revenueChart.options.scales.y.ticks.color = tick;
             revenueChart.options.scales.y.grid.color  = grid;

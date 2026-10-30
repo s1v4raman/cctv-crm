@@ -2622,7 +2622,7 @@ a.btn-primary {
 .crm-back-link {
     font-size: 0.875rem !important;
     font-weight: 500 !important;
-    color: #2563eb !important;
+    color: var(--crm-accent, #2563eb) !important;
     text-decoration: none !important;
     display: inline-flex !important;
     align-items: center !important;
@@ -3434,8 +3434,8 @@ a.crm-tab-active,
 a.crm-tab-active *,
 a.crm-pill-active,
 a.crm-pill-active * {
-    background-color: var(--primary-btn-bg) !important;
-    color: var(--text-main) !important;
+    background-color: var(--crm-accent, #2563eb) !important;
+    color: #ffffff !important;
     font-weight: 700 !important;
 }
 
@@ -4189,4 +4189,16 @@ html.dark body :is(button, a[class*="btn"], .btn-secondary, .ld-outline) svg.ico
 /* ...and in a plain icon tile (dialog headers) a solid icon uses the main text colour, not grey */
 .crm-content :is(div, span)[class*="w-"][class*="h-"][class*="justify-center"]:has(> svg.icon-solid:only-child) > svg.icon-solid.icon-solid {
     color: var(--text-main) !important;
+}
+
+/* Precision IT Systems Adaptive Brand Logo */
+.crm-brand-logo {
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+    user-select: none;
+}
+.crm-brand-logo .crm-logo-prec-mask {
+    background-color: var(--crm-accent, #2563eb);
+    transition: background-color 0.2s ease;
 }

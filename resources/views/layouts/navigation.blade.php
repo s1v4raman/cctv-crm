@@ -4,16 +4,14 @@
     {{-- Sidebar Top: Brand Logo matching 56px fixed frame --}}
     <div class="crm-sidebar-header h-[56px] min-h-[56px] max-h-[56px] shrink-0 flex items-center justify-between px-3.5 border-b border-[var(--card-border)] bg-[var(--card-bg)] text-[var(--text-main)] transition-colors duration-200">
         <a href="{{ auth()->user()->homeUrl() }}" class="flex items-center group overflow-hidden min-w-0" title="Precision IT Systems">
-            {{-- EXPANDED STATE: Full horizontal brand logo (Light & Dark mode adaptive) --}}
+            {{-- EXPANDED STATE: Full horizontal brand logo — "Precision" recolours with theme accent --}}
             <div :class="sidebarCollapsed ? 'lg:hidden' : 'flex items-center'" class="h-8 max-h-8 min-w-0">
-                <img src="{{ asset('logo.png') }}?v={{ filemtime(public_path('logo.png')) }}" alt="Precision IT Systems" class="h-7 w-auto max-w-[155px] object-contain dark:hidden group-hover:scale-105 transition-transform shrink-0">
-                <img src="{{ asset('logo-dark.png') }}?v={{ filemtime(public_path('logo-dark.png')) }}" alt="Precision IT Systems" class="h-7 w-auto max-w-[155px] object-contain hidden dark:block group-hover:scale-105 transition-transform shrink-0">
+                <x-brand-logo class="h-7 max-h-7 w-auto max-w-[155px] group-hover:scale-105 transition-transform shrink-0" />
             </div>
 
-            {{-- COLLAPSED STATE (Desktop lg:w-20): Centered square brand mark (Light & Dark mode adaptive) --}}
+            {{-- COLLAPSED STATE (Desktop lg:w-20): Centered square brand mark --}}
             <div :class="sidebarCollapsed ? 'hidden lg:flex lg:items-center lg:justify-center' : 'hidden'" class="w-full">
-                <img src="{{ asset('logo-mark.png') }}?v={{ filemtime(public_path('logo-mark.png')) }}" alt="Precision IT Systems" class="h-8 w-8 object-contain dark:hidden group-hover:scale-105 transition-transform shrink-0">
-                <img src="{{ asset('logo-mark-dark.png') }}?v={{ filemtime(public_path('logo-mark-dark.png')) }}" alt="Precision IT Systems" class="h-8 w-8 object-contain hidden dark:block group-hover:scale-105 transition-transform shrink-0">
+                <x-brand-logo :mark="true" class="h-8 w-8 group-hover:scale-105 transition-transform shrink-0" />
             </div>
         </a>
         

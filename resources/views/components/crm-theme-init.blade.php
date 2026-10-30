@@ -106,6 +106,14 @@
                 --crm-accent-rgb: ${tr}, ${tg}, ${tb} !important;
                 --brand-blue: ${hex} !important;
                 --brand-blue-hover: ${hoverHex} !important;
+                --primary-btn-bg: ${hex} !important;
+                --color-blue-600: ${hex} !important;
+                --color-blue-700: ${hoverHex} !important;
+            }
+
+            /* Brand Logo: PRECISION wordmark mask dynamically recolored */
+            .crm-brand-logo .crm-logo-prec-mask {
+                background-color: ${hex} !important;
             }
             
             /* 1. BRAND WORDMARK: Precision IT [Systems] */
@@ -633,21 +641,84 @@
                 outline-color: ${hex} !important;
             }
 
-            /* 12. TEXT ACCENTS (Excluding buttons and white text) */
+            /* 12. TEXT ACCENTS, LABELS & ALL MODULE CONTENT LINKS */
             .text-blue-600:not(.btn-primary):not([class*="bg-blue"]):not([class*="bg-[#2563eb]"]):not(.btn-search):not(.btn-filter):not(.text-white),
             .text-blue-500:not(.btn-primary):not([class*="bg-blue"]):not([class*="bg-[#2563eb]"]):not(.btn-search):not(.btn-filter):not(.text-white),
             .text-blue-700:not(.btn-primary):not([class*="bg-blue"]):not([class*="bg-[#2563eb]"]):not(.btn-search):not(.btn-filter):not(.text-white),
+            .text-indigo-600:not(.btn-primary):not([class*="bg-indigo"]):not(.text-white),
+            .text-indigo-700:not(.btn-primary):not([class*="bg-indigo"]):not(.text-white),
+            .text-sky-600:not(.btn-primary):not([class*="bg-sky"]):not(.text-white),
+            .text-sky-700:not(.btn-primary):not([class*="bg-sky"]):not(.text-white),
+            html.dark .dark\:text-blue-400:not(.btn-primary):not(.text-white),
+            html.dark .dark\:text-blue-300:not(.btn-primary):not(.text-white),
+            html.dark .dark\:text-indigo-400:not(.btn-primary):not(.text-white),
+            html.dark .dark\:text-indigo-300:not(.btn-primary):not(.text-white),
+            html.dark .dark\:text-sky-400:not(.btn-primary):not(.text-white),
+            html.dark .dark\:text-sky-300:not(.btn-primary):not(.text-white),
             .cell-name a,
             .cell-no a,
             .leads-table .cell-name a,
-            .dark .dark\\:text-blue-400:not(.btn-primary):not([class*="bg-blue"]):not(.text-white),
-            .dark .dark\\:text-blue-300:not(.btn-primary):not([class*="bg-blue"]):not(.text-white) {
+            table td a:not(.btn):not([class*="btn"]):not([class*="text-emerald"]):not([class*="text-amber"]):not([class*="text-rose"]):not([class*="text-red"]):not([class*="text-slate"]):not([class*="text-gray"]),
+            a:not(.btn):not(.btn-primary):not(.btn-secondary):not(.btn-subtle):not(.btn-inline-add):not([class*="btn-"]):not(aside a):not(.crm-brand-logo):not(.text-white):not([class*="text-white"]):not(.crm-filter-tab):not(.filter-tab):not(.active):not([class*="active"]):not(.filter-tabs a):not(.section-nav-link):not(.plain-link):not([class*="text-emerald"]):not([class*="text-amber"]):not([class*="text-rose"]):not([class*="text-red"]):not([class*="text-slate"]):not([class*="text-gray"]),
+            td[x-show*="map"] a,
+            a[href*="projects/"]:not(.btn),
+            a[href*="workers/"]:not(.btn),
+            a[href*="suppliers/"]:not(.btn) {
                 color: ${hex} !important;
             }
             .cell-name a:hover,
             .cell-no a:hover,
-            .leads-table .cell-name a:hover {
+            .leads-table .cell-name a:hover,
+            table td a:hover,
+            td[x-show*="map"] a:hover {
                 color: ${hoverHex} !important;
+            }
+
+            /* 13. ACCENT BADGES, STATUS PILLS & DOTS */
+            span.rounded-full.bg-blue-600,
+            span.rounded-full.bg-sky-500,
+            span.rounded-full.bg-indigo-600,
+            span.w-3.h-3.rounded-full.bg-blue-600 {
+                background-color: ${hex} !important;
+            }
+
+            .bg-blue-50:not(.btn-primary):not(.btn),
+            .bg-indigo-50:not(.btn-primary):not(.btn),
+            .bg-sky-50:not(.btn-primary):not(.btn),
+            html.dark .dark\:bg-blue-950\/60,
+            html.dark .dark\:bg-indigo-900\/30,
+            html.dark .dark\:bg-indigo-950\/30,
+            html.dark .dark\:bg-sky-950\/40 {
+                background-color: rgba(${tr}, ${tg}, ${tb}, 0.12) !important;
+            }
+
+            .border-blue-200,
+            .border-indigo-200,
+            .border-sky-200,
+            html.dark .dark\:border-blue-800,
+            html.dark .dark\:border-indigo-800,
+            html.dark .dark\:border-sky-800 {
+                border-color: rgba(${tr}, ${tg}, ${tb}, 0.3) !important;
+            }
+
+            /* Plain tabs (e.g. Calendar tabs) */
+            .crm-plain-tab.active,
+            html.dark .crm-plain-tab.active {
+                color: ${hex} !important;
+                border-bottom-color: ${hex} !important;
+            }
+
+            /* Active Timeframe & Tab Pills */
+            .crm-tab-active,
+            .crm-tab-active *,
+            .crm-pill-active,
+            .crm-pill-active *,
+            a.crm-tab-active,
+            a.crm-tab-active *,
+            a.crm-pill-active,
+            a.crm-pill-active * {
+                background-color: ${hex} !important;
+                color: #ffffff !important;
             }
 
             /* Search icon dimensional guard */

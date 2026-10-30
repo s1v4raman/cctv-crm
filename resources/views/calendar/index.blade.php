@@ -67,8 +67,8 @@
         }
         .crm-cal-input:focus,
         .crm-cal-select:focus {
-            border-color: #2563eb !important;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.28) !important;
+            border-color: var(--crm-accent, #2563eb) !important;
+            box-shadow: 0 0 0 3px rgba(var(--crm-accent-rgb, 37, 99, 235), 0.28) !important;
             outline: none !important;
         }
         html.dark .crm-cal-input {
@@ -136,13 +136,13 @@
             color: #f8fafc;
         }
         .crm-plain-tab.active {
-            color: #2563eb !important;
+            color: var(--crm-accent, #2563eb) !important;
             font-weight: 600 !important;
-            border-bottom: 2px solid #2563eb !important;
+            border-bottom: 2px solid var(--crm-accent, #2563eb) !important;
         }
         html.dark .crm-plain-tab.active {
-            color: #3b82f6 !important;
-            border-bottom: 2px solid #2563eb !important;
+            color: var(--crm-accent, #3b82f6) !important;
+            border-bottom: 2px solid var(--crm-accent, #2563eb) !important;
         }
     </style>
 
