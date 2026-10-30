@@ -586,7 +586,7 @@
                         <span>Copy Message</span>
                     </button>
                 </div>
-                <textarea id="wa-custom-message" rows="4" class="crm-input h-auto py-2.5 font-mono text-xs leading-relaxed">{{ $quotation->getWhatsAppFormattedMessage('1') }}</textarea>
+                <textarea aria-label="WhatsApp message" id="wa-custom-message" rows="4" class="crm-input h-auto py-2.5 font-mono text-xs leading-relaxed">{{ $quotation->getWhatsAppFormattedMessage('1') }}</textarea>
             </div>
 
             {{-- Action Buttons --}}

@@ -22,21 +22,21 @@
                     @endif
 
                     <div>
-                        <label class="block text-sm font-semibold text-slate-300 mb-1.5">Full Name</label>
-                        <input type="text" name="name" value="{{ old('name') }}" required autofocus
+                        <label for="f-name" class="block text-sm font-semibold text-slate-300 mb-1.5">Full Name</label>
+                        <input id="f-name" type="text" name="name" value="{{ old('name') }}" required autofocus
                                class="w-full text-sm rounded-xl border border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:outline-none p-3" placeholder="e.g. John Doe">
                         @error('name') <div class="text-xs text-rose-400 mt-1 font-mono">{{ $message }}</div> @enderror
                     </div>
 
                     <div>
-                        <label class="block text-sm font-semibold text-slate-300 mb-1.5">Email Address</label>
-                        <input type="email" name="email" value="{{ old('email') }}" required
+                        <label for="f-email" class="block text-sm font-semibold text-slate-300 mb-1.5">Email Address</label>
+                        <input id="f-email" type="email" name="email" value="{{ old('email') }}" required
                                class="w-full text-sm rounded-xl border border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:outline-none p-3" placeholder="e.g. john@example.com">
                         @error('email') <div class="text-xs text-rose-400 mt-1 font-mono">{{ $message }}</div> @enderror
                     </div>
 
                     <div>
-                        <label class="block text-sm font-semibold text-slate-300 mb-1.5">Account Role</label>
+                        <label for="roleSelect" class="block text-sm font-semibold text-slate-300 mb-1.5">Account Role</label>
                         <select name="role" id="roleSelect" class="w-full text-sm rounded-xl border border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:outline-none p-3" required>
                             <option value="" disabled {{ !request('role') && !old('role') ? 'selected' : '' }} class="bg-[#0F172A] text-slate-500">Select Role...</option>
                             <option value="admin" @selected(request('role', old('role')) === 'admin') class="bg-[#0F172A]">Admin</option>
@@ -48,15 +48,15 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-semibold text-slate-300 mb-1.5">Password</label>
-                        <input type="password" name="password" required
+                        <label for="f-password" class="block text-sm font-semibold text-slate-300 mb-1.5">Password</label>
+                        <input id="f-password" type="password" name="password" required
                                class="w-full text-sm rounded-xl border border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:outline-none p-3 font-mono" placeholder="Min. 8 characters">
                         @error('password') <div class="text-xs text-rose-400 mt-1 font-mono">{{ $message }}</div> @enderror
                     </div>
 
                     <div>
-                        <label class="block text-sm font-semibold text-slate-300 mb-1.5">Confirm Password</label>
-                        <input type="password" name="password_confirmation" required
+                        <label for="f-password-confirmation" class="block text-sm font-semibold text-slate-300 mb-1.5">Confirm Password</label>
+                        <input id="f-password-confirmation" type="password" name="password_confirmation" required
                                class="w-full text-sm rounded-xl border border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:outline-none p-3 font-mono" placeholder="Re-type password">
                     </div>
 

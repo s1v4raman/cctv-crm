@@ -3,7 +3,7 @@
     
     {{-- Sidebar Top: Brand Logo matching 56px fixed frame --}}
     <div class="crm-sidebar-header h-[56px] min-h-[56px] max-h-[56px] shrink-0 flex items-center justify-between px-3.5 border-b border-[var(--card-border)] bg-[var(--card-bg)] text-[var(--text-main)] transition-colors duration-200">
-        <a href="{{ auth()->user()->role === 'technician' ? route('technician.dashboard') : route('dashboard') }}" class="flex items-center group overflow-hidden min-w-0" title="Precision IT Systems">
+        <a href="{{ auth()->user()->homeUrl() }}" class="flex items-center group overflow-hidden min-w-0" title="Precision IT Systems">
             {{-- EXPANDED STATE: Full horizontal brand logo (Light & Dark mode adaptive) --}}
             <div :class="sidebarCollapsed ? 'lg:hidden' : 'flex items-center'" class="h-8 max-h-8 min-w-0">
                 <img src="{{ asset('logo.png') }}?v={{ filemtime(public_path('logo.png')) }}" alt="Precision IT Systems" class="h-7 w-auto max-w-[155px] object-contain dark:hidden group-hover:scale-105 transition-transform shrink-0">
@@ -99,7 +99,7 @@
             </div>
 
         {{-- Admin & Staff Comprehensive Navigation --}}
-        @else
+        @elseif(auth()->user()->isOffice())
             
             {{-- 1. Main Overview --}}
             <div>
@@ -390,6 +390,27 @@
                     </div>
                 </div>
             @endif
+
+        {{-- Daily-wage workers: their portal; any other account: only its profile --}}
+        @else
+            <div class="space-y-1">
+                @if(auth()->user()->isWorker())
+                    <a :title="sidebarCollapsed ? $el.textContent.trim() : null" :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('worker.portal') }}"
+                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('worker.*') ? 'crm-active-link' : '' }}" @if(request()->routeIs('worker.*')) aria-current="page" @endif>
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                        <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">My Work &amp; Attendance</span>
+                    </a>
+                @endif
+                <a :title="sidebarCollapsed ? $el.textContent.trim() : null" :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('profile.edit') }}"
+                   class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('profile.*') ? 'crm-active-link' : '' }}" @if(request()->routeIs('profile.*')) aria-current="page" @endif>
+                    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    </svg>
+                    <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">My Profile</span>
+                </a>
+            </div>
         @endif
 
     </nav>

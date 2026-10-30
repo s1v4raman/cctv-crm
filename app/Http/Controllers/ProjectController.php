@@ -416,7 +416,7 @@ class ProjectController extends Controller
         ]);
 
         $activeTab = $request->input('tab', 'overview');
-        $activeTaskView = $request->input('view', 'kanban');
+        $activeTaskView = $request->input('view') === 'kanban' ? 'kanban' : 'list';
         $companies = $this->getExecutingCompanies();
         $workers = Worker::where('is_active', true)->orderBy('name')->get();
         $technicians = User::whereIn('role', ['admin', 'technician', 'staff'])->orderBy('name')->get();

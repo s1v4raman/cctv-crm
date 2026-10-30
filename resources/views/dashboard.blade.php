@@ -70,7 +70,7 @@
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-3 border-b border-[var(--card-border)] mb-4">
                         <h3 class="text-sm font-bold text-[var(--text-main)]">Revenue Overview</h3>
                         <div class="flex items-center gap-3">
-                            <select class="h-[32px] px-2.5 text-xs rounded-md border border-[var(--input-border)] bg-[var(--card-bg)] text-[var(--text-main)] focus:outline-none focus:ring-2 focus:ring-blue-500/30">
+                            <select id="revenue-months" aria-label="Revenue period" class="h-[32px] px-2.5 text-xs rounded-md border border-[var(--input-border)] bg-[var(--card-bg)] text-[var(--text-main)] focus:outline-none focus:ring-2 focus:ring-blue-500/30">
                                 <option value="3">Past 3 Months</option>
                                 <option value="6" selected>Past 6 Months</option>
                                 <option value="12">Past 12 Months</option>
@@ -919,7 +919,8 @@
     async function refreshDashboard(firstLoad = false) {
         const errorBox = document.getElementById('dashboard-error');
         try {
-            const res = await fetch(dataUrl, { headers: { Accept: 'application/json' } });
+            const months = document.getElementById('revenue-months')?.value || 6;
+            const res = await fetch(dataUrl + '?months=' + encodeURIComponent(months), { headers: { Accept: 'application/json' } });
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const data = await res.json();
 
@@ -958,5 +959,6 @@
 
     refreshDashboard(true);
     setInterval(() => refreshDashboard(false), 30_000);
+    document.getElementById('revenue-months')?.addEventListener('change', () => refreshDashboard(false));
     </script>
 </x-app-layout>

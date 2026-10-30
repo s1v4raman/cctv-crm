@@ -89,6 +89,20 @@ class User extends Authenticatable
         return $this->role === 'worker';
     }
 
+    /**
+     * This account's start page: the technician station, the worker portal,
+     * the office dashboard, or (for any other account) its own profile.
+     */
+    public function homeUrl(): string
+    {
+        return match (true) {
+            $this->isTechnician() => route('technician.dashboard'),
+            $this->isWorker() => route('worker.portal'),
+            $this->isOffice() => route('dashboard'),
+            default => route('profile.edit'),
+        };
+    }
+
     public function worker(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(Worker::class, 'user_id');

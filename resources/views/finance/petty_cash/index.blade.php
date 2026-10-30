@@ -472,8 +472,8 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Attach Receipt</label>
-                            <input type="file" name="receipt_photo" accept="image/*,.pdf" class="w-full text-xs text-slate-500">
+                            <label for="f-receipt-photo" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Attach Receipt</label>
+                            <input id="f-receipt-photo" type="file" name="receipt_photo" accept="image/*,.pdf" class="w-full text-xs text-slate-500">
                         </div>
                     </div>
 

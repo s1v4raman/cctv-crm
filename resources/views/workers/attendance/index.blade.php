@@ -77,7 +77,7 @@
                             <input type="hidden" name="view" value="day">
                             @if(request('worker_id')) <input type="hidden" name="worker_id" value="{{ request('worker_id') }}"> @endif
                             @if(request('project_id')) <input type="hidden" name="project_id" value="{{ request('project_id') }}"> @endif
-                            <input type="date" name="date" value="{{ $selectedDate->toDateString() }}" onchange="this.form.submit()" class="crm-input py-1 px-2 text-xs font-semibold rounded w-36">
+                            <input aria-label="Attendance date" type="date" name="date" value="{{ $selectedDate->toDateString() }}" onchange="this.form.submit()" class="crm-input py-1 px-2 text-xs font-semibold rounded w-36">
                         </form>
 
                         <a href="{{ route('workers.attendance.index', array_merge(request()->query(), ['view' => 'day', 'date' => $nextDay])) }}" class="btn-secondary py-1 px-2.5 text-xs" title="Next Day">Next &rarr;</a>
@@ -131,17 +131,17 @@
                     <input type="hidden" name="month" value="{{ $selectedMonth }}">
                 @endif
 
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search worker name, phone or notes…" 
+                <input aria-label="Search workers" type="text" name="search" value="{{ request('search') }}" placeholder="Search worker name, phone or notes…" 
                        class="crm-input flex-1 min-w-[200px] text-xs py-1.5">
 
-                <select name="worker_id" class="crm-select min-w-[160px] text-xs py-1.5" onchange="this.form.submit()">
+                <select aria-label="Filter by worker" name="worker_id" class="crm-select min-w-[160px] text-xs py-1.5" onchange="this.form.submit()">
                     <option value="">All Workers</option>
                     @foreach($activeWorkers as $w)
                         <option value="{{ $w->id }}" @selected(request('worker_id') == $w->id)>{{ $w->name }}</option>
                     @endforeach
                 </select>
 
-                <select name="project_id" class="crm-select min-w-[180px] text-xs py-1.5" onchange="this.form.submit()">
+                <select aria-label="Filter by project" name="project_id" class="crm-select min-w-[180px] text-xs py-1.5" onchange="this.form.submit()">
                     <option value="">All Projects</option>
                     @foreach($activeProjects as $p)
                         <option value="{{ $p->id }}" @selected(request('project_id') == $p->id)>{{ Str::limit($p->title, 26) }}</option>
@@ -780,7 +780,7 @@
                         <span>Registered Profile Photo</span>
                     </div>
                     <div class="w-full h-56 bg-slate-200 dark:bg-slate-800 rounded flex items-center justify-center overflow-hidden border border-slate-300 dark:border-slate-600">
-                        <img id="lightbox-profile-img" src="#" alt="Profile Photo" class="w-full h-full object-cover" onerror="this.classList.add('hidden'); document.getElementById('lightbox-profile-empty').classList.remove('hidden');">
+                        <img id="lightbox-profile-img" alt="Profile Photo" class="w-full h-full object-cover" onerror="this.classList.add('hidden'); document.getElementById('lightbox-profile-empty').classList.remove('hidden');">
                         <span id="lightbox-profile-empty" class="text-xs text-slate-400 hidden">No master profile photo registered</span>
                     </div>
                     <p class="text-[11px] text-slate-500 mt-2">Master worker portrait on file</p>
@@ -793,7 +793,7 @@
                         <span>Daily Punch Photo</span>
                     </div>
                     <div class="w-full h-56 bg-slate-200 dark:bg-slate-800 rounded flex items-center justify-center overflow-hidden border border-slate-300 dark:border-slate-600">
-                        <img id="lightbox-punch-img" src="#" alt="Punch Photo" class="w-full h-full object-cover" onerror="this.classList.add('hidden'); document.getElementById('lightbox-punch-empty').classList.remove('hidden');">
+                        <img id="lightbox-punch-img" alt="Punch Photo" class="w-full h-full object-cover" onerror="this.classList.add('hidden'); document.getElementById('lightbox-punch-empty').classList.remove('hidden');">
                         <span id="lightbox-punch-empty" class="text-xs text-slate-400 hidden">No punch photo recorded</span>
                     </div>
                     <p class="text-[11px] text-slate-500 mt-2" id="lightbox-punch-date">Taken on shift check-in</p>
@@ -824,7 +824,7 @@
                 {{-- Worker & Project Pickers --}}
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label class="crm-label text-xs">Worker <span class="required-marker">*</span></label>
+                        <label for="modal-worker-select" class="crm-label text-xs">Worker <span class="required-marker">*</span></label>
                         <select name="worker_id" id="modal-worker-select" onchange="onWorkerSelectChange(this)" required class="crm-select text-xs w-full">
                             <option value="">Select Worker...</option>
                             @foreach($activeWorkers as $w)
@@ -834,14 +834,14 @@
                             @endforeach
                         </select>
                         <div id="modal-worker-preview-box" class="flex items-center gap-2 mt-1.5 p-1.5 rounded bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hidden">
-                            <img id="modal-worker-img" src="#" alt="Worker" class="w-6 h-6 rounded-full object-cover border border-slate-300">
+                            <img id="modal-worker-img" alt="Worker" class="w-6 h-6 rounded-full object-cover border border-slate-300">
                             <span class="text-[11px] text-slate-700 dark:text-slate-300 font-semibold" id="modal-worker-name-preview"></span>
                         </div>
                     </div>
 
                     <div>
-                        <label class="crm-label text-xs">Project Site <span class="required-marker">*</span></label>
-                        <select name="project_id" required class="crm-select text-xs w-full">
+                        <label for="f-project-id" class="crm-label text-xs">Project Site <span class="required-marker">*</span></label>
+                        <select id="f-project-id" name="project_id" required class="crm-select text-xs w-full">
                             <option value="">Select Project Site...</option>
                             @foreach($activeProjects as $p)
                                 <option value="{{ $p->id }}" @selected(request('project_id') == $p->id)>
@@ -855,21 +855,21 @@
                 {{-- Date, Shift Type, Time --}}
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
-                        <label class="crm-label text-xs">Date <span class="required-marker">*</span></label>
+                        <label for="modal-work-date" class="crm-label text-xs">Date <span class="required-marker">*</span></label>
                         <input type="date" name="work_date" id="modal-work-date" value="{{ $viewMode === 'day' ? $selectedDate->toDateString() : now()->toDateString() }}" required class="crm-input text-xs w-full">
                     </div>
 
                     <div>
-                        <label class="crm-label text-xs">Shift Type <span class="required-marker">*</span></label>
-                        <select name="attendance_type" required class="crm-select text-xs w-full">
+                        <label for="f-attendance-type" class="crm-label text-xs">Shift Type <span class="required-marker">*</span></label>
+                        <select id="f-attendance-type" name="attendance_type" required class="crm-select text-xs w-full">
                             <option value="full" selected>Full Day (1.0x)</option>
                             <option value="half">Half Day (0.5x)</option>
                         </select>
                     </div>
 
                     <div>
-                        <label class="crm-label text-xs">Punch Time</label>
-                        <input type="time" name="check_in_time" value="{{ now()->format('H:i') }}" class="crm-input text-xs w-full">
+                        <label for="f-check-in-time" class="crm-label text-xs">Punch Time</label>
+                        <input id="f-check-in-time" type="time" name="check_in_time" value="{{ now()->format('H:i') }}" class="crm-input text-xs w-full">
                     </div>
                 </div>
 
@@ -892,9 +892,9 @@
 
                     {{-- Mode 1: File Input --}}
                     <div id="photo-tab-file">
-                        <input type="file" name="photo" id="modal-photo-input" accept="image/*" class="text-xs text-slate-600 file:mr-2 file:py-1 file:px-2.5 file:rounded file:border file:border-slate-300 file:text-xs file:font-semibold file:bg-white hover:file:bg-slate-50 cursor-pointer w-full">
+                        <input aria-label="Site photo" type="file" name="photo" id="modal-photo-input" accept="image/*" class="text-xs text-slate-600 file:mr-2 file:py-1 file:px-2.5 file:rounded file:border file:border-slate-300 file:text-xs file:font-semibold file:bg-white hover:file:bg-slate-50 cursor-pointer w-full">
                         <div id="file-preview-wrap" class="mt-2 hidden">
-                            <img id="file-preview-img" src="#" alt="Preview" class="w-24 h-24 object-cover rounded border border-slate-300">
+                            <img id="file-preview-img" alt="Preview" class="w-24 h-24 object-cover rounded border border-slate-300">
                         </div>
                     </div>
 
@@ -911,7 +911,7 @@
                         </div>
                         <div id="camera-snapped-preview" class="mt-2 hidden">
                             <div class="text-[10px] text-emerald-600 font-bold mb-1">&#10003; Photo Snapped!</div>
-                            <img id="camera-snapped-img" src="#" alt="Snapped" class="w-24 h-24 object-cover rounded border border-emerald-500">
+                            <img id="camera-snapped-img" alt="Snapped" class="w-24 h-24 object-cover rounded border border-emerald-500">
                         </div>
                     </div>
                 </div>
@@ -919,14 +919,14 @@
                 {{-- Output Metrics: Cabling Meters & Cameras Installed --}}
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label class="crm-label text-xs">Cabling Metres Done</label>
-                        <input type="number" step="0.1" min="0" name="cabling_metres" placeholder="e.g. 75.0" class="crm-input text-xs w-full">
+                        <label for="f-cabling-metres" class="crm-label text-xs">Cabling Metres Done</label>
+                        <input id="f-cabling-metres" type="number" step="0.1" min="0" name="cabling_metres" placeholder="e.g. 75.0" class="crm-input text-xs w-full">
                         <p class="text-[10px] text-slate-400 mt-0.5">Physical cable pulled today</p>
                     </div>
 
                     <div>
-                        <label class="crm-label text-xs">Cameras Installed</label>
-                        <input type="number" min="0" name="cameras_installed" placeholder="e.g. 4" class="crm-input text-xs w-full">
+                        <label for="f-cameras-installed" class="crm-label text-xs">Cameras Installed</label>
+                        <input id="f-cameras-installed" type="number" min="0" name="cameras_installed" placeholder="e.g. 4" class="crm-input text-xs w-full">
                         <p class="text-[10px] text-slate-400 mt-0.5">Units mounted/configured</p>
                     </div>
                 </div>
@@ -934,18 +934,18 @@
                 {{-- Extra Allowance & Notes --}}
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label class="crm-label text-xs">Extra Allowance (₹)</label>
-                        <input type="number" step="any" min="0" name="extra_amount" placeholder="e.g. 150" class="crm-input text-xs w-full">
+                        <label for="f-extra-amount" class="crm-label text-xs">Extra Allowance (₹)</label>
+                        <input id="f-extra-amount" type="number" step="any" min="0" name="extra_amount" placeholder="e.g. 150" class="crm-input text-xs w-full">
                     </div>
                     <div>
-                        <label class="crm-label text-xs">Extra Reason</label>
-                        <input type="text" name="extra_description" placeholder="e.g. Night shift / Travel allowance" class="crm-input text-xs w-full">
+                        <label for="f-extra-description" class="crm-label text-xs">Extra Reason</label>
+                        <input id="f-extra-description" type="text" name="extra_description" placeholder="e.g. Night shift / Travel allowance" class="crm-input text-xs w-full">
                     </div>
                 </div>
 
                 <div>
-                    <label class="crm-label text-xs">Work Notes / Summary</label>
-                    <textarea name="notes" rows="2" placeholder="Summary of work performed..." class="crm-input text-xs w-full"></textarea>
+                    <label for="f-notes" class="crm-label text-xs">Work Notes / Summary</label>
+                    <textarea id="f-notes" name="notes" rows="2" placeholder="Summary of work performed..." class="crm-input text-xs w-full"></textarea>
                 </div>
 
                 <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-200 dark:border-slate-800">

@@ -112,7 +112,7 @@
                 <div class="flex items-center gap-3">
                     <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Payday Period:</span>
                     <form method="GET" action="{{ route('wages.index') }}" class="inline-block">
-                        <select name="week" onchange="this.form.submit()" class="px-3 py-1.5 text-sm bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-800 dark:text-white" style="border-radius: 4px; height: 38px;">
+                        <select aria-label="Week" name="week" onchange="this.form.submit()" class="px-3 py-1.5 text-sm bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-800 dark:text-white" style="border-radius: 4px; height: 38px;">
                             @foreach($availableWeeks as $w)
                                 <option value="{{ $w['val'] }}" {{ $weekStart->toDateString() === $w['val'] ? 'selected' : '' }}>
                                     {{ $w['label'] }}
@@ -551,18 +551,18 @@
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Advance Amount (₹) *</label>
-                            <input type="number" step="1" min="1" name="amount" required placeholder="500" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-900 dark:text-white font-mono" style="border-radius: 4px; height: 38px;">
+                            <label for="f-amount" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Advance Amount (₹) *</label>
+                            <input id="f-amount" type="number" step="1" min="1" name="amount" required placeholder="500" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-900 dark:text-white font-mono" style="border-radius: 4px; height: 38px;">
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Payment Date *</label>
-                            <input type="date" name="payment_date" value="{{ now()->toDateString() }}" required class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-900 dark:text-white" style="border-radius: 4px; height: 38px;">
+                            <label for="f-payment-date" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Payment Date *</label>
+                            <input id="f-payment-date" type="date" name="payment_date" value="{{ now()->toDateString() }}" required class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-900 dark:text-white" style="border-radius: 4px; height: 38px;">
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Disbursement Mode *</label>
-                            <select name="payment_mode" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-900 dark:text-white" style="border-radius: 4px; height: 38px;">
+                            <label for="f-payment-mode" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Disbursement Mode *</label>
+                            <select id="f-payment-mode" name="payment_mode" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-900 dark:text-white" style="border-radius: 4px; height: 38px;">
                                 <option value="cash">Cash in Hand</option>
                                 <option value="upi">UPI / GPay / PhonePe</option>
                                 <option value="bank_transfer">Direct Bank Transfer</option>
@@ -571,8 +571,8 @@
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Notes / Reason</label>
-                            <input type="text" name="reference_notes" placeholder="e.g. Travel allowance" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-900 dark:text-white" style="border-radius: 4px; height: 38px;">
+                            <label for="f-reference-notes" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Notes / Reason</label>
+                            <input id="f-reference-notes" type="text" name="reference_notes" placeholder="e.g. Travel allowance" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-900 dark:text-white" style="border-radius: 4px; height: 38px;">
                         </div>
 
                         <div class="flex items-center justify-end gap-2 pt-2">
@@ -608,14 +608,14 @@
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Amount to Pay Now (₹) *</label>
-                            <input type="number" step="0.5" min="1" :max="selectedTotalDue" name="amount_to_pay" x-model="partAmount" required class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-900 dark:text-white font-mono" style="border-radius: 4px; height: 38px;">
+                            <label for="f-amount-to-pay" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Amount to Pay Now (₹) *</label>
+                            <input id="f-amount-to-pay" type="number" step="0.5" min="1" :max="selectedTotalDue" name="amount_to_pay" x-model="partAmount" required class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-900 dark:text-white font-mono" style="border-radius: 4px; height: 38px;">
                             <p class="text-xs text-slate-500 mt-1">Remaining balance will automatically be carried forward to next week.</p>
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Payment Mode *</label>
-                            <select name="payment_mode" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-900 dark:text-white" style="border-radius: 4px; height: 38px;">
+                            <label for="f-payment-mode-2" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Payment Mode *</label>
+                            <select id="f-payment-mode-2" name="payment_mode" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-900 dark:text-white" style="border-radius: 4px; height: 38px;">
                                 <option value="cash">Cash</option>
                                 <option value="upi">UPI</option>
                                 <option value="bank_transfer">Bank Transfer</option>

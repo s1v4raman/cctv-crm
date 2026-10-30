@@ -50,7 +50,8 @@ class HeaderNotificationService
                 'timestamp'   => $log->created_at ? $log->created_at->timestamp : time(),
                 'icon'        => 'log',
                 'activity_at' => $log->created_at?->timestamp,
-                'url'         => route('alerts.index'),
+                // The alerts log is admin-only; for anyone else the row is shown without a link
+                'url'         => $user->isAdmin() ? route('alerts.index') : null,
                 'is_unread'   => $log->created_at && $log->created_at->isToday(),
             ]);
         }
@@ -145,7 +146,7 @@ class HeaderNotificationService
                 'time'        => 'Now',
                 'timestamp'   => time(),
                 'icon'        => 'info',
-                'url'         => route('dashboard'),
+                'url'         => $user->homeUrl(),
                 'is_unread'   => false,
             ]);
         }

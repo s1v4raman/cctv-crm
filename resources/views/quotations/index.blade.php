@@ -17,7 +17,7 @@
 
     <x-list-page-assets />
 
-    <div class="ld-root" x-data="listPage(@js($quotations->pluck('id')), 'quotations', { phone: true, date: true, valid: true, total: true, status: true })" @keydown.escape.window="menu = null">
+    <div class="ld-root" x-data="listPage(@js($quotations->pluck('id')), 'quotations', { phone: true, date: true, valid: true, total: true, status: true }, @js($filterCount > 0))" @keydown.escape.window="menu = null">
 
         @if (session('status'))
             <div class="px-4 py-2 text-sm bg-emerald-50 text-emerald-800 border-b border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-900">{{ session('status') }}</div>

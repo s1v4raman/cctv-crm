@@ -223,7 +223,7 @@
                             {{-- Filled State (Preview) --}}
                             <div class="slot-filled-state hidden flex-col">
                                 <div class="w-full h-44 rounded-xl overflow-hidden relative border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-black group">
-                                    <img src="" class="slot-preview-img w-full h-full object-cover">
+                                    <img alt="Photo preview" class="slot-preview-img w-full h-full object-cover">
                                     <div class="absolute top-2 left-2 flex items-center gap-1.5">
                                         <span class="px-2 py-0.5 rounded-full bg-emerald-600 text-white font-bold text-[11px] shadow">✓ Photo Attached</span>
                                         <span class="slot-file-size px-2 py-0.5 rounded-full bg-slate-900/80 text-slate-300 font-mono text-[11px] border border-slate-700"></span>
@@ -286,7 +286,7 @@
                             {{-- Filled State (Preview) --}}
                             <div class="slot-filled-state hidden flex-col">
                                 <div class="w-full h-44 rounded-xl overflow-hidden relative border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-black group">
-                                    <img src="" class="slot-preview-img w-full h-full object-cover">
+                                    <img alt="Photo preview" class="slot-preview-img w-full h-full object-cover">
                                     <div class="absolute top-2 left-2 flex items-center gap-1.5">
                                         <span class="px-2 py-0.5 rounded-full bg-emerald-600 text-white font-bold text-[11px] shadow">✓ Photo Attached</span>
                                         <span class="slot-file-size px-2 py-0.5 rounded-full bg-slate-900/80 text-slate-300 font-mono text-[11px] border border-slate-700"></span>
@@ -1026,7 +1026,7 @@
 
                 <div class="slot-filled-state hidden flex-col">
                     <div class="w-full h-44 rounded-xl overflow-hidden relative border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-black group">
-                        <img src="" class="slot-preview-img w-full h-full object-cover">
+                        <img alt="Photo preview" class="slot-preview-img w-full h-full object-cover">
                         <div class="absolute top-2 left-2 flex items-center gap-1.5">
                             <span class="px-2 py-0.5 rounded-full bg-emerald-600 text-white font-bold text-[11px] shadow">✓ Photo Attached</span>
                             <span class="slot-file-size px-2 py-0.5 rounded-full bg-slate-900/80 text-slate-300 font-mono text-[11px] border border-slate-700"></span>

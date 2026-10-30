@@ -198,7 +198,7 @@
     {{-- Lightbox --}}
     <div id="lightbox" class="hidden fixed inset-0 bg-slate-950/80 z-50 flex items-center justify-center p-4">
         <span onclick="closeLightbox()" class="absolute top-4 right-6 text-white text-3xl cursor-pointer">&times;</span>
-        <img id="lightbox-img" src="" alt="Site photo" class="max-w-[90vw] max-h-[85vh] rounded border border-white/20">
+        <img id="lightbox-img" alt="Site photo" class="max-w-[90vw] max-h-[85vh] rounded border border-white/20">
     </div>
 
     {{-- Upload Photo Modal --}}
@@ -212,8 +212,8 @@
             <form method="POST" action="{{ route('site-surveys.photos.upload', $siteSurvey) }}" enctype="multipart/form-data" class="space-y-4">
                 @csrf
                 <div>
-                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Select Photos or Capture with Camera *</label>
-                    <input type="file" name="photos[]" multiple accept="image/*" required class="crm-input text-xs file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                    <label for="f-photos" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Select Photos or Capture with Camera *</label>
+                    <input id="f-photos" type="file" name="photos[]" multiple accept="image/*" required class="crm-input text-xs file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
                     <p class="text-[11px] text-slate-500 mt-1">Accepts multiple images (JPG, PNG). Stored securely across cloud and local servers.</p>
                 </div>
 

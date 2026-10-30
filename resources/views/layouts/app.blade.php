@@ -1152,7 +1152,7 @@
                 if (!isInput && e.altKey) {
                     if (e.key === 'd' || e.key === 'D') {
                         e.preventDefault();
-                        window.location.href = '{{ auth()->user()->role === 'technician' ? route('technician.dashboard') : route('dashboard') }}';
+                        window.location.href = '{{ auth()->user()->homeUrl() }}';
                     } else if (e.key === 'a' || e.key === 'A') {
                         e.preventDefault();
                         window.location.href = '{{ route('attendance.index') }}';
@@ -1367,6 +1367,7 @@
                             <span class="crm-page-title text-sm font-bold text-[var(--text-main)] truncate">{{ $crmPageTitle }}</span>
                         </div>
 
+                        @if(auth()->user()->isInternal())
                         {{-- 2. One Search Box (Center) --}}
                         <div class="hidden md:flex flex-1 items-center justify-center px-4 max-w-md mx-auto">
                             <div class="relative w-full" @click.away="open = false">
@@ -1436,6 +1437,9 @@
                                 </div>
                             </div>
                         </div>
+                        @else
+                            <div class="hidden md:block flex-1"></div>
+                        @endif
 
                         @php
                             $headerNotifs = \App\Services\HeaderNotificationService::getNotificationsForUser(Auth::user());
@@ -1443,6 +1447,7 @@
 
                         {{-- 3. Topbar Controls: Search, Theme Toggle, Notification Bell & Pill Profile (Right) --}}
                         <div class="flex items-center gap-2.5 shrink-0">
+                            @if(auth()->user()->isInternal())
                             {{-- Mobile search trigger icon --}}
                             <button @click="mobileSearchOpen = true; $nextTick(() => { $refs.mobileSearchInput.focus(); if (query.trim().length >= 2) open = true; })" 
                                     type="button"
@@ -1450,6 +1455,7 @@
                                     title="Search">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                             </button>
+                            @endif
 
                             {{-- Universal 1-Click Dark/Light Mode Button on Every Page for All Users --}}
                             <button @click="toggleThemeMode()" 
@@ -1548,7 +1554,8 @@
                                     {{-- Items List --}}
                                     <div class="max-h-80 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800/80">
                                         @forelse($headerNotifs['items'] as $item)
-                                            <a href="{{ $item['url'] }}" 
+                                            @php $rowTag = $item['url'] ? 'a' : 'div'; @endphp
+                                            <{{ $rowTag }} @if($item['url']) href="{{ $item['url'] }}" @endif
                                                @click="notifOpen = false"
                                                class="flex items-start gap-3 px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition group block">
                                                 
@@ -1581,7 +1588,7 @@
                                                     </div>
                                                     <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">{{ $item['description'] }}</p>
                                                 </div>
-                                            </a>
+                                            </{{ $rowTag }}>
                                         @empty
                                             <div class="p-6 text-center text-slate-400">
                                                 <p class="text-xs">No pending notifications</p>
@@ -1591,7 +1598,7 @@
 
                                     {{-- Footer Action Link --}}
                                     <div class="px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border-t border-[var(--card-border)] text-center">
-                                        @if(Auth::user()->isAdmin() || Auth::user()->isStaff())
+                                        @if(Auth::user()->isAdmin())
                                             <a href="{{ route('alerts.index') }}" class="text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:underline">
                                                 View Automated Alerts Engine →
                                             </a>
@@ -1599,7 +1606,11 @@
                                             <a href="{{ route('technician.dashboard') }}" class="text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:underline">
                                                 View All Assigned Work Orders →
                                             </a>
-                                        @else
+                                        @elseif(Auth::user()->isWorker())
+                                            <a href="{{ route('worker.portal') }}" class="text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:underline">
+                                                Open My Work &amp; Attendance →
+                                            </a>
+                                        @elseif(Auth::user()->isOffice())
                                             <a href="{{ route('dashboard') }}" class="text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:underline">
                                                 View Operations Dashboard →
                                             </a>
@@ -1713,6 +1724,7 @@
                             </div>
                         </div>
 
+                        @if(auth()->user()->isInternal())
                         {{-- Mobile Omnisearch Full-Width Overlay --}}
                         <div x-show="mobileSearchOpen"
                              x-cloak
@@ -1723,6 +1735,7 @@
                                 <div class="relative flex-1 flex items-center">
                                     <input type="text" 
                                            x-ref="mobileSearchInput"
+                                           aria-label="Search leads, projects and products"
                                            x-model="query"
                                            @input.debounce.250ms="search()"
                                            @focus="if(query.length >= 2) open = true"
@@ -1770,6 +1783,7 @@
                                 </template>
                             </div>
                         </div>
+                        @endif
                     </header>
 
                     {{-- Main Content Area: Responsive padding p-3 on mobile, p-5 on desktop --}}
@@ -1830,7 +1844,7 @@
                             <span class="text-[11px] tracking-tight">Profile</span>
                         </a>
 
-                    @else
+                    @elseif(auth()->user()->isOffice())
                         {{-- Admin & Staff Mobile Dock --}}
                         <a href="{{ route('dashboard') }}" 
                            class="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl transition {{ request()->routeIs('dashboard') ? 'text-blue-600 dark:text-blue-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200' }}">
@@ -1909,6 +1923,21 @@
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                             <span class="text-[11px] tracking-tight">Roster</span>
                         </a>
+
+                        <a href="{{ route('profile.edit') }}" 
+                           class="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl transition {{ request()->routeIs('profile.*') ? 'text-blue-600 dark:text-blue-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200' }}">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                            <span class="text-[11px] tracking-tight">Profile</span>
+                        </a>
+                    @else
+                        {{-- Worker / other accounts: their own page and profile --}}
+                        @if(auth()->user()->isWorker())
+                        <a href="{{ route('worker.portal') }}" 
+                           class="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl transition {{ request()->routeIs('worker.*') ? 'text-blue-600 dark:text-blue-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200' }}">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                            <span class="text-[11px] tracking-tight">My Work</span>
+                        </a>
+                        @endif
 
                         <a href="{{ route('profile.edit') }}" 
                            class="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl transition {{ request()->routeIs('profile.*') ? 'text-blue-600 dark:text-blue-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200' }}">

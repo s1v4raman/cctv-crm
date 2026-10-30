@@ -28,10 +28,10 @@
                     <div class="mb-5 p-3 rounded bg-slate-50 border border-slate-200 flex items-center gap-4">
                         <div class="w-16 h-16 rounded-full bg-slate-200 border-2 border-slate-300 flex items-center justify-center overflow-hidden shrink-0 shadow-sm" id="photo-preview-wrap">
                             <span id="photo-placeholder" class="text-xs font-semibold text-slate-500 uppercase">Photo</span>
-                            <img id="photo-preview" src="#" alt="Worker Photo" class="w-full h-full object-cover hidden">
+                            <img id="photo-preview" alt="Worker Photo" class="w-full h-full object-cover hidden">
                         </div>
                         <div class="flex-1">
-                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1">
+                            <label for="worker-photo-input" class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1">
                                 Worker Profile Photo (Login & Verification Photo)
                             </label>
                             <input type="file" name="photo" id="worker-photo-input" accept="image/*" class="text-xs text-slate-600 file:mr-2 file:py-1 file:px-2.5 file:rounded file:border file:border-slate-300 file:text-xs file:font-semibold file:bg-white hover:file:bg-slate-50 cursor-pointer">

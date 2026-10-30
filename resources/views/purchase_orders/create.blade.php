@@ -108,10 +108,10 @@
                                             <input aria-label="Item sku" type="text" :name="`items[${index}][sku]`" x-model="item.sku" placeholder="e.g. DS-2CD2143G2" class="crm-input">
                                         </td>
                                         <td class="text-right">
-                                            <input type="number" step="0.01" min="0" :name="`items[${index}][unit_cost]`" x-model.number="item.unit_cost" required class="crm-input text-right">
+                                            <input aria-label="Unit cost" type="number" step="0.01" min="0" :name="`items[${index}][unit_cost]`" x-model.number="item.unit_cost" required class="crm-input text-right">
                                         </td>
                                         <td class="text-right">
-                                            <input type="number" min="1" :name="`items[${index}][quantity_ordered]`" x-model.number="item.quantity_ordered" required class="crm-input text-right">
+                                            <input aria-label="Quantity ordered" type="number" min="1" :name="`items[${index}][quantity_ordered]`" x-model.number="item.quantity_ordered" required class="crm-input text-right">
                                         </td>
                                         <td class="text-right font-bold text-gray-900">
                                             ₹<span x-text="formatNumber(item.unit_cost * item.quantity_ordered)"></span>

@@ -41,4 +41,11 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URI', '/auth/google/callback'),
     ],
 
+    // Company pages shown as icons in the public website footer (an icon is hidden until its address is set)
+    'social' => [
+        'facebook' => env('SOCIAL_FACEBOOK_URL'),
+        'x' => env('SOCIAL_X_URL'),
+        'linkedin' => env('SOCIAL_LINKEDIN_URL'),
+    ],
+
 ];

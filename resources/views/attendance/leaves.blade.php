@@ -576,8 +576,8 @@
 
                 {{-- Attachment --}}
                 <div>
-                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Attachment (Optional, e.g. Doctor's Note / Proof)</label>
-                    <input type="file" name="attachment" accept=".pdf,.jpg,.jpeg,.png" 
+                    <label for="f-attachment" class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Attachment (Optional, e.g. Doctor's Note / Proof)</label>
+                    <input id="f-attachment" type="file" name="attachment" accept=".pdf,.jpg,.jpeg,.png" 
                            class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
                 </div>
 

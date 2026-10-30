@@ -112,21 +112,15 @@
     <header class="sticky top-0 z-50 bg-white/95 dark:bg-[#060913]/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 transition-colors">
         <div class="max-w-[1400px] mx-auto px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3 flex items-center justify-between gap-2 sm:gap-3 xl:gap-6">
             
-            <!-- Brand Logo & Company Name (Maximized Logo & Clean Responsive Lockup) -->
-            <a href="{{ route('home') }}" class="flex items-center gap-2 sm:gap-3.5 group min-w-0 shrink">
-                <img src="{{ asset('logo.png') }}" alt="Precision IT Systems" class="crm-brand-logo h-10 w-10 sm:h-14 sm:w-14 md:h-[68px] md:w-[68px] lg:h-[72px] lg:w-[72px] object-contain group-hover:scale-105 transition-transform shrink-0 drop-shadow-xs">
-                <div class="flex flex-col min-w-0">
-                    <span class="text-base sm:text-2xl lg:text-[26px] font-black font-heading tracking-tight text-slate-900 dark:text-white leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate">
-                        Precision IT <span class="crm-brand-accent-text text-blue-600 dark:text-blue-400">Systems</span>
-                    </span>
-                    <span class="hidden sm:block text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 font-mono mt-0.5">
-                        Security &amp; AI Surveillance
-                    </span>
-                </div>
+            <!-- Brand: the wordmark already spells the name, so it stands alone at its real shape (white version at night) -->
+            <a href="{{ route('home') }}" class="crm-brand-logo flex items-center gap-4 shrink-0" aria-label="Precision IT Systems home">
+                <img src="{{ asset('logo.png') }}?v={{ filemtime(public_path('logo.png')) }}" alt="Precision IT Systems" width="149" height="40" class="h-8 sm:h-9 lg:h-10 w-auto dark:hidden">
+                <img src="{{ asset('logo-dark.png') }}?v={{ filemtime(public_path('logo-dark.png')) }}" alt="Precision IT Systems" width="149" height="40" class="h-8 sm:h-9 lg:h-10 w-auto hidden dark:block">
+                <span class="hidden 2xl:block pl-4 border-l border-slate-200 dark:border-slate-700 text-xs leading-snug text-slate-500 dark:text-slate-400">Security &amp; AI<br>surveillance</span>
             </a>
 
             <!-- Navigation Links (Centered, seamlessly filling the gap on lg and xl viewports) -->
-            <nav class="hidden lg:flex items-center space-x-3.5 xl:space-x-6 text-sm xl:text-[15px] font-semibold text-slate-600 dark:text-slate-300">
+            <nav class="hidden lg:flex items-center space-x-3.5 xl:space-x-6 text-sm xl:text-[15px] font-semibold text-slate-600 dark:text-slate-300 whitespace-nowrap">
                 <a href="#home" class="px-2 py-1.5 rounded-lg text-blue-600 dark:text-blue-400 font-bold hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors">Home</a>
                 <a href="#about" class="px-2 py-1.5 rounded-lg hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors">About Us</a>
                 <div class="relative group py-1.5">
@@ -222,7 +216,7 @@
                                         <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                                         <span>Worker Portal</span>
                                     </a>
-                                @else
+                                @elseif(Auth::user()->isOffice())
                                     <a href="{{ route('dashboard') }}" class="flex items-center space-x-2.5 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-800 hover:text-blue-600 rounded-xl transition-colors">
                                         <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                                         <span>ERP Dashboard</span>
@@ -1000,21 +994,21 @@
 
                                         <div class="space-y-3.5">
                                             <div>
-                                                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Full Name *</label>
+                                                <label for="stepCustomerName" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Full Name *</label>
                                                 <input type="text" name="customer_name" id="stepCustomerName" required placeholder="John Doe"
                                                     class="w-full px-4 py-3 text-sm min-h-[44px] rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none">
                                                 <span id="nameError" class="text-[11px] text-rose-500 hidden mt-1">Please enter your full name.</span>
                                             </div>
 
                                             <div>
-                                                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Mobile Phone *</label>
+                                                <label for="stepPhone" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Mobile Phone *</label>
                                                 <input type="tel" name="phone" id="stepPhone" required placeholder="+91 98765 43210"
                                                     class="w-full px-4 py-3 text-sm min-h-[44px] rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none">
                                                 <span id="phoneError" class="text-[11px] text-rose-500 hidden mt-1">Please enter a valid mobile number.</span>
                                             </div>
 
                                             <div>
-                                                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Email Address</label>
+                                                <label for="stepEmail" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Email Address</label>
                                                 <input type="email" name="email" id="stepEmail" placeholder="john@company.com"
                                                     class="w-full px-4 py-3 text-sm min-h-[44px] rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none">
                                             </div>
@@ -1041,8 +1035,8 @@
 
                                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                                             <div>
-                                                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Facility Type</label>
-                                                <select name="property_type"
+                                                <label for="f-property-type" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Facility Type</label>
+                                                <select id="f-property-type" name="property_type"
                                                     class="w-full px-4 py-3 text-sm min-h-[44px] rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none">
                                                     <option value="Commercial Corporate Office">Commercial Corporate Office</option>
                                                     <option value="Industrial Warehouse / Factory">Industrial Warehouse / Factory</option>
@@ -1053,8 +1047,8 @@
                                             </div>
 
                                             <div>
-                                                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Camera Count / Scale</label>
-                                                <select name="camera_scale"
+                                                <label for="f-camera-scale" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Camera Count / Scale</label>
+                                                <select id="f-camera-scale" name="camera_scale"
                                                     class="w-full px-4 py-3 text-sm min-h-[44px] rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none">
                                                     <option value="4 Cameras Setup">1 - 4 Cameras (Small Office / Villa)</option>
                                                     <option value="8 Cameras Setup">5 - 8 Cameras (Medium Office / Store)</option>
@@ -1065,8 +1059,8 @@
                                         </div>
 
                                         <div>
-                                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Specific Requirements / Notes</label>
-                                            <textarea name="notes" rows="3" placeholder="e.g., Need 24/7 color night vision for warehouse perimeter, gate ANPR, and cloud mobile viewing..."
+                                            <label for="f-notes" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Specific Requirements / Notes</label>
+                                            <textarea id="f-notes" name="notes" rows="3" placeholder="e.g., Need 24/7 color night vision for warehouse perimeter, gate ANPR, and cloud mobile viewing..."
                                                 class="w-full px-4 py-3 text-sm min-h-[44px] rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none"></textarea>
                                         </div>
 
@@ -1095,26 +1089,28 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-12">
                 <!-- Col 1: Logo & Bio -->
                 <div class="lg:col-span-2 space-y-4">
-                    <div class="flex items-center gap-3.5">
-                        <img src="{{ asset('logo.png') }}" alt="Precision IT Systems" class="crm-brand-logo h-16 w-16 object-contain bg-white/95 p-1 rounded-2xl shadow-sm shrink-0">
-                        <div>
-                            <span class="font-heading font-black text-lg text-white tracking-tight">Precision IT <span class="crm-brand-accent-text text-blue-400">Systems</span></span>
-                            <span class="block text-[10px] font-bold uppercase tracking-widest text-slate-400 font-mono mt-0.5">Security Operations</span>
-                        </div>
-                    </div>
+                    {{-- The footer is always dark, so it uses the white wordmark --}}
+                    <img src="{{ asset('logo-dark.png') }}?v={{ filemtime(public_path('logo-dark.png')) }}" alt="Precision IT Systems" width="164" height="44" class="h-11 w-auto">
+                    <p class="text-sm text-slate-300">Security &amp; AI surveillance</p>
                     <p class="text-xs text-slate-400 leading-relaxed max-w-sm">
                         Leading provider of enterprise AI video surveillance, smart security architecture, and mission-critical 24/7 maintenance engineering across modern premises.
                     </p>
                     <div class="flex items-center space-x-3 text-slate-400 pt-2">
-                        <a href="#" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-blue-600 hover:text-white flex items-center justify-center transition-colors">
+                        @if(config('services.social.facebook'))
+                        <a href="{{ config('services.social.facebook') }}" target="_blank" rel="noopener" aria-label="Precision IT Systems on Facebook" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-blue-600 hover:text-white flex items-center justify-center transition-colors">
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/></svg>
                         </a>
-                        <a href="#" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-blue-600 hover:text-white flex items-center justify-center transition-colors">
+                        @endif
+                        @if(config('services.social.x'))
+                        <a href="{{ config('services.social.x') }}" target="_blank" rel="noopener" aria-label="Precision IT Systems on X (Twitter)" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-blue-600 hover:text-white flex items-center justify-center transition-colors">
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
                         </a>
-                        <a href="#" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-blue-600 hover:text-white flex items-center justify-center transition-colors">
+                        @endif
+                        @if(config('services.social.linkedin'))
+                        <a href="{{ config('services.social.linkedin') }}" target="_blank" rel="noopener" aria-label="Precision IT Systems on LinkedIn" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-blue-600 hover:text-white flex items-center justify-center transition-colors">
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
                         </a>
+                        @endif
                     </div>
                 </div>
 
@@ -1176,7 +1172,7 @@
     <!-- 10. PRODUCT INQUIRY & QUOTATION MODAL -->
     <div id="inquireModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="pathsoft-card max-w-lg w-full p-6 sm:p-8 relative shadow-2xl">
-            <button type="button" onclick="closeInquireModal()"
+            <button aria-label="Close" type="button" onclick="closeInquireModal()"
                 class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white p-1 rounded-lg">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -1202,27 +1198,27 @@
                 <input type="hidden" name="model_no" id="modalProductSkuInput">
 
                 <div>
-                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Your Full Name *</label>
-                    <input type="text" name="customer_name" required placeholder="John Doe"
+                    <label for="f-customer-name" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Your Full Name *</label>
+                    <input id="f-customer-name" type="text" name="customer_name" required placeholder="John Doe"
                         class="w-full min-h-[44px] px-3.5 py-2.5 text-sm rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Mobile Phone *</label>
-                        <input type="tel" name="phone" required placeholder="+91 98765 43210"
+                        <label for="f-phone" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Mobile Phone *</label>
+                        <input id="f-phone" type="tel" name="phone" required placeholder="+91 98765 43210"
                             class="w-full min-h-[44px] px-3.5 py-2.5 text-sm rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Email Address</label>
-                        <input type="email" name="email" placeholder="john@enterprise.com"
+                        <label for="f-email" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Email Address</label>
+                        <input id="f-email" type="email" name="email" placeholder="john@enterprise.com"
                             class="w-full min-h-[44px] px-3.5 py-2.5 text-sm rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Estimated Units / Notes</label>
-                    <input type="text" name="notes" placeholder="e.g., Need 8 units with 8-ch NVR and installation"
+                    <label for="f-notes-2" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Estimated Units / Notes</label>
+                    <input id="f-notes-2" type="text" name="notes" placeholder="e.g., Need 8 units with 8-ch NVR and installation"
                         class="w-full min-h-[44px] px-3.5 py-2.5 text-sm rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
 
@@ -1247,7 +1243,7 @@
                         <p class="text-xs text-slate-500 dark:text-slate-400">Search enterprise security solutions, AMC packages, and CCTV architectures</p>
                     </div>
                 </div>
-                <button type="button" onclick="closeSearchModal()"
+                <button aria-label="Close search" type="button" onclick="closeSearchModal()"
                     class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
@@ -1259,7 +1255,7 @@
                     <svg class="w-5 h-5 text-slate-400 absolute left-3.5 pointer-events-none shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                     </svg>
-                    <input type="text" name="q" id="searchModalInput" autofocus
+                    <input aria-label="Search the website" type="text" name="q" id="searchModalInput" autofocus
                         placeholder="Type keywords (e.g. CCTV, AMC, Cloud VMS, ANPR, Access Control, Audit)..."
                         style="padding-left: 2.875rem !important;"
                         class="w-full pl-11 pr-24 py-3.5 text-sm rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-inner">
@@ -1533,7 +1529,7 @@
         <!-- Lightbox Body / Image View -->
         <div class="relative flex-1 flex items-center justify-center my-2 max-w-7xl mx-auto w-full overflow-hidden">
             <!-- Prev Button -->
-            <button type="button" onclick="prevLightboxSlide()"
+            <button aria-label="Previous photo" type="button" onclick="prevLightboxSlide()"
                 class="absolute left-2 sm:left-4 z-30 w-12 h-12 rounded-full bg-slate-900/80 hover:bg-blue-600 text-white backdrop-blur-md border border-white/20 flex items-center justify-center transition-all shadow-2xl hover:scale-110">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
@@ -1542,7 +1538,7 @@
 
             <!-- Main Display Image -->
             <div class="relative max-h-full max-w-full flex flex-col items-center justify-center p-2">
-                <img id="lightboxImage" src="" alt="" 
+                <img id="lightboxImage" alt="" 
                     class="max-h-[62vh] sm:max-h-[70vh] w-auto max-w-full object-contain rounded-xl shadow-2xl transition-all duration-300 transform scale-100">
                 <div class="mt-3 text-center max-w-2xl px-4">
                     <h3 id="lightboxTitle" class="text-base sm:text-lg font-bold font-heading text-white drop-shadow"></h3>
@@ -1551,7 +1547,7 @@
             </div>
 
             <!-- Next Button -->
-            <button type="button" onclick="nextLightboxSlide()"
+            <button aria-label="Next photo" type="button" onclick="nextLightboxSlide()"
                 class="absolute right-2 sm:right-4 z-30 w-12 h-12 rounded-full bg-slate-900/80 hover:bg-blue-600 text-white backdrop-blur-md border border-white/20 flex items-center justify-center transition-all shadow-2xl hover:scale-110">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>

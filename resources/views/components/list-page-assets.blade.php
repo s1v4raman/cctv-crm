@@ -130,8 +130,10 @@
 </style>
 
 <script>
-    if (!window.listPage) window.listPage = (pageIds, key, columns = {}) => ({
-        showFilter: true,
+    // The filter panel starts closed and opens from the Filter button; it is open on load only
+    // when filters are applied (filtersOn), so the applied values stay in view after Apply Filter.
+    if (!window.listPage) window.listPage = (pageIds, key, columns = {}, filtersOn = false) => ({
+        showFilter: filtersOn,
         selected: [],
         pageIds,
         menu: null,
@@ -139,11 +141,7 @@
         cols: { ...columns },
         init() {
             try { Object.assign(this.cols, JSON.parse(localStorage.getItem(key + '.columns') || '{}')); } catch (e) {}
-            let open = null;
-            try { open = localStorage.getItem(key + '.filterOpen'); } catch (e) {}
-            this.showFilter = open === null ? window.innerWidth >= 1024 : open === '1';
             this.$watch('cols', (v) => { try { localStorage.setItem(key + '.columns', JSON.stringify(v)); } catch (e) {} });
-            this.$watch('showFilter', (v) => { try { localStorage.setItem(key + '.filterOpen', v ? '1' : '0'); } catch (e) {} });
             this.$nextTick(() => this.fit());
             window.addEventListener('resize', () => this.fit());
         },

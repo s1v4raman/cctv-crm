@@ -43,7 +43,7 @@
             }
         }" class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40">
             <input type="hidden" name="remove_avatar" :value="removeAvatar ? '1' : '0'">
-            <input type="file" 
+            <input aria-label="Profile photo" type="file" 
                    x-ref="photo" 
                    name="avatar" 
                    id="avatar-input"
