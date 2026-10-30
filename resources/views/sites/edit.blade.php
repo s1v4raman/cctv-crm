@@ -85,7 +85,7 @@
                                 <option value="">-- Standalone Site / Select Client --</option>
                                 @foreach($leads as $l)
                                     <option value="{{ $l->id }}" @selected(old('lead_id', $site->lead_id) == $l->id)>
-                                        {{ $l->customer_name }}
+                                        {{ $l->customer_name }} ({{ $l->company_name ?? $l->lead_number ?? 'Lead' }})
                                     </option>
                                 @endforeach
                             </select>
@@ -93,6 +93,12 @@
                         </div>
 
                         <div>
+                            <label class="crm-label">Client / Organization Name</label>
+                            <input aria-label="Client / Organization Name" type="text" name="client_name" value="{{ old('client_name', $site->client_name) }}" placeholder="e.g. Anand Textiles Pvt Ltd" class="crm-input">
+                            @error('client_name') <p class="error-text">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div class="sm:col-span-2">
                             <label class="crm-label">Facility Type <span class="required-marker">*</span></label>
                             <select aria-label="Facility Type" name="type" required class="crm-select">
                                 @foreach(['commercial' => 'Commercial / Office', 'industrial' => 'Industrial / Factory', 'residential' => 'Residential / Apartment', 'warehouse' => 'Warehouse / Logistics', 'retail' => 'Retail / Showroom', 'hospital' => 'Hospital / Healthcare', 'education' => 'School / College', 'other' => 'Other Facility'] as $k => $label)
@@ -129,15 +135,20 @@
 
                     <h3 class="mb-4 pb-2 border-b border-[#ddd] font-bold text-base text-gray-900 mt-6">Contact &amp; Location</h3>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
                         <div>
                             <label class="crm-label">Site Contact Person</label>
-                            <input aria-label="Site Contact Person" type="text" name="client_contact_person" value="{{ old('client_contact_person', $site->client_contact_person) }}" class="crm-input">
+                            <input aria-label="Site Contact Person" type="text" name="contact_person" value="{{ old('contact_person', $site->contact_person) }}" placeholder="e.g. Suresh Kumar (Manager)" class="crm-input">
                         </div>
 
                         <div>
                             <label class="crm-label">Site Contact Phone</label>
-                            <input aria-label="Site Contact Phone" type="text" name="client_phone" value="{{ old('client_phone', $site->client_phone) }}" class="crm-input">
+                            <input aria-label="Site Contact Phone" type="text" name="client_phone" value="{{ old('client_phone', $site->client_phone) }}" placeholder="e.g. 9840123456" class="crm-input">
+                        </div>
+
+                        <div>
+                            <label class="crm-label">Client Email Address</label>
+                            <input aria-label="Client Email Address" type="email" name="client_email" value="{{ old('client_email', $site->client_email) }}" placeholder="e.g. contact@client.com" class="crm-input">
                         </div>
                     </div>
 

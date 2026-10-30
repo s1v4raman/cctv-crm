@@ -51,8 +51,28 @@
                     <tbody>
                         <tr>
                             <td style="width: 25%; color: var(--text-muted); font-weight: 500;">Client / Organization</td>
-                            <td style="color: var(--text-main); font-weight: 500;">{{ $site->client_name ?? '—' }}</td>
+                            <td style="color: var(--text-main); font-weight: 500;">
+                                @php
+                                    $displayName = $site->client_name ?: ($site->lead?->company_name ?: ($site->lead?->customer_name ?? null));
+                                @endphp
+                                @if($displayName)
+                                    <span class="font-semibold">{{ $displayName }}</span>
+                                    @if($site->lead_id)
+                                        <a href="{{ route('leads.show', $site->lead_id) }}" class="action-link text-xs ml-2">
+                                            (View CRM Lead &rarr;)
+                                        </a>
+                                    @endif
+                                @else
+                                    —
+                                @endif
+                            </td>
                         </tr>
+                        @if($site->type)
+                        <tr>
+                            <td style="color: var(--text-muted); font-weight: 500;">Facility Type</td>
+                            <td style="color: var(--text-main); font-weight: 500;">{{ ucfirst(str_replace('_', ' ', $site->type)) }}</td>
+                        </tr>
+                        @endif
                         <tr>
                             <td style="color: var(--text-muted); font-weight: 500;">Contact Phone</td>
                             <td style="color: var(--text-main); font-weight: 500;">

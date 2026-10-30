@@ -13,6 +13,27 @@
              gmapsUrl: '{{ old('google_maps_url') }}',
              clientPhone: '{{ old('client_phone') }}',
              siteName: '{{ old('name') }}',
+             clientName: '{{ old('client_name') }}',
+             contactPerson: '{{ old('contact_person', old('client_contact_person')) }}',
+             clientEmail: '{{ old('client_email') }}',
+             selectedLeadId: '{{ old('lead_id', request('lead_id', '')) }}',
+             leadsList: {{ Js::from($leads->map(fn($l) => [
+                 'id' => (string)$l->id,
+                 'name' => $l->company_name ?: $l->customer_name,
+                 'phone' => $l->phone ?? '',
+                 'email' => $l->email ?? '',
+                 'contact' => $l->customer_name ?? '',
+             ])) }},
+             onLeadChange() {
+                 if (!this.selectedLeadId) return;
+                 const lead = this.leadsList.find(l => l.id == this.selectedLeadId);
+                 if (lead) {
+                     this.clientName = lead.name;
+                     if (lead.phone && !this.clientPhone) this.clientPhone = lead.phone;
+                     if (lead.email && !this.clientEmail) this.clientEmail = lead.email;
+                     if (lead.contact && !this.contactPerson) this.contactPerson = lead.contact;
+                 }
+             },
              locating: false,
              locError: '',
              duplicateWarning: '',
@@ -109,11 +130,11 @@
 
                         <div>
                             <label class="crm-label">Link to CRM Lead / Client</label>
-                            <select aria-label="Link to CRM Lead / Client" name="lead_id" class="crm-select">
+                            <select aria-label="Link to CRM Lead / Client" name="lead_id" x-model="selectedLeadId" @change="onLeadChange()" class="crm-select">
                                 <option value="">-- Standalone Site / Select Client --</option>
                                 @foreach($leads as $l)
                                     <option value="{{ $l->id }}" @selected(old('lead_id', request('lead_id')) == $l->id)>
-                                        {{ $l->customer_name }} ({{ $l->lead_number ?? $l->company_name ?? 'Lead' }})
+                                        {{ $l->customer_name }} ({{ $l->company_name ?? $l->lead_number ?? 'Lead' }})
                                     </option>
                                 @endforeach
                             </select>
@@ -121,6 +142,12 @@
                         </div>
 
                         <div>
+                            <label class="crm-label">Client / Organization Name</label>
+                            <input aria-label="Client / Organization Name" type="text" name="client_name" x-model="clientName" value="{{ old('client_name') }}" placeholder="e.g. Anand Textiles Pvt Ltd" class="crm-input">
+                            @error('client_name') <p class="error-text">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div class="sm:col-span-2">
                             <label class="crm-label">Building / Structure Type <span class="required-marker">*</span></label>
                             <select aria-label="Building / Structure Type" name="type" required class="crm-select">
                                 @foreach(['commercial' => 'Commercial / Office', 'industrial' => 'Industrial / Factory', 'residential' => 'Residential / Apartment', 'warehouse' => 'Warehouse / Logistics', 'retail' => 'Retail / Showroom', 'hospital' => 'Hospital / Healthcare', 'education' => 'School / College', 'other' => 'Other Facility'] as $k => $label)
@@ -162,15 +189,20 @@
                 <div class="crm-section mb-4">
                     <h3>Contact &amp; Coordinates</h3>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
                         <div>
                             <label class="crm-label">Site Contact Person</label>
-                            <input aria-label="Site Contact Person" type="text" name="client_contact_person" value="{{ old('client_contact_person') }}" placeholder="e.g. Suresh Kumar (Manager)" class="crm-input">
+                            <input aria-label="Site Contact Person" type="text" name="contact_person" x-model="contactPerson" value="{{ old('contact_person', old('client_contact_person')) }}" placeholder="e.g. Suresh Kumar (Manager)" class="crm-input">
                         </div>
 
                         <div>
                             <label class="crm-label">Site Contact Phone</label>
                             <input aria-label="Site Contact Phone" type="text" name="client_phone" x-model="clientPhone" @blur="checkDuplicate()" value="{{ old('client_phone') }}" placeholder="e.g. 9840123456" class="crm-input">
+                        </div>
+
+                        <div>
+                            <label class="crm-label">Client Email Address</label>
+                            <input aria-label="Client Email Address" type="email" name="client_email" x-model="clientEmail" value="{{ old('client_email') }}" placeholder="e.g. contact@client.com" class="crm-input">
                         </div>
                     </div>
 

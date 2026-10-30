@@ -947,16 +947,16 @@
                         <button type="button" onclick="setPhotoTab('file')" id="tab-btn-file" class="px-2.5 py-1 text-xs font-semibold rounded bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-indigo-600 dark:text-indigo-400 shadow-xs">
                             Upload File
                         </button>
-                        <button type="button" onclick="setPhotoTab('camera')" id="tab-btn-camera" class="px-2.5 py-1 text-xs font-semibold rounded bg-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900">
+                        <button type="button" onclick="setPhotoTab('camera')" id="tab-btn-camera" class="px-2.5 py-1 text-xs font-semibold rounded bg-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
                             Live Camera
                         </button>
                     </div>
 
                     {{-- Mode 1: File Input --}}
                     <div id="photo-tab-file">
-                        <input aria-label="Site photo" type="file" name="photo" id="modal-photo-input" accept="image/*" class="text-xs text-slate-600 file:mr-2 file:py-1 file:px-2.5 file:rounded file:border file:border-slate-300 file:text-xs file:font-semibold file:bg-white hover:file:bg-slate-50 cursor-pointer w-full">
+                        <input aria-label="Site photo" type="file" name="photo" id="modal-photo-input" accept="image/*" class="text-xs text-slate-500 dark:text-slate-400 file:mr-2 file:py-1 file:px-2.5 file:rounded file:border file:border-slate-300 dark:file:border-slate-600 file:text-xs file:font-semibold file:bg-white dark:file:bg-slate-800 file:text-slate-700 dark:file:text-slate-200 hover:file:bg-slate-50 dark:hover:file:bg-slate-700 cursor-pointer w-full">
                         <div id="file-preview-wrap" class="mt-2 hidden">
-                            <img id="file-preview-img" alt="Preview" class="w-24 h-24 object-cover rounded border border-slate-300">
+                            <img id="file-preview-img" alt="Preview" class="w-24 h-24 object-cover rounded border border-slate-300 dark:border-slate-600">
                         </div>
                     </div>
 
@@ -1107,13 +1107,13 @@
                 tabFile.classList.remove('hidden');
                 tabCamera.classList.add('hidden');
                 btnFile.className = "px-2.5 py-1 text-xs font-semibold rounded bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-indigo-600 dark:text-indigo-400 shadow-xs";
-                btnCamera.className = "px-2.5 py-1 text-xs font-semibold rounded bg-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900";
+                btnCamera.className = "px-2.5 py-1 text-xs font-semibold rounded bg-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white";
                 stopWebcam();
             } else {
                 tabFile.classList.add('hidden');
                 tabCamera.classList.remove('hidden');
                 btnCamera.className = "px-2.5 py-1 text-xs font-semibold rounded bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-indigo-600 dark:text-indigo-400 shadow-xs";
-                btnFile.className = "px-2.5 py-1 text-xs font-semibold rounded bg-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900";
+                btnFile.className = "px-2.5 py-1 text-xs font-semibold rounded bg-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white";
                 startWebcam();
             }
         }
