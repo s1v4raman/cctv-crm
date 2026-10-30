@@ -35,6 +35,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'internal' => \App\Http\Middleware\InternalUserOnly::class,
             'technician' => \App\Http\Middleware\TechnicianMiddleware::class,
             'customer' => \App\Http\Middleware\CustomerAccess::class,
+            'photo.access' => \App\Http\Middleware\PrivatePhotoAccess::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

@@ -613,8 +613,8 @@ class WorkerAttendanceController extends Controller
             $cleanPath = ltrim(str_replace('public/', '', $attendance->photo_path), '/');
             if (Storage::disk('public')->exists($cleanPath)) {
                 return response()->file(Storage::disk('public')->path($cleanPath), [
-                    'Cache-Control' => 'public, max-age=31536000, immutable',
-                ]);
+                    'Cache-Control' => 'private, max-age=31536000, immutable',
+                ])->setPrivate();
             }
         }
 
@@ -644,7 +644,7 @@ class WorkerAttendanceController extends Controller
 
                 return response($binary, 200, [
                     'Content-Type' => $mime,
-                    'Cache-Control' => 'public, max-age=31536000, immutable',
+                    'Cache-Control' => 'private, max-age=31536000, immutable',
                 ]);
             }
         }
@@ -660,8 +660,8 @@ class WorkerAttendanceController extends Controller
         $path = 'attendance_photos/' . $filename;
         if (Storage::disk('public')->exists($path)) {
             return response()->file(Storage::disk('public')->path($path), [
-                'Cache-Control' => 'public, max-age=31536000, immutable',
-            ]);
+                'Cache-Control' => 'private, max-age=31536000, immutable',
+            ])->setPrivate();
         }
 
         $attendance = ProjectWorkerAttendance::where('photo_path', 'LIKE', '%' . $filename)->first();
@@ -684,7 +684,7 @@ class WorkerAttendanceController extends Controller
 
                 return response($binary, 200, [
                     'Content-Type' => $mime,
-                    'Cache-Control' => 'public, max-age=31536000, immutable',
+                    'Cache-Control' => 'private, max-age=31536000, immutable',
                 ]);
             }
         }

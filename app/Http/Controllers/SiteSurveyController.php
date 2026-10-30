@@ -180,8 +180,8 @@ class SiteSurveyController extends Controller
             $path = Storage::disk('public')->path('site-surveys/' . $photo->filename);
             return response()->file($path, [
                 'Content-Type'  => $photo->mime_type ?: 'image/jpeg',
-                'Cache-Control' => 'public, max-age=86400',
-            ]);
+                'Cache-Control' => 'private, max-age=86400',
+            ])->setPrivate();
         }
 
         // 2. Check if image data is saved in database (Base64)
@@ -193,7 +193,7 @@ class SiteSurveyController extends Controller
             $binary = base64_decode($data);
             return response($binary, 200, [
                 'Content-Type'   => $photo->mime_type ?: 'image/jpeg',
-                'Cache-Control'  => 'public, max-age=86400',
+                'Cache-Control'  => 'private, max-age=86400',
                 'Content-Length' => strlen($binary),
             ]);
         }

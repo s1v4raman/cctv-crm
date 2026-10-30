@@ -59,14 +59,19 @@ Route::get('/api/mobile-scanner/lan-info', [MobileScannerSyncController::class, 
 // Universal Global Omnisearch API: returns customer names, phones and addresses, so internal users only
 Route::get('/api/global-search', [GlobalSearchController::class, 'search'])->middleware(['auth', 'internal'])->name('api.global-search');
 
-// Public Photo Stream Endpoint (allows <img> rendering, PDF generation, and lightbox without auth redirect)
-Route::get('/site-surveys/photos/{photo}', [SiteSurveyController::class, 'showPhoto'])->name('site-surveys.photos.show');
+// Site survey photos, worker ID photos and punch selfies (from disk, or from the database copy on Render).
+// Internal users see all of them, a worker only their own; anything sent outside the app needs a
+// URL::temporarySignedRoute link. See App\Http\Middleware\PrivatePhotoAccess.
+Route::middleware('photo.access')->group(function () {
+    Route::get('/site-surveys/photos/{photo}', [SiteSurveyController::class, 'showPhoto'])->name('site-surveys.photos.show');
+    Route::get('/attendance-photos/{attendance}', [WorkerAttendanceController::class, 'streamPhoto'])->name('workers.attendance.photo');
+    Route::get('/worker-photos/{worker}', [WorkerController::class, 'streamPhoto'])->withTrashed()->name('workers.photo');
 
-// Public Worker & Attendance Photo Streaming Endpoints (persistent across Local and OnRender)
-Route::get('/attendance-photos/{attendance}', [WorkerAttendanceController::class, 'streamPhoto'])->name('workers.attendance.photo');
-Route::get('/worker-photos/{worker}', [WorkerController::class, 'streamPhoto'])->withTrashed()->name('workers.photo');
-Route::get('/storage/attendance_photos/{filename}', [WorkerAttendanceController::class, 'serveStoragePhoto'])->where('filename', '.*');
-Route::get('/storage/worker_photos/{filename}', [WorkerController::class, 'serveStoragePhoto'])->where('filename', '.*');
+    // Old /storage/... photo links. The web server sends these folders here instead of serving
+    // the files itself (docker/nginx.conf, public/.htaccess). A plain file name only: no "/" or "%".
+    Route::get('/storage/attendance_photos/{filename}', [WorkerAttendanceController::class, 'serveStoragePhoto'])->where('filename', '[A-Za-z0-9_-][A-Za-z0-9_.-]*');
+    Route::get('/storage/worker_photos/{filename}', [WorkerController::class, 'serveStoragePhoto'])->where('filename', '[A-Za-z0-9_-][A-Za-z0-9_.-]*');
+});
 
 // Public Amazon-style CCTV Storefront Homepage & Inquiry Engine
 Route::get('/', [StorefrontController::class, 'index'])->name('home');
