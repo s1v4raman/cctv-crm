@@ -56,8 +56,8 @@ Route::get('/api/mobile-scanner/poll/{token}', [MobileScannerSyncController::cla
 Route::post('/api/mobile-scanner/heartbeat/{token}', [MobileScannerSyncController::class, 'heartbeat'])->name('api.mobile-scanner.heartbeat');
 Route::get('/api/mobile-scanner/lan-info', [MobileScannerSyncController::class, 'getLanInfo'])->name('api.mobile-scanner.lan-info');
 
-// Universal Global Omnisearch API
-Route::get('/api/global-search', [GlobalSearchController::class, 'search'])->name('api.global-search');
+// Universal Global Omnisearch API: returns customer names, phones and addresses, so internal users only
+Route::get('/api/global-search', [GlobalSearchController::class, 'search'])->middleware(['auth', 'internal'])->name('api.global-search');
 
 // Public Photo Stream Endpoint (allows <img> rendering, PDF generation, and lightbox without auth redirect)
 Route::get('/site-surveys/photos/{photo}', [SiteSurveyController::class, 'showPhoto'])->name('site-surveys.photos.show');
