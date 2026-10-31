@@ -14,11 +14,6 @@
         </div>
     </x-slot>
 
-    <script>
-        window.SAVED_PRODUCTS_MAP = @json($savedProductsMap ?? []);
-        window.SAVED_VENDORS_SET = @json($savedVendorsSet ?? []);
-    </script>
-
     @php
         $preselectedSite = null;
         $siteIdToLoad = old('site_id', request('site_id'));
@@ -27,313 +22,325 @@
         }
     @endphp
 
-    <div class="py-6 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto"
-         x-data="{
-             step: {{ (int) old('current_step', request('step', session('new_technician_id') ? 2 : ($errors->any() ? 3 : ($preselectedSite ? 2 : 1)))) }},
-             selectedSite: @json($preselectedSite),
-             siteSearch: '',
-             siteResults: [],
-             siteModalOpen: false,
-             newSite: { name: '', client_name: '', client_phone: '', address: '', city: 'Coimbatore', latitude: '', longitude: '' },
-             
-             goStep(targetStep) {
-                 const s = parseInt(targetStep, 10);
-                 if (!isNaN(s) && s >= 1 && s <= 3) {
-                     this.step = s;
-                 }
-             },
+    <script>
+        window.SAVED_PRODUCTS_MAP = @json($savedProductsMap ?? []);
+        window.SAVED_VENDORS_SET = @json($savedVendorsSet ?? []);
 
-             // Step 2 Info
-             title: @js(old('title', '')),
-             project_type: '{{ old('project_type', 'hardware_cctv') }}',
-             lead_technician_id: '{{ session('new_technician_id', old('lead_technician_id', '')) }}',
-             budget: @js(old('budget', '')),
-             po_number: @js(old('po_number', '')),
-             start_date: '{{ old('start_date', now()->toDateString()) }}',
-             deadline: '{{ old('deadline', '') }}',
-             priority: '{{ old('priority', 'medium') }}',
-             description: @js(old('description', '')),
+        function projectWizard() {
+            return {
+                step: {{ (int) old('current_step', request('step', session('new_technician_id') ? 2 : ((isset($errors) && $errors->any()) ? 3 : ($preselectedSite ? 2 : 1)))) }},
+                selectedSite: @json($preselectedSite),
+                siteSearch: '',
+                siteResults: [],
+                siteModalOpen: false,
+                newSite: { name: '', client_name: '', client_phone: '', address: '', city: 'Coimbatore', latitude: '', longitude: '' },
+                
+                goStep(targetStep) {
+                    const s = parseInt(targetStep, 10);
+                    if (!isNaN(s) && s >= 1 && s <= 3) {
+                        this.step = s;
+                    }
+                },
 
-             // Dynamic Templates by Project Type
-             templates: {
-                 hardware_cctv: {
-                     nameSuffix: 'CCTV Surveillance & Security',
-                     requirements: {
-                         cctv_count: 4,
-                         nvr_channels: '8',
-                         cabling_metres: 150,
-                         power_supply: '8-Port PoE Gigabit Switch',
-                         display_screen: '32-inch Full HD LED',
-                         storage_hdd: '4TB Surveillance SATA HDD'
-                     },
-                     materials: [
-                         { item_name: 'Dome IP Camera 4MP IR', quantity: 2, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'Indoor dome' },
-                         { item_name: 'Bullet IP Camera 4MP Outdoor', quantity: 2, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'Outdoor weatherproof' },
-                         { item_name: '8-Channel 4K NVR', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'H.265+' },
-                         { item_name: '4TB Surveillance HDD', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'Seagate SkyHawk' },
-                         { item_name: 'CAT6 UTP Cable Roll (305m)', quantity: 1, unit: 'roll', source: 'warehouse', shop_name: '', notes: 'Pure copper' },
-                         { item_name: '8-Port PoE Switch Gigabit', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: '120W Total PoE' },
-                         { item_name: 'PVC Conduit Pipes 20mm', quantity: 15, unit: 'nos', source: 'local_purchase', shop_name: 'Local Electricals', notes: 'Heavy gauge' }
-                     ]
-                 },
-                 networking: {
-                     nameSuffix: 'Network Cabling & Wi-Fi Systems',
-                     requirements: {
-                         network_drops: 24,
-                         wifi_aps: 3,
-                         rack_size: '9U Wall Mount Server Rack',
-                         switch_spec: '24-Port Gigabit Managed PoE+ Switch',
-                         cabling_metres: 450,
-                         router_gateway: 'Dual-WAN Gigabit Security Gateway Router'
-                     },
-                     materials: [
-                         { item_name: 'Dual-Band Wi-Fi 6 Access Point', quantity: 3, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'Ceiling mount PoE' },
-                         { item_name: '24-Port Gigabit Managed Switch', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'L2+ managed' },
-                         { item_name: '9U Wall Mount Network Server Rack', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'With PDU & tray' },
-                         { item_name: '24-Port Cat6 Patch Panel', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: '110 punch down' },
-                         { item_name: 'Cat6 UTP 305m Cable Roll', quantity: 2, unit: 'roll', source: 'warehouse', shop_name: '', notes: 'Solid copper' },
-                         { item_name: 'Dual Faceplate + Cat6 Keystone I/O', quantity: 12, unit: 'set', source: 'warehouse', shop_name: '', notes: 'Workstation drops' },
-                         { item_name: '1-Metre Cat6 Patch Cords (Molded)', quantity: 24, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'Rack patching' }
-                     ]
-                 },
-                 software_web: {
-                     nameSuffix: 'Webpage & Web Application',
-                     requirements: {
-                         app_architecture: 'Full-Stack Responsive Web App',
-                         tech_stack: 'PHP Laravel + Tailwind + MySQL',
-                         core_modules: 'Auth, Role Permissions, CRM, Billing & REST API',
-                         hosting_infra: 'Cloud VPS (Ubuntu / Nginx / SSL)',
-                         domain_ssl: 'Custom Domain + Cloudflare Wildcard SSL',
-                         delivery_timeline: '4 Sprints (Design, Core, Integration, QA)'
-                     },
-                     materials: [
-                         { item_name: 'UI/UX Wireframes & Interactive Prototype', quantity: 1, unit: 'set', source: 'warehouse', shop_name: '', notes: 'Figma mockups' },
-                         { item_name: 'Responsive Frontend Web Application Module', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'Mobile & desktop ready' },
-                         { item_name: 'Backend Core Engine & Database Schema', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'REST API & database' },
-                         { item_name: 'User Authentication & Role Permissions Module', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'Admin, staff, client portals' },
-                         { item_name: 'Third-Party Payment & SMS Gateway Integration', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'API webhooks' },
-                         { item_name: 'Cloud Production Server Deployment & SSL', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'Automated backups' },
-                         { item_name: 'User Manual & Technical Handover Training', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'Admin training session' }
-                     ]
-                 },
-                 access_control: {
-                     nameSuffix: 'Biometric Access Control & Intercom',
-                     requirements: {
-                         doors_count: 2,
-                         auth_method: 'Face Recognition + Fingerprint + RFID Card',
-                         lock_type: '600lbs Heavy-Duty Electromagnetic (EM) Lock',
-                         exit_device: 'No-Touch Infrared Exit Sensor Switch',
-                         controller_type: 'Standalone IP Biometric Terminal',
-                         power_backup: '12V 5A Power Supply with 7Ah Battery'
-                     },
-                     materials: [
-                         { item_name: 'Face & Fingerprint Access Terminal', quantity: 2, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'Optical sensor' },
-                         { item_name: '600 lbs Electromagnetic Lock (EM Lock)', quantity: 2, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'With ZL bracket' },
-                         { item_name: 'No-Touch Infrared Exit Button', quantity: 2, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'Stainless steel plate' },
-                         { item_name: '12V 5A Access Control Power Supply Unit', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'UPS enclosure' },
-                         { item_name: '12V 7Ah Sealed Lead Acid Battery', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: '4-hour backup' },
-                         { item_name: 'RFID Proximity Smart Cards (125kHz)', quantity: 50, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'Printed keycards' },
-                         { item_name: '4-Core Shielded Access Cable (100m)', quantity: 1, unit: 'roll', source: 'warehouse', shop_name: '', notes: 'Lock & reader wiring' }
-                     ]
-                 },
-                 hardware_attendance: {
-                     nameSuffix: 'Terminal Camera & Attendance System',
-                     hardware_specs: {
-                         terminal_count: 2,
-                         camera_count: 4,
-                         device_brand: 'Hikvision MinMoe / ZKTeco ProFace X',
-                         terminal_ip: '192.168.1.50 - 192.168.1.55',
-                         attendance_sync_mode: 'face_recognition'
-                     },
-                     requirements: {
-                         terminal_users: 500,
-                         communication: 'TCP/IP Ethernet + Wi-Fi + USB Drive',
-                         hrms_software: 'Desktop Software + Automated Excel/Payroll Sync',
-                         mounting_location: 'Main Reception / Employee Entry Turnstile',
-                         power_battery: 'Inbuilt Rechargeable Lithium Backup Battery'
-                     },
-                     materials: [
-                         { item_name: 'AI Face & Fingerprint Attendance Terminal', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'High-speed matching' },
-                         { item_name: 'Heavy-Duty Metallic Wall Mounting Enclosure', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'Tamper proof' },
-                         { item_name: 'Regulated 12V DC Linear Power Adapter', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'Surge protected' },
-                         { item_name: 'CAT6 High-Speed Network Cable', quantity: 20, unit: 'mtr', source: 'warehouse', shop_name: '', notes: 'Switch link' },
-                         { item_name: 'Attendance Management & Payroll Desktop Software License', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'Multi-user license' }
-                     ]
-                 },
-                 hybrid: {
-                     nameSuffix: 'Hybrid Smart Integrated System',
-                     hardware_specs: {
-                         terminal_count: 4,
-                         camera_count: 16,
-                         device_brand: 'Hikvision AI + Uniview 4K',
-                         terminal_ip: '172.16.1.10 - 172.16.1.25',
-                         attendance_sync_mode: 'face_recognition'
-                     },
-                     requirements: {
-                         hardware_endpoints: 16,
-                         software_platform: 'Central Web Dashboard & Mobile Alert App',
-                         edge_gateway: 'Edge IoT Controller Unit',
-                         server_storage: 'On-Premises High Availability Micro-Server',
-                         alert_channels: 'Real-Time WhatsApp, Email & SMS Alerts'
-                     },
-                     materials: [
-                         { item_name: 'IoT Edge Gateway Multi-Protocol Hub', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'Industrial grade' },
-                         { item_name: 'Smart Surveillance & Environmental Sensors', quantity: 8, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'Sensor array' },
-                         { item_name: 'Managed Industrial PoE Switch', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'DIN-rail mount' },
-                         { item_name: 'Custom Web Portal & Central Dashboard License', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'Web & mobile UI' },
-                         { item_name: 'Micro-Server Compute Unit with RAID Storage', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'Local logging' }
-                     ]
-                 }
-             },
+                // Step 2 Info
+                title: @json(old('title', '')),
+                project_type: @json(old('project_type', 'hardware_cctv')),
+                lead_technician_id: @json((string) session('new_technician_id', old('lead_technician_id', ''))),
+                budget: @json(old('budget', '')),
+                po_number: @json(old('po_number', '')),
+                start_date: @json(old('start_date', now()->toDateString())),
+                deadline: @json(old('deadline', '')),
+                priority: @json(old('priority', 'medium')),
+                description: @json(old('description', '')),
 
-             req: {
-                 cctv_count: 4,
-                 nvr_channels: '8',
-                 cabling_metres: 150,
-                 power_supply: '8-Port PoE Gigabit Switch',
-                 display_screen: '32-inch Full HD LED',
-                 storage_hdd: '4TB Surveillance SATA HDD',
-                 special_requirements: ''
-             },
+                // Dynamic Templates by Project Type
+                templates: {
+                    hardware_cctv: {
+                        nameSuffix: 'CCTV Surveillance & Security',
+                        requirements: {
+                            cctv_count: 4,
+                            nvr_channels: '8',
+                            cabling_metres: 150,
+                            power_supply: '8-Port PoE Gigabit Switch',
+                            display_screen: '32-inch Full HD LED',
+                            storage_hdd: '4TB Surveillance SATA HDD'
+                        },
+                        materials: [
+                            { item_name: 'Dome IP Camera 4MP IR', quantity: 2, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'Indoor dome' },
+                            { item_name: 'Bullet IP Camera 4MP Outdoor', quantity: 2, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'Outdoor weatherproof' },
+                            { item_name: '8-Channel 4K NVR', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'H.265+' },
+                            { item_name: '4TB Surveillance HDD', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'Seagate SkyHawk' },
+                            { item_name: 'CAT6 UTP Cable Roll (305m)', quantity: 1, unit: 'roll', source: 'warehouse', shop_name: '', notes: 'Pure copper' },
+                            { item_name: '8-Port PoE Switch Gigabit', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: '120W Total PoE' },
+                            { item_name: 'PVC Conduit Pipes 20mm', quantity: 15, unit: 'nos', source: 'local_purchase', shop_name: 'Local Electricals', notes: 'Heavy gauge' }
+                        ]
+                    },
+                    networking: {
+                        nameSuffix: 'Network Cabling & Wi-Fi Systems',
+                        requirements: {
+                            network_drops: 24,
+                            wifi_aps: 3,
+                            rack_size: '9U Wall Mount Server Rack',
+                            switch_spec: '24-Port Gigabit Managed PoE+ Switch',
+                            cabling_metres: 450,
+                            router_gateway: 'Dual-WAN Gigabit Security Gateway Router'
+                        },
+                        materials: [
+                            { item_name: 'Dual-Band Wi-Fi 6 Access Point', quantity: 3, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'Ceiling mount PoE' },
+                            { item_name: '24-Port Gigabit Managed Switch', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'L2+ managed' },
+                            { item_name: '9U Wall Mount Network Server Rack', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'With PDU & tray' },
+                            { item_name: '24-Port Cat6 Patch Panel', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: '110 punch down' },
+                            { item_name: 'Cat6 UTP 305m Cable Roll', quantity: 2, unit: 'roll', source: 'warehouse', shop_name: '', notes: 'Solid copper' },
+                            { item_name: 'Dual Faceplate + Cat6 Keystone I/O', quantity: 12, unit: 'set', source: 'warehouse', shop_name: '', notes: 'Workstation drops' },
+                            { item_name: '1-Metre Cat6 Patch Cords (Molded)', quantity: 24, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'Rack patching' }
+                        ]
+                    },
+                    software_web: {
+                        nameSuffix: 'Webpage & Web Application',
+                        requirements: {
+                            app_architecture: 'Full-Stack Responsive Web App',
+                            tech_stack: 'PHP Laravel + Tailwind + MySQL',
+                            core_modules: 'Auth, Role Permissions, CRM, Billing & REST API',
+                            hosting_infra: 'Cloud VPS (Ubuntu / Nginx / SSL)',
+                            domain_ssl: 'Custom Domain + Cloudflare Wildcard SSL',
+                            delivery_timeline: '4 Sprints (Design, Core, Integration, QA)'
+                        },
+                        materials: [
+                            { item_name: 'UI/UX Wireframes & Interactive Prototype', quantity: 1, unit: 'set', source: 'warehouse', shop_name: '', notes: 'Figma mockups' },
+                            { item_name: 'Responsive Frontend Web Application Module', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'Mobile & desktop ready' },
+                            { item_name: 'Backend Core Engine & Database Schema', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'REST API & database' },
+                            { item_name: 'User Authentication & Role Permissions Module', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'Admin, staff, client portals' },
+                            { item_name: 'Third-Party Payment & SMS Gateway Integration', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'API webhooks' },
+                            { item_name: 'Cloud Production Server Deployment & SSL', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'Automated backups' },
+                            { item_name: 'User Manual & Technical Handover Training', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'Admin training session' }
+                        ]
+                    },
+                    access_control: {
+                        nameSuffix: 'Biometric Access Control & Intercom',
+                        requirements: {
+                            doors_count: 2,
+                            auth_method: 'Face Recognition + Fingerprint + RFID Card',
+                            lock_type: '600lbs Heavy-Duty Electromagnetic (EM) Lock',
+                            exit_device: 'No-Touch Infrared Exit Sensor Switch',
+                            controller_type: 'Standalone IP Biometric Terminal',
+                            power_backup: '12V 5A Power Supply with 7Ah Battery'
+                        },
+                        materials: [
+                            { item_name: 'Face & Fingerprint Access Terminal', quantity: 2, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'Optical sensor' },
+                            { item_name: '600 lbs Electromagnetic Lock (EM Lock)', quantity: 2, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'With ZL bracket' },
+                            { item_name: 'No-Touch Infrared Exit Button', quantity: 2, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'Stainless steel plate' },
+                            { item_name: '12V 5A Access Control Power Supply Unit', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'UPS enclosure' },
+                            { item_name: '12V 7Ah Sealed Lead Acid Battery', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: '4-hour backup' },
+                            { item_name: 'RFID Proximity Smart Cards (125kHz)', quantity: 50, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'Printed keycards' },
+                            { item_name: '4-Core Shielded Access Cable (100m)', quantity: 1, unit: 'roll', source: 'warehouse', shop_name: '', notes: 'Lock & reader wiring' }
+                        ]
+                    },
+                    hardware_attendance: {
+                        nameSuffix: 'Terminal Camera & Attendance System',
+                        hardware_specs: {
+                            terminal_count: 2,
+                            camera_count: 4,
+                            device_brand: 'Hikvision MinMoe / ZKTeco ProFace X',
+                            terminal_ip: '192.168.1.50 - 192.168.1.55',
+                            attendance_sync_mode: 'face_recognition'
+                        },
+                        requirements: {
+                            terminal_users: 500,
+                            communication: 'TCP/IP Ethernet + Wi-Fi + USB Drive',
+                            hrms_software: 'Desktop Software + Automated Excel/Payroll Sync',
+                            mounting_location: 'Main Reception / Employee Entry Turnstile',
+                            power_battery: 'Inbuilt Rechargeable Lithium Backup Battery'
+                        },
+                        materials: [
+                            { item_name: 'AI Face & Fingerprint Attendance Terminal', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'High-speed matching' },
+                            { item_name: 'Heavy-Duty Metallic Wall Mounting Enclosure', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'Tamper proof' },
+                            { item_name: 'Regulated 12V DC Linear Power Adapter', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'Surge protected' },
+                            { item_name: 'CAT6 High-Speed Network Cable', quantity: 20, unit: 'mtr', source: 'warehouse', shop_name: '', notes: 'Switch link' },
+                            { item_name: 'Attendance Management & Payroll Desktop Software License', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'Multi-user license' }
+                        ]
+                    },
+                    hybrid: {
+                        nameSuffix: 'Hybrid Smart Integrated System',
+                        hardware_specs: {
+                            terminal_count: 4,
+                            camera_count: 16,
+                            device_brand: 'Hikvision AI + Uniview 4K',
+                            terminal_ip: '172.16.1.10 - 172.16.1.25',
+                            attendance_sync_mode: 'face_recognition'
+                        },
+                        requirements: {
+                            hardware_endpoints: 16,
+                            software_platform: 'Central Web Dashboard & Mobile Alert App',
+                            edge_gateway: 'Edge IoT Controller Unit',
+                            server_storage: 'On-Premises High Availability Micro-Server',
+                            alert_channels: 'Real-Time WhatsApp, Email & SMS Alerts'
+                        },
+                        materials: [
+                            { item_name: 'IoT Edge Gateway Multi-Protocol Hub', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'Industrial grade' },
+                            { item_name: 'Smart Surveillance & Environmental Sensors', quantity: 8, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'Sensor array' },
+                            { item_name: 'Managed Industrial PoE Switch', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'DIN-rail mount' },
+                            { item_name: 'Custom Web Portal & Central Dashboard License', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'Web & mobile UI' },
+                            { item_name: 'Micro-Server Compute Unit with RAID Storage', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: 'Local logging' }
+                        ]
+                    }
+                },
 
-             hardware_specs: {
-                 terminal_count: 0,
-                 camera_count: 0,
-                 device_brand: '',
-                 terminal_ip: '',
-                 attendance_sync_mode: 'face_recognition'
-             },
+                req: {
+                    cctv_count: 4,
+                    nvr_channels: '8',
+                    cabling_metres: 150,
+                    power_supply: '8-Port PoE Gigabit Switch',
+                    display_screen: '32-inch Full HD LED',
+                    storage_hdd: '4TB Surveillance SATA HDD',
+                    special_requirements: ''
+                },
 
-             materials: @json(old('materials', [])),
-             oldRequirements: @json(old('requirements', [])),
-             oldHardwareSpecs: @json(old('hardware_specs', [])),
+                hardware_specs: {
+                    terminal_count: 0,
+                    camera_count: 0,
+                    device_brand: '',
+                    terminal_ip: '',
+                    attendance_sync_mode: 'face_recognition'
+                },
 
-             init() {
-                 if (this.materials && this.materials.length > 0) {
-                     // Materials were already restored from previous submission
-                     if (this.oldRequirements && Object.keys(this.oldRequirements).length > 0) {
-                         this.req = Object.assign({}, this.req, this.oldRequirements);
-                     }
-                     if (this.oldHardwareSpecs && Object.keys(this.oldHardwareSpecs).length > 0) {
-                         this.hardware_specs = Object.assign({}, this.hardware_specs, this.oldHardwareSpecs);
-                     }
-                 } else {
-                     this.applyTemplate(this.project_type, false);
-                 }
-             },
+                materials: @json(old('materials', [])),
+                oldRequirements: @json(old('requirements', [])),
+                oldHardwareSpecs: @json(old('hardware_specs', [])),
 
-             applyTemplate(type, forceTitle = false) {
-                 const tpl = this.templates[type] || this.templates['hardware_cctv'];
-                 this.req = Object.assign({}, tpl.requirements, { special_requirements: this.req.special_requirements || '' });
-                 this.hardware_specs = Object.assign({
-                     terminal_count: 0,
-                     camera_count: 0,
-                     device_brand: '',
-                     terminal_ip: '',
-                     attendance_sync_mode: 'face_recognition'
-                 }, tpl.hardware_specs || {});
-                 this.materials = JSON.parse(JSON.stringify(tpl.materials));
-                 if (forceTitle || !this.title || this.title.includes('Surveillance') || this.title.includes('System') || this.title.includes('Cabling') || this.title.includes('Application')) {
-                     if (this.selectedSite) {
-                         this.title = `${this.selectedSite.name} - ${tpl.nameSuffix}`;
-                     } else {
-                         this.title = `${tpl.nameSuffix}`;
-                     }
-                 }
-             },
+                init() {
+                    if (this.materials && this.materials.length > 0) {
+                        // Materials were already restored from previous submission
+                        if (this.oldRequirements && Object.keys(this.oldRequirements).length > 0) {
+                            this.req = Object.assign({}, this.req, this.oldRequirements);
+                        }
+                        if (this.oldHardwareSpecs && Object.keys(this.oldHardwareSpecs).length > 0) {
+                            this.hardware_specs = Object.assign({}, this.hardware_specs, this.oldHardwareSpecs);
+                        }
+                    } else {
+                        this.applyTemplate(this.project_type, false);
+                    }
+                    if (this.selectedSite && (!this.title || this.title === '')) {
+                        const tpl = this.templates[this.project_type] || this.templates['hardware_cctv'];
+                        this.title = `${this.selectedSite.name} - ${tpl.nameSuffix}`;
+                    }
+                },
 
-             addMaterialRow() {
-                 this.materials.push({ item_name: '', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: '', is_custom: true });
-             },
-             removeMaterialRow(index) {
-                 this.materials.splice(index, 1);
-             },
-             normalizeKey(str) {
-                 return (str || '').toString().trim().toLowerCase().replace(/\s+/g, ' ');
-             },
-             isNewProduct(name) {
-                 const key = this.normalizeKey(name);
-                 if (!key) return false;
-                 return !window.SAVED_PRODUCTS_MAP || !(key in window.SAVED_PRODUCTS_MAP);
-             },
-             isNewVendor(name) {
-                 const key = this.normalizeKey(name);
-                 if (!key) return false;
-                 return !window.SAVED_VENDORS_SET || !window.SAVED_VENDORS_SET.includes(key);
-             },
-             onProductSelect(mat) {
-                 const key = this.normalizeKey(mat.item_name);
-                 const match = window.SAVED_PRODUCTS_MAP ? window.SAVED_PRODUCTS_MAP[key] : null;
-                 if (match && match.unit) {
-                     const u = match.unit.toLowerCase();
-                     if (['nos','mtr','box','pkt','roll','set'].includes(u)) {
-                         mat.unit = u;
-                     }
-                 }
-             },
+                applyTemplate(type, forceTitle = false) {
+                    const tpl = this.templates[type] || this.templates['hardware_cctv'];
+                    this.req = Object.assign({}, tpl.requirements, { special_requirements: this.req.special_requirements || '' });
+                    this.hardware_specs = Object.assign({
+                        terminal_count: 0,
+                        camera_count: 0,
+                        device_brand: '',
+                        terminal_ip: '',
+                        attendance_sync_mode: 'face_recognition'
+                    }, tpl.hardware_specs || {});
+                    this.materials = JSON.parse(JSON.stringify(tpl.materials));
+                    if (forceTitle || !this.title || this.title.includes('Surveillance') || this.title.includes('System') || this.title.includes('Cabling') || this.title.includes('Application')) {
+                        if (this.selectedSite) {
+                            this.title = `${this.selectedSite.name} - ${tpl.nameSuffix}`;
+                        } else {
+                            this.title = `${tpl.nameSuffix}`;
+                        }
+                    }
+                },
 
-             async searchSites() {
-                 if (this.siteSearch.length < 1) {
-                     this.siteResults = [];
-                     return;
-                 }
-                 try {
-                     const res = await fetch(`/sites/search?q=${encodeURIComponent(this.siteSearch)}`);
-                     this.siteResults = await res.json();
-                 } catch (e) {}
-             },
-             pickSite(site) {
-                 this.selectedSite = site;
-                 this.siteResults = [];
-                 this.siteSearch = '';
-                 if (!this.title) {
-                     this.title = `${site.name} - CCTV Surveillance System`;
-                 }
-             },
-             async createSite() {
-                 if (!this.newSite.name || !this.newSite.address) {
-                     crmAlert('Site Name and Address are required.');
-                     return;
-                 }
-                 try {
-                     const res = await fetch('{{ route('sites.store') }}', {
-                         method: 'POST',
-                         headers: {
-                             'Content-Type': 'application/json',
-                             'Accept': 'application/json',
-                             'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                         },
-                         body: JSON.stringify(this.newSite)
-                     });
-                     const data = await res.json();
-                     if (data.success && data.site) {
-                         this.pickSite(data.site);
-                         this.siteModalOpen = false;
-                     }
-                 } catch (e) {
-                     crmAlert('Error creating site');
-                 }
-             },
-             draftSaved: false,
-             saveDraft() {
-                 const form = document.getElementById('projectWizardForm');
-                 if (form) {
-                     let actionInput = document.getElementById('wizardActionInput');
-                     if (!actionInput) {
-                         actionInput = document.createElement('input');
-                         actionInput.type = 'hidden';
-                         actionInput.name = 'action';
-                         actionInput.id = 'wizardActionInput';
-                         form.appendChild(actionInput);
-                     }
-                     actionInput.value = 'save_draft';
-                     form.submit();
-                 }
-             }
-         }">
+                addMaterialRow() {
+                    this.materials.push({ item_name: '', quantity: 1, unit: 'nos', source: 'warehouse', shop_name: '', notes: '', is_custom: true });
+                },
+                removeMaterialRow(index) {
+                    this.materials.splice(index, 1);
+                },
+                normalizeKey(str) {
+                    return (str || '').toString().trim().toLowerCase().replace(/\s+/g, ' ');
+                },
+                isNewProduct(name) {
+                    const key = this.normalizeKey(name);
+                    if (!key) return false;
+                    return !window.SAVED_PRODUCTS_MAP || !(key in window.SAVED_PRODUCTS_MAP);
+                },
+                isNewVendor(name) {
+                    const key = this.normalizeKey(name);
+                    if (!key) return false;
+                    return !window.SAVED_VENDORS_SET || !window.SAVED_VENDORS_SET.includes(key);
+                },
+                onProductSelect(mat) {
+                    const key = this.normalizeKey(mat.item_name);
+                    const match = window.SAVED_PRODUCTS_MAP ? window.SAVED_PRODUCTS_MAP[key] : null;
+                    if (match && match.unit) {
+                        const u = match.unit.toLowerCase();
+                        if (['nos','mtr','box','pkt','roll','set'].includes(u)) {
+                            mat.unit = u;
+                        }
+                    }
+                },
+
+                async searchSites() {
+                    if (this.siteSearch.length < 1) {
+                        this.siteResults = [];
+                        return;
+                    }
+                    try {
+                        const res = await fetch(`/sites/search?q=${encodeURIComponent(this.siteSearch)}`);
+                        this.siteResults = await res.json();
+                    } catch (e) {}
+                },
+                pickSite(site) {
+                    this.selectedSite = site;
+                    this.siteResults = [];
+                    this.siteSearch = '';
+                    if (!this.title) {
+                        this.title = `${site.name} - CCTV Surveillance System`;
+                    }
+                },
+                async createSite() {
+                    if (!this.newSite.name || !this.newSite.address) {
+                        crmAlert('Site Name and Address are required.');
+                        return;
+                    }
+                    try {
+                        const res = await fetch('{{ route('sites.store') }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            body: JSON.stringify(this.newSite)
+                        });
+                        const data = await res.json();
+                        if (data.success && data.site) {
+                            this.pickSite(data.site);
+                            this.siteModalOpen = false;
+                        }
+                    } catch (e) {
+                        crmAlert('Error creating site');
+                    }
+                },
+                draftSaved: false,
+                saveDraft() {
+                    const form = document.getElementById('projectWizardForm');
+                    if (form) {
+                        let actionInput = document.getElementById('wizardActionInput');
+                        if (!actionInput) {
+                            actionInput = document.createElement('input');
+                            actionInput.type = 'hidden';
+                            actionInput.name = 'action';
+                            actionInput.id = 'wizardActionInput';
+                            form.appendChild(actionInput);
+                        }
+                        actionInput.value = 'save_draft';
+                        form.submit();
+                    }
+                }
+            };
+        }
+    </script>
+
+    <div class="py-6 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto" x-data="projectWizard()">
 
         {{-- Validation / Session Errors Alert --}}
-        @if(session('error') || $errors->any())
+        @if(session('error') || (isset($errors) && $errors->any()))
             <div class="p-4 mb-5 rounded-2xl border border-rose-200 dark:border-rose-900 bg-rose-50 dark:bg-rose-950/50 text-rose-800 dark:text-rose-200 text-sm">
                 <div class="flex items-start gap-3">
                     <svg class="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -344,7 +351,7 @@
                         @if(session('error'))
                             <div class="mt-1 text-xs">{{ session('error') }}</div>
                         @endif
-                        @if($errors->any())
+                        @if(isset($errors) && $errors->any())
                             <ul class="mt-1.5 list-disc list-inside text-xs space-y-0.5">
                                 @foreach($errors->all() as $err)
                                     <li>{{ $err }}</li>
