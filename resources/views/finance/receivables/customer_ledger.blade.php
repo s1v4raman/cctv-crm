@@ -14,7 +14,7 @@
 
             <div class="flex items-center gap-2">
                 <a href="{{ route('finance.receivables.customer.pdf', $lead->id) }}"
-                   class="inline-flex items-center px-3 py-1.5 bg-[#2563eb] hover:bg-blue-700 text-white text-xs font-medium rounded transition">
+                   class="inline-flex items-center px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded transition">
                     Download Statement PDF
                 </a>
             </div>

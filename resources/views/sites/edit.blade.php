@@ -10,7 +10,41 @@
          x-data="{
              lat: '{{ old('latitude', $site->latitude) }}',
              lng: '{{ old('longitude', $site->longitude) }}',
-             gmapsUrl: '{{ old('google_maps_url', $site->google_maps_url) }}',
+             gmapsUrl: '{{ old('google_maps_url', $site->google_maps_url ?: $site->google_maps_link) }}',
+             selectedLeadId: '{{ old('lead_id', $site->lead_id) }}',
+             clientName: '{{ old('client_name', $site->client_name) }}',
+             contactPerson: '{{ old('contact_person', $site->contact_person) }}',
+             clientPhone: '{{ old('client_phone', $site->client_phone ?: ($site->contact_phone ?: $site->phone)) }}',
+             clientEmail: '{{ old('client_email', $site->client_email ?: $site->email) }}',
+             address: '{{ old('address', $site->address) }}',
+             city: '{{ old('city', $site->city) }}',
+             state: '{{ old('state', $site->state) }}',
+             pincode: '{{ old('pincode', $site->pincode) }}',
+             leadsList: {{ Js::from($leads->map(fn($l) => [
+                 'id' => (string)$l->id,
+                 'name' => $l->company_name ?: $l->customer_name,
+                 'phone' => $l->phone ?? '',
+                 'email' => $l->email ?? '',
+                 'contact' => $l->customer_name ?? '',
+                 'address' => $l->site_address ?? ($l->address ?? ''),
+                 'city' => $l->city ?? '',
+                 'state' => $l->state ?? '',
+                 'pincode' => $l->pincode ?? '',
+             ])) }},
+             onLeadChange() {
+                 if (!this.selectedLeadId) return;
+                 const lead = this.leadsList.find(l => l.id == this.selectedLeadId);
+                 if (lead) {
+                     this.clientName = lead.name;
+                     if (lead.phone && !this.clientPhone) this.clientPhone = lead.phone;
+                     if (lead.email && !this.clientEmail) this.clientEmail = lead.email;
+                     if (lead.contact && (!this.contactPerson || this.contactPerson === 'Site Manager')) this.contactPerson = lead.contact;
+                     if (lead.address && !this.address) this.address = lead.address;
+                     if (lead.city && !this.city) this.city = lead.city;
+                     if (lead.state && !this.state) this.state = lead.state;
+                     if (lead.pincode && !this.pincode) this.pincode = lead.pincode;
+                 }
+             },
              locating: false,
              locError: '',
              async getCurrentLocation() {
@@ -70,7 +104,7 @@
                     @csrf
                     @method('PUT')
 
-                    <h3 class="mb-4 pb-2 border-b border-[#ddd] font-bold text-base text-gray-900">Site Details</h3>
+                    <h3 class="mb-4 pb-2 border-b border-[#ddd] dark:border-slate-800 font-bold text-base text-gray-900 dark:text-white">Site Details</h3>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                         <div class="sm:col-span-2">
@@ -81,7 +115,7 @@
 
                         <div>
                             <label class="crm-label">Link to CRM Lead / Client</label>
-                            <select aria-label="Link to CRM Lead / Client" name="lead_id" class="crm-select">
+                            <select aria-label="Link to CRM Lead / Client" name="lead_id" x-model="selectedLeadId" @change="onLeadChange()" class="crm-select">
                                 <option value="">-- Standalone Site / Select Client --</option>
                                 @foreach($leads as $l)
                                     <option value="{{ $l->id }}" @selected(old('lead_id', $site->lead_id) == $l->id)>
@@ -94,7 +128,7 @@
 
                         <div>
                             <label class="crm-label">Client / Organization Name</label>
-                            <input aria-label="Client / Organization Name" type="text" name="client_name" value="{{ old('client_name', $site->client_name) }}" placeholder="e.g. Anand Textiles Pvt Ltd" class="crm-input">
+                            <input aria-label="Client / Organization Name" type="text" name="client_name" x-model="clientName" placeholder="e.g. Anand Textiles Pvt Ltd" class="crm-input">
                             @error('client_name') <p class="error-text">{{ $message }}</p> @enderror
                         </div>
 
@@ -111,44 +145,44 @@
 
                     <div class="mb-4">
                         <label class="crm-label">Physical Address <span class="required-marker">*</span></label>
-                        <textarea aria-label="Physical Address" name="address" rows="2" required class="crm-input" style="height: auto;">{{ old('address', $site->address) }}</textarea>
+                        <textarea aria-label="Physical Address" name="address" x-model="address" rows="2" required class="crm-input" style="height: auto;"></textarea>
                         @error('address') <p class="error-text">{{ $message }}</p> @enderror
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
                         <div>
                             <label class="crm-label">City <span class="required-marker">*</span></label>
-                            <input aria-label="City" type="text" name="city" value="{{ old('city', $site->city) }}" required class="crm-input">
+                            <input aria-label="City" type="text" name="city" x-model="city" required class="crm-input">
                             @error('city') <p class="error-text">{{ $message }}</p> @enderror
                         </div>
 
                         <div>
                             <label class="crm-label">State</label>
-                            <input aria-label="State" type="text" name="state" value="{{ old('state', $site->state) }}" class="crm-input">
+                            <input aria-label="State" type="text" name="state" x-model="state" class="crm-input">
                         </div>
 
                         <div>
                             <label class="crm-label">PIN Code</label>
-                            <input aria-label="PIN Code" type="text" name="pincode" value="{{ old('pincode', $site->pincode) }}" class="crm-input">
+                            <input aria-label="PIN Code" type="text" name="pincode" x-model="pincode" class="crm-input">
                         </div>
                     </div>
 
-                    <h3 class="mb-4 pb-2 border-b border-[#ddd] font-bold text-base text-gray-900 mt-6">Contact &amp; Location</h3>
+                    <h3 class="mb-4 pb-2 border-b border-[#ddd] dark:border-slate-800 font-bold text-base text-gray-900 dark:text-white mt-6">Contact &amp; Location</h3>
 
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
                         <div>
                             <label class="crm-label">Site Contact Person</label>
-                            <input aria-label="Site Contact Person" type="text" name="contact_person" value="{{ old('contact_person', $site->contact_person) }}" placeholder="e.g. Suresh Kumar (Manager)" class="crm-input">
+                            <input aria-label="Site Contact Person" type="text" name="contact_person" x-model="contactPerson" placeholder="e.g. R. Murugan (Store Manager)" class="crm-input">
                         </div>
 
                         <div>
                             <label class="crm-label">Site Contact Phone</label>
-                            <input aria-label="Site Contact Phone" type="text" name="client_phone" value="{{ old('client_phone', $site->client_phone) }}" placeholder="e.g. 9840123456" class="crm-input">
+                            <input aria-label="Site Contact Phone" type="text" name="client_phone" x-model="clientPhone" placeholder="e.g. 98765 43210" class="crm-input">
                         </div>
 
                         <div>
                             <label class="crm-label">Client Email Address</label>
-                            <input aria-label="Client Email Address" type="email" name="client_email" value="{{ old('client_email', $site->client_email) }}" placeholder="e.g. contact@client.com" class="crm-input">
+                            <input aria-label="Client Email Address" type="email" name="client_email" x-model="clientEmail" placeholder="e.g. contact@client.com" class="crm-input">
                         </div>
                     </div>
 

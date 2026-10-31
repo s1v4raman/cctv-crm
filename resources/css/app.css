@@ -33,18 +33,18 @@
 
     --status-success-fg: #047857; --status-success-bg: #ecfdf5; --status-success-bd: #a7f3d0;
     --status-warning-fg: #b45309; --status-warning-bg: #fffbeb; --status-warning-bd: #fde68a;
-    --status-info-fg: #1d4ed8;    --status-info-bg: #eff6ff;    --status-info-bd: #bfdbfe;
+    --status-info-fg: var(--crm-accent-hover, #1d4ed8);    --status-info-bg: color-mix(in srgb, var(--crm-accent, #2563eb) 6%, #fff);    --status-info-bd: color-mix(in srgb, var(--crm-accent, #2563eb) 24%, #fff);
     --status-danger-fg: #b91c1c;  --status-danger-bg: #fef2f2;  --status-danger-bd: #fecaca;
     --status-neutral-fg: #475569; --status-neutral-bg: #f1f5f9; --status-neutral-bd: #cbd5e1;
-    --status-purple-fg: #7e22ce;  --status-purple-bg: #faf5ff;  --status-purple-bd: #e9d5ff;
+    --status-purple-fg: var(--crm-accent, #2563eb);  --status-purple-bg: color-mix(in srgb, var(--crm-accent, #2563eb) 6%, #fff);  --status-purple-bd: color-mix(in srgb, var(--crm-accent, #2563eb) 24%, #fff);
 }
 html.dark {
     --status-success-fg: #6ee7b7; --status-success-bg: rgba(16, 185, 129, 0.12); --status-success-bd: rgba(16, 185, 129, 0.35);
     --status-warning-fg: #fcd34d; --status-warning-bg: rgba(245, 158, 11, 0.12); --status-warning-bd: rgba(245, 158, 11, 0.35);
-    --status-info-fg: #93c5fd;    --status-info-bg: rgba(59, 130, 246, 0.14);    --status-info-bd: rgba(59, 130, 246, 0.38);
+    --status-info-fg: color-mix(in srgb, var(--crm-accent, #2563eb) 45%, #fff);    --status-info-bg: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.14);    --status-info-bd: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.38);
     --status-danger-fg: #fca5a5;  --status-danger-bg: rgba(239, 68, 68, 0.12);   --status-danger-bd: rgba(239, 68, 68, 0.35);
     --status-neutral-fg: #cbd5e1; --status-neutral-bg: rgba(148, 163, 184, 0.12); --status-neutral-bd: rgba(148, 163, 184, 0.3);
-    --status-purple-fg: #d8b4fe;  --status-purple-bg: rgba(168, 85, 247, 0.12);  --status-purple-bd: rgba(168, 85, 247, 0.35);
+    --status-purple-fg: color-mix(in srgb, var(--crm-accent, #2563eb) 45%, #fff);  --status-purple-bg: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.12);  --status-purple-bd: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.35);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -89,14 +89,14 @@ html:not(.dark) {
     --status-warning: #d97706;
     --status-danger: #dc2626;
 
-    --primary-btn-bg: #2563eb;
-    --primary-btn-hover: #1d4ed8;
+    --primary-btn-bg: var(--crm-accent, #2563eb);
+    --primary-btn-hover: var(--crm-accent-hover, #1d4ed8);
     --primary-btn-text: #ffffff;
     --crm-accent: #2563eb;
     --crm-accent-hover: #1d4ed8;
     --crm-accent-light: #eff6ff;
-    --brand-blue: #2563eb;
-    --brand-blue-hover: #1d4ed8;
+    --brand-blue: var(--crm-accent, #2563eb);
+    --brand-blue-hover: var(--crm-accent-hover, #1d4ed8);
 }
 
 [data-theme='dark'],
@@ -136,14 +136,14 @@ html[data-theme='dark'] {
     --status-warning: #fbbf24;
     --status-danger: #f87171;
 
-    --primary-btn-bg: #2563eb; /* primary button stays #2563eb */
-    --primary-btn-hover: #1d4ed8;
+    --primary-btn-bg: var(--crm-accent, #2563eb); /* primary button stays var(--crm-accent, #2563eb) */
+    --primary-btn-hover: var(--crm-accent-hover, #1d4ed8);
     --primary-btn-text: #ffffff;
     --crm-accent: #2563eb;
     --crm-accent-hover: #1d4ed8;
     --crm-accent-light: rgba(37, 99, 235, 0.15);
-    --brand-blue: #2563eb;
-    --brand-blue-hover: #1d4ed8;
+    --brand-blue: var(--crm-accent, #2563eb);
+    --brand-blue-hover: var(--crm-accent-hover, #1d4ed8);
 }
 
 body {
@@ -385,8 +385,8 @@ textarea:focus:not([class*="border-0"]),
 .crm-select:focus,
 .ts-control.focus,
 .ts-control:focus-within {
-    border-color: #2563eb !important;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.28) !important;
+    border-color: var(--crm-accent, #2563eb) !important;
+    box-shadow: 0 0 0 3px rgba(var(--crm-accent-rgb, 37, 99, 235), 0.28) !important;
     outline: none !important;
 }
 html.dark input:focus:not([class*="border-0"]),
@@ -397,8 +397,8 @@ html.dark .crm-input:focus,
 html.dark .crm-select:focus,
 html.dark .ts-control.focus,
 html.dark .ts-control:focus-within {
-    border-color: #3b82f6 !important;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.35) !important;
+    border-color: color-mix(in srgb, var(--crm-accent, #2563eb) 80%, #fff) !important;
+    box-shadow: 0 0 0 3px rgba(var(--crm-accent-rgb, 37, 99, 235), 0.35) !important;
     outline: none !important;
 }
 
@@ -444,16 +444,16 @@ nav[class*="border-b"] a[class*="border-blue"],
 nav[class*="border-b"] button[class*="border-blue"],
 .tab-active,
 [role="tab"][aria-selected="true"] {
-    border-bottom: 2px solid #2563eb !important;
-    color: #2563eb !important;
+    border-bottom: 2px solid var(--crm-accent, #2563eb) !important;
+    color: var(--crm-accent, #2563eb) !important;
     font-weight: 700 !important;
 }
 html.dark nav[class*="border-b"] a[class*="border-blue"],
 html.dark nav[class*="border-b"] button[class*="border-blue"],
 html.dark .tab-active,
 html.dark [role="tab"][aria-selected="true"] {
-    border-bottom: 2px solid #3b82f6 !important;
-    color: #60a5fa !important;
+    border-bottom: 2px solid color-mix(in srgb, var(--crm-accent, #2563eb) 80%, #fff) !important;
+    color: color-mix(in srgb, var(--crm-accent, #2563eb) 60%, #fff) !important;
 }
 
 /* 7. Action Buttons (Secondary / Outlined) */
@@ -718,7 +718,7 @@ input:focus,
 select:focus,
 textarea:focus {
     border-color: var(--crm-accent, #2563eb) !important;
-    --tw-ring-color: var(--crm-accent-shadow, rgba(37, 99, 235, 0.2)) !important;
+    --tw-ring-color: var(--crm-accent-shadow, rgba(var(--crm-accent-rgb, 37, 99, 235), 0.2)) !important;
     outline: none !important;
 }
 
@@ -959,8 +959,8 @@ html.dark .filter-bar {
 .filter-bar input:focus,
 .filter-bar select:focus,
 .filter-select:focus {
-    border-color: #2563eb !important;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
+    border-color: var(--crm-accent, #2563eb) !important;
+    box-shadow: 0 0 0 3px rgba(var(--crm-accent-rgb, 37, 99, 235), 0.15) !important;
     background-color: var(--card-bg) !important;
 }
 html.dark .filter-bar input,
@@ -973,8 +973,8 @@ html.dark .filter-select {
 html.dark .filter-bar input:focus,
 html.dark .filter-bar select:focus,
 html.dark .filter-select:focus {
-    border-color: #3b82f6 !important;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25) !important;
+    border-color: color-mix(in srgb, var(--crm-accent, #2563eb) 80%, #fff) !important;
+    box-shadow: 0 0 0 3px rgba(var(--crm-accent-rgb, 37, 99, 235), 0.25) !important;
     background-color: var(--table-header-bg) !important;
 }
 
@@ -999,7 +999,7 @@ html.dark .status-tab {
 .status-tab.active {
     background: var(--primary-btn-bg) !important;
     color: var(--text-main) !important;
-    border-color: #2563eb !important;
+    border-color: var(--crm-accent, #2563eb) !important;
 }
 .status-tab .count-badge {
     background: #f1f5f9 !important;
@@ -1021,7 +1021,7 @@ html.dark .status-tab:hover {
 html.dark .status-tab.active {
     background: var(--primary-btn-bg) !important;
     color: var(--text-main) !important;
-    border-color: #2563eb !important;
+    border-color: var(--crm-accent, #2563eb) !important;
 }
 
 /* Universal Module Tables */
@@ -1321,14 +1321,14 @@ html.dark .cell-date {
     border-radius: 9999px !important;
     font-size: 0.7rem !important;
     font-weight: 600 !important;
-    background: #eff6ff !important;
-    color: #2563eb !important;
-    border: 1px solid #dbeafe !important;
+    background: color-mix(in srgb, var(--crm-accent, #2563eb) 6%, #fff) !important;
+    color: var(--crm-accent, #2563eb) !important;
+    border: 1px solid color-mix(in srgb, var(--crm-accent, #2563eb) 12%, #fff) !important;
 }
 html.dark .source-tag {
-    background: rgba(37, 99, 235, 0.15) !important;
-    color: #60a5fa !important;
-    border-color: rgba(37, 99, 235, 0.3) !important;
+    background: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.15) !important;
+    color: color-mix(in srgb, var(--crm-accent, #2563eb) 60%, #fff) !important;
+    border-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.3) !important;
 }
 
 .tech-tag {
@@ -1379,20 +1379,20 @@ html.dark .btn-ticket {
     border-radius: 0.5rem !important;
     font-size: 0.72rem !important;
     font-weight: 700 !important;
-    background: #eff6ff !important;
-    color: #2563eb !important;
-    border: 1px solid #bfdbfe !important;
+    background: color-mix(in srgb, var(--crm-accent, #2563eb) 6%, #fff) !important;
+    color: var(--crm-accent, #2563eb) !important;
+    border: 1px solid color-mix(in srgb, var(--crm-accent, #2563eb) 24%, #fff) !important;
     text-decoration: none !important;
     transition: all 0.15s ease !important;
 }
 .btn-edit:hover {
-    background: #dbeafe !important;
-    color: #1d4ed8 !important;
+    background: color-mix(in srgb, var(--crm-accent, #2563eb) 12%, #fff) !important;
+    color: var(--crm-accent-hover, #1d4ed8) !important;
 }
 html.dark .btn-edit {
-    background: rgba(59, 130, 246, 0.15) !important;
-    color: #60a5fa !important;
-    border-color: rgba(59, 130, 246, 0.3) !important;
+    background: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.15) !important;
+    color: color-mix(in srgb, var(--crm-accent, #2563eb) 60%, #fff) !important;
+    border-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.3) !important;
 }
 
 .btn-del {
@@ -1515,8 +1515,8 @@ html.dark .form-label {
 .form-input:focus,
 .form-select:focus,
 .form-textarea:focus {
-    border-color: #2563eb !important;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
+    border-color: var(--crm-accent, #2563eb) !important;
+    box-shadow: 0 0 0 3px rgba(var(--crm-accent-rgb, 37, 99, 235), 0.15) !important;
 }
 html.dark .form-input,
 html.dark .form-select,
@@ -1528,8 +1528,8 @@ html.dark .form-textarea {
 html.dark .form-input:focus,
 html.dark .form-select:focus,
 html.dark .form-textarea:focus {
-    border-color: #2563eb !important;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25) !important;
+    border-color: var(--crm-accent, #2563eb) !important;
+    box-shadow: 0 0 0 3px rgba(var(--crm-accent-rgb, 37, 99, 235), 0.25) !important;
 }
 
 .btn-submit-primary {
@@ -1543,13 +1543,13 @@ html.dark .form-textarea:focus {
     font-weight: 700 !important;
     background-color: var(--primary-btn-bg) !important;
     color: var(--text-main) !important;
-    border: 1px solid #1d4ed8 !important;
+    border: 1px solid var(--crm-accent-hover, #1d4ed8) !important;
     cursor: pointer !important;
     box-shadow: none !important;
     transition: all 0.15s ease-in-out !important;
 }
 .btn-submit-primary:hover {
-    background-color: #1d4ed8 !important;
+    background-color: var(--crm-accent-hover, #1d4ed8) !important;
     transform: translateY(-1px) !important;
     box-shadow: none !important;
 }
@@ -1895,7 +1895,7 @@ html:not(.dark) .pg-wrap table tbody td {
 
 /* ── CELL-NAME, CELL-NO: Force correct colors in light mode ── */
 html:not(.dark) .cell-name { color: var(--text-main) !important; }
-html:not(.dark) .cell-no   { color: #2563eb !important; }
+html:not(.dark) .cell-no   { color: var(--crm-accent, #2563eb) !important; }
 html:not(.dark) .cell-sub  { color: var(--text-muted) !important; }
 html:not(.dark) .cell-sku  {
     color: #475569 !important;
@@ -2156,8 +2156,8 @@ html:not(.dark) .tech-stat {
     cursor: pointer;
 }
 .ts-dropdown .option.active, .ts-dropdown .option:hover {
-    background-color: #eff6ff !important;
-    color: #2563eb !important;
+    background-color: color-mix(in srgb, var(--crm-accent, #2563eb) 6%, #fff) !important;
+    color: var(--crm-accent, #2563eb) !important;
 }
 
 /* Dark mode TomSelect */
@@ -2205,7 +2205,7 @@ html.dark .ts-dropdown .option {
 html.dark .ts-dropdown .option.active, 
 html.dark .ts-dropdown .option:hover {
     background-color: var(--table-header-bg) !important;
-    color: #38bdf8 !important;
+    color: color-mix(in srgb, var(--crm-accent, #2563eb) 60%, #fff) !important;
 }
 html.dark .ts-dropdown .optgroup-header {
     background: var(--card-bg) !important;
@@ -2215,15 +2215,15 @@ html.dark .ts-wrapper.plugin-clear_button .clear-button {
     color: var(--text-muted) !important;
 }
 .ts-wrapper.focus .ts-control {
-    border-color: #2563eb !important;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2) !important;
+    border-color: var(--crm-accent, #2563eb) !important;
+    box-shadow: 0 0 0 3px rgba(var(--crm-accent-rgb, 37, 99, 235), 0.2) !important;
 }
 html.dark .ts-wrapper.focus .ts-control,
 html.dark .ts-wrapper.single.input-active .ts-control {
     background: #0b1120 !important;
     background-image: none !important;
-    border-color: #3b82f6 !important;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25) !important;
+    border-color: color-mix(in srgb, var(--crm-accent, #2563eb) 80%, #fff) !important;
+    box-shadow: 0 0 0 3px rgba(var(--crm-accent-rgb, 37, 99, 235), 0.25) !important;
 }
 html.dark .ts-wrapper.multi .ts-control > div {
     background: #1e293b !important;
@@ -2242,10 +2242,10 @@ html.dark .info-label {
     color: var(--text-muted) !important;
 }
 html.dark .info-link {
-    color: #60a5fa !important;
+    color: color-mix(in srgb, var(--crm-accent, #2563eb) 60%, #fff) !important;
 }
 html.dark .info-value.text-indigo-600 {
-    color: #818cf8 !important;
+    color: color-mix(in srgb, var(--crm-accent, #2563eb) 60%, #fff) !important;
 }
 html.dark .info-value.text-emerald-600 {
     color: #34d399 !important;
@@ -2265,7 +2265,7 @@ html.dark .empty-state {
     color: var(--text-muted) !important;
 }
 html.dark .empty-state a {
-    color: #818cf8 !important;
+    color: color-mix(in srgb, var(--crm-accent, #2563eb) 60%, #fff) !important;
 }
 
 /* Section Heads & Notice Cards */
@@ -2292,7 +2292,7 @@ html.dark .notice-text p {
 }
 html.dark .req-box {
     background: var(--card-bg) !important;
-    border-color: #3730a3 !important;
+    border-color: color-mix(in srgb, var(--crm-accent, #2563eb) 45%, transparent) !important;
 }
 html.dark .req-title {
     color: #a5b4fc !important;
@@ -2318,8 +2318,8 @@ html.dark .form-textarea {
 html.dark .form-input:focus,
 html.dark .form-select:focus,
 html.dark .form-textarea:focus {
-    border-color: #3b82f6 !important;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25) !important;
+    border-color: color-mix(in srgb, var(--crm-accent, #2563eb) 80%, #fff) !important;
+    box-shadow: 0 0 0 3px rgba(var(--crm-accent-rgb, 37, 99, 235), 0.25) !important;
 }
 html.dark .form-hint {
     color: var(--text-muted) !important;
@@ -2356,12 +2356,12 @@ html.dark .btn-head-secondary:hover {
     border-color: var(--input-border) !important;
 }
 html.dark .btn-add-item {
-    background-color: rgba(99, 102, 241, 0.15) !important;
-    color: #818cf8 !important;
-    border-color: rgba(99, 102, 241, 0.3) !important;
+    background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.15) !important;
+    color: color-mix(in srgb, var(--crm-accent, #2563eb) 60%, #fff) !important;
+    border-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.3) !important;
 }
 html.dark .btn-add-item:hover {
-    background-color: #4f46e5 !important;
+    background-color: var(--crm-accent, #2563eb) !important;
     color: var(--text-main) !important;
 }
 
@@ -2485,8 +2485,8 @@ html.dark .crm-select {
 
 .crm-input:focus,
 .crm-select:focus {
-    border-color: #2563eb !important;
-    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2) !important;
+    border-color: var(--crm-accent, #2563eb) !important;
+    box-shadow: 0 0 0 2px rgba(var(--crm-accent-rgb, 37, 99, 235), 0.2) !important;
 }
 
 .crm-textarea {
@@ -2507,15 +2507,15 @@ html.dark .crm-textarea {
 }
 
 .crm-textarea:focus {
-    border-color: #2563eb !important;
-    box-shadow: 0 0 0 1px #2563eb !important;
+    border-color: var(--crm-accent, #2563eb) !important;
+    box-shadow: 0 0 0 1px var(--crm-accent, #2563eb) !important;
 }
 
 .crm-btn-primary {
     background-color: var(--primary-btn-bg) !important;
     background-image: none !important;
     color: var(--text-main) !important;
-    border: 1px solid #2563eb !important;
+    border: 1px solid var(--crm-accent, #2563eb) !important;
     font-weight: 600 !important;
     padding: 0 1.25rem !important;
     display: inline-flex !important;
@@ -2526,8 +2526,8 @@ html.dark .crm-textarea {
 }
 
 .crm-btn-primary:hover {
-    background-color: #1d4ed8 !important;
-    border-color: #1d4ed8 !important;
+    background-color: var(--crm-accent-hover, #1d4ed8) !important;
+    border-color: var(--crm-accent-hover, #1d4ed8) !important;
 }
 
 .crm-btn-secondary {
@@ -2630,7 +2630,7 @@ a.btn-primary {
 }
 
 .crm-back-link:hover {
-    color: #1d4ed8 !important;
+    color: var(--crm-accent-hover, #1d4ed8) !important;
     text-decoration: underline !important;
 }
 
@@ -2900,7 +2900,7 @@ html.dark .crm-box {
    ═══════════════════════════════════════════════════════════════════════ */
 
 /* 5.1 BUTTONS */
-/* Primary: Background #2563eb, white text, no border */
+/* Primary: Background var(--crm-accent, #2563eb), white text, no border */
 .btn-primary,
 .crm-btn-primary,
 .btn-blue,
@@ -2930,7 +2930,7 @@ a.btn-primary {
 .btn-blue:hover,
 button.btn-primary:hover,
 a.btn-primary:hover {
-    background-color: #1d4ed8 !important;
+    background-color: var(--crm-accent-hover, #1d4ed8) !important;
     transform: none !important;
     box-shadow: none !important;
 }
@@ -2989,7 +2989,7 @@ html.dark .crm-btn-secondary:hover {
 .row-action-link {
     background: transparent !important;
     border: none !important;
-    color: #2563eb !important;
+    color: var(--crm-accent, #2563eb) !important;
     padding: 0 !important;
     font-size: 14px !important;
     font-weight: normal !important;
@@ -3209,7 +3209,7 @@ table td.col-name {
 table td.table-actions a,
 table td .table-action-link,
 table td a:not(.btn):not(.btn-primary) {
-    color: #2563eb !important;
+    color: var(--crm-accent, #2563eb) !important;
     text-decoration: none !important;
     font-size: 14px !important;
     font-weight: normal !important;
@@ -3329,9 +3329,9 @@ html.dark .detail-table td:last-child {
 }
 
 /* 5.6 LINKS AND NAVIGATION */
-/* Links are blue #2563eb, no underline, underline on hover */
+/* Links are blue var(--crm-accent, #2563eb), no underline, underline on hover */
 a:not(.btn):not(.btn-primary):not(.btn-secondary):not(.btn-subtle):not(.btn-inline-add):not([class*="btn-subtle"]):not(aside a):not(.crm-active-link):not(.crm-brand-logo):not(.text-white):not([class*="text-white"]):not(.crm-filter-tab):not(.filter-tab):not(.active):not([class*="active"]):not(.filter-tabs a):not(.section-nav-link):not(.plain-link) {
-    color: #2563eb !important;
+    color: var(--crm-accent, #2563eb) !important;
     text-decoration: none !important;
 }
 a:not(.btn):not(.btn-primary):not(.btn-secondary):not(.btn-subtle):not(.btn-inline-add):not([class*="btn-subtle"]):not(aside a):not(.text-white):not([class*="text-white"]):not(.crm-filter-tab):not(.filter-tab):not(.active):not([class*="active"]):not(.filter-tabs a):not(.section-nav-link):not(.plain-link):hover {
@@ -3414,7 +3414,7 @@ html.dark .filter-tabs a:not(.active):hover {
 a.crm-back-link {
     display: inline-block !important;
     font-size: 14px !important;
-    color: #2563eb !important;
+    color: var(--crm-accent, #2563eb) !important;
     text-decoration: none !important;
     margin-bottom: 8px !important;
 }
@@ -3459,7 +3459,7 @@ html.dark .jcr-canvas-container {
 
 .jcr-canvas-container:hover,
 .jcr-canvas-container:focus-within {
-    border-color: #2563eb !important;
+    border-color: var(--crm-accent, #2563eb) !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -3613,8 +3613,8 @@ select:focus:not([class*="border-0"]),
 textarea:focus:not([class*="border-0"]),
 .ts-control.focus,
 .ts-control:focus-within {
-    border-color: #2563eb !important;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.28) !important;
+    border-color: var(--crm-accent, #2563eb) !important;
+    box-shadow: 0 0 0 3px rgba(var(--crm-accent-rgb, 37, 99, 235), 0.28) !important;
     outline: none !important;
 }
 html.dark input:focus:not([class*="border-0"]),
@@ -3622,8 +3622,8 @@ html.dark select:focus:not([class*="border-0"]),
 html.dark textarea:focus:not([class*="border-0"]),
 html.dark .ts-control.focus,
 html.dark .ts-control:focus-within {
-    border-color: #3b82f6 !important;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.35) !important;
+    border-color: color-mix(in srgb, var(--crm-accent, #2563eb) 80%, #fff) !important;
+    box-shadow: 0 0 0 3px rgba(var(--crm-accent-rgb, 37, 99, 235), 0.35) !important;
     outline: none !important;
 }
 

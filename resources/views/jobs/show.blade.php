@@ -10,7 +10,7 @@
                         Installation Job #{{ $job->job_no }}
                     </h2>
                     @php
-                        $jStatusColor = '#2563eb';
+                        $jStatusColor = 'var(--crm-accent, #2563eb)';
                         if ($job->status === 'completed') $jStatusColor = '#16a34a';
                         elseif ($job->status === 'cancelled') $jStatusColor = '#dc2626';
                     @endphp

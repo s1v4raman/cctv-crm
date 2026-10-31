@@ -48,16 +48,16 @@
                 <canvas id="{{ $modalId }}-canvas" style="display:none;"></canvas>
 
                 {{-- Scanning Reticle & Aim Animation --}}
-                <div style="position:absolute;width:240px;height:160px;border:2px dashed #3b82f6;border-radius:12px;box-shadow:0 0 0 4000px rgba(0,0,0,0.5);pointer-events:none;display:flex;flex-direction:column;justify-content:space-between;padding:6px;box-sizing:border-box;">
+                <div style="position:absolute;width:240px;height:160px;border:2px dashed color-mix(in srgb, var(--crm-accent, #2563eb) 80%, #fff);border-radius:12px;box-shadow:0 0 0 4000px rgba(0,0,0,0.5);pointer-events:none;display:flex;flex-direction:column;justify-content:space-between;padding:6px;box-sizing:border-box;">
                     <div style="display:flex;justify-content:space-between;">
-                        <div style="width:16px;height:16px;border-top:3px solid #60a5fa;border-left:3px solid #60a5fa;border-top-left-radius:6px;"></div>
-                        <div style="width:16px;height:16px;border-top:3px solid #60a5fa;border-right:3px solid #60a5fa;border-top-right-radius:6px;"></div>
+                        <div style="width:16px;height:16px;border-top:3px solid color-mix(in srgb, var(--crm-accent, #2563eb) 60%, #fff);border-left:3px solid color-mix(in srgb, var(--crm-accent, #2563eb) 60%, #fff);border-top-left-radius:6px;"></div>
+                        <div style="width:16px;height:16px;border-top:3px solid color-mix(in srgb, var(--crm-accent, #2563eb) 60%, #fff);border-right:3px solid color-mix(in srgb, var(--crm-accent, #2563eb) 60%, #fff);border-top-right-radius:6px;"></div>
                     </div>
                     {{-- Laser Scan Line --}}
                     <div class="laser-scanner-line" style="width:100%;height:2px;background:#ef4444;box-shadow:0 0 10px #ef4444;animation:scanLaser 2s infinite ease-in-out;"></div>
                     <div style="display:flex;justify-content:space-between;">
-                        <div style="width:16px;height:16px;border-bottom:3px solid #60a5fa;border-left:3px solid #60a5fa;border-bottom-left-radius:6px;"></div>
-                        <div style="width:16px;height:16px;border-bottom:3px solid #60a5fa;border-right:3px solid #60a5fa;border-bottom-right-radius:6px;"></div>
+                        <div style="width:16px;height:16px;border-bottom:3px solid color-mix(in srgb, var(--crm-accent, #2563eb) 60%, #fff);border-left:3px solid color-mix(in srgb, var(--crm-accent, #2563eb) 60%, #fff);border-bottom-left-radius:6px;"></div>
+                        <div style="width:16px;height:16px;border-bottom:3px solid color-mix(in srgb, var(--crm-accent, #2563eb) 60%, #fff);border-right:3px solid color-mix(in srgb, var(--crm-accent, #2563eb) 60%, #fff);border-bottom-right-radius:6px;"></div>
                     </div>
                 </div>
 
@@ -86,7 +86,7 @@
                             style="padding:.45rem .85rem;background:#059669;color:#fff;border-radius:.6rem;border:none;font-size:.75rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:.35rem;box-shadow:0 4px 12px rgba(5,150,105,0.3);">
                         📸 Snap
                     </button>
-                    <label style="padding:.45rem .85rem;background:#2563eb;color:#fff;border-radius:.6rem;font-size:.75rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:.35rem;box-shadow:0 4px 12px rgba(37,99,235,0.25);">
+                    <label style="padding:.45rem .85rem;background:var(--crm-accent, #2563eb);color:#fff;border-radius:.6rem;font-size:.75rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:.35rem;box-shadow:0 4px 12px rgba(var(--crm-accent-rgb, 37, 99, 235),0.25);">
                         📁 Upload Image
                         <input type="file" accept="image/*" onchange="handleBarcodeImageUpload(event, '{{ $modalId }}')" style="display:none;">
                     </label>

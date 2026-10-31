@@ -441,7 +441,7 @@ class WorkerAttendanceController extends Controller
             'worker_id' => 'required|exists:workers,id',
             'project_id' => 'required|exists:projects,id',
             'work_date' => 'required|date',
-            'attendance_type' => 'required|in:full,half',
+            'attendance_type' => 'required|string',
             'photo' => 'nullable|image|max:8192',
             'photo_data' => 'nullable|string',
             'check_in_time' => 'nullable|string',
@@ -451,6 +451,13 @@ class WorkerAttendanceController extends Controller
             'extra_description' => 'nullable|string|max:255',
             'notes' => 'nullable|string',
         ]);
+
+        $attType = strtolower($validated['attendance_type']);
+        if ($attType === 'half' || $attType === 'half_day') {
+            $validated['attendance_type'] = 'half';
+        } else {
+            $validated['attendance_type'] = 'full';
+        }
 
         $worker = Worker::findOrFail($validated['worker_id']);
         $project = Project::findOrFail($validated['project_id']);
@@ -568,10 +575,28 @@ class WorkerAttendanceController extends Controller
 
             DB::commit();
 
-            return redirect()->back()->with('status', "✓ Attendance successfully logged for {$worker->name} on {$workDate}!");
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => "✓ Attendance successfully logged for {$worker->name} on {$workDate}!",
+                    'redirect_url' => route('workers.attendance.index', ['date' => $workDate, 'view' => 'day']),
+                ]);
+            }
+
+            return redirect()->route('workers.attendance.index', [
+                'date' => $workDate,
+                'view' => 'day'
+            ])->with('status', "✓ Attendance successfully logged for {$worker->name} on {$workDate}!");
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Error storing worker attendance: ' . $e->getMessage());
+
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to log attendance: ' . $e->getMessage()
+                ], 422);
+            }
 
             return redirect()->back()->with('error', 'Failed to log attendance: ' . $e->getMessage());
         }

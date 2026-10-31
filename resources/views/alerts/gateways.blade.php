@@ -76,28 +76,28 @@
 
                             <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                                 {{-- Option: Log --}}
-                                <label class="relative flex flex-col p-3 rounded-[4px] border cursor-pointer transition {{ $settings->active_sms_gateway === 'log' ? 'border-[#2563eb] bg-blue-50/50 dark:bg-blue-950/20' : 'border-[#ddd] dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-slate-400' }}">
+                                <label class="relative flex flex-col p-3 rounded-[4px] border cursor-pointer transition {{ $settings->active_sms_gateway === 'log' ? 'border-blue-600 bg-blue-50/50 dark:bg-blue-950/20' : 'border-[#ddd] dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-slate-400' }}">
                                     <input type="radio" name="active_sms_gateway" value="log" {{ $settings->active_sms_gateway === 'log' ? 'checked' : '' }} class="sr-only">
                                     <span class="text-xs font-bold text-slate-900 dark:text-white">Log Simulator</span>
                                     <span class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Local file testing</span>
                                 </label>
 
                                 {{-- Option: Twilio --}}
-                                <label class="relative flex flex-col p-3 rounded-[4px] border cursor-pointer transition {{ $settings->active_sms_gateway === 'twilio' ? 'border-[#2563eb] bg-blue-50/50 dark:bg-blue-950/20' : 'border-[#ddd] dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-slate-400' }}">
+                                <label class="relative flex flex-col p-3 rounded-[4px] border cursor-pointer transition {{ $settings->active_sms_gateway === 'twilio' ? 'border-blue-600 bg-blue-50/50 dark:bg-blue-950/20' : 'border-[#ddd] dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-slate-400' }}">
                                     <input type="radio" name="active_sms_gateway" value="twilio" {{ $settings->active_sms_gateway === 'twilio' ? 'checked' : '' }} class="sr-only">
                                     <span class="text-xs font-bold text-slate-900 dark:text-white">Twilio API</span>
                                     <span class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Global SMS &amp; OTP</span>
                                 </label>
 
                                 {{-- Option: MSG91 --}}
-                                <label class="relative flex flex-col p-3 rounded-[4px] border cursor-pointer transition {{ $settings->active_sms_gateway === 'msg91' ? 'border-[#2563eb] bg-blue-50/50 dark:bg-blue-950/20' : 'border-[#ddd] dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-slate-400' }}">
+                                <label class="relative flex flex-col p-3 rounded-[4px] border cursor-pointer transition {{ $settings->active_sms_gateway === 'msg91' ? 'border-blue-600 bg-blue-50/50 dark:bg-blue-950/20' : 'border-[#ddd] dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-slate-400' }}">
                                     <input type="radio" name="active_sms_gateway" value="msg91" {{ $settings->active_sms_gateway === 'msg91' ? 'checked' : '' }} class="sr-only">
                                     <span class="text-xs font-bold text-slate-900 dark:text-white">MSG91 Flow</span>
                                     <span class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">India DLT Compliant</span>
                                 </label>
 
                                 {{-- Option: Custom Webhook --}}
-                                <label class="relative flex flex-col p-3 rounded-[4px] border cursor-pointer transition {{ $settings->active_sms_gateway === 'custom_webhook' ? 'border-[#2563eb] bg-blue-50/50 dark:bg-blue-950/20' : 'border-[#ddd] dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-slate-400' }}">
+                                <label class="relative flex flex-col p-3 rounded-[4px] border cursor-pointer transition {{ $settings->active_sms_gateway === 'custom_webhook' ? 'border-blue-600 bg-blue-50/50 dark:bg-blue-950/20' : 'border-[#ddd] dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-slate-400' }}">
                                     <input type="radio" name="active_sms_gateway" value="custom_webhook" {{ $settings->active_sms_gateway === 'custom_webhook' ? 'checked' : '' }} class="sr-only">
                                     <span class="text-xs font-bold text-slate-900 dark:text-white">Webhook</span>
                                     <span class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Fast2SMS / Zapier</span>
@@ -212,7 +212,7 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <label class="flex items-start gap-3 p-3.5 rounded-[4px] border border-[#ddd] dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 cursor-pointer">
                                     <input type="checkbox" name="ticket_auto_sms_enabled" value="1" {{ $settings->ticket_auto_sms_enabled ? 'checked' : '' }}
-                                           class="mt-0.5 rounded-[4px] border-[#ccc] text-[#2563eb]">
+                                           class="mt-0.5 rounded-[4px] border-[#ccc] text-blue-600">
                                     <div>
                                         <span class="text-xs font-bold text-slate-900 dark:text-white">Auto-SMS on Ticket Events</span>
                                         <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Send SMS when ticket is created, assigned, or resolved.</p>
@@ -221,7 +221,7 @@
 
                                 <label class="flex items-start gap-3 p-3.5 rounded-[4px] border border-[#ddd] dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 cursor-pointer">
                                     <input type="checkbox" name="ticket_auto_whatsapp_enabled" value="1" {{ $settings->ticket_auto_whatsapp_enabled ? 'checked' : '' }}
-                                           class="mt-0.5 rounded-[4px] border-[#ccc] text-[#2563eb]">
+                                           class="mt-0.5 rounded-[4px] border-[#ccc] text-blue-600">
                                     <div>
                                         <span class="text-xs font-bold text-slate-900 dark:text-white">Auto-WhatsApp on Ticket Events</span>
                                         <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Generate WhatsApp alert links on ticket status changes.</p>
@@ -230,7 +230,7 @@
 
                                 <label class="flex items-start gap-3 p-3.5 rounded-[4px] border border-[#ddd] dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 cursor-pointer">
                                     <input type="checkbox" name="otp_sms_enabled" value="1" {{ $settings->otp_sms_enabled ? 'checked' : '' }}
-                                           class="mt-0.5 rounded-[4px] border-[#ccc] text-[#2563eb]">
+                                           class="mt-0.5 rounded-[4px] border-[#ccc] text-blue-600">
                                     <div>
                                         <span class="text-xs font-bold text-slate-900 dark:text-white">Instant OTP via SMS</span>
                                         <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Dispatch 6-digit verification codes via SMS.</p>
@@ -239,7 +239,7 @@
 
                                 <label class="flex items-start gap-3 p-3.5 rounded-[4px] border border-[#ddd] dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 cursor-pointer">
                                     <input type="checkbox" name="otp_whatsapp_enabled" value="1" {{ $settings->otp_whatsapp_enabled ? 'checked' : '' }}
-                                           class="mt-0.5 rounded-[4px] border-[#ccc] text-[#2563eb]">
+                                           class="mt-0.5 rounded-[4px] border-[#ccc] text-blue-600">
                                     <div>
                                         <span class="text-xs font-bold text-slate-900 dark:text-white">Instant OTP via WhatsApp</span>
                                         <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Support direct WhatsApp verification links.</p>
@@ -258,7 +258,7 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <label class="flex items-start gap-3 p-3.5 rounded-[4px] border border-[#ddd] dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 cursor-pointer">
                                     <input type="checkbox" name="auto_receipt_whatsapp_enabled" value="1" {{ $settings->auto_receipt_whatsapp_enabled ? 'checked' : '' }}
-                                           class="mt-0.5 rounded-[4px] border-[#ccc] text-[#2563eb]">
+                                           class="mt-0.5 rounded-[4px] border-[#ccc] text-blue-600">
                                     <div>
                                         <span class="text-xs font-bold text-slate-900 dark:text-white">Auto-WhatsApp Payment Receipts</span>
                                         <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Send the receipt with its PDF link as soon as a payment is recorded.</p>
@@ -266,7 +266,7 @@
                                 </label>
                                 <label class="flex items-start gap-3 p-3.5 rounded-[4px] border border-[#ddd] dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 cursor-pointer">
                                     <input type="checkbox" name="auto_receipt_email_enabled" value="1" {{ $settings->auto_receipt_email_enabled ? 'checked' : '' }}
-                                           class="mt-0.5 rounded-[4px] border-[#ccc] text-[#2563eb]">
+                                           class="mt-0.5 rounded-[4px] border-[#ccc] text-blue-600">
                                     <div>
                                         <span class="text-xs font-bold text-slate-900 dark:text-white">Auto-Email Payment Receipts</span>
                                         <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Deliver official tax receipt PDF directly to customer billing email.</p>

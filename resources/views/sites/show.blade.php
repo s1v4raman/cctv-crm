@@ -76,9 +76,12 @@
                         <tr>
                             <td style="color: var(--text-muted); font-weight: 500;">Contact Phone</td>
                             <td style="color: var(--text-main); font-weight: 500;">
-                                @if($site->client_phone)
-                                    <a href="tel:{{ $site->client_phone }}" class="action-link">
-                                        {{ $site->client_phone }}
+                                @php
+                                    $phoneDisplay = $site->client_phone ?: ($site->contact_phone ?: ($site->phone && $site->phone !== '-' ? $site->phone : ($site->lead?->phone ?? null)));
+                                @endphp
+                                @if($phoneDisplay)
+                                    <a href="tel:{{ $phoneDisplay }}" class="action-link font-medium">
+                                        {{ $phoneDisplay }}
                                     </a>
                                 @else
                                     —
@@ -87,15 +90,25 @@
                         </tr>
                         <tr>
                             <td style="color: var(--text-muted); font-weight: 500;">Contact Person</td>
-                            <td style="color: var(--text-main); font-weight: 500;">{{ $site->contact_person ?? '—' }}</td>
+                            <td style="color: var(--text-main); font-weight: 500;">
+                                @php
+                                    $personDisplay = ($site->contact_person && $site->contact_person !== 'Site Manager')
+                                        ? $site->contact_person
+                                        : ($site->lead?->customer_name ?: ($site->contact_person ?? '—'));
+                                @endphp
+                                {{ $personDisplay }}
+                            </td>
                         </tr>
                         <tr>
                             <td style="color: var(--text-muted); font-weight: 500;">Email Address</td>
                             <td style="color: var(--text-main); font-weight: 500;">
-                                @if($site->client_email)
-                                    <a href="mailto:{{ $site->client_email }}" class="action-link inline-flex items-center gap-1.5">
-                                        <x-icon.email class="w-3.5 h-3.5 shrink-0" />
-                                        <span>{{ $site->client_email }}</span>
+                                @php
+                                    $emailDisplay = $site->client_email ?: ($site->email ?: ($site->lead?->email ?? null));
+                                @endphp
+                                @if($emailDisplay)
+                                    <a href="mailto:{{ $emailDisplay }}" class="action-link inline-flex items-center gap-1.5 font-medium">
+                                        <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>
+                                        <span>{{ $emailDisplay }}</span>
                                     </a>
                                 @else
                                     —

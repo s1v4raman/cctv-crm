@@ -256,7 +256,7 @@
 
                 <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
                     <button type="button" onclick="document.getElementById('salaryModal').classList.add('hidden')" class="px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 rounded transition">Cancel</button>
-                    <button type="submit" class="px-4 py-2 text-xs font-medium text-white bg-[#2563eb] hover:bg-blue-700 rounded transition">Save Salary Structure</button>
+                    <button type="submit" class="px-4 py-2 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded transition">Save Salary Structure</button>
                 </div>
             </form>
         </div>

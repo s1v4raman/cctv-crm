@@ -10,7 +10,7 @@
                         Tax Invoice {{ $invoice->invoice_no }}
                     </h2>
                     @php
-                        $invStatusColor = '#2563eb';
+                        $invStatusColor = 'var(--crm-accent, #2563eb)';
                         if ($invoice->status === 'paid') $invStatusColor = '#16a34a';
                         elseif ($invoice->status === 'cancelled') $invStatusColor = '#dc2626';
                     @endphp

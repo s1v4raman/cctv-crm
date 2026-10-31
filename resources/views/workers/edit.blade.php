@@ -79,7 +79,7 @@
                                 @endphp
                                 @foreach(['cabling' => 'Cabling & Conduit', 'mounting' => 'Camera Mounting', 'termination' => 'RJ45 Termination', 'networking' => 'IP Networking', 'civil' => 'Drilling / Civil', 'helper' => 'General Helper'] as $val => $lbl)
                                     <label class="flex items-center gap-2 p-2 border border-[#ddd] rounded-[4px] cursor-pointer text-xs text-gray-700">
-                                        <input type="checkbox" name="skills[]" value="{{ $val }}" {{ in_array($val, $currentSkills) ? 'checked' : '' }} class="rounded-[4px] border-[#ccc] text-[#2563eb]">
+                                        <input type="checkbox" name="skills[]" value="{{ $val }}" {{ in_array($val, $currentSkills) ? 'checked' : '' }} class="rounded-[4px] border-[#ccc] text-blue-600">
                                         <span>{{ $lbl }}</span>
                                     </label>
                                 @endforeach
@@ -94,7 +94,7 @@
 
                         <div class="sm:col-span-2">
                             <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="checkbox" name="is_active" value="1" {{ $worker->is_active ? 'checked' : '' }} class="w-4 h-4 rounded-[4px] border-[#ccc] text-[#2563eb]">
+                                <input type="checkbox" name="is_active" value="1" {{ $worker->is_active ? 'checked' : '' }} class="w-4 h-4 rounded-[4px] border-[#ccc] text-blue-600">
                                 <span class="text-sm text-gray-700">Active (Available for daily shifts)</span>
                             </label>
                         </div>

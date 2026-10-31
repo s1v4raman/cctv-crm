@@ -23,7 +23,15 @@
                  'phone' => $l->phone ?? '',
                  'email' => $l->email ?? '',
                  'contact' => $l->customer_name ?? '',
+                 'address' => $l->site_address ?? ($l->address ?? ''),
+                 'city' => $l->city ?? '',
+                 'state' => $l->state ?? '',
+                 'pincode' => $l->pincode ?? '',
              ])) }},
+             address: '{{ old('address') }}',
+             city: '{{ old('city') }}',
+             state: '{{ old('state') }}',
+             pincode: '{{ old('pincode') }}',
              onLeadChange() {
                  if (!this.selectedLeadId) return;
                  const lead = this.leadsList.find(l => l.id == this.selectedLeadId);
@@ -31,7 +39,11 @@
                      this.clientName = lead.name;
                      if (lead.phone && !this.clientPhone) this.clientPhone = lead.phone;
                      if (lead.email && !this.clientEmail) this.clientEmail = lead.email;
-                     if (lead.contact && !this.contactPerson) this.contactPerson = lead.contact;
+                     if (lead.contact && (!this.contactPerson || this.contactPerson === 'Site Manager')) this.contactPerson = lead.contact;
+                     if (lead.address && !this.address) this.address = lead.address;
+                     if (lead.city && !this.city) this.city = lead.city;
+                     if (lead.state && !this.state) this.state = lead.state;
+                     if (lead.pincode && !this.pincode) this.pincode = lead.pincode;
                  }
              },
              locating: false,
@@ -160,26 +172,26 @@
 
                     <div class="mb-4">
                         <label class="crm-label">Physical Address <span class="required-marker">*</span></label>
-                        <textarea aria-label="Physical Address" name="address" rows="2" required placeholder="e.g. Plot 42, Electronics City Phase 1" class="crm-input" style="height: auto;">{{ old('address') }}</textarea>
+                        <textarea aria-label="Physical Address" name="address" x-model="address" rows="2" required placeholder="e.g. Plot 42, Electronics City Phase 1" class="crm-input" style="height: auto;">{{ old('address') }}</textarea>
                         @error('address') <p class="error-text">{{ $message }}</p> @enderror
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div>
                             <label class="crm-label">City <span class="required-marker">*</span></label>
-                            <input aria-label="City" type="text" name="city" value="{{ old('city') }}" required placeholder="e.g. Bengaluru" class="crm-input">
+                            <input aria-label="City" type="text" name="city" x-model="city" value="{{ old('city') }}" required placeholder="e.g. Bengaluru" class="crm-input">
                             @error('city') <p class="error-text">{{ $message }}</p> @enderror
                         </div>
 
                         <div>
                             <label class="crm-label">State</label>
-                            <input aria-label="State" type="text" name="state" value="{{ old('state', 'Karnataka') }}" placeholder="e.g. Karnataka" class="crm-input">
+                            <input aria-label="State" type="text" name="state" x-model="state" value="{{ old('state', 'Karnataka') }}" placeholder="e.g. Karnataka" class="crm-input">
                             @error('state') <p class="error-text">{{ $message }}</p> @enderror
                         </div>
 
                         <div>
                             <label class="crm-label">PIN Code</label>
-                            <input aria-label="PIN Code" type="text" name="pincode" value="{{ old('pincode') }}" placeholder="e.g. 560100" class="crm-input">
+                            <input aria-label="PIN Code" type="text" name="pincode" x-model="pincode" value="{{ old('pincode') }}" placeholder="e.g. 560100" class="crm-input">
                             @error('pincode') <p class="error-text">{{ $message }}</p> @enderror
                         </div>
                     </div>

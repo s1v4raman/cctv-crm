@@ -2,7 +2,7 @@
     @php
         $statusColors = [
             'draft'    => ['badge' => 'border-slate-600 bg-slate-800/80 text-slate-300', 'bar' => '#64748b', 'glow' => 'rgba(100,116,139,0.3)'],
-            'sent'     => ['badge' => 'border-sky-500/30 bg-sky-500/10 text-sky-400', 'bar' => '#38bdf8', 'glow' => 'rgba(56,189,248,0.3)'],
+            'sent'     => ['badge' => 'border-sky-500/30 bg-sky-500/10 text-sky-400', 'bar' => 'var(--crm-accent, #2563eb)', 'glow' => 'rgba(var(--crm-accent-rgb, 37, 99, 235), 0.3)'],
             'accepted' => ['badge' => 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400', 'bar' => '#34d399', 'glow' => 'rgba(52,211,153,0.3)'],
             'rejected' => ['badge' => 'border-rose-500/30 bg-rose-500/10 text-rose-400', 'bar' => '#f43f5e', 'glow' => 'rgba(244,63,94,0.3)'],
             'expired'  => ['badge' => 'border-amber-500/30 bg-amber-500/10 text-amber-400', 'bar' => '#f59e0b', 'glow' => 'rgba(245,158,11,0.3)'],
@@ -22,7 +22,7 @@
                     </h2>
                     @php
                         $qStatusColor = '#64748b';
-                        if ($quotation->status === 'sent') $qStatusColor = '#0284c7';
+                        if ($quotation->status === 'sent') $qStatusColor = 'var(--crm-accent, #2563eb)';
                         elseif ($quotation->status === 'accepted') $qStatusColor = '#16a34a';
                         elseif ($quotation->status === 'rejected') $qStatusColor = '#dc2626';
                         elseif ($quotation->status === 'expired') $qStatusColor = '#d97706';

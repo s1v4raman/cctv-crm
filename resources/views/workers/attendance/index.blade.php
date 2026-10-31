@@ -879,9 +879,21 @@
                 <button type="button" onclick="closeAttendanceModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xl font-bold">&times;</button>
             </div>
 
-            <form method="POST" action="{{ route('workers.attendance.store') }}" enctype="multipart/form-data" class="space-y-4 mt-4">
+            <form id="mark-attendance-form" method="POST" action="{{ route('workers.attendance.store') }}" enctype="multipart/form-data" class="space-y-4 mt-4" onsubmit="return handleAttendanceSubmit(event)">
                 @csrf
                 <input type="hidden" name="photo_data" id="webcam-photo-data">
+
+                <div id="modal-validation-error" class="hidden p-3 rounded bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs"></div>
+
+                @if($errors->any())
+                    <div class="p-3 rounded bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs">
+                        <ul class="list-disc list-inside space-y-1">
+                            @foreach($errors->all() as $err)
+                                <li>{{ $err }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
 
                 {{-- Worker & Project Pickers --}}
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -954,7 +966,9 @@
 
                     {{-- Mode 1: File Input --}}
                     <div id="photo-tab-file">
-                        <input aria-label="Site photo" type="file" name="photo" id="modal-photo-input" accept="image/*" class="text-xs text-slate-500 dark:text-slate-400 file:mr-2 file:py-1 file:px-2.5 file:rounded file:border file:border-slate-300 dark:file:border-slate-600 file:text-xs file:font-semibold file:bg-white dark:file:bg-slate-800 file:text-slate-700 dark:file:text-slate-200 hover:file:bg-slate-50 dark:hover:file:bg-slate-700 cursor-pointer w-full">
+                        <div class="p-2 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+                            <input aria-label="Site photo" type="file" name="photo" id="modal-photo-input" accept="image/*" class="text-xs text-slate-600 dark:text-slate-300 file:mr-2.5 file:py-1.5 file:px-3 file:rounded file:border file:border-slate-300 dark:file:border-slate-600 file:text-xs file:font-semibold file:bg-slate-100 dark:file:bg-slate-800 file:text-slate-700 dark:file:text-slate-200 hover:file:bg-slate-200 dark:hover:file:bg-slate-700 cursor-pointer w-full">
+                        </div>
                         <div id="file-preview-wrap" class="mt-2 hidden">
                             <img id="file-preview-img" alt="Preview" class="w-24 h-24 object-cover rounded border border-slate-300 dark:border-slate-600">
                         </div>
@@ -1012,7 +1026,7 @@
 
                 <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-200 dark:border-slate-800">
                     <button type="button" onclick="closeAttendanceModal()" class="btn-secondary text-xs">Cancel</button>
-                    <button type="submit" class="btn-primary text-xs">✓ Save Attendance</button>
+                    <button type="submit" id="btn-save-attendance" class="btn-primary text-xs flex items-center gap-1.5 font-medium"><span>✓ Save Attendance</span></button>
                 </div>
             </form>
         </div>
@@ -1060,6 +1074,38 @@
                 document.getElementById('modal-work-date').value = dateOverride;
             }
             document.getElementById('markAttendanceModal').classList.remove('hidden');
+        }
+
+        function handleAttendanceSubmit(e) {
+            const workerSelect = document.getElementById('modal-worker-select');
+            const projectSelect = document.getElementById('f-project-id');
+            const errorBox = document.getElementById('modal-validation-error');
+            const saveBtn = document.getElementById('btn-save-attendance');
+
+            if (!workerSelect || !workerSelect.value) {
+                if (errorBox) {
+                    errorBox.textContent = 'Please select a Worker before saving attendance.';
+                    errorBox.classList.remove('hidden');
+                }
+                if (workerSelect) workerSelect.focus();
+                return false;
+            }
+
+            if (!projectSelect || !projectSelect.value) {
+                if (errorBox) {
+                    errorBox.textContent = 'Please select a Project Site before saving attendance.';
+                    errorBox.classList.remove('hidden');
+                }
+                if (projectSelect) projectSelect.focus();
+                return false;
+            }
+
+            if (errorBox) errorBox.classList.add('hidden');
+            if (saveBtn) {
+                saveBtn.disabled = true;
+                saveBtn.innerHTML = '<span class="inline-block animate-spin mr-1.5">&#9696;</span> Saving Attendance...';
+            }
+            return true;
         }
 
         function closeAttendanceModal() {

@@ -785,23 +785,36 @@
         // Automatically recolor all logo images on the page
         if (typeof window.recolorCrmBrandLogo === 'function') {
             window.recolorCrmBrandLogo(hex);
+        }
 
-        // Dynamically recolor any Chart.js bar and line charts live on the page
+        // Charts draw their main series with window.crmAccentColor(); swap the old theme colour
+        // for the new one and leave the other series (green, amber, grey...) as they are
+        const previous = window.crmChartAccent;
+        window.crmChartAccent = hex;
         try {
-            if (window.Chart && window.Chart.instances) {
+            if (previous && previous.toLowerCase() !== hex.toLowerCase() && window.Chart && window.Chart.instances) {
+                const swap = function(value) {
+                    if (Array.isArray(value)) return value.map(swap);
+                    return (typeof value === 'string' && value.toLowerCase() === previous.toLowerCase()) ? hex : value;
+                };
                 Object.values(window.Chart.instances).forEach(function(chart) {
-                    if (chart && chart.data && chart.data.datasets) {
-                        chart.data.datasets.forEach(function(ds) {
-                            if (ds.label === 'Accepted Revenue' || ds.type === 'bar' || (!ds.type && chart.config.type === 'bar')) {
-                                ds.backgroundColor = hex;
-                            }
+                    if (!chart || !chart.data || !chart.data.datasets) return;
+                    chart.data.datasets.forEach(function(ds) {
+                        ['backgroundColor', 'borderColor', 'hoverBackgroundColor', 'pointBackgroundColor', 'pointBorderColor'].forEach(function(key) {
+                            if (ds[key] !== undefined) ds[key] = swap(ds[key]);
                         });
-                        chart.update('none');
-                    }
+                    });
+                    chart.update('none');
                 });
             }
         } catch(e) {}
-        }
+    };
+
+    // The current theme colour as a plain hex, for charts and other canvas drawing
+    window.crmAccentColor = function() {
+        return window.crmChartAccent
+            || getComputedStyle(document.documentElement).getPropertyValue('--crm-accent').trim()
+            || '#2563eb';
     };
 
     // Cross-page mode lookup: checks user-scoped key, generic key, legacy 'theme' key, and cookie

@@ -51,7 +51,7 @@
         <div class="flex flex-wrap items-center justify-between gap-3 p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded">
             <span class="text-xs font-medium text-slate-600 dark:text-slate-400">Quick Actions</span>
             <div class="flex flex-wrap items-center gap-2">
-                <button type="button" @click="advanceModal = true" class="inline-flex items-center px-3 py-1.5 bg-[#2563eb] hover:bg-blue-700 text-white font-medium text-xs rounded transition">
+                <button type="button" @click="advanceModal = true" class="inline-flex items-center px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs rounded transition">
                     Issue Float Advance
                 </button>
                 <button type="button" @click="collectionModal = true" class="inline-flex items-center px-3 py-1.5 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 font-medium text-xs rounded transition">
@@ -333,7 +333,7 @@
                         <button type="button" @click="advanceModal = false" class="px-4 py-2 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-medium text-xs rounded transition">
                             Cancel
                         </button>
-                        <button type="submit" class="px-4 py-2 bg-[#2563eb] hover:bg-blue-700 text-white font-medium text-xs rounded transition">
+                        <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs rounded transition">
                             Disburse Float
                         </button>
                     </div>
@@ -400,7 +400,7 @@
                         <button type="button" @click="collectionModal = false" class="px-4 py-2 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-medium text-xs rounded transition">
                             Cancel
                         </button>
-                        <button type="submit" class="px-4 py-2 bg-[#2563eb] hover:bg-blue-700 text-white font-medium text-xs rounded transition">
+                        <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs rounded transition">
                             Save Collection
                         </button>
                     </div>
@@ -486,7 +486,7 @@
                         <button type="button" @click="expenseModal = false" class="px-4 py-2 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-medium text-xs rounded transition">
                             Cancel
                         </button>
-                        <button type="submit" class="px-4 py-2 bg-[#2563eb] hover:bg-blue-700 text-white font-medium text-xs rounded transition">
+                        <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs rounded transition">
                             Record Expense
                         </button>
                     </div>
@@ -553,7 +553,7 @@
                         <button type="button" @click="handoverModal = false" class="px-4 py-2 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-medium text-xs rounded transition">
                             Cancel
                         </button>
-                        <button type="submit" class="px-4 py-2 bg-[#2563eb] hover:bg-blue-700 text-white font-medium text-xs rounded transition">
+                        <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs rounded transition">
                             Process Handover
                         </button>
                     </div>

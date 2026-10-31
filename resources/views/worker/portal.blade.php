@@ -13,8 +13,8 @@
 
     <style>
         :root {
-            --crm-accent: #2563eb !important;
-            --crm-accent-hover: #1d4ed8 !important;
+            --crm-accent: #2563eb;
+            --crm-accent-hover: #1d4ed8;
         }
         * { box-shadow: none !important; }
     </style>

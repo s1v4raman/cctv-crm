@@ -270,8 +270,8 @@
             .crm-cal-select:focus,
             .ts-control.focus,
             .ts-control:focus-within {
-                border-color: #2563eb !important;
-                box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.28) !important;
+                border-color: var(--crm-accent, #2563eb) !important;
+                box-shadow: 0 0 0 3px rgba(var(--crm-accent-rgb, 37, 99, 235), 0.28) !important;
                 outline: none !important;
             }
             html.dark input:focus:not([class*="border-0"]),
@@ -284,8 +284,8 @@
             html.dark .crm-cal-select:focus,
             html.dark .ts-control.focus,
             html.dark .ts-control:focus-within {
-                border-color: #3b82f6 !important;
-                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.35) !important;
+                border-color: color-mix(in srgb, var(--crm-accent, #2563eb) 80%, #fff) !important;
+                box-shadow: 0 0 0 3px rgba(var(--crm-accent-rgb, 37, 99, 235), 0.35) !important;
                 outline: none !important;
             }
 
@@ -571,8 +571,8 @@
             }
             .crm-topbar input[type="text"]:focus,
             .crm-topbar .crm-search-input:focus {
-                border-color: #2563eb !important;
-                box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.28) !important;
+                border-color: var(--crm-accent, #2563eb) !important;
+                box-shadow: 0 0 0 3px rgba(var(--crm-accent-rgb, 37, 99, 235), 0.28) !important;
                 outline: none !important;
             }
             html.dark .crm-topbar input[type="text"],
@@ -584,8 +584,8 @@
             }
             html.dark .crm-topbar input[type="text"]:focus,
             html.dark .crm-topbar .crm-search-input:focus {
-                border-color: #3b82f6 !important;
-                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.35) !important;
+                border-color: color-mix(in srgb, var(--crm-accent, #2563eb) 80%, #fff) !important;
+                box-shadow: 0 0 0 3px rgba(var(--crm-accent-rgb, 37, 99, 235), 0.35) !important;
                 outline: none !important;
             }
 
@@ -826,15 +826,15 @@
             .btn-primary,
             .crm-btn-primary,
             .crm-filter-btn {
-                background-color: #2563eb !important;
-                border: 1px solid #2563eb !important;
+                background-color: var(--crm-accent, #2563eb) !important;
+                border: 1px solid var(--crm-accent, #2563eb) !important;
                 color: #ffffff !important;
             }
             .btn-primary:hover,
             .crm-btn-primary:hover,
             .crm-filter-btn:hover {
-                background-color: #1d4ed8 !important;
-                border-color: #1d4ed8 !important;
+                background-color: var(--crm-accent-hover, #1d4ed8) !important;
+                border-color: var(--crm-accent-hover, #1d4ed8) !important;
             }
             .btn-primary *,
             .crm-btn-primary *,
@@ -877,14 +877,14 @@
                 font-size: 12px !important;
                 font-weight: 600 !important;
                 border-radius: 8px !important;
-                background-color: #2563eb !important;
-                border: 1px solid #2563eb !important;
+                background-color: var(--crm-accent, #2563eb) !important;
+                border: 1px solid var(--crm-accent, #2563eb) !important;
                 color: #ffffff !important;
                 cursor: pointer !important;
                 text-decoration: none !important;
                 white-space: nowrap !important;
                 transition: all 0.15s ease !important;
-                box-shadow: 0 1px 2px rgba(37, 99, 235, 0.25) !important;
+                box-shadow: 0 1px 2px rgba(var(--crm-accent-rgb, 37, 99, 235), 0.25) !important;
             }
             .btn-subtle:hover,
             .btn-inline-add:hover,
@@ -892,8 +892,8 @@
             button.btn-subtle:hover,
             a[class*="btn-subtle"]:hover,
             button[class*="btn-subtle"]:hover {
-                background-color: #1d4ed8 !important;
-                border-color: #1d4ed8 !important;
+                background-color: var(--crm-accent-hover, #1d4ed8) !important;
+                border-color: var(--crm-accent-hover, #1d4ed8) !important;
                 color: #ffffff !important;
             }
             .btn-subtle *,
@@ -911,8 +911,8 @@
             html.dark button.btn-subtle,
             html.dark a[class*="btn-subtle"],
             html.dark button[class*="btn-subtle"] {
-                background-color: #2563eb !important;
-                border: 1px solid #3b82f6 !important;
+                background-color: var(--crm-accent, #2563eb) !important;
+                border: 1px solid color-mix(in srgb, var(--crm-accent, #2563eb) 80%, #fff) !important;
                 color: #ffffff !important;
             }
             html.dark .btn-subtle:hover,
@@ -921,8 +921,8 @@
             html.dark button.btn-subtle:hover,
             html.dark a[class*="btn-subtle"]:hover,
             html.dark button[class*="btn-subtle"]:hover {
-                background-color: #1d4ed8 !important;
-                border-color: #2563eb !important;
+                background-color: var(--crm-accent-hover, #1d4ed8) !important;
+                border-color: var(--crm-accent, #2563eb) !important;
                 color: #ffffff !important;
             }
             html.dark .btn-subtle *,
@@ -937,7 +937,7 @@
 
             select.crm-select:invalid,
             select.crm-select option[value=""] {
-                color: #60a5fa !important;
+                color: color-mix(in srgb, var(--crm-accent, #2563eb) 60%, #fff) !important;
             }
 
             html.dark select,
@@ -951,9 +951,9 @@
 
             select:focus,
             .crm-select:focus {
-                border-color: #2563eb !important;
+                border-color: var(--crm-accent, #2563eb) !important;
                 outline: none !important;
-                box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.28) !important;
+                box-shadow: 0 0 0 3px rgba(var(--crm-accent-rgb, 37, 99, 235), 0.28) !important;
             }
 
             /* Clean Single-Border Dropdown Select Styling (Matches Reference Design) */
@@ -995,9 +995,9 @@
             .search-input-box:focus,
             input[type="search"]:focus,
             input[name="search"]:not([type="hidden"]):focus {
-                border-color: #2563eb !important;
+                border-color: var(--crm-accent, #2563eb) !important;
                 outline: none !important;
-                box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.28) !important;
+                box-shadow: 0 0 0 3px rgba(var(--crm-accent-rgb, 37, 99, 235), 0.28) !important;
             }
 
             /* Universal Badge, Label & Status Pill System with Crisp Single 1px Dark Border (Matching Image 4) */

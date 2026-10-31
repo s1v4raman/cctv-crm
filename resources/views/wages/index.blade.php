@@ -417,7 +417,7 @@
                                         </td>
                                         <td class="text-right whitespace-nowrap">
                                             <div class="inline-flex items-center gap-1.5 justify-end text-xs">
-                                                <button type="button" @click="openAdvance({{ $w->id }}, '{{ addslashes($w->name) }}')" class="text-amber-600 dark:text-amber-400 hover:underline font-semibold cursor-pointer">
+                                                <button type="button" @click="openAdvance({{ $w->id }}, '{{ addslashes($w->name) }}')" class="text-blue-600 dark:text-blue-400 hover:underline font-semibold cursor-pointer">
                                                     Advance
                                                 </button>
 
@@ -432,7 +432,7 @@
                                                         <input type="hidden" name="settlement_action" value="pay_full">
                                                         <input type="hidden" name="week_start" value="{{ $weekStart->toDateString() }}">
                                                         <input type="hidden" name="payment_mode" value="cash">
-                                                        <button type="submit" class="text-emerald-600 hover:underline font-bold cursor-pointer">
+                                                        <button type="submit" class="text-blue-600 dark:text-blue-400 hover:underline font-semibold cursor-pointer">
                                                             Pay Now
                                                         </button>
                                                     </form>
@@ -444,13 +444,13 @@
                                                         <input type="hidden" name="settlement_action" value="pay_full">
                                                         <input type="hidden" name="week_start" value="{{ $weekStart->toDateString() }}">
                                                         <input type="hidden" name="payment_mode" value="cash">
-                                                        <button type="submit" class="text-emerald-600 hover:underline font-bold cursor-pointer">
+                                                        <button type="submit" class="text-blue-600 dark:text-blue-400 hover:underline font-semibold cursor-pointer">
                                                             Pay Full
                                                         </button>
                                                     </form>
 
                                                     <span class="text-slate-300 dark:text-slate-600">|</span>
-                                                    <button type="button" @click="openPayPart({{ $w->id }}, '{{ addslashes($w->name) }}', {{ $due }})" class="hover:underline font-semibold cursor-pointer" style="color: var(--crm-accent, #2563eb);">
+                                                    <button type="button" @click="openPayPart({{ $w->id }}, '{{ addslashes($w->name) }}', {{ $due }})" class="text-blue-600 dark:text-blue-400 hover:underline font-semibold cursor-pointer">
                                                         Pay Part
                                                     </button>
 
@@ -461,7 +461,7 @@
                                                         <input type="hidden" name="settlement_action" value="carry_forward">
                                                         <input type="hidden" name="week_start" value="{{ $weekStart->toDateString() }}">
                                                         <input type="hidden" name="payment_mode" value="cash">
-                                                        <button type="submit" class="text-slate-500 hover:underline font-medium cursor-pointer">
+                                                        <button type="submit" class="text-blue-600 dark:text-blue-400 hover:underline font-semibold cursor-pointer">
                                                             Carry Fwd
                                                         </button>
                                                     </form>
@@ -478,7 +478,7 @@
                                                 @endif
 
                                                 <span class="text-slate-300 dark:text-slate-600">|</span>
-                                                <button type="button" @click='openAnalysis(@json($rowData))' class="hover:underline text-xs font-semibold cursor-pointer" style="color: var(--crm-accent, #2563eb);">
+                                                <button type="button" @click='openAnalysis(@json($rowData))' class="text-xs text-blue-600 dark:text-blue-400 hover:underline font-semibold cursor-pointer">
                                                     Shifts &amp; Photos
                                                 </button>
                                             </div>

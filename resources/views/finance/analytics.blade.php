@@ -15,7 +15,7 @@
                 @endif
                 @if(auth()->user()->isAdmin())
                 <a href="{{ route('finance.payroll.index') }}"
-                   class="inline-flex items-center px-3 py-1.5 rounded bg-[#2563eb] hover:bg-blue-700 text-white text-xs font-medium transition">
+                   class="inline-flex items-center px-3 py-1.5 rounded bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium transition">
                     Payrolls
                 </a>
                 @endif
@@ -36,15 +36,15 @@
                 <span class="text-xs font-medium text-slate-700 dark:text-slate-300">Analytical View:</span>
                 <div class="inline-flex border border-slate-300 dark:border-slate-700 rounded overflow-hidden">
                     <a href="{{ route('finance.analytics', ['mode' => 'monthly']) }}"
-                       class="px-3 py-1 text-xs font-medium transition {{ $viewMode === 'monthly' ? 'bg-[#2563eb] text-white' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700' }}">
+                       class="px-3 py-1 text-xs font-medium transition {{ $viewMode === 'monthly' ? 'bg-blue-600 text-white' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700' }}">
                         Monthly
                     </a>
                     <a href="{{ route('finance.analytics', ['mode' => 'weekly']) }}"
-                       class="px-3 py-1 text-xs font-medium transition border-l border-slate-300 dark:border-slate-700 {{ $viewMode === 'weekly' ? 'bg-[#2563eb] text-white' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700' }}">
+                       class="px-3 py-1 text-xs font-medium transition border-l border-slate-300 dark:border-slate-700 {{ $viewMode === 'weekly' ? 'bg-blue-600 text-white' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700' }}">
                         Weekly
                     </a>
                     <a href="{{ route('finance.analytics', ['mode' => 'daily']) }}"
-                       class="px-3 py-1 text-xs font-medium transition border-l border-slate-300 dark:border-slate-700 {{ $viewMode === 'daily' ? 'bg-[#2563eb] text-white' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700' }}">
+                       class="px-3 py-1 text-xs font-medium transition border-l border-slate-300 dark:border-slate-700 {{ $viewMode === 'daily' ? 'bg-blue-600 text-white' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700' }}">
                         Daily
                     </a>
                 </div>

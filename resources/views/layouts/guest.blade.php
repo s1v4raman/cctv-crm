@@ -80,7 +80,7 @@
                 <x-brand-logo class="h-8 w-auto max-w-[175px] shrink-0" />
                 <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider pl-2 border-l border-slate-300">Operations</span>
             </a>
-            <a href="/" class="text-xs text-[#555555] hover:text-[#2563eb] hover:underline flex items-center gap-1 font-normal">
+            <a href="/" class="text-xs text-[#555555] hover:text-blue-600 hover:underline flex items-center gap-1 font-normal">
                 <span>← Back to Storefront</span>
             </a>
         </header>

@@ -1,4 +1,4 @@
-import baseConfig from './tailwind.config.js';
+import baseConfig, { accent } from './tailwind.config.js';
 
 /**
  * Plain Tailwind for the standalone pages built from resources/css/standalone.css
@@ -11,5 +11,7 @@ import baseConfig from './tailwind.config.js';
 export default {
     darkMode: baseConfig.darkMode,
     content: baseConfig.content,
+    // Blue follows the theme colour here too (the worker portal loads the theme)
+    theme: { extend: { colors: { blue: accent, indigo: accent, purple: accent, violet: accent, sky: accent } } },
     plugins: [],
 };

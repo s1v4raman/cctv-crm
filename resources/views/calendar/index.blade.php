@@ -87,7 +87,7 @@
         }
 
         /* ══════════════════════════════════════════════════════════════════════
-           FOUR PLAIN TEXT TABS (No pills, active tab: 2px #2563eb bottom border)
+           FOUR PLAIN TEXT TABS (No pills, active tab: 2px var(--crm-accent, #2563eb) bottom border)
            ══════════════════════════════════════════════════════════════════════ */
         .crm-tab-container {
             border-bottom: 1px solid var(--card-border, #cbd5e1);

@@ -341,7 +341,7 @@
                             <div class="space-y-2.5">
                                 <a href="{{ route('calendar.index') }}" class="flex items-center justify-between p-3 rounded-[4px] bg-slate-50 dark:bg-slate-800/60 hover:bg-blue-50 dark:hover:bg-blue-950/40 border border-[#eee] dark:border-slate-800 transition">
                                     <div class="flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded-[4px] bg-blue-100 dark:bg-blue-900/50 text-[#2563eb] dark:text-blue-400 flex items-center justify-center font-bold">
+                                        <div class="w-8 h-8 rounded-[4px] bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                                         </div>
                                         <div>
@@ -349,7 +349,7 @@
                                             <div class="text-[11px] text-slate-400">View daily schedule</div>
                                         </div>
                                     </div>
-                                    <span class="text-xs text-[#2563eb] font-semibold">Open &rarr;</span>
+                                    <span class="text-xs text-blue-600 font-semibold">Open &rarr;</span>
                                 </a>
 
                                 <a href="{{ route('projects.index') }}" class="flex items-center justify-between p-3 rounded-[4px] bg-slate-50 dark:bg-slate-800/60 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 border border-[#eee] dark:border-slate-800 transition">
@@ -381,7 +381,7 @@
                         </div>
 
                         <div class="pt-4 mt-4 border-t border-[#eee] dark:border-slate-800 text-center">
-                            <a href="{{ route('attendance.index') }}" class="text-xs font-semibold text-[#2563eb] dark:text-blue-400 hover:underline">
+                            <a href="{{ route('attendance.index') }}" class="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline">
                                 Go to Daily Attendance System &rarr;
                             </a>
                         </div>
@@ -403,10 +403,10 @@
     /* Clean SaaS Colour Palette — primary follows the live theme accent */
     const C = {
         get primary() { return getComputedStyle(document.documentElement).getPropertyValue('--crm-accent').trim() || '#2563eb'; },
-        sky:     '#38bdf8',
+        get sky() { return this.primary; },
         emerald: '#10b981',
         amber:   '#f59e0b',
-        purple:  '#8b5cf6',
+        purple:  '#94a3b8',
         rose:    '#f43f5e',
         slate:   '#64748b',
     };
@@ -800,7 +800,7 @@
                     datasets: [{
                         label: 'Jobs',
                         data: data.jobChart.data,
-                        backgroundColor: '#2563eb',
+                        backgroundColor: C.primary,
                         borderRadius: 6,
                         borderSkipped: false,
                         maxBarThickness: 32,

@@ -72,7 +72,7 @@
         html.dark .filter-bar input, html.dark .filter-bar select {
             background: #0b1120; border-color: #475569; color: #ffffff;
         }
-        .filter-bar input:focus, .filter-bar select:focus { border-color: #2563eb; }
+        .filter-bar input:focus, .filter-bar select:focus { border-color: var(--crm-accent, #2563eb); }
 
         .p-table { width: 100%; border-collapse: collapse; }
         .p-table thead { background: #f8fafc; border-bottom: 1px solid var(--card-border); }

@@ -14,7 +14,7 @@
                         $leadStatusColor = 'var(--crm-accent, #2563eb)';
                         if ($lead->status === 'won') $leadStatusColor = '#16a34a';
                         elseif ($lead->status === 'lost') $leadStatusColor = '#dc2626';
-                        elseif ($lead->status === 'quoted') $leadStatusColor = '#7c3aed';
+                        elseif ($lead->status === 'quoted') $leadStatusColor = 'var(--crm-accent-hover, #1d4ed8)';
                     @endphp
                     <span class="text-sm font-bold" style="color: {{ $leadStatusColor }};">
                         {{ ucfirst($lead->status) }}

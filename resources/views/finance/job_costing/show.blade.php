@@ -285,7 +285,7 @@
                     Cancel
                 </button>
                 <button type="submit"
-                        class="px-4 py-2 text-xs font-medium text-white bg-[#2563eb] hover:bg-blue-700 rounded transition">
+                        class="px-4 py-2 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded transition">
                     Update Cost Sheet
                 </button>
             </div>

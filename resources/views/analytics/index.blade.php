@@ -467,7 +467,7 @@
                             {{ $overview['revenue_streams']['hardware'] ?? 0 }},
                             {{ $overview['revenue_streams']['surveys'] ?? 0 }}
                         ],
-                        backgroundColor: ['#3b82f6', '#10b981', '#8b5cf6'],
+                        backgroundColor: [window.crmAccentColor(), '#10b981', '#94a3b8'],
                         borderWidth: 2,
                         borderColor: '#0f172a',
                     }]
@@ -495,7 +495,7 @@
                             {{ $overview['lead_funnel']['quotations'] }},
                             {{ $overview['lead_funnel']['won_projects'] }}
                         ],
-                        backgroundColor: ['#6366f1', '#38bdf8', '#fbbf24', '#10b981'],
+                        backgroundColor: [window.crmAccentColor(), '#94a3b8', '#fbbf24', '#10b981'],
                         borderRadius: 6,
                     }]
                 },
@@ -525,7 +525,7 @@
                             {{ $overview['financials']['aging_buckets']['31_60'] }},
                             {{ $overview['financials']['aging_buckets']['60_plus'] }}
                         ],
-                        backgroundColor: ['#3b82f6', '#f59e0b', '#f97316', '#ef4444'],
+                        backgroundColor: [window.crmAccentColor(), '#f59e0b', '#f97316', '#ef4444'],
                         borderRadius: 6,
                     }]
                 },

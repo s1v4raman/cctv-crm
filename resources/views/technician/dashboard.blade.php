@@ -2,675 +2,504 @@
     <x-slot name="header">
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h1 class="text-2xl font-bold text-[#222222]">
+                <h1 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
                     Field Engineer Workstation
                 </h1>
-                <div class="mt-0.5 text-xs text-[#555555]">Welcome, {{ auth()->user()->name }}</div>
+                <div class="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                    Welcome, <span class="font-semibold text-slate-700 dark:text-slate-300">{{ auth()->user()->name }}</span> &bull; Active Technician Portal
+                </div>
             </div>
             <div class="flex items-center gap-2 flex-wrap">
                 <a href="{{ route('finance.expenses.index') }}" 
-                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-medium text-xs hover:bg-slate-50 dark:hover:bg-slate-700 transition">
-                    <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-medium text-xs hover:bg-slate-50 dark:hover:bg-slate-700 shadow-xs transition">
+                    <svg class="w-3.5 h-3.5 text-slate-600 dark:text-slate-300 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     <span>Travel &amp; Fuel Claims</span>
                 </a>
             </div>
         </div>
     </x-slot>
 
-    <style>
-        .tech-wrap {
-            padding: 1.5rem 0 3rem;
-        }
-        .tech-inner {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 0 1.5rem;
-        }
+    <div class="py-6 px-4 sm:px-6 max-w-7xl mx-auto space-y-6">
 
-        /* Tab System */
-        .tab-bar {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1.5rem;
-            border-bottom: 1px solid #e2e8f0;
-            padding-bottom: 0;
-            overflow-x: auto;
-        }
-        .tab-btn {
-            padding: 0.65rem 1rem;
-            font-size: 0.82rem;
-            font-weight: 500;
-            border: none;
-            background: none;
-            cursor: pointer;
-            color: #64748b;
-            border-bottom: 2px solid transparent;
-            margin-bottom: -1px;
-            transition: all 0.2s;
-            white-space: nowrap;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-        }
-        .tab-btn.active {
-            color: #2563eb;
-            border-bottom-color: #2563eb;
-            font-weight: 700;
-        }
-        .tab-btn:hover:not(.active) {
-            color: var(--text-main);
-        }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-
-        /* Card System */
-        .tech-card {
-            background: #ffffff;
-            border-radius: 4px;
-            border: 1px solid #e2e8f0;
-            margin-bottom: 1.25rem;
-        }
-        .card-head {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0.85rem 1.25rem;
-            border-bottom: 1px solid #e2e8f0;
-            background: #ffffff;
-        }
-        .card-head-left {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-        .card-title {
-            font-size: 0.9rem;
-            font-weight: 700;
-            color: var(--text-main);
-        }
-        .card-sub {
-            font-size: 0.75rem;
-            color: #64748b;
-            margin-top: 0.1rem;
-        }
-        .card-body {
-            padding: 1.25rem;
-        }
-
-        /* Statuses */
-        .status-text {
-            font-weight: 700;
-            font-size: 0.75rem;
-        }
-
-        /* Info rows */
-        .info-row {
-            display: flex;
-            gap: 0.5rem;
-            align-items: flex-start;
-            margin-bottom: 0.5rem;
-            font-size: 0.82rem;
-            color: var(--card-border);
-        }
-        .info-label {
-            font-weight: 600;
-            color: #64748b;
-            min-width: 6.5rem;
-        }
-
-        /* Form area */
-        .update-form {
-            background: #f8fafc;
-            border-radius: 4px;
-            padding: 1rem;
-            margin-top: 1rem;
-            border: 1px solid #e2e8f0;
-        }
-        .form-label {
-            font-size: 0.78rem;
-            font-weight: 600;
-            color: #475569;
-            margin-bottom: 0.35rem;
-            display: block;
-        }
-        .form-select, .form-textarea, .form-input {
-            width: 100%;
-            border: 1px solid #cbd5e1;
-            border-radius: 4px;
-            padding: 0.55rem 0.8rem;
-            font-size: 0.82rem;
-            color: var(--text-main);
-            outline: none;
-            background: #ffffff;
-            box-sizing: border-box;
-        }
-        .form-textarea {
-            min-height: 60px;
-            resize: vertical;
-            font-family: inherit;
-        }
-
-        .btn-submit {
-            padding: 0.5rem 1rem;
-            font-size: 0.8rem;
-            font-weight: 600;
-            border: 1px solid #cbd5e1;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-            background: #ffffff;
-            color: var(--card-border);
-        }
-        .btn-submit:hover {
-            background: #f8fafc;
-            color: var(--text-main);
-        }
-
-        .alert-success {
-            background: #ecfdf5;
-            border: 1px solid #a7f3d0;
-            color: #065f46;
-            padding: 0.75rem 1rem;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            margin-bottom: 1.25rem;
-            font-weight: 600;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 3rem 1rem;
-            color: var(--text-muted);
-        }
-        .empty-state svg {
-            width: 2.5rem;
-            height: 2.5rem;
-            margin: 0 auto 0.75rem;
-            color: var(--text-muted);
-        }
-        .empty-state h4 {
-            font-size: 0.95rem;
-            font-weight: 700;
-            color: var(--text-main);
-            margin-bottom: 0.3rem;
-        }
-
-        html.dark .tab-bar { border-bottom-color: var(--text-main); }
-        html.dark .tab-btn { color: var(--text-muted); }
-        html.dark .tab-btn.active { color: #3b82f6; border-bottom-color: #3b82f6; }
-        html.dark .tab-btn:hover:not(.active) { color: var(--text-main); }
-
-        html.dark .tech-card {
-            background: #0f172a;
-            border-color: var(--text-main);
-            color: var(--text-main);
-        }
-        html.dark .card-head {
-            background: #0f172a;
-            border-bottom-color: var(--text-main);
-        }
-        html.dark .card-title {
-            color: #ffffff;
-        }
-        html.dark .card-sub {
-            color: var(--text-muted);
-        }
-        html.dark .info-row {
-            color: var(--text-muted);
-        }
-        html.dark .info-label {
-            color: var(--text-muted);
-        }
-        html.dark .update-form {
-            background: #0b1120;
-            border-color: var(--text-main);
-        }
-        html.dark .form-label {
-            color: var(--text-muted);
-        }
-        html.dark .form-select,
-        html.dark .form-textarea,
-        html.dark .form-input {
-            background: #060913;
-            border-color: var(--card-border);
-            color: #ffffff;
-        }
-        html.dark .empty-state h4 {
-            color: #ffffff;
-        }
-    </style>
-
-    <div class="tech-wrap">
-        <div class="tech-inner">
-
-            @if (session('status'))
-                <div class="alert-success">{{ session('status') }}</div>
-            @endif
-
-            {{-- Stats Bar (4 Clean Metric Cards) --}}
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                
-                {{-- Infrastructure Projects & ACS Sites --}}
-                <div onclick="switchTab('projects', document.querySelector('.tab-bar .tab-btn:first-child'))" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-4 cursor-pointer">
-                    <span class="text-xs font-medium text-slate-500 dark:text-slate-400 block">Assigned Projects</span>
-                    <div class="text-2xl font-bold text-slate-900 dark:text-white mt-1">{{ $assignedProjects->count() }}</div>
-                </div>
-
-                {{-- Active Jobs --}}
-                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-4">
-                    <span class="text-xs font-medium text-slate-500 dark:text-slate-400 block">Active Installation Jobs</span>
-                    <div class="text-2xl font-bold text-slate-900 dark:text-white mt-1">{{ $activeJobs->count() }}</div>
-                </div>
-
-                {{-- Site Surveys --}}
-                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-4">
-                    <span class="text-xs font-medium text-slate-500 dark:text-slate-400 block">Pending Surveys</span>
-                    <div class="text-2xl font-bold text-slate-900 dark:text-white mt-1">{{ $activeSurveys->count() }}</div>
-                </div>
-
-                {{-- Resolved / Done --}}
-                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-4">
-                    <span class="text-xs font-medium text-slate-500 dark:text-slate-400 block">Completed Work</span>
-                    <div class="text-2xl font-bold text-slate-900 dark:text-white mt-1">{{ $completedJobs->count() + $completedSurveys->count() }}</div>
-                </div>
-
+        @if (session('status'))
+            <div class="p-3.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs font-semibold flex items-center gap-2">
+                <svg class="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span>{{ session('status') }}</span>
             </div>
+        @endif
 
-            {{-- On-Site Hardware Barcode Scanner Quick Tool --}}
-            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-4 mb-6 shadow-sm">
-                <div class="flex items-center justify-between flex-wrap gap-4">
+        {{-- Stats Bar (4 Clean Metric Cards Matching Admin Standard) --}}
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            
+            {{-- Assigned Projects --}}
+            <button type="button" onclick="switchTechTab('projects', document.getElementById('tab-btn-projects'))" 
+                    class="p-4 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs text-left hover:border-blue-500/50 transition group cursor-pointer">
+                <span class="text-xs font-medium text-slate-500 dark:text-slate-400 block">Assigned Projects</span>
+                <div class="text-2xl font-bold text-slate-900 dark:text-white mt-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition">{{ $assignedProjects->count() }}</div>
+                <div class="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
+                    <span>Active deployment sites</span>
+                    <span class="text-blue-600 dark:text-blue-400 font-semibold">&rarr;</span>
+                </div>
+            </button>
+
+            {{-- Active Jobs --}}
+            <button type="button" onclick="switchTechTab('jobs', document.getElementById('tab-btn-jobs'))"
+                    class="p-4 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs text-left hover:border-indigo-500/50 transition group cursor-pointer">
+                <span class="text-xs font-medium text-slate-500 dark:text-slate-400 block">Active Installation Jobs</span>
+                <div class="text-2xl font-bold text-slate-900 dark:text-white mt-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition">{{ $activeJobs->count() }}</div>
+                <div class="text-[11px] text-slate-400 mt-1">Pending &amp; in-progress work</div>
+            </button>
+
+            {{-- Site Surveys --}}
+            <button type="button" onclick="switchTechTab('surveys', document.getElementById('tab-btn-surveys'))"
+                    class="p-4 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs text-left hover:border-amber-500/50 transition group cursor-pointer">
+                <span class="text-xs font-medium text-slate-500 dark:text-slate-400 block">Pending Surveys</span>
+                <div class="text-2xl font-bold text-slate-900 dark:text-white mt-1 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition">{{ $activeSurveys->count() }}</div>
+                <div class="text-[11px] text-slate-400 mt-1">Site inspections scheduled</div>
+            </button>
+
+            {{-- Completed Work --}}
+            <button type="button" onclick="switchTechTab('history', document.getElementById('tab-btn-history'))"
+                    class="p-4 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs text-left hover:border-emerald-500/50 transition group cursor-pointer">
+                <span class="text-xs font-medium text-slate-500 dark:text-slate-400 block">Completed Work</span>
+                <div class="text-2xl font-bold text-slate-900 dark:text-white mt-1 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition">{{ $completedJobs->count() + $completedSurveys->count() }}</div>
+                <div class="text-[11px] text-slate-400 mt-1">Successfully resolved tasks</div>
+            </button>
+
+        </div>
+
+        {{-- On-Site Hardware Barcode Scanner Quick Tool (Clean Unified Admin Styling) --}}
+        <div class="rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 shadow-xs">
+            <div class="flex items-center justify-between flex-wrap gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 flex items-center justify-center shrink-0">
+                        <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 6.75h.008v.008H6.75V6.75zM6.75 16.5h.008v.008H6.75V16.5zM16.5 6.75h.008v.008H16.5V6.75zM13.5 13.5h.008v.008H13.5V13.5zM13.5 19.5h.008v.008H13.5V19.5zM19.5 13.5h.008v.008H19.5V13.5zM16.5 16.5h.008v.008H16.5V16.5zM19.5 19.5h.008v.008H19.5V19.5z"/>
+                        </svg>
+                    </div>
                     <div>
-                        <h3 class="text-lg font-bold text-slate-900 dark:text-white">On-Site Hardware Barcode Scanner</h3>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Scan serial barcode to check warranty and asset details</p>
-                    </div>
-                    <div class="flex items-center gap-2 flex-wrap">
-                        <button type="button" onclick="openBarcodeScanner('tech-barcode-modal', null, handleTechScannedCode)"
-                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition cursor-pointer">
-                            <svg class="w-4 h-4 text-white shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                            <span>Open Camera Scanner</span>
-                        </button>
-                        <a href="{{ route('equipment.create') }}"
-                           class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-sm font-normal border border-slate-300 dark:border-slate-700 transition">
-                            <svg class="w-4 h-4 text-slate-600 dark:text-slate-300 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-                            <span>Register Asset</span>
-                        </a>
+                        <h3 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white">On-Site Hardware Barcode Scanner</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Scan camera, NVR or terminal serial barcode to verify warranty and client allocation</p>
                     </div>
                 </div>
-
-                {{-- Scanned Lookup Result Card (Dynamically Rendered via JS) --}}
-                <div id="tech-scan-result" class="hidden mt-4 p-3 rounded bg-slate-900 border border-slate-700"></div>
+                <div class="flex items-center gap-2 flex-wrap">
+                    <button type="button" onclick="openBarcodeScanner('tech-barcode-modal', null, handleTechScannedCode)"
+                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs transition cursor-pointer">
+                        <svg class="w-3.5 h-3.5 text-white shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        <span>Open Camera Scanner</span>
+                    </button>
+                    <a href="{{ route('equipment.create') }}"
+                       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-medium border border-slate-300 dark:border-slate-700 shadow-xs transition">
+                        <svg class="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                        <span>Register Asset</span>
+                    </a>
+                </div>
             </div>
 
-            <x-barcode-scanner modalId="tech-barcode-modal" title="Hardware Scanner" />
+            {{-- Scanned Lookup Result Card --}}
+            <div id="tech-scan-result" class="hidden mt-3 p-3.5 rounded-lg bg-slate-900 border border-slate-700"></div>
+        </div>
 
-            {{-- Tab Bar --}}
-            <div class="tab-bar">
-                <button class="tab-btn active" onclick="switchTab('projects', this)">
-                    Projects &amp; Sites
+        <x-barcode-scanner modalId="tech-barcode-modal" title="Hardware Scanner" />
+
+        {{-- Unified Filter Navigation Tabs (Admin Style) --}}
+        <div class="border-b border-slate-200 dark:border-slate-800">
+            <div class="flex items-center gap-2 overflow-x-auto pb-px">
+                <button id="tab-btn-projects" onclick="switchTechTab('projects', this)"
+                        class="tech-tab-btn active px-3.5 py-2 text-xs font-semibold border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 inline-flex items-center gap-1.5 whitespace-nowrap transition">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z"/></svg>
+                    <span>Projects &amp; Sites</span>
                     @if($assignedProjects->count() > 0)
-                        <span class="font-bold text-blue-600 dark:text-blue-400 ml-1">({{ $assignedProjects->count() }})</span>
+                        <span class="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300">
+                            {{ $assignedProjects->count() }}
+                        </span>
                     @endif
                 </button>
-                <button class="tab-btn" onclick="switchTab('jobs', this)">
-                    Installation Jobs
+
+                <button id="tab-btn-jobs" onclick="switchTechTab('jobs', this)"
+                        class="tech-tab-btn px-3.5 py-2 text-xs font-semibold border-b-2 border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 inline-flex items-center gap-1.5 whitespace-nowrap transition">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.204a4.5 4.5 0 00-6.364-6.364l-.707.707a4.5 4.5 0 006.364 6.364l.707-.707z"/></svg>
+                    <span>Installation Jobs</span>
                     @if($activeJobs->count() > 0)
-                        <span class="font-bold text-indigo-600 dark:text-indigo-400 ml-1">({{ $activeJobs->count() }})</span>
+                        <span class="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300">
+                            {{ $activeJobs->count() }}
+                        </span>
                     @endif
                 </button>
-                <button class="tab-btn" onclick="switchTab('surveys', this)">
-                    Site Surveys
+
+                <button id="tab-btn-surveys" onclick="switchTechTab('surveys', this)"
+                        class="tech-tab-btn px-3.5 py-2 text-xs font-semibold border-b-2 border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 inline-flex items-center gap-1.5 whitespace-nowrap transition">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z"/></svg>
+                    <span>Site Surveys</span>
                     @if($activeSurveys->count() > 0)
-                        <span class="font-bold text-blue-600 dark:text-blue-400 ml-1">({{ $activeSurveys->count() }})</span>
+                        <span class="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-amber-100 dark:bg-amber-900/60 text-amber-700 dark:text-amber-300">
+                            {{ $activeSurveys->count() }}
+                        </span>
                     @endif
                 </button>
-                <button class="tab-btn" onclick="switchTab('history', this)">
-                    History
+
+                <button id="tab-btn-history" onclick="switchTechTab('history', this)"
+                        class="tech-tab-btn px-3.5 py-2 text-xs font-semibold border-b-2 border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 inline-flex items-center gap-1.5 whitespace-nowrap transition">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span>Completed History</span>
                 </button>
             </div>
+        </div>
 
-            {{-- Tab: Assigned Projects & Sites --}}
-            <div id="tab-projects" class="tab-content active">
-                @forelse($assignedProjects as $prj)
-                    <div class="tech-card">
-                        <div class="card-head">
-                            <div class="card-head-left">
-                                <div>
-                                    <div class="card-title flex items-center gap-2 flex-wrap">
-                                        <span>{{ $prj->title }}</span>
-                                        <span class="text-xs font-mono font-medium text-slate-500">
-                                            ({{ $prj->project_code }})
-                                        </span>
-                                    </div>
-                                    <div class="card-sub">
-                                        Type: <strong>{{ $prj->project_type_label }}</strong> &bull; Client: {{ $prj->company_name ?? ($prj->site?->client_name ?? 'Client') }}
-                                    </div>
-                                </div>
+        {{-- 1. TAB: Assigned Projects & Sites --}}
+        <div id="tech-tab-projects" class="tech-tab-pane space-y-4">
+            @forelse($assignedProjects as $prj)
+                <div class="rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
+                    <div class="px-4 py-3 bg-slate-50/70 dark:bg-slate-800/40 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between flex-wrap gap-2">
+                        <div>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <h3 class="text-sm font-bold text-slate-900 dark:text-white">{{ $prj->title }}</h3>
+                                <span class="px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300">
+                                    {{ $prj->project_code }}
+                                </span>
+                            </div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                                Type: <strong class="text-slate-700 dark:text-slate-300">{{ $prj->project_type_label }}</strong> &bull; Client: {{ $prj->company_name ?? ($prj->site?->client_name ?? 'Client') }}
+                            </p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold capitalize bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                                {{ str_replace('_', ' ', $prj->status) }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="p-4 space-y-3">
+                        @if($prj->site)
+                            <div class="text-xs text-slate-600 dark:text-slate-300 flex items-start gap-1.5">
+                                <span class="font-bold text-slate-700 dark:text-slate-200 shrink-0">Site Address:</span>
+                                <span><strong>{{ $prj->site->name }}</strong> &mdash; {{ $prj->site->address }}, {{ $prj->site->city }} {{ $prj->site->state }}</span>
+                            </div>
+                        @endif
+
+                        @if($prj->contact_person || $prj->contact_phone)
+                            <div class="text-xs text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+                                <span class="font-bold text-slate-700 dark:text-slate-200">Site Contact:</span>
+                                <span>{{ $prj->contact_person ?? 'Manager' }}</span>
+                                @if($prj->contact_phone)
+                                    <a href="tel:{{ $prj->contact_phone }}" class="text-blue-600 dark:text-blue-400 font-semibold hover:underline">
+                                        ({{ $prj->contact_phone }})
+                                    </a>
+                                @endif
+                            </div>
+                        @endif
+
+                        {{-- Project Metrics Grid --}}
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 p-3 rounded-lg bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 text-xs">
+                            <div>
+                                <span class="text-slate-500 dark:text-slate-400 block text-[11px]">Hardware Specs</span>
+                                <span class="font-bold text-slate-800 dark:text-slate-200">
+                                    @if($prj->project_type === 'hardware_attendance')
+                                        {{ $prj->hardware_specs['terminal_count'] ?? 0 }} Terminals &bull; {{ $prj->hardware_specs['camera_count'] ?? 0 }} Cams
+                                    @elseif($prj->project_type === 'networking')
+                                        {{ $prj->requirements['network_drops'] ?? 'N/A' }} Drops &bull; {{ $prj->requirements['wifi_aps'] ?? 'N/A' }} APs
+                                    @elseif($prj->project_type === 'software_web')
+                                        {{ $prj->requirements['tech_stack'] ?? 'Web App' }}
+                                    @else
+                                        {{ $prj->requirements['cctv_count'] ?? 'N/A' }} Cams &bull; {{ $prj->requirements['cabling_metres'] ?? 'N/A' }}m
+                                    @endif
+                                </span>
                             </div>
                             <div>
-                                <span class="font-bold text-xs capitalize text-blue-600 dark:text-blue-400">{{ str_replace('_', ' ', $prj->status) }}</span>
+                                <span class="text-slate-500 dark:text-slate-400 block text-[11px]">BOM Materials</span>
+                                <span class="font-bold text-slate-800 dark:text-slate-200">{{ $prj->materials->count() }} Items</span>
+                            </div>
+                            <div>
+                                <span class="text-slate-500 dark:text-slate-400 block text-[11px]">IP Devices</span>
+                                <span class="font-bold text-slate-800 dark:text-slate-200">{{ $prj->ipDevices->count() }} Configured</span>
+                            </div>
+                            <div>
+                                <span class="text-slate-500 dark:text-slate-400 block text-[11px]">Assigned Role</span>
+                                <span class="font-bold text-blue-600 dark:text-blue-400">
+                                    {{ $prj->lead_technician_id == auth()->id() ? 'Lead Engineer' : 'Technician' }}
+                                </span>
                             </div>
                         </div>
-                        <div class="card-body">
-                            @if($prj->site)
-                                <div class="info-row">
-                                    <span class="info-label">Site:</span>
-                                    <span><strong>{{ $prj->site->name }}</strong> ({{ $prj->site->address }}, {{ $prj->site->city }})</span>
-                                </div>
-                            @endif
 
-                            @if($prj->contact_person || $prj->contact_phone)
-                                <div class="info-row">
-                                    <span class="info-label">Contact:</span>
-                                    <span>{{ $prj->contact_person }} @if($prj->contact_phone) (<a href="tel:{{ $prj->contact_phone }}" class="text-blue-600 hover:underline">{{ $prj->contact_phone }}</a>) @endif</span>
-                                </div>
-                            @endif
-
-                            {{-- Project Metrics Snapshot --}}
-                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 my-3 p-3 rounded bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 text-xs">
-                                <div>
-                                    <span class="text-slate-500 block text-[11px]">Hardware Specs</span>
-                                    <span class="font-bold text-slate-800 dark:text-slate-200">
-                                        @if($prj->project_type === 'hardware_attendance')
-                                            {{ $prj->hardware_specs['terminal_count'] ?? 0 }} Terminals &bull; {{ $prj->hardware_specs['camera_count'] ?? 0 }} Cams
-                                        @elseif($prj->project_type === 'networking')
-                                            {{ $prj->requirements['network_drops'] ?? 'N/A' }} Drops &bull; {{ $prj->requirements['wifi_aps'] ?? 'N/A' }} APs
-                                        @elseif($prj->project_type === 'software_web')
-                                            {{ $prj->requirements['tech_stack'] ?? 'Web App' }}
-                                        @else
-                                            {{ $prj->requirements['cctv_count'] ?? 'N/A' }} Cams &bull; {{ $prj->requirements['cabling_metres'] ?? 'N/A' }}m
-                                        @endif
+                        {{-- Configured IP Devices Chips --}}
+                        @if($prj->ipDevices->count() > 0)
+                            <div class="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800">
+                                <div class="flex items-center justify-between text-xs mb-2">
+                                    <span class="font-bold text-slate-700 dark:text-slate-300">
+                                        IP Devices ({{ $prj->ipDevices->count() }} registered)
                                     </span>
+                                    <a href="{{ route('projects.show', [$prj, 'tab' => 'devices']) }}" class="text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium">
+                                        Manage Devices &rarr;
+                                    </a>
                                 </div>
-                                <div>
-                                    <span class="text-slate-500 block text-[11px]">BOM Materials</span>
-                                    <span class="font-bold text-slate-800 dark:text-slate-200">{{ $prj->materials->count() }} Items</span>
-                                </div>
-                                <div>
-                                    <span class="text-slate-500 block text-[11px]">IP Devices</span>
-                                    <span class="font-bold text-slate-800 dark:text-slate-200">{{ $prj->ipDevices->count() }} Configured</span>
-                                </div>
-                                <div>
-                                    <span class="text-slate-500 block text-[11px]">Role</span>
-                                    <span class="font-bold text-blue-600 dark:text-blue-400">
-                                        {{ $prj->lead_technician_id == auth()->id() ? 'Lead Engineer' : 'Technician' }}
-                                    </span>
+                                <div class="flex flex-wrap gap-1.5">
+                                    @foreach($prj->ipDevices->take(4) as $dev)
+                                        <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">
+                                            <strong class="font-mono text-blue-600 dark:text-blue-400">{{ $dev->ip_address }}</strong>
+                                            <span class="text-slate-500 truncate max-w-[150px]">{{ $dev->device_name }}</span>
+                                        </span>
+                                    @endforeach
+                                    @if($prj->ipDevices->count() > 4)
+                                        <span class="text-xs text-slate-400 self-center">+{{ $prj->ipDevices->count() - 4 }} more</span>
+                                    @endif
                                 </div>
                             </div>
+                        @endif
 
-                            @if($prj->ipDevices->count() > 0)
-                                <div class="mt-3 p-3 rounded bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800">
-                                    <div class="flex items-center justify-between text-xs mb-2">
-                                        <span class="font-bold text-slate-700 dark:text-slate-300">
-                                            Devices ({{ $prj->ipDevices->count() }} registered)
-                                        </span>
-                                        <a href="{{ route('projects.show', [$prj, 'tab' => 'devices']) }}" class="text-xs text-blue-600 hover:underline">
-                                            Manage Devices &rarr;
-                                        </a>
-                                    </div>
-                                    <div class="flex flex-wrap gap-1.5">
-                                        @foreach($prj->ipDevices->take(4) as $dev)
-                                            <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">
-                                                <strong class="font-mono text-blue-600 dark:text-blue-400">{{ $dev->ip_address }}</strong>
-                                                <span class="text-slate-500 truncate max-w-[150px]">{{ $dev->device_name }}</span>
-                                            </span>
-                                        @endforeach
-                                        @if($prj->ipDevices->count() > 4)
-                                            <span class="text-xs text-slate-400 self-center">+{{ $prj->ipDevices->count() - 4 }} more</span>
-                                        @endif
-                                    </div>
-                                </div>
-                            @endif
-
-                            <div class="mt-3 flex items-center justify-between flex-wrap gap-2">
-                                <div class="flex items-center gap-2 flex-wrap">
-                                    @if($prj->contact_phone)
-                                        <a href="tel:{{ $prj->contact_phone }}" class="inline-flex items-center gap-1 px-2.5 py-1 rounded border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs hover:bg-slate-50 dark:hover:bg-slate-800 transition">
-                                            <svg class="w-3 h-3 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
-                                            <span>Call Client</span>
-                                        </a>
-                                    @endif
-                                    @if($prj->site?->navigate_url)
-                                        <a href="{{ $prj->site->navigate_url }}" target="_blank" class="inline-flex items-center gap-1 px-2.5 py-1 rounded border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs hover:bg-slate-50 dark:hover:bg-slate-800 transition">
-                                            <svg class="w-3 h-3 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                                            <span>GPS Directions</span>
-                                        </a>
-                                    @endif
-                                    <a href="{{ route('projects.show', [$prj, 'tab' => 'work_days']) }}" class="inline-flex items-center gap-1 px-2.5 py-1 rounded border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs hover:bg-slate-50 dark:hover:bg-slate-800 transition">
-                                        <svg class="w-3 h-3 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                                        <span>Daily Attendance</span>
+                        {{-- Action Buttons --}}
+                        <div class="pt-2 flex items-center justify-between flex-wrap gap-2 border-t border-slate-100 dark:border-slate-800/80">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                @if($prj->contact_phone)
+                                    <a href="tel:{{ $prj->contact_phone }}" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs hover:bg-slate-50 dark:hover:bg-slate-800 shadow-xs transition">
+                                        <svg class="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                                        <span>Call Client</span>
                                     </a>
-                                    <a href="{{ route('projects.show', [$prj, 'tab' => 'devices']) }}" class="inline-flex items-center gap-1 px-2.5 py-1 rounded border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs hover:bg-slate-50 dark:hover:bg-slate-800 transition">
-                                        <svg class="w-3 h-3 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"/></svg>
-                                        <span>IP Terminals</span>
+                                @endif
+                                @if($prj->site?->navigate_url)
+                                    <a href="{{ $prj->site->navigate_url }}" target="_blank" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs hover:bg-slate-50 dark:hover:bg-slate-800 shadow-xs transition">
+                                        <svg class="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                        <span>GPS Directions</span>
                                     </a>
-                                </div>
-                                <a href="{{ route('projects.show', $prj) }}" class="text-blue-600 hover:underline text-xs font-semibold">
-                                    View Project Details &rarr;
+                                @endif
+                                <a href="{{ route('projects.show', [$prj, 'tab' => 'work_days']) }}" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs hover:bg-slate-50 dark:hover:bg-slate-800 shadow-xs transition">
+                                    <svg class="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                    <span>Daily Attendance</span>
+                                </a>
+                                <a href="{{ route('projects.show', [$prj, 'tab' => 'devices']) }}" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs hover:bg-slate-50 dark:hover:bg-slate-800 shadow-xs transition">
+                                    <svg class="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"/></svg>
+                                    <span>IP Terminals</span>
                                 </a>
                             </div>
-                        </div>
-                    </div>
-                @empty
-                    <div class="empty-state">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
-                        <h4>No Projects Assigned</h4>
-                        <p class="text-xs text-slate-400 mb-4">When assigned to a project, it will appear here.</p>
-                        <div class="flex justify-center gap-3">
-                            <a href="{{ route('projects.index') }}" class="px-3 py-1.5 rounded border border-slate-300 dark:border-slate-700 text-xs">
-                                Browse All Projects
+                            <a href="{{ route('projects.show', $prj) }}" class="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline text-xs font-semibold">
+                                <span>Open Project Workspace</span>
+                                <span>&rarr;</span>
                             </a>
                         </div>
                     </div>
-                @endforelse
-            </div>
+                </div>
+            @empty
+                <div class="text-center py-12 px-4 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                    <svg class="w-12 h-12 mx-auto text-slate-400 mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                    <h4 class="text-sm font-bold text-slate-800 dark:text-slate-200">No Projects Assigned</h4>
+                    <p class="text-xs text-slate-400 mt-1 mb-4">When you are assigned as lead or team technician, projects appear here.</p>
+                    <a href="{{ route('projects.index') }}" class="btn-secondary text-xs">
+                        Browse All Projects
+                    </a>
+                </div>
+            @endforelse
+        </div>
 
-            {{-- Tab: Site Surveys --}}
-            <div id="tab-surveys" class="tab-content">
-                @forelse($activeSurveys as $survey)
-                    @php $lead = $survey->lead; @endphp
-                    <div class="tech-card">
-                        <div class="card-head">
-                            <div class="card-head-left">
-                                <div>
-                                    <div class="card-title">Site Survey: {{ $lead->customer_name }}</div>
-                                    <div class="card-sub">Inspection Date: {{ $survey->survey_date->format('d M Y') }}</div>
-                                </div>
+        {{-- 2. TAB: Installation Jobs --}}
+        <div id="tech-tab-jobs" class="tech-tab-pane hidden space-y-4">
+            @forelse($activeJobs as $job)
+                @php $lead = $job->quotation?->lead; @endphp
+                <div class="rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
+                    <div class="px-4 py-3 bg-slate-50/70 dark:bg-slate-800/40 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between flex-wrap gap-2">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h3 class="text-sm font-bold text-slate-900 dark:text-white">{{ $job->job_no ?? 'JOB-' . $job->id }}</h3>
+                                <span class="text-xs font-semibold text-slate-600 dark:text-slate-300">&bull; {{ $lead?->customer_name ?? 'N/A' }}</span>
                             </div>
-                            <span class="font-bold text-amber-600 dark:text-amber-400 text-xs">Pending Visit</span>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Assigned Date: {{ $job->created_at->format('d M Y') }}</p>
                         </div>
-                        <div class="card-body">
-                            <div class="info-row">
-                                <span class="info-label">Address:</span>
-                                <span>{{ $survey->site_address ?: ($lead->site_address ?: 'Not specified') }}</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">Contact:</span>
-                                <span>{{ $survey->contact_person ?: $lead->customer_name }} ({{ $survey->contact_phone ?: $lead->phone }})</span>
-                            </div>
-                            @if($survey->visit_notes)
-                                <div class="info-row">
-                                    <span class="info-label">Note:</span>
-                                    <span>{{ $survey->visit_notes }}</span>
-                                </div>
-                            @endif
-
-                            <div class="mt-3 flex items-center justify-between flex-wrap gap-2">
-                                <div class="flex items-center gap-2">
-                                    @if($survey->contact_phone || $lead->phone)
-                                        <a href="tel:{{ $survey->contact_phone ?: $lead->phone }}" class="inline-flex items-center gap-1 px-2.5 py-1 rounded border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs hover:bg-slate-50 transition">
-                                            <svg class="w-3 h-3 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
-                                            <span>Call</span>
-                                        </a>
-                                    @endif
-                                    @if($survey->site_address || $lead->site_address)
-                                        <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode($survey->site_address ?: $lead->site_address) }}" target="_blank" class="inline-flex items-center gap-1 px-2.5 py-1 rounded border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs hover:bg-slate-50 transition">
-                                            <svg class="w-3 h-3 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                                            <span>Maps</span>
-                                        </a>
-                                    @endif
-                                </div>
-                                <a href="{{ route('technician.surveys.show', $survey) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-[#2563eb] text-white text-xs font-medium hover:bg-blue-700 transition">
-                                    <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
-                                    <span>Conduct Survey</span>
-                                </a>
-                            </div>
-                        </div>
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold capitalize bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+                            {{ ucfirst($job->status) }}
+                        </span>
                     </div>
-                @empty
-                    <div class="empty-state">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-                        <h4>No Pending Site Surveys</h4>
-                        <p class="text-xs text-slate-400">You have no upcoming site inspection visits scheduled.</p>
-                    </div>
-                @endforelse
-            </div>
 
-
-
-            {{-- Tab: Installation Jobs --}}
-            <div id="tab-jobs" class="tab-content">
-                @forelse($activeJobs as $job)
-                    @php
-                        $lead = $job->quotation?->lead;
-                    @endphp
-                    <div class="tech-card">
-                        <div class="card-head">
-                            <div class="card-head-left">
-                                <div>
-                                    <div class="card-title">{{ $job->job_no ?? 'JOB-' . $job->id }}</div>
-                                    <div class="card-sub">{{ $lead?->customer_name ?? 'N/A' }}</div>
-                                </div>
-                            </div>
-                            <span class="font-bold text-xs capitalize text-blue-600">{{ ucfirst($job->status) }}</span>
+                    <div class="p-4 space-y-3">
+                        <div class="text-xs text-slate-600 dark:text-slate-300 flex items-start gap-1.5">
+                            <span class="font-bold text-slate-700 dark:text-slate-200 shrink-0">Site Address:</span>
+                            <span>{{ $lead?->site_address ?? $lead?->address ?? 'Address not specified' }}</span>
                         </div>
-                        <div class="card-body">
-                            <div class="info-row">
-                                <span class="info-label">Site:</span>
-                                <span>{{ $lead?->site_address ?? $lead?->address ?? 'Address not specified' }}</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">Contact:</span>
-                                @if($lead?->phone)
-                                    <a href="tel:{{ $lead->phone }}" class="text-blue-600 hover:underline">{{ $lead->phone }}</a>
-                                @else
-                                    <span>—</span>
-                                @endif
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">Assigned:</span>
-                                <span>{{ $job->created_at->format('d M Y') }}</span>
-                            </div>
-                            @if($job->installation_notes)
-                                <div class="info-row">
-                                    <span class="info-label">Notes:</span>
-                                    <span>{{ $job->installation_notes }}</span>
-                                </div>
-                            @endif
 
-                            <form method="POST" action="{{ route('technician.jobs.updateStatus', $job) }}">
-                                @csrf
-                                <div class="update-form">
-                                    <label class="form-label">Update Status</label>
-                                    <select aria-label="Update Status" name="status" class="form-select mb-3" style="height: 38px;">
-                                        <option value="pending"   @selected($job->status === 'pending')>Pending</option>
-                                        <option value="scheduled" @selected($job->status === 'scheduled')>Scheduled</option>
-                                        <option value="assigned"  @selected($job->status === 'assigned')>Assigned (In Progress)</option>
-                                        <option value="completed" @selected($job->status === 'completed')>Completed</option>
-                                    </select>
-                                    <label class="form-label">Completion Notes (optional)</label>
-                                    <textarea aria-label="Completion Notes (optional)" name="notes" class="form-textarea mb-3" placeholder="Describe what was installed, tested, or any issues…">{{ $job->installation_notes }}</textarea>
-                                                                     <div class="flex items-center justify-between mt-3 flex-wrap gap-2">
-                                        <button type="submit" class="btn-submit">
-                                            Save Status
-                                        </button>
+                        <div class="text-xs text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+                            <span class="font-bold text-slate-700 dark:text-slate-200">Customer Phone:</span>
+                            @if($lead?->phone)
+                                <a href="tel:{{ $lead->phone }}" class="text-blue-600 dark:text-blue-400 font-semibold hover:underline">{{ $lead->phone }}</a>
+                            @else
+                                <span>—</span>
+                            @endif
+                        </div>
+
+                        @if($job->installation_notes)
+                            <div class="text-xs text-slate-600 dark:text-slate-300">
+                                <span class="font-bold text-slate-700 dark:text-slate-200">Work Notes:</span>
+                                <span>{{ $job->installation_notes }}</span>
+                            </div>
+                        @endif
+
+                        {{-- Update Status Form --}}
+                        <form method="POST" action="{{ route('technician.jobs.updateStatus', $job) }}" class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+                            @csrf
+                            <div class="p-3.5 rounded-lg bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 space-y-3">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="crm-label text-xs">Update Status</label>
+                                        <select aria-label="Update Status" name="status" class="crm-select text-xs w-full">
+                                            <option value="pending"   @selected($job->status === 'pending')>Pending</option>
+                                            <option value="scheduled" @selected($job->status === 'scheduled')>Scheduled</option>
+                                            <option value="assigned"  @selected($job->status === 'assigned')>Assigned (In Progress)</option>
+                                            <option value="completed" @selected($job->status === 'completed')>Completed</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="crm-label text-xs">Completion Notes / Logs</label>
+                                        <input aria-label="Completion Notes" type="text" name="notes" class="crm-input text-xs w-full" value="{{ $job->installation_notes }}" placeholder="Describe installation status or findings...">
                                     </div>
                                 </div>
-                            </form>
+                                <div class="flex justify-end">
+                                    <button type="submit" class="btn-primary text-xs">
+                                        Save Status
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            @empty
+                <div class="text-center py-12 px-4 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                    <svg class="w-12 h-12 mx-auto text-slate-400 mb-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <h4 class="text-sm font-bold text-slate-800 dark:text-slate-200">No Active Installation Jobs</h4>
+                    <p class="text-xs text-slate-400 mt-1">You have no pending or scheduled installation jobs assigned right now.</p>
+                </div>
+            @endforelse
+        </div>
+
+        {{-- 3. TAB: Site Surveys --}}
+        <div id="tech-tab-surveys" class="tech-tab-pane hidden space-y-4">
+            @forelse($activeSurveys as $survey)
+                @php $lead = $survey->lead; @endphp
+                <div class="rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
+                    <div class="px-4 py-3 bg-slate-50/70 dark:bg-slate-800/40 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between flex-wrap gap-2">
+                        <div>
+                            <h3 class="text-sm font-bold text-slate-900 dark:text-white">Site Survey: {{ $lead?->customer_name }}</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Inspection Date: {{ $survey->survey_date?->format('d M Y') ?? 'Immediate' }}</p>
+                        </div>
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                            Pending Visit
+                        </span>
+                    </div>
+
+                    <div class="p-4 space-y-3">
+                        <div class="text-xs text-slate-600 dark:text-slate-300 flex items-start gap-1.5">
+                            <span class="font-bold text-slate-700 dark:text-slate-200 shrink-0">Site Address:</span>
+                            <span>{{ $survey->site_address ?: ($lead?->site_address ?: 'Not specified') }}</span>
+                        </div>
+                        <div class="text-xs text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+                            <span class="font-bold text-slate-700 dark:text-slate-200">Contact:</span>
+                            <span>{{ $survey->contact_person ?: $lead?->customer_name }} ({{ $survey->contact_phone ?: $lead?->phone }})</span>
+                        </div>
+                        @if($survey->visit_notes)
+                            <div class="text-xs text-slate-600 dark:text-slate-300">
+                                <span class="font-bold text-slate-700 dark:text-slate-200">Notes:</span>
+                                <span>{{ $survey->visit_notes }}</span>
+                            </div>
+                        @endif
+
+                        <div class="pt-2 flex items-center justify-between flex-wrap gap-2 border-t border-slate-100 dark:border-slate-800/80">
+                            <div class="flex items-center gap-2">
+                                @if($survey->contact_phone || $lead?->phone)
+                                    <a href="tel:{{ $survey->contact_phone ?: $lead?->phone }}" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs hover:bg-slate-50 dark:hover:bg-slate-800 shadow-xs transition">
+                                        <svg class="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                                        <span>Call</span>
+                                    </a>
+                                @endif
+                                @if($survey->site_address || $lead?->site_address)
+                                    <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode($survey->site_address ?: $lead?->site_address) }}" target="_blank" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs hover:bg-slate-50 dark:hover:bg-slate-800 shadow-xs transition">
+                                        <svg class="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                        <span>Maps</span>
+                                    </a>
+                                @endif
+                            </div>
+                            <a href="{{ route('technician.surveys.show', $survey) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs transition">
+                                <svg class="w-3.5 h-3.5 text-white shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                                <span>Conduct Survey</span>
+                            </a>
                         </div>
                     </div>
-                @empty
-                    <div class="tech-card">
-                        <div class="empty-state">
-                            <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                            <h4>No Active Jobs</h4>
-                            <p class="text-xs text-slate-400">You have no pending or scheduled installation jobs at the moment.</p>
+                </div>
+            @empty
+                <div class="text-center py-12 px-4 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                    <svg class="w-12 h-12 mx-auto text-slate-400 mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                    <h4 class="text-sm font-bold text-slate-800 dark:text-slate-200">No Pending Site Surveys</h4>
+                    <p class="text-xs text-slate-400 mt-1">You have no upcoming site inspection visits scheduled.</p>
+                </div>
+            @endforelse
+        </div>
+
+        {{-- 4. TAB: Completed History --}}
+        <div id="tech-tab-history" class="tech-tab-pane hidden space-y-4">
+            
+            {{-- Completed Jobs Card --}}
+            <div class="rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
+                <div class="px-4 py-3 bg-slate-50/70 dark:bg-slate-800/40 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                    <h3 class="text-sm font-bold text-slate-900 dark:text-white">Completed Installation Jobs</h3>
+                    <span class="text-xs text-slate-500 font-semibold">{{ $completedJobs->count() }} jobs</span>
+                </div>
+                <div class="divide-y divide-slate-100 dark:divide-slate-800">
+                    @forelse($completedJobs as $job)
+                        @php $lead = $job->quotation?->lead; @endphp
+                        <div class="p-3.5 flex items-center justify-between gap-3 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition">
+                            <div>
+                                <div class="text-xs font-semibold text-slate-800 dark:text-slate-200">{{ $job->job_no ?? 'JOB-' . $job->id }}</div>
+                                <div class="text-[11px] text-slate-500 mt-0.5">{{ $lead?->customer_name ?? 'N/A' }} &middot; Completed {{ $job->updated_at->format('d M Y') }}</div>
+                            </div>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                                Completed
+                            </span>
                         </div>
-                    </div>
-                @endforelse
+                    @empty
+                        <div class="p-6 text-center text-xs text-slate-400">
+                            No completed installation jobs recorded yet.
+                        </div>
+                    @endforelse
+                </div>
             </div>
 
-            {{-- Tab: History --}}
-            <div id="tab-history" class="tab-content">
-
-                {{-- Completed Jobs --}}
-                <div class="tech-card">
-                    <div class="card-head">
-                        <div class="card-head-left">
-                            <div>
-                                <div class="card-title">Completed Installation Jobs</div>
-                                <div class="card-sub">{{ $completedJobs->count() }} jobs done</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="divide-y divide-slate-100 dark:divide-slate-800">
-                        @forelse($completedJobs as $job)
-                            @php $lead = $job->quotation?->lead; @endphp
-                            <div class="p-3 flex items-center justify-between gap-3 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition">
-                                <div>
-                                    <div class="text-xs font-semibold text-slate-800 dark:text-slate-200">{{ $job->job_no ?? 'JOB-' . $job->id }}</div>
-                                    <div class="text-[11px] text-slate-500 mt-0.5">{{ $lead?->customer_name ?? 'N/A' }} &middot; {{ $job->updated_at->format('d M Y') }}</div>
-                                </div>
-                                <span class="font-bold text-xs text-emerald-600 dark:text-emerald-400">Completed</span>
-                            </div>
-                        @empty
-                            <div class="p-4 text-center text-xs text-slate-400">
-                                No completed installation jobs yet.
-                            </div>
-                        @endforelse
-                    </div>
+            {{-- Completed Surveys Card --}}
+            <div class="rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
+                <div class="px-4 py-3 bg-slate-50/70 dark:bg-slate-800/40 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                    <h3 class="text-sm font-bold text-slate-900 dark:text-white">Completed Site Surveys</h3>
+                    <span class="text-xs text-slate-500 font-semibold">{{ $completedSurveys->count() }} surveys</span>
                 </div>
-
-                {{-- Completed Site Surveys --}}
-                <div class="tech-card">
-                    <div class="card-head">
-                        <div class="card-head-left">
+                <div class="divide-y divide-slate-100 dark:divide-slate-800">
+                    @forelse($completedSurveys as $survey)
+                        <div class="p-3.5 flex items-center justify-between gap-3 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition">
                             <div>
-                                <div class="card-title">Completed Site Surveys</div>
-                                <div class="card-sub">{{ $completedSurveys->count() }} surveys completed</div>
+                                <div class="text-xs font-semibold text-slate-800 dark:text-slate-200">{{ $survey->lead?->customer_name ?? 'Lead #' . $survey->lead_id }}</div>
+                                <div class="text-[11px] text-slate-500 mt-0.5">{{ $survey->lead?->site_address ?? 'Site' }} &middot; Completed {{ $survey->updated_at->format('d M Y') }}</div>
                             </div>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                                Completed
+                            </span>
                         </div>
-                    </div>
-                    <div class="divide-y divide-slate-100 dark:divide-slate-800">
-                        @forelse($completedSurveys as $survey)
-                            <div class="p-3 flex items-center justify-between gap-3 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition">
-                                <div>
-                                    <div class="text-xs font-semibold text-slate-800 dark:text-slate-200">{{ $survey->lead?->customer_name ?? 'Lead #' . $survey->lead_id }}</div>
-                                    <div class="text-[11px] text-slate-500 mt-0.5">{{ $survey->lead?->site_address ?? 'Site' }} &middot; Completed {{ $survey->updated_at->format('d M Y') }}</div>
-                                </div>
-                                <span class="font-bold text-xs text-emerald-600 dark:text-emerald-400">Completed</span>
-                            </div>
-                        @empty
-                            <div class="p-4 text-center text-xs text-slate-400">
-                                No completed site surveys yet.
-                            </div>
-                        @endforelse
-                    </div>
+                    @empty
+                        <div class="p-6 text-center text-xs text-slate-400">
+                            No completed site surveys recorded yet.
+                        </div>
+                    @endforelse
                 </div>
-
             </div>
 
         </div>
+
     </div>
 
     <script>
-        function switchTab(name, btn) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById('tab-' + name).classList.add('active');
-            btn.classList.add('active');
+        function switchTechTab(name, btn) {
+            document.querySelectorAll('.tech-tab-pane').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tech-tab-btn').forEach(el => {
+                el.classList.remove('active', 'border-blue-600', 'text-blue-600', 'dark:text-blue-400');
+                el.classList.add('border-transparent', 'text-slate-500', 'dark:text-slate-400');
+            });
+            const targetPane = document.getElementById('tech-tab-' + name);
+            if (targetPane) targetPane.classList.remove('hidden');
+            if (btn) {
+                btn.classList.add('active', 'border-blue-600', 'text-blue-600', 'dark:text-blue-400');
+                btn.classList.remove('border-transparent', 'text-slate-500', 'dark:text-slate-400');
+            }
         }
 
         async function handleTechScannedCode(code) {
@@ -678,8 +507,9 @@
             if (!container) return;
 
             container.classList.remove('hidden');
-            container.innerHTML = `<div class="text-slate-300 text-xs">
-                Querying database for S/N <strong>${code}</strong>...
+            container.innerHTML = `<div class="text-slate-300 text-xs flex items-center gap-2">
+                <span class="inline-block animate-spin">&#9696;</span>
+                <span>Querying database for S/N <strong>${code}</strong>...</span>
             </div>`;
 
             try {
@@ -688,25 +518,25 @@
 
                 if (data.found && data.type === 'installed_equipment') {
                     const warrantyBadge = data.is_under_warranty 
-                        ? `<span class="text-emerald-400 text-xs font-bold">Under Warranty</span>`
-                        : `<span class="text-rose-400 text-xs font-bold">Warranty Expired</span>`;
+                        ? `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-900/60 text-emerald-300 border border-emerald-700">Under Warranty</span>`
+                        : `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-900/60 text-rose-300 border border-rose-700">Warranty Expired</span>`;
 
                     container.innerHTML = `
                         <div class="flex justify-between items-start flex-wrap gap-3">
                             <div>
-                                <div class="flex items-center gap-2 mb-1">
+                                <div class="flex items-center gap-2 mb-1.5">
                                     <h4 class="text-sm font-bold text-white">${data.equipment_name}</h4>
                                     ${warrantyBadge}
                                 </div>
-                                <div class="text-xs text-slate-300 space-y-0.5">
+                                <div class="text-xs text-slate-300 space-y-1">
                                     <div>Customer: <strong class="text-white">${data.customer_name}</strong> (${data.customer_phone})</div>
                                     <div>Location: <strong class="text-white">${data.location_tag || 'Site Asset'}</strong> &middot; S/N: <code class="text-blue-300">${data.serial_number}</code></div>
-                                    <div>Warranty Ends: <strong>${data.mfg_warranty_expiry}</strong></div>
+                                    <div>Warranty Expiry: <strong>${data.mfg_warranty_expiry}</strong></div>
                                 </div>
                             </div>
                             <div class="flex items-center gap-2 flex-wrap">
-                                <a href="${data.show_url}" class="border border-slate-700 text-slate-200 text-xs font-medium px-3 py-1.5 rounded transition hover:bg-slate-800">
-                                    View Asset History
+                                <a href="${data.show_url}" class="border border-slate-700 text-slate-200 text-xs font-semibold px-3 py-1.5 rounded-lg transition hover:bg-slate-800">
+                                    View Asset History &rarr;
                                 </a>
                             </div>
                         </div>
@@ -715,12 +545,12 @@
                     container.innerHTML = `
                         <div class="flex justify-between items-center flex-wrap gap-3">
                             <div>
-                                <div class="text-[11px] font-bold text-blue-300 uppercase">Catalog Product</div>
+                                <div class="text-[10px] font-bold text-blue-300 uppercase tracking-wide">Catalog Inventory Item</div>
                                 <h4 class="text-sm font-bold text-white mt-0.5">${data.product_name}</h4>
-                                <div class="text-xs text-slate-300">SKU: ${data.sku} &middot; Model: ${data.model_no || 'N/A'} &middot; Stock: <strong class="text-emerald-400">${data.stock_quantity} in stock</strong></div>
+                                <div class="text-xs text-slate-300 mt-1">SKU: ${data.sku} &middot; Model: ${data.model_no || 'N/A'} &middot; Stock: <strong class="text-emerald-400">${data.stock_quantity} available</strong></div>
                             </div>
-                            <a href="{{ route('equipment.create') }}?product_id=${data.id}&serial=${encodeURIComponent(code)}" class="bg-[#2563eb] text-white text-xs font-medium px-3.5 py-1.5 rounded transition">
-                                Install at Client Site
+                            <a href="{{ route('equipment.create') }}?product_id=${data.id}&serial=${encodeURIComponent(code)}" class="btn-primary text-xs">
+                                Install at Client Site &rarr;
                             </a>
                         </div>
                     `;
@@ -728,11 +558,11 @@
                     container.innerHTML = `
                         <div class="flex justify-between items-center flex-wrap gap-3">
                             <div>
-                                <div class="text-xs font-bold text-rose-400">No record found for S/N: ${code}</div>
-                                <div class="text-xs text-slate-300">This hardware serial has not yet been registered.</div>
+                                <div class="text-xs font-bold text-rose-400">No hardware found for S/N: ${code}</div>
+                                <div class="text-xs text-slate-400 mt-0.5">This hardware serial has not yet been registered in the system.</div>
                             </div>
-                            <a href="{{ route('equipment.create') }}?serial=${encodeURIComponent(code)}" class="bg-[#2563eb] text-white text-xs font-medium px-3.5 py-1.5 rounded transition">
-                                Register New Asset
+                            <a href="{{ route('equipment.create') }}?serial=${encodeURIComponent(code)}" class="btn-primary text-xs">
+                                Register New Asset &rarr;
                             </a>
                         </div>
                     `;

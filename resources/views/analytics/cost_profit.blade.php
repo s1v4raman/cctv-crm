@@ -90,7 +90,7 @@
                     <div class="flex items-start justify-between gap-2">
                         <div>
                             <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">Revenue (Without Tax)</span>
-                            <span class="text-[11px] text-blue-600 dark:text-sky-400 font-semibold">Subtotal Billings</span>
+                            <span class="text-[11px] text-blue-600 dark:text-blue-400 font-semibold">Subtotal Billings</span>
                         </div>
                         <div class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 flex items-center justify-center shrink-0 shadow-xs">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6H2.25m0 0v10.5m0-10.5h16.5m-16.5 0a2.25 2.25 0 00-2.25 2.25v7.5a2.25 2.25 0 002.25 2.25m16.5-12a2.25 2.25 0 012.25 2.25v7.5a2.25 2.25 0 01-2.25 2.25m-16.5-12h16.5M12 9.75a2.25 2.25 0 100 4.5 2.25 2.25 0 000-4.5z"/></svg>
@@ -109,14 +109,14 @@
                     <div class="flex items-start justify-between gap-2">
                         <div>
                             <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">Product Buy Cost</span>
-                            <span class="text-[11px] text-rose-500 font-semibold">Hardware COGS</span>
+                            <span class="text-[11px] text-blue-600 dark:text-blue-400 font-semibold">Hardware COGS</span>
                         </div>
                         <div class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 flex items-center justify-center shrink-0 shadow-xs">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"/></svg>
                         </div>
                     </div>
                     <div class="mt-3">
-                        <div class="text-2xl font-extrabold text-slate-900 dark:text-slate-200 leading-tight font-heading">₹{{ number_format($data['financials']['product_buy_cost'], 2) }}</div>
+                        <div class="text-2xl font-extrabold text-slate-900 dark:text-white leading-tight font-heading">₹{{ number_format($data['financials']['product_buy_cost'], 2) }}</div>
                         <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
                             Equipment purchase cost
                         </div>
@@ -128,15 +128,15 @@
                     <div class="flex items-start justify-between gap-2">
                         <div>
                             <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">Gross Profit</span>
-                            <span class="text-[11px] text-amber-500 font-semibold">Pre-Tax Margin</span>
+                            <span class="text-[11px] text-blue-600 dark:text-blue-400 font-semibold">Pre-Tax Margin</span>
                         </div>
                         <div class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 flex items-center justify-center shrink-0 shadow-xs">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         </div>
                     </div>
                     <div class="mt-3">
-                        <div class="text-2xl font-extrabold text-amber-600 dark:text-amber-400 leading-tight font-heading">₹{{ number_format($data['financials']['gross_profit_without_tax'], 2) }}</div>
-                        <div class="text-[11px] font-semibold text-amber-600 dark:text-amber-400 mt-1">
+                        <div class="text-2xl font-extrabold text-slate-900 dark:text-white leading-tight font-heading">₹{{ number_format($data['financials']['gross_profit_without_tax'], 2) }}</div>
+                        <div class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 mt-1">
                             {{ $data['financials']['gross_margin_without_tax_percent'] }}% Gross Margin
                         </div>
                     </div>
@@ -147,14 +147,14 @@
                     <div class="flex items-start justify-between gap-2">
                         <div>
                             <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">Salary Credited Cost</span>
-                            <span class="text-[11px] text-purple-600 dark:text-purple-400 font-semibold">Auto-Deducted</span>
+                            <span class="text-[11px] text-blue-600 dark:text-blue-400 font-semibold">Auto-Deducted</span>
                         </div>
                         <div class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 flex items-center justify-center shrink-0 shadow-xs">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
                         </div>
                     </div>
                     <div class="mt-3">
-                        <div class="text-2xl font-extrabold text-purple-600 dark:text-purple-400 leading-tight font-heading">₹{{ number_format($data['financials']['employee_salary_cost'], 2) }}</div>
+                        <div class="text-2xl font-extrabold text-slate-900 dark:text-white leading-tight font-heading">₹{{ number_format($data['financials']['employee_salary_cost'], 2) }}</div>
                         <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
                             ₹{{ number_format($data['financials']['salary_credited_cost'], 2) }} paid • {{ $data['salary']['employee_count'] }} staff
                         </div>

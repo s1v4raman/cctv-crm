@@ -105,6 +105,25 @@ class SiteController extends Controller
         }
         unset($validated['client_contact_person']);
 
+        // Sync emails bidirectionally
+        if (!empty($validated['client_email'])) {
+            $validated['email'] = $validated['client_email'];
+        } elseif (!empty($validated['email'])) {
+            $validated['client_email'] = $validated['email'];
+        }
+
+        // Sync phones bidirectionally
+        if (!empty($validated['client_phone'])) {
+            $validated['phone'] = $validated['client_phone'];
+            $validated['contact_phone'] = $validated['client_phone'];
+        } elseif (!empty($validated['contact_phone'])) {
+            $validated['client_phone'] = $validated['contact_phone'];
+            $validated['phone'] = $validated['contact_phone'];
+        } elseif (!empty($validated['phone'])) {
+            $validated['client_phone'] = $validated['phone'];
+            $validated['contact_phone'] = $validated['phone'];
+        }
+
         // Auto-populate client & contact details from lead if linked
         if (!empty($validated['lead_id'])) {
             $lead = Lead::find($validated['lead_id']);
@@ -114,11 +133,14 @@ class SiteController extends Controller
                 }
                 if (empty($validated['client_phone'])) {
                     $validated['client_phone'] = $lead->phone;
+                    $validated['phone'] = $lead->phone;
+                    $validated['contact_phone'] = $lead->phone;
                 }
                 if (empty($validated['client_email'])) {
                     $validated['client_email'] = $lead->email;
+                    $validated['email'] = $lead->email;
                 }
-                if (empty($validated['contact_person'])) {
+                if (empty($validated['contact_person']) || $validated['contact_person'] === 'Site Manager') {
                     $validated['contact_person'] = $lead->customer_name;
                 }
             }
@@ -216,6 +238,25 @@ class SiteController extends Controller
         }
         unset($validated['client_contact_person']);
 
+        // Sync emails bidirectionally
+        if (!empty($validated['client_email'])) {
+            $validated['email'] = $validated['client_email'];
+        } elseif (!empty($validated['email'])) {
+            $validated['client_email'] = $validated['email'];
+        }
+
+        // Sync phones bidirectionally
+        if (!empty($validated['client_phone'])) {
+            $validated['phone'] = $validated['client_phone'];
+            $validated['contact_phone'] = $validated['client_phone'];
+        } elseif (!empty($validated['contact_phone'])) {
+            $validated['client_phone'] = $validated['contact_phone'];
+            $validated['phone'] = $validated['contact_phone'];
+        } elseif (!empty($validated['phone'])) {
+            $validated['client_phone'] = $validated['phone'];
+            $validated['contact_phone'] = $validated['phone'];
+        }
+
         // Auto-populate from lead if linked and not specified
         if (!empty($validated['lead_id'])) {
             $lead = Lead::find($validated['lead_id']);
@@ -225,11 +266,14 @@ class SiteController extends Controller
                 }
                 if (empty($validated['client_phone'])) {
                     $validated['client_phone'] = $lead->phone;
+                    $validated['phone'] = $lead->phone;
+                    $validated['contact_phone'] = $lead->phone;
                 }
                 if (empty($validated['client_email'])) {
                     $validated['client_email'] = $lead->email;
+                    $validated['email'] = $lead->email;
                 }
-                if (empty($validated['contact_person'])) {
+                if (empty($validated['contact_person']) || $validated['contact_person'] === 'Site Manager') {
                     $validated['contact_person'] = $lead->customer_name;
                 }
             }
