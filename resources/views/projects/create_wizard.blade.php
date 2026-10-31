@@ -495,9 +495,10 @@
                                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-500">Lead Technician In-Charge</label>
                                 @if(auth()->user()->isAdmin())
                                 <a href="{{ route('admin.users.create', ['role' => 'technician', 'return_to' => route('projects.create', ['step' => 2])]) }}" 
-                                   class="btn-subtle text-white font-semibold"
+                                   class="btn-subtle gap-1.5 text-white font-semibold"
                                    style="color: #ffffff !important;">
-                                    <span class="text-white font-semibold" style="color: #ffffff !important;">+ Add New Technician</span>
+                                    <x-icon.plus />
+                                    <span class="text-white font-semibold" style="color: #ffffff !important;">Add New Technician</span>
                                 </a>
                                 @endif
                             </div>

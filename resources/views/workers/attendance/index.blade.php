@@ -377,7 +377,7 @@
                                                             <span class="text-[9px] px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 font-medium" title="This worker profile is archived/deleted">Archived</span>
                                                         @endif
                                                         @if(!$w->photo_url && auth()->user()->isOffice())
-                                                            <a href="{{ route('workers.edit', $w) }}" class="text-[10px] text-indigo-500 hover:underline" title="Upload master profile photo">+ Photo</a>
+                                                            <a href="{{ route('workers.edit', $w) }}" class="inline-flex items-center gap-0.5 text-[10px] text-indigo-500 hover:underline" title="Upload master profile photo"><x-icon.plus class="w-2.5 h-2.5 shrink-0" />Photo</a>
                                                         @endif
                                                     @else
                                                         <span class="font-bold text-slate-600 dark:text-slate-400">
@@ -528,7 +528,8 @@
                                         <div class="text-sm font-semibold">No worker attendances logged for {{ $selectedDate->format('d M Y') }}</div>
                                         <div class="text-xs text-slate-400 mt-1">Click the button below to mark attendance with photo or webcam.</div>
                                         <button type="button" onclick="openAttendanceModal('{{ $selectedDate->toDateString() }}')" class="btn-primary mt-3 text-xs">
-                                            + Mark Attendance for {{ $selectedDate->format('d M') }}
+                                            <x-icon.plus />
+                                            <span>Mark Attendance for {{ $selectedDate->format('d M') }}</span>
                                         </button>
                                     </td>
                                 </tr>

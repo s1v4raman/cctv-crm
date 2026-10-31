@@ -244,7 +244,7 @@ class ProjectHardwareAndSoftwareModulesTest extends TestCase
         $response = $this->actingAs($this->admin)->get(route('projects.show', ['project' => $project, 'tab' => 'overview']));
 
         $response->assertStatus(200);
-        $response->assertSee('+ Add New Technician');
+        $response->assertSee('Add New Technician');
         $response->assertSee(route('admin.users.create', ['role' => 'technician', 'return_to' => route('projects.show', [$project->id, 'tab' => 'overview'])]));
     }
 
@@ -326,7 +326,7 @@ class ProjectHardwareAndSoftwareModulesTest extends TestCase
     {
         $response = $this->actingAs($this->admin)->get(route('projects.create'));
         $response->assertStatus(200);
-        $response->assertSee('+ Add New Technician');
+        $response->assertSee('Add New Technician');
 
         $wizardResponse = $this->actingAs($this->admin)->get(route('projects.create.wizard'));
         $wizardResponse->assertStatus(200);

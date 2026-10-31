@@ -1041,8 +1041,9 @@
                         </button>
 
                         <div class="flex items-center gap-2">
-                            <button type="button" @click="openAdvance(selectedAnalysis.id, selectedAnalysis.name)" class="px-3 py-2 rounded bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-700 hover:bg-amber-100 text-sm font-semibold transition">
-                                + Record Advance
+                            <button type="button" @click="openAdvance(selectedAnalysis.id, selectedAnalysis.name)" class="inline-flex items-center gap-1.5 px-3 py-2 rounded bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-700 hover:bg-amber-100 text-sm font-semibold transition">
+                                <x-icon.plus />
+                                <span>Record Advance</span>
                             </button>
 
                             <template x-if="selectedAnalysis?.total_due > 0">

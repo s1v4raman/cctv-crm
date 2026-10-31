@@ -24,7 +24,7 @@ class QuotationLeadCreationWorkflowTest extends TestCase
         $response = $this->actingAs($this->admin)->get(route('quotations.create-general'));
 
         $response->assertStatus(200);
-        $response->assertSee('+ Add New Customer');
+        $response->assertSee('Add New Customer');
         $response->assertSee(route('leads.create', ['return_to' => 'quotation', 'for_quote' => 1]));
     }
 
