@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\Project;
 use App\Models\ProjectAuditLog;
 use App\Models\ProjectMaterial;
+use App\Models\ProjectMaterialIssue;
 use App\Models\ProjectTask;
 use App\Models\ProjectTaskChecklist;
 use App\Models\StockMovement;
@@ -650,6 +651,12 @@ class ProjectTaskController extends Controller
         try {
             $stockMovementId = null;
             $deductFromStock = !empty($validated['deduct_from_stock']) && !empty($validated['product_id']);
+            // Material given to the site already left the storeroom then, so it is not taken out twice
+            $fromSiteStock = $deductFromStock && ProjectMaterialIssue::where('project_id', $project->id)
+                ->where('product_id', $validated['product_id'])->exists();
+            if ($fromSiteStock) {
+                $deductFromStock = false;
+            }
 
             if ($deductFromStock) {
                 $product = Product::find($validated['product_id']);
@@ -690,7 +697,7 @@ class ProjectTaskController extends Controller
             ]);
 
             $wastageText = ($consumption->wastage_quantity > 0) ? " (Scrap/Wastage: {$consumption->wastage_quantity} {$consumption->unit})" : '';
-            $stockText = $deductFromStock ? ' [Deducted from warehouse stock]' : '';
+            $stockText = $deductFromStock ? ' [Deducted from warehouse stock]' : ($fromSiteStock ? ' [From stock already given to the site]' : '');
 
             ProjectAuditLog::logChange(
                 $project,

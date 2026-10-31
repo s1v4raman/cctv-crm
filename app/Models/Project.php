@@ -169,6 +169,14 @@ class Project extends Model
         return $this->hasMany(TaskMaterialConsumption::class)->latest();
     }
 
+    /**
+     * Material given to this site from the storeroom, and returns.
+     */
+    public function materialIssues(): HasMany
+    {
+        return $this->hasMany(ProjectMaterialIssue::class)->latest('issued_on')->latest('id');
+    }
+
     public function documents(): HasMany
     {
         return $this->hasMany(ProjectDocument::class)->latest();

@@ -39,6 +39,7 @@ use App\Http\Controllers\PettyCashController;
 use App\Http\Controllers\ModuleHubController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\ProjectMaterialIssueController;
 use App\Http\Controllers\SiteController;
 use App\Http\Controllers\WorkerController;
 use App\Http\Controllers\WorkerAttendanceController;
@@ -332,6 +333,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/projects/{project}/reject', [ProjectController::class, 'reject'])->name('projects.reject');
         Route::post('/projects/{project}/materials', [ProjectController::class, 'addMaterial'])->name('projects.materials.store');
         Route::delete('/projects/{project}/materials/{material}', [ProjectController::class, 'deleteMaterial'])->name('projects.materials.destroy');
+        Route::post('/projects/{project}/material-issues', [ProjectMaterialIssueController::class, 'store'])->name('projects.material-issues.store');
+        Route::delete('/projects/{project}/material-issues/{issue}', [ProjectMaterialIssueController::class, 'destroy'])->name('projects.material-issues.destroy');
 
         // Project Tasks, Workflows & Checklists
         Route::get('/projects/{project}/tasks', [ProjectTaskController::class, 'index'])->name('projects.tasks.index');

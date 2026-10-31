@@ -42,9 +42,21 @@
         </div>
     </x-slot>
 
+    @php
+        // For the Stock by product filters and the give / return form
+        $stockRowsJs = collect($stockLedger['rows'])->map(fn ($r) => ['key' => $r['key'], 'name' => $r['name'], 'category' => $r['category']])->values();
+        $stockHistoryKeys = collect($stockLedger['history'])->pluck('key')->unique()->values();
+        $siteBalanceByProduct = collect($stockLedger['rows'])->filter(fn ($r) => $r['product_id'])->mapWithKeys(fn ($r) => [$r['product_id'] => $r['balance']]);
+        $issueStockJs = $availableProducts->mapWithKeys(fn ($p) => [$p->id => [
+            'store' => $qty($p->stock_quantity),
+            'site' => $siteBalanceByProduct->has($p->id) ? $qty($siteBalanceByProduct[$p->id]) : null,
+            'unit' => $p->unit,
+        ]]);
+        $issueFormFailed = $errors->any() && old('type');
+    @endphp
     <div class="py-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-6"
          x-data="{
-             currentTab: '{{ $activeTab }}',
+             currentTab: '{{ $issueFormFailed ? 'materials' : $activeTab }}',
              activeTaskView: '{{ $activeTaskView ?? 'list' }}',
              taskSearchQuery: '',
              approveModalOpen: false,
@@ -64,6 +76,32 @@
              consumeDrumNo: '',
              consumeDeductStock: true,
              consumeNotes: '',
+             stockCategory: 'all',
+             stockProduct: 'all',
+             stockRows: @js($stockRowsJs),
+             stockHistoryKeys: @js($stockHistoryKeys),
+             issueModalOpen: false,
+             issueType: 'issue',
+             issueProductId: '',
+             issueStock: @js($issueStockJs),
+             openIssueModal(type = 'issue', productId = '') {
+                 this.issueType = type;
+                 this.issueProductId = productId ? String(productId) : '';
+                 this.issueModalOpen = true;
+             },
+             stockShows(key, category) {
+                 return (this.stockCategory === 'all' || this.stockCategory === category)
+                     && (this.stockProduct === 'all' || this.stockProduct === key);
+             },
+             stockRowName() {
+                 const row = this.stockRows.find(r => r.key === this.stockProduct);
+                 return row ? row.name : '';
+             },
+             issueHint() {
+                 const s = this.issueStock[this.issueProductId];
+                 if (!s) return '';
+                 return 'In storeroom: ' + s.store + ' ' + s.unit + (s.site !== null ? ' · On this site: ' + s.site + ' ' + s.unit : '');
+             },
              documentModalOpen: false,
              workDayModalOpen: false,
              workerPhotoModalUrl: null,
@@ -997,36 +1035,202 @@
         {{-- ════════════════════════════════════════════════════════════════ --}}
         <div x-show="currentTab === 'materials'" x-cloak class="space-y-6">
 
-            {{-- Materials summary: one line until something has been used --}}
+            {{-- Materials summary: cable from the storeroom to the site, then everything else --}}
             @php
-                $hardwareInstalled = $project->materialConsumptions->where('unit', '!=', 'meters')->sum('quantity_used');
-                $nothingUsedYet = $totalCableMeters == 0 && $hardwareInstalled == 0 && $totalWastageQuantity == 0;
+                $cable = $stockLedger['cable'];
+                $hardware = $stockLedger['hardware'];
             @endphp
-            <div class="rounded-lg bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 px-5 py-4">
-                @if($nothingUsedYet)
-                    <p class="text-sm text-slate-600 dark:text-slate-300">
-                        {{ $project->materials->count() }} {{ Str::plural('item', $project->materials->count()) }} planned ({{ $qty($totalBomQuantity) }} units) · nothing used yet
-                    </p>
-                @else
-                    <dl class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                        <div>
-                            <dt class="text-xs text-slate-500 dark:text-slate-400">Planned</dt>
-                            <dd class="text-lg font-semibold text-slate-900 dark:text-white">{{ $project->materials->count() }} {{ Str::plural('item', $project->materials->count()) }} <span class="text-sm font-normal text-slate-500">· {{ $qty($totalBomQuantity) }} units</span></dd>
-                        </div>
-                        <div>
-                            <dt class="text-xs text-slate-500 dark:text-slate-400">Cable pulled</dt>
-                            <dd class="text-lg font-semibold text-slate-900 dark:text-white">{{ $qty($totalCableMeters) }} m</dd>
-                        </div>
-                        <div>
-                            <dt class="text-xs text-slate-500 dark:text-slate-400">Hardware installed</dt>
-                            <dd class="text-lg font-semibold text-slate-900 dark:text-white">{{ $qty($hardwareInstalled) }}</dd>
-                        </div>
-                        <div>
-                            <dt class="text-xs text-slate-500 dark:text-slate-400">Wastage</dt>
-                            <dd class="text-lg font-semibold {{ $totalWastageQuantity > 0 ? 'text-amber-700 dark:text-amber-400' : 'text-slate-900 dark:text-white' }}">{{ $qty($totalWastageQuantity) }}</dd>
-                        </div>
-                    </dl>
+            <div class="rounded-lg bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 px-5 py-4 space-y-4">
+                <dl class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div>
+                        <dt class="text-xs text-slate-500 dark:text-slate-400">Cable given to site</dt>
+                        <dd class="text-lg font-semibold text-slate-900 dark:text-white">{{ $qty($cable['given']) }} m</dd>
+                        <dd class="text-[11px] text-slate-500 dark:text-slate-400">from the storeroom, less returns</dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs text-slate-500 dark:text-slate-400">Cable pulled</dt>
+                        <dd class="text-lg font-semibold text-slate-900 dark:text-white">{{ $qty($cable['pulled']) }} m</dd>
+                        <dd class="text-[11px] text-slate-500 dark:text-slate-400">{{ $cable['wastage'] > 0 ? '+ ' . $qty($cable['wastage']) . ' m wastage' : 'laid on site' }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs text-slate-500 dark:text-slate-400">Cable balance on site</dt>
+                        @if($cable['balance'] === null)
+                            <dd class="text-lg font-semibold text-slate-900 dark:text-white">—</dd>
+                            <dd class="text-[11px] text-slate-500 dark:text-slate-400">no cable given yet</dd>
+                        @elseif($cable['balance'] < 0)
+                            <dd class="text-lg font-semibold text-rose-600 dark:text-rose-400">{{ $qty($cable['balance']) }} m</dd>
+                            <dd class="text-[11px] text-rose-600 dark:text-rose-400">more pulled than given</dd>
+                        @else
+                            <dd class="text-lg font-semibold text-slate-900 dark:text-white">{{ $qty($cable['balance']) }} m</dd>
+                            <dd class="text-[11px] text-slate-500 dark:text-slate-400">with the team, to use or return</dd>
+                        @endif
+                    </div>
+                    <div>
+                        <dt class="text-xs text-slate-500 dark:text-slate-400">Cable in storeroom</dt>
+                        <dd class="text-lg font-semibold text-slate-900 dark:text-white">{{ $qty($cable['in_store']) }} m</dd>
+                        <dd class="text-[11px] text-slate-500 dark:text-slate-400">
+                            {{ $cable['all_cable'] ? 'all cable products' : 'this project\'s cable' }}{{ $cable['on_order'] > 0 ? ' · ' . $qty($cable['on_order']) . ' m on order' : '' }}
+                        </dd>
+                    </div>
+                </dl>
+                <dl class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+                    <div>
+                        <dt class="text-xs text-slate-500 dark:text-slate-400">Planned</dt>
+                        <dd class="text-lg font-semibold text-slate-900 dark:text-white">{{ $project->materials->count() }} {{ Str::plural('item', $project->materials->count()) }} <span class="text-sm font-normal text-slate-500">· {{ $qty($totalBomQuantity) }} units</span></dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs text-slate-500 dark:text-slate-400">Hardware given to site</dt>
+                        <dd class="text-lg font-semibold text-slate-900 dark:text-white">{{ $qty($hardware['given']) }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs text-slate-500 dark:text-slate-400">Hardware installed</dt>
+                        <dd class="text-lg font-semibold text-slate-900 dark:text-white">{{ $qty($hardware['installed']) }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs text-slate-500 dark:text-slate-400">Wastage</dt>
+                        <dd class="text-lg font-semibold {{ $totalWastageQuantity > 0 ? 'text-amber-700 dark:text-amber-400' : 'text-slate-900 dark:text-white' }}">{{ $qty($totalWastageQuantity) }}</dd>
+                    </div>
+                </dl>
+            </div>
+
+            {{-- Stock by product: given to site, used, balance on site, storeroom, on order --}}
+            <div class="rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden">
+                <div class="p-5 border-b border-slate-100 dark:border-slate-800 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <div>
+                        <h3 class="font-extrabold text-slate-900 dark:text-white text-base">Stock by product</h3>
+                        <p class="text-xs text-slate-500 mt-0.5">What was given to this site, what was used, what is left with the team and what the storeroom still holds.</p>
+                    </div>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <select aria-label="Filter by category" x-model="stockCategory" @change="stockProduct = 'all'" class="crm-select text-xs">
+                            <option value="all">All categories</option>
+                            @foreach($stockLedger['categories'] as $stockCat)
+                                <option value="{{ $stockCat }}">{{ $stockCat }}</option>
+                            @endforeach
+                        </select>
+                        <select aria-label="Filter by product" x-model="stockProduct" class="crm-select text-xs">
+                            <option value="all">All products</option>
+                            <template x-for="r in stockRows.filter(r => stockCategory === 'all' || r.category === stockCategory)" :key="r.key">
+                                <option :value="r.key" x-text="r.name" :selected="r.key === stockProduct"></option>
+                            </template>
+                        </select>
+                        @if(auth()->user()->isOffice())
+                            <button type="button" @click="openIssueModal('issue')" class="btn-primary text-xs">Give to site</button>
+                            <button type="button" @click="openIssueModal('return')" class="btn-secondary text-xs">Return to storeroom</button>
+                        @endif
+                    </div>
+                </div>
+
+                @if($issueFormFailed)
+                    <div class="mx-5 mt-4 p-3 rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs" role="alert">
+                        @foreach($errors->all() as $issueError)
+                            <p>{{ $issueError }}</p>
+                        @endforeach
+                    </div>
                 @endif
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-slate-600 dark:text-slate-300">
+                        <thead class="bg-slate-50/80 dark:bg-slate-800/50 text-xs uppercase font-bold text-slate-500 border-b border-slate-100 dark:border-slate-800">
+                            <tr>
+                                <th class="px-5 py-3.5">Product</th>
+                                <th class="px-4 py-3.5 text-right">Planned</th>
+                                <th class="px-4 py-3.5 text-right">Given to site</th>
+                                <th class="px-4 py-3.5 text-right">Used</th>
+                                <th class="px-4 py-3.5 text-right">Wastage</th>
+                                <th class="px-4 py-3.5 text-right">Balance on site</th>
+                                <th class="px-4 py-3.5 text-right">In storeroom</th>
+                                <th class="px-4 py-3.5 text-right">On order</th>
+                                <th class="px-5 py-3.5 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                            @forelse($stockLedger['rows'] as $row)
+                                <tr x-show="stockShows(@js($row['key']), @js($row['category']))" class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40">
+                                    <td class="px-5 py-3">
+                                        <div class="font-bold text-slate-900 dark:text-white flex items-center gap-1.5 flex-wrap">
+                                            <span>{{ $row['name'] }}</span>
+                                            @if($row['sku'])
+                                                <span class="px-1.5 py-0.5 rounded text-[11px] font-mono bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">{{ $row['sku'] }}</span>
+                                            @endif
+                                        </div>
+                                        <span class="text-[11px] text-slate-500 dark:text-slate-400">{{ $row['category'] }}</span>
+                                        @if($row['warning'])
+                                            <span class="block text-[11px] font-semibold {{ $row['balance'] < 0 ? 'text-rose-600 dark:text-rose-400' : 'text-amber-700 dark:text-amber-400' }}">{{ $row['warning'] }}</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-4 py-3 text-right font-mono whitespace-nowrap">{{ collect([$row['planned'] > 0 ? $qty($row['planned']) . ' ' . $row['unit'] : null])->merge($row['planned_other'])->filter()->implode(' + ') ?: '—' }}</td>
+                                    <td class="px-4 py-3 text-right font-mono whitespace-nowrap">{{ $qty($row['given']) }} {{ $row['unit'] }}</td>
+                                    <td class="px-4 py-3 text-right font-mono whitespace-nowrap">{{ $qty($row['used']) }} {{ $row['unit'] }}</td>
+                                    <td class="px-4 py-3 text-right font-mono whitespace-nowrap {{ $row['wastage'] > 0 ? 'text-amber-700 dark:text-amber-400' : '' }}">{{ $row['wastage'] > 0 ? $qty($row['wastage']) . ' ' . $row['unit'] : '—' }}</td>
+                                    <td class="px-4 py-3 text-right font-mono whitespace-nowrap font-bold {{ $row['given'] > 0 && $row['balance'] < 0 ? 'text-rose-600 dark:text-rose-400' : 'text-slate-900 dark:text-white' }}">
+                                        {{ $row['given'] > 0 ? $qty($row['balance']) . ' ' . $row['unit'] : '—' }}
+                                    </td>
+                                    <td class="px-4 py-3 text-right font-mono whitespace-nowrap">{{ $row['in_store'] !== null ? $qty($row['in_store']) . ' ' . $row['unit'] : '—' }}</td>
+                                    <td class="px-4 py-3 text-right font-mono whitespace-nowrap">{{ $row['on_order'] ? $qty($row['on_order']) . ' ' . $row['unit'] : '—' }}</td>
+                                    <td class="px-5 py-3 text-right whitespace-nowrap">
+                                        <div class="inline-flex items-center gap-3">
+                                            <button type="button" @click="stockProduct = @js($row['key'])" class="action-link text-xs">History</button>
+                                            @if($row['product_id'] && auth()->user()->isOffice())
+                                                <button type="button" @click="openIssueModal('issue', {{ $row['product_id'] }})" class="action-link text-xs">Give</button>
+                                                <button type="button" @click="openIssueModal('return', {{ $row['product_id'] }})" class="action-link text-xs">Return</button>
+                                            @endif
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="9" class="px-5 py-10 text-center text-slate-400 text-xs">
+                                        Nothing planned, given or used on this site yet.
+                                        @if(auth()->user()->isOffice()) Use <strong>Give to site</strong> when material leaves the storeroom. @endif
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+
+                {{-- One product's history, newest first --}}
+                <div x-show="stockProduct !== 'all'" x-cloak class="border-t border-slate-100 dark:border-slate-800 px-5 py-4">
+                    <div class="flex items-center justify-between gap-3">
+                        <h4 class="text-sm font-bold text-slate-900 dark:text-white">History: <span x-text="stockRowName()"></span></h4>
+                        <button type="button" @click="stockProduct = 'all'" class="action-link text-xs">Show all products</button>
+                    </div>
+                    <ol class="mt-2 divide-y divide-slate-100 dark:divide-slate-800">
+                        @foreach($stockLedger['history'] as $entry)
+                            <li x-show="stockProduct === @js($entry['key'])" class="py-2.5 flex flex-wrap items-baseline gap-x-4 gap-y-1 text-sm">
+                                <span class="w-24 shrink-0 text-xs text-slate-500 dark:text-slate-400">{{ $entry['date']?->format('d M Y') }}</span>
+                                @if($entry['kind'] === 'issue')
+                                    <span class="w-36 shrink-0 font-semibold text-slate-900 dark:text-white">Given to site</span>
+                                    <span class="w-28 shrink-0 font-mono">+{{ $qty($entry['quantity']) }} {{ $entry['unit'] }}</span>
+                                @elseif($entry['kind'] === 'return')
+                                    <span class="w-36 shrink-0 font-semibold text-slate-900 dark:text-white">Returned to storeroom</span>
+                                    <span class="w-28 shrink-0 font-mono">−{{ $qty($entry['quantity']) }} {{ $entry['unit'] }}</span>
+                                @else
+                                    <span class="w-36 shrink-0 font-semibold text-slate-900 dark:text-white">Used</span>
+                                    <span class="w-28 shrink-0 font-mono">−{{ $qty($entry['quantity']) }} {{ $entry['unit'] }}@if($entry['wastage'] > 0)<span class="text-amber-700 dark:text-amber-400"> (+{{ $qty($entry['wastage']) }} waste)</span>@endif</span>
+                                @endif
+                                <span class="flex-1 min-w-[12rem] text-xs text-slate-500 dark:text-slate-400">
+                                    {{ collect([
+                                        $entry['who'] ? ($entry['kind'] === 'issue' ? 'to ' : ($entry['kind'] === 'return' ? 'from ' : 'by ')) . $entry['who'] : null,
+                                        $entry['drum'] ? 'drum ' . $entry['drum'] : null,
+                                        $entry['detail'] ?: null,
+                                    ])->filter()->implode(' · ') }}
+                                </span>
+                                @if($entry['kind'] !== 'use' && auth()->user()->isAdmin())
+                                    <form method="POST" action="{{ route('projects.material-issues.destroy', ['project' => $project, 'issue' => $entry['id']]) }}" data-confirm="Undo this hand-over? The storeroom stock is put back as it was." class="inline-block">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="danger-link text-xs bg-transparent border-0 p-0 cursor-pointer">Undo</button>
+                                    </form>
+                                @endif
+                            </li>
+                        @endforeach
+                    </ol>
+                    <p x-show="!stockHistoryKeys.includes(stockProduct)" class="py-2.5 text-xs text-slate-500 dark:text-slate-400">Nothing given or used for this product yet.</p>
+                </div>
+                <p x-show="stockProduct === 'all'" class="border-t border-slate-100 dark:border-slate-800 px-5 py-3 text-xs text-slate-500 dark:text-slate-400">
+                    Pick a product above, or press <strong>History</strong>, to see each hand-over and use by date. Balance on site = given to site − used − wastage.
+                </p>
             </div>
 
             {{-- 1. Bill of Materials (BOM) & Reconciliation Table --}}
@@ -2527,6 +2731,94 @@
             </div>
         </div>
 
+        {{-- Give material to the site / return it to the storeroom --}}
+        @if(auth()->user()->isOffice())
+        <div x-show="issueModalOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+            <div @click.away="issueModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 max-h-[90vh] overflow-y-auto">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                    <h3 class="font-bold text-slate-900 dark:text-white text-base" x-text="issueType === 'return' ? 'Return material to the storeroom' : 'Give material to the site'"></h3>
+                    <x-close-button @click="issueModalOpen = false" />
+                </div>
+
+                <form method="POST" action="{{ route('projects.material-issues.store', $project) }}" class="space-y-4">
+                    @csrf
+                    <input type="hidden" name="type" :value="issueType">
+
+                    <div class="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Direction">
+                        <button type="button" role="radio" :aria-checked="issueType === 'issue'" @click="issueType = 'issue'"
+                                class="px-3 py-2 rounded-lg border text-xs font-semibold"
+                                :class="issueType === 'issue' ? 'border-blue-600 bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300' : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300'">
+                            Give to site
+                        </button>
+                        <button type="button" role="radio" :aria-checked="issueType === 'return'" @click="issueType = 'return'"
+                                class="px-3 py-2 rounded-lg border text-xs font-semibold"
+                                :class="issueType === 'return' ? 'border-blue-600 bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300' : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300'">
+                            Return to storeroom
+                        </button>
+                    </div>
+
+                    <div>
+                        <label for="issue-product-id" class="block text-xs font-bold uppercase text-slate-500 mb-1">Product *</label>
+                        <select id="issue-product-id" name="product_id" x-model="issueProductId" required class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                            <option value="">-- Choose a product --</option>
+                            @foreach($availableProducts as $prod)
+                                <option value="{{ $prod->id }}">[{{ $prod->sku }}] {{ $prod->name }}</option>
+                            @endforeach
+                        </select>
+                        <p x-show="issueProductId" x-text="issueHint()" class="mt-1 text-[11px] text-slate-500 dark:text-slate-400"></p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label for="issue-quantity" class="block text-xs font-bold uppercase text-slate-500 mb-1">Quantity *</label>
+                            <input id="issue-quantity" type="number" step="1" min="1" name="quantity" required value="{{ old('quantity') }}" placeholder="e.g. 305" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-bold font-mono">
+                        </div>
+                        <div>
+                            <label for="issue-date" class="block text-xs font-bold uppercase text-slate-500 mb-1">Date *</label>
+                            <input id="issue-date" type="date" name="issued_on" required value="{{ old('issued_on', now()->toDateString()) }}" max="{{ now()->toDateString() }}" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="issue-handled-by" class="block text-xs font-bold uppercase text-slate-500 mb-1" x-text="issueType === 'return' ? 'Brought back by' : 'Given to'"></label>
+                        <select id="issue-handled-by" name="handled_by" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                            <option value="">-- Not recorded --</option>
+                            @if($workers->isNotEmpty())
+                                <optgroup label="Workers">
+                                    @foreach($workers as $w)
+                                        <option value="worker:{{ $w->id }}" @selected(old('handled_by') === 'worker:' . $w->id)>{{ $w->name }}</option>
+                                    @endforeach
+                                </optgroup>
+                            @endif
+                            <optgroup label="Staff and technicians">
+                                @foreach($technicians as $t)
+                                    <option value="user:{{ $t->id }}" @selected(old('handled_by') === 'user:' . $t->id)>{{ $t->name }}</option>
+                                @endforeach
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="issue-drum" class="block text-xs font-bold uppercase text-slate-500 mb-1">Drum / batch no.</label>
+                        <input id="issue-drum" type="text" name="drum_or_batch_no" maxlength="100" value="{{ old('drum_or_batch_no') }}" placeholder="e.g. D-0425" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-mono">
+                    </div>
+
+                    <div>
+                        <label for="issue-notes" class="block text-xs font-bold uppercase text-slate-500 mb-1">Notes</label>
+                        <input id="issue-notes" type="text" name="notes" maxlength="255" value="{{ old('notes') }}" placeholder="e.g. For Block A cabling" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                    </div>
+
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400" x-text="issueType === 'return' ? 'Adds the quantity back to the storeroom stock.' : 'Takes the quantity out of the storeroom stock. Usage logged later for this product is not taken out again.'"></p>
+
+                    <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                        <button type="button" @click="issueModalOpen = false" class="btn-secondary text-xs">Cancel</button>
+                        <button type="submit" class="btn-primary text-xs shadow-md" x-text="issueType === 'return' ? 'Return to storeroom' : 'Give to site'"></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        @endif
+
         {{-- Log Material & Cable Consumption Modal --}}
         <div x-show="consumeModalOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto">
             <div @click.away="consumeModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col max-h-[90vh] overflow-hidden my-auto">
@@ -2708,6 +3000,7 @@
                                         </option>
                                     @endforeach
                                 </select>
+                                <p class="text-[11px] text-slate-500 dark:text-slate-400">A product already given to this site is not taken from the storeroom again.</p>
                             </div>
                         </div>
                     </div>

@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Project;
 use App\Models\ProjectAuditLog;
+use App\Models\ProjectMaterialIssue;
 use App\Models\ProjectTask;
 use App\Models\ProjectWorkerAttendance;
 use App\Models\TaskMaterialConsumption;
 use App\Models\User;
 use App\Models\WorkDay;
 use App\Models\Worker;
+use App\Services\ProjectMaterialLedger;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -345,9 +347,12 @@ class WorkerPortalController extends Controller
 
             // If cabling meters were recorded, log cable consumption
             if ($addedCabling > 0 && $task) {
+                [$cableProductId, $cableMaterialId] = $this->projectCableProduct($project);
                 TaskMaterialConsumption::create([
                     'project_id' => $project->id,
                     'project_task_id' => $task->id,
+                    'project_material_id' => $cableMaterialId,
+                    'product_id' => $cableProductId,
                     'item_name' => "Cat6 Cabling Pulled by {$worker->name}",
                     'quantity_used' => $addedCabling,
                     'unit' => 'meters',
@@ -457,5 +462,32 @@ class WorkerPortalController extends Controller
                 })
                 ->firstOrFail();
         }
+    }
+
+    /**
+     * The project's cable product, so a worker's metres count against its stock:
+     * the one cable item in the BOM, or else the one cable product given to the site.
+     *
+     * @return array{0: int|null, 1: int|null} product id, BOM item id
+     */
+    protected function projectCableProduct(Project $project): array
+    {
+        $bomCable = $project->materials()->with('product')->get()
+            ->filter(fn ($m) => ProjectMaterialLedger::isCableProduct($m->product));
+        if ($bomCable->isNotEmpty()) {
+            if ($bomCable->pluck('product_id')->unique()->count() !== 1) {
+                return [null, null];
+            }
+            // Only tie metres to a BOM line counted in metres, not one planned in rolls
+            $inMetres = $bomCable->first(fn ($m) => ProjectMaterialLedger::isMetreUnit($m->unit));
+
+            return [$bomCable->first()->product_id, $inMetres?->id];
+        }
+
+        $issuedCable = ProjectMaterialIssue::with('product')->where('project_id', $project->id)->get()
+            ->filter(fn ($i) => ProjectMaterialLedger::isCableProduct($i->product))
+            ->pluck('product_id')->unique();
+
+        return $issuedCable->count() === 1 ? [$issuedCable->first(), null] : [null, null];
     }
 }
