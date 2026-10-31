@@ -5,6 +5,8 @@
         $currProject = request('project_id');
         $filterCount = ($currSearch ? 1 : 0) + ($currWorker ? 1 : 0) + ($currProject ? 1 : 0);
         $here = fn (array $change) => request()->fullUrlWithQuery(array_merge(['page' => null], $change));
+        // Only the day roster lists single punches; the week and month views pass none
+        $attendances = $attendances ?? collect();
 
         $viewTitle = 'Per-Day (Daily Roster)';
         if ($viewMode === 'week') { $viewTitle = 'Per-Week (Weekly Matrix)'; }
@@ -148,7 +150,7 @@
                                 <a href="{{ route('wages.index') }}" class="plain-link">Open Sunday Payday Console</a>
                             @endif
                             <a href="{{ route('workers.index') }}" class="plain-link">View All Registered Workers</a>
-                            <button type="button" @click="menu = null; window.print()">Print this sheet</button>
+                            <button type="button" @click="menu = null; $nextTick(() => window.print())">Print View</button>
                         </div>
                     </div>
                 </div>
@@ -180,7 +182,7 @@
                         <details open>
                             <summary><span class="ld-caret ld-caret-sm" aria-hidden="true"></span><span>Assigned Worker</span></summary>
                             <div class="space-y-1">
-                                <select name="worker_id" class="ld-input">
+                                <select name="worker_id" class="ld-input" aria-label="Assigned Worker">
                                     <option value="">All Workers ({{ $activeWorkers->count() }})</option>
                                     @foreach($activeWorkers as $w)
                                         <option value="{{ $w->id }}" @selected(request('worker_id') == $w->id)>{{ $w->name }}</option>
@@ -192,7 +194,7 @@
                         <details open>
                             <summary><span class="ld-caret ld-caret-sm" aria-hidden="true"></span><span>Project / Site</span></summary>
                             <div class="space-y-1">
-                                <select name="project_id" class="ld-input">
+                                <select name="project_id" class="ld-input" aria-label="Project / Site">
                                     <option value="">All Projects</option>
                                     @foreach($activeProjects as $p)
                                         <option value="{{ $p->id }}" @selected(request('project_id') == $p->id)>{{ Str::limit($p->title, 26) }}</option>
@@ -868,176 +870,13 @@
         </div>
     </div>
 
-    {{-- MARK ATTENDANCE MODAL WITH FILE UPLOAD & WEBCAM CAPTURE --}}
-    <div id="markAttendanceModal" class="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4 hidden overflow-y-auto">
-        <div class="bg-white dark:bg-slate-900 rounded-lg max-w-lg w-full p-5 shadow-2xl border border-slate-200 dark:border-slate-800 my-8">
-            <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
-                <div>
-                    <h3 class="text-base font-bold text-slate-900 dark:text-white">Mark Worker Attendance</h3>
-                    <p class="text-xs text-slate-500">Record daily shift with photo verification & work output metrics.</p>
-                </div>
-                <button type="button" onclick="closeAttendanceModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xl font-bold">&times;</button>
-            </div>
+    {{-- TWO-STEP SPLIT GUIDED ATTENDANCE MODAL COMPONENT --}}
+    <x-mark-attendance-modal :workers="$activeWorkers" :projects="$activeProjects" :selected-date="$viewMode === 'day' ? $selectedDate->toDateString() : now()->toDateString()" />
 
-            <form id="mark-attendance-form" method="POST" action="{{ route('workers.attendance.store') }}" enctype="multipart/form-data" class="space-y-4 mt-4" onsubmit="return handleAttendanceSubmit(event)">
-                @csrf
-                <input type="hidden" name="photo_data" id="webcam-photo-data">
-
-                <div id="modal-validation-error" class="hidden p-3 rounded bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs"></div>
-
-                @if($errors->any())
-                    <div class="p-3 rounded bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs">
-                        <ul class="list-disc list-inside space-y-1">
-                            @foreach($errors->all() as $err)
-                                <li>{{ $err }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-
-                {{-- Worker & Project Pickers --}}
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                        <label for="modal-worker-select" class="crm-label text-xs">Worker <span class="required-marker">*</span></label>
-                        <select name="worker_id" id="modal-worker-select" onchange="onWorkerSelectChange(this)" required class="crm-select text-xs w-full">
-                            <option value="">Select Worker...</option>
-                            @foreach($activeWorkers as $w)
-                                <option value="{{ $w->id }}" data-photo="{{ $w->photo_url ?? '' }}" data-name="{{ $w->name }}" @selected(request('worker_id') == $w->id)>
-                                    {{ $w->name }} (&#8377;{{ number_format($w->daily_rate, 0) }})
-                                </option>
-                            @endforeach
-                        </select>
-                        <div id="modal-worker-preview-box" class="flex items-center gap-2 mt-1.5 p-1.5 rounded bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hidden">
-                            <img id="modal-worker-img" alt="Worker" class="w-6 h-6 rounded-full object-cover border border-slate-300">
-                            <span class="text-[11px] text-slate-700 dark:text-slate-300 font-semibold" id="modal-worker-name-preview"></span>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label for="f-project-id" class="crm-label text-xs">Project Site <span class="required-marker">*</span></label>
-                        <select id="f-project-id" name="project_id" required class="crm-select text-xs w-full">
-                            <option value="">Select Project Site...</option>
-                            @foreach($activeProjects as $p)
-                                <option value="{{ $p->id }}" @selected(request('project_id') == $p->id)>
-                                    {{ Str::limit($p->title, 26) }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-
-                {{-- Date, Shift Type, Time --}}
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div>
-                        <label for="modal-work-date" class="crm-label text-xs">Date <span class="required-marker">*</span></label>
-                        <input type="date" name="work_date" id="modal-work-date" value="{{ $viewMode === 'day' ? $selectedDate->toDateString() : now()->toDateString() }}" required class="crm-input text-xs w-full">
-                    </div>
-
-                    <div>
-                        <label for="f-attendance-type" class="crm-label text-xs">Shift Type <span class="required-marker">*</span></label>
-                        <select id="f-attendance-type" name="attendance_type" required class="crm-select text-xs w-full">
-                            <option value="full" selected>Full Day (1.0x)</option>
-                            <option value="half">Half Day (0.5x)</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label for="f-check-in-time" class="crm-label text-xs">Punch Time</label>
-                        <input id="f-check-in-time" type="time" name="check_in_time" value="{{ now()->format('H:i') }}" class="crm-input text-xs w-full">
-                    </div>
-                </div>
-
-                {{-- PHOTO CAPTURE SECTION (Tabs: File Upload / Live Camera) --}}
-                <div class="p-3 bg-slate-50 dark:bg-slate-800/50 rounded border border-slate-200 dark:border-slate-700">
-                    <label class="block text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wide mb-1.5 flex items-center justify-between">
-                        <span>Attendance Photo (Selfie / Work Site)</span>
-                        <span class="text-[10px] text-slate-400 font-normal">Optional but Recommended</span>
-                    </label>
-
-                    {{-- Capture Mode Buttons --}}
-                    <div class="flex items-center gap-2 mb-2">
-                        <button type="button" onclick="setPhotoTab('file')" id="tab-btn-file" class="px-2.5 py-1 text-xs font-semibold rounded bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-indigo-600 dark:text-indigo-400 shadow-xs">
-                            Upload File
-                        </button>
-                        <button type="button" onclick="setPhotoTab('camera')" id="tab-btn-camera" class="px-2.5 py-1 text-xs font-semibold rounded bg-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
-                            Live Camera
-                        </button>
-                    </div>
-
-                    {{-- Mode 1: File Input --}}
-                    <div id="photo-tab-file">
-                        <div class="p-2 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
-                            <input aria-label="Site photo" type="file" name="photo" id="modal-photo-input" accept="image/*" class="text-xs text-slate-600 dark:text-slate-300 file:mr-2.5 file:py-1.5 file:px-3 file:rounded file:border file:border-slate-300 dark:file:border-slate-600 file:text-xs file:font-semibold file:bg-slate-100 dark:file:bg-slate-800 file:text-slate-700 dark:file:text-slate-200 hover:file:bg-slate-200 dark:hover:file:bg-slate-700 cursor-pointer w-full">
-                        </div>
-                        <div id="file-preview-wrap" class="mt-2 hidden">
-                            <img id="file-preview-img" alt="Preview" class="w-24 h-24 object-cover rounded border border-slate-300 dark:border-slate-600">
-                        </div>
-                    </div>
-
-                    {{-- Mode 2: Live Camera Video Stream --}}
-                    <div id="photo-tab-camera" class="hidden">
-                        <div class="relative bg-black rounded overflow-hidden h-48 flex items-center justify-center">
-                            <video id="webcam-video" autoplay playsinline class="w-full h-full object-cover"></video>
-                            <canvas id="webcam-canvas" class="hidden"></canvas>
-                        </div>
-                        <div class="flex items-center justify-between mt-2">
-                            <button type="button" onclick="startWebcam()" id="btn-start-camera" class="btn-secondary py-1 px-2.5 text-xs">Start Camera</button>
-                            <button type="button" onclick="snapWebcamPhoto()" id="btn-snap-camera" class="btn-primary py-1 px-3 text-xs hidden">Snap Photo</button>
-                            <span id="camera-status-text" class="text-[11px] text-slate-500">Click start camera to use webcam</span>
-                        </div>
-                        <div id="camera-snapped-preview" class="mt-2 hidden">
-                            <div class="text-[10px] text-emerald-600 font-bold mb-1">&#10003; Photo Snapped!</div>
-                            <img id="camera-snapped-img" alt="Snapped" class="w-24 h-24 object-cover rounded border border-emerald-500">
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Output Metrics: Cabling Meters & Cameras Installed --}}
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                        <label for="f-cabling-metres" class="crm-label text-xs">Cabling Metres Done</label>
-                        <input id="f-cabling-metres" type="number" step="0.1" min="0" name="cabling_metres" placeholder="e.g. 75.0" class="crm-input text-xs w-full">
-                        <p class="text-[10px] text-slate-400 mt-0.5">Physical cable pulled today</p>
-                    </div>
-
-                    <div>
-                        <label for="f-cameras-installed" class="crm-label text-xs">Cameras Installed</label>
-                        <input id="f-cameras-installed" type="number" min="0" name="cameras_installed" placeholder="e.g. 4" class="crm-input text-xs w-full">
-                        <p class="text-[10px] text-slate-400 mt-0.5">Units mounted/configured</p>
-                    </div>
-                </div>
-
-                {{-- Extra Allowance & Notes --}}
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                        <label for="f-extra-amount" class="crm-label text-xs">Extra Allowance (₹)</label>
-                        <input id="f-extra-amount" type="number" step="any" min="0" name="extra_amount" placeholder="e.g. 150" class="crm-input text-xs w-full">
-                    </div>
-                    <div>
-                        <label for="f-extra-description" class="crm-label text-xs">Extra Reason</label>
-                        <input id="f-extra-description" type="text" name="extra_description" placeholder="e.g. Night shift / Travel allowance" class="crm-input text-xs w-full">
-                    </div>
-                </div>
-
-                <div>
-                    <label for="f-notes" class="crm-label text-xs">Work Notes / Summary</label>
-                    <textarea id="f-notes" name="notes" rows="2" placeholder="Summary of work performed..." class="crm-input text-xs w-full"></textarea>
-                </div>
-
-                <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-200 dark:border-slate-800">
-                    <button type="button" onclick="closeAttendanceModal()" class="btn-secondary text-xs">Cancel</button>
-                    <button type="submit" id="btn-save-attendance" class="btn-primary text-xs flex items-center gap-1.5 font-medium"><span>✓ Save Attendance</span></button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    {{-- Interactive JavaScript for Lightbox, Webcam, and View Helpers --}}
+    {{-- Interactive JavaScript for Lightbox & View Helpers --}}
     <script>
-        let webcamStream = null;
-
         function showLightbox(workerName, profileUrl, punchUrl, dateStr) {
-            document.getElementById('lightbox-worker-title').textContent = workerName + ' &bull; ' + dateStr;
+            document.getElementById('lightbox-worker-title').textContent = workerName + ' • ' + dateStr;
             
             const profileImg = document.getElementById('lightbox-profile-img');
             const profileEmpty = document.getElementById('lightbox-profile-empty');
@@ -1069,193 +908,11 @@
             document.getElementById('photoLightboxModal').classList.add('hidden');
         }
 
-        function openAttendanceModal(dateOverride) {
-            if (dateOverride) {
-                document.getElementById('modal-work-date').value = dateOverride;
-            }
-            document.getElementById('markAttendanceModal').classList.remove('hidden');
-        }
-
-        function handleAttendanceSubmit(e) {
-            const workerSelect = document.getElementById('modal-worker-select');
-            const projectSelect = document.getElementById('f-project-id');
-            const errorBox = document.getElementById('modal-validation-error');
-            const saveBtn = document.getElementById('btn-save-attendance');
-
-            if (!workerSelect || !workerSelect.value) {
-                if (errorBox) {
-                    errorBox.textContent = 'Please select a Worker before saving attendance.';
-                    errorBox.classList.remove('hidden');
-                }
-                if (workerSelect) workerSelect.focus();
-                return false;
-            }
-
-            if (!projectSelect || !projectSelect.value) {
-                if (errorBox) {
-                    errorBox.textContent = 'Please select a Project Site before saving attendance.';
-                    errorBox.classList.remove('hidden');
-                }
-                if (projectSelect) projectSelect.focus();
-                return false;
-            }
-
-            if (errorBox) errorBox.classList.add('hidden');
-            if (saveBtn) {
-                saveBtn.disabled = true;
-                saveBtn.innerHTML = '<span class="inline-block animate-spin mr-1.5">&#9696;</span> Saving Attendance...';
-            }
-            return true;
-        }
-
-        function closeAttendanceModal() {
-            document.getElementById('markAttendanceModal').classList.add('hidden');
-            stopWebcam();
-        }
-
-        function onWorkerSelectChange(select) {
-            const opt = select.options[select.selectedIndex];
-            const photoUrl = opt ? opt.getAttribute('data-photo') : '';
-            const workerName = opt ? opt.getAttribute('data-name') : '';
-            const box = document.getElementById('modal-worker-preview-box');
-            const img = document.getElementById('modal-worker-img');
-            const nameEl = document.getElementById('modal-worker-name-preview');
-
-            if (select.value && workerName) {
-                box.classList.remove('hidden');
-                nameEl.textContent = workerName;
-                if (photoUrl && photoUrl !== '') {
-                    img.src = photoUrl;
-                    img.classList.remove('hidden');
-                } else {
-                    img.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(workerName) + '&background=6366f1&color=fff&size=64';
-                    img.classList.remove('hidden');
-                }
-            } else {
-                box.classList.add('hidden');
-            }
-        }
-
         function toggleWorkerShifts(workerId) {
             const row = document.getElementById('worker-shifts-' + workerId);
             if (row) {
                 row.classList.toggle('hidden');
             }
-        }
-
-        function setPhotoTab(mode) {
-            const tabFile = document.getElementById('photo-tab-file');
-            const tabCamera = document.getElementById('photo-tab-camera');
-            const btnFile = document.getElementById('tab-btn-file');
-            const btnCamera = document.getElementById('tab-btn-camera');
-
-            if (mode === 'file') {
-                tabFile.classList.remove('hidden');
-                tabCamera.classList.add('hidden');
-                btnFile.className = "px-2.5 py-1 text-xs font-semibold rounded bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-indigo-600 dark:text-indigo-400 shadow-xs";
-                btnCamera.className = "px-2.5 py-1 text-xs font-semibold rounded bg-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white";
-                stopWebcam();
-            } else {
-                tabFile.classList.add('hidden');
-                tabCamera.classList.remove('hidden');
-                btnCamera.className = "px-2.5 py-1 text-xs font-semibold rounded bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-indigo-600 dark:text-indigo-400 shadow-xs";
-                btnFile.className = "px-2.5 py-1 text-xs font-semibold rounded bg-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white";
-                startWebcam();
-            }
-        }
-
-        // File upload live preview & client-side compression for cross-server synchronization
-        document.getElementById('modal-photo-input')?.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(evt) {
-                    const tempImg = new Image();
-                    tempImg.onload = function() {
-                        const canvas = document.createElement('canvas');
-                        const maxDim = 800;
-                        let w = tempImg.width;
-                        let h = tempImg.height;
-                        if (w > maxDim || h > maxDim) {
-                            if (w > h) {
-                                h = Math.round((h * maxDim) / w);
-                                w = maxDim;
-                            } else {
-                                w = Math.round((w * maxDim) / h);
-                                h = maxDim;
-                            }
-                        }
-                        canvas.width = w;
-                        canvas.height = h;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(tempImg, 0, 0, w, h);
-                        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.85);
-
-                        const dataInput = document.getElementById('webcam-photo-data');
-                        if (dataInput) {
-                            dataInput.value = compressedBase64;
-                        }
-
-                        const wrap = document.getElementById('file-preview-wrap');
-                        const img = document.getElementById('file-preview-img');
-                        if (img && wrap) {
-                            img.src = compressedBase64;
-                            wrap.classList.remove('hidden');
-                        }
-                    };
-                    tempImg.src = evt.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-
-        // Webcam functions
-        async function startWebcam() {
-            const video = document.getElementById('webcam-video');
-            const status = document.getElementById('camera-status-text');
-            const startBtn = document.getElementById('btn-start-camera');
-            const snapBtn = document.getElementById('btn-snap-camera');
-
-            try {
-                webcamStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
-                video.srcObject = webcamStream;
-                status.textContent = 'Camera ready';
-                startBtn.classList.add('hidden');
-                snapBtn.classList.remove('hidden');
-            } catch (err) {
-                status.textContent = 'Unable to access camera: ' + err.message;
-            }
-        }
-
-        function snapWebcamPhoto() {
-            const video = document.getElementById('webcam-video');
-            const canvas = document.getElementById('webcam-canvas');
-            const dataInput = document.getElementById('webcam-photo-data');
-            const previewWrap = document.getElementById('camera-snapped-preview');
-            const previewImg = document.getElementById('camera-snapped-img');
-
-            canvas.width = video.videoWidth || 640;
-            canvas.height = video.videoHeight || 480;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-            const base64 = canvas.toDataURL('image/jpeg', 0.85);
-            dataInput.value = base64;
-            previewImg.src = base64;
-            previewWrap.classList.remove('hidden');
-
-            stopWebcam();
-        }
-
-        function stopWebcam() {
-            if (webcamStream) {
-                webcamStream.getTracks().forEach(t => t.stop());
-                webcamStream = null;
-            }
-            const startBtn = document.getElementById('btn-start-camera');
-            const snapBtn = document.getElementById('btn-snap-camera');
-            if (startBtn) startBtn.classList.remove('hidden');
-            if (snapBtn) snapBtn.classList.add('hidden');
         }
     </script>
 </x-app-layout>

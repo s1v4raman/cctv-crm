@@ -68,6 +68,7 @@
                 $due = $po->balanceDue();
             @endphp
             <tr>
+                <x-list-pick :id="$po->id" :label="$po->po_number" />
                 <td class="whitespace-nowrap"><a href="{{ route('purchase-orders.show', $po) }}" class="ld-name plain-link">{{ $po->po_number }}</a></td>
                 <td>
                     <div>{{ $po->supplier->name ?? '—' }}</div>

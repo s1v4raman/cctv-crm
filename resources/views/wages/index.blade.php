@@ -122,7 +122,7 @@
                         <div class="ld-menu right-0" x-show="menu === 'more'" x-cloak>
                             <a href="{{ route('wages.signature-sheet', ['week' => $weekStart->toDateString()]) }}" target="_blank" class="plain-link">Print Signature Sheet</a>
                             <a href="{{ route('wages.export-csv', ['week' => $weekStart->toDateString()]) }}" class="plain-link">Download Ledger CSV</a>
-                            <button type="button" @click="menu = null; window.print()">Print this page</button>
+                            <button type="button" @click="menu = null; $nextTick(() => window.print())">Print View</button>
                         </div>
                     </div>
                 </div>

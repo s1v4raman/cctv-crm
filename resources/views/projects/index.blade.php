@@ -82,6 +82,7 @@
         @foreach($projects as $project)
             @php $canEdit = auth()->user()->isAdmin() || ($project->created_by === auth()->id() && in_array($project->status, ['draft', 'pending_approval'])); @endphp
             <tr>
+                <x-list-pick :id="$project->id" :label="$project->project_code" />
                 <td>
                     <a href="{{ route('projects.show', $project) }}" class="ld-name plain-link">{{ $project->title }}</a>
                     <div class="text-xs mt-0.5" style="color: var(--ld-muted)">{{ $project->project_code }} · {{ $project->documents_count }} {{ Str::plural('document', $project->documents_count) }}</div>

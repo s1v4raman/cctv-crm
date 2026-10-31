@@ -118,6 +118,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    // Record lists, "..." menu: each record still goes through its own delete or status action
+    Route::middleware(['internal'])->prefix('list-actions/{list}')->name('list-actions.')->group(function () {
+        Route::post('/delete', [\App\Http\Controllers\ListActionController::class, 'delete'])->name('delete');
+        Route::post('/update', [\App\Http\Controllers\ListActionController::class, 'update'])->name('update');
+        Route::post('/emails', [\App\Http\Controllers\ListActionController::class, 'emails'])->name('emails');
+        Route::get('/export', [\App\Http\Controllers\ListActionController::class, 'export'])->name('export');
+    });
+
     // ================================================================
     // OFFICE (Admin + Staff): add and edit records in every module.
     // Admin-only actions are in the next group (see User::isOffice()).

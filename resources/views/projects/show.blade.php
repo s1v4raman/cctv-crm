@@ -1487,13 +1487,19 @@
                 </div>
             @endif
 
-            <div class="flex justify-between items-center pt-2">
+            <div class="flex justify-between items-center pt-2 flex-wrap gap-2">
                 <h3 class="font-extrabold text-slate-900 dark:text-white text-base">Work days</h3>
-                @can('logWorkDay', $project)
-                    <button type="button" @click="workDayModalOpen = true" class="btn-primary text-xs">
-                        Log work day
+                <div class="flex items-center gap-2 flex-wrap">
+                    <button type="button" onclick="openAttendanceModal('{{ $project->id }}')" class="btn-primary text-xs flex items-center gap-1.5 cursor-pointer">
+                        <svg class="w-3.5 h-3.5 text-white shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                        <span>+ Mark Attendance (Photo Punch)</span>
                     </button>
-                @endcan
+                    @can('logWorkDay', $project)
+                        <button type="button" @click="workDayModalOpen = true" class="btn-secondary text-xs">
+                            Batch Work Day Log
+                        </button>
+                    @endcan
+                </div>
             </div>
 
             <div class="space-y-4">
@@ -3594,6 +3600,9 @@
         </div>
 
     </div>
+
+    {{-- TWO-STEP SPLIT GUIDED ATTENDANCE MODAL COMPONENT --}}
+    <x-mark-attendance-modal :workers="$workers" :projects="collect([$project])" :default-project-id="$project->id" />
 
     {{-- Sortable.js CDN for Drag-and-Drop Kanban Interaction --}}
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>

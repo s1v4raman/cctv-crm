@@ -33,6 +33,7 @@
 
         @foreach($users as $user)
             <tr>
+                <x-list-pick :id="$user->id" :label="$user->name" />
                 <td>
                     <a href="{{ route('admin.users.show', $user) }}" class="ld-name plain-link">{{ $user->name }}</a>
                     @if($user->id === auth()->id())<span class="text-xs" style="color: var(--ld-muted)"> (you)</span>@endif

@@ -39,6 +39,7 @@
 
         @foreach($sites as $site)
             <tr>
+                <x-list-pick :id="$site->id" :label="$site->site_code" />
                 <td>
                     <a href="{{ route('sites.show', $site) }}" class="ld-name plain-link">{{ $site->name }}</a>
                     <div class="text-xs mt-0.5" style="color: var(--ld-muted)">{{ $site->site_code }}</div>

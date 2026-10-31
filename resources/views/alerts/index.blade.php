@@ -102,7 +102,7 @@
                         <div class="ld-menu right-0" x-show="menu === 'more'" x-cloak>
                             <a href="{{ route('alerts.gateways') }}" class="plain-link">Manage SMS / WhatsApp Gateways</a>
                             <a href="{{ route('alerts.templates') }}" class="plain-link">Manage Notification Templates</a>
-                            <button type="button" @click="menu = null; window.print()">Print this log sheet</button>
+                            <button type="button" @click="menu = null; $nextTick(() => window.print())">Print View</button>
                         </div>
                     </div>
                 </div>
@@ -227,32 +227,32 @@
                     <form method="POST" action="{{ route('alerts.broadcast') }}" class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 text-xs">
                         @csrf
                         <div>
-                            <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Dispatch Channel <span class="text-rose-500">*</span></label>
-                            <select name="channel" required class="ld-input">
+                            <label for="alert-channel" class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Dispatch Channel <span class="text-rose-500">*</span></label>
+                            <select id="alert-channel" name="channel" required class="ld-input">
                                 <option value="whatsapp">WhatsApp Direct</option>
                                 <option value="email">Email Notification</option>
                                 <option value="sms">SMS Text</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Recipient Name <span class="text-rose-500">*</span></label>
-                            <input type="text" name="recipient_name" required placeholder="e.g. John Doe" class="ld-input">
+                            <label for="alert-recipient-name" class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Recipient Name <span class="text-rose-500">*</span></label>
+                            <input type="text" id="alert-recipient-name" name="recipient_name" required placeholder="e.g. John Doe" class="ld-input">
                         </div>
                         <div>
-                            <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Recipient Phone / Mobile</label>
-                            <input type="text" name="phone" placeholder="e.g. 9876543210" class="ld-input">
+                            <label for="alert-phone" class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Recipient Phone / Mobile</label>
+                            <input type="text" id="alert-phone" name="phone" placeholder="e.g. 9876543210" class="ld-input">
                         </div>
                         <div class="sm:col-span-2">
-                            <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Email Subject (Optional)</label>
-                            <input type="text" name="subject" placeholder="e.g. Service visit schedule confirmation" class="ld-input">
+                            <label for="alert-subject" class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Email Subject (Optional)</label>
+                            <input type="text" id="alert-subject" name="subject" placeholder="e.g. Service visit schedule confirmation" class="ld-input">
                         </div>
                         <div>
-                            <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Recipient Email (Optional)</label>
-                            <input type="email" name="email" placeholder="e.g. customer@example.com" class="ld-input">
+                            <label for="alert-email" class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Recipient Email (Optional)</label>
+                            <input type="email" id="alert-email" name="email" placeholder="e.g. customer@example.com" class="ld-input">
                         </div>
                         <div class="sm:col-span-3">
-                            <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Message Content <span class="text-rose-500">*</span></label>
-                            <textarea name="message" rows="3" required placeholder="Type the message body here…" class="ld-input" style="height: auto !important"></textarea>
+                            <label for="alert-message" class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Message Content <span class="text-rose-500">*</span></label>
+                            <textarea id="alert-message" name="message" rows="3" required placeholder="Type the message body here…" class="ld-input" style="height: auto !important"></textarea>
                         </div>
                         <div class="sm:col-span-3 flex justify-end gap-2">
                             <button type="button" @click="composeOpen = false" class="ld-outline" style="height: 32px">Cancel</button>

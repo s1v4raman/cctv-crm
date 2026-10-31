@@ -36,6 +36,7 @@
 
         @foreach($suppliers as $supplier)
             <tr>
+                <x-list-pick :id="$supplier->id" :label="$supplier->name" />
                 <td>
                     <a href="{{ route('suppliers.show', $supplier) }}" class="ld-name plain-link">{{ $supplier->name }}</a>
                     @if($supplier->company_name || $supplier->city)

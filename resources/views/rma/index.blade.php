@@ -60,6 +60,7 @@
 
         @foreach($claims as $claim)
             <tr>
+                <x-list-pick :id="$claim->id" :label="$claim->rma_no" />
                 <td class="whitespace-nowrap">
                     <a href="{{ route('rma.show', $claim) }}" class="ld-name plain-link">{{ $claim->rma_no }}</a>
                     <div class="text-xs mt-0.5" style="color: var(--ld-muted)">{{ $claim->created_at->format('d/m/Y') }}</div>

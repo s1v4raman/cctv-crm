@@ -73,6 +73,7 @@
         @foreach($workers as $worker)
             @php $balance = $worker->getRunningBalance(); @endphp
             <tr>
+                <x-list-pick :id="$worker->id" :label="$worker->name" />
                 <td>
                     <a href="{{ route('workers.show', $worker) }}" class="ld-name plain-link">{{ $worker->name }}</a>
                     <div class="text-xs mt-0.5" style="color: var(--ld-muted)">{{ $worker->attendances_count }} {{ Str::plural('day', $worker->attendances_count) }} logged</div>

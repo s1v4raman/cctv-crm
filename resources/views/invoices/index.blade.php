@@ -51,6 +51,7 @@
                 $statusLabel = $statuses[strtolower($invoice->status)] ?? ucfirst(str_replace('_', ' ', $invoice->status));
             @endphp
             <tr>
+                <x-list-pick :id="$invoice->id" :label="$invoice->invoice_no" />
                 <td class="whitespace-nowrap"><a href="{{ route('invoices.show', $invoice) }}" class="ld-name plain-link">{{ $invoice->invoice_no }}</a></td>
                 <td>
                     <div>{{ $invoice->quotation->lead->customer_name ?? '—' }}</div>

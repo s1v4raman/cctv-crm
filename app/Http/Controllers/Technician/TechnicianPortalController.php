@@ -54,13 +54,21 @@ class TechnicianPortalController extends Controller
 
         $allProjectsCount = \App\Models\Project::count();
 
+        // Active Workers and Projects for Technician On-Site Daily Attendance Logging
+        $activeWorkers = \App\Models\Worker::where('is_active', true)->orderBy('name')->get();
+        $activeProjects = \App\Models\Project::whereIn('status', ['approved', 'in_progress'])
+            ->orderBy('title')
+            ->get();
+
         return view('technician.dashboard', compact(
             'activeJobs',
             'completedJobs',
             'activeSurveys',
             'completedSurveys',
             'assignedProjects',
-            'allProjectsCount'
+            'allProjectsCount',
+            'activeWorkers',
+            'activeProjects'
         ));
     }
 

@@ -52,6 +52,7 @@
 
         @foreach($reports as $report)
             <tr>
+                <x-list-pick :id="$report->id" :label="$report->report_no" />
                 <td class="whitespace-nowrap"><a href="{{ route('jcr.show', $report) }}" class="ld-name plain-link">{{ $report->report_no }}</a></td>
                 <td>
                     @if($report->lead)

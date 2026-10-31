@@ -172,7 +172,6 @@ class CalendarController extends Controller
         $user = $request->user();
         $start = $request->query('start') ? Carbon::parse($request->query('start')) : now()->startOfMonth()->subDays(7);
         $end = $request->query('end') ? Carbon::parse($request->query('end')) : now()->endOfMonth()->addDays(7);
-
         $events = $this->fetchEvents($start, $end, $user);
 
         // If worker, only events assigned to them
@@ -553,12 +552,15 @@ class CalendarController extends Controller
     protected function fetchEvents(Carbon $startDate, Carbon $endDate, User $user): array
     {
         $events = [];
+        // Whole days at both ends, so dates stored with a time still count on the last day
+        $from = $startDate->copy()->startOfDay();
+        $to = $endDate->copy()->endOfDay();
 
         // 1. Project Tasks with Scheduled Dates
         $taskQuery = ProjectTask::with(['project', 'assignedUser'])
-            ->where(function ($q) use ($startDate, $endDate) {
-                $q->whereBetween('due_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
-                  ->orWhereBetween('start_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')]);
+            ->where(function ($q) use ($from, $to) {
+                $q->whereBetween('due_date', [$from, $to])
+                  ->orWhereBetween('start_date', [$from, $to]);
             });
 
         if ($user->isWorker()) {
@@ -608,7 +610,7 @@ class CalendarController extends Controller
         // 2. Site Surveys (Non-workers only)
         $surveys = SiteSurvey::with(['lead', 'surveyedBy'])
             ->whereNotNull('survey_date')
-            ->whereBetween('survey_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
+            ->whereBetween('survey_date', [$from, $to])
             ->get();
 
         foreach ($surveys as $s) {
@@ -636,7 +638,7 @@ class CalendarController extends Controller
         // 3. Installation Jobs (Non-workers only)
         $jobs = InstallationJob::with(['quotation.lead', 'assignedTechnician'])
             ->whereNotNull('scheduled_date')
-            ->whereBetween('scheduled_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
+            ->whereBetween('scheduled_date', [$from, $to])
             ->get();
 
         foreach ($jobs as $j) {
@@ -666,7 +668,7 @@ class CalendarController extends Controller
         if (class_exists(\App\Models\AmcVisit::class)) {
             $amcVisits = \App\Models\AmcVisit::with(['amcContract.lead', 'assignedTechnician'])
                 ->whereNotNull('scheduled_date')
-                ->whereBetween('scheduled_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
+                ->whereBetween('scheduled_date', [$from, $to])
                 ->get();
 
             foreach ($amcVisits as $v) {
@@ -697,7 +699,7 @@ class CalendarController extends Controller
         if (class_exists(\App\Models\ServiceTicket::class)) {
             $tickets = \App\Models\ServiceTicket::with(['lead', 'assignedTechnician'])
                 ->whereNotNull('scheduled_date')
-                ->whereBetween('scheduled_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
+                ->whereBetween('scheduled_date', [$from, $to])
                 ->get();
 
             foreach ($tickets as $t) {

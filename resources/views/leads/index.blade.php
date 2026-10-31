@@ -106,7 +106,7 @@
                 </div>
                 @endif
 
-                <div class="flex items-center gap-2 ml-auto" x-show="selected.length === 0">
+                <div class="flex items-center gap-2 ml-auto">
                     @if($isOffice)
                         <div class="relative" @click.outside="menu === 'create' && (menu = null)">
                             {{-- one shape: shared outline and corners, a thin divider before the arrow --}}
@@ -127,11 +127,12 @@
                         <button type="button" class="ld-outline" title="More actions" aria-label="More actions" :aria-expanded="menu === 'more'" @click="open('more')">
                             <svg class="w-4 h-4 icon-solid" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><circle cx="4" cy="10" r="1.6"/><circle cx="10" cy="10" r="1.6"/><circle cx="16" cy="10" r="1.6"/></svg>
                         </button>
-                        <div class="ld-menu right-0" x-show="menu === 'more'" x-cloak>
+                        <div class="ld-menu right-0" x-show="menu === 'more'" x-cloak style="min-width: 220px">
+                            <x-list-mass-actions list="leads" part="menu" />
                             @if($isOffice)
-                                <a href="{{ route('leads.export', request()->except('page', 'layout', 'per_page')) }}" class="plain-link">Export these leads (CSV)</a>
+                                <a href="{{ route('leads.export', request()->except('page', 'layout', 'per_page')) }}" class="plain-link">Export this view (CSV)</a>
                             @endif
-                            <button type="button" @click="menu = null; window.print()">Print this page</button>
+                            <button type="button" @click="menu = null; $nextTick(() => window.print())">Print View</button>
                         </div>
                     </div>
                 </div>
@@ -362,5 +363,7 @@
                 @endif
             </section>
         </div>
+
+        <x-list-mass-actions list="leads" part="dialogs" />
     </div>
 </x-app-layout>

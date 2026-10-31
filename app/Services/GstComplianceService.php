@@ -38,7 +38,7 @@ class GstComplianceService
         $companyStateCode = $company['state_code'];
 
         $invoices = Invoice::with(['quotation.lead', 'quotation.items.product', 'installationJob'])
-            ->whereBetween('invoice_date', [$startDate->toDateString(), $endDate->toDateString()])
+            ->whereBetween('invoice_date', [$startDate->copy()->startOfDay(), $endDate->copy()->endOfDay()])
             ->orderBy('invoice_date')
             ->get();
 
@@ -246,7 +246,7 @@ class GstComplianceService
 
         // 1. Inward supplies from Purchase Orders
         $purchaseOrders = PurchaseOrder::with(['supplier', 'items.product'])
-            ->whereBetween('order_date', [$startDate->toDateString(), $endDate->toDateString()])
+            ->whereBetween('order_date', [$startDate->copy()->startOfDay(), $endDate->copy()->endOfDay()])
             ->where('status', '!=', 'cancelled')
             ->where('is_itc_eligible', true)
             ->orderBy('order_date')
@@ -311,7 +311,7 @@ class GstComplianceService
         }
 
         // 2. Operational Hardware & Supplies Expense Claims
-        $expenses = ExpenseClaim::whereBetween('expense_date', [$startDate->toDateString(), $endDate->toDateString()])
+        $expenses = ExpenseClaim::whereBetween('expense_date', [$startDate->copy()->startOfDay(), $endDate->copy()->endOfDay()])
             ->whereIn('status', ['approved', 'paid'])
             ->whereIn('expense_category', ['hardware_tools', 'emergency_materials'])
             ->with(['user'])

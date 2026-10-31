@@ -33,11 +33,18 @@
     $perPage = in_array((int) request('per_page'), [10, 20, 50, 100], true) ? (int) request('per_page') : $paginator->perPage();
     $here = fn (array $change) => request()->fullUrlWithQuery(array_merge(['page' => null], $change));
     $hasFilters = trim((string) ($filters ?? '')) !== '';
+
+    // Mass actions for this list and user (App\Support\ListActions); rows add <x-list-pick>
+    $mass = \App\Support\ListActions::forUser($key, auth()->user());
+    $pick = $mass['pick'] ?? false;
+    if ($createUrl && count($createMenu) === 0 && !empty($mass['create'])) {
+        $createMenu = [$createLabel => $createUrl] + $mass['create'];
+    }
 @endphp
 
 <x-list-page-assets />
 
-<div class="ld-root" x-data="listPage([], @js($key), @js(array_fill_keys(array_keys($columns), true)), @js($filterCount > 0))" @keydown.escape.window="menu = null">
+<div class="ld-root" x-data="listPage(@js($pick ? $paginator->getCollection()->pluck('id')->values() : []), @js($key), @js(array_fill_keys(array_keys($columns), true)), @js($filterCount > 0))" @keydown.escape.window="menu = null">
 
     @if (session('status'))
         <div class="px-4 py-2 text-sm bg-emerald-50 text-emerald-800 border-b border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-900">{{ session('status') }}</div>
@@ -72,7 +79,9 @@
         </div>
 
         <div class="ld-toolbar">
-            <div class="flex items-center gap-1">
+            <x-list-mass-actions :list="$key" part="bar" />
+
+            <div class="flex items-center gap-1" @if($pick) x-show="selected.length === 0" @endif>
                 @if($hasFilters)
                     <button type="button" class="ld-tool" :class="showFilter && 'is-on'" @click="showFilter = !showFilter; $nextTick(() => fit())" :aria-pressed="showFilter">
                         <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5h18l-7 8.5V19l-4 2v-7.5L3 5z"/></svg>
@@ -128,10 +137,11 @@
                     <button type="button" class="ld-outline" title="More actions" aria-label="More actions" :aria-expanded="menu === 'more'" @click="open('more')">
                         <svg class="w-4 h-4 icon-solid" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><circle cx="4" cy="10" r="1.6"/><circle cx="10" cy="10" r="1.6"/><circle cx="16" cy="10" r="1.6"/></svg>
                     </button>
-                    <div class="ld-menu right-0" x-show="menu === 'more'" x-cloak>
-                        @if($exportUrl)<a href="{{ $exportUrl }}" class="plain-link">Export (CSV)</a>@endif
+                    <div class="ld-menu right-0" x-show="menu === 'more'" x-cloak style="min-width: 220px">
+                        <x-list-mass-actions :list="$key" part="menu" />
+                        @if($exportUrl)<a href="{{ $exportUrl }}" class="plain-link">Export this view (CSV)</a>@endif
                         {{ $more ?? '' }}
-                        <button type="button" @click="menu = null; window.print()">Print this page</button>
+                        <button type="button" @click="menu = null; $nextTick(() => window.print())">Print View</button>
                     </div>
                 </div>
             </div>
@@ -168,8 +178,11 @@
                     <table class="ld-table">
                         <thead>
                             <tr>
+                                @if($pick)
+                                    <th class="ld-box"><input type="checkbox" :checked="allPicked" @change="toggleAll()" aria-label="Select all on this page"></th>
+                                @endif
                                 {{ $head }}
-                                <th style="width: 72px; text-align: right">
+                                <th class="ld-cols" style="width: 72px; text-align: right">
                                     @if(count($columns) > 0)
                                         <div class="relative inline-block" @click.outside="menu === 'cols' && (menu = null)">
                                             <button type="button" class="ld-icon-btn" title="Choose columns" aria-label="Choose columns" :aria-expanded="menu === 'cols'" @click="open('cols')">
@@ -243,4 +256,6 @@
             </div>
         </section>
     </div>
+
+    <x-list-mass-actions :list="$key" part="dialogs" />
 </div>

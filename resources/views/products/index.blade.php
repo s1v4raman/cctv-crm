@@ -61,6 +61,7 @@
                     $margin = $product->unit_price > 0 ? round((($product->unit_price - $product->cost_price) / $product->unit_price) * 100, 1) : 0;
                 @endphp
                 <tr>
+                    <x-list-pick :id="$product->id" :label="$product->name" />
                     <td>
                         <div>{{ $product->name }}@if($isPending) <span class="text-xs" style="color: var(--ld-muted)">· added from a job</span>@endif</div>
                         @if($product->description)<div class="text-xs mt-0.5" style="color: var(--ld-muted)">{{ Str::limit($product->description, 60) }}</div>@endif

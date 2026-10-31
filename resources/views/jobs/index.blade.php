@@ -48,6 +48,7 @@
 
         @foreach($jobs as $job)
             <tr>
+                <x-list-pick :id="$job->id" :label="$job->job_no" />
                 <td class="whitespace-nowrap"><a href="{{ route('jobs.show', $job) }}" class="ld-name plain-link">{{ $job->job_no }}</a></td>
                 <td>
                     <div>{{ $job->quotation?->lead?->customer_name ?? '—' }}</div>

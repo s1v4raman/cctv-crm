@@ -62,6 +62,9 @@
     .ld-menu { position: absolute; z-index: 40; min-width: 190px; margin-top: 4px; padding: 4px 0; background: var(--ld-card); border: 1px solid var(--ld-border); border-radius: 6px; box-shadow: 0 8px 24px rgba(15, 23, 42, .12); }
     .ld-menu a, .ld-menu button, .ld-menu label { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 10px; padding: 7px 12px; font-size: 14px; color: var(--ld-text) !important; text-align: left; text-decoration: none !important; background: transparent; border: 0; cursor: pointer; }
     .ld-menu a:hover, .ld-menu button:hover, .ld-menu label:hover { background: var(--ld-hover); }
+    /* the app-wide button rule (five :not() filters, app.css) centres button text; the repeated
+       class outranks it so menu items line up on the left like the links */
+    .ld-root .ld-menu.ld-menu.ld-menu.ld-menu.ld-menu button { display: flex !important; justify-content: flex-start !important; text-align: left !important; font-weight: 400; }
     .ld-menu .is-current { font-weight: 600; }
     .ld-menu hr { border: 0; border-top: 1px solid var(--ld-line); margin: 4px 0; }
 
@@ -127,6 +130,37 @@
     .ld-letters { display: grid; grid-template-columns: repeat(6, 1fr); gap: 2px; padding: 6px; width: 228px; }
     .ld-letters a { justify-content: center !important; padding: 6px 0 !important; border-radius: 4px; }
     .ld-letters a.is-current { background: var(--ld-accent-soft); font-weight: 600; }
+
+    /* Ticked rows (list-pick) and the mass action dialogs (list-mass-actions) */
+    .ld-root .ld-scroll table.ld-table tbody tr:has(.ld-box input:checked) td { background: var(--ld-accent-soft) !important; }
+    .ld-danger { color: #b91c1c !important; }
+    html.dark .ld-danger { color: #fca5a5 !important; }
+    .ld-root .ld-danger-fill { background: #dc2626 !important; border-color: #b91c1c !important; }
+    .ld-root .ld-danger-fill:hover { background: #b91c1c !important; }
+    .ld-dialog-wrap { position: fixed; inset: 0; z-index: 80; display: flex; align-items: center; justify-content: center; padding: 16px; }
+    .ld-dialog-backdrop { position: absolute; inset: 0; background: rgba(15, 23, 42, .45); }
+    html.dark .ld-dialog-backdrop { background: rgba(0, 0, 0, .6); }
+    .ld-dialog { position: relative; width: 100%; max-width: 440px; background: var(--ld-card); color: var(--ld-text); border: 1px solid var(--ld-border); border-radius: 8px; padding: 20px; box-shadow: 0 20px 50px rgba(15, 23, 42, .25); }
+    .ld-dialog h2 { font-size: 16px; font-weight: 700; margin-bottom: 10px; }
+    .ld-dialog p { font-size: 14px; color: var(--ld-muted); margin-bottom: 8px; }
+    .ld-dialog p strong { color: var(--ld-text); }
+    .ld-dialog .ld-sub { display: block; font-size: 12px; color: var(--ld-muted); margin: 12px 0 6px; }
+    .ld-dialog-actions { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+    .ld-dialog-actions [disabled] { opacity: .5; cursor: not-allowed; }
+
+    /* Print View: just the list, on plain paper */
+    @media print {
+        aside, .crm-sidebar-container, .crm-topbar, nav.fixed, .ld-above, .ld-views, .ld-toolbar, .ld-filter, .ld-foot form, .ld-page-arrow,
+        .ld-box, .ld-row-actions, .ld-cols, .ld-dialog-wrap, [x-cloak] { display: none !important; }
+        html, body, .crm-app-container, .crm-app-container > div, #main-content { height: auto !important; min-height: 0 !important; overflow: visible !important; background: #fff !important; }
+        #main-content { padding: 0 !important; }
+        .ld-root, .ld-band, .ld-card { background: #fff !important; border-color: #ccc !important; }
+        .ld-body { display: block !important; height: auto !important; padding: 0 !important; }
+        .ld-scroll { overflow: visible !important; }
+        .ld-root .ld-scroll table.ld-table th { position: static; }
+        .ld-root .ld-scroll table.ld-table td, .ld-root .ld-scroll table.ld-table th { padding: 6px 8px; font-size: 11px; color: #000 !important; background: #fff !important; }
+        .ld-root .ld-scroll table.ld-table tr { break-inside: avoid; }
+    }
 </style>
 
 <script>
@@ -155,5 +189,40 @@
         toggleAll() { this.selected = this.allPicked ? [] : [...this.pageIds]; },
         open(name) { this.menu = this.menu === name ? null : name; },
         shows(label) { return label.toLowerCase().includes(this.filterQuery.trim().toLowerCase()); },
+    });
+
+    // The mass delete, update and email dialogs; `selected` comes from the listPage() around them
+    if (!window.listMass) window.listMass = (fields, emailsUrl) => ({
+        dialog: null,
+        fields,
+        field: fields.length ? fields[0].key : '',
+        value: '',
+        emails: [],
+        missing: 0,
+        loading: false,
+        copied: false,
+        options() { return (this.fields.find((f) => f.key === this.field) || { options: [] }).options; },
+        open(kind, ids) {
+            this.dialog = kind;
+            this.copied = false;
+            if (kind === 'email' && ids.length) this.loadEmails(ids);
+        },
+        async loadEmails(ids) {
+            this.loading = true;
+            try {
+                const res = await fetch(emailsUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', Accept: 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '' },
+                    body: JSON.stringify({ ids }),
+                });
+                const data = await res.json();
+                this.emails = data.emails || [];
+                this.missing = data.missing || 0;
+            } catch (e) {
+                this.emails = [];
+                this.missing = ids.length;
+            }
+            this.loading = false;
+        },
     });
 </script>
