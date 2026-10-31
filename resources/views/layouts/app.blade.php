@@ -1398,9 +1398,7 @@
                                             </svg>
                                         </template>
                                         <template x-if="!loading && query.length > 0">
-                                            <button @click="clear()" type="button" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs font-bold leading-none p-0.5 cursor-pointer">
-                                                &times;
-                                            </button>
+                                            <x-close-button size="sm" label="Clear search" @click="clear()" />
                                         </template>
                                     </div>
                                 </div>
@@ -1968,9 +1966,7 @@
                 <div role="dialog" aria-modal="true" aria-labelledby="crm-shortcuts-title" class="crm-shortcuts-panel w-full max-w-md rounded-xl bg-[var(--card-bg)] text-[var(--text-main)]">
                     <div class="flex items-center justify-between px-5 py-3.5 border-b border-[var(--card-border)]">
                         <h2 id="crm-shortcuts-title" class="text-sm font-bold">Keyboard Shortcuts</h2>
-                        <button type="button" x-ref="shortcutsClose" @click="shortcutsModalOpen = false" class="crm-shortcuts-close btn-icon" aria-label="Close keyboard shortcuts">
-                            <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                        </button>
+                        <x-close-button label="Close keyboard shortcuts" x-ref="shortcutsClose" @click="shortcutsModalOpen = false" />
                     </div>
                     @php
                         $crmShortcuts = [

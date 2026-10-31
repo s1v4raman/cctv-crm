@@ -46,7 +46,7 @@
         @if (session('status'))
             <div class="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-sm flex items-center justify-between">
                 <span>{{ session('status') }}</span>
-                <button type="button" onclick="this.parentElement.remove()" class="text-emerald-600 hover:text-emerald-900">&times;</button>
+                <x-close-button size="sm" tone="inherit" label="Dismiss message" onclick="this.parentElement.remove()" />
             </div>
         @endif
 
@@ -181,7 +181,7 @@
             <div @click.away="invoiceModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                     <h3 class="font-bold text-slate-900 dark:text-white text-base">Mark Delivery Challans as Invoiced</h3>
-                    <button type="button" @click="invoiceModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+                    <x-close-button @click="invoiceModalOpen = false" />
                 </div>
 
                 <form method="POST" action="{{ route('documents.mark-invoiced') }}" class="space-y-4">

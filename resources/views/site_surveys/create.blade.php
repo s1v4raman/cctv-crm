@@ -183,9 +183,7 @@
                                 <p class="text-[11px] text-slate-500">Quickly create and link customer profile</p>
                             </div>
                         </div>
-                        <button type="button" @click="newCustomerModalOpen = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg leading-none p-1">
-                            &times;
-                        </button>
+                        <x-close-button @click="newCustomerModalOpen = false" />
                     </div>
 
                     <div x-show="errorMessage" class="mb-3 p-2.5 rounded-lg bg-rose-50 text-rose-600 border border-rose-200 text-xs" x-text="errorMessage"></div>
@@ -254,9 +252,7 @@
                             <h3 class="text-sm font-bold text-slate-900 dark:text-white">Add New Technician</h3>
                             <p class="text-[11px] text-slate-500">Register new field technician account</p>
                         </div>
-                        <button type="button" @click="newTechModalOpen = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg leading-none p-1">
-                            &times;
-                        </button>
+                        <x-close-button @click="newTechModalOpen = false" />
                     </div>
 
                     <div x-show="techErrorMessage" class="mb-3 p-2.5 rounded-lg bg-rose-50 text-rose-600 border border-rose-200 text-xs" x-text="techErrorMessage"></div>

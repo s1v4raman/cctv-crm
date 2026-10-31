@@ -374,14 +374,14 @@
         @if (session('status'))
             <div class="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-sm flex items-center justify-between">
                 <span>{{ session('status') }}</span>
-                <button type="button" onclick="this.parentElement.remove()" class="text-emerald-600 hover:text-emerald-900">&times;</button>
+                <x-close-button size="sm" tone="inherit" label="Dismiss message" onclick="this.parentElement.remove()" />
             </div>
         @endif
 
         @if (session('error'))
             <div class="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 text-sm flex items-center justify-between">
                 <span>{{ session('error') }}</span>
-                <button type="button" onclick="this.parentElement.remove()" class="text-rose-600 hover:text-rose-900">&times;</button>
+                <x-close-button size="sm" tone="inherit" label="Dismiss message" onclick="this.parentElement.remove()" />
             </div>
         @endif
 
@@ -1142,9 +1142,7 @@
                                             <form method="POST" action="{{ route('projects.materials.destroy', ['project' => $project, 'material' => $mat]) }}" data-confirm="Remove this material from BOM?" class="inline-block">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="p-1 rounded text-slate-400 hover:text-rose-600 text-xs font-bold" title="Delete BOM Item">
-                                                    &times;
-                                                </button>
+                                                <x-close-button size="sm" tone="danger" label="Delete BOM item" type="submit" />
                                             </form>
                                             @endif
                                         </div>
@@ -1668,7 +1666,7 @@
                 <div class="relative bg-white dark:bg-[#0f172a] rounded-2xl overflow-hidden max-w-md w-full border border-slate-200 dark:border-slate-800 shadow-2xl">
                     <div class="p-3 bg-slate-900 text-white flex items-center justify-between">
                         <span class="text-xs font-bold">Worker Attendance Verified Selfie</span>
-                        <button type="button" @click="workerPhotoModalUrl = null" class="text-slate-400 hover:text-white text-base leading-none">&times;</button>
+                        <x-close-button size="sm" tone="dark" label="Close photo" @click="workerPhotoModalUrl = null" />
                     </div>
                     <div class="p-3 bg-slate-100 dark:bg-slate-950 flex items-center justify-center">
                         <img :src="workerPhotoModalUrl" alt="Worker Punch Photo" class="max-h-[70vh] w-auto object-contain rounded-xl">
@@ -2020,7 +2018,7 @@
                                         <div class="text-xs tk-muted">{{ $task->phase_name ?: 'General' }}</div>
                                         <h3 class="text-base font-semibold mt-0.5" style="color: var(--text-main)">{{ $task->title }}</h3>
                                     </div>
-                                    <button type="button" class="btn-secondary" style="padding: 0 10px !important" @click="drawer = null" aria-label="Close">&times;</button>
+                                    <x-close-button @click="drawer = null" />
                                 </div>
 
                                 <div class="px-5 py-4 space-y-5">
@@ -2358,9 +2356,7 @@
                                             <form method="POST" action="{{ route('projects.tasks.destroy', ['project' => $project, 'task' => $task]) }}" data-confirm="Delete this task?" class="inline">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="p-1 rounded text-slate-300 hover:text-rose-600 transition" title="Delete Task">
-                                                    &times;
-                                                </button>
+                                                <x-close-button size="sm" tone="danger" label="Delete task" type="submit" />
                                             </form>
                                             @endif
                                         </div>
@@ -2386,7 +2382,7 @@
             <div @click.away="approveModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                     <h3 class="font-bold text-slate-900 dark:text-white text-base">Approve &amp; Assign Executing Company</h3>
-                    <button type="button" @click="approveModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+                    <x-close-button @click="approveModalOpen = false" />
                 </div>
 
                 <form method="POST" action="{{ route('projects.approve', $project) }}" class="space-y-4">
@@ -2435,7 +2431,7 @@
             <div @click.away="rejectModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                     <h3 class="font-bold text-slate-900 dark:text-white text-base">Reject Project</h3>
-                    <button type="button" @click="rejectModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+                    <x-close-button @click="rejectModalOpen = false" />
                 </div>
 
                 <form method="POST" action="{{ route('projects.reject', $project) }}" class="space-y-4">
@@ -2458,7 +2454,7 @@
             <div @click.away="materialModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                     <h3 class="font-bold text-slate-900 dark:text-white text-base">Add Material Line Item to BOM</h3>
-                    <button type="button" @click="materialModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+                    <x-close-button @click="materialModalOpen = false" />
                 </div>
 
                 <form method="POST" action="{{ route('projects.materials.store', $project) }}" class="space-y-4">
@@ -2542,7 +2538,7 @@
                         </h3>
                         <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Record actual meters laid or hardware installed for a specific task</p>
                     </div>
-                    <button type="button" @click="consumeModalOpen = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 text-lg leading-none p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition">&times;</button>
+                    <x-close-button @click="consumeModalOpen = false" />
                 </div>
 
                 {{-- Two-Step Navigation Tabs --}}
@@ -2748,7 +2744,7 @@
             <div @click.away="documentModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                     <h3 class="font-bold text-slate-900 dark:text-white text-base">Upload Document / Delivery Challan</h3>
-                    <button type="button" @click="documentModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+                    <x-close-button @click="documentModalOpen = false" />
                 </div>
 
                 <form method="POST" action="{{ route('projects.documents.store', $project) }}" enctype="multipart/form-data" class="space-y-4"
@@ -2952,7 +2948,7 @@
                             <p class="text-xs text-slate-500 dark:text-slate-400">Worker attendance &amp; cabling incentives (₹{{ number_format((float)($project->per_metre_rate ?? 8.0), 2) }}/m)</p>
                         </div>
                     </div>
-                    <button type="button" @click="workDayModalOpen = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 text-lg leading-none p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition">&times;</button>
+                    <x-close-button @click="workDayModalOpen = false" />
                 </div>
 
                 {{-- Scrollable Form Body --}}
@@ -3156,7 +3152,7 @@
             <div @click.away="deviceModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                     <h3 class="font-bold text-slate-900 dark:text-white text-base">Add IP Device</h3>
-                    <button type="button" @click="deviceModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+                    <x-close-button @click="deviceModalOpen = false" />
                 </div>
 
                 <form method="POST" action="{{ route('projects.devices.store', $project) }}" class="space-y-3">
@@ -3215,7 +3211,7 @@
                         <h3 class="font-bold text-slate-900 dark:text-white text-base">Bulk Sequential IP Generator</h3>
                         <p class="text-xs text-slate-400">Generate multiple sequential camera IP rows in 1-click</p>
                     </div>
-                    <button type="button" @click="bulkDeviceModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+                    <x-close-button @click="bulkDeviceModalOpen = false" />
                 </div>
 
                 <form method="POST" action="{{ route('projects.devices.bulk', $project) }}" class="space-y-3">
@@ -3268,7 +3264,7 @@
                         <span class="w-7 h-7 rounded-lg bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-sm"><svg class="w-5 h-5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></span>
                         <h3 class="font-bold text-slate-900 dark:text-white text-base">Apply Pre-Built Workflow Template</h3>
                     </div>
-                    <button type="button" @click="templateModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+                    <x-close-button @click="templateModalOpen = false" />
                 </div>
 
                 <form method="POST" action="{{ route('projects.tasks.apply-template', $project) }}" class="space-y-4">
@@ -3314,7 +3310,7 @@
             <div @click.away="taskModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 max-h-[90vh] overflow-y-auto">
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                     <h3 class="font-bold text-slate-900 dark:text-white text-base">Add Custom Project Task</h3>
-                    <button type="button" @click="taskModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+                    <x-close-button @click="taskModalOpen = false" />
                 </div>
 
                 <form method="POST" action="{{ route('projects.tasks.store', $project) }}" class="space-y-3.5">
@@ -3438,7 +3434,7 @@
                             <p class="text-[11px] text-slate-400">Instantly alerts Project Managers via Dashboard Notification &amp; WhatsApp</p>
                         </div>
                     </div>
-                    <button type="button" @click="blockerModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+                    <x-close-button @click="blockerModalOpen = false" />
                 </div>
 
                 {{-- Task Context --}}
@@ -3495,7 +3491,7 @@
             <div @click.away="editTaskModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 max-h-[90vh] overflow-y-auto">
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                     <h3 class="font-bold text-slate-900 dark:text-white text-base">Edit Project Task</h3>
-                    <button type="button" @click="editTaskModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+                    <x-close-button @click="editTaskModalOpen = false" />
                 </div>
 
                 <form :action="`/projects/{{ $project->id }}/tasks/${editTaskId}`" method="POST" class="space-y-3.5">

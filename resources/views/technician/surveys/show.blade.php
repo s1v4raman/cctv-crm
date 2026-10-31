@@ -247,7 +247,7 @@
                                         <div class="rounded-xl overflow-hidden border border-slate-700 shadow-sm bg-[#060913] relative">
                                             <img :src="item.url" class="w-full h-28 object-cover">
                                             <input aria-label="Photo caption" type="text" :name="'captions[' + index + ']'" placeholder="Photo caption..." class="w-full text-[11px] p-1.5 bg-[#0b1120] text-white border-t border-slate-700 focus:outline-none">
-                                            <button type="button" @click="removePhoto(index)" class="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-rose-600 text-white text-xs font-bold flex items-center justify-center shadow">✕</button>
+                                            <x-close-button size="sm" tone="dark" label="Remove photo" @click="removePhoto(index)" class="absolute top-1.5 right-1.5" />
                                         </div>
                                     </template>
                                 </div>
@@ -264,7 +264,7 @@
                                         <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
                                         Live Camera Viewfinder
                                     </h3>
-                                    <button type="button" @click="closeCamera()" class="text-slate-400 hover:text-white text-sm font-bold p-1">✕</button>
+                                    <x-close-button tone="dark" label="Close camera" @click="closeCamera()" />
                                 </div>
 
                                 <div class="relative bg-black rounded-xl overflow-hidden aspect-video flex items-center justify-center border border-slate-800">

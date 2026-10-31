@@ -656,7 +656,7 @@
         <div class="relative bg-white dark:bg-slate-900 rounded-[4px] overflow-hidden max-w-md w-full border border-slate-300 dark:border-slate-700 shadow-2xl">
             <div class="p-3 bg-slate-900 dark:bg-slate-950 text-white flex items-center justify-between">
                 <span class="text-xs font-bold">Verified Attendance Selfie Photo</span>
-                <button type="button" @click="modalPhotoUrl = null" class="text-slate-400 hover:text-white text-base leading-none">&times;</button>
+                <x-close-button size="sm" tone="dark" label="Close photo" @click="modalPhotoUrl = null" />
             </div>
             <div class="p-2 bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
                 <img :src="modalPhotoUrl" alt="Modal Photo" class="max-h-[70vh] w-auto object-contain rounded-[4px]">

@@ -114,6 +114,89 @@ html.dark .crm-dialog {
     color: var(--fb-text, var(--text-main)) !important;
 }
 
+/* ── Close button (<x-close-button>) ─────────────────────────────────────── */
+/* The class is doubled to outrank the page rules that size and colour every button */
+.crm-close.crm-close {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0;
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    min-height: 36px !important;
+    padding: 0 !important;
+    border: 1px solid transparent !important;
+    border-radius: 8px !important;
+    background: transparent !important;
+    color: var(--text-muted, #64748b) !important;
+    box-shadow: none !important;
+    cursor: pointer;
+    line-height: 1;
+    transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+}
+/* Outranks the theme rule that draws every button icon at 15px */
+button.crm-close.crm-close.crm-close svg {
+    width: 20px !important;
+    height: 20px !important;
+    min-width: 20px !important;
+    min-height: 20px !important;
+    max-width: 20px !important;
+    max-height: 20px !important;
+    flex-shrink: 0;
+    pointer-events: none;
+}
+.crm-close.crm-close:hover {
+    background: var(--page-bg, #f1f5f9) !important;
+    border-color: var(--card-border, #e2e8f0) !important;
+    color: var(--text-main, #0f172a) !important;
+}
+.crm-close.crm-close:focus-visible {
+    outline: 2px solid var(--crm-accent, #2563eb);
+    outline-offset: 2px;
+}
+.crm-close.crm-close--sm {
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    min-height: 28px !important;
+    border-radius: 6px !important;
+}
+button.crm-close.crm-close.crm-close--sm svg {
+    width: 16px !important;
+    height: 16px !important;
+    min-width: 16px !important;
+    min-height: 16px !important;
+    max-width: 16px !important;
+    max-height: 16px !important;
+}
+.crm-close.crm-close--inherit {
+    color: inherit !important;
+    opacity: 0.8;
+}
+.crm-close.crm-close--inherit:hover {
+    background: color-mix(in srgb, currentColor 12%, transparent) !important;
+    border-color: transparent !important;
+    color: inherit !important;
+    opacity: 1;
+}
+.crm-close.crm-close--dark {
+    border-radius: 999px !important;
+    background: rgba(15, 23, 42, 0.6) !important;
+    border-color: rgba(255, 255, 255, 0.18) !important;
+    color: #e2e8f0 !important;
+}
+.crm-close.crm-close--dark:hover {
+    background: rgba(15, 23, 42, 0.85) !important;
+    border-color: rgba(255, 255, 255, 0.35) !important;
+    color: #fff !important;
+}
+.crm-close.crm-close--danger:hover {
+    background: color-mix(in srgb, var(--status-danger, #dc2626) 10%, transparent) !important;
+    border-color: color-mix(in srgb, var(--status-danger, #dc2626) 30%, transparent) !important;
+    color: var(--status-danger, #dc2626) !important;
+}
+
 /* ── Confirm dialog (crmConfirm / data-confirm) ─────────────────────────── */
 html.crm-dialog-open {
     overflow: hidden;

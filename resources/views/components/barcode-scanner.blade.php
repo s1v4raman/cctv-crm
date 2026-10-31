@@ -28,11 +28,7 @@
                     <p style="font-size:.72rem;color:#94a3b8;margin:2px 0 0;">Scan Barcode, Serial Number, or MAC Address tag</p>
                 </div>
             </div>
-            <button type="button" onclick="closeBarcodeScanner('{{ $modalId }}')"
-                    style="background:none;border:none;color:#94a3b8;font-size:1.4rem;line-height:1;cursor:pointer;padding:.2rem .4rem;border-radius:.4rem;"
-                    class="hover:text-white transition-colors">
-                ✕
-            </button>
+            <x-close-button tone="dark" label="Close scanner" onclick="closeBarcodeScanner('{{ $modalId }}')" />
         </div>
 
 

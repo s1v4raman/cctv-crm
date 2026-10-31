@@ -34,7 +34,7 @@
                         <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         {{ session('status') }}
                     </span>
-                    <button onclick="this.parentElement.remove()" class="text-emerald-500 hover:text-emerald-700">✕</button>
+                    <x-close-button size="sm" tone="inherit" label="Dismiss message" onclick="this.parentElement.remove()" />
                 </div>
             @endif
 
@@ -44,7 +44,7 @@
                         <svg class="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/></svg>
                         {{ session('error') }}
                     </span>
-                    <button onclick="this.parentElement.remove()" class="text-rose-500 hover:text-rose-700">✕</button>
+                    <x-close-button size="sm" tone="inherit" label="Dismiss message" onclick="this.parentElement.remove()" />
                 </div>
             @endif
 
@@ -778,7 +778,7 @@
         <div class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl">
             <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                 <h3 class="text-sm font-bold text-slate-900 dark:text-white" id="modalTitle">Record Employee Attendance</h3>
-                <button type="button" onclick="document.getElementById('manualAttendanceModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600">✕</button>
+                <x-close-button onclick="document.getElementById('manualAttendanceModal').classList.add('hidden')" />
             </div>
 
             <form method="POST" action="{{ route('attendance.store') }}" class="space-y-4 mt-4">
@@ -860,7 +860,7 @@
         <div class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-lg w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl">
             <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                 <h3 class="text-sm font-bold text-slate-900 dark:text-white">Bulk / Range Attendance Fill</h3>
-                <button type="button" onclick="document.getElementById('bulkAttendanceModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600">✕</button>
+                <x-close-button onclick="document.getElementById('bulkAttendanceModal').classList.add('hidden')" />
             </div>
 
             <form method="POST" action="{{ route('attendance.batch-store') }}" class="space-y-4 mt-4">

@@ -257,9 +257,7 @@
                         Send Payslip via WhatsApp
                     </h3>
                 </div>
-                <button type="button" onclick="document.getElementById('whatsappModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 text-xl font-bold">
-                    &times;
-                </button>
+                <x-close-button onclick="document.getElementById('whatsappModal').classList.add('hidden')" />
             </div>
 
             <form action="{{ route('finance.payroll.sendWhatsApp', $payroll) }}" method="GET" target="_blank" class="space-y-4 text-xs">

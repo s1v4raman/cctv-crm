@@ -346,9 +346,7 @@
                         <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Server SMTP Delivery or Outlook Desktop Compose</p>
                     </div>
                 </div>
-                <button type="button" onclick="closeEmailModal()" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer" aria-label="Close modal">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
+                <x-close-button onclick="closeEmailModal()" />
             </div>
 
             {{-- 1-Click External Email Clients --}}
@@ -467,9 +465,7 @@
                         <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Quotation #{{ $quotation->quotation_no }} &bull; Total: <strong>₹{{ number_format((float)$quotation->total, 2) }}</strong></p>
                     </div>
                 </div>
-                <button type="button" onclick="closeWhatsAppModal()" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer" aria-label="Close modal">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
+                <x-close-button onclick="closeWhatsAppModal()" />
             </div>
 
             {{-- Condition Status --}}

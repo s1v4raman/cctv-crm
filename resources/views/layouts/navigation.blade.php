@@ -16,9 +16,7 @@
         </a>
         
         {{-- Close mobile drawer button --}}
-        <button aria-label="Close menu" @click="sidebarOpen = false" class="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-        </button>
+        <x-close-button label="Close menu" @click="sidebarOpen = false" class="lg:hidden" />
     </div>
 
     {{-- Navigation Menu Items: Scrollable flex-1 container for all modules --}}

@@ -483,9 +483,7 @@
                 <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 font-heading">
                     File Travel / Field Expense Claim
                 </h3>
-                <button type="button" onclick="document.getElementById('submitExpenseModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 text-xl font-bold">
-                    &times;
-                </button>
+                <x-close-button onclick="document.getElementById('submitExpenseModal').classList.add('hidden')" />
             </div>
 
             <form action="{{ route('finance.expenses.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4 text-xs">
@@ -610,9 +608,7 @@
                 <h3 class="text-base font-bold text-rose-600 dark:text-rose-400 flex items-center gap-2 font-heading">
                     Reject Expense Claim
                 </h3>
-                <button type="button" onclick="document.getElementById('rejectClaimModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 text-xl font-bold">
-                    &times;
-                </button>
+                <x-close-button onclick="document.getElementById('rejectClaimModal').classList.add('hidden')" />
             </div>
 
             <p id="rejectClaimPrompt" class="text-xs text-slate-600 dark:text-slate-300">
@@ -648,9 +644,7 @@
                 <h3 class="text-base font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-2 font-heading">
                     Disburse Claim Reimbursement
                 </h3>
-                <button type="button" onclick="document.getElementById('payClaimModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 text-xl font-bold">
-                    &times;
-                </button>
+                <x-close-button onclick="document.getElementById('payClaimModal').classList.add('hidden')" />
             </div>
 
             <div id="payClaimInfo" class="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-xs">

@@ -60,6 +60,11 @@ class TechnicianPortalController extends Controller
             ->orderBy('title')
             ->get();
 
+        // Current Authenticated Technician Attendance Record for Today
+        $myAttendanceToday = \App\Models\EmployeeAttendance::where('user_id', $technicianId)
+            ->whereDate('date', now()->toDateString())
+            ->first();
+
         return view('technician.dashboard', compact(
             'activeJobs',
             'completedJobs',
@@ -68,7 +73,8 @@ class TechnicianPortalController extends Controller
             'assignedProjects',
             'allProjectsCount',
             'activeWorkers',
-            'activeProjects'
+            'activeProjects',
+            'myAttendanceToday'
         ));
     }
 

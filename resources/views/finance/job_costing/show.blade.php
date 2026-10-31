@@ -245,9 +245,7 @@
             @csrf
             <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
                 <h3 class="text-sm font-bold text-slate-900 dark:text-white">Edit Labor Time &amp; Project Overheads</h3>
-                <button aria-label="Close" type="button" @click="$dispatch('close-modal', 'edit-costing-modal')" class="text-slate-400 hover:text-slate-600">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
+                <x-close-button @click="$dispatch('close-modal', 'edit-costing-modal')" />
             </div>
 
             <div class="space-y-3 text-xs">

@@ -338,7 +338,7 @@
             <div class="bg-white dark:bg-[#0f172a] rounded-[4px] max-w-md w-full p-5 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200" @click.outside="adjustModal = false">
                 <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 mb-4">
                     <h3 class="text-base font-bold text-slate-900 dark:text-white">Update Stock Level</h3>
-                    <button @click="adjustModal = false" class="text-slate-400 hover:text-slate-700 text-2xl font-bold leading-none">&times;</button>
+                    <x-close-button @click="adjustModal = false" />
                 </div>
 
                 <template x-if="selectedProductId">

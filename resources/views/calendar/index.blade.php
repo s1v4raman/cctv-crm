@@ -155,7 +155,7 @@
                     <svg class="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     <span>{{ session('status') }}</span>
                 </div>
-                <button type="button" @click="$el.parentElement.remove()" class="text-emerald-600 hover:text-emerald-900 cursor-pointer">&times;</button>
+                <x-close-button size="sm" tone="inherit" label="Dismiss message" @click="$el.parentElement.remove()" />
             </div>
         @endif
 
@@ -582,7 +582,7 @@
                         <span class="text-rose-500"><svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg></span>
                         <span>Reject Task &amp; Return to Admin</span>
                     </h3>
-                    <button type="button" @click="rejectModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg cursor-pointer">&times;</button>
+                    <x-close-button @click="rejectModalOpen = false" />
                 </div>
 
                 <form :action="'/calendar/tasks/' + (activeRejectTask ? activeRejectTask.id : '') + '/reject'" method="POST" class="p-6 space-y-4">
@@ -635,7 +635,7 @@
                             <span><svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg></span>
                             <span>Assign / Reassign Task</span>
                         </h3>
-                        <button type="button" @click="reassignModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg cursor-pointer">&times;</button>
+                        <x-close-button @click="reassignModalOpen = false" />
                     </div>
 
                     <form :action="'/calendar/tasks/' + (activeReassignTask ? activeReassignTask.id : '') + '/assign'" method="POST" class="p-6 space-y-4">
@@ -710,7 +710,7 @@
                             <span>✨</span>
                             <span>Create Company Task</span>
                         </h3>
-                        <button type="button" @click="openCreateTaskModal = false" class="text-slate-400 hover:text-slate-600 text-lg cursor-pointer">&times;</button>
+                        <x-close-button @click="openCreateTaskModal = false" />
                     </div>
 
                     <form action="{{ route('calendar.tasks.store') }}" method="POST" class="p-6 space-y-4">
@@ -838,9 +838,7 @@
                 
                 <div class="px-5 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
                     <span class="text-xs font-bold text-blue-600 uppercase tracking-wider" x-text="selectedEvent ? selectedEvent.badge : ''"></span>
-                    <button aria-label="Close" type="button" @click="closeDrawer()" class="text-slate-400 hover:text-slate-600 cursor-pointer">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                    </button>
+                    <x-close-button @click="closeDrawer()" />
                 </div>
 
                 <div class="p-5 space-y-4 overflow-y-auto flex-1" x-show="selectedEvent">

@@ -425,9 +425,7 @@
                         <p id="jcrModalTargetTitle" style="font-size:.75rem;color:#f59e0b;margin:0;font-weight:600;">DVR Rack Setup</p>
                     </div>
                 </div>
-                <button type="button" onclick="closeJcrCameraModal()" style="width:2rem;height:2rem;border-radius:999px;background:#1e293b;border:1px solid #334155;color:#94a3b8;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:bold;">
-                    ✕
-                </button>
+                <x-close-button tone="dark" label="Close camera" onclick="closeJcrCameraModal()" />
             </div>
 
             {{-- Viewfinder Box --}}
@@ -999,7 +997,7 @@
                     </div>
                     <div class="flex items-center gap-2">
                         <span class="text-[11px] font-semibold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">Extra Proof</span>
-                        <button type="button" onclick="deleteSlot('${newId}')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs font-bold cursor-pointer bg-transparent border-0">✕</button>
+                        <button type="button" onclick="deleteSlot('${newId}')" class="crm-close btn-icon crm-close--sm crm-close--danger" aria-label="Remove photo slot" title="Remove photo slot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
                     </div>
                 </div>
 

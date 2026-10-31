@@ -20,7 +20,7 @@
         @if (session('status'))
             <div class="px-4 py-2.5 text-sm bg-emerald-50 text-emerald-800 border-b border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-900 flex items-center justify-between">
                 <span>{{ session('status') }}</span>
-                <button type="button" @click="$el.parentElement.remove()" class="text-emerald-700 dark:text-emerald-400 font-bold">&times;</button>
+                <x-close-button size="sm" tone="inherit" label="Dismiss message" @click="$el.parentElement.remove()" />
             </div>
         @endif
 
@@ -221,7 +221,7 @@
                             <h3 class="font-bold text-sm text-slate-900 dark:text-white">Compose Direct Dispatch</h3>
                             <p class="text-xs text-slate-500">Send an instant WhatsApp message, SMS text or email update to any client or field technician.</p>
                         </div>
-                        <button type="button" @click="composeOpen = false" class="text-slate-400 hover:text-slate-700 text-lg font-bold">&times;</button>
+                        <x-close-button @click="composeOpen = false" />
                     </div>
 
                     <form method="POST" action="{{ route('alerts.broadcast') }}" class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 text-xs">

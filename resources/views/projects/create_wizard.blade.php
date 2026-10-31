@@ -650,7 +650,7 @@
                                             </div>
                                         </td>
                                         <td class="py-2 text-center align-top">
-                                            <button type="button" @click="removeMaterialRow(idx)" class="text-rose-500 hover:text-rose-700 text-lg leading-none pt-1.5">&times;</button>
+                                            <x-close-button size="sm" tone="danger" label="Remove material" @click="removeMaterialRow(idx)" />
                                         </td>
                                     </tr>
                                 </template>
@@ -689,9 +689,7 @@
                             <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Directly add and select site location for this project</p>
                         </div>
                     </div>
-                    <button type="button" @click="siteModalOpen = false" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer" aria-label="Close modal">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                    </button>
+                    <x-close-button @click="siteModalOpen = false" />
                 </div>
 
                 <div class="space-y-3.5">

@@ -91,9 +91,7 @@ $titleId = 'modal-title-' . \Illuminate\Support\Str::slug($name);
         @if ($title)
             <div class="flex items-center justify-between gap-3 px-6 py-4 border-b border-[var(--card-border)]">
                 <h2 id="{{ $titleId }}" class="text-base font-bold">{{ $title }}</h2>
-                <button type="button" class="crm-shortcuts-close btn-icon" x-on:click="show = false" aria-label="Close">
-                    <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
+                <x-close-button x-on:click="show = false" />
             </div>
         @endif
         {{ $slot }}

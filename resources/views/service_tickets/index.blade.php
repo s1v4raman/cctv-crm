@@ -149,9 +149,7 @@
                                 <p class="text-xs text-slate-400">How customer emails automatically convert into CRM tickets</p>
                             </div>
                         </div>
-                        <button type="button" @click="emailModalOpen = false" class="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition">
-                            ✕
-                        </button>
+                        <x-close-button tone="dark" @click="emailModalOpen = false" />
                     </div>
 
                     <!-- Webhook Info Box -->

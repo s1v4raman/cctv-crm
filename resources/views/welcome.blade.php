@@ -1171,12 +1171,7 @@
     <!-- 10. PRODUCT INQUIRY & QUOTATION MODAL -->
     <div id="inquireModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="pathsoft-card max-w-lg w-full p-6 sm:p-8 relative shadow-2xl">
-            <button aria-label="Close" type="button" onclick="closeInquireModal()"
-                class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white p-1 rounded-lg">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-            </button>
+            <x-close-button onclick="closeInquireModal()" class="absolute top-4 right-4" />
 
             <div class="mb-5">
                 <div class="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-semibold mb-2">
@@ -1242,10 +1237,7 @@
                         <p class="text-xs text-slate-500 dark:text-slate-400">Search enterprise security solutions, AMC packages, and CCTV architectures</p>
                     </div>
                 </div>
-                <button aria-label="Close search" type="button" onclick="closeSearchModal()"
-                    class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
+                <x-close-button label="Close search" onclick="closeSearchModal()" />
             </div>
 
             <!-- Search Form -->
@@ -1515,13 +1507,7 @@
                     <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                     <span id="lightboxAutoplayLabel">Auto Play</span>
                 </button>
-                <button type="button" onclick="closePictureLightbox()"
-                    class="w-9 h-9 rounded-full bg-white/10 hover:bg-rose-600 text-white flex items-center justify-center transition-all hover:scale-110"
-                    title="Close Viewer (ESC)">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                </button>
+                <x-close-button tone="dark" label="Close viewer" onclick="closePictureLightbox()" />
             </div>
         </div>
 

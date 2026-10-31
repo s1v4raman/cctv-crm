@@ -22,7 +22,7 @@
         @if(session('status'))
             <div class="p-3 rounded border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 text-xs font-medium flex items-center justify-between">
                 <span>{{ session('status') }}</span>
-                <button onclick="this.parentElement.remove()" class="text-emerald-500 hover:text-emerald-700">✕</button>
+                <x-close-button size="sm" tone="inherit" label="Dismiss message" onclick="this.parentElement.remove()" />
             </div>
         @endif
 
@@ -175,7 +175,7 @@
                     <h3 class="text-sm font-bold text-slate-900 dark:text-white" id="salaryModalTitle">Configure Salary Structure</h3>
                     <p class="text-xs text-slate-500" id="salaryModalSub">Set monthly base, daily and weekly wages</p>
                 </div>
-                <button type="button" onclick="document.getElementById('salaryModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600">✕</button>
+                <x-close-button onclick="document.getElementById('salaryModal').classList.add('hidden')" />
             </div>
 
             <form id="salaryForm" method="POST" action="" class="space-y-3 mt-4 text-xs">

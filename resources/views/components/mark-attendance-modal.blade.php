@@ -7,7 +7,7 @@
 ])
 
 {{-- MARK WORKER ATTENDANCE TWO-STEP SPLIT MODAL --}}
-<div id="markAttendanceModal" class="fixed inset-0 z-50 bg-black/75 flex items-center justify-center p-3 sm:p-4 hidden overflow-y-auto backdrop-blur-xs">
+<div id="markAttendanceModal" class="fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-3 sm:p-4 hidden overflow-y-auto backdrop-blur-xs">
     <div class="bg-white dark:bg-slate-900 rounded-xl max-w-xl w-full p-5 sm:p-6 shadow-2xl border border-slate-200 dark:border-slate-800 my-auto transition-all">
         
         {{-- Modal Top Bar --}}
@@ -19,7 +19,7 @@
                 </h3>
                 <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Two-step guided check-in &amp; work performance logging</p>
             </div>
-            <button type="button" onclick="closeAttendanceModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xl font-bold p-1">&times;</button>
+            <x-close-button onclick="closeAttendanceModal()" />
         </div>
 
         {{-- Stepper Progress Indicator --}}
@@ -75,8 +75,8 @@
                     </div>
 
                     <div>
-                        <label for="f-project-id" class="crm-label text-xs">Project Site <span class="required-marker">*</span></label>
-                        <select id="f-project-id" name="project_id" required class="crm-select text-xs w-full">
+                        <label for="att-project-id" class="crm-label text-xs">Project Site <span class="required-marker">*</span></label>
+                        <select id="att-project-id" name="project_id" required class="crm-select text-xs w-full">
                             <option value="">Select Project Site...</option>
                             @foreach($projects as $p)
                                 <option value="{{ $p->id }}" @selected(old('project_id', $defaultProjectId) == $p->id)>
@@ -95,21 +95,21 @@
                     </div>
 
                     <div>
-                        <label for="f-attendance-type" class="crm-label text-xs">Shift Type <span class="required-marker">*</span></label>
-                        <select id="f-attendance-type" name="attendance_type" required class="crm-select text-xs w-full">
+                        <label for="att-attendance-type" class="crm-label text-xs">Shift Type <span class="required-marker">*</span></label>
+                        <select id="att-attendance-type" name="attendance_type" required class="crm-select text-xs w-full">
                             <option value="full" selected>Full Day (1.0x)</option>
                             <option value="half">Half Day (0.5x)</option>
                         </select>
                     </div>
 
                     <div>
-                        <label for="f-check-in-time" class="crm-label text-xs">Punch Time</label>
-                        <input id="f-check-in-time" type="time" name="check_in_time" value="{{ now()->format('H:i') }}" class="crm-input text-xs w-full">
+                        <label for="att-check-in-time" class="crm-label text-xs">Punch Time</label>
+                        <input id="att-check-in-time" type="time" name="check_in_time" value="{{ now()->format('H:i') }}" class="crm-input text-xs w-full">
                     </div>
                 </div>
 
                 {{-- PHOTO CAPTURE SECTION --}}
-                <div class="p-3.5 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700">
+                <div class="p-3.5 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-200 dark:border-slate-700">
                     <div class="flex items-center justify-between mb-2">
                         <label class="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wide">
                             Attendance Photo (Selfie / Work Site)
@@ -118,45 +118,83 @@
                     </div>
 
                     {{-- Mode Switch Tabs --}}
-                    <div class="flex items-center gap-2 mb-2.5">
-                        <button type="button" onclick="setPhotoTab('camera')" id="tab-btn-camera" class="px-2.5 py-1 text-xs font-semibold rounded-md bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-blue-600 dark:text-blue-400 shadow-xs transition">
-                            Live Camera
+                    <div class="inline-flex items-center p-1 rounded-lg bg-slate-200/70 dark:bg-slate-800 border border-slate-300/70 dark:border-slate-700 text-xs mb-3">
+                        <button type="button" onclick="setPhotoTab('camera')" id="tab-btn-camera" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md font-semibold text-xs transition bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs cursor-pointer">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z"/></svg>
+                            <span>Live Camera</span>
                         </button>
-                        <button type="button" onclick="setPhotoTab('file')" id="tab-btn-file" class="px-2.5 py-1 text-xs font-semibold rounded-md bg-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition">
-                            Upload File
+                        <button type="button" onclick="setPhotoTab('file')" id="tab-btn-file" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md font-semibold text-xs transition text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg>
+                            <span>Upload File</span>
                         </button>
                     </div>
 
                     {{-- Mode 1: Live Camera Stream --}}
                     <div id="photo-tab-camera">
-                        <div class="relative bg-black rounded-lg overflow-hidden h-44 sm:h-48 flex items-center justify-center border border-slate-800">
-                            <video id="webcam-video" autoplay playsinline class="w-full h-full object-cover"></video>
-                            <canvas id="webcam-canvas" class="hidden"></canvas>
-                        </div>
-                        <div class="flex items-center justify-between mt-2.5 flex-wrap gap-2">
-                            <button type="button" onclick="startWebcam()" id="btn-start-camera" class="btn-secondary py-1 px-3 text-xs">
-                                Start Camera
-                            </button>
-                            <button type="button" onclick="snapWebcamPhoto()" id="btn-snap-camera" class="btn-primary py-1 px-3 text-xs hidden">
-                                📸 Snap Photo
-                            </button>
-                            <span id="camera-status-text" class="text-[11px] text-slate-500">Tap start camera to take selfie</span>
-                        </div>
-                        <div id="camera-snapped-preview" class="mt-2.5 hidden">
-                            <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 mb-1.5 border border-emerald-300 dark:border-emerald-700">
-                                ✓ Photo Snapped &amp; Ready
+                        <div class="relative bg-slate-100/90 dark:bg-slate-800/80 rounded-xl overflow-hidden min-h-[185px] flex items-center justify-center border border-slate-200 dark:border-slate-700">
+                            {{-- Camera Standby Placeholder (Shown when camera is off/idle) --}}
+                            <div id="camera-idle-placeholder" class="text-center p-5 flex flex-col items-center justify-center">
+                                <div class="w-12 h-12 rounded-full bg-blue-50 dark:bg-blue-900/40 border border-blue-200 dark:border-blue-700/60 flex items-center justify-center text-blue-600 dark:text-blue-400 mb-2 shadow-xs">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z" />
+                                    </svg>
+                                </div>
+                                <p class="text-xs font-bold text-slate-700 dark:text-slate-200">Live Camera Standby</p>
+                                <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Click "Start Camera" below to preview worker selfie</p>
                             </div>
-                            <img id="camera-snapped-img" alt="Snapped" class="w-20 h-20 object-cover rounded-lg border-2 border-emerald-500 shadow-xs">
+
+                            {{-- Active Video Feed (Hidden until Start Camera is clicked) --}}
+                            <video id="webcam-video" autoplay playsinline class="w-full h-48 sm:h-52 object-cover hidden"></video>
+                            <canvas id="webcam-canvas" class="hidden"></canvas>
+
+                            {{-- Snapped Preview Surface (Replaces video feed completely upon snap) --}}
+                            <div id="camera-snapped-container" class="hidden flex flex-col items-center justify-center p-3.5 w-full">
+                                <div class="relative">
+                                    <img id="camera-snapped-img" alt="Captured Selfie" class="w-36 h-36 object-cover rounded-xl border-2 border-emerald-500 shadow-md">
+                                    <span class="absolute -top-2 -right-2 bg-emerald-600 text-white rounded-full p-1 shadow">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                                    </span>
+                                </div>
+                                <div class="mt-2.5 flex items-center gap-2">
+                                    <span class="text-xs font-semibold text-emerald-700 dark:text-emerald-400">Photo Snapped &amp; Ready</span>
+                                    <button type="button" onclick="retakeWebcamPhoto()" class="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 hover:underline cursor-pointer">
+                                        (Retake)
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Camera Action Controls --}}
+                        <div class="flex items-center justify-between mt-2.5 flex-wrap gap-2">
+                            <div class="flex items-center gap-2">
+                                <button type="button" onclick="startWebcam()" id="btn-start-camera" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 font-semibold text-xs hover:bg-slate-50 dark:hover:bg-slate-700 shadow-xs transition cursor-pointer">
+                                    <svg class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z"/></svg>
+                                    <span>Start Camera</span>
+                                </button>
+                                <button type="button" onclick="snapWebcamPhoto()" id="btn-snap-camera" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-xs transition cursor-pointer hidden">
+                                    <span>📸 Snap Photo</span>
+                                </button>
+                            </div>
+                            <span id="camera-status-text" class="text-[11px] text-slate-500 dark:text-slate-400">Click Start Camera to take selfie</span>
                         </div>
                     </div>
 
                     {{-- Mode 2: File Upload --}}
                     <div id="photo-tab-file" class="hidden">
-                        <div class="p-2.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
-                            <input aria-label="Site photo" type="file" name="photo" id="modal-photo-input" accept="image/*" class="text-xs text-slate-600 dark:text-slate-300 file:mr-2.5 file:py-1.5 file:px-3 file:rounded file:border file:border-slate-300 dark:file:border-slate-600 file:text-xs file:font-semibold file:bg-slate-100 dark:file:bg-slate-800 file:text-slate-700 dark:file:text-slate-200 hover:file:bg-slate-200 dark:hover:file:bg-slate-700 cursor-pointer w-full">
+                        <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-dashed border-slate-300 dark:border-slate-600 text-center flex flex-col items-center justify-center">
+                            <svg class="w-8 h-8 text-slate-400 mb-2" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
+                            </svg>
+                            <label for="modal-photo-input" class="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer">
+                                Browse device photo or gallery
+                            </label>
+                            <input aria-label="Site photo" type="file" name="photo" id="modal-photo-input" accept="image/*" class="mt-2 text-xs text-slate-600 dark:text-slate-300 file:mr-2.5 file:py-1.5 file:px-3 file:rounded file:border file:border-slate-300 dark:file:border-slate-600 file:text-xs file:font-semibold file:bg-slate-100 dark:file:bg-slate-800 file:text-slate-700 dark:file:text-slate-200 hover:file:bg-slate-200 dark:hover:file:bg-slate-700 cursor-pointer w-full max-w-xs">
+                            <p class="text-[10px] text-slate-400 mt-1">JPEG, PNG or WebP up to 10MB</p>
                         </div>
-                        <div id="file-preview-wrap" class="mt-2.5 hidden">
-                            <img id="file-preview-img" alt="Preview" class="w-20 h-20 object-cover rounded-lg border-2 border-blue-500 shadow-xs">
+                        <div id="file-preview-wrap" class="mt-3 hidden text-center">
+                            <img id="file-preview-img" alt="Preview" class="w-32 h-32 object-cover rounded-xl border-2 border-blue-500 shadow-md mx-auto">
+                            <span class="inline-block mt-1 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">✓ File selected &amp; ready</span>
                         </div>
                     </div>
                 </div>
@@ -199,14 +237,14 @@
                 {{-- Cabling Metres & Cameras Installed --}}
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label for="f-cabling-metres" class="crm-label text-xs">Cabling Metres Done</label>
-                        <input id="f-cabling-metres" type="number" step="0.1" min="0" name="cabling_metres" placeholder="e.g. 75.0" class="crm-input text-xs w-full">
+                        <label for="att-cabling-metres" class="crm-label text-xs">Cabling Metres Done</label>
+                        <input id="att-cabling-metres" type="number" step="0.1" min="0" name="cabling_metres" placeholder="e.g. 75.0" class="crm-input text-xs w-full">
                         <p class="text-[10px] text-slate-400 mt-0.5">Physical cable pulled today (m)</p>
                     </div>
 
                     <div>
-                        <label for="f-cameras-installed" class="crm-label text-xs">Cameras Installed</label>
-                        <input id="f-cameras-installed" type="number" min="0" name="cameras_installed" placeholder="e.g. 4" class="crm-input text-xs w-full">
+                        <label for="att-cameras-installed" class="crm-label text-xs">Cameras Installed</label>
+                        <input id="att-cameras-installed" type="number" min="0" name="cameras_installed" placeholder="e.g. 4" class="crm-input text-xs w-full">
                         <p class="text-[10px] text-slate-400 mt-0.5">Units mounted/configured today</p>
                     </div>
                 </div>
@@ -214,19 +252,19 @@
                 {{-- Extra Allowance & Reason --}}
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label for="f-extra-amount" class="crm-label text-xs">Extra Allowance (₹)</label>
-                        <input id="f-extra-amount" type="number" step="any" min="0" name="extra_amount" placeholder="e.g. 150" class="crm-input text-xs w-full">
+                        <label for="att-extra-amount" class="crm-label text-xs">Extra Allowance (₹)</label>
+                        <input id="att-extra-amount" type="number" step="any" min="0" name="extra_amount" placeholder="e.g. 150" class="crm-input text-xs w-full">
                     </div>
                     <div>
-                        <label for="f-extra-description" class="crm-label text-xs">Extra Reason</label>
-                        <input id="f-extra-description" type="text" name="extra_description" placeholder="e.g. Night shift / Travel allowance" class="crm-input text-xs w-full">
+                        <label for="att-extra-description" class="crm-label text-xs">Extra Reason</label>
+                        <input id="att-extra-description" type="text" name="extra_description" placeholder="e.g. Night shift / Travel allowance" class="crm-input text-xs w-full">
                     </div>
                 </div>
 
                 {{-- Work Notes --}}
                 <div>
-                    <label for="f-notes" class="crm-label text-xs">Work Notes / Summary</label>
-                    <textarea id="f-notes" name="notes" rows="2" placeholder="Summary of work performed, site conditions, testing details..." class="crm-input text-xs w-full"></textarea>
+                    <label for="att-notes" class="crm-label text-xs">Work Notes / Summary</label>
+                    <textarea id="att-notes" name="notes" rows="2" placeholder="Summary of work performed, site conditions, testing details..." class="crm-input text-xs w-full"></textarea>
                 </div>
 
                 {{-- Step 2 Actions --}}
@@ -263,7 +301,7 @@
         if (dateParam) selectedDateVal = dateParam;
 
         if (selectedProjId) {
-            const projSelect = document.getElementById('f-project-id');
+            const projSelect = document.getElementById('att-project-id');
             if (projSelect) projSelect.value = selectedProjId;
         }
 
@@ -303,7 +341,7 @@
 
         if (step === 2) {
             const workerSelect = document.getElementById('modal-worker-select');
-            const projectSelect = document.getElementById('f-project-id');
+            const projectSelect = document.getElementById('att-project-id');
 
             if (!workerSelect || !workerSelect.value) {
                 if (err1) {
@@ -329,7 +367,7 @@
             const workerOpt = workerSelect.options[workerSelect.selectedIndex];
             const projOpt = projectSelect.options[projectSelect.selectedIndex];
             const dateVal = document.getElementById('modal-work-date').value;
-            const shiftType = document.getElementById('f-attendance-type').value === 'half' ? 'Half Day (0.5x)' : 'Full Day (1.0x)';
+            const shiftType = document.getElementById('att-attendance-type').value === 'half' ? 'Half Day (0.5x)' : 'Full Day (1.0x)';
             const photoData = document.getElementById('webcam-photo-data').value;
             const profilePhoto = workerOpt.getAttribute('data-photo');
 
@@ -409,20 +447,21 @@
         if (mode === 'file') {
             tabFile.classList.remove('hidden');
             tabCamera.classList.add('hidden');
-            btnFile.className = "px-2.5 py-1 text-xs font-semibold rounded-md bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-blue-600 dark:text-blue-400 shadow-xs transition";
-            btnCamera.className = "px-2.5 py-1 text-xs font-semibold rounded-md bg-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition";
+            btnFile.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-md font-semibold text-xs transition bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs cursor-pointer";
+            btnCamera.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-md font-semibold text-xs transition text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer";
             stopWebcam();
         } else {
             tabFile.classList.add('hidden');
             tabCamera.classList.remove('hidden');
-            btnCamera.className = "px-2.5 py-1 text-xs font-semibold rounded-md bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-blue-600 dark:text-blue-400 shadow-xs transition";
-            btnFile.className = "px-2.5 py-1 text-xs font-semibold rounded-md bg-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition";
-            startWebcam();
+            btnCamera.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-md font-semibold text-xs transition bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs cursor-pointer";
+            btnFile.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-md font-semibold text-xs transition text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer";
         }
     }
 
     async function startWebcam() {
         const video = document.getElementById('webcam-video');
+        const placeholder = document.getElementById('camera-idle-placeholder');
+        const snappedContainer = document.getElementById('camera-snapped-container');
         const status = document.getElementById('camera-status-text');
         const startBtn = document.getElementById('btn-start-camera');
         const snapBtn = document.getElementById('btn-snap-camera');
@@ -430,11 +469,14 @@
         try {
             globalWebcamStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
             video.srcObject = globalWebcamStream;
-            status.textContent = 'Camera active';
-            startBtn.classList.add('hidden');
-            snapBtn.classList.remove('hidden');
+            video.classList.remove('hidden');
+            if (placeholder) placeholder.classList.add('hidden');
+            if (snappedContainer) snappedContainer.classList.add('hidden');
+            if (status) status.innerHTML = '<span class="text-emerald-600 dark:text-emerald-400 font-semibold">🟢 Camera active</span> - Frame face & snap photo';
+            if (startBtn) startBtn.classList.add('hidden');
+            if (snapBtn) snapBtn.classList.remove('hidden');
         } catch (err) {
-            status.textContent = 'Camera unavailable: ' + err.message;
+            if (status) status.innerHTML = '<span class="text-rose-500 font-semibold">⚠️ Camera unavailable:</span> ' + (err.message || 'Permission denied');
         }
     }
 
@@ -442,8 +484,9 @@
         const video = document.getElementById('webcam-video');
         const canvas = document.getElementById('webcam-canvas');
         const dataInput = document.getElementById('webcam-photo-data');
-        const previewWrap = document.getElementById('camera-snapped-preview');
+        const snappedContainer = document.getElementById('camera-snapped-container');
         const previewImg = document.getElementById('camera-snapped-img');
+        const status = document.getElementById('camera-status-text');
 
         canvas.width = video.videoWidth || 640;
         canvas.height = video.videoHeight || 480;
@@ -453,20 +496,41 @@
         const base64 = canvas.toDataURL('image/jpeg', 0.85);
         dataInput.value = base64;
         previewImg.src = base64;
-        previewWrap.classList.remove('hidden');
 
-        stopWebcam();
+        video.classList.add('hidden');
+        snappedContainer.classList.remove('hidden');
+        if (status) status.innerHTML = '<span class="text-emerald-600 dark:text-emerald-400 font-semibold">✓ Selfie captured!</span> Ready to proceed';
+
+        stopWebcam(true);
     }
 
-    function stopWebcam() {
+    function retakeWebcamPhoto() {
+        const dataInput = document.getElementById('webcam-photo-data');
+        if (dataInput) dataInput.value = '';
+        startWebcam();
+    }
+
+    function stopWebcam(keepSnapped = false) {
         if (globalWebcamStream) {
             globalWebcamStream.getTracks().forEach(t => t.stop());
             globalWebcamStream = null;
         }
+        const video = document.getElementById('webcam-video');
+        const placeholder = document.getElementById('camera-idle-placeholder');
+        const snappedContainer = document.getElementById('camera-snapped-container');
         const startBtn = document.getElementById('btn-start-camera');
         const snapBtn = document.getElementById('btn-snap-camera');
-        if (startBtn) startBtn.classList.remove('hidden');
+        const status = document.getElementById('camera-status-text');
+
+        if (video) video.classList.add('hidden');
         if (snapBtn) snapBtn.classList.add('hidden');
+        if (startBtn) startBtn.classList.remove('hidden');
+
+        if (!keepSnapped) {
+            if (placeholder) placeholder.classList.remove('hidden');
+            if (snappedContainer) snappedContainer.classList.add('hidden');
+            if (status) status.textContent = 'Click Start Camera to take selfie';
+        }
     }
 
     document.getElementById('modal-photo-input')?.addEventListener('change', function(e) {
@@ -513,7 +577,7 @@
 
     function handleAttendanceSubmit(e) {
         const workerSelect = document.getElementById('modal-worker-select');
-        const projectSelect = document.getElementById('f-project-id');
+        const projectSelect = document.getElementById('att-project-id');
         const errorBox = document.getElementById('modal-validation-error-step2');
         const saveBtn = document.getElementById('btn-save-attendance');
 
@@ -530,3 +594,4 @@
         return true;
     }
 </script>
+

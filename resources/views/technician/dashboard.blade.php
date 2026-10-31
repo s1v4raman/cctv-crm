@@ -10,10 +10,43 @@
                 </div>
             </div>
             <div class="flex items-center gap-2 flex-wrap">
+                {{-- Technician Self Attendance Clock In / Clock Out --}}
+                @php
+                    $myAttendance = $myAttendanceToday ?? \App\Models\EmployeeAttendance::where('user_id', auth()->id())->whereDate('date', now()->toDateString())->first();
+                @endphp
+                @if(!$myAttendance || !$myAttendance->clock_in)
+                    <form method="POST" action="{{ route('attendance.clock-in') }}" class="inline-flex items-center">
+                        @csrf
+                        <input type="hidden" name="location_type" value="on_site">
+                        <button type="submit" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-xs transition cursor-pointer">
+                            <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+                            <span>Clock In</span>
+                        </button>
+                    </form>
+                @elseif(!$myAttendance->clock_out)
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-300 dark:border-emerald-800 text-xs">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span class="text-emerald-800 dark:text-emerald-300 font-semibold">
+                            In: {{ \Carbon\Carbon::parse($myAttendance->clock_in)->format('h:i A') }}
+                        </span>
+                        <form method="POST" action="{{ route('attendance.clock-out') }}" class="inline">
+                            @csrf
+                            <button type="submit" class="px-2 py-0.5 rounded bg-rose-600 hover:bg-rose-700 text-white font-bold text-[11px] shadow-xs transition cursor-pointer">
+                                Clock Out
+                            </button>
+                        </form>
+                    </div>
+                @else
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-700 dark:text-slate-300">
+                        <svg class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span>Shift Done ({{ $myAttendance->total_hours }}h)</span>
+                    </div>
+                @endif
+
                 <button type="button" onclick="openAttendanceModal()" 
                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-xs transition cursor-pointer">
                     <svg class="w-3.5 h-3.5 text-white shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-                    <span>Log Daily Attendance</span>
+                    <span>Log Worker Attendance</span>
                 </button>
                 <a href="{{ route('finance.expenses.index') }}" 
                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-medium text-xs hover:bg-slate-50 dark:hover:bg-slate-700 shadow-xs transition">

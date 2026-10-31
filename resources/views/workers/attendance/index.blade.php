@@ -20,14 +20,14 @@
         @if (session('status'))
             <div class="px-4 py-2.5 text-sm bg-emerald-50 text-emerald-800 border-b border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-900 flex items-center justify-between">
                 <span>{{ session('status') }}</span>
-                <button type="button" @click="$el.parentElement.remove()" class="text-emerald-700 dark:text-emerald-400 font-bold">&times;</button>
+                <x-close-button size="sm" tone="inherit" label="Dismiss message" @click="$el.parentElement.remove()" />
             </div>
         @endif
 
         @if (session('error'))
             <div class="px-4 py-2.5 text-sm bg-rose-50 text-rose-800 border-b border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-900 flex items-center justify-between">
                 <span>{{ session('error') }}</span>
-                <button type="button" @click="$el.parentElement.remove()" class="text-rose-700 dark:text-rose-400 font-bold">&times;</button>
+                <x-close-button size="sm" tone="inherit" label="Dismiss message" @click="$el.parentElement.remove()" />
             </div>
         @endif
 
@@ -833,7 +833,7 @@
                     </h3>
                     <p class="text-xs text-slate-500 mt-0.5" id="lightbox-worker-title">Worker Name</p>
                 </div>
-                <button type="button" onclick="closeLightbox()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xl font-bold">&times;</button>
+                <x-close-button onclick="closeLightbox()" />
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-4">

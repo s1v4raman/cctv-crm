@@ -52,14 +52,14 @@
         @if (session('status'))
             <div class="px-4 py-2.5 text-sm bg-emerald-50 text-emerald-800 border-b border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-900 flex items-center justify-between">
                 <span>{{ session('status') }}</span>
-                <button type="button" @click="$el.parentElement.remove()" class="text-emerald-700 dark:text-emerald-400 font-bold">&times;</button>
+                <x-close-button size="sm" tone="inherit" label="Dismiss message" @click="$el.parentElement.remove()" />
             </div>
         @endif
 
         @if (session('error'))
             <div class="px-4 py-2.5 text-sm bg-rose-50 text-rose-800 border-b border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-900 flex items-center justify-between">
                 <span>{{ session('error') }}</span>
-                <button type="button" @click="$el.parentElement.remove()" class="text-rose-700 dark:text-rose-400 font-bold">&times;</button>
+                <x-close-button size="sm" tone="inherit" label="Dismiss message" @click="$el.parentElement.remove()" />
             </div>
         @endif
 
@@ -603,7 +603,7 @@
                 <div @click.away="advanceModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded max-w-md w-full p-6 border border-slate-200 dark:border-slate-800 space-y-4" style="border-radius: 4px;">
                     <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
                         <h3 class="font-bold text-slate-900 dark:text-white text-base">Record Advance Payout</h3>
-                        <button type="button" @click="advanceModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+                        <x-close-button @click="advanceModalOpen = false" />
                     </div>
 
                     <form method="POST" action="{{ route('wages.advance') }}" class="space-y-4">
@@ -653,7 +653,7 @@
                 <div @click.away="payPartModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded max-w-md w-full p-6 border border-slate-200 dark:border-slate-800 space-y-4" style="border-radius: 4px;">
                     <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
                         <h3 class="font-bold text-slate-900 dark:text-white text-base">Partial Wage Settlement</h3>
-                        <button type="button" @click="payPartModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+                        <x-close-button @click="payPartModalOpen = false" />
                     </div>
 
                     <form method="POST" action="{{ route('wages.settle') }}" class="space-y-4">
@@ -716,7 +716,7 @@
                                 Detailed work shifts, punch-in verification photos, advance payouts, and settlement ledger for current week.
                             </p>
                         </div>
-                        <button type="button" @click="analysisModalOpen = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-white text-2xl leading-none">&times;</button>
+                        <x-close-button @click="analysisModalOpen = false" />
                     </div>
 
                     {{-- Summary Bento KPI Cards --}}
@@ -1086,9 +1086,7 @@
                                     <span>Open Full</span>
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                                 </a>
-                                <button type="button" @click.stop="photoModalUrl = null" class="w-7 h-7 rounded-full bg-slate-800 hover:bg-rose-600 text-slate-300 hover:text-white flex items-center justify-center text-lg font-bold transition cursor-pointer" title="Close Preview (Esc)">
-                                    &times;
-                                </button>
+                                <x-close-button size="sm" tone="dark" label="Close photo" @click.stop="photoModalUrl = null" />
                             </div>
                         </div>
 

@@ -296,9 +296,7 @@
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded max-w-lg w-full p-6 space-y-4" @click.away="advanceModal = false">
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                     <h3 class="text-sm font-bold text-slate-900 dark:text-white">Issue Cash Float Advance</h3>
-                    <button aria-label="Close" @click="advanceModal = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                    </button>
+                    <x-close-button @click="advanceModal = false" />
                 </div>
 
                 <form action="{{ route('finance.petty_cash.advance') }}" method="POST" class="space-y-4">
@@ -348,9 +346,7 @@
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded max-w-lg w-full p-6 space-y-4" @click.away="collectionModal = false">
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                     <h3 class="text-sm font-bold text-slate-900 dark:text-white">Record Customer Cash Collection</h3>
-                    <button aria-label="Close" @click="collectionModal = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                    </button>
+                    <x-close-button @click="collectionModal = false" />
                 </div>
 
                 <form action="{{ route('finance.petty_cash.collection') }}" method="POST" class="space-y-4">
@@ -415,9 +411,7 @@
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded max-w-lg w-full p-6 space-y-4" @click.away="expenseModal = false">
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                     <h3 class="text-sm font-bold text-slate-900 dark:text-white">Log Site Petty Expense</h3>
-                    <button aria-label="Close" @click="expenseModal = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                    </button>
+                    <x-close-button @click="expenseModal = false" />
                 </div>
 
                 <form action="{{ route('finance.petty_cash.expense') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
@@ -501,9 +495,7 @@
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded max-w-lg w-full p-6 space-y-4" @click.away="handoverModal = false">
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                     <h3 class="text-sm font-bold text-slate-900 dark:text-white">Cash Handover / Bank Deposit</h3>
-                    <button aria-label="Close" @click="handoverModal = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                    </button>
+                    <x-close-button @click="handoverModal = false" />
                 </div>
 
                 <form action="{{ route('finance.petty_cash.handover') }}" method="POST" class="space-y-4">

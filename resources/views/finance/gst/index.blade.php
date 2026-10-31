@@ -715,9 +715,7 @@
                     </span>
                     <h3 class="text-base font-black text-slate-900 dark:text-white">Company GST & Business Profile</h3>
                 </div>
-                <button aria-label="Close" type="button" @click="$dispatch('close-modal', 'company-gst-modal')" class="text-slate-400 hover:text-slate-600">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
+                <x-close-button @click="$dispatch('close-modal', 'company-gst-modal')" />
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
@@ -793,9 +791,7 @@
                         <p class="text-xs text-slate-500">Period: {{ Carbon\Carbon::parse($selectedMonth.'-01')->format('F Y') }}</p>
                     </div>
                 </div>
-                <button aria-label="Close" type="button" @click="$dispatch('close-modal', 'record-filing-modal')" class="text-slate-400 hover:text-slate-600">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
+                <x-close-button @click="$dispatch('close-modal', 'record-filing-modal')" />
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">

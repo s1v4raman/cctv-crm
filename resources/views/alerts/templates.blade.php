@@ -52,7 +52,7 @@
                         <input aria-label="Search template title or event key" type="text" x-model="searchTerm" placeholder="Search template title or event key..." 
                                style="padding-left: 2.25rem !important;"
                                class="w-full text-xs font-mono rounded-xl border border-slate-700 bg-[#060913] text-white placeholder-slate-500 focus:border-amber-400 focus:outline-none p-2.5">
-                        <button type="button" x-show="searchTerm" @click="searchTerm = ''" class="absolute right-2.5 top-2 text-slate-400 hover:text-white text-xs">&times;</button>
+                        <x-close-button size="sm" label="Clear search" x-show="searchTerm" @click="searchTerm = ''" class="absolute right-1 top-1/2 -translate-y-1/2" />
                     </div>
                 </div>
 

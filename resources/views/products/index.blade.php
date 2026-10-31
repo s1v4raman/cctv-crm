@@ -125,7 +125,7 @@
                         <h3 class="font-extrabold text-slate-900 dark:text-white text-base">Approve Product</h3>
                         <p class="text-xs text-slate-500 mt-0.5">Assign category, cost price, and sale price to approve this auto-learned item</p>
                     </div>
-                    <button type="button" @click="approveModalOpen = false" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+                    <x-close-button @click="approveModalOpen = false" />
                 </div>
 
                 <form :action="selectedProduct?.id ? `/products/${selectedProduct.id}/approve` : '#'" method="POST" class="space-y-4">
@@ -194,7 +194,7 @@
                         <h3 class="font-extrabold text-slate-900 dark:text-white text-base">Merge Duplicate Product</h3>
                         <p class="text-xs text-slate-500 mt-0.5">Combine duplicate records into a master product</p>
                     </div>
-                    <button type="button" @click="mergeModalOpen = false" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+                    <x-close-button @click="mergeModalOpen = false" />
                 </div>
 
                 <form :action="selectedProduct?.id ? `/products/${selectedProduct.id}/merge` : '#'" method="POST" class="space-y-4"

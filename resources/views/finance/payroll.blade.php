@@ -22,7 +22,7 @@
         @if(session('status'))
             <div class="p-3 rounded border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 text-xs font-medium flex items-center justify-between">
                 <span>{{ session('status') }}</span>
-                <button onclick="this.parentElement.remove()" class="text-emerald-500 hover:text-emerald-700">✕</button>
+                <x-close-button size="sm" tone="inherit" label="Dismiss message" onclick="this.parentElement.remove()" />
             </div>
         @endif
 
@@ -204,7 +204,7 @@
                 <h3 class="font-bold text-sm text-slate-900 dark:text-white">
                     Payroll Generator
                 </h3>
-                <button type="button" onclick="closeGenerateModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">✕</button>
+                <x-close-button onclick="closeGenerateModal()" />
             </div>
 
             <form method="POST" action="{{ route('finance.payroll.generate') }}" class="mt-4 space-y-4">
@@ -272,7 +272,7 @@
                 <h3 class="font-bold text-sm text-slate-900 dark:text-white">
                     Update Payroll <span id="statusModalNumber" class="text-blue-600"></span>
                 </h3>
-                <button type="button" onclick="closeStatusModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">✕</button>
+                <x-close-button onclick="closeStatusModal()" />
             </div>
 
             <form id="statusForm" method="POST" action="" class="mt-4 space-y-3">

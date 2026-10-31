@@ -183,7 +183,7 @@
                                 <form method="POST" action="{{ route('site-surveys.photos.destroy', $photo) }}" data-confirm="Remove this photo?" class="inline m-0">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="text-red-500 hover:text-red-700 font-bold px-1.5 py-0.5 bg-transparent border-0 cursor-pointer text-sm" title="Delete photo">&times;</button>
+                                    <x-close-button size="sm" tone="danger" label="Delete photo" type="submit" />
                                 </form>
                             </div>
                         </div>
@@ -197,7 +197,7 @@
 
     {{-- Lightbox --}}
     <div id="lightbox" class="hidden fixed inset-0 bg-slate-950/80 z-50 flex items-center justify-center p-4">
-        <span onclick="closeLightbox()" class="absolute top-4 right-6 text-white text-3xl cursor-pointer">&times;</span>
+        <x-close-button tone="dark" label="Close photo" onclick="closeLightbox()" class="absolute top-4 right-4" />
         <img id="lightbox-img" alt="Site photo" class="max-w-[90vw] max-h-[85vh] rounded border border-white/20">
     </div>
 
@@ -206,7 +206,7 @@
         <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-300 dark:border-slate-700 shadow-2xl max-w-md w-full p-6 space-y-4">
             <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
                 <h3 class="text-base font-bold text-slate-900 dark:text-white m-0">Upload Site Photos</h3>
-                <button type="button" onclick="closeUploadModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white text-xl cursor-pointer">&times;</button>
+                <x-close-button onclick="closeUploadModal()" />
             </div>
 
             <form method="POST" action="{{ route('site-surveys.photos.upload', $siteSurvey) }}" enctype="multipart/form-data" class="space-y-4">
