@@ -423,6 +423,13 @@
             </div>
         @endif
 
+        @if ($errors->hasAny(['file', 'document_type', 'dc_number', 'dc_date', 'items_summary']))
+            <div class="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 text-sm flex items-center justify-between">
+                <span>Document not uploaded: {{ collect(['file', 'document_type', 'dc_number', 'dc_date', 'items_summary'])->map(fn ($f) => $errors->first($f))->filter()->implode(' ') }}</span>
+                <x-close-button size="sm" tone="inherit" label="Dismiss message" onclick="this.parentElement.remove()" />
+            </div>
+        @endif
+
         {{-- Admin Approval / Rejection Banner --}}
         @if($project->status === 'pending_approval')
             <div class="p-5 rounded-2xl bg-amber-50/80 dark:bg-amber-950/40 border-2 border-amber-300 dark:border-amber-700/60 shadow-md flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -1507,7 +1514,7 @@
                                 <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40">
                                     <td class="px-5 py-3.5">
                                         <div class="font-bold text-slate-900 dark:text-white">{{ $doc->title }}</div>
-                                        <div class="text-xs text-slate-400">{{ $doc->document_type_label }} &bull; {{ $doc->formatted_file_size }}</div>
+                                        <div class="text-xs text-slate-400">{{ $doc->document_type_label }} &bull; {{ $doc->formatted_size }}</div>
                                     </td>
                                     <td class="px-5 py-3.5 font-mono text-xs">
                                         @if($doc->dc_number)
@@ -3091,8 +3098,8 @@
                     </div>
 
                     <div>
-                        <label for="f-file" class="block text-xs font-bold uppercase text-slate-500 mb-1">Attach File (PDF, Image, up to 50MB) *</label>
-                        <input id="f-file" type="file" name="file" required class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                        <label for="f-file" class="block text-xs font-bold uppercase text-slate-500 mb-1">Attach File (PDF, photo, Word or Excel, up to 20MB) *</label>
+                        <input id="f-file" type="file" name="file" required accept=".pdf,.jpg,.jpeg,.png,.webp,.gif,.doc,.docx,.xls,.xlsx" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
                     </div>
 
                     <div class="flex items-center justify-end gap-2 pt-2">
