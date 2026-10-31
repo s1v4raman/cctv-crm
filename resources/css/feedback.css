@@ -115,9 +115,12 @@ html.dark .crm-dialog {
 }
 
 /* ── Close button (<x-close-button>) ─────────────────────────────────────── */
+/* Display carries no weight, so hidden, lg:hidden and x-show can still hide the button */
+:where(.crm-close) {
+    display: inline-flex;
+}
 /* The class is doubled to outrank the page rules that size and colour every button */
 .crm-close.crm-close {
-    display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
     flex-shrink: 0;
