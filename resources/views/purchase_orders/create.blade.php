@@ -3,7 +3,7 @@
         <h2 class="text-xl font-semibold leading-tight text-gray-800">Create Purchase Order</h2>
     </x-slot>
 
-    <div class="py-5" x-data="purchaseOrderBuilder(@js($products))">
+    <div class="py-5" x-data="purchaseOrderBuilder(@js($products))" @supplier-added="supplierAdded($event.detail)">
         <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
             <a href="{{ route('purchase-orders.index') }}" class="back-link">&larr; Back</a>
 
@@ -30,8 +30,14 @@
 
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
                         <div>
-                            <label class="crm-label">Select Supplier <span class="required-marker">*</span></label>
-                            <select aria-label="Select Supplier" name="supplier_id" required class="crm-select">
+                            <div class="flex flex-wrap items-center justify-between gap-x-2">
+                                <label for="po-supplier" class="crm-label whitespace-nowrap">Select Supplier <span class="required-marker">*</span></label>
+                                <button type="button" @click="$dispatch('open-modal', 'add-supplier')" class="mb-[0.45rem] inline-flex items-center gap-1 whitespace-nowrap text-xs font-semibold hover:underline" style="color: var(--crm-accent, #2563eb);">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.25" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" d="M12 5v14M5 12h14"/></svg>
+                                    Add new supplier
+                                </button>
+                            </div>
+                            <select id="po-supplier" x-ref="supplierSelect" name="supplier_id" required class="crm-select" @change="supplierNote = ''">
                                 <option value="">-- Choose Hardware Supplier --</option>
                                 @foreach($suppliers as $supplier)
                                     <option value="{{ $supplier->id }}" @selected(old('supplier_id', $selectedSupplierId) == $supplier->id)>
@@ -39,6 +45,7 @@
                                     </option>
                                 @endforeach
                             </select>
+                            <p x-show="supplierNote" x-text="supplierNote" x-cloak role="status" class="mt-1 text-xs font-semibold text-emerald-600"></p>
                             @error('supplier_id') <p class="error-text">{{ $message }}</p> @enderror
                         </div>
 
@@ -169,15 +176,125 @@
                 </div>
             </form>
 
+            {{-- Add a supplier without leaving the order; kept outside the order form so the two never mix. --}}
+            <x-modal name="add-supplier" title="Add new supplier" maxWidth="xl">
+                <form x-data="newSupplierForm(@js(route('suppliers.store')))" @submit.prevent="save($event.target)" class="p-6 space-y-4" novalidate>
+                    @csrf
+                    <p x-show="errorMessage" x-text="errorMessage" x-cloak role="alert" class="p-3 rounded-[4px] bg-red-50 border border-red-200 text-[#dc2626] text-sm"></p>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="sm:col-span-2">
+                            <label for="ns-name" class="crm-label">Supplier Name <span class="required-marker">*</span></label>
+                            <input id="ns-name" type="text" name="name" required maxlength="255" placeholder="e.g. Hikvision India Central" class="crm-input">
+                            <p x-show="errors.name" x-text="errors.name?.[0]" class="error-text"></p>
+                        </div>
+                        <div>
+                            <label for="ns-company" class="crm-label">Company Name</label>
+                            <input id="ns-company" type="text" name="company_name" maxlength="255" placeholder="e.g. Prama Hikvision Pvt Ltd" class="crm-input">
+                            <p x-show="errors.company_name" x-text="errors.company_name?.[0]" class="error-text"></p>
+                        </div>
+                        <div>
+                            <label for="ns-contact" class="crm-label">Contact Person</label>
+                            <input id="ns-contact" type="text" name="contact_person" maxlength="255" placeholder="e.g. Ramesh Sharma" class="crm-input">
+                        </div>
+                        <div>
+                            <label for="ns-phone" class="crm-label">Phone</label>
+                            <input id="ns-phone" type="tel" name="phone" maxlength="50" placeholder="e.g. 9876543210" class="crm-input">
+                            <p x-show="errors.phone" x-text="errors.phone?.[0]" class="error-text"></p>
+                        </div>
+                        <div>
+                            <label for="ns-email" class="crm-label">Email</label>
+                            <input id="ns-email" type="email" name="email" maxlength="255" placeholder="e.g. orders@supplier.com" class="crm-input">
+                            <p x-show="errors.email" x-text="errors.email?.[0]" class="error-text"></p>
+                        </div>
+                        <div>
+                            <label for="ns-gst" class="crm-label">GSTIN</label>
+                            <input id="ns-gst" type="text" name="gst_number" maxlength="50" placeholder="e.g. 33AAAAA0000A1Z5" class="crm-input font-mono">
+                            <p x-show="errors.gst_number" x-text="errors.gst_number?.[0]" class="error-text"></p>
+                        </div>
+                        <div>
+                            <label for="ns-terms" class="crm-label">Payment Terms</label>
+                            <input id="ns-terms" type="text" name="payment_terms" value="Net 30 Days" maxlength="100" class="crm-input">
+                        </div>
+                        <div>
+                            <label for="ns-city" class="crm-label">City</label>
+                            <input id="ns-city" type="text" name="city" maxlength="100" placeholder="e.g. Chennai" class="crm-input">
+                        </div>
+                        <div>
+                            <label for="ns-state" class="crm-label">State</label>
+                            <input id="ns-state" type="text" name="state" maxlength="100" placeholder="e.g. Tamil Nadu" class="crm-input">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label for="ns-address" class="crm-label">Address</label>
+                            <input id="ns-address" type="text" name="address" maxlength="255" placeholder="e.g. 42 Industrial Estate, Guindy" class="crm-input">
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-end gap-2 pt-2">
+                        <button type="button" @click="$dispatch('close-modal', 'add-supplier')" class="btn-secondary">Cancel</button>
+                        <button type="submit" :disabled="saving" class="btn-primary" x-text="saving ? 'Saving…' : 'Save supplier'">Save supplier</button>
+                    </div>
+                </form>
+            </x-modal>
+
         </div>
     </div>
 
     <script>
+        function newSupplierForm(url) {
+            return {
+                saving: false,
+                errors: {},
+                errorMessage: '',
+                async save(form) {
+                    this.errors = {};
+                    this.errorMessage = '';
+                    if (!form.elements.name.value.trim()) {
+                        this.errors = { name: ['Enter the supplier name.'] };
+                        form.elements.name.focus();
+                        return;
+                    }
+                    this.saving = true;
+                    try {
+                        const response = await fetch(url, {
+                            method: 'POST',
+                            headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                            body: new FormData(form),
+                        });
+                        const data = await response.json().catch(() => ({}));
+                        if (response.status === 201) {
+                            this.$dispatch('supplier-added', data);
+                            this.$dispatch('close-modal', 'add-supplier');
+                            form.reset();
+                        } else if (response.status === 422) {
+                            this.errors = data.errors || {};
+                            this.errorMessage = 'Please check the highlighted fields.';
+                        } else if (response.status === 419) {
+                            this.errorMessage = 'Your session expired. Reload the page and try again.';
+                        } else {
+                            this.errorMessage = data.message || 'The supplier could not be saved. Please try again.';
+                        }
+                    } catch (e) {
+                        this.errorMessage = 'Could not reach the server. Check the connection and try again.';
+                    } finally {
+                        this.saving = false;
+                    }
+                },
+            };
+        }
+
         function purchaseOrderBuilder(catalogProducts) {
             return {
                 catalogProducts: catalogProducts || [],
+                supplierNote: '',
                 taxPercent: 18.0,
                 shippingCost: 0.0,
+                supplierAdded(supplier) {
+                    const select = this.$refs.supplierSelect;
+                    select.add(new Option(supplier.label, supplier.id, true, true));
+                    select.value = String(supplier.id);
+                    this.supplierNote = supplier.message;
+                },
                 items: [
                     { product_id: '', item_name: '', sku: '', unit_cost: 0, quantity_ordered: 1 }
                 ],

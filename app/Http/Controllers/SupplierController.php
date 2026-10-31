@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreSupplierRequest;
 use App\Models\Supplier;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -51,12 +52,21 @@ class SupplierController extends Controller
         return view('suppliers.create');
     }
 
-    public function store(StoreSupplierRequest $request): RedirectResponse
+    public function store(StoreSupplierRequest $request): RedirectResponse|JsonResponse
     {
         $validated = $request->validated();
         $validated['is_active'] = $request->boolean('is_active', true);
 
         $supplier = Supplier::create($validated);
+
+        // Added from the purchase order form's pop-up: hand back what the supplier list needs.
+        if ($request->expectsJson()) {
+            return response()->json([
+                'id' => $supplier->id,
+                'label' => $supplier->name . ($supplier->company_name ? " ({$supplier->company_name})" : ''),
+                'message' => "Supplier '{$supplier->name}' added and selected.",
+            ], 201);
+        }
 
         return redirect()->route('suppliers.show', $supplier)->with('status', "Supplier '{$supplier->name}' registered successfully.");
     }
