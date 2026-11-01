@@ -119,7 +119,7 @@
         html:not(.dark) .form-panel .fp-subtext  { color: #64748b !important; }
         html:not(.dark) .form-panel .fp-label    { color: #334155 !important; }
         html:not(.dark) .form-panel .fp-muted    { color: #94a3b8 !important; }
-        html:not(.dark) .form-panel .fp-footer   { color: #94a3b8 !important; }
+        html:not(.dark) .form-panel .fp-footer   { color: #64748b !important; }
 
         html:not(.dark) .login-input {
             background: #ffffff !important;
@@ -200,7 +200,7 @@
         html.dark .form-panel .fp-subtext  { color: #94a3b8 !important; }
         html.dark .form-panel .fp-label    { color: #e2e8f0 !important; }
         html.dark .form-panel .fp-muted    { color: #94a3b8 !important; }
-        html.dark .form-panel .fp-footer   { color: #64748b !important; }
+        html.dark .form-panel .fp-footer   { color: #94a3b8 !important; }
 
         html.dark .login-input {
             background: #1e293b !important;

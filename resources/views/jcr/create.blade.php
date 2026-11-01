@@ -390,7 +390,7 @@
                         </div>
                         <div class="jcr-canvas-container border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900">
                             <canvas id="customerCanvas" width="700" height="180" class="w-full h-44 rounded-lg cursor-crosshair bg-white dark:bg-slate-900"></canvas>
-                            <div id="sigPlaceholder" class="absolute inset-0 pointer-events-none flex items-center justify-center text-slate-400 dark:text-slate-500 text-xs">
+                            <div id="sigPlaceholder" class="absolute inset-0 pointer-events-none flex items-center justify-center text-slate-500 dark:text-slate-400 text-xs">
                                 Sign with finger, stylus, or mouse here
                             </div>
                         </div>

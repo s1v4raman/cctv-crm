@@ -656,7 +656,7 @@
                                                             title="{{ $mDay['date'] }}: {{ $rec->status_label }} ({{ $rec->total_hours }}h)"
                                                             class="w-6 h-6 mx-auto rounded text-[11px] font-bold flex items-center justify-center transition
                                                                 {{ $rec->status === 'present' ? 'bg-emerald-500 hover:bg-emerald-600 text-white' : '' }}
-                                                                {{ $rec->status === 'late' ? 'bg-amber-400 hover:bg-amber-500 text-slate-900 font-black' : '' }}
+                                                                {{ $rec->status === 'late' ? 'bg-amber-400 hover:bg-amber-500 text-slate-900 dark:text-slate-900 font-black' : '' }}
                                                                 {{ $rec->status === 'half_day' ? 'bg-sky-500 hover:bg-sky-600 text-white' : '' }}
                                                                 {{ $rec->status === 'absent' ? 'bg-rose-500 hover:bg-rose-600 text-white' : '' }}
                                                                 {{ $rec->status === 'on_leave' ? 'bg-purple-500 hover:bg-purple-600 text-white' : '' }}

@@ -93,7 +93,7 @@
                             @csrf
                             <input type="hidden" name="action" value="delete">
                             <template x-for="id in selected" :key="id"><input type="hidden" name="ids[]" :value="id"></template>
-                            <button type="submit" class="ld-outline btn-cancel" style="color: #b91c1c !important">Delete drafts</button>
+                            <button type="submit" class="ld-outline btn-cancel" style="color: var(--status-danger-fg) !important">Delete drafts</button>
                         </form>
                     @endif
                 </div>

@@ -6,8 +6,8 @@
                 <div class="flex items-center gap-3">
                     <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ $equipment->equipment_name }}</h2>
                     @php
-                        $eqStatusColor = '#16a34a';
-                        if ($equipment->status === 'under_repair' || $equipment->status === 'faulty') $eqStatusColor = '#dc2626';
+                        $eqStatusColor = 'var(--status-success-fg)';
+                        if ($equipment->status === 'under_repair' || $equipment->status === 'faulty') $eqStatusColor = 'var(--status-danger-fg)';
                     @endphp
                     <span class="text-sm font-bold" style="color: {{ $eqStatusColor }};">
                         {{ ucfirst(str_replace('_', ' ', $equipment->status ?? 'active')) }}

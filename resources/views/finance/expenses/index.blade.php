@@ -586,7 +586,7 @@
                 <div>
                     <label for="f-receipt" class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Receipt / Invoice Photo (Recommended)</label>
                     <input id="f-receipt" type="file" name="receipt" accept=".pdf,.jpg,.jpeg,.png,.webp" 
-                           class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                           class="w-full">
                 </div>
 
                 <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">

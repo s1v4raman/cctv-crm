@@ -100,7 +100,7 @@
 
             {{-- Rejected status --}}
             @if ($quotation->status === 'rejected')
-                <span style="display: inline-flex; align-items: center; border-radius: 9999px; background-color: #fee2e2; color: #b91c1c; padding: 8px 14px; font-size: 13px; font-weight: 700;">
+                <span style="display: inline-flex; align-items: center; border-radius: 9999px; background-color: var(--status-danger-bg); color: var(--status-danger-fg); border: 1px solid var(--status-danger-bd); padding: 8px 14px; font-size: 13px; font-weight: 700;">
                     Customer Rejected This Quotation
                 </span>
             @endif

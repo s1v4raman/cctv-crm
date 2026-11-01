@@ -10,9 +10,9 @@
                         Installation Job #{{ $job->job_no }}
                     </h2>
                     @php
-                        $jStatusColor = 'var(--crm-accent, #2563eb)';
-                        if ($job->status === 'completed') $jStatusColor = '#16a34a';
-                        elseif ($job->status === 'cancelled') $jStatusColor = '#dc2626';
+                        $jStatusColor = 'var(--link-color)';
+                        if ($job->status === 'completed') $jStatusColor = 'var(--status-success-fg)';
+                        elseif ($job->status === 'cancelled') $jStatusColor = 'var(--status-danger-fg)';
                     @endphp
                     <span class="text-sm font-bold" style="color: {{ $jStatusColor }};">
                         {{ ucfirst(str_replace('_', ' ', $job->status)) }}

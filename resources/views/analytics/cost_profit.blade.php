@@ -232,7 +232,7 @@
                             {{-- Line 3: Gross Profit Without Tax --}}
                             <tr class="bg-slate-50/60 dark:bg-slate-800/60 border-y border-slate-200 dark:border-slate-700">
                                 <td class="px-6 py-3.5 text-slate-900 dark:text-white font-bold flex items-center gap-2">
-                                    <span class="w-6 h-6 rounded-md bg-amber-500 text-slate-950 flex items-center justify-center font-bold text-xs">=</span>
+                                    <span class="w-6 h-6 rounded-md bg-amber-500 text-slate-950 dark:text-slate-950 flex items-center justify-center font-bold text-xs">=</span>
                                     <span>Gross Operating Profit (Without Tax)</span>
                                 </td>
                                 <td class="px-6 py-3.5 text-amber-600 dark:text-amber-400 font-semibold text-right">

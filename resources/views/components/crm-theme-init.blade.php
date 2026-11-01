@@ -36,6 +36,24 @@
         }
     } catch(e) {}
 
+    // Paper is white: a page printed from dark mode (quotation, invoice, payslip) prints in the light theme
+    window.addEventListener('beforeprint', function() {
+        const root = document.documentElement;
+        if (root.classList.contains('dark')) {
+            root.dataset.printedFromDark = '1';
+            root.classList.remove('dark');
+            root.setAttribute('data-theme', 'light');
+        }
+    });
+    window.addEventListener('afterprint', function() {
+        const root = document.documentElement;
+        if (root.dataset.printedFromDark) {
+            delete root.dataset.printedFromDark;
+            root.classList.add('dark');
+            root.setAttribute('data-theme', 'dark');
+        }
+    });
+
     window.crmLogoCache = window.crmLogoCache || {};
 
     const currentUserId = {!! json_encode($userId ?? (auth()->check() ? auth()->id() : null)) !!};
@@ -83,6 +101,22 @@
             hoverHex = '#' + ((1 << 24) + (hr << 16) + (hg << 8) + hb).toString(16).slice(1);
         } catch(e) {}
 
+        // The accent as text (links, accent labels): a shade that keeps 4.5:1 contrast, darker on the
+        // light theme's white cards and lighter on the dark theme's #0f172a / #1e293b panels.
+        const linkShade = function(towards, isReadable) {
+            for (let t = 0; t <= 1.0001; t += 0.05) {
+                const rgb = [tr, tg, tb].map(function(c) { return Math.round(c + (towards - c) * t); });
+                const lum = rgb.map(function(c) { c /= 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); });
+                if (isReadable(0.2126 * lum[0] + 0.7152 * lum[1] + 0.0722 * lum[2])) {
+                    return '#' + rgb.map(function(c) { return c.toString(16).padStart(2, '0'); }).join('');
+                }
+            }
+            return towards ? '#ffffff' : '#000000';
+        };
+        const linkLight = linkShade(0, function(l) { return l <= 0.16; });
+        const linkDark = linkShade(255, function(l) { return l >= 0.28; });
+        const linkDarkHover = linkShade(255, function(l) { return l >= 0.42; });
+
         document.documentElement.style.setProperty('--crm-accent', hex);
         document.documentElement.style.setProperty('--crm-accent-hover', hoverHex);
         document.documentElement.style.setProperty('--crm-accent-rgb', tr + ', ' + tg + ', ' + tb);
@@ -116,6 +150,12 @@
                 --ld-accent: ${hex} !important;
                 --ld-accent-hover: ${hoverHex} !important;
                 --ld-accent-soft: rgba(${tr}, ${tg}, ${tb}, 0.14) !important;
+                --link-color: ${linkLight} !important;
+                --link-hover: ${hoverHex} !important;
+            }
+            html.dark {
+                --link-color: ${linkDark} !important;
+                --link-hover: ${linkDarkHover} !important;
             }
 
             /* Brand Logo: PRECISION wordmark mask dynamically recolored */
@@ -544,7 +584,7 @@
             div[x-data*="open"] > button.crm-quick-action-btn {
                 background-color: rgba(${tr}, ${tg}, ${tb}, 0.12) !important;
                 background-image: none !important;
-                color: ${hex} !important;
+                color: var(--link-color) !important;
                 border: 1px solid rgba(${tr}, ${tg}, ${tb}, 0.3) !important;
             }
             .crm-quick-action-btn:hover,
@@ -565,13 +605,13 @@
             .crm-customer-pill,
             span.crm-customer-pill {
                 background-color: rgba(${tr}, ${tg}, ${tb}, 0.12) !important;
-                color: ${hex} !important;
+                color: var(--link-color) !important;
                 border: 1px solid rgba(${tr}, ${tg}, ${tb}, 0.28) !important;
             }
             .crm-customer-icon-box,
             div.crm-customer-icon-box {
                 background-color: rgba(${tr}, ${tg}, ${tb}, 0.12) !important;
-                color: ${hex} !important;
+                color: var(--link-color) !important;
                 border: 1px solid rgba(${tr}, ${tg}, ${tb}, 0.28) !important;
             }
             .crm-customer-badge,
@@ -608,7 +648,7 @@
             button.btn-view {
                 background-color: rgba(${tr}, ${tg}, ${tb}, 0.1) !important;
                 background-image: none !important;
-                color: ${hex} !important;
+                color: var(--link-color) !important;
                 border: 1px solid rgba(${tr}, ${tg}, ${tb}, 0.25) !important;
             }
             .btn-view:hover,
@@ -682,7 +722,7 @@
             a[href*="suppliers/"]:not(.btn),
             a[href*="leads/"]:not(.btn),
             a[href*="quotations/"]:not(.btn) {
-                color: ${hex} !important;
+                color: var(--link-color) !important;
             }
             .cell-name a:hover,
             .cell-no a:hover,
@@ -691,7 +731,7 @@
             a.ld-name:hover,
             table td a:hover,
             td[x-show*="map"] a:hover {
-                color: ${hoverHex} !important;
+                color: var(--link-hover) !important;
             }
 
             /* 13. ACCENT BADGES, STATUS PILLS, DOTS & TIMELINE */
@@ -754,7 +794,7 @@
             /* Plain tabs (e.g. Calendar tabs) */
             .crm-plain-tab.active,
             html.dark .crm-plain-tab.active {
-                color: ${hex} !important;
+                color: var(--link-color) !important;
                 border-bottom-color: ${hex} !important;
             }
 

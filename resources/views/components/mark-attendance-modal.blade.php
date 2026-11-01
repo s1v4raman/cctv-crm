@@ -189,7 +189,7 @@
                             <label for="modal-photo-input" class="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer">
                                 Browse device photo or gallery
                             </label>
-                            <input aria-label="Site photo" type="file" name="photo" id="modal-photo-input" accept="image/*" class="mt-2 text-xs text-slate-600 dark:text-slate-300 file:mr-2.5 file:py-1.5 file:px-3 file:rounded file:border file:border-slate-300 dark:file:border-slate-600 file:text-xs file:font-semibold file:bg-slate-100 dark:file:bg-slate-800 file:text-slate-700 dark:file:text-slate-200 hover:file:bg-slate-200 dark:hover:file:bg-slate-700 cursor-pointer w-full max-w-xs">
+                            <input aria-label="Site photo" type="file" name="photo" id="modal-photo-input" accept="image/*" class="mt-2 cursor-pointer w-full max-w-xs">
                             <p class="text-[10px] text-slate-400 mt-1">JPEG, PNG or WebP up to 10MB</p>
                         </div>
                         <div id="file-preview-wrap" class="mt-3 hidden text-center">

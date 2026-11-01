@@ -21,11 +21,11 @@
                         Quotation {{ $quotation->quotation_no }}
                     </h2>
                     @php
-                        $qStatusColor = '#64748b';
-                        if ($quotation->status === 'sent') $qStatusColor = 'var(--crm-accent, #2563eb)';
-                        elseif ($quotation->status === 'accepted') $qStatusColor = '#16a34a';
-                        elseif ($quotation->status === 'rejected') $qStatusColor = '#dc2626';
-                        elseif ($quotation->status === 'expired') $qStatusColor = '#d97706';
+                        $qStatusColor = 'var(--text-muted)';
+                        if ($quotation->status === 'sent') $qStatusColor = 'var(--link-color)';
+                        elseif ($quotation->status === 'accepted') $qStatusColor = 'var(--status-success-fg)';
+                        elseif ($quotation->status === 'rejected') $qStatusColor = 'var(--status-danger-fg)';
+                        elseif ($quotation->status === 'expired') $qStatusColor = 'var(--status-warning-fg)';
                     @endphp
                     <span class="text-sm font-bold" style="color: {{ $qStatusColor }};">
                         {{ ucfirst($quotation->status) }}

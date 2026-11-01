@@ -212,7 +212,7 @@
 
             {{-- Cost Breakdown Highlight Bar --}}
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl px-5 py-3.5 flex flex-wrap items-center gap-x-6 gap-y-2 shadow-xs">
-                <span class="text-[11px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">Cost Waterfall</span>
+                <span class="text-[11px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Cost Waterfall</span>
                 <div class="flex items-center gap-2">
                     <span class="w-2 h-2 rounded-full bg-sky-500 inline-block"></span>
                     <span class="text-[11px] text-slate-600 dark:text-slate-300 font-semibold">Revenue (No Tax): <strong class="text-sky-700 dark:text-sky-300">₹{{ number_format($overview['financials']['revenue_without_tax'] ?? round($overview['financials']['invoiced_revenue']/1.18, 0), 0) }}</strong></span>

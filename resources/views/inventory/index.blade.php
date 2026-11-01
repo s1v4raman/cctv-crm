@@ -210,15 +210,15 @@
                                 </td>
                                 <td class="center">
                                     @if($prod->stock_quantity <= 0)
-                                        <span class="status-text" style="color: #dc2626; font-weight: bold;">
+                                        <span class="status-text" style="color: var(--status-danger-fg); font-weight: bold;">
                                             Out of Stock (0 {{ $prod->unit }})
                                         </span>
                                     @elseif($prod->isLowStock())
-                                        <span class="status-text" style="color: #d97706; font-weight: bold;">
+                                        <span class="status-text" style="color: var(--status-warning-fg); font-weight: bold;">
                                             Low: {{ $prod->stock_quantity }} {{ $prod->unit }}
                                         </span>
                                     @else
-                                        <span class="status-text" style="color: #16a34a; font-weight: bold;">
+                                        <span class="status-text" style="color: var(--status-success-fg); font-weight: bold;">
                                             {{ $prod->stock_quantity }} {{ $prod->unit }}
                                         </span>
                                     @endif

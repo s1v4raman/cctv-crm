@@ -6,9 +6,9 @@
                 <div class="flex items-center gap-3">
                     <h2 class="text-xl font-bold text-slate-900 dark:text-white">Ticket #{{ $ticket->ticket_no }}</h2>
                     @php
-                        $ticketStatusColor = 'var(--crm-accent, #2563eb)';
-                        if (in_array($ticket->status, ['resolved', 'closed'])) $ticketStatusColor = '#16a34a';
-                        elseif ($ticket->status === 'cancelled') $ticketStatusColor = '#dc2626';
+                        $ticketStatusColor = 'var(--link-color)';
+                        if (in_array($ticket->status, ['resolved', 'closed'])) $ticketStatusColor = 'var(--status-success-fg)';
+                        elseif ($ticket->status === 'cancelled') $ticketStatusColor = 'var(--status-danger-fg)';
                     @endphp
                     <span class="text-sm font-bold" style="color: {{ $ticketStatusColor }};">
                         {{ $ticket->status_label }}

@@ -264,7 +264,7 @@
                             </div>
 
                             <!-- Footer Security Assurance Note -->
-                            <div class="px-4 py-2 bg-slate-50/80 dark:bg-slate-900/80 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[10px] text-slate-400 dark:text-slate-500">
+                            <div class="px-4 py-2 bg-slate-50/80 dark:bg-slate-900/80 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400">
                                 <span class="flex items-center gap-1 font-medium">
                                     <svg class="w-3 h-3 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clip-rule="evenodd"/>
@@ -580,7 +580,7 @@
                                     <div id="heroFloatingBadgeTitle" class="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider truncate">CCTV &amp; Biometrics</div>
                                     <div id="heroFloatingBadgeSub" class="text-xs text-slate-500 dark:text-slate-400 truncate">Installation, AMC &amp; Support</div>
                                 </div>
-                                <div class="hidden sm:flex items-center gap-1.5 text-[10px] text-slate-400 dark:text-slate-500 font-medium flex-shrink-0">
+                                <div class="hidden sm:flex items-center gap-1.5 text-[10px] text-slate-500 dark:text-slate-400 font-medium flex-shrink-0">
                                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                                     <span>Live System</span>
                                 </div>
@@ -1117,11 +1117,11 @@
                 <div class="space-y-3">
                     <h4 class="text-sm font-bold text-white font-heading uppercase tracking-wider">About</h4>
                     <ul class="space-y-2 text-xs text-slate-400">
-                        <li><a href="#about" class="hover:text-blue-400 transition-colors">About Us</a></li>
-                        <li><a href="#why-us" class="hover:text-blue-400 transition-colors">Corporate Team</a></li>
-                        <li><a href="#contact" class="hover:text-blue-400 transition-colors">Careers & Jobs</a></li>
-                        <li><a href="#contact" class="hover:text-blue-400 transition-colors">Client Testimonials</a></li>
-                        <li><a href="#why-us" class="hover:text-blue-400 transition-colors">Certifications</a></li>
+                        <li><a href="#about" class="text-slate-400 hover:text-blue-400 transition-colors">About Us</a></li>
+                        <li><a href="#why-us" class="text-slate-400 hover:text-blue-400 transition-colors">Corporate Team</a></li>
+                        <li><a href="#contact" class="text-slate-400 hover:text-blue-400 transition-colors">Careers & Jobs</a></li>
+                        <li><a href="#contact" class="text-slate-400 hover:text-blue-400 transition-colors">Client Testimonials</a></li>
+                        <li><a href="#why-us" class="text-slate-400 hover:text-blue-400 transition-colors">Certifications</a></li>
                     </ul>
                 </div>
 
@@ -1129,11 +1129,11 @@
                 <div class="space-y-3">
                     <h4 class="text-sm font-bold text-white font-heading uppercase tracking-wider">Services</h4>
                     <ul class="space-y-2 text-xs text-slate-400">
-                        <li><a href="#services" class="hover:text-blue-400 transition-colors">Corporate Solutions</a></li>
-                        <li><a href="#services" class="hover:text-blue-400 transition-colors">Call Center Support</a></li>
-                        <li><a href="#services" class="hover:text-blue-400 transition-colors">Cloud Development</a></li>
-                        <li><a href="#services" class="hover:text-blue-400 transition-colors">4K AI Camera Setup</a></li>
-                        <li><a href="#contact" class="hover:text-blue-400 transition-colors">Preventive AMC Plans</a></li>
+                        <li><a href="#services" class="text-slate-400 hover:text-blue-400 transition-colors">Corporate Solutions</a></li>
+                        <li><a href="#services" class="text-slate-400 hover:text-blue-400 transition-colors">Call Center Support</a></li>
+                        <li><a href="#services" class="text-slate-400 hover:text-blue-400 transition-colors">Cloud Development</a></li>
+                        <li><a href="#services" class="text-slate-400 hover:text-blue-400 transition-colors">4K AI Camera Setup</a></li>
+                        <li><a href="#contact" class="text-slate-400 hover:text-blue-400 transition-colors">Preventive AMC Plans</a></li>
                     </ul>
                 </div>
 
@@ -1147,11 +1147,11 @@
                         </li>
                         <li class="flex items-center space-x-2">
                             <svg class="w-3.5 h-3.5 text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                            <a href="mailto:precisionitsystem@gmail.com" class="hover:text-white transition-colors">precisionitsystem@gmail.com</a>
+                            <a href="mailto:precisionitsystem@gmail.com" class="text-slate-400 hover:text-white transition-colors">precisionitsystem@gmail.com</a>
                         </li>
                         <li class="flex items-center space-x-2">
                             <svg class="w-3.5 h-3.5 text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
-                            <a href="tel:+919677257774" class="hover:text-white transition-colors">+91 96772 57774</a>
+                            <a href="tel:+919677257774" class="text-slate-400 hover:text-white transition-colors">+91 96772 57774</a>
                         </li>
                         <li class="flex items-center space-x-2">
                             <span class="text-[10px] font-mono font-bold text-blue-400">GST:</span>
@@ -1257,7 +1257,7 @@
 
                 <!-- Quick Filters -->
                 <div class="pt-2">
-                    <p class="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2">Explore Solutions</p>
+                    <p class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Explore Solutions</p>
                     <div class="flex flex-wrap gap-2">
                         <a href="#services" onclick="closeSearchModal()" class="px-3 py-1 rounded-lg text-xs bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-blue-600 hover:text-white transition-colors">Corporate Solutions</a>
                         <a href="#services" onclick="closeSearchModal()" class="px-3 py-1 rounded-lg text-xs bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-blue-600 hover:text-white transition-colors">24/7 Call Center AMC</a>

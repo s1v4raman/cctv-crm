@@ -78,9 +78,17 @@ html:not(.dark) {
     --tool-hover: #eef0f3;
 
     --text-main: #313949;
-    --text-muted: #6b7280;
+    --text-muted: #5f6673;
     --text-secondary: #4b5563;
-    --text-hint: #6b7280;
+    --text-hint: #5f6673;
+
+    /* Links and accent text: the theme script swaps in a shade of the user's accent that reads on this background */
+    --link-color: var(--crm-accent, #2563eb);
+    --link-hover: var(--crm-accent-hover, #1d4ed8);
+    /* Panels inside a card, from faint to strong (bg-slate-50 / 100 / 200 in dark mode use the dark set) */
+    --surface-subtle: #f8fafc;
+    --surface-muted: #f1f5f9;
+    --surface-strong: #e2e8f0;
 
     --status-green: #16a34a;
     --status-orange: #d97706;
@@ -128,6 +136,12 @@ html[data-theme='dark'] {
     --text-muted: #94a3b8;
     --text-secondary: #94a3b8;
     --text-hint: #94a3b8;
+
+    --link-color: color-mix(in srgb, var(--crm-accent, #2563eb) 70%, #fff);
+    --link-hover: color-mix(in srgb, var(--crm-accent, #2563eb) 55%, #fff);
+    --surface-subtle: #131c2e;
+    --surface-muted: #1e293b;
+    --surface-strong: #334155;
 
     --status-green: #4ade80;
     --status-orange: #fbbf24;
@@ -445,7 +459,7 @@ nav[class*="border-b"] button[class*="border-blue"],
 .tab-active,
 [role="tab"][aria-selected="true"] {
     border-bottom: 2px solid var(--crm-accent, #2563eb) !important;
-    color: var(--crm-accent, #2563eb) !important;
+    color: var(--link-color) !important;
     font-weight: 700 !important;
 }
 html.dark nav[class*="border-b"] a[class*="border-blue"],
@@ -1243,7 +1257,7 @@ html.dark table.pg-table tbody td {
     color: var(--text-main) !important;
 }
 .cell-name a {
-    color: var(--crm-accent, #2563eb) !important;
+    color: var(--link-color) !important;
     text-decoration: none !important;
     transition: color 0.15s ease !important;
 }
@@ -1254,11 +1268,11 @@ html.dark table.pg-table tbody td {
 .cell-no {
     font-size: 0.85rem !important;
     font-weight: 700 !important;
-    color: var(--crm-accent, #2563eb) !important;
+    color: var(--link-color) !important;
     text-decoration: none !important;
 }
 .cell-no a {
-    color: var(--crm-accent, #2563eb) !important;
+    color: var(--link-color) !important;
     text-decoration: none !important;
 }
 .cell-no a:hover {
@@ -1322,7 +1336,7 @@ html.dark .cell-date {
     font-size: 0.7rem !important;
     font-weight: 600 !important;
     background: color-mix(in srgb, var(--crm-accent, #2563eb) 6%, #fff) !important;
-    color: var(--crm-accent, #2563eb) !important;
+    color: var(--link-color) !important;
     border: 1px solid color-mix(in srgb, var(--crm-accent, #2563eb) 12%, #fff) !important;
 }
 html.dark .source-tag {
@@ -1380,7 +1394,7 @@ html.dark .btn-ticket {
     font-size: 0.72rem !important;
     font-weight: 700 !important;
     background: color-mix(in srgb, var(--crm-accent, #2563eb) 6%, #fff) !important;
-    color: var(--crm-accent, #2563eb) !important;
+    color: var(--link-color) !important;
     border: 1px solid color-mix(in srgb, var(--crm-accent, #2563eb) 24%, #fff) !important;
     text-decoration: none !important;
     transition: all 0.15s ease !important;
@@ -1649,7 +1663,7 @@ html:not(.dark) .crm-app-container h2.text-white,
 html:not(.dark) .crm-app-container h3.text-white,
 html:not(.dark) .crm-app-container h4.text-white,
 html:not(.dark) .crm-app-container strong.text-white,
-html:not(.dark) .crm-app-container .text-white:not(.btn):not(.btn-primary):not([class*="btn-primary"]):not(.crm-tab-active):not(.crm-pill-active):not(.active):not([class*="active"]):not([class*="bg-blue"]):not([class*="bg-indigo"]):not([class*="bg-emerald"]):not([class*="bg-green"]):not([class*="bg-red"]):not(.crm-user-avatar):not(.badge) {
+html:not(.dark) .crm-app-container .text-white:not(.btn):not(.btn-primary):not([class*="btn-primary"]):not(.crm-tab-active):not(.crm-pill-active):not(.active):not([class*="active"]):not([class*="bg-blue"]):not([class*="bg-indigo"]):not([class*="bg-emerald"]):not([class*="bg-green"]):not([class*="bg-red"]):not([class*="bg-amber"]):not([class*="bg-rose"]):not(.crm-user-avatar):not(.badge) {
     color: var(--text-main) !important;
 }
 
@@ -1977,7 +1991,7 @@ html:not(.dark) .pg-card .text-gray-500 {
 }
 html:not(.dark) .pg-card .text-slate-900,
 html:not(.dark) .pg-card .text-gray-900,
-html:not(.dark) .pg-card .text-white:not(.btn):not(.btn-primary):not([class*="btn-primary"]):not(.crm-tab-active):not(.crm-pill-active):not(.active):not([class*="active"]):not([class*="bg-blue"]):not([class*="bg-indigo"]):not([class*="bg-emerald"]):not([class*="bg-green"]):not([class*="bg-red"]):not(.crm-user-avatar):not(.badge) {
+html:not(.dark) .pg-card .text-white:not(.btn):not(.btn-primary):not([class*="btn-primary"]):not(.crm-tab-active):not(.crm-pill-active):not(.active):not([class*="active"]):not([class*="bg-blue"]):not([class*="bg-indigo"]):not([class*="bg-emerald"]):not([class*="bg-green"]):not([class*="bg-red"]):not([class*="bg-amber"]):not([class*="bg-rose"]):not(.crm-user-avatar):not(.badge) {
     color: var(--text-main) !important;
 }
 
@@ -2076,7 +2090,8 @@ html:not(.dark) [style*="background:#0b1120"] {
     background: #f8fafc !important;
     border: 1px solid #e2e8f0 !important;
 }
-html:not(.dark) [class*="text-slate-400"]:not([class*="dark:"]) {
+/* (text inside a panel that is dark in both themes, like the landing page footer, keeps its light grey) */
+html:not(.dark) [class*="text-slate-400"]:not([class*="dark:"]):not(:is(.bg-slate-900, .bg-slate-950, .bg-gray-900, .bg-black) *) {
     color: var(--text-muted) !important;
 }
 
@@ -2157,7 +2172,7 @@ html:not(.dark) .tech-stat {
 }
 .ts-dropdown .option.active, .ts-dropdown .option:hover {
     background-color: color-mix(in srgb, var(--crm-accent, #2563eb) 6%, #fff) !important;
-    color: var(--crm-accent, #2563eb) !important;
+    color: var(--link-color) !important;
 }
 
 /* Dark mode TomSelect */
@@ -2622,7 +2637,7 @@ a.btn-primary {
 .crm-back-link {
     font-size: 0.875rem !important;
     font-weight: 500 !important;
-    color: var(--crm-accent, #2563eb) !important;
+    color: var(--link-color) !important;
     text-decoration: none !important;
     display: inline-flex !important;
     align-items: center !important;
@@ -2989,7 +3004,7 @@ html.dark .crm-btn-secondary:hover {
 .row-action-link {
     background: transparent !important;
     border: none !important;
-    color: var(--crm-accent, #2563eb) !important;
+    color: var(--link-color) !important;
     padding: 0 !important;
     font-size: 14px !important;
     font-weight: normal !important;
@@ -3209,7 +3224,7 @@ table td.col-name {
 table td.table-actions a,
 table td .table-action-link,
 table td a:not(.btn):not(.btn-primary) {
-    color: var(--crm-accent, #2563eb) !important;
+    color: var(--link-color) !important;
     text-decoration: none !important;
     font-size: 14px !important;
     font-weight: normal !important;
@@ -3267,6 +3282,10 @@ html.dark .section-heading {
     color: var(--text-main) !important;
     border-bottom: 1px solid var(--table-border) !important;
 }
+/* ...except a heading set to white on a dark picture or panel, which stays white in both themes */
+html body section h3[class~="text-white"] {
+    color: #ffffff !important;
+}
 
 /* Dashboard stat cards show only a gray label and a bold number. Crisp 1px dark border outline. */
 .stat-card {
@@ -3286,7 +3305,11 @@ html.dark .stat-card {
     font-weight: normal !important;
     text-transform: normal !important;
     letter-spacing: normal !important;
-    color: #666666 !important;
+    color: var(--text-muted) !important;
+}
+html.dark .stat-card .stat-label,
+html.dark .stat-card > div:first-child {
+    color: var(--text-muted) !important;
 }
 
 .stat-card .stat-value,
@@ -3329,9 +3352,10 @@ html.dark .detail-table td:last-child {
 }
 
 /* 5.6 LINKS AND NAVIGATION */
-/* Links are blue var(--crm-accent, #2563eb), no underline, underline on hover */
-a:not(.btn):not(.btn-primary):not(.btn-secondary):not(.btn-subtle):not(.btn-inline-add):not([class*="btn-subtle"]):not(aside a):not(.crm-active-link):not(.crm-brand-logo):not(.text-white):not([class*="text-white"]):not(.crm-filter-tab):not(.filter-tab):not(.active):not([class*="active"]):not(.filter-tabs a):not(.section-nav-link):not(.plain-link) {
-    color: var(--crm-accent, #2563eb) !important;
+/* Links use the accent (--link-color), no underline, underline on hover. A link that sets its own
+   grey (text-slate-*, text-gray-*), such as a tab or a Cancel button, keeps that colour. */
+a:not(.btn):not(.btn-primary):not(.btn-secondary):not(.btn-subtle):not(.btn-inline-add):not([class*="btn-subtle"]):not(aside a):not(.crm-active-link):not(.crm-brand-logo):not(.text-white):not([class*="text-white"]):not(.crm-filter-tab):not(.filter-tab):not(.active):not([class*="active"]):not(.filter-tabs a):not(.section-nav-link):not(.plain-link):not([class*="text-slate"]):not([class*="text-gray"]) {
+    color: var(--link-color) !important;
     text-decoration: none !important;
 }
 a:not(.btn):not(.btn-primary):not(.btn-secondary):not(.btn-subtle):not(.btn-inline-add):not([class*="btn-subtle"]):not(aside a):not(.text-white):not([class*="text-white"]):not(.crm-filter-tab):not(.filter-tab):not(.active):not([class*="active"]):not(.filter-tabs a):not(.section-nav-link):not(.plain-link):hover {
@@ -3414,7 +3438,7 @@ html.dark .filter-tabs a:not(.active):hover {
 a.crm-back-link {
     display: inline-block !important;
     font-size: 14px !important;
-    color: var(--crm-accent, #2563eb) !important;
+    color: var(--link-color) !important;
     text-decoration: none !important;
     margin-bottom: 8px !important;
 }
@@ -4201,4 +4225,140 @@ html.dark body :is(button, a[class*="btn"], .btn-secondary, .ld-outline) svg.ico
 .crm-brand-logo .crm-logo-prec-mask {
     background-color: var(--crm-accent, #2563eb);
     transition: background-color 0.2s ease;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   THEME GUARD: every page reads the same in light and dark mode.
+   Views colour things with Tailwind's light classes (bg-white, bg-slate-50,
+   text-gray-900, bg-emerald-50 text-emerald-800 ...). Where a view left out
+   the dark: partner, dark mode showed a white box or text that vanished into
+   the background. Here those classes get their dark-mode colour. A dark:bg-*
+   or dark:text-* class on the same element still wins, so new views should
+   keep writing both.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Neutral surfaces: card, then faint / muted / strong panels inside a card */
+html.dark :is(.bg-white, .bg-\[\#fff\], .bg-\[\#ffffff\]):not([class*="dark:bg-"]) {
+    background-color: var(--card-bg);
+}
+html.dark :is(.bg-slate-50, .bg-slate-50\/50, .bg-slate-50\/60, .bg-slate-50\/70, .bg-slate-50\/80, .bg-gray-50, .bg-gray-50\/50, .bg-gray-50\/75, .bg-zinc-50, .bg-neutral-50, .bg-\[\#f8fafc\], .bg-\[\#f9fafb\], .bg-\[\#f9f9f9\], .bg-\[\#fafafa\], .bg-\[\#f5f5f5\]):not([class*="dark:bg-"]) {
+    background-color: var(--surface-subtle);
+}
+html.dark :is(.bg-slate-100, .bg-gray-100, .bg-zinc-100, .bg-neutral-100, .bg-\[\#f1f5f9\], .bg-\[\#f3f4f6\]):not([class*="dark:bg-"]) {
+    background-color: var(--surface-muted);
+}
+html.dark :is(.bg-slate-200, .bg-gray-200, .bg-slate-300, .bg-gray-300):not([class*="dark:bg-"]) {
+    background-color: var(--surface-strong);
+}
+html.dark :is(.hover\:bg-white, .hover\:bg-slate-50, .hover\:bg-gray-50, .hover\:bg-slate-100, .hover\:bg-gray-100):hover:not([class*="dark:hover:bg-"]) {
+    background-color: var(--surface-muted);
+}
+html.dark :is(.hover\:bg-slate-200, .hover\:bg-gray-200, .hover\:bg-slate-300, .hover\:bg-gray-300):hover:not([class*="dark:hover:bg-"]) {
+    background-color: var(--surface-strong);
+}
+html.dark :is(.divide-gray-100, .divide-gray-300, .divide-slate-50, .divide-gray-50) > * + * {
+    border-color: var(--card-border) !important;
+}
+
+/* Neutral text: headings and values, body text, muted notes */
+html.dark :is(.text-black, .text-gray-950, .text-gray-900, .text-gray-800, .text-slate-950, .text-slate-900, .text-slate-800, .text-zinc-900, .text-neutral-900, .text-\[\#000\], .text-\[\#000000\], .text-\[\#111\], .text-\[\#111827\], .text-\[\#0f172a\], .text-\[\#1e293b\], .text-\[\#222\], .text-\[\#222222\], .text-\[\#333\], .text-\[\#333333\]):not([class*="dark:text-"]) {
+    color: var(--text-main);
+}
+html.dark :is(.text-gray-700, .text-slate-700, .text-zinc-700, .text-neutral-700, .text-\[\#444\], .text-\[\#444444\]):not([class*="dark:text-"]) {
+    color: #cbd5e1;
+}
+html.dark :is(.text-gray-600, .text-slate-600, .text-gray-500, .text-slate-500, .text-zinc-500, .text-\[\#555\], .text-\[\#555555\], .text-\[\#666\], .text-\[\#666666\], .text-\[\#6b7280\]):not([class*="dark:text-"]) {
+    color: var(--text-muted);
+}
+html.dark :is(.hover\:text-black, .hover\:text-gray-900, .hover\:text-gray-800, .hover\:text-gray-700, .hover\:text-slate-900, .hover\:text-slate-800, .hover\:text-slate-700):hover:not([class*="dark:hover:text-"]) {
+    color: #f1f5f9;
+}
+
+/* Coloured text: the 600 shade becomes the 400 shade, 700-900 (text on a tint) the 300 shade.
+   tailwind.config.js makes blue, indigo, violet, purple, fuchsia, sky and cyan the accent colour,
+   so those read as --link-color; orange is amber, teal and lime are emerald, pink is rose. */
+html.dark :is(.text-blue-500, .text-blue-600, .text-blue-700, .text-blue-800, .text-blue-900, .text-indigo-500, .text-indigo-600, .text-indigo-700, .text-indigo-800, .text-indigo-900, .text-violet-600, .text-violet-700, .text-violet-800, .text-violet-900, .text-purple-600, .text-purple-700, .text-purple-800, .text-purple-900, .text-fuchsia-600, .text-fuchsia-700, .text-fuchsia-800, .text-fuchsia-900, .text-sky-600, .text-sky-700, .text-sky-800, .text-sky-900, .text-cyan-600, .text-cyan-700, .text-cyan-800, .text-cyan-900):not([class*="dark:text-"]) {
+    color: var(--link-color);
+}
+html.dark :is(.text-red-600, .text-\[\#dc2626\]):not([class*="dark:text-"]) { color: #f87171; }
+html.dark :is(.text-red-700, .text-red-800, .text-red-900, .text-\[\#b91c1c\]):not([class*="dark:text-"]) { color: #fca5a5; }
+html.dark :is(.text-rose-600, .text-pink-600, .text-\[\#e11d48\]):not([class*="dark:text-"]) { color: #fb7185; }
+html.dark :is(.text-rose-700, .text-rose-800, .text-rose-900, .text-pink-700, .text-pink-800, .text-pink-900):not([class*="dark:text-"]) { color: #fda4af; }
+html.dark :is(.text-amber-600, .text-orange-600, .text-\[\#d97706\]):not([class*="dark:text-"]) { color: #fbbf24; }
+html.dark :is(.text-amber-700, .text-amber-800, .text-amber-900, .text-orange-700, .text-orange-800, .text-orange-900, .text-\[\#b45309\]):not([class*="dark:text-"]) { color: #fcd34d; }
+html.dark .text-yellow-600:not([class*="dark:text-"]) { color: #facc15; }
+html.dark :is(.text-yellow-700, .text-yellow-800, .text-yellow-900):not([class*="dark:text-"]) { color: #fde047; }
+html.dark :is(.text-green-600, .text-\[\#16a34a\]):not([class*="dark:text-"]) { color: #4ade80; }
+html.dark :is(.text-green-700, .text-green-800, .text-green-900, .text-\[\#15803d\]):not([class*="dark:text-"]) { color: #86efac; }
+html.dark :is(.text-emerald-600, .text-teal-600, .text-lime-600, .text-\[\#059669\]):not([class*="dark:text-"]) { color: #34d399; }
+html.dark :is(.text-emerald-700, .text-emerald-800, .text-emerald-900, .text-teal-700, .text-teal-800, .text-teal-900, .text-lime-700, .text-lime-800, .text-lime-900, .text-\[\#047857\]):not([class*="dark:text-"]) { color: #6ee7b7; }
+
+/* Tinted panels and badges (bg-emerald-50 and friends) become a soft wash of the same colour */
+html.dark :is(.bg-blue-50, .bg-blue-50\/20, .bg-blue-50\/50, .bg-violet-50\/50, .bg-cyan-50\/50, .bg-blue-100, .bg-indigo-50, .bg-indigo-100, .bg-violet-50, .bg-violet-100, .bg-purple-50, .bg-purple-100, .bg-fuchsia-50, .bg-fuchsia-100, .bg-sky-50, .bg-sky-100, .bg-cyan-50, .bg-cyan-100):not([class*="dark:bg-"]) {
+    background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.14);
+}
+html.dark :is(.bg-red-50, .bg-red-100):not([class*="dark:bg-"]) { background-color: rgba(239, 68, 68, 0.12); }
+html.dark :is(.bg-rose-50, .bg-rose-100, .bg-pink-50, .bg-pink-50\/50, .bg-pink-100):not([class*="dark:bg-"]) { background-color: rgba(244, 63, 94, 0.12); }
+html.dark :is(.bg-amber-50, .bg-amber-50\/50, .bg-amber-100, .bg-orange-50, .bg-orange-50\/50, .bg-orange-100):not([class*="dark:bg-"]) { background-color: rgba(245, 158, 11, 0.12); }
+html.dark :is(.bg-yellow-50, .bg-yellow-50\/50, .bg-yellow-100):not([class*="dark:bg-"]) { background-color: rgba(234, 179, 8, 0.12); }
+html.dark :is(.bg-green-50, .bg-green-100):not([class*="dark:bg-"]) { background-color: rgba(34, 197, 94, 0.12); }
+html.dark :is(.bg-emerald-50, .bg-emerald-50\/50, .bg-emerald-100, .bg-teal-50, .bg-teal-100, .bg-lime-50, .bg-lime-100):not([class*="dark:bg-"]) { background-color: rgba(16, 185, 129, 0.12); }
+html.dark :is(.border-blue-100, .border-blue-200, .border-blue-300, .border-indigo-100, .border-indigo-200, .border-indigo-300, .border-violet-100, .border-violet-200, .border-purple-200, .border-sky-200, .border-cyan-100, .border-cyan-200):not([class*="dark:border-"]) { border-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.35); }
+html.dark :is(.border-red-100, .border-red-200, .border-red-300):not([class*="dark:border-"]) { border-color: rgba(239, 68, 68, 0.35); }
+html.dark :is(.border-rose-100, .border-rose-200, .border-rose-300, .border-pink-100, .border-pink-200, .border-pink-300):not([class*="dark:border-"]) { border-color: rgba(244, 63, 94, 0.35); }
+html.dark :is(.border-amber-100, .border-amber-200, .border-amber-300, .border-orange-100, .border-orange-200, .border-orange-300):not([class*="dark:border-"]) { border-color: rgba(245, 158, 11, 0.35); }
+html.dark :is(.border-yellow-100, .border-yellow-200, .border-yellow-300):not([class*="dark:border-"]) { border-color: rgba(234, 179, 8, 0.35); }
+html.dark :is(.border-green-100, .border-green-200, .border-green-300):not([class*="dark:border-"]) { border-color: rgba(34, 197, 94, 0.35); }
+html.dark :is(.border-emerald-100, .border-emerald-200, .border-emerald-300, .border-teal-200, .border-lime-200, .border-yellow-100):not([class*="dark:border-"]) { border-color: rgba(16, 185, 129, 0.35); }
+
+/* File pickers: one button style for every upload field, in both themes */
+input[type="file"] {
+    color: var(--text-muted);
+    font-size: 12px;
+    max-width: 100%;
+}
+input[type="file"]::file-selector-button {
+    margin-right: 10px;
+    padding: 5px 12px;
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius-control);
+    background-color: var(--surface-muted);
+    color: var(--text-main);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+input[type="file"]:hover::file-selector-button {
+    background-color: var(--surface-strong);
+}
+input[type="file"]:focus-visible {
+    outline: 2px solid var(--crm-accent, #2563eb);
+    outline-offset: 2px;
+    border-radius: var(--radius-control);
+}
+
+/* Light mode, the other way round: some views were written for dark mode first and use the
+   bright 300/400 shades (text-amber-400, text-emerald-400 ...) as their only colour, and the
+   500/600 shades are too pale for small text on white. On light backgrounds these take the
+   700 shade. Text inside a panel that stays dark in both themes (bg-slate-900, the sign-in
+   artwork) keeps its bright colour. */
+html:not(.dark) :is(.text-amber-300, .text-amber-400, .text-amber-500, .text-amber-600, .text-orange-300, .text-orange-400, .text-orange-500, .text-orange-600, .text-yellow-400, .text-yellow-500, .text-yellow-600):not(:is(.bg-slate-900, .bg-slate-950, .bg-gray-900, .bg-black, .login-hero-panel) *) { color: #b45309; }
+html:not(.dark) :is(.text-emerald-300, .text-emerald-400, .text-emerald-500, .text-emerald-600, .text-teal-300, .text-teal-400, .text-teal-500, .text-teal-600, .text-lime-400, .text-lime-500, .text-lime-600):not(:is(.bg-slate-900, .bg-slate-950, .bg-gray-900, .bg-black, .login-hero-panel) *) { color: #047857; }
+html:not(.dark) :is(.text-green-300, .text-green-400, .text-green-500, .text-green-600, .text-\[\#16a34a\]):not(:is(.bg-slate-900, .bg-slate-950, .bg-gray-900, .bg-black, .login-hero-panel) *) { color: #15803d; }
+html:not(.dark) :is(.text-rose-300, .text-rose-400, .text-rose-500, .text-pink-300, .text-pink-400, .text-pink-500):not(:is(.bg-slate-900, .bg-slate-950, .bg-gray-900, .bg-black, .login-hero-panel) *) { color: #be123c; }
+html:not(.dark) :is(.text-red-300, .text-red-400, .text-red-500):not(:is(.bg-slate-900, .bg-slate-950, .bg-gray-900, .bg-black, .login-hero-panel) *) { color: #b91c1c; }
+html:not(.dark) :is(.text-blue-300, .text-blue-400, .text-indigo-300, .text-indigo-400, .text-violet-300, .text-violet-400, .text-purple-300, .text-purple-400, .text-fuchsia-300, .text-fuchsia-400, .text-sky-300, .text-sky-400, .text-cyan-300, .text-cyan-400):not(:is(.bg-slate-900, .bg-slate-950, .bg-gray-900, .bg-black, .login-hero-panel) *) { color: var(--link-color); }
+html:not(.dark) .text-gray-400:not(svg):not(:is(.bg-slate-900, .bg-slate-950, .bg-gray-900, .bg-black, .login-hero-panel) *) { color: var(--text-muted); }
+
+/* ...and their small dark chips (bg-slate-800 tags and badges) turn into light grey chips */
+html:not(.dark) body :is(span, code, kbd, a, button):is(.bg-slate-800, .bg-slate-800\/40, .bg-slate-800\/50, .bg-slate-900):not([class~="text-white"]) {
+    background-color: var(--surface-muted) !important;
+    border-color: var(--card-border) !important;
+    color: var(--text-secondary) !important;
+}
+
+/* Laravel's built-in pagination dims its "Showing 1 to 15 of 36" line with dark:text-gray-600 */
+html.dark nav[role="navigation"] :is(.dark\:text-gray-600, .dark\:text-gray-600 *) {
+    color: var(--text-muted);
 }

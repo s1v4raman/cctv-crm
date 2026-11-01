@@ -58,7 +58,7 @@
 
                 <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs font-mono">
                     <button type="button" @click="activeCategory = 'all'"
-                            :class="activeCategory === 'all' ? 'bg-amber-500 text-slate-950 font-black shadow-lg shadow-amber-500/20' : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'"
+                            :class="activeCategory === 'all' ? 'bg-amber-500 text-slate-950 dark:text-slate-950 font-black shadow-lg shadow-amber-500/20' : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'"
                             class="px-3 py-1.5 rounded-xl transition shrink-0 font-bold">
                         All Modules ({{ $templates->count() }})
                     </button>
@@ -83,7 +83,7 @@
                     @endphp
                     @foreach($categories as $cat)
                         <button type="button" @click="activeCategory = '{{ $cat }}'"
-                                :class="activeCategory === '{{ $cat }}' ? 'bg-amber-500 text-slate-950 font-black shadow-lg shadow-amber-500/20' : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'"
+                                :class="activeCategory === '{{ $cat }}' ? 'bg-amber-500 text-slate-950 dark:text-slate-950 font-black shadow-lg shadow-amber-500/20' : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'"
                                 class="px-3 py-1.5 rounded-xl transition shrink-0 font-bold">
                             {{ $categoryIcons[$cat] ?? ucfirst($cat) }} ({{ $templates->where('category', $cat)->count() }})
                         </button>

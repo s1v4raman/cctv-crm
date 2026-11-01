@@ -1197,7 +1197,7 @@
           @shortcuts-toggle.window="shortcutsModalOpen = (typeof $event.detail?.open === 'boolean') ? $event.detail.open : !shortcutsModalOpen"
           @shortcuts-open.window="shortcutsModalOpen = true"
           @shortcuts-close.window="shortcutsModalOpen = false">
-            <a href="#main-content" class="crm-skip-link">Skip to main content</a>
+            <a href="#main-content" class="crm-skip-link text-white">Skip to main content</a>
         
             {{-- ════════════════════════════════════════════════════════════════ --}}
             {{-- SECUREVISION UNIFIED ENTERPRISE SAAS CRM SUITE (ALL ROLES)        --}}
@@ -1582,7 +1582,7 @@
                                                 <div class="flex-1 min-w-0">
                                                     <div class="flex items-center justify-between gap-1">
                                                         <p class="font-bold text-slate-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition">{{ $item['title'] }}</p>
-                                                        <span class="text-[11px] text-slate-400 dark:text-slate-500 shrink-0">{{ $item['time'] }}</span>
+                                                        <span class="text-[11px] text-slate-500 dark:text-slate-400 shrink-0">{{ $item['time'] }}</span>
                                                     </div>
                                                     <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">{{ $item['description'] }}</p>
                                                 </div>

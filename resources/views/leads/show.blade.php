@@ -11,10 +11,10 @@
                         {{ $lead->customer_name }}
                     </h2>
                     @php
-                        $leadStatusColor = 'var(--crm-accent, #2563eb)';
-                        if ($lead->status === 'won') $leadStatusColor = '#16a34a';
-                        elseif ($lead->status === 'lost') $leadStatusColor = '#dc2626';
-                        elseif ($lead->status === 'quoted') $leadStatusColor = 'var(--crm-accent-hover, #1d4ed8)';
+                        $leadStatusColor = 'var(--link-color)';
+                        if ($lead->status === 'won') $leadStatusColor = 'var(--status-success-fg)';
+                        elseif ($lead->status === 'lost') $leadStatusColor = 'var(--status-danger-fg)';
+                        elseif ($lead->status === 'quoted') $leadStatusColor = 'var(--link-hover)';
                     @endphp
                     <span class="text-sm font-bold" style="color: {{ $leadStatusColor }};">
                         {{ ucfirst($lead->status) }}

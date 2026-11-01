@@ -616,7 +616,7 @@
                                                    required
                                                    placeholder="Item description"
                                                    class="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none">
-                                            <div x-show="mat.is_custom && isNewProduct(mat.item_name)" x-cloak class="text-[11px] text-slate-400 dark:text-slate-500 mt-1 font-medium">
+                                            <div x-show="mat.is_custom && isNewProduct(mat.item_name)" x-cloak class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-medium">
                                                 New item. Will be saved for next time.
                                             </div>
                                         </td>
@@ -646,7 +646,7 @@
                                                    list="bom-vendors-list"
                                                    placeholder="Shop name if local"
                                                    class="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none">
-                                            <div x-show="mat.is_custom && mat.source === 'local_purchase' && isNewVendor(mat.shop_name)" x-cloak class="text-[11px] text-slate-400 dark:text-slate-500 mt-1 font-medium">
+                                            <div x-show="mat.is_custom && mat.source === 'local_purchase' && isNewVendor(mat.shop_name)" x-cloak class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-medium">
                                                 New item. Will be saved for next time.
                                             </div>
                                         </td>

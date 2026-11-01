@@ -7,7 +7,7 @@
 
 @if (request()->anyFilled($filters))
     <span>{{ $filtered }}</span>
-    <a href="{{ url()->current() }}" class="ml-1 font-semibold text-[var(--crm-accent)] hover:underline">Clear filters</a>
+    <a href="{{ url()->current() }}" class="ml-1 font-semibold text-[var(--link-color)] hover:underline">Clear filters</a>
 @else
     <span>{{ $empty }}</span>
 @endif

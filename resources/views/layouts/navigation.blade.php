@@ -25,7 +25,7 @@
         {{-- Technician Navigation --}}
         @if(auth()->user()->role === 'technician')
             <div>
-                <div :class="sidebarCollapsed ? 'lg:hidden' : ''" class="px-3 mb-1.5 text-[11px] font-bold tracking-wider uppercase text-slate-400 dark:text-slate-500">Technician Portal</div>
+                <div :class="sidebarCollapsed ? 'lg:hidden' : ''" class="px-3 mb-1.5 text-[11px] font-bold tracking-wider uppercase text-slate-500 dark:text-slate-400">Technician Portal</div>
                 <div :class="sidebarCollapsed ? 'hidden lg:block' : 'hidden'" class="my-2 border-t border-slate-100 dark:border-slate-800"></div>
                 <div class="space-y-1">
                     {{-- Field Work Orders (Wrench icon) --}}
@@ -99,7 +99,7 @@
             
             {{-- 1. Main Overview --}}
             <div>
-                <div :class="sidebarCollapsed ? 'lg:hidden' : ''" class="px-3 mb-1.5 text-[11px] font-bold tracking-wider uppercase text-slate-400 dark:text-slate-500">Overview</div>
+                <div :class="sidebarCollapsed ? 'lg:hidden' : ''" class="px-3 mb-1.5 text-[11px] font-bold tracking-wider uppercase text-slate-500 dark:text-slate-400">Overview</div>
                 <div :class="sidebarCollapsed ? 'hidden lg:block' : 'hidden'" class="my-2 border-t border-slate-100 dark:border-slate-800"></div>
                 <div class="space-y-1">
                     {{-- Dashboard (Home icon) --}}
@@ -129,7 +129,7 @@
 
             {{-- 2. Sales & Pipeline --}}
             <div>
-                <div :class="sidebarCollapsed ? 'lg:hidden' : ''" class="px-3 mb-1.5 text-[11px] font-bold tracking-wider uppercase text-slate-400 dark:text-slate-500">Sales & Pipeline</div>
+                <div :class="sidebarCollapsed ? 'lg:hidden' : ''" class="px-3 mb-1.5 text-[11px] font-bold tracking-wider uppercase text-slate-500 dark:text-slate-400">Sales & Pipeline</div>
                 <div :class="sidebarCollapsed ? 'hidden lg:block' : 'hidden'" class="my-2 border-t border-slate-100 dark:border-slate-800"></div>
                 <div class="space-y-1">
                     {{-- Leads & Inquiries (User outline icon) --}}
@@ -166,7 +166,7 @@
 
             {{-- 3. Field Operations & Support --}}
             <div>
-                <div :class="sidebarCollapsed ? 'lg:hidden' : ''" class="px-3 mb-1.5 text-[11px] font-bold tracking-wider uppercase text-slate-400 dark:text-slate-500">Field Operations</div>
+                <div :class="sidebarCollapsed ? 'lg:hidden' : ''" class="px-3 mb-1.5 text-[11px] font-bold tracking-wider uppercase text-slate-500 dark:text-slate-400">Field Operations</div>
                 <div :class="sidebarCollapsed ? 'hidden lg:block' : 'hidden'" class="my-2 border-t border-slate-100 dark:border-slate-800"></div>
                 <div class="space-y-1">
                     {{-- Projects & Sites (Briefcase icon) --}}
@@ -259,7 +259,7 @@
 
             {{-- 4. Inventory & Procurement --}}
             <div>
-                <div :class="sidebarCollapsed ? 'lg:hidden' : ''" class="px-3 mb-1.5 text-[11px] font-bold tracking-wider uppercase text-slate-400 dark:text-slate-500">Inventory & Procurement</div>
+                <div :class="sidebarCollapsed ? 'lg:hidden' : ''" class="px-3 mb-1.5 text-[11px] font-bold tracking-wider uppercase text-slate-500 dark:text-slate-400">Inventory & Procurement</div>
                 <div :class="sidebarCollapsed ? 'hidden lg:block' : 'hidden'" class="my-2 border-t border-slate-100 dark:border-slate-800"></div>
                 <div class="space-y-1">
                     @if(auth()->user()->isOffice())
@@ -303,7 +303,7 @@
 
             {{-- 5. Employee & Workforce (Clean Single Link) --}}
             <div>
-                <div :class="sidebarCollapsed ? 'lg:hidden' : ''" class="px-3 mb-1.5 text-[11px] font-bold tracking-wider uppercase text-slate-400 dark:text-slate-500">Workspace</div>
+                <div :class="sidebarCollapsed ? 'lg:hidden' : ''" class="px-3 mb-1.5 text-[11px] font-bold tracking-wider uppercase text-slate-500 dark:text-slate-400">Workspace</div>
                 <div :class="sidebarCollapsed ? 'hidden lg:block' : 'hidden'" class="my-2 border-t border-slate-100 dark:border-slate-800"></div>
                 <div class="space-y-1">
                     {{-- Employee & Workspace (User outline icon) --}}
@@ -321,7 +321,7 @@
 
             {{-- 6. Finance & Accounting (Clean Single Link) --}}
             <div>
-                <div :class="sidebarCollapsed ? 'lg:hidden' : ''" class="px-3 mb-1.5 text-[11px] font-bold tracking-wider uppercase text-slate-400 dark:text-slate-500">Finance</div>
+                <div :class="sidebarCollapsed ? 'lg:hidden' : ''" class="px-3 mb-1.5 text-[11px] font-bold tracking-wider uppercase text-slate-500 dark:text-slate-400">Finance</div>
                 <div :class="sidebarCollapsed ? 'hidden lg:block' : 'hidden'" class="my-2 border-t border-slate-100 dark:border-slate-800"></div>
                 <div class="space-y-1">
                     {{-- Finance & Accounting (Briefcase icon) --}}
@@ -341,7 +341,7 @@
             {{-- 7. Analytics & Automation (analytics for office users; alerts and user accounts admin-only) --}}
             @if(auth()->user()->isOffice())
                 <div>
-                    <div :class="sidebarCollapsed ? 'lg:hidden' : ''" class="px-3 mb-1.5 text-[11px] font-bold tracking-wider uppercase text-slate-400 dark:text-slate-500">Analytics & Automation</div>
+                    <div :class="sidebarCollapsed ? 'lg:hidden' : ''" class="px-3 mb-1.5 text-[11px] font-bold tracking-wider uppercase text-slate-500 dark:text-slate-400">Analytics & Automation</div>
                     <div :class="sidebarCollapsed ? 'hidden lg:block' : 'hidden'" class="my-2 border-t border-slate-100 dark:border-slate-800"></div>
                     <div class="space-y-1">
                         @if(auth()->user()->isAdmin())

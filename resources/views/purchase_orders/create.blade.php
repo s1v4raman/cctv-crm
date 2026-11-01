@@ -32,7 +32,7 @@
                         <div>
                             <div class="flex flex-wrap items-center justify-between gap-x-2">
                                 <label for="po-supplier" class="crm-label whitespace-nowrap">Select Supplier <span class="required-marker">*</span></label>
-                                <button type="button" @click="$dispatch('open-modal', 'add-supplier')" class="mb-[0.45rem] inline-flex items-center gap-1 whitespace-nowrap text-xs font-semibold hover:underline" style="color: var(--crm-accent, #2563eb);">
+                                <button type="button" @click="$dispatch('open-modal', 'add-supplier')" class="mb-[0.45rem] inline-flex items-center gap-1 whitespace-nowrap text-xs font-semibold hover:underline" style="color: var(--link-color);">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.25" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" d="M12 5v14M5 12h14"/></svg>
                                     Add new supplier
                                 </button>

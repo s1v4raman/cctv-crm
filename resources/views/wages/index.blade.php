@@ -331,13 +331,13 @@
                                                         <span class="font-bold text-slate-500">Worker #{{ $row['worker_id'] ?? '—' }}</span>
                                                     @endif
                                                 </div>
-                                                <button type="button" @click='openAnalysis(@json($rowData))' class="px-2 py-0.5 text-xs font-semibold rounded" style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.12); color: var(--crm-accent, #2563eb);" title="View Shift Analysis, Verified Photos, and Advances">
+                                                <button type="button" @click='openAnalysis(@json($rowData))' class="px-2 py-0.5 text-xs font-semibold rounded" style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.12); color: var(--link-color);" title="View Shift Analysis, Verified Photos, and Advances">
                                                     Analysis ({{ $row['days_worked'] > 0 ? $row['days_worked'] : ($row['prior_days_worked'] > 0 ? $row['prior_days_worked'] . ' b/f' : 0) }})
                                                 </button>
                                             </div>
                                         </td>
                                         <td class="text-center font-medium">
-                                            <button type="button" @click='openAnalysis(@json($rowData))' class="font-mono font-bold hover:underline cursor-pointer" style="color: var(--crm-accent, #2563eb);">
+                                            <button type="button" @click='openAnalysis(@json($rowData))' class="font-mono font-bold hover:underline cursor-pointer" style="color: var(--link-color);">
                                                 @if($row['days_worked'] > 0)
                                                     {{ $row['days_worked'] }}
                                                     @if(($row['prior_days_worked'] ?? 0) > 0)
@@ -396,7 +396,7 @@
                                         </td>
                                         <td class="text-right font-mono">
                                             @if($row['is_carried_forward'])
-                                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold" style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.12); color: var(--crm-accent, #2563eb);">
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold" style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.12); color: var(--link-color);">
                                                     Carried Fwd
                                                 </span>
                                             @elseif($row['wages_paid'] > 0)
@@ -409,7 +409,7 @@
                                         </td>
                                         <td class="text-right font-bold font-mono text-sm {{ $due > 0 ? 'text-rose-600 dark:text-rose-400' : 'text-slate-400' }}">
                                             @if($row['is_carried_forward'])
-                                                <span class="text-xs font-semibold block" style="color: var(--crm-accent, #2563eb);">Deferred</span>
+                                                <span class="text-xs font-semibold block" style="color: var(--link-color);">Deferred</span>
                                                 <span class="text-xs text-slate-400 font-mono">₹{{ number_format($row['carried_forward_balance'], 2) }}</span>
                                             @else
                                                 ₹{{ number_format($due, 2) }}
@@ -423,7 +423,7 @@
 
                                                 @if($row['is_carried_forward'])
                                                     <span class="text-slate-300 dark:text-slate-600">|</span>
-                                                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-semibold" style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.12); color: var(--crm-accent, #2563eb);">
+                                                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-semibold" style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.12); color: var(--link-color);">
                                                         Carried Fwd
                                                     </span>
                                                     <form method="POST" action="{{ route('wages.settle') }}" class="inline ml-1" data-confirm="Disburse settlement of ₹{{ number_format($row['carried_forward_balance'], 2) }} now to {{ $w->name }}?">

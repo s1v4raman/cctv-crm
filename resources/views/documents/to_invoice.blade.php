@@ -98,13 +98,13 @@
                         <div class="flex items-center gap-3">
                             <span class="w-3 h-3 rounded-full" style="background-color: var(--crm-accent, #2563eb);"></span>
                             <h3 class="font-bold text-slate-900 dark:text-white text-sm font-heading">{{ $companyName }}</h3>
-                            <span class="text-xs font-semibold px-2 py-0.5 rounded-full" style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.12); color: var(--crm-accent, #2563eb);">
+                            <span class="text-xs font-semibold px-2 py-0.5 rounded-full" style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.12); color: var(--link-color);">
                                 {{ $docs->count() }} DCs
                             </span>
                         </div>
 
                         <div class="flex items-center gap-2 text-xs">
-                            <button type="button" @click="selectAll({{ json_encode($docIds) }})" class="hover:underline font-semibold" style="color: var(--crm-accent, #2563eb);">Select All</button>
+                            <button type="button" @click="selectAll({{ json_encode($docIds) }})" class="hover:underline font-semibold" style="color: var(--link-color);">Select All</button>
                             <span class="text-slate-300">&bull;</span>
                             <button type="button" @click="clearGroup({{ json_encode($docIds) }})" class="text-slate-400 hover:underline">Deselect</button>
                         </div>
@@ -146,7 +146,7 @@
                                             </div>
                                         </td>
                                         <td class="px-5 py-3.5">
-                                            <a href="{{ route('projects.show', $doc->project) }}" class="font-bold hover:underline" style="color: var(--crm-accent, #2563eb);">
+                                            <a href="{{ route('projects.show', $doc->project) }}" class="font-bold hover:underline" style="color: var(--link-color);">
                                                 {{ $doc->project->project_code }}
                                             </a>
                                             <div class="text-xs text-slate-400 truncate max-w-xs">{{ $doc->project->title }}</div>

@@ -54,7 +54,7 @@
                 </td>
                 <td x-show="cols.map" class="whitespace-nowrap">
                     @if($site->has_coordinates || $site->google_maps_url)
-                        <a href="{{ $site->navigate_url }}" target="_blank" rel="noopener noreferrer" class="hover:underline font-medium" style="color: var(--crm-accent, #2563eb)">Open map</a>
+                        <a href="{{ $site->navigate_url }}" target="_blank" rel="noopener noreferrer" class="hover:underline font-medium" style="color: var(--link-color)">Open map</a>
                     @else
                         <span style="color: var(--ld-muted)">—</span>
                     @endif

@@ -7,9 +7,9 @@
                 <div class="flex items-center gap-3">
                     <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ $project->title }}</h2>
                     @php
-                        $projStatusColor = 'var(--crm-accent, #2563eb)';
-                        if ($project->status === 'completed') $projStatusColor = '#16a34a';
-                        elseif (in_array($project->status, ['cancelled', 'on_hold'])) $projStatusColor = '#dc2626';
+                        $projStatusColor = 'var(--link-color)';
+                        if ($project->status === 'completed') $projStatusColor = 'var(--status-success-fg)';
+                        elseif (in_array($project->status, ['cancelled', 'on_hold'])) $projStatusColor = 'var(--status-danger-fg)';
                     @endphp
                     <span class="text-sm font-bold" style="color: {{ $projStatusColor }};">
                         {{ $project->status_label ?? ucfirst(str_replace('_', ' ', $project->status)) }}
@@ -471,7 +471,7 @@
                 <button type="button" @click="currentTab = 'materials'" :class="currentTab === 'materials' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 dark:text-slate-400 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'" class="inline-flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
                     <span>Materials</span> <span class="text-slate-400 font-normal">{{ $project->materials->count() }}</span>
                     @if($totalCableMeters > 0)
-                        <span class="px-1.5 py-0.5 text-[11px] rounded-full font-bold" style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.12); color: var(--crm-accent, #2563eb);">{{ number_format($totalCableMeters, 0) }}m</span>
+                        <span class="px-1.5 py-0.5 text-[11px] rounded-full font-bold" style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.12); color: var(--link-color);">{{ number_format($totalCableMeters, 0) }}m</span>
                     @endif
                 </button>
                 <button type="button" @click="currentTab = 'documents'" :class="currentTab === 'documents' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 dark:text-slate-400 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'" class="inline-flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
@@ -489,7 +489,7 @@
                 <button type="button" @click="currentTab = 'tasks'" :class="currentTab === 'tasks' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 dark:text-slate-400 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'" class="inline-flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
                     <span>Tasks</span> <span class="text-slate-400 font-normal">{{ $tasksCount }}</span>
                     @if($tasksCount > 0)
-                        <span class="px-1.5 py-0.5 text-[11px] rounded-full font-bold" style="{{ $taskCompletionPercentage === 100 ? 'background-color: rgba(16, 185, 129, 0.15); color: #10b981;' : 'background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.12); color: var(--crm-accent, #2563eb);' }}">{{ $taskCompletionPercentage }}%</span>
+                        <span class="px-1.5 py-0.5 text-[11px] rounded-full font-bold" style="{{ $taskCompletionPercentage === 100 ? 'background-color: rgba(16, 185, 129, 0.15); color: #10b981;' : 'background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.12); color: var(--link-color);' }}">{{ $taskCompletionPercentage }}%</span>
                     @endif
                 </button>
             </nav>
@@ -870,14 +870,13 @@
                             <div class="flex items-center gap-1.5">
                                 @if(auth()->user()->isAdmin())
                                 <a href="{{ route('admin.users.create', ['role' => 'technician', 'return_to' => route('projects.show', [$project->id, 'tab' => 'overview'])]) }}" 
-                                   class="inline-flex items-center px-2.5 py-1 rounded-lg text-white text-xs font-semibold shadow-xs transition"
-                                   style="background-color: var(--crm-accent, #2563eb);"
+                                   class="inline-flex items-center px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs transition"
                                    title="Add and register a new technician for this project">
                                     Add Technician
                                 </a>
                                 @endif
                                 @if(auth()->user()->isAdmin() || ($project->created_by === auth()->id() && in_array($project->status, ['draft', 'pending_approval'])))
-                                    <a href="{{ route('projects.edit', $project) }}" class="text-xs font-semibold hover:underline px-1 py-0.5" style="color: var(--crm-accent, #2563eb);">
+                                    <a href="{{ route('projects.edit', $project) }}" class="text-xs font-semibold hover:underline px-1 py-0.5" style="color: var(--link-color);">
                                         Edit
                                     </a>
                                 @endif
@@ -910,8 +909,8 @@
                             {{-- Lead Technician --}}
                             <div x-data="{ showAssignForm: false }" class="p-3 rounded-xl border" style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.08); border-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.25);">
                                 <div class="flex items-center justify-between mb-1">
-                                    <span class="text-[11px] uppercase tracking-wider block font-bold" style="color: var(--crm-accent, #2563eb);">Lead Technician (In-Charge)</span>
-                                    <button type="button" @click="showAssignForm = !showAssignForm" class="text-[11px] font-semibold hover:underline" style="color: var(--crm-accent, #2563eb);">
+                                    <span class="text-[11px] uppercase tracking-wider block font-bold" style="color: var(--link-color);">Lead Technician (In-Charge)</span>
+                                    <button type="button" @click="showAssignForm = !showAssignForm" class="text-[11px] font-semibold hover:underline" style="color: var(--link-color);">
                                         <span x-text="showAssignForm ? 'Cancel' : '{{ $project->leadTechnician ? 'Change' : 'Assign' }}'"></span>
                                     </button>
                                 </div>
@@ -2184,7 +2183,7 @@
                                                 @if($task->status === 'blocked')
                                                     <span class="text-rose-700 dark:text-rose-400 truncate max-w-[260px]" title="{{ $task->blocker_reason }}">Blocked: {{ $task->blocker_reason ?: 'waiting' }}</span>
                                                 @elseif($task->status === 'under_review')
-                                                    <span style="color: var(--crm-accent)">Needs checking</span>
+                                                    <span style="color: var(--link-color)">Needs checking</span>
                                                 @elseif($task->status === 'rejected')
                                                     <span class="text-amber-700 dark:text-amber-400">Needs a new person</span>
                                                 @endif
@@ -2318,7 +2317,7 @@
                                         <form method="POST" action="{{ route('projects.tasks.destroy', ['project' => $project, 'task' => $task]) }}" class="ml-auto" data-confirm="Delete the task {{ $task->title }}?">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn-secondary btn-cancel" style="color: #b91c1c !important">Delete</button>
+                                            <button type="submit" class="btn-secondary btn-cancel" style="color: var(--status-danger-fg) !important">Delete</button>
                                         </form>
                                     @endif
                                 </div>

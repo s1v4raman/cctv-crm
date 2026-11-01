@@ -432,24 +432,17 @@
 
     function statusBadge(status) {
         const s = (status || '').toLowerCase();
-        let color = 'var(--text-main)';
-        let bg = 'var(--table-header-bg)';
-        let border = 'var(--card-border)';
+        // Status colours come from the theme tokens, so the pill reads in light and dark mode alike
+        let tone = 'neutral';
         if (s.includes('won') || s.includes('accepted') || s.includes('completed') || s.includes('active') || s.includes('paid')) {
-            color = 'var(--status-green)';
-            bg = isDarkTheme() ? 'rgba(74, 222, 128, 0.15)' : 'rgba(22, 163, 74, 0.12)';
-            border = 'var(--status-green)';
+            tone = 'success';
         } else if (s.includes('lost') || s.includes('rejected') || s.includes('cancelled') || s.includes('critical') || s.includes('expired')) {
-            color = 'var(--status-red)';
-            bg = isDarkTheme() ? 'rgba(248, 113, 113, 0.15)' : 'rgba(220, 38, 38, 0.12)';
-            border = 'var(--status-red)';
+            tone = 'danger';
         } else if (s.includes('pending') || s.includes('draft') || s.includes('sent') || s.includes('progress') || s.includes('scheduled')) {
-            color = 'var(--status-orange)';
-            bg = isDarkTheme() ? 'rgba(251, 191, 36, 0.15)' : 'rgba(217, 119, 6, 0.12)';
-            border = 'var(--status-orange)';
+            tone = 'warning';
         }
         const label = (status || '').replace(/_/g, ' ');
-        return `<span style="border: 1px solid ${border}; border-radius: 4px; padding: 2px 8px; font-size: 11px; color: ${color}; text-transform: capitalize; background: ${bg}; font-weight: 600;">${escapeHtml(label)}</span>`;
+        return `<span style="border: 1px solid var(--status-${tone}-bd); border-radius: 4px; padding: 2px 8px; font-size: 11px; color: var(--status-${tone}-fg); text-transform: capitalize; background: var(--status-${tone}-bg); font-weight: 600;">${escapeHtml(label)}</span>`;
     }
 
     function getInitials(name) {

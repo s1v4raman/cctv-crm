@@ -1,5 +1,10 @@
+@php
+    // Same starting theme as the sign-in page, so this page does not flash white for a dark-mode user
+    $cookieMode = request()->cookie('crm_mode');
+    $isDarkServer = ($cookieMode === 'night' || $cookieMode === 'dark' || $cookieMode === null);
+@endphp
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-white">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-white {{ $isDarkServer ? 'dark' : '' }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -19,6 +24,8 @@
 
     <!-- Scripts & Styles via Vite -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <x-crm-theme-init />
 </head>
 
 <body class="h-full antialiased font-sans text-slate-800 bg-white">
@@ -31,7 +38,7 @@
             {{-- Brand Logo Header --}}
             <div class="flex items-center justify-between mb-4 lg:mb-6">
                 <a href="{{ request()->getPort() == 8001 ? route('login') : route('home') }}" class="flex items-center gap-3">
-                    <img src="{{ asset('logo.png') }}?v={{ filemtime(public_path('logo.png')) }}" alt="Precision IT Systems" class="h-9 w-auto max-w-[180px] object-contain shrink-0">
+                    <x-brand-logo class="h-9 w-auto max-w-[180px] shrink-0" />
                     <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider pl-2 border-l border-slate-300">Operations</span>
                 </a>
 

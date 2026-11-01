@@ -6,9 +6,9 @@
                 <div class="flex items-center gap-3">
                     <h2 class="text-xl font-bold text-slate-900 dark:text-white">Site Survey #{{ $siteSurvey->id }}</h2>
                     @php
-                        $surveyStatusColor = 'var(--crm-accent, #2563eb)';
-                        if ($siteSurvey->status === 'completed') $surveyStatusColor = '#16a34a';
-                        elseif ($siteSurvey->status === 'cancelled') $surveyStatusColor = '#dc2626';
+                        $surveyStatusColor = 'var(--link-color)';
+                        if ($siteSurvey->status === 'completed') $surveyStatusColor = 'var(--status-success-fg)';
+                        elseif ($siteSurvey->status === 'cancelled') $surveyStatusColor = 'var(--status-danger-fg)';
                     @endphp
                     <span class="text-sm font-bold" style="color: {{ $surveyStatusColor }};">
                         {{ ucfirst($siteSurvey->status) }}
@@ -213,7 +213,7 @@
                 @csrf
                 <div>
                     <label for="f-photos" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Select Photos or Capture with Camera *</label>
-                    <input id="f-photos" type="file" name="photos[]" multiple accept="image/*" required class="crm-input text-xs file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                    <input id="f-photos" type="file" name="photos[]" multiple accept="image/*" required class="crm-input">
                     <p class="text-[11px] text-slate-500 mt-1">Accepts multiple images (JPG, PNG). Stored securely across cloud and local servers.</p>
                 </div>
 
