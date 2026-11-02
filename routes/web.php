@@ -236,6 +236,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/finance/petty-cash/export-pdf', [PettyCashController::class, 'exportPdf'])->name('finance.petty_cash.export-pdf');
         Route::get('/finance/petty-cash/export-csv', [PettyCashController::class, 'exportCsv'])->name('finance.petty_cash.export-csv');
 
+        // Finance & Salary Configuration (Office: Admin + Staff)
+        Route::get('/finance/salaries', [FinanceController::class, 'salaries'])->name('finance.salaries.index');
+        Route::post('/finance/salaries/{user}', [FinanceController::class, 'updateSalary'])->name('finance.salaries.update');
+        Route::get('/finance/payroll', [FinanceController::class, 'payrollIndex'])->name('finance.payroll.index');
+        Route::post('/finance/payroll/generate', [FinanceController::class, 'generatePayroll'])->name('finance.payroll.generate');
+        Route::get('/finance/payroll/{payroll}', [FinanceController::class, 'showPayroll'])->name('finance.payroll.show');
+        Route::get('/finance/payroll/{payroll}/pdf', [FinanceController::class, 'downloadPayslipPdf'])->name('finance.payroll.pdf');
+        Route::get('/finance/payroll/{payroll}/view-pdf', [FinanceController::class, 'streamPayslipPdf'])->name('finance.payroll.viewPdf');
+        Route::match(['get', 'post'], '/finance/payroll/{payroll}/send-whatsapp', [FinanceController::class, 'sendWhatsApp'])->name('finance.payroll.sendWhatsApp');
+        Route::post('/finance/payroll/{payroll}/status', [FinanceController::class, 'updatePayrollStatus'])->name('finance.payroll.updateStatus');
+
         // Executive Business Analytics
         Route::get('/analytics', [ExecutiveAnalyticsController::class, 'index'])->name('analytics.index');
         Route::get('/analytics/api', [ExecutiveAnalyticsController::class, 'apiData'])->name('analytics.api');
@@ -283,17 +294,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/alerts/gateways/test-email', [AlertNotificationController::class, 'testEmailGateway'])->name('alerts.gateways.test-email');
         Route::post('/alerts/broadcast', [AlertNotificationController::class, 'sendManualBroadcast'])->name('alerts.broadcast');
         Route::post('/alerts/run-sweep', [AlertNotificationController::class, 'runAutomatedSweep'])->name('alerts.run-sweep');
-
-        // Finance & Salary
-        Route::get('/finance/salaries', [FinanceController::class, 'salaries'])->name('finance.salaries.index');
-        Route::post('/finance/salaries/{user}', [FinanceController::class, 'updateSalary'])->name('finance.salaries.update');
-        Route::get('/finance/payroll', [FinanceController::class, 'payrollIndex'])->name('finance.payroll.index');
-        Route::post('/finance/payroll/generate', [FinanceController::class, 'generatePayroll'])->name('finance.payroll.generate');
-        Route::get('/finance/payroll/{payroll}', [FinanceController::class, 'showPayroll'])->name('finance.payroll.show');
-        Route::get('/finance/payroll/{payroll}/pdf', [FinanceController::class, 'downloadPayslipPdf'])->name('finance.payroll.pdf');
-        Route::get('/finance/payroll/{payroll}/view-pdf', [FinanceController::class, 'streamPayslipPdf'])->name('finance.payroll.viewPdf');
-        Route::match(['get', 'post'], '/finance/payroll/{payroll}/send-whatsapp', [FinanceController::class, 'sendWhatsApp'])->name('finance.payroll.sendWhatsApp');
-        Route::post('/finance/payroll/{payroll}/status', [FinanceController::class, 'updatePayrollStatus'])->name('finance.payroll.updateStatus');
     });
 
     // ================================================================

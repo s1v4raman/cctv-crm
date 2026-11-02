@@ -9,7 +9,7 @@
         @foreach ($items as $item)
             <li>
                 <a href="{{ $item['url'] }}" @if($item['active']) aria-current="page" @endif
-                   class="section-nav-link inline-block py-2.5 border-b-2 {{ $item['active'] ? 'border-[var(--crm-accent,#2563eb)] text-[var(--text-main)] font-medium' : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text-main)]' }}">
+                   class="section-nav-link inline-block py-2.5 border-b-2 font-medium transition {{ $item['active'] ? 'border-blue-600 dark:border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white' }}">
                     {{ $item['label'] }}
                 </a>
             </li>
