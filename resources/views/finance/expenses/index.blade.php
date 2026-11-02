@@ -517,7 +517,12 @@
                         <span class="font-bold text-purple-900 dark:text-purple-300 flex items-center gap-1.5">
                             Smart Travel KM Calculator
                         </span>
-                        <span class="text-[11px] text-purple-700 dark:text-purple-400 font-semibold">Standard: ₹6.00 / KM</span>
+                        <div class="flex items-center gap-2">
+                            <span class="text-[11px] text-purple-700 dark:text-purple-400 font-semibold">Standard: ₹6.00 / KM</span>
+                            <button type="button" onclick="resetKmCalculator()" title="Reset / Clear KM Calculator" class="text-[11px] text-purple-600 dark:text-purple-400 hover:text-purple-900 dark:hover:text-purple-200 font-semibold inline-flex items-center gap-1 px-2 py-0.5 rounded hover:bg-purple-100 dark:hover:bg-purple-900/50 transition cursor-pointer">
+                                <span>✕ Reset</span>
+                            </button>
+                        </div>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -590,8 +595,10 @@
                 </div>
 
                 <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
-                    <button type="button" onclick="document.getElementById('submitExpenseModal').classList.add('hidden')" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 dark:text-slate-400">
-                        Cancel
+                    <button type="button" onclick="document.getElementById('submitExpenseModal').classList.add('hidden')" 
+                            class="inline-flex items-center gap-1.5 px-4 py-2.5 min-h-[44px] text-xs font-semibold rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 shadow-xs transition cursor-pointer">
+                        <svg class="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                        <span>Cancel</span>
                     </button>
                     <button type="submit" class="px-6 py-2.5 min-h-[44px] text-sm font-bold text-white rounded-xl shadow-md transition cursor-pointer" style="background-color: var(--crm-accent, #2563eb);">
                         Submit Claim
@@ -626,8 +633,10 @@
                 </div>
 
                 <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
-                    <button type="button" onclick="document.getElementById('rejectClaimModal').classList.add('hidden')" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 dark:text-slate-400">
-                        Back
+                    <button type="button" onclick="document.getElementById('rejectClaimModal').classList.add('hidden')" 
+                            class="inline-flex items-center gap-1.5 px-4 py-2.5 min-h-[44px] text-xs font-semibold rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 shadow-xs transition cursor-pointer">
+                        <svg class="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                        <span>Cancel</span>
                     </button>
                     <button type="submit" class="px-6 py-2.5 min-h-[44px] text-sm font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-xl shadow-md transition">
                         Confirm Rejection
@@ -671,8 +680,10 @@
                 </div>
 
                 <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
-                    <button type="button" onclick="document.getElementById('payClaimModal').classList.add('hidden')" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 dark:text-slate-400">
-                        Cancel
+                    <button type="button" onclick="document.getElementById('payClaimModal').classList.add('hidden')" 
+                            class="inline-flex items-center gap-1.5 px-4 py-2.5 min-h-[44px] text-xs font-semibold rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 shadow-xs transition cursor-pointer">
+                        <svg class="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                        <span>Cancel</span>
                     </button>
                     <button type="submit" class="px-6 py-2.5 min-h-[44px] text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-md transition">
                         Confirm Disbursal
@@ -683,6 +694,18 @@
     </div>
 
     <script>
+        function resetKmCalculator() {
+            const from = document.querySelector('input[name="travel_from"]');
+            const to = document.querySelector('input[name="travel_to"]');
+            const km = document.getElementById('kmInput');
+            const rate = document.getElementById('rateInput');
+            const claim = document.getElementById('claimAmountInput');
+            if (from) from.value = '';
+            if (to) to.value = '';
+            if (km) km.value = '';
+            if (rate) rate.value = '6.0';
+            if (claim) claim.value = '';
+        }
         function toggleKmSection(category) {
             const kmSection = document.getElementById('kmCalculatorSection');
             if (category === 'fuel_travel') {
