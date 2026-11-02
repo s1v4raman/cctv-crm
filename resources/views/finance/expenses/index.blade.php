@@ -480,10 +480,22 @@
     <div id="submitExpenseModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
         <div class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
             <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-                <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 font-heading">
-                    File Travel / Field Expense Claim
-                </h3>
-                <x-close-button onclick="document.getElementById('submitExpenseModal').classList.add('hidden')" />
+                <div>
+                    <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 font-heading">
+                        <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span>File Travel / Field Expense Claim</span>
+                    </h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Submit fuel travel (KM) or on-site operational expense claim</p>
+                </div>
+                <button type="button" 
+                        onclick="document.getElementById('submitExpenseModal').classList.add('hidden')" 
+                        class="inline-flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-500 hover:text-slate-800 dark:text-slate-300 dark:hover:text-white transition shadow-xs cursor-pointer" 
+                        title="Close (Esc)" 
+                        aria-label="Close">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 6L6 18M6 6l12 12"/>
+                    </svg>
+                </button>
             </div>
 
             <form action="{{ route('finance.expenses.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4 text-xs">
@@ -615,7 +627,15 @@
                 <h3 class="text-base font-bold text-rose-600 dark:text-rose-400 flex items-center gap-2 font-heading">
                     Reject Expense Claim
                 </h3>
-                <x-close-button onclick="document.getElementById('rejectClaimModal').classList.add('hidden')" />
+                <button type="button" 
+                        onclick="document.getElementById('rejectClaimModal').classList.add('hidden')" 
+                        class="inline-flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-500 hover:text-slate-800 dark:text-slate-300 dark:hover:text-white transition shadow-xs cursor-pointer" 
+                        title="Close" 
+                        aria-label="Close">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 6L6 18M6 6l12 12"/>
+                    </svg>
+                </button>
             </div>
 
             <p id="rejectClaimPrompt" class="text-xs text-slate-600 dark:text-slate-300">
@@ -653,7 +673,15 @@
                 <h3 class="text-base font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-2 font-heading">
                     Disburse Claim Reimbursement
                 </h3>
-                <x-close-button onclick="document.getElementById('payClaimModal').classList.add('hidden')" />
+                <button type="button" 
+                        onclick="document.getElementById('payClaimModal').classList.add('hidden')" 
+                        class="inline-flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-500 hover:text-slate-800 dark:text-slate-300 dark:hover:text-white transition shadow-xs cursor-pointer" 
+                        title="Close" 
+                        aria-label="Close">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 6L6 18M6 6l12 12"/>
+                    </svg>
+                </button>
             </div>
 
             <div id="payClaimInfo" class="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-xs">

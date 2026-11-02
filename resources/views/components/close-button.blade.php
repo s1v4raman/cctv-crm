@@ -10,7 +10,7 @@
 @props(['label' => 'Close', 'size' => null, 'tone' => null])
 
 <button {{ $attributes->merge(['type' => 'button', 'aria-label' => $label, 'title' => $label])->class([
-    'crm-close inline-flex items-center justify-center rounded-lg transition cursor-pointer',
+    'inline-flex items-center justify-center rounded-lg transition shadow-xs cursor-pointer',
     $size === 'sm' ? 'w-7 h-7 min-w-[28px] min-h-[28px]' : 'w-8 h-8 sm:w-9 sm:h-9 min-w-[32px] min-h-[32px]',
     $tone === 'danger'
         ? 'bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/60 dark:hover:bg-rose-900/60 border border-rose-200 dark:border-rose-800 text-rose-600 dark:text-rose-400'
