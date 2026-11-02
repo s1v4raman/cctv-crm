@@ -38,8 +38,7 @@ class PettyCashController extends Controller
         $summary = $this->cashService->getPettyCashSummary();
         $accounts = $this->cashService->getAccountsList($filters);
         
-        $technicians = User::whereIn('role', ['technician', 'staff'])
-            ->where('is_active', true)
+        $technicians = User::whereIn('role', ['admin', 'staff', 'technician'])
             ->orderBy('name')
             ->get();
 
