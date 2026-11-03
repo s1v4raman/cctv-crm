@@ -164,7 +164,6 @@ class UserController extends Controller
         } elseif ($user->role === 'worker') {
             $worker = $user->worker ?? \App\Models\Worker::where('user_id', $user->id)->first();
             if ($worker) {
-                $worker->load(['attendances.project', 'wagePayments.recorder']);
                 $stats['shifts_count'] = $worker->attendances()->count();
                 $stats['daily_rate']   = (float) $worker->daily_rate;
                 $stats['total_earned'] = (float) $worker->getTotalEarned();
