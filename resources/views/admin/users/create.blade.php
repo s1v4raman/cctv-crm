@@ -30,7 +30,7 @@
 
                     <div>
                         <label for="f-email" class="block text-sm font-semibold text-slate-300 mb-1.5">Email Address</label>
-                        <input id="f-email" type="email" name="email" value="{{ old('email') }}" required
+                        <input id="f-email" type="email" name="email" autocomplete="off" value="{{ old('email') }}" required
                                class="w-full text-sm rounded-xl border border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:outline-none p-3" placeholder="e.g. john@example.com">
                         @error('email') <div class="text-xs text-rose-400 mt-1 font-mono">{{ $message }}</div> @enderror
                     </div>
@@ -49,14 +49,14 @@
 
                     <div>
                         <label for="f-password" class="block text-sm font-semibold text-slate-300 mb-1.5">Password</label>
-                        <input id="f-password" type="password" name="password" required
+                        <input id="f-password" type="password" name="password" autocomplete="new-password" required
                                class="w-full text-sm rounded-xl border border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:outline-none p-3 font-mono" placeholder="Min. 8 characters">
                         @error('password') <div class="text-xs text-rose-400 mt-1 font-mono">{{ $message }}</div> @enderror
                     </div>
 
                     <div>
                         <label for="f-password-confirmation" class="block text-sm font-semibold text-slate-300 mb-1.5">Confirm Password</label>
-                        <input id="f-password-confirmation" type="password" name="password_confirmation" required
+                        <input id="f-password-confirmation" type="password" name="password_confirmation" autocomplete="new-password" required
                                class="w-full text-sm rounded-xl border border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:outline-none p-3 font-mono" placeholder="Re-type password">
                     </div>
 

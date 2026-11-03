@@ -14,6 +14,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Sets known passwords on the demo logins: local databases only
+        \App\Support\SharedDatabase::refuseSeeding(static::class);
+
         // 1. Ensure product catalog is populated (non-destructive updateOrCreate)
         $this->call(ProductSeeder::class);
 

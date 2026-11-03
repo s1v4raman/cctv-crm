@@ -21,6 +21,17 @@ class LoginRequest extends FormRequest
     }
 
     /**
+     * Addresses are stored in lower case, and Postgres compares them case by case, so
+     * "Raman@gmail.com " from a phone keyboard would not match.
+     */
+    protected function prepareForValidation(): void
+    {
+        if (is_string($this->input('email'))) {
+            $this->merge(['email' => Str::lower(trim($this->input('email')))]);
+        }
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, ValidationRule|array<mixed>|string>
