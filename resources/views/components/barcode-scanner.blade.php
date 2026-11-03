@@ -2,8 +2,11 @@
 @props([
     'modalId' => 'barcode-scanner-modal',
     'targetInputId' => null,
-    'title' => '📸 CCTV Hardware & Barcode Scanner',
+    'title' => null,
 ])
+@php
+    $title ??= '📸 ' . __('CCTV Hardware & Barcode Scanner');
+@endphp
 
 @php
     $lanIp = gethostbyname(gethostname());
@@ -25,10 +28,10 @@
                 <span style="font-size:1.3rem;">🔍</span>
                 <div>
                     <h4 style="font-size:.95rem;font-weight:700;color:#fff;margin:0;">{{ $title }}</h4>
-                    <p style="font-size:.72rem;color:#94a3b8;margin:2px 0 0;">Scan Barcode, Serial Number, or MAC Address tag</p>
+                    <p style="font-size:.72rem;color:#94a3b8;margin:2px 0 0;">{{ __('Scan Barcode, Serial Number, or MAC Address tag') }}</p>
                 </div>
             </div>
-            <x-close-button tone="dark" label="Close scanner" onclick="closeBarcodeScanner('{{ $modalId }}')" />
+            <x-close-button tone="dark" :label="__('Close scanner')" onclick="closeBarcodeScanner('{{ $modalId }}')" />
         </div>
 
 
@@ -60,7 +63,7 @@
                 {{-- Status Overlay message --}}
                 <div id="{{ $modalId }}-status"
                      style="position:absolute;bottom:12px;left:12px;right:12px;text-align:center;background:rgba(15,23,42,0.85);color:#e2e8f0;font-size:.75rem;font-weight:600;padding:.4rem .75rem;border-radius:999px;border:1px solid rgba(255,255,255,0.15);">
-                    Initializing camera...
+                    {{ __('Initializing camera...') }}
                 </div>
             </div>
 
@@ -69,21 +72,21 @@
                 <div style="display:flex;gap:.5rem;">
                     <button type="button" id="{{ $modalId }}-torch-btn" onclick="toggleTorch('{{ $modalId }}')"
                             style="padding:.45rem .8rem;background:#1e293b;color:#f8fafc;border:1px solid #334155;border-radius:.6rem;font-size:.75rem;font-weight:700;display:inline-flex;align-items:center;gap:.35rem;cursor:pointer;">
-                        💡 Torch
+                        💡 {{ __('Torch') }}
                     </button>
                     <button type="button" id="{{ $modalId }}-flip-btn" onclick="switchCamera('{{ $modalId }}')"
                             style="padding:.45rem .8rem;background:#1e293b;color:#f8fafc;border:1px solid #334155;border-radius:.6rem;font-size:.75rem;font-weight:700;display:inline-flex;align-items:center;gap:.35rem;cursor:pointer;transition:all 0.2s ease;">
-                        🔄 Flip Cam
+                        🔄 {{ __('Flip Cam') }}
                     </button>
                 </div>
 
                 <div style="display:flex;gap:.5rem;align-items:center;">
                     <button type="button" onclick="snapBarcodeCurrentFrame('{{ $modalId }}')"
                             style="padding:.45rem .85rem;background:#059669;color:#fff;border-radius:.6rem;border:none;font-size:.75rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:.35rem;box-shadow:0 4px 12px rgba(5,150,105,0.3);">
-                        📸 Snap
+                        📸 {{ __('Snap') }}
                     </button>
                     <label style="padding:.45rem .85rem;background:var(--crm-accent, #2563eb);color:#fff;border-radius:.6rem;font-size:.75rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:.35rem;box-shadow:0 4px 12px rgba(var(--crm-accent-rgb, 37, 99, 235),0.25);">
-                        📁 Upload Image
+                        📁 {{ __('Upload Image') }}
                         <input type="file" accept="image/*" onchange="handleBarcodeImageUpload(event, '{{ $modalId }}')" style="display:none;">
                     </label>
                 </div>
@@ -104,6 +107,30 @@
 </style>
 
 <script>
+window.barcodeScannerText = {{ Js::from([
+    'notSupported' => __('Camera not supported. Please use Chrome on Android or Safari on iOS.'),
+    'mobileCamera' => __('Mobile Rear Camera'),
+    'laptopCamera' => __('Laptop Integrated Camera'),
+    'active' => __('Active: :camera... Hold steady over barcode.'),
+    'blockedOrUnavailable' => __('⚠️ Camera blocked or unavailable. Click "📁 Upload Image" or check permissions.'),
+    'blocked' => __('🚫 Camera blocked! Click 🔒 in your address bar and set Camera to "Allow", then click Retry.'),
+    'inUseShort' => __('⚠️ Camera in use by another app (Zoom/Teams). Please close it and click Retry.'),
+    'noCamera' => __('⚠️ No camera hardware found on this computer. Use "📁 Upload Image".'),
+    'permissionBlocked' => __("🚫 Camera Permission is Blocked in your browser!\n\nTo allow it:\n1. Look at the address bar at the top (where http://127.0.0.1:8000 is written).\n2. Click the Lock / Tune icon (🔒 or 🎚️) on the left of the URL.\n3. Change \"Camera\" permission from \"Block\" to \"Allow\".\n4. Re-open this scanner or reload the page.\n\nYou can also click \"📁 Upload Image\" below to choose a photo directly from your computer."),
+    'inUse' => __("⚠️ Camera is currently in use by another application (Zoom, Teams, Skype, etc.).\n\nPlease close the other app and click \"🔄 Flip Cam\" to retry, or use \"📁 Upload Image\"."),
+    'notConnected' => __("⚠️ Camera stream is not connected.\n\nPlease click \"📁 Upload Image\" to scan from a photo file, or ensure camera permissions are allowed in your browser."),
+    'waitingFrame' => __('⏳ Waiting for camera frame...'),
+    'snapping' => __('⚡ Snapping frame and scanning barcode...'),
+    'manualSnap' => __('Could not auto-read barcode from current snap. Enter S/N manually or try again:'),
+    'holdCloser' => __('Hold barcode closer and center in red line, then tap Snap again.'),
+    'processingUpload' => __('Processing uploaded image...'),
+    'manualPhoto' => __('Could not auto-read barcode from photo. Enter S/N manually:'),
+    'unreadableImage' => __('Could not read barcode from image. Please try again or use Mobile Scan.'),
+    'noTorch' => __('Torch / Flashlight is not supported on this webcam/device.'),
+    'torchUnavailable' => __('Torch control unavailable on this camera stream.'),
+    'switching' => __('🔄 Switching camera...'),
+    'toggling' => __('🔄 Toggling camera mode... (1 physical camera detected)'),
+]) }};
 window.barcodeScannerState = window.barcodeScannerState || {};
 
 function isMobileScannerDevice() {
@@ -185,7 +212,7 @@ async function startBarcodeCamera(modalId, preferDeviceId = null) {
     const flipBtn = document.getElementById(`${modalId}-flip-btn`);
 
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        if (status) status.innerText = 'Camera not supported. Please use Chrome on Android or Safari on iOS.';
+        if (status) status.innerText = barcodeScannerText.notSupported;
         return;
     }
 
@@ -287,23 +314,23 @@ async function startBarcodeCamera(modalId, preferDeviceId = null) {
 
         const label = (state.track && state.track.label)
             ? state.track.label
-            : (isMobile ? 'Mobile Rear Camera' : 'Laptop Integrated Camera');
+            : (isMobile ? barcodeScannerText.mobileCamera : barcodeScannerText.laptopCamera);
 
         if (status) {
-            status.innerHTML = `<span style="color:#4ade80;">●</span> Active: ${label.substring(0, 32)}... Hold steady over barcode.`;
+            status.innerHTML = `<span style="color:#4ade80;">●</span> ${barcodeScannerText.active.replace(':camera', label.substring(0, 32))}`;
         }
 
         scanBarcodeLoop(modalId);
     } catch (err) {
         console.warn('Camera stream error:', err);
         state.lastError = err.name || 'Error';
-        let errorMsg = '⚠️ Camera blocked or unavailable. Click "📁 Upload Image" or check permissions.';
+        let errorMsg = barcodeScannerText.blockedOrUnavailable;
         if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-            errorMsg = '🚫 Camera blocked! Click 🔒 in your address bar and set Camera to "Allow", then click Retry.';
+            errorMsg = barcodeScannerText.blocked;
         } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
-            errorMsg = '⚠️ Camera in use by another app (Zoom/Teams). Please close it and click Retry.';
+            errorMsg = barcodeScannerText.inUseShort;
         } else if (err.name === 'NotFoundError') {
-            errorMsg = '⚠️ No camera hardware found on this computer. Use "📁 Upload Image".';
+            errorMsg = barcodeScannerText.noCamera;
         }
         if (status) {
             status.innerHTML = `<span style="color:#fca5a5;">${errorMsg}</span>`;
@@ -400,11 +427,11 @@ async function snapBarcodeCurrentFrame(modalId) {
 
     if (!state || !state.stream) {
         if (state && (state.lastError === 'NotAllowedError' || state.lastError === 'PermissionDeniedError')) {
-            crmAlert('🚫 Camera Permission is Blocked in your browser!\n\nTo allow it:\n1. Look at the address bar at the top (where http://127.0.0.1:8000 is written).\n2. Click the Lock / Tune icon (🔒 or 🎚️) on the left of the URL.\n3. Change "Camera" permission from "Block" to "Allow".\n4. Re-open this scanner or reload the page.\n\nYou can also click "📁 Upload Image" below to choose a photo directly from your computer.');
+            crmAlert(barcodeScannerText.permissionBlocked);
         } else if (state && (state.lastError === 'NotReadableError' || state.lastError === 'TrackStartError')) {
-            crmAlert('⚠️ Camera is currently in use by another application (Zoom, Teams, Skype, etc.).\n\nPlease close the other app and click "🔄 Flip Cam" to retry, or use "📁 Upload Image".');
+            crmAlert(barcodeScannerText.inUse);
         } else {
-            crmAlert('⚠️ Camera stream is not connected.\n\nPlease click "📁 Upload Image" to scan from a photo file, or ensure camera permissions are allowed in your browser.');
+            crmAlert(barcodeScannerText.notConnected);
         }
         return;
     }
@@ -413,11 +440,11 @@ async function snapBarcodeCurrentFrame(modalId) {
 
     // Gracefully wait up to 500ms if stream is active but first frame is still decoding
     if (video.videoWidth === 0 || video.readyState < 2) {
-        if (status) status.innerText = '⏳ Waiting for camera frame...';
+        if (status) status.innerText = barcodeScannerText.waitingFrame;
         await new Promise(r => setTimeout(r, 400));
     }
 
-    if (status) status.innerText = '⚡ Snapping frame and scanning barcode...';
+    if (status) status.innerText = barcodeScannerText.snapping;
 
     const width = video.videoWidth || 1280;
     const height = video.videoHeight || 720;
@@ -441,11 +468,11 @@ async function snapBarcodeCurrentFrame(modalId) {
         }
     }
 
-    const manual = prompt('Could not auto-read barcode from current snap. Enter S/N manually or try again:');
+    const manual = prompt(barcodeScannerText.manualSnap);
     if (manual) {
         handleBarcodeDetected(modalId, manual);
     } else if (status) {
-        status.innerText = 'Hold barcode closer and center in red line, then tap Snap again.';
+        status.innerText = barcodeScannerText.holdCloser;
     }
 }
 
@@ -455,7 +482,7 @@ async function handleBarcodeImageUpload(event, modalId) {
     event.target.value = ''; // Reset so the same file can be selected again if needed
 
     const status = document.getElementById(`${modalId}-status`);
-    if (status) status.innerText = 'Processing uploaded image...';
+    if (status) status.innerText = barcodeScannerText.processingUpload;
 
     const img = new Image();
     img.src = URL.createObjectURL(file);
@@ -473,11 +500,11 @@ async function handleBarcodeImageUpload(event, modalId) {
             } catch (e) {}
         }
         
-        const manualCode = prompt('Could not auto-read barcode from photo. Enter S/N manually:', file.name.replace(/\.[^/.]+$/, ''));
+        const manualCode = prompt(barcodeScannerText.manualPhoto, file.name.replace(/\.[^/.]+$/, ''));
         if (manualCode) {
             handleBarcodeDetected(modalId, manualCode);
         } else if (status) {
-            status.innerText = 'Could not read barcode from image. Please try again or use Mobile Scan.';
+            status.innerText = barcodeScannerText.unreadableImage;
         }
     };
 }
@@ -497,10 +524,10 @@ function toggleTorch(modalId) {
             }
         }).catch(() => {
             state.torchOn = false;
-            crmAlert('Torch / Flashlight is not supported on this webcam/device.');
+            crmAlert(barcodeScannerText.noTorch);
         });
     } else {
-        crmAlert('Torch control unavailable on this camera stream.');
+        crmAlert(barcodeScannerText.torchUnavailable);
     }
 }
 
@@ -515,7 +542,7 @@ async function switchCamera(modalId) {
         flipBtn.disabled = true;
         flipBtn.style.opacity = '0.5';
     }
-    if (status) status.innerText = '🔄 Switching camera...';
+    if (status) status.innerText = barcodeScannerText.switching;
 
     // Fetch latest devices
     let devices = await getBarcodeVideoDevices();
@@ -536,7 +563,7 @@ async function switchCamera(modalId) {
         // Single webcam detected or browser hasn't exposed device IDs
         state.currentFacingMode = state.currentFacingMode === 'environment' ? 'user' : 'environment';
         if (devices.length === 1 && status) {
-            status.innerText = '🔄 Toggling camera mode... (1 physical camera detected)';
+            status.innerText = barcodeScannerText.toggling;
         }
         await startBarcodeCamera(modalId, null);
     }

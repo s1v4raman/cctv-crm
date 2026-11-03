@@ -311,7 +311,7 @@ class AttendanceController extends Controller
         ]);
 
         if ($attendance->clock_in) {
-            return back()->with('error', 'You have already clocked in today at ' . Carbon::parse($attendance->clock_in)->format('h:i A') . '.');
+            return back()->with('error', __('You have already clocked in today at :time.', ['time' => Carbon::parse($attendance->clock_in)->format('h:i A')]));
         }
 
         // Standard shift start threshold: after 09:30 AM considered late
@@ -325,9 +325,9 @@ class AttendanceController extends Controller
         $attendance->marked_by = $user->id;
         $attendance->save();
 
-        $statusMsg = $isLate 
-            ? '⏰ Clocked in at ' . now()->format('h:i A') . ' (Marked as Late Arrival).' 
-            : '✅ Successfully clocked in at ' . now()->format('h:i A') . '! Have a productive shift.';
+        $statusMsg = $isLate
+            ? __('⏰ Clocked in at :time (Marked as Late Arrival).', ['time' => now()->format('h:i A')])
+            : __('✅ Successfully clocked in at :time! Have a productive shift.', ['time' => now()->format('h:i A')]);
 
         return back()->with('status', $statusMsg);
     }
@@ -346,18 +346,18 @@ class AttendanceController extends Controller
             ->first();
 
         if (!$attendance || !$attendance->clock_in) {
-            return back()->with('error', 'You have not clocked in yet today.');
+            return back()->with('error', __('You have not clocked in yet today.'));
         }
 
         if ($attendance->clock_out) {
-            return back()->with('error', 'You have already clocked out today at ' . Carbon::parse($attendance->clock_out)->format('h:i A') . '.');
+            return back()->with('error', __('You have already clocked out today at :time.', ['time' => Carbon::parse($attendance->clock_out)->format('h:i A')]));
         }
 
         $attendance->clock_out = now()->format('H:i:s');
         $attendance->calculateHours();
         $attendance->save();
 
-        return back()->with('status', "🏁 Clocked out at " . now()->format('h:i A') . "! Total logged time: {$attendance->total_hours} hrs.");
+        return back()->with('status', __('🏁 Clocked out at :time! Total logged time: :hours hrs.', ['time' => now()->format('h:i A'), 'hours' => $attendance->total_hours]));
     }
 
     /**

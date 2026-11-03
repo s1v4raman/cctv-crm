@@ -127,9 +127,11 @@ return [
     |
     */
 
+    // A local server locked to one portal (LOGIN_PORTAL) gets its own cookie, so the admin and
+    // technician servers stay signed in side by side in one browser
     'cookie' => env(
         'SESSION_COOKIE',
-        Str::slug((string) env('APP_NAME', 'laravel')).'-session'
+        Str::slug((string) env('APP_NAME', 'laravel')).(env('LOGIN_PORTAL') ? '-'.Str::slug((string) env('LOGIN_PORTAL')) : '').'-session'
     ),
 
     /*

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Middleware\SetLocale;
 use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -46,7 +47,11 @@ class AuthenticatedSessionController extends Controller
         $request->session()->put('portal_type', 'staff');
 
         if ($user->role === 'technician') {
-            return redirect()->intended(route('technician.dashboard', absolute: false));
+            // English / Tamil picked on the sign-in page's Technician tab carries over to the technician pages
+            $locale = SetLocale::rememberOnSignIn($request, $user);
+
+            return redirect()->intended(route('technician.dashboard', absolute: false))
+                ->withCookie(cookie()->forever(SetLocale::COOKIE, $locale));
         }
 
         if ($user->role === 'worker') {
@@ -61,12 +66,17 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
+        $wasWorker = (bool) $request->user()?->isWorker();
+
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
 
         $request->session()->regenerateToken();
 
-        return redirect()->route('login');
+        // A worker lands back on the worker sign-in tab (in the language this phone picked)
+        return $wasWorker
+            ? redirect()->route('login')->with('login_portal', 'worker')
+            : redirect()->route('login');
     }
 }

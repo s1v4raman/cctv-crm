@@ -23,6 +23,13 @@ return Application::configure(basePath: dirname(__DIR__))
             'crm_mode',
         ]);
 
+        // English / Tamil for worker and technician pages (needs the session, so it runs in the web group)
+        // A local server locked to admin or technician (LOGIN_PORTAL) signs any other account back out
+        $middleware->web(append: [
+            \App\Http\Middleware\SetLocale::class,
+            \App\Http\Middleware\EnforceLoginPortal::class,
+        ]);
+
         $middleware->validateCsrfTokens(except: [
             'api/*',
             'webhook/*',

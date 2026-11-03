@@ -37,6 +37,7 @@ use App\Http\Controllers\AccountsReceivableController;
 use App\Http\Controllers\AccountsPayableController;
 use App\Http\Controllers\PettyCashController;
 use App\Http\Controllers\ModuleHubController;
+use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectMaterialIssueController;
@@ -579,6 +580,11 @@ Route::middleware(['auth', 'technician'])->prefix('technician')->name('technicia
     Route::get('/surveys/{siteSurvey}', [TechnicianPortalController::class, 'showSurvey'])->name('surveys.show');
     Route::post('/surveys/{siteSurvey}/complete', [TechnicianPortalController::class, 'completeSurvey'])->name('surveys.complete');
 });
+
+// English / Tamil switch on the worker sign-in, worker portal and technician pages
+Route::post('/locale', [LocaleController::class, 'update'])
+    ->middleware('throttle:30,1')
+    ->name('locale.update');
 
 // Daily Wages Worker Mobile Portal & Work Logging
 Route::post('/login/worker', [WorkerPortalController::class, 'workerLogin'])

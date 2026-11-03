@@ -25,7 +25,7 @@
                         @else
                             <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center font-bold text-2xl sm:text-3xl text-white shadow-md ring-4 ring-slate-100 dark:ring-slate-800 crm-user-avatar shrink-0"
                                  style="background-color: var(--crm-accent, #2563eb);">
-                                {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                                {{ strtoupper(mb_substr(auth()->user()->name, 0, 1)) }}
                             </div>
                         @endif
                         <div class="space-y-1 min-w-0">

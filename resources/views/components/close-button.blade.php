@@ -7,7 +7,8 @@
       tone="dark"     on a dark surface: photo viewers, cameras, dark dialogs
       tone="danger"   red on hover, for removing an item
 --}}
-@props(['label' => 'Close', 'size' => null, 'tone' => null])
+@props(['label' => null, 'size' => null, 'tone' => null])
+@php($label ??= __('Close'))
 
 <button {{ $attributes->merge(['type' => 'button', 'aria-label' => $label, 'title' => $label])->class([
     'inline-flex items-center justify-center rounded-lg transition shadow-xs cursor-pointer',

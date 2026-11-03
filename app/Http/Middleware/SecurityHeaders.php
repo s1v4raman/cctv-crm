@@ -22,7 +22,12 @@ class SecurityHeaders
         $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
         $response->headers->set('X-XSS-Protection', '1; mode=block');
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
-        $response->headers->set('Permissions-Policy', 'camera=(self), microphone=(), geolocation=()');
+        // Voice input: the worker sign-in's name, and the text boxes on worker and technician pages.
+        // Office pages keep the microphone off.
+        $voiceInput = $request->routeIs('login', 'staff.login', 'admin.login')
+            || ($request->hasSession() && $request->user()?->canChooseLanguage());
+        $microphone = $voiceInput ? '(self)' : '()';
+        $response->headers->set('Permissions-Policy', "camera=(self), microphone={$microphone}, geolocation=()");
 
         if ($request->isSecure()) {
             $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');

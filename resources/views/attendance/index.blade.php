@@ -230,7 +230,7 @@
                                         <td class="py-3 px-4">
                                             <div class="flex items-center gap-3">
                                                 <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-xs">
-                                                    {{ strtoupper(substr($emp->name, 0, 1)) }}
+                                                    {{ strtoupper(mb_substr($emp->name, 0, 1)) }}
                                                 </div>
                                                 <div>
                                                     <span class="font-bold text-slate-900 dark:text-white block">{{ $emp->name }}</span>
@@ -468,7 +468,7 @@
                                         <td class="py-3 px-4">
                                             <div class="flex items-center gap-2.5">
                                                 <div class="w-7 h-7 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-xs">
-                                                    {{ strtoupper(substr($emp->name, 0, 1)) }}
+                                                    {{ strtoupper(mb_substr($emp->name, 0, 1)) }}
                                                 </div>
                                                 <div>
                                                     <span class="font-bold text-slate-900 dark:text-white block">{{ $emp->name }}</span>
@@ -613,7 +613,7 @@
                                     @foreach($monthDays as $mDay)
                                         <th class="py-2.5 px-1 text-center min-w-[32px] {{ $mDay['is_today'] ? 'bg-blue-100/60 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300 font-black' : '' }} {{ $mDay['is_sunday'] ? 'text-rose-500' : '' }}">
                                             <span class="block text-[11px]">{{ $mDay['day_num'] }}</span>
-                                            <span class="block text-[11px] font-normal opacity-70">{{ substr($mDay['day_name'], 0, 1) }}</span>
+                                            <span class="block text-[11px] font-normal opacity-70">{{ mb_substr($mDay['day_name'], 0, 1) }}</span>
                                         </th>
                                     @endforeach
                                     <th class="py-3 px-3 text-center min-w-[80px]">Days</th>
@@ -635,7 +635,7 @@
                                         <td class="py-2.5 px-3 sticky left-0 bg-white dark:bg-[#0f172a] z-10 shadow-xs">
                                             <div class="flex items-center gap-2">
                                                 <div class="w-6 h-6 rounded-md bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-[11px]">
-                                                    {{ strtoupper(substr($emp->name, 0, 1)) }}
+                                                    {{ strtoupper(mb_substr($emp->name, 0, 1)) }}
                                                 </div>
                                                 <div class="truncate max-w-[120px]">
                                                     <span class="font-bold text-slate-900 dark:text-white block truncate">{{ $emp->name }}</span>
@@ -728,7 +728,7 @@
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center gap-2.5">
                                         <div class="w-8 h-8 rounded-lg bg-blue-600 text-white font-bold text-xs flex items-center justify-center">
-                                            {{ strtoupper(substr($emp->name, 0, 1)) }}
+                                            {{ strtoupper(mb_substr($emp->name, 0, 1)) }}
                                         </div>
                                         <div>
                                             <span class="font-bold text-xs text-slate-900 dark:text-white block">{{ $emp->name }}</span>
