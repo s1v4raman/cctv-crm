@@ -82,6 +82,16 @@ return [
 
     'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
 
+    // Local admin / technician servers (run-admin-server.bat, run-technician-server.bat): 'admin' or
+    // 'technician' locks that server's sign-in page and accounts to the one portal. Unset (production): every tab.
+    'login_portal' => in_array(env('LOGIN_PORTAL'), ['admin', 'technician'], true) ? env('LOGIN_PORTAL') : null,
+
+    // Languages a worker or technician can pick on their pages (code => name shown on the switch)
+    'supported_locales' => [
+        'en' => 'English',
+        'ta' => 'தமிழ்',
+    ],
+
     'faker_locale' => env('APP_FAKER_LOCALE', 'en_US'),
 
     /*

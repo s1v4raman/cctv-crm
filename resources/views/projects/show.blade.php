@@ -1443,7 +1443,7 @@
                                     <td class="px-5 py-3.5 whitespace-nowrap text-xs">
                                         <div class="flex items-center gap-1.5">
                                             <span class="w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-[11px] font-bold flex items-center justify-center">
-                                                {{ strtoupper(substr($cLog->consumedBy?->name ?? 'T', 0, 1)) }}
+                                                {{ strtoupper(mb_substr($cLog->consumedBy?->name ?? 'T', 0, 1)) }}
                                             </span>
                                             <span class="font-medium text-slate-700 dark:text-slate-300">{{ $cLog->consumedBy?->name ?? 'Technician' }}</span>
                                         </div>
@@ -1764,7 +1764,7 @@
                                                         </div>
                                                     @else
                                                         <div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 flex items-center justify-center text-xs font-bold text-slate-500 shrink-0">
-                                                            {{ strtoupper(substr($att->worker?->name ?? 'WK', 0, 2)) }}
+                                                            {{ strtoupper(mb_substr($att->worker?->name ?? 'WK', 0, 2)) }}
                                                         </div>
                                                     @endif
 
@@ -2544,7 +2544,7 @@
                                         {{-- Assignee Avatar & Name --}}
                                         <div class="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-300 text-[11px] truncate max-w-[120px]">
                                             <span class="w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-[11px] font-bold flex items-center justify-center shrink-0">
-                                                {{ strtoupper(substr($task->assignedUser?->name ?? 'U', 0, 1)) }}
+                                                {{ strtoupper(mb_substr($task->assignedUser?->name ?? 'U', 0, 1)) }}
                                             </span>
                                             <span class="truncate">{{ $task->assignedUser?->name ?? 'Unassigned' }}</span>
                                         </div>

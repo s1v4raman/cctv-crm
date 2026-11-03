@@ -542,7 +542,7 @@ class WageController extends Controller implements HasMiddleware
         $workers = Worker::where('is_active', true)->orderBy('name')->get();
 
         $headers = [
-            'Content-Type' => 'text/csv',
+            'Content-Type' => 'text/csv; charset=UTF-8',
             'Content-Disposition' => "attachment; filename=\"Weekly_Wages_{$weekStart->format('Y-m-d')}.csv\"",
             'Pragma' => 'no-cache',
             'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
@@ -551,6 +551,9 @@ class WageController extends Controller implements HasMiddleware
 
         return new StreamedResponse(function () use ($workers, $weekStart, $weekEnd, $paydaySunday) {
             $handle = fopen('php://output', 'w');
+
+            // UTF-8 byte order mark, so Excel shows Tamil worker names (and ₹) instead of garbled text
+            fwrite($handle, "\xEF\xBB\xBF");
 
             fputcsv($handle, ['SecureVision CRM - Sunday Weekly Wage Payout Ledger']);
             fputcsv($handle, ['Week Cycle', $weekStart->format('d M Y') . ' to ' . $weekEnd->format('d M Y')]);

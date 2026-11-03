@@ -578,7 +578,7 @@ class WorkerAttendanceController extends Controller
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'success' => true,
-                    'message' => "✓ Attendance successfully logged for {$worker->name} on {$workDate}!",
+                    'message' => __('✓ Attendance successfully logged for :name on :date!', ['name' => $worker->name, 'date' => $workDate]),
                     'redirect_url' => route('workers.attendance.index', ['date' => $workDate, 'view' => 'day']),
                 ]);
             }
@@ -586,7 +586,7 @@ class WorkerAttendanceController extends Controller
             return redirect()->route('workers.attendance.index', [
                 'date' => $workDate,
                 'view' => 'day'
-            ])->with('status', "✓ Attendance successfully logged for {$worker->name} on {$workDate}!");
+            ])->with('status', __('✓ Attendance successfully logged for :name on :date!', ['name' => $worker->name, 'date' => $workDate]));
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Error storing worker attendance: ' . $e->getMessage());
@@ -594,11 +594,11 @@ class WorkerAttendanceController extends Controller
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Failed to log attendance: ' . $e->getMessage()
+                    'message' => __('Failed to log attendance: :error', ['error' => $e->getMessage()])
                 ], 422);
             }
 
-            return redirect()->back()->with('error', 'Failed to log attendance: ' . $e->getMessage());
+            return redirect()->back()->with('error', __('Failed to log attendance: :error', ['error' => $e->getMessage()]));
         }
     }
 

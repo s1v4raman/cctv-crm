@@ -173,7 +173,7 @@
                             class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl flex items-center justify-center font-black text-xs sm:text-base text-white shadow-md transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none ring-2 ring-slate-200/90 dark:ring-slate-700/80 hover:ring-blue-500/50 cursor-pointer select-none shrink-0"
                             style="background: var(--crm-accent, #2563eb);"
                             title="My Account: {{ Auth::user()->name }} (Click to view profile)">
-                            <span class="drop-shadow-xs">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
+                            <span class="drop-shadow-xs">{{ strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}</span>
                         </button>
                     @else
                         <!-- Guest Portal / Profile Access Button -->
@@ -196,7 +196,7 @@
                             <div class="px-4 py-3 bg-gradient-to-r from-blue-50/80 to-slate-50 dark:from-blue-950/40 dark:to-slate-900/60 border-b border-blue-100 dark:border-blue-900/50 flex items-center gap-3">
                                 <div class="w-9 h-9 rounded-xl flex items-center justify-center font-black text-sm text-white shrink-0 shadow-sm"
                                      style="background: var(--crm-accent, #2563eb);">
-                                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                                    {{ strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}
                                 </div>
                                 <div class="min-w-0 flex-1">
                                     <span class="text-[10px] text-blue-600 dark:text-blue-400 font-bold block uppercase tracking-wider">Hello, {{ explode(' ', Auth::user()->name)[0] }}</span>

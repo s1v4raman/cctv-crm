@@ -72,7 +72,7 @@
                     <template x-if="!photoPreview && (removeAvatar || !'{{ $user->avatar_url }}')">
                         <div class="w-16 h-16 rounded-full text-white flex items-center justify-center font-bold text-2xl shadow-sm ring-2 ring-slate-200 dark:ring-slate-700" 
                              style="background-color: var(--crm-accent, #2563eb);">
-                            {{ strtoupper(substr($user->name, 0, 1)) }}
+                            {{ strtoupper(mb_substr($user->name, 0, 1)) }}
                         </div>
                     </template>
                 </div>

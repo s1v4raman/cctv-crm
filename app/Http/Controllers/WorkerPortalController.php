@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Middleware\SetLocale;
 use App\Models\Project;
 use App\Models\ProjectAuditLog;
 use App\Models\ProjectMaterialIssue;
@@ -52,17 +53,17 @@ class WorkerPortalController extends Controller
             ]);
 
             return back()->withInput()->with('login_portal', 'worker')
-                ->with('status', "Thanks, {$name}. Your request has been sent to the office. You can sign in once the admin approves it.");
+                ->with('status', __('Thanks, :name. Your request has been sent to the office. You can sign in once the admin approves it.', ['name' => $name]));
         }
 
         if ($worker->isPendingApproval()) {
             return back()->withInput()->with('login_portal', 'worker')
-                ->withErrors(['phone' => 'Your request is waiting for the admin to approve it. Please try again later.']);
+                ->withErrors(['phone' => __('Your request is waiting for the admin to approve it. Please try again later.')]);
         }
 
         if (!$worker->is_active) {
             return back()->withInput()->with('login_portal', 'worker')
-                ->withErrors(['phone' => 'This worker account is turned off. Please contact the office.']);
+                ->withErrors(['phone' => __('This worker account is turned off. Please contact the office.')]);
         }
 
         // Find or create associated user account with 'worker' role
@@ -86,7 +87,7 @@ class WorkerPortalController extends Controller
         // The phone sign-in must never open an office account
         if (!$user->isWorker()) {
             return back()->withInput()->with('login_portal', 'worker')
-                ->withErrors(['phone' => 'This number cannot be used for the worker sign-in. Please contact the office.']);
+                ->withErrors(['phone' => __('This number cannot be used for the worker sign-in. Please contact the office.')]);
         }
 
         // Authenticate user session
@@ -95,8 +96,11 @@ class WorkerPortalController extends Controller
         $request->session()->put('portal_type', 'worker');
         $request->session()->put('worker_id', $worker->id);
 
+        $locale = SetLocale::rememberOnSignIn($request, $user);
+
         return redirect()->route('worker.portal')
-            ->with('status', "Welcome, {$worker->name}! You are logged in to the Daily Wages Worker Portal.");
+            ->withCookie(cookie()->forever(SetLocale::COOKIE, $locale))
+            ->with('status', __('Welcome, :name! You are logged in to the Daily Wages Worker Portal.', ['name' => $worker->name]));
     }
 
     /**
@@ -261,12 +265,12 @@ class WorkerPortalController extends Controller
             DB::commit();
 
             return redirect()->route('worker.portal')
-                ->with('status', "✓ Attendance successfully punched for {$project->title} with verified photo!");
+                ->with('status', __('✓ Attendance successfully punched for :project with verified photo!', ['project' => $project->title]));
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Error punching worker attendance: ' . $e->getMessage());
 
-            return back()->with('error', 'Failed to punch attendance: ' . $e->getMessage());
+            return back()->with('error', __('Failed to punch attendance: :error', ['error' => $e->getMessage()]));
         }
     }
 
@@ -389,12 +393,16 @@ class WorkerPortalController extends Controller
             DB::commit();
 
             return redirect()->route('worker.portal')
-                ->with('status', "✓ Successfully logged {$addedCabling}m cabling and {$addedCameras} cameras for {$project->title}!");
+                ->with('status', __('✓ Successfully logged :metresm cabling and :cameras cameras for :project!', [
+                    'metres' => $addedCabling,
+                    'cameras' => $addedCameras,
+                    'project' => $project->title,
+                ]));
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Error logging worker work: ' . $e->getMessage());
 
-            return back()->with('error', 'Failed to log work data: ' . $e->getMessage());
+            return back()->with('error', __('Failed to log work data: :error', ['error' => $e->getMessage()]));
         }
     }
 
@@ -404,7 +412,7 @@ class WorkerPortalController extends Controller
     protected function currentWorker(): Worker
     {
         $user = Auth::user();
-        abort_unless($user->isWorker(), 403, 'The worker portal is only for daily-wage workers.');
+        abort_unless($user->isWorker(), 403, __('The worker portal is only for daily-wage workers.'));
 
         $worker = $user->worker;
 
@@ -414,9 +422,9 @@ class WorkerPortalController extends Controller
             $worker = $cleanPhone === '' ? null : Worker::where('phone', $cleanPhone)->whereNull('user_id')->first();
         }
 
-        abort_unless($worker, 403, 'No worker record is linked to this account. Please contact the office.');
-        abort_if($worker->isPendingApproval(), 403, 'Your sign-up is waiting for the admin to approve it.');
-        abort_unless($worker->is_active, 403, 'This worker account is turned off. Please contact the office.');
+        abort_unless($worker, 403, __('No worker record is linked to this account. Please contact the office.'));
+        abort_if($worker->isPendingApproval(), 403, __('Your sign-up is waiting for the admin to approve it.'));
+        abort_unless($worker->is_active, 403, __('This worker account is turned off. Please contact the office.'));
 
         return $worker;
     }

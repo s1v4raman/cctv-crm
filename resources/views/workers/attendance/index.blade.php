@@ -364,7 +364,7 @@
                                                      onclick="showLightbox('{{ $w->name }}', '{{ $w->photo_url }}', '{{ $att->photo_url }}', '{{ $selectedDate->format('d M Y') }}')">
                                             @else
                                                 <div class="w-9 h-9 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs flex items-center justify-center shrink-0 border border-slate-300 dark:border-slate-600">
-                                                    {{ strtoupper(substr($w?->name ?? 'W', 0, 1)) }}
+                                                    {{ strtoupper(mb_substr($w?->name ?? 'W', 0, 1)) }}
                                                 </div>
                                             @endif
                                             <div>
@@ -592,7 +592,7 @@
                                                 <img src="{{ $w->photo_url }}" alt="{{ $w->name }}" class="w-7 h-7 rounded-full object-cover border border-slate-300 dark:border-slate-600 shrink-0">
                                             @else
                                                 <div class="w-7 h-7 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-[11px] flex items-center justify-center shrink-0">
-                                                    {{ strtoupper(substr($w?->name ?? 'W', 0, 1)) }}
+                                                    {{ strtoupper(mb_substr($w?->name ?? 'W', 0, 1)) }}
                                                 </div>
                                             @endif
                                             <div>
@@ -720,7 +720,7 @@
                                                 <img src="{{ $w->photo_url }}" alt="{{ $w->name }}" class="w-8 h-8 rounded-full object-cover border border-slate-300 dark:border-slate-600 shrink-0">
                                             @else
                                                 <div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs flex items-center justify-center shrink-0">
-                                                    {{ strtoupper(substr($w?->name ?? 'W', 0, 1)) }}
+                                                    {{ strtoupper(mb_substr($w?->name ?? 'W', 0, 1)) }}
                                                 </div>
                                             @endif
                                             <div>

@@ -205,7 +205,7 @@ class SiteSurveyController extends Controller
             <circle cx="160" cy="80" r="28" fill="#e2e8f0"/>
             <path d="M150 74h4l2-3h8l2 3h4c1.1 0 2 .9 2 2v14c0 1.1-.9 2-2 2h-20c-1.1 0-2-.9-2-2V76c0-1.1.9-2 2-2zm10 15c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5z" fill="#64748b"/>
             <text x="160" y="126" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600" fill="#475569">Photo File Missing</text>
-            <text x="160" y="145" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#94a3b8">' . substr($name, 0, 30) . '</text>
+            <text x="160" y="145" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#94a3b8">' . mb_substr($name, 0, 30) . '</text>
         </svg>';
 
         return response($svg, 200, [
