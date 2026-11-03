@@ -188,9 +188,46 @@
         html:not(.dark) .login-alert-error { background: #fef2f2 !important; border: 1px solid #fecaca !important; color: #b91c1c !important; }
         html:not(.dark) .login-alert-success { background: #f0fdf4 !important; border: 1px solid #bbf7d0 !important; color: #15803d !important; }
 
+        /* Hide browser native password reveal and clear buttons (Microsoft Edge & IE) to avoid double/overlapping icons */
+        input::-ms-reveal,
+        input::-ms-clear {
+            display: none !important;
+            width: 0 !important;
+            height: 0 !important;
+        }
+
+        /* Hide WebKit auto-fill credentials button overlay */
+        input::-webkit-credentials-auto-fill-button {
+            visibility: hidden !important;
+            pointer-events: none !important;
+            position: absolute !important;
+            right: 0 !important;
+        }
+
+        /* Hide x-cloak immediately before Alpine boots */
+        [x-cloak] {
+            display: none !important;
+        }
+
+        /* Password toggle button styling */
+        .pwd-toggle {
+            transition: all 0.15s ease-in-out;
+            border-radius: 6px;
+        }
+        html:not(.dark) .pwd-toggle {
+            color: #64748b !important;
+        }
+        html:not(.dark) .pwd-toggle:hover {
+            color: #0f172a !important;
+            background-color: #f1f5f9 !important;
+        }
+        html:not(.dark) .pwd-toggle:focus-visible {
+            outline: 2px solid #2563eb !important;
+            outline-offset: 1px;
+        }
+
         /* Icons in Light Mode — Black */
         html:not(.dark) .input-icon { color: #000000 !important; stroke: #000000 !important; }
-        html:not(.dark) .pwd-toggle { color: #000000 !important; stroke: #000000 !important; }
         html:not(.dark) .tab-btn svg { color: #000000 !important; stroke: #000000 !important; }
 
 
@@ -278,9 +315,10 @@
         /* Icons in Dark Mode — White / Light Slate */
         html.dark .input-icon { color: #94a3b8 !important; stroke: #94a3b8 !important; }
         html.dark .pwd-toggle { color: #94a3b8 !important; stroke: #94a3b8 !important; }
-        html.dark .pwd-toggle:hover { color: #ffffff !important; stroke: #ffffff !important; }
+        html.dark .pwd-toggle:hover { color: #f8fafc !important; stroke: #f8fafc !important; background-color: rgba(51, 65, 85, 0.6) !important; }
         html.dark .pwd-toggle svg { stroke: #94a3b8 !important; color: #94a3b8 !important; }
-        html.dark .pwd-toggle:hover svg { stroke: #ffffff !important; color: #ffffff !important; }
+        html.dark .pwd-toggle:hover svg { stroke: #f8fafc !important; color: #f8fafc !important; }
+        html.dark .pwd-toggle:focus-visible { outline: 2px solid #3b82f6 !important; outline-offset: 1px; }
         html.dark .tab-btn svg { color: #cbd5e1 !important; stroke: #cbd5e1 !important; }
 
 
@@ -630,16 +668,17 @@
                             </div>
                             <div>
                                 <label for="password" class="fp-label block text-xs font-semibold mb-1.5">Password</label>
-                                <div class="relative">
+                                <div class="relative flex items-center">
                                     <input id="password" :type="showPassword ? 'text' : 'password'" name="password" 
                                            required autocomplete="current-password"
                                            placeholder="••••••••" 
                                            class="login-input w-full px-4 py-2.5 text-sm rounded-lg pr-11">
                                     <button aria-label="Toggle password visibility" type="button" @click="showPassword = !showPassword" 
-                                            class="pwd-toggle absolute right-3 top-1/2 -translate-y-1/2 transition-colors cursor-pointer"
-                                            title="Toggle password visibility">
-                                        <svg x-show="!showPassword" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                                        <svg x-show="showPassword" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"/></svg>
+                                            tabindex="-1"
+                                            class="pwd-toggle absolute right-2.5 p-1.5 rounded-md cursor-pointer flex items-center justify-center focus:outline-none"
+                                            :title="showPassword ? 'Hide password' : 'Show password'">
+                                        <svg x-show="!showPassword" x-cloak class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                        <svg x-show="showPassword" x-cloak class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"/></svg>
                                     </button>
                                 </div>
                             </div>

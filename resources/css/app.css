@@ -11,6 +11,14 @@
     display: none !important;
 }
 
+/* Disable native Edge / IE password reveal and clear buttons to prevent duplicate / overlapping icons with custom toggles */
+input::-ms-reveal,
+input::-ms-clear {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
 /* ═══════════════════════════════════════════════════════════════════════
    DESIGN TOKENS: the single source for type, radius, control size and
    status colours. Rules below reference these instead of literal values.
