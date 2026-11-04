@@ -848,8 +848,8 @@
                 </div>
 
                 <div class="flex items-center justify-end gap-2 pt-2">
-                    <button type="button" onclick="document.getElementById('manualAttendanceModal').classList.add('hidden')" class="px-5 py-2.5 min-h-[44px] rounded-xl text-sm font-semibold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800">Cancel</button>
-                    <button type="submit" class="px-6 py-2.5 min-h-[44px] rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold shadow-md shadow-blue-500/25">Save Record</button>
+                    <button type="button" onclick="document.getElementById('manualAttendanceModal').classList.add('hidden')" class="btn-md px-5 py-2.5 min-h-[44px] rounded-xl text-sm font-semibold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800">Cancel</button>
+                    <button type="submit" class="btn-md px-6 py-2.5 min-h-[44px] rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold shadow-md shadow-blue-500/25">Save Record</button>
                 </div>
             </form>
         </div>
@@ -912,8 +912,8 @@
                 </div>
 
                 <div class="flex items-center justify-end gap-2 pt-2">
-                    <button type="button" onclick="document.getElementById('bulkAttendanceModal').classList.add('hidden')" class="px-5 py-2.5 min-h-[44px] rounded-xl text-sm font-semibold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800">Cancel</button>
-                    <button type="submit" class="px-6 py-2.5 min-h-[44px] rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold shadow-md shadow-blue-500/25">Apply Range Fill</button>
+                    <button type="button" onclick="document.getElementById('bulkAttendanceModal').classList.add('hidden')" class="btn-md px-5 py-2.5 min-h-[44px] rounded-xl text-sm font-semibold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800">Cancel</button>
+                    <button type="submit" class="btn-md px-6 py-2.5 min-h-[44px] rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold shadow-md shadow-blue-500/25">Apply Range Fill</button>
                 </div>
             </form>
         </div>

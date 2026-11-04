@@ -226,7 +226,7 @@
 
                     <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
                         <button type="button" @click="mergeModalOpen = false" class="btn-secondary text-xs">Cancel</button>
-                        <button type="submit" class="px-4 py-2 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-md transition">
+                        <button type="submit" class="btn-md px-4 py-2 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-md transition">
                             Merge &amp; Delete Duplicate
                         </button>
                     </div>

@@ -220,10 +220,10 @@
                             </a>
                             @endif
                             <div class="flex items-center gap-2">
-                                <button type="button" @click="newCustomerModalOpen = false" class="px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 rounded-lg">
+                                <button type="button" @click="newCustomerModalOpen = false" class="btn-md px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 rounded-lg">
                                     Cancel
                                 </button>
-                                <button type="submit" :disabled="isSubmitting" class="px-4 py-1.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm disabled:opacity-50 inline-flex items-center gap-1.5">
+                                <button type="submit" :disabled="isSubmitting" class="btn-md px-4 py-1.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm disabled:opacity-50 inline-flex items-center gap-1.5">
                                     <span x-show="!isSubmitting">Save &amp; Select</span>
                                     <span x-show="isSubmitting">Saving...</span>
                                 </button>
@@ -278,10 +278,10 @@
                         </div>
 
                         <div class="flex items-center justify-end gap-2 pt-2">
-                            <button type="button" @click="newTechModalOpen = false" class="px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 rounded-lg">
+                            <button type="button" @click="newTechModalOpen = false" class="btn-md px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 rounded-lg">
                                 Cancel
                             </button>
-                            <button type="submit" :disabled="isTechSubmitting" class="px-4 py-1.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm disabled:opacity-50 inline-flex items-center gap-1.5 cursor-pointer">
+                            <button type="submit" :disabled="isTechSubmitting" class="btn-md px-4 py-1.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm disabled:opacity-50 inline-flex items-center gap-1.5 cursor-pointer">
                                 <span x-show="!isTechSubmitting">Save &amp; Select</span>
                                 <span x-show="isTechSubmitting">Saving...</span>
                             </button>

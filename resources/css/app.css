@@ -32,7 +32,8 @@ input::-ms-clear {
     --radius-card: 6px;      /* cards, panels, dropdowns, modals */
     --radius-pill: 9999px;   /* status pills, avatars, dots */
 
-    --control-height: 32px;  /* every input, select and button */
+    --control-height: 32px;  /* every input and select, and buttons in a row with them */
+    --button-height: 36px;   /* every action button: one medium size (BUTTON SIZE, end of file) */
 
     --text-min: 11px;        /* smallest text anywhere (uppercase micro-labels) */
     --text-sm: 13px;         /* meta text, table headers, badges */
@@ -4233,6 +4234,11 @@ html.dark body :is(button, a[class*="btn"], .btn-secondary, .ld-outline) svg.ico
     margin-top: auto;
     margin-bottom: auto;
 }
+/* A dialog placed inside a space-y-* stack would get that stack's top margin, which pushes the
+   whole screen-sized overlay down and cuts its height */
+.fixed.inset-0.fixed.inset-0 {
+    margin: 0;
+}
 
 /* Long dialog forms shown one step at a time (resources/js/form-steps.js, x-form-stepper) */
 .form-stepper {
@@ -4443,4 +4449,74 @@ html:not(.dark) body :is(span, code, kbd, a, button):is(.bg-slate-800, .bg-slate
 /* Laravel's built-in pagination dims its "Showing 1 to 15 of 36" line with dark:text-gray-600 */
 html.dark nav[role="navigation"] :is(.dark\:text-gray-600, .dark\:text-gray-600 *) {
     color: var(--text-muted);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   BUTTON SIZE: one medium size for every action button
+   Page header actions, toolbars, and form and dialog footers share one height, padding, text size,
+   corner and icon size, whichever classes a button was written with: the btn-* classes, or btn-md
+   on a hand-written Tailwind button (which keeps its own colours). Filter chips, tabs, table row
+   actions, icon buttons and the small helpers next to a field keep their compact sizes.
+   The #id inside :not() lifts these rules above the app-wide button:not(...) height rule.
+   ═══════════════════════════════════════════════════════════════════════ */
+@media (pointer: coarse) {
+    :root { --button-height: 40px; }
+}
+
+:is(.btn-md, .btn, .btn-primary, .btn-secondary, .btn-blue, .btn-danger, .btn-dark, .btn-white, .btn-amber,
+    .crm-btn-primary, .crm-btn-secondary, .btn-submit-primary, .btn-cancel, .btn-head-secondary, .ld-accent):not(.btn-icon):not(td *):not(#_) {
+    height: var(--button-height) !important;
+    min-height: var(--button-height) !important;
+    max-height: none !important;
+    padding: 0 16px !important;
+    border-radius: var(--radius-control) !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    line-height: 1.2 !important;
+    letter-spacing: normal !important;
+    text-transform: none !important;
+    gap: 6px !important;
+    white-space: nowrap;
+    box-sizing: border-box !important;
+}
+:is(.btn-md, .btn, .btn-primary, .btn-secondary, .btn-blue, .btn-danger, .btn-dark, .btn-white, .btn-amber,
+    .crm-btn-primary, .crm-btn-secondary, .btn-submit-primary, .btn-cancel, .btn-head-secondary, .ld-accent):not(.btn-icon):not(td *):not(#_) svg {
+    width: 16px !important;
+    height: 16px !important;
+    flex-shrink: 0;
+}
+/* btn-md only sizes: no forced display, so Tailwind's hidden / sm:flex and Alpine's x-show still work */
+:where(.btn-md) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* A button in the same row as inputs (a filter bar) keeps the input height so the row lines up */
+:is(input:not([type="hidden"]), select, .ts-wrapper) ~ :is(.btn-md, .btn, .btn-primary, .btn-secondary, .btn-blue, .btn-danger,
+    .crm-btn-primary, .crm-btn-secondary, .btn-cancel):not(.btn-icon):not(#_):not(#_) {
+    height: var(--control-height) !important;
+    min-height: var(--control-height) !important;
+}
+
+/* The list pages' split "New ..." button */
+.ld-split:not(#_) {
+    --control-height: calc(var(--button-height) - 2px);
+    height: var(--button-height) !important;
+}
+.ld-split:not(#_) > a {
+    padding: 0 16px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+}
+
+/* List page header actions (next to the create button) match it; the filter bar keeps its compact controls */
+.ld-head-actions .ld-outline:not(#_) {
+    height: var(--button-height) !important;
+    min-height: var(--button-height) !important;
+}
+.ld-head-actions a.ld-outline:not(#_) {
+    padding: 0 16px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
 }

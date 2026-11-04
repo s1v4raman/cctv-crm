@@ -9,11 +9,11 @@
             </div>
             <div class="flex items-center gap-2">
                 <a href="{{ route('alerts.gateways') }}"
-                   class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-700 bg-slate-800 text-slate-200 hover:bg-slate-700 text-xs font-bold transition">
+                   class="btn-md inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-700 bg-slate-800 text-slate-200 hover:bg-slate-700 text-xs font-bold transition">
                     Gateways & SMTP
                 </a>
                 <a href="{{ route('alerts.index') }}"
-                   class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-700/60 bg-slate-800/40 text-slate-400 hover:text-white text-xs font-semibold transition">
+                   class="btn-md inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-700/60 bg-slate-800/40 text-slate-400 hover:text-white text-xs font-semibold transition">
                     &larr; Notification Logs
                 </a>
             </div>
@@ -199,7 +199,7 @@
                                 </div>
 
                                 <div class="flex justify-end pt-2">
-                                    <button type="submit" class="px-6 py-2.5 min-h-[44px] bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 rounded-xl text-sm font-bold uppercase tracking-wider shadow-lg shadow-amber-500/20 transition">
+                                    <button type="submit" class="btn-md px-6 py-2.5 min-h-[44px] bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 rounded-xl text-sm font-bold uppercase tracking-wider shadow-lg shadow-amber-500/20 transition">
                                         Save Template Changes &rarr;
                                     </button>
                                 </div>

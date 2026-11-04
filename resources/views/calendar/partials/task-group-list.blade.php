@@ -79,7 +79,7 @@
                                     @if($canManageTasks)
                                         <button type="button" 
                                                 @click="openReassignModal({{ json_encode($task) }})" 
-                                                class="px-3 py-1.5 rounded-[4px] bg-rose-600 text-white text-[11px] font-bold hover:bg-rose-700 transition shrink-0 cursor-pointer shadow-xs">
+                                                class="btn-md px-3 py-1.5 rounded-[4px] bg-rose-600 text-white text-[11px] font-bold hover:bg-rose-700 transition shrink-0 cursor-pointer shadow-xs">
                                             Reassign Task
                                         </button>
                                     @endif
@@ -200,7 +200,7 @@
                                         <form method="POST" action="{{ route('calendar.tasks.accept', $task['id']) }}">
                                             @csrf
                                             <button type="submit" 
-                                                    class="px-3.5 py-1.5 rounded-[4px] bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition shadow-xs flex items-center gap-1 cursor-pointer">
+                                                    class="btn-md px-3.5 py-1.5 rounded-[4px] bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition shadow-xs flex items-center gap-1 cursor-pointer">
                                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                                                 <span>Accept</span>
                                             </button>
@@ -209,7 +209,7 @@
                                         {{-- Reject Button (Opens Modal requiring reason) --}}
                                         <button type="button" 
                                                 @click="openRejectModal({{ json_encode($task) }})"
-                                                class="px-3 py-1.5 rounded-[4px] border border-rose-300 dark:border-rose-800/80 text-rose-700 dark:text-rose-300 bg-rose-50/60 dark:bg-rose-950/40 hover:bg-rose-100 text-xs font-bold transition flex items-center gap-1 cursor-pointer">
+                                                class="btn-md px-3 py-1.5 rounded-[4px] border border-rose-300 dark:border-rose-800/80 text-rose-700 dark:text-rose-300 bg-rose-50/60 dark:bg-rose-950/40 hover:bg-rose-100 text-xs font-bold transition flex items-center gap-1 cursor-pointer">
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                                             <span>Reject</span>
                                         </button>
@@ -220,7 +220,7 @@
                                 @if($canManageTasks)
                                     <button type="button" 
                                             @click="openReassignModal({{ json_encode($task) }})"
-                                            class="px-3 py-1.5 rounded-[4px] border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold shadow-2xs transition flex items-center gap-1 cursor-pointer">
+                                            class="btn-md px-3 py-1.5 rounded-[4px] border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold shadow-2xs transition flex items-center gap-1 cursor-pointer">
                                         <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                                         <span>{{ empty($task['assigned_to']) ? 'Assign' : 'Reassign' }}</span>
                                     </button>

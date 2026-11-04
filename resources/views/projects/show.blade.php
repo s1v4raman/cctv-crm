@@ -447,10 +447,10 @@
 
                 @if(auth()->user()->isAdmin())
                     <div class="flex items-center gap-2 shrink-0">
-                        <button type="button" @click="rejectModalOpen = true" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-slate-800 text-rose-600 border border-rose-300 dark:border-rose-800 hover:bg-rose-50 transition">
+                        <button type="button" @click="rejectModalOpen = true" class="btn-md px-3.5 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-slate-800 text-rose-600 border border-rose-300 dark:border-rose-800 hover:bg-rose-50 transition">
                             Reject
                         </button>
-                        <button type="button" @click="approveModalOpen = true" class="px-4 py-1.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-md transition">
+                        <button type="button" @click="approveModalOpen = true" class="btn-md px-4 py-1.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-md transition">
                             Approve
                         </button>
                     </div>
@@ -968,7 +968,7 @@
                                                 <button type="button" @click="showAssignForm = false" class="px-2.5 py-1 text-xs text-slate-500 hover:text-slate-700">
                                                     Cancel
                                                 </button>
-                                                <button type="submit" class="px-3 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-xs">
+                                                <button type="submit" class="btn-md px-3 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-xs">
                                                     Save
                                                 </button>
                                             </div>
@@ -1622,7 +1622,7 @@
                             </p>
                         </div>
                         @if(auth()->user()->isAdmin())
-                        <a href="{{ route('wages.index') }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition">
+                        <a href="{{ route('wages.index') }}" class="btn-md inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition">
                             <span>Open Sunday Wage Console &rarr;</span>
                         </a>
                         @endif
@@ -1885,7 +1885,7 @@
                         <img :src="workerPhotoModalUrl" alt="Worker Punch Photo" class="max-h-[70vh] w-auto object-contain rounded-xl">
                     </div>
                     <div class="p-3 text-right bg-white dark:bg-[#0f172a] border-t border-slate-100 dark:border-slate-800">
-                        <button type="button" @click="workerPhotoModalUrl = null" class="px-4 py-1.5 bg-slate-800 text-white text-xs font-bold rounded-lg hover:bg-slate-700">Close</button>
+                        <button type="button" @click="workerPhotoModalUrl = null" class="btn-md px-4 py-1.5 bg-slate-800 text-white text-xs font-bold rounded-lg hover:bg-slate-700">Close</button>
                     </div>
                 </div>
             </div>
@@ -2002,7 +2002,7 @@
                         <p class="text-xs text-emerald-700 dark:text-emerald-300 mt-0.5">The blocker has been logged. Click below to launch WhatsApp and notify the Project Manager with the pre-formatted alert.</p>
                     </div>
                 </div>
-                <a href="{{ session('whatsapp_blocker_url') }}" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-extrabold bg-emerald-600 hover:bg-emerald-700 text-white shadow-md transition shrink-0">
+                <a href="{{ session('whatsapp_blocker_url') }}" target="_blank" class="btn-md inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-extrabold bg-emerald-600 hover:bg-emerald-700 text-white shadow-md transition shrink-0">
                     <x-icon.whatsapp class="w-4 h-4 fill-current" />
                     <span>Launch WhatsApp Alert</span>
                 </a>
@@ -2657,7 +2657,7 @@
 
                     <div class="flex items-center justify-end gap-2 pt-2">
                         <button type="button" @click="rejectModalOpen = false" class="btn-secondary text-xs">Cancel</button>
-                        <button type="submit" class="px-4 py-2 text-xs font-bold rounded-xl bg-rose-600 text-white hover:bg-rose-700 shadow-md">Confirm Rejection</button>
+                        <button type="submit" class="btn-md px-4 py-2 text-xs font-bold rounded-xl bg-rose-600 text-white hover:bg-rose-700 shadow-md">Confirm Rejection</button>
                     </div>
                 </form>
             </div>
@@ -2756,12 +2756,12 @@
 
                     <div class="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Direction">
                         <button type="button" role="radio" :aria-checked="issueType === 'issue'" @click="issueType = 'issue'"
-                                class="px-3 py-2 rounded-lg border text-xs font-semibold"
+                                class="btn-md px-3 py-2 rounded-lg border text-xs font-semibold"
                                 :class="issueType === 'issue' ? 'border-blue-600 bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300' : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300'">
                             Give to site
                         </button>
                         <button type="button" role="radio" :aria-checked="issueType === 'return'" @click="issueType = 'return'"
-                                class="px-3 py-2 rounded-lg border text-xs font-semibold"
+                                class="btn-md px-3 py-2 rounded-lg border text-xs font-semibold"
                                 :class="issueType === 'return' ? 'border-blue-600 bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300' : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300'">
                             Return to storeroom
                         </button>
@@ -2906,13 +2906,13 @@
                                         <div class="flex items-center gap-2 pt-1">
                                             <button type="button" 
                                                     @click="consumeModalOpen = false; taskModalOpen = true" 
-                                                    class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs transition inline-flex items-center gap-1 cursor-pointer">
+                                                    class="btn-md px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs transition inline-flex items-center gap-1 cursor-pointer">
                                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                                                 <span>Create First Task</span>
                                             </button>
                                             <button type="button" 
                                                     @click="consumeModalOpen = false; templateModalOpen = true" 
-                                                    class="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition cursor-pointer">
+                                                    class="btn-md px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition cursor-pointer">
                                                 Apply Workflow Template
                                             </button>
                                         </div>
@@ -3812,7 +3812,7 @@
                     <button type="button" @click="blockerModalOpen = false" class="btn-secondary text-xs">Cancel</button>
                     <x-form-step-buttons />
                     <template x-if="isLast()">
-                        <button type="button" @click="submitBlockerModal()" :disabled="blockerSubmitting" class="px-4 py-2 rounded-xl text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white shadow-md transition flex items-center gap-1.5">
+                        <button type="button" @click="submitBlockerModal()" :disabled="blockerSubmitting" class="btn-md px-4 py-2 rounded-xl text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white shadow-md transition flex items-center gap-1.5">
                             <span x-show="!blockerSubmitting">Confirm Blocker &amp; Alert Management</span>
                             <span x-show="blockerSubmitting">Dispatching Alerts...</span>
                         </button>

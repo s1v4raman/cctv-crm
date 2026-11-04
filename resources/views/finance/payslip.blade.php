@@ -10,11 +10,11 @@
             </div>
             <div class="flex items-center gap-2 flex-wrap">
                 <a href="{{ route('finance.payroll.index') }}"
-                   class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold hover:bg-slate-50 dark:hover:bg-slate-700 shadow-2xs transition">
+                   class="btn-md inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold hover:bg-slate-50 dark:hover:bg-slate-700 shadow-2xs transition">
                     ← Back to Payroll
                 </a>
                 <a href="{{ route('finance.payroll.pdf', $payroll) }}"
-                   class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white !text-white dark:!text-slate-900 text-xs font-bold shadow-xs transition">
+                   class="btn-md inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white !text-white dark:!text-slate-900 text-xs font-bold shadow-xs transition">
                     <svg class="w-4 h-4 !text-white dark:!text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                     </svg>
@@ -22,12 +22,12 @@
                 </a>
                 <button type="button" 
                         onclick="document.getElementById('whatsappModal').classList.remove('hidden')"
-                        class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 !text-white text-xs font-bold shadow-xs transition">
+                        class="btn-md inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 !text-white text-xs font-bold shadow-xs transition">
                     <x-icon.whatsapp class="w-4 h-4 fill-current !text-white" />
                     <span class="!text-white">Send via WhatsApp</span>
                 </button>
                 <button onclick="window.print()"
-                        class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 !text-white text-xs font-bold shadow-xs transition">
+                        class="btn-md inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 !text-white text-xs font-bold shadow-xs transition">
                     <span class="!text-white">Print</span>
                 </button>
             </div>

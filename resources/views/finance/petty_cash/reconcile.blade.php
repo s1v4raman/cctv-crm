@@ -264,10 +264,10 @@
                             </div>
 
                             <div class="pt-3 border-t border-gray-100 flex flex-col gap-2">
-                                <button type="submit" class="w-full inline-flex items-center justify-center px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm rounded-xl shadow-sm transition">
+                                <button type="submit" class="btn-md w-full inline-flex items-center justify-center px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm rounded-xl shadow-sm transition">
                                     Confirm & Save Reconciliation
                                 </button>
-                                <a href="{{ route('finance.petty_cash.index') }}" class="w-full inline-flex items-center justify-center px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-sm rounded-xl transition">
+                                <a href="{{ route('finance.petty_cash.index') }}" class="btn-md w-full inline-flex items-center justify-center px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-sm rounded-xl transition">
                                     Cancel
                                 </a>
                             </div>

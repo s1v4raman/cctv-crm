@@ -51,7 +51,7 @@
         p { margin: 0 0 8px; color: var(--muted); }
         .detail { margin-top: 12px; padding: 10px 12px; border-radius: 6px; background: var(--bg); color: var(--text); font-size: 13px; }
         .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
-        .btn { display: inline-flex; align-items: center; min-height: 38px; padding: 0 16px; border-radius: 6px; font-weight: 600; font-size: 14px;
+        .btn { display: inline-flex; align-items: center; height: 36px; padding: 0 16px; border-radius: 4px; font-weight: 600; font-size: 13px; box-sizing: border-box;
                text-decoration: none; border: 1px solid var(--accent); cursor: pointer; font-family: inherit; }
         .btn-primary { background: var(--accent); color: #fff; }
         .btn-secondary { background: transparent; color: var(--accent); }

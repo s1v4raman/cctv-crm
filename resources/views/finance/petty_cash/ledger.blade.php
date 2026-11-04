@@ -16,11 +16,11 @@
                 </div>
             </div>
             <div class="flex items-center gap-3">
-                <a href="{{ route('finance.petty_cash.reconcile', $account) }}" class="inline-flex items-center px-4 py-2 bg-amber-700 hover:bg-amber-800 text-white font-semibold text-sm rounded-xl shadow-sm transition gap-2">
+                <a href="{{ route('finance.petty_cash.reconcile', $account) }}" class="btn-md inline-flex items-center px-4 py-2 bg-amber-700 hover:bg-amber-800 text-white font-semibold text-sm rounded-xl shadow-sm transition gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     <span>Reconcile & Tally</span>
                 </a>
-                <a href="{{ route('finance.petty_cash.export-pdf', ['from_date' => $filters['from_date'] ?? null, 'to_date' => $filters['to_date'] ?? null]) }}" class="inline-flex items-center px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold text-sm rounded-xl border border-rose-200 transition gap-2">
+                <a href="{{ route('finance.petty_cash.export-pdf', ['from_date' => $filters['from_date'] ?? null, 'to_date' => $filters['to_date'] ?? null]) }}" class="btn-md inline-flex items-center px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold text-sm rounded-xl border border-rose-200 transition gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                     <span>Export PDF</span>
                 </a>
@@ -45,7 +45,7 @@
                             <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">To Date</label>
                             <input aria-label="To Date" type="date" name="to_date" value="{{ $filters['to_date'] ?? '' }}" class="w-full rounded-xl border-gray-200 text-sm focus:border-indigo-500 focus:ring-indigo-500">
                         </div>
-                        <button type="submit" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl shadow-md shadow-indigo-600/20 transition">
+                        <button type="submit" class="btn-md px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl shadow-md shadow-indigo-600/20 transition">
                             Filter
                         </button>
                     </form>

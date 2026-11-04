@@ -128,7 +128,7 @@
                     <div class="text-xs font-mono text-emerald-300 font-bold" id="scannedCodeDisplay">---</div>
                 </div>
             </div>
-            <button type="button" onclick="resumeScanning()" class="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-600 text-white text-[11px] font-bold rounded-lg shadow">
+            <button type="button" onclick="resumeScanning()" class="btn-md px-3 py-1.5 bg-emerald-700 hover:bg-emerald-600 text-white text-[11px] font-bold rounded-lg shadow">
                 Next
             </button>
         </div>
@@ -144,7 +144,7 @@
 
             <!-- Manual Entry / Type S/N Button -->
             <button type="button" onclick="openManualEntryPrompt()"
-                class="flex items-center justify-center space-x-2 min-h-[44px] py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-sm font-semibold border border-slate-700/80 shadow-md active:scale-98 transition-all">
+                class="btn-md flex items-center justify-center space-x-2 min-h-[44px] py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-sm font-semibold border border-slate-700/80 shadow-md active:scale-98 transition-all">
                 <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                 <span>Type S/N Manually</span>
             </button>

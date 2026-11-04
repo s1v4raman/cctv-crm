@@ -6,7 +6,7 @@
                 <p class="mt-1 text-xs text-slate-400 font-mono">Register a new access account for an administrator, employee, or technician.</p>
             </div>
             <a href="{{ request('return_to', route('admin.users.index')) }}"
-               class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-700/60 bg-slate-800/40 text-slate-400 hover:text-white text-xs font-semibold transition">
+               class="btn-md inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-700/60 bg-slate-800/40 text-slate-400 hover:text-white text-xs font-semibold transition">
                 &larr; {{ request('return_to') ? (str_contains(request('return_to'), 'wizard') ? 'Back to Project Wizard' : 'Back to Project') : 'Back to Accounts' }}
             </a>
         </div>
@@ -60,7 +60,7 @@
                                class="w-full text-sm rounded-xl border border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:outline-none p-3 font-mono" placeholder="Re-type password">
                     </div>
 
-                    <button type="submit" class="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-sm uppercase tracking-wider shadow-lg min-h-[44px] shadow-amber-500/20 transition mt-4">
+                    <button type="submit" class="btn-md w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-sm uppercase tracking-wider shadow-lg min-h-[44px] shadow-amber-500/20 transition mt-4">
                         Register Account
                     </button>
                 </form>
