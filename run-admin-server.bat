@@ -3,7 +3,7 @@ cd /d "%~dp0"
 title CCTV CRM - Admin Server (Port 8001)
 echo ======================================================================
 echo Starting ADMIN SERVER on http://admin.localhost:8001
-echo The sign-in page here shows only the admin login, and only admin
+echo The sign-in page here shows only the admin and employee login, and only those
 echo accounts can sign in (technicians and daily workers use
 echo run-technician-server.bat).
 echo ======================================================================

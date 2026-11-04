@@ -373,13 +373,17 @@
     </style>
 </head>
 
-{{-- A local admin or technician server (LOGIN_PORTAL) shows only its own sign-in tabs (the technician server also the daily worker's) --}}
+{{-- Each portal shows only its own sign-in tabs: the office (/login) admin and employee, the field (/field/login)
+     technician and daily worker. A local server locked to one portal (LOGIN_PORTAL) shows it at /login. --}}
 @php($lockedPortal = config('app.login_portal'))
-@php($loginTabs = $lockedPortal ? \App\Http\Middleware\EnforceLoginPortal::ROLES[$lockedPortal] : ['admin', 'technician', 'staff', 'worker'])
+@php($portal ??= $lockedPortal ?? 'admin')
+@php($loginTabs = \App\Http\Middleware\EnforceLoginPortal::ROLES[$portal])
 {{-- The tab to open on: back on the worker or technician tab after a worker sign-in or a language switch --}}
 @php($openTab = old('phone') !== null ? 'worker' : (session('login_portal') ?? request('portal')))
-@php($staffHeading = match ($lockedPortal) { 'admin' => 'Admin Sign In', 'technician' => __('Technician Sign In'), default => 'Operations Sign In' })
-@php($staffBadge = match ($lockedPortal) { 'admin' => 'Admin Server', 'technician' => __('Technician Server'), default => 'Staff & Admin' })
+@php($staffHeading = $portal === 'admin' ? 'Admin & Employee Sign In' : __('Technician Sign In'))
+@php($staffBadge = match (true) { $portal === 'technician' => $lockedPortal ? __('Technician Server') : __('Field Team'), (bool) $lockedPortal => 'Admin Server', default => 'Staff & Admin' })
+{{-- The office page's email form posts to /login, the field page's to /field/login --}}
+@php($signInAction = $portal === 'technician' && !$lockedPortal ? route('field.login.post') : route('login'))
 <body class="h-full antialiased"
       x-data="{
           portal: {{ Js::from(in_array($openTab, $loginTabs, true) ? $openTab : $loginTabs[0]) }},
@@ -504,7 +508,7 @@
                     <span class="text-[11px] font-semibold px-2.5 py-1 rounded-md transition-colors duration-200"
                           :class="portal === 'worker' ? 'portal-badge-worker' : 'portal-badge-staff'" 
                           x-text="portal === 'worker' ? {{ Js::from(__('Daily Wage Worker')) }} : {{ Js::from($staffBadge) }}">
-                        {{ $lockedPortal ? $staffBadge : 'Staff & Admin ERP' }}
+                        {{ $portal === 'admin' && !$lockedPortal ? 'Staff & Admin ERP' : $staffBadge }}
                     </span>
                 </div>
             </div>
@@ -708,7 +712,7 @@
 
                         <!-- Google OAuth -->
                         <div class="anim anim-d2">
-                            <a href="{{ route('auth.google', ['portal' => 'staff', 'mode' => 'login']) }}"
+                            <a href="{{ route('auth.google', ['portal' => $portal === 'technician' ? 'field' : 'staff', 'mode' => 'login']) }}"
                                class="google-btn w-full flex items-center justify-center gap-2.5 py-2.5 px-4 rounded-lg text-sm font-medium cursor-pointer">
                                 <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24">
                                     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -728,7 +732,7 @@
                         </div>
 
                         <!-- Login Form -->
-                        <form id="loginForm" method="POST" action="{{ route('login') }}" class="space-y-4 anim anim-d3">
+                        <form id="loginForm" method="POST" action="{{ $signInAction }}" class="space-y-4 anim anim-d3">
                             @csrf
                             <div>
                                 <label for="email" class="fp-label block text-xs font-semibold mb-1.5">{{ __('Email Address') }}</label>

@@ -26,7 +26,7 @@ class WorkerPortalAndAttendanceTest extends TestCase
 
     public function test_login_page_renders_daily_wage_worker_tab(): void
     {
-        $response = $this->get('/login');
+        $response = $this->get('/field/login');
 
         $response->assertStatus(200);
         $response->assertSee('Daily Wage Worker');

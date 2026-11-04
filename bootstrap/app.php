@@ -16,6 +16,11 @@ return Application::configure(basePath: dirname(__DIR__))
         // Trust Cloudflare Tunnel & all reverse proxies (fixes 419 CSRF error via tunnel)
         $middleware->trustProxies(at: '*');
 
+        // Signed-out technicians and workers go to their own sign-in link, everyone else to the office's
+        $middleware->redirectGuestsTo(fn (Request $request) => route(
+            $request->is('technician/*', 'worker/*') ? \App\Http\Middleware\EnforceLoginPortal::loginRoute('technician') : 'login'
+        ));
+
         // Security response headers (anti-clickjacking, XSS, MIME sniffing)
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
 

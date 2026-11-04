@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Middleware\EnforceLoginPortal;
 use App\Http\Middleware\SetLocale;
 use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
@@ -13,11 +14,11 @@ use Illuminate\View\View;
 class AuthenticatedSessionController extends Controller
 {
     /**
-     * Display the login view.
+     * Display the login view: the office's (admin, employee) or the field's (technician, daily worker).
      */
-    public function create(): View
+    public function create(Request $request): View
     {
-        return view('auth.login');
+        return view('auth.login', ['portal' => EnforceLoginPortal::forRequest($request)]);
     }
 
     /**
@@ -25,6 +26,8 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
+        $portal = EnforceLoginPortal::forRequest($request);
+
         $request->authenticate();
 
         $request->session()->regenerate();
@@ -40,6 +43,17 @@ class AuthenticatedSessionController extends Controller
 
             return redirect()->route('login')->withErrors([
                 'email' => 'Customer self-service portal login has been retired. Please contact support for assistance.',
+            ]);
+        }
+
+        // An account from the other portal signs in on its own link
+        if (!EnforceLoginPortal::allows($portal, $user)) {
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()->route(EnforceLoginPortal::loginRoute($portal))->withErrors([
+                'email' => EnforceLoginPortal::wrongAccountMessage($portal),
             ]);
         }
 
@@ -67,6 +81,7 @@ class AuthenticatedSessionController extends Controller
     public function destroy(Request $request): RedirectResponse
     {
         $wasWorker = (bool) $request->user()?->isWorker();
+        $wasField = $wasWorker || (bool) $request->user()?->isTechnician();
 
         Auth::guard('web')->logout();
 
@@ -74,9 +89,12 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        // A worker lands back on the worker sign-in tab (in the language this phone picked)
+        // Technicians and workers land back on their own sign-in link, a worker on the worker tab
+        // (in the language this phone picked)
+        $loginRoute = $wasField ? EnforceLoginPortal::loginRoute('technician') : 'login';
+
         return $wasWorker
-            ? redirect()->route('login')->with('login_portal', 'worker')
-            : redirect()->route('login');
+            ? redirect()->route($loginRoute)->with('login_portal', 'worker')
+            : redirect()->route($loginRoute);
     }
 }

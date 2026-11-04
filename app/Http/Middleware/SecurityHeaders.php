@@ -22,9 +22,10 @@ class SecurityHeaders
         $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
         $response->headers->set('X-XSS-Protection', '1; mode=block');
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
-        // Voice input: the worker sign-in's name, and the text boxes on worker and technician pages.
-        // Office pages keep the microphone off.
-        $voiceInput = $request->routeIs('login', 'staff.login', 'admin.login')
+        // Voice input: the worker sign-in's name on the field sign-in page, and the text boxes on worker and
+        // technician pages. Office pages, the office sign-in included, keep the microphone off.
+        $signInPortal = config('app.login_portal') ?? ($request->routeIs('field.login') ? 'technician' : 'admin');
+        $voiceInput = ($request->routeIs('login', 'staff.login', 'admin.login', 'field.login') && $signInPortal === 'technician')
             || ($request->hasSession() && $request->user()?->canChooseLanguage());
         $microphone = $voiceInput ? '(self)' : '()';
         $response->headers->set('Permissions-Policy', "camera=(self), microphone={$microphone}, geolocation=()");

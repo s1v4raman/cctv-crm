@@ -18,7 +18,7 @@ class SignInAndResetEmailTest extends TestCase
     {
         User::factory()->create(['email' => 'raman@example.com', 'password' => 'correct-horse-9', 'role' => 'technician']);
 
-        $this->post('/login', ['email' => '  Raman@Example.com ', 'password' => 'correct-horse-9']);
+        $this->post('/field/login', ['email' => '  Raman@Example.com ', 'password' => 'correct-horse-9']);
 
         $this->assertAuthenticated();
     }
