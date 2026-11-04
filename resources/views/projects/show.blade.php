@@ -3166,12 +3166,16 @@
                 </div>
 
                 {{-- Scrollable Form Body --}}
-                <form method="POST" action="{{ route('projects.work-days.store', $project) }}" class="flex flex-col flex-1 overflow-hidden m-0">
+                <form method="POST" action="{{ route('projects.work-days.store', $project) }}" class="flex flex-col flex-1 overflow-hidden m-0" x-data="formSteps">
                     @csrf
+                    <div class="px-5 pt-4 shrink-0">
+                        <x-form-stepper :steps="['Shift', 'Workers & wages']" />
+                    </div>
+
                     <div class="p-5 overflow-y-auto space-y-4 flex-1">
-                        
+
                         {{-- Shift Date & General Notes (Compact) --}}
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3.5 rounded-xl bg-slate-50/80 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800">
+                        <div data-step x-show="step === 1" class="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3.5 rounded-xl bg-slate-50/80 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800">
                             <div class="sm:col-span-1">
                                 <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Shift Date *</label>
                                 <input type="date" name="work_date" value="{{ now()->toDateString() }}" required class="w-full px-2.5 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg outline-none font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
@@ -3182,170 +3186,172 @@
                             </div>
                         </div>
 
-                        {{-- Quick Register New Worker Drawer --}}
-                        <div x-show="showNewWorkerModal" x-transition class="p-3.5 rounded-xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800/80 space-y-3">
-                            <div class="flex items-center justify-between pb-1.5 border-b border-blue-200/60 dark:border-blue-800/60">
-                                <div class="flex items-center gap-1.5">
-                                    <span class="w-4 h-4 rounded-full bg-blue-600 text-white flex items-center justify-center text-[11px] font-bold">+</span>
-                                    <h4 class="text-xs font-bold text-blue-950 dark:text-blue-200 uppercase tracking-wide">Register New Daily Worker</h4>
+                        <div data-step x-show="step === 2" x-cloak class="space-y-4">
+                            {{-- Quick Register New Worker Drawer --}}
+                            <div x-show="showNewWorkerModal" x-transition class="p-3.5 rounded-xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800/80 space-y-3">
+                                <div class="flex items-center justify-between pb-1.5 border-b border-blue-200/60 dark:border-blue-800/60">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="w-4 h-4 rounded-full bg-blue-600 text-white flex items-center justify-center text-[11px] font-bold">+</span>
+                                        <h4 class="text-xs font-bold text-blue-950 dark:text-blue-200 uppercase tracking-wide">Register New Daily Worker</h4>
+                                    </div>
+                                    <button type="button" @click="showNewWorkerModal = false" class="text-slate-400 hover:text-slate-600 text-xs font-bold">&times; Close</button>
                                 </div>
-                                <button type="button" @click="showNewWorkerModal = false" class="text-slate-400 hover:text-slate-600 text-xs font-bold">&times; Close</button>
-                            </div>
 
-                            <div x-show="newWorkerError" x-text="newWorkerError" class="p-2 rounded-lg bg-rose-100 text-rose-800 border border-rose-300 text-xs"></div>
-                            <div x-show="newWorkerSuccess" x-text="newWorkerSuccess" class="p-2 rounded-lg bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs"></div>
+                                <div x-show="newWorkerError" x-text="newWorkerError" class="p-2 rounded-lg bg-rose-100 text-rose-800 border border-rose-300 text-xs"></div>
+                                <div x-show="newWorkerSuccess" x-text="newWorkerSuccess" class="p-2 rounded-lg bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs"></div>
 
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                                <div>
-                                    <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Full Name *</label>
-                                    <input type="text" x-model="newWorkerName" placeholder="e.g. Ramesh Kumar" class="w-full px-2.5 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg outline-none font-semibold text-slate-900 dark:text-white">
-                                </div>
-                                <div>
-                                    <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Daily Wage Rate (₹) *</label>
-                                    <div class="flex items-center rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 overflow-hidden">
-                                        <span class="px-2.5 py-1.5 text-xs font-bold text-slate-500 bg-slate-100 dark:bg-slate-800 border-r border-slate-300 dark:border-slate-700 select-none">₹</span>
-                                        <input type="number" step="10" min="0" x-model="newWorkerDailyRate" placeholder="750" class="w-full px-2 py-1.5 text-xs bg-transparent outline-none font-mono font-bold text-blue-600 dark:text-blue-400">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                    <div>
+                                        <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Full Name *</label>
+                                        <input type="text" x-model="newWorkerName" placeholder="e.g. Ramesh Kumar" class="w-full px-2.5 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg outline-none font-semibold text-slate-900 dark:text-white">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Daily Wage Rate (₹) *</label>
+                                        <div class="flex items-center rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 overflow-hidden">
+                                            <span class="px-2.5 py-1.5 text-xs font-bold text-slate-500 bg-slate-100 dark:bg-slate-800 border-r border-slate-300 dark:border-slate-700 select-none">₹</span>
+                                            <input type="number" step="10" min="0" x-model="newWorkerDailyRate" placeholder="750" class="w-full px-2 py-1.5 text-xs bg-transparent outline-none font-mono font-bold text-blue-600 dark:text-blue-400">
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                                <div>
-                                    <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Phone Number</label>
-                                    <input type="text" x-model="newWorkerPhone" placeholder="e.g. 9876543210" class="w-full px-2.5 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg outline-none font-mono text-slate-900 dark:text-white">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                    <div>
+                                        <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Phone Number</label>
+                                        <input type="text" x-model="newWorkerPhone" placeholder="e.g. 9876543210" class="w-full px-2.5 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg outline-none font-mono text-slate-900 dark:text-white">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Role / Notes</label>
+                                        <input type="text" x-model="newWorkerNotes" placeholder="e.g. Cable puller" class="w-full px-2.5 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg outline-none text-slate-900 dark:text-white">
+                                    </div>
                                 </div>
-                                <div>
-                                    <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Role / Notes</label>
-                                    <input type="text" x-model="newWorkerNotes" placeholder="e.g. Cable puller" class="w-full px-2.5 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg outline-none text-slate-900 dark:text-white">
-                                </div>
-                            </div>
 
-                            <div class="flex justify-end gap-2 pt-1">
-                                <button type="button" @click="showNewWorkerModal = false" class="px-2.5 py-1 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-                                    Cancel
-                                </button>
-                                <button type="button" @click="saveNewWorker()" :disabled="newWorkerSaving" class="px-3 py-1 text-xs font-semibold rounded-lg bg-blue-600 hover:bg-blue-700 text-white shadow-xs inline-flex items-center gap-1 cursor-pointer disabled:opacity-50">
-                                    <span x-show="newWorkerSaving">Saving...</span>
-                                    <span x-show="!newWorkerSaving">Save Worker</span>
-                                </button>
-                            </div>
-                        </div>
-
-                        {{-- Worker Attendance Rows Header --}}
-                        <div class="space-y-3">
-                            <div class="flex items-center justify-between pb-0.5">
-                                <div class="flex items-center gap-2">
-                                    <span class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Workers on Shift</span>
-                                    <span class="text-[11px] px-2 py-0.5 rounded-full font-bold bg-slate-100 dark:bg-slate-800 text-slate-500" x-text="`${workersList.length} saved`"></span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <button type="button" @click="openNewWorkerModal(null)" class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 hover:bg-blue-100 transition inline-flex items-center gap-1 cursor-pointer">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                                        <span>Add New Worker</span>
+                                <div class="flex justify-end gap-2 pt-1">
+                                    <button type="button" @click="showNewWorkerModal = false" class="px-2.5 py-1 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                                        Cancel
                                     </button>
-                                    <button type="button" @click="addRow()" class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition inline-flex items-center gap-1 cursor-pointer">
-                                        <span>+ Row</span>
+                                    <button type="button" @click="saveNewWorker()" :disabled="newWorkerSaving" class="px-3 py-1 text-xs font-semibold rounded-lg bg-blue-600 hover:bg-blue-700 text-white shadow-xs inline-flex items-center gap-1 cursor-pointer disabled:opacity-50">
+                                        <span x-show="newWorkerSaving">Saving...</span>
+                                        <span x-show="!newWorkerSaving">Save Worker</span>
                                     </button>
                                 </div>
                             </div>
 
-                            {{-- Rows Cards --}}
-                            <template x-for="(r, idx) in rows" :key="idx">
-                                <div class="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs space-y-2.5">
-                                    {{-- Row Subheader --}}
-                                    <div class="flex items-center justify-between pb-1.5 border-b border-slate-100 dark:border-slate-800">
-                                        <div class="flex items-center gap-2">
-                                            <span class="w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[11px] font-bold flex items-center justify-center" x-text="idx + 1"></span>
-                                            <span class="text-xs font-bold text-slate-800 dark:text-slate-200" x-text="r.worker_id ? (workersList.find(w => w.id == r.worker_id)?.name || 'Worker') : `Worker #${idx + 1}`"></span>
-                                            <template x-if="r.daily_rate > 0">
-                                                <span class="text-[11px] font-mono font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-1.5 py-0.5 rounded border border-emerald-200 dark:border-emerald-800" x-text="`₹${r.daily_rate}/day`"></span>
-                                            </template>
-                                        </div>
-                                        <div class="flex items-center gap-2.5">
-                                            <button type="button" @click="openNewWorkerModal(idx)" class="text-[11px] font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 cursor-pointer">
-                                                + New Person
-                                            </button>
-                                            <button type="button" @click="removeRow(idx)" class="text-rose-500 hover:text-rose-700 text-xs font-semibold cursor-pointer" x-show="rows.length > 1">
-                                                &times; Remove
-                                            </button>
-                                        </div>
+                            {{-- Worker Attendance Rows Header --}}
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between pb-0.5">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Workers on Shift</span>
+                                        <span class="text-[11px] px-2 py-0.5 rounded-full font-bold bg-slate-100 dark:bg-slate-800 text-slate-500" x-text="`${workersList.length} saved`"></span>
                                     </div>
+                                    <div class="flex items-center gap-2">
+                                        <button type="button" @click="openNewWorkerModal(null)" class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 hover:bg-blue-100 transition inline-flex items-center gap-1 cursor-pointer">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                            <span>Add New Worker</span>
+                                        </button>
+                                        <button type="button" @click="addRow()" class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition inline-flex items-center gap-1 cursor-pointer">
+                                            <span>+ Row</span>
+                                        </button>
+                                    </div>
+                                </div>
 
-                                    {{-- Row Fields Grid --}}
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                                        <div>
-                                            <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Worker *</label>
-                                            <select :name="`attendances[${idx}][worker_id]`" x-model="r.worker_id" @change="updateRate(r)" required class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg outline-none font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
-                                                <option value="">-- Select Worker --</option>
-                                                <template x-for="w in workersList" :key="w.id">
-                                                    <option :value="w.id" x-text="`${w.name} (₹${w.daily_rate}/d)`"></option>
+                                {{-- Rows Cards --}}
+                                <template x-for="(r, idx) in rows" :key="idx">
+                                    <div class="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs space-y-2.5">
+                                        {{-- Row Subheader --}}
+                                        <div class="flex items-center justify-between pb-1.5 border-b border-slate-100 dark:border-slate-800">
+                                            <div class="flex items-center gap-2">
+                                                <span class="w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[11px] font-bold flex items-center justify-center" x-text="idx + 1"></span>
+                                                <span class="text-xs font-bold text-slate-800 dark:text-slate-200" x-text="r.worker_id ? (workersList.find(w => w.id == r.worker_id)?.name || 'Worker') : `Worker #${idx + 1}`"></span>
+                                                <template x-if="r.daily_rate > 0">
+                                                    <span class="text-[11px] font-mono font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-1.5 py-0.5 rounded border border-emerald-200 dark:border-emerald-800" x-text="`₹${r.daily_rate}/day`"></span>
                                                 </template>
-                                            </select>
-                                        </div>
-
-                                        <div>
-                                            <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Shift Duration *</label>
-                                            <select :name="`attendances[${idx}][attendance_type]`" x-model="r.attendance_type" @change="calcRow(r)" class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg outline-none font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
-                                                <option value="full_day">Full Day (1.0 Shift • 100%)</option>
-                                                <option value="half_day">Half Day (0.5 Shift • 50%)</option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                                        <div>
-                                            <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">
-                                                Cabling (Metres)
-                                            </label>
-                                            <input type="number" step="1" min="0" :name="`attendances[${idx}][cabling_metres]`" x-model="r.cabling_metres" @input="calcRow(r)" placeholder="0" class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg font-mono font-bold outline-none text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
-                                        </div>
-
-                                        <div>
-                                            <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Extra Allowance</label>
-                                            <div class="flex items-center rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 overflow-hidden focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500">
-                                                <span class="px-2 py-1 text-xs font-bold text-slate-500 bg-slate-100 dark:bg-slate-700/60 border-r border-slate-300 dark:border-slate-700 select-none">₹</span>
-                                                <input type="number" step="0.5" min="0" :name="`attendances[${idx}][extra_amount]`" x-model="r.extra_amount" @input="calcRow(r)" placeholder="0" class="w-full px-2 py-1 text-xs bg-transparent outline-none font-mono text-slate-900 dark:text-white">
+                                            </div>
+                                            <div class="flex items-center gap-2.5">
+                                                <button type="button" @click="openNewWorkerModal(idx)" class="text-[11px] font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 cursor-pointer">
+                                                    + New Person
+                                                </button>
+                                                <button type="button" @click="removeRow(idx)" class="text-rose-500 hover:text-rose-700 text-xs font-semibold cursor-pointer" x-show="rows.length > 1">
+                                                    &times; Remove
+                                                </button>
                                             </div>
                                         </div>
 
-                                        <div>
-                                            <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Reason for Extra</label>
-                                            <input type="text" :name="`attendances[${idx}][extra_description]`" x-model="r.extra_description" placeholder="Overtime / travel" class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg outline-none text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
-                                        </div>
-                                    </div>
+                                        {{-- Row Fields Grid --}}
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                            <div>
+                                                <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Worker *</label>
+                                                <select :name="`attendances[${idx}][worker_id]`" x-model="r.worker_id" @change="updateRate(r)" required class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg outline-none font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+                                                    <option value="">-- Select Worker --</option>
+                                                    <template x-for="w in workersList" :key="w.id">
+                                                        <option :value="w.id" x-text="`${w.name} (₹${w.daily_rate}/d)`"></option>
+                                                    </template>
+                                                </select>
+                                            </div>
 
-                                    {{-- Row Subtotal Summary --}}
-                                    <div class="px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 flex items-center justify-between text-xs">
-                                        <div class="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-                                            <span>Base: ₹<span x-text="r.attendance_type === 'half_day' ? (r.daily_rate / 2).toFixed(0) : r.daily_rate"></span></span>
-                                            <span x-show="parseFloat(r.cabling_metres) > 0" x-text="`+ ₹${((parseFloat(r.cabling_metres) || 0) * {{ (float) ($project->per_metre_rate ?? 8.0) }}).toFixed(0)} cable`"></span>
-                                            <span x-show="parseFloat(r.extra_amount) > 0" x-text="`+ ₹${(parseFloat(r.extra_amount) || 0).toFixed(0)} extra`"></span>
+                                            <div>
+                                                <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Shift Duration *</label>
+                                                <select :name="`attendances[${idx}][attendance_type]`" x-model="r.attendance_type" @change="calcRow(r)" class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg outline-none font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+                                                    <option value="full_day">Full Day (1.0 Shift • 100%)</option>
+                                                    <option value="half_day">Half Day (0.5 Shift • 50%)</option>
+                                                </select>
+                                            </div>
                                         </div>
-                                        <div class="font-mono font-bold text-emerald-600 dark:text-emerald-400">
-                                            Subtotal: ₹<span x-text="r.row_total.toFixed(2)"></span>
+
+                                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                                            <div>
+                                                <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">
+                                                    Cabling (Metres)
+                                                </label>
+                                                <input type="number" step="1" min="0" :name="`attendances[${idx}][cabling_metres]`" x-model="r.cabling_metres" @input="calcRow(r)" placeholder="0" class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg font-mono font-bold outline-none text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+                                            </div>
+
+                                            <div>
+                                                <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Extra Allowance</label>
+                                                <div class="flex items-center rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 overflow-hidden focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500">
+                                                    <span class="px-2 py-1 text-xs font-bold text-slate-500 bg-slate-100 dark:bg-slate-700/60 border-r border-slate-300 dark:border-slate-700 select-none">₹</span>
+                                                    <input type="number" step="0.5" min="0" :name="`attendances[${idx}][extra_amount]`" x-model="r.extra_amount" @input="calcRow(r)" placeholder="0" class="w-full px-2 py-1 text-xs bg-transparent outline-none font-mono text-slate-900 dark:text-white">
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Reason for Extra</label>
+                                                <input type="text" :name="`attendances[${idx}][extra_description]`" x-model="r.extra_description" placeholder="Overtime / travel" class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg outline-none text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+                                            </div>
+                                        </div>
+
+                                        {{-- Row Subtotal Summary --}}
+                                        <div class="px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 flex items-center justify-between text-xs">
+                                            <div class="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                                                <span>Base: ₹<span x-text="r.attendance_type === 'half_day' ? (r.daily_rate / 2).toFixed(0) : r.daily_rate"></span></span>
+                                                <span x-show="parseFloat(r.cabling_metres) > 0" x-text="`+ ₹${((parseFloat(r.cabling_metres) || 0) * {{ (float) ($project->per_metre_rate ?? 8.0) }}).toFixed(0)} cable`"></span>
+                                                <span x-show="parseFloat(r.extra_amount) > 0" x-text="`+ ₹${(parseFloat(r.extra_amount) || 0).toFixed(0)} extra`"></span>
+                                            </div>
+                                            <div class="font-mono font-bold text-emerald-600 dark:text-emerald-400">
+                                                Subtotal: ₹<span x-text="r.row_total.toFixed(2)"></span>
+                                            </div>
                                         </div>
                                     </div>
+                                </template>
+                            </div>
+
+                            {{-- Real-time Shift Summary Bar (Compact) --}}
+                            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 grid grid-cols-4 gap-2 text-center">
+                                <div>
+                                    <span class="text-[11px] font-bold uppercase text-slate-400 block">Workers</span>
+                                    <span class="text-sm font-bold font-mono text-slate-800 dark:text-slate-200" x-text="rows.filter(r => r.worker_id).length"></span>
                                 </div>
-                            </template>
-                        </div>
-
-                        {{-- Real-time Shift Summary Bar (Compact) --}}
-                        <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 grid grid-cols-4 gap-2 text-center">
-                            <div>
-                                <span class="text-[11px] font-bold uppercase text-slate-400 block">Workers</span>
-                                <span class="text-sm font-bold font-mono text-slate-800 dark:text-slate-200" x-text="rows.filter(r => r.worker_id).length"></span>
-                            </div>
-                            <div>
-                                <span class="text-[11px] font-bold uppercase text-slate-400 block">Man-Days</span>
-                                <span class="text-sm font-bold font-mono text-slate-800 dark:text-slate-200" x-text="totalManDays.toFixed(1)"></span>
-                            </div>
-                            <div>
-                                <span class="text-[11px] font-bold uppercase text-slate-400 block">Cabling</span>
-                                <span class="text-sm font-bold font-mono text-slate-800 dark:text-slate-200" x-text="`${totalCablingMtrs}m`"></span>
-                            </div>
-                            <div>
-                                <span class="text-[11px] font-bold uppercase text-emerald-600 dark:text-emerald-400 block">Total Wages</span>
-                                <span class="text-sm font-bold font-mono text-emerald-600 dark:text-emerald-400" x-text="`₹${totalWagePayout.toFixed(2)}`"></span>
+                                <div>
+                                    <span class="text-[11px] font-bold uppercase text-slate-400 block">Man-Days</span>
+                                    <span class="text-sm font-bold font-mono text-slate-800 dark:text-slate-200" x-text="totalManDays.toFixed(1)"></span>
+                                </div>
+                                <div>
+                                    <span class="text-[11px] font-bold uppercase text-slate-400 block">Cabling</span>
+                                    <span class="text-sm font-bold font-mono text-slate-800 dark:text-slate-200" x-text="`${totalCablingMtrs}m`"></span>
+                                </div>
+                                <div>
+                                    <span class="text-[11px] font-bold uppercase text-emerald-600 dark:text-emerald-400 block">Total Wages</span>
+                                    <span class="text-sm font-bold font-mono text-emerald-600 dark:text-emerald-400" x-text="`₹${totalWagePayout.toFixed(2)}`"></span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -3353,9 +3359,14 @@
                     {{-- Sticky Modal Footer --}}
                     <div class="px-5 py-3 bg-slate-50 dark:bg-slate-900/60 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between shrink-0">
                         <button type="button" @click="workDayModalOpen = false" class="btn-secondary text-xs">Cancel</button>
-                        <button type="submit" class="btn-primary text-xs shadow-md inline-flex items-center gap-1.5 cursor-pointer">
-                            <span>Save Work Day Log</span>
-                        </button>
+                        <div class="flex items-center gap-2">
+                            <x-form-step-buttons />
+                            <template x-if="isLast()">
+                                <button type="submit" class="btn-primary text-xs shadow-md inline-flex items-center gap-1.5 cursor-pointer">
+                                    <span>Save Work Day Log</span>
+                                </button>
+                            </template>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -3527,111 +3538,122 @@
                     <button type="button" @click="taskModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
                 </div>
 
-                <form method="POST" action="{{ route('projects.tasks.store', $project) }}" class="space-y-3.5">
+                <form method="POST" action="{{ route('projects.tasks.store', $project) }}" class="space-y-3.5" x-data="formSteps">
                     @csrf
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Phase / Milestone Name *</label>
-                        <input type="text" name="phase_name" list="existing_phases" required placeholder="e.g. Phase 2: Cabling &amp; Tagging" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-semibold">
-                        <datalist id="existing_phases">
-                            @foreach($tasksByPhase->keys() as $pName)
-                                <option value="{{ $pName }}">
-                            @endforeach
-                            <option value="Phase 1: Civil &amp; Site Preparation">
-                            <option value="Phase 2: Cabling &amp; Tagging">
-                            <option value="Phase 3: Hardware Mounting">
-                            <option value="Phase 4: IP Allocation &amp; Commissioning">
-                            <option value="Phase 5: Client Sign-off &amp; JCR">
-                        </datalist>
-                    </div>
+                    <x-form-stepper :steps="['Task', 'Schedule', 'Team & checks']" />
 
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Task Title *</label>
-                        <input type="text" name="title" required placeholder="e.g. Pull Cat6 drop to Admin Block Entrance" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Description</label>
-                        <textarea name="description" rows="2" placeholder="Technical instructions or notes for technician..." class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none"></textarea>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-3">
+                    <div data-step x-show="step === 1" class="space-y-3.5">
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Priority *</label>
-                            <select name="priority" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-semibold">
-                                <option value="low">Low</option>
-                                <option value="medium" selected>Medium</option>
-                                <option value="high">High</option>
-                                <option value="urgent">Urgent</option>
-                            </select>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Phase / Milestone Name *</label>
+                            <input type="text" name="phase_name" list="existing_phases" required placeholder="e.g. Phase 2: Cabling &amp; Tagging" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-semibold">
+                            <datalist id="existing_phases">
+                                @foreach($tasksByPhase->keys() as $pName)
+                                    <option value="{{ $pName }}">
+                                @endforeach
+                                <option value="Phase 1: Civil &amp; Site Preparation">
+                                <option value="Phase 2: Cabling &amp; Tagging">
+                                <option value="Phase 3: Hardware Mounting">
+                                <option value="Phase 4: IP Allocation &amp; Commissioning">
+                                <option value="Phase 5: Client Sign-off &amp; JCR">
+                            </datalist>
                         </div>
+
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Status *</label>
-                            <select name="status" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-semibold">
-                                <option value="pending" selected>Backlog / Pending</option>
-                                <option value="in_progress">Assigned / In Progress</option>
-                                <option value="under_review">Under Review / QA</option>
-                                <option value="completed">Completed</option>
-                                <option value="blocked">Blocked</option>
-                            </select>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Task Title *</label>
+                            <input type="text" name="title" required placeholder="e.g. Pull Cat6 drop to Admin Block Entrance" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Description</label>
+                            <textarea name="description" rows="2" placeholder="Technical instructions or notes for technician..." class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none"></textarea>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Start Date</label>
-                            <input type="date" name="start_date" value="{{ date('Y-m-d') }}" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                    <div data-step x-show="step === 2" x-cloak class="space-y-3.5">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Priority *</label>
+                                <select name="priority" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-semibold">
+                                    <option value="low">Low</option>
+                                    <option value="medium" selected>Medium</option>
+                                    <option value="high">High</option>
+                                    <option value="urgent">Urgent</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Status *</label>
+                                <select name="status" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-semibold">
+                                    <option value="pending" selected>Backlog / Pending</option>
+                                    <option value="in_progress">Assigned / In Progress</option>
+                                    <option value="under_review">Under Review / QA</option>
+                                    <option value="completed">Completed</option>
+                                    <option value="blocked">Blocked</option>
+                                </select>
+                            </div>
                         </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Due Date</label>
-                            <input type="date" name="due_date" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Start Date</label>
+                                <input type="date" name="start_date" value="{{ date('Y-m-d') }}" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Due Date</label>
+                                <input type="date" name="due_date" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                            </div>
                         </div>
-                    </div>
 
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Prerequisite Task Dependency</label>
-                        <select name="depends_on_task_id" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
-                            <option value="">No Prerequisite (Can Start Immediately)</option>
-                            @foreach($project->tasks as $otherTask)
-                                <option value="{{ $otherTask->id }}">
-                                    [{{ $otherTask->phase_name }}] {{ $otherTask->title }} ({{ ucfirst(str_replace('_', ' ', $otherTask->status)) }})
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Assigned Technician</label>
-                            <select name="assigned_to" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
-                                <option value="">Select Technician</option>
-                                @foreach($technicians as $tech)
-                                    <option value="{{ $tech->id }}" {{ $project->lead_technician_id == $tech->id ? 'selected' : '' }}>
-                                        {{ $tech->name }}
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Prerequisite Task Dependency</label>
+                            <select name="depends_on_task_id" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                                <option value="">No Prerequisite (Can Start Immediately)</option>
+                                @foreach($project->tasks as $otherTask)
+                                    <option value="{{ $otherTask->id }}">
+                                        [{{ $otherTask->phase_name }}] {{ $otherTask->title }} ({{ ucfirst(str_replace('_', ' ', $otherTask->status)) }})
                                     </option>
                                 @endforeach
                             </select>
                         </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Estimated Hours</label>
-                            <input type="number" step="0.5" min="0" name="estimated_hours" placeholder="4.0" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono outline-none">
+                    </div>
+
+                    <div data-step x-show="step === 3" x-cloak class="space-y-3.5">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Assigned Technician</label>
+                                <select name="assigned_to" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                                    <option value="">Select Technician</option>
+                                    @foreach($technicians as $tech)
+                                        <option value="{{ $tech->id }}" {{ $project->lead_technician_id == $tech->id ? 'selected' : '' }}>
+                                            {{ $tech->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Estimated Hours</label>
+                                <input type="number" step="0.5" min="0" name="estimated_hours" placeholder="4.0" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono outline-none">
+                            </div>
                         </div>
-                    </div>
 
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Blocker Reason (If Blocked)</label>
-                        <input type="text" name="blocker_reason" placeholder="e.g. Cannot start Camera Mounting until Client Finishes False Ceiling Paint" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
-                    </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Blocker Reason (If Blocked)</label>
+                            <input type="text" name="blocker_reason" placeholder="e.g. Cannot start Camera Mounting until Client Finishes False Ceiling Paint" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                        </div>
 
-                    <div class="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-                        <label class="block text-xs font-bold uppercase text-slate-500">Initial SOP Quality Checkpoints</label>
-                        <input type="text" name="checklist_items[]" placeholder="Checkpoint 1 (e.g. Conduit properly clamped)" class="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none">
-                        <input type="text" name="checklist_items[]" placeholder="Checkpoint 2 (e.g. Waterproof junction box installed)" class="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none">
-                        <input type="text" name="checklist_items[]" placeholder="Checkpoint 3 (e.g. Cable ferrule marked at both ends)" class="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none">
+                        <div class="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                            <label class="block text-xs font-bold uppercase text-slate-500">Initial SOP Quality Checkpoints</label>
+                            <input type="text" name="checklist_items[]" placeholder="Checkpoint 1 (e.g. Conduit properly clamped)" class="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none">
+                            <input type="text" name="checklist_items[]" placeholder="Checkpoint 2 (e.g. Waterproof junction box installed)" class="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none">
+                            <input type="text" name="checklist_items[]" placeholder="Checkpoint 3 (e.g. Cable ferrule marked at both ends)" class="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none">
+                        </div>
                     </div>
 
                     <div class="flex items-center justify-end gap-2 pt-2">
                         <button type="button" @click="taskModalOpen = false" class="btn-secondary text-xs">Cancel</button>
-                        <button type="submit" class="btn-primary text-xs shadow-md">Create Task</button>
+                        <x-form-step-buttons />
+                        <template x-if="isLast()">
+                            <button type="submit" class="btn-primary text-xs shadow-md">Create Task</button>
+                        </template>
                     </div>
                 </form>
             </div>
@@ -3639,7 +3661,7 @@
 
         {{-- Dedicated Flag Blocker Modal (Auto-Alerts WhatsApp & Dashboard Bell) --}}
         <div x-show="blockerModalOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-            <div @click.away="blockerModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-lg w-full p-6 shadow-2xl border-2 border-rose-300 dark:border-rose-800 space-y-4">
+            <div @click.away="blockerModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-lg w-full p-6 shadow-2xl border-2 border-rose-300 dark:border-rose-800 space-y-4" x-data="formSteps">
                 <div class="flex items-center justify-between pb-3 border-b border-rose-100 dark:border-rose-900/60">
                     <div class="flex items-center gap-2">
                         <span class="w-8 h-8 rounded-xl bg-rose-600 text-white flex items-center justify-center font-bold text-base shadow-xs"><svg class="w-5 h-5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg></span>
@@ -3651,31 +3673,35 @@
                     <button type="button" @click="blockerModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
                 </div>
 
-                {{-- Task Context --}}
-                <div class="p-3 rounded-xl bg-rose-50/70 dark:bg-rose-950/40 border border-rose-200/80 dark:border-rose-900/50">
-                    <span class="text-[11px] font-extrabold uppercase tracking-wide text-rose-600 block">Affected Task</span>
-                    <h5 class="text-xs font-extrabold text-slate-900 dark:text-white mt-0.5" x-text="blockerTaskTitle"></h5>
+                <x-form-stepper :steps="['Blocker', 'Details & alert']" />
+
+                <div data-step x-show="step === 1" class="space-y-4">
+                    {{-- Task Context --}}
+                    <div class="p-3 rounded-xl bg-rose-50/70 dark:bg-rose-950/40 border border-rose-200/80 dark:border-rose-900/50">
+                        <span class="text-[11px] font-extrabold uppercase tracking-wide text-rose-600 block">Affected Task</span>
+                        <h5 class="text-xs font-extrabold text-slate-900 dark:text-white mt-0.5" x-text="blockerTaskTitle"></h5>
+                    </div>
+
+                    {{-- Quick Select Preset Reasons: picking one fills the reason and moves on to it --}}
+                    <div class="space-y-1.5">
+                        <span class="text-[11px] font-bold uppercase text-slate-400 block">Common CCTV Installation Blockers (Click to Fill):</span>
+                        <div class="flex flex-wrap gap-1.5">
+                            <template x-for="chip in quickBlockers" :key="chip">
+                                <button type="button" @click="blockerReason = chip; next()" :class="blockerReason === chip && 'ring-1 ring-rose-400 text-rose-700 dark:text-rose-300'" class="text-[11px] px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-rose-50 hover:text-rose-700 dark:bg-slate-800 dark:hover:bg-rose-950/50 dark:hover:text-rose-300 border border-slate-200 dark:border-slate-700 transition text-left">
+                                    <span x-text="chip"></span>
+                                </button>
+                            </template>
+                        </div>
+                    </div>
                 </div>
 
-                {{-- Reason Input & Quick Chips --}}
-                <div class="space-y-3">
+                <div data-step x-show="step === 2" x-cloak class="space-y-3">
+                    {{-- Reason Input --}}
                     <div>
                         <label class="block text-xs font-bold uppercase text-slate-600 dark:text-slate-300 mb-1">
                             Blocker Reason / Bottleneck Details *
                         </label>
                         <textarea x-model="blockerReason" rows="3" required placeholder="e.g., Cannot start Camera Mounting until Client Finishes False Ceiling Paint" class="w-full px-3.5 py-2.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-rose-500 font-medium"></textarea>
-                    </div>
-
-                    {{-- Quick Select Preset Reasons --}}
-                    <div class="space-y-1.5">
-                        <span class="text-[11px] font-bold uppercase text-slate-400 block">Common CCTV Installation Blockers (Click to Fill):</span>
-                        <div class="flex flex-wrap gap-1.5">
-                            <template x-for="chip in quickBlockers" :key="chip">
-                                <button type="button" @click="setBlockerReason(chip)" class="text-[11px] px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-rose-50 hover:text-rose-700 dark:bg-slate-800 dark:hover:bg-rose-950/50 dark:hover:text-rose-300 border border-slate-200 dark:border-slate-700 transition text-left">
-                                    <span x-text="chip"></span>
-                                </button>
-                            </template>
-                        </div>
                     </div>
 
                     {{-- Auto-Alert Channels Callout --}}
@@ -3692,10 +3718,13 @@
 
                 <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
                     <button type="button" @click="blockerModalOpen = false" class="btn-secondary text-xs">Cancel</button>
-                    <button type="button" @click="submitBlockerModal()" :disabled="blockerSubmitting" class="px-4 py-2 rounded-xl text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white shadow-md transition flex items-center gap-1.5">
-                        <span x-show="!blockerSubmitting">Confirm Blocker &amp; Alert Management</span>
-                        <span x-show="blockerSubmitting">Dispatching Alerts...</span>
-                    </button>
+                    <x-form-step-buttons />
+                    <template x-if="isLast()">
+                        <button type="button" @click="submitBlockerModal()" :disabled="blockerSubmitting" class="px-4 py-2 rounded-xl text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white shadow-md transition flex items-center gap-1.5">
+                            <span x-show="!blockerSubmitting">Confirm Blocker &amp; Alert Management</span>
+                            <span x-show="blockerSubmitting">Dispatching Alerts...</span>
+                        </button>
+                    </template>
                 </div>
             </div>
         </div>
@@ -3708,102 +3737,113 @@
                     <button type="button" @click="editTaskModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
                 </div>
 
-                <form :action="`/projects/{{ $project->id }}/tasks/${editTaskId}`" method="POST" class="space-y-3.5">
+                <form :action="`/projects/{{ $project->id }}/tasks/${editTaskId}`" method="POST" class="space-y-3.5" x-data="formSteps">
                     @csrf
                     @method('PUT')
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Phase / Milestone Name *</label>
-                        <input type="text" name="phase_name" x-model="editTaskPhase" required class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-semibold">
-                    </div>
+                    <x-form-stepper :steps="['Task', 'Schedule', 'Team']" />
 
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Task Title *</label>
-                        <input type="text" name="title" x-model="editTaskTitle" required class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-bold">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Description</label>
-                        <textarea name="description" x-model="editTaskDescription" rows="2" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none"></textarea>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-3">
+                    <div data-step x-show="step === 1" class="space-y-3.5">
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Priority *</label>
-                            <select name="priority" x-model="editTaskPriority" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-semibold">
-                                <option value="low">Low</option>
-                                <option value="medium">Medium</option>
-                                <option value="high">High</option>
-                                <option value="urgent">Urgent</option>
-                            </select>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Phase / Milestone Name *</label>
+                            <input type="text" name="phase_name" x-model="editTaskPhase" required class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-semibold">
                         </div>
+
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Status *</label>
-                            <select name="status" x-model="editTaskStatus" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-semibold">
-                                <option value="pending">Backlog / Pending</option>
-                                <option value="in_progress">Assigned / In Progress</option>
-                                <option value="under_review">Under Review / QA</option>
-                                <option value="completed">Completed</option>
-                                <option value="blocked">Blocked</option>
-                            </select>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Task Title *</label>
+                            <input type="text" name="title" x-model="editTaskTitle" required class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-bold">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Description</label>
+                            <textarea name="description" x-model="editTaskDescription" rows="2" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none"></textarea>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Start Date</label>
-                            <input type="date" name="start_date" x-model="editTaskStartDate" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                    <div data-step x-show="step === 2" x-cloak class="space-y-3.5">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Priority *</label>
+                                <select name="priority" x-model="editTaskPriority" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-semibold">
+                                    <option value="low">Low</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="high">High</option>
+                                    <option value="urgent">Urgent</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Status *</label>
+                                <select name="status" x-model="editTaskStatus" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-semibold">
+                                    <option value="pending">Backlog / Pending</option>
+                                    <option value="in_progress">Assigned / In Progress</option>
+                                    <option value="under_review">Under Review / QA</option>
+                                    <option value="completed">Completed</option>
+                                    <option value="blocked">Blocked</option>
+                                </select>
+                            </div>
                         </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Due Date</label>
-                            <input type="date" name="due_date" x-model="editTaskDueDate" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Start Date</label>
+                                <input type="date" name="start_date" x-model="editTaskStartDate" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Due Date</label>
+                                <input type="date" name="due_date" x-model="editTaskDueDate" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                            </div>
                         </div>
-                    </div>
 
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Prerequisite Task Dependency</label>
-                        <select name="depends_on_task_id" x-model="editTaskDependsOn" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
-                            <option value="">No Prerequisite (Can Start Immediately)</option>
-                            @foreach($project->tasks as $otherTask)
-                                <option value="{{ $otherTask->id }}">
-                                    [{{ $otherTask->phase_name }}] {{ $otherTask->title }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Assigned Technician</label>
-                            <select name="assigned_to" x-model="editTaskAssignedTo" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
-                                <option value="">Select Technician</option>
-                                @foreach($technicians as $tech)
-                                    <option value="{{ $tech->id }}">{{ $tech->name }}</option>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Prerequisite Task Dependency</label>
+                            <select name="depends_on_task_id" x-model="editTaskDependsOn" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                                <option value="">No Prerequisite (Can Start Immediately)</option>
+                                @foreach($project->tasks as $otherTask)
+                                    <option value="{{ $otherTask->id }}">
+                                        [{{ $otherTask->phase_name }}] {{ $otherTask->title }}
+                                    </option>
                                 @endforeach
                             </select>
                         </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Estimated Hours</label>
-                            <input type="number" step="0.5" min="0" name="estimated_hours" x-model="editTaskEstHours" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono outline-none">
+                    </div>
+
+                    <div data-step x-show="step === 3" x-cloak class="space-y-3.5">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Assigned Technician</label>
+                                <select name="assigned_to" x-model="editTaskAssignedTo" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                                    <option value="">Select Technician</option>
+                                    @foreach($technicians as $tech)
+                                        <option value="{{ $tech->id }}">{{ $tech->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Estimated Hours</label>
+                                <input type="number" step="0.5" min="0" name="estimated_hours" x-model="editTaskEstHours" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono outline-none">
+                            </div>
                         </div>
-                    </div>
 
-                    {{-- Conditional Blocker Reason --}}
-                    <div x-show="editTaskStatus === 'blocked'" class="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 space-y-1">
-                        <label class="block text-xs font-extrabold uppercase text-rose-700 dark:text-rose-300">Blocker Reason *</label>
-                        <input type="text" name="blocker_reason" x-model="editTaskBlockerReason" placeholder="e.g. Cannot start Camera Mounting until Client Finishes False Ceiling Paint" class="w-full px-3 py-2 text-xs bg-white dark:bg-slate-800 border border-rose-300 dark:border-rose-800 rounded-lg outline-none font-medium">
-                    </div>
+                        {{-- Conditional Blocker Reason --}}
+                        <div x-show="editTaskStatus === 'blocked'" class="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 space-y-1">
+                            <label class="block text-xs font-extrabold uppercase text-rose-700 dark:text-rose-300">Blocker Reason *</label>
+                            <input type="text" name="blocker_reason" x-model="editTaskBlockerReason" placeholder="e.g. Cannot start Camera Mounting until Client Finishes False Ceiling Paint" class="w-full px-3 py-2 text-xs bg-white dark:bg-slate-800 border border-rose-300 dark:border-rose-800 rounded-lg outline-none font-medium">
+                        </div>
 
-                    {{-- Quick Log Material / Cable Action --}}
-                    <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                        <span class="text-xs text-slate-500 font-medium">Field Material / Cable Logging:</span>
-                        <button type="button" @click="editTaskModalOpen = false; openConsumeModal(editTaskId, editTaskTitle)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100">
-                            <svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg> Log Materials on this Task
-                        </button>
+                        {{-- Quick Log Material / Cable Action --}}
+                        <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                            <span class="text-xs text-slate-500 font-medium">Field Material / Cable Logging:</span>
+                            <button type="button" @click="editTaskModalOpen = false; openConsumeModal(editTaskId, editTaskTitle)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100">
+                                <svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg> Log Materials on this Task
+                            </button>
+                        </div>
                     </div>
 
                     <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
                         <button type="button" @click="editTaskModalOpen = false" class="btn-secondary text-xs">Cancel</button>
-                        <button type="submit" class="btn-primary text-xs shadow-md">Update Task</button>
+                        <x-form-step-buttons />
+                        <template x-if="isLast()">
+                            <button type="submit" class="btn-primary text-xs shadow-md">Update Task</button>
+                        </template>
                     </div>
                 </form>
             </div>

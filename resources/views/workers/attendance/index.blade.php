@@ -817,64 +817,67 @@
                 <button type="button" onclick="closeAttendanceModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xl font-bold">&times;</button>
             </div>
 
-            <form method="POST" action="{{ route('workers.attendance.store') }}" enctype="multipart/form-data" class="space-y-4 mt-4">
+            <form method="POST" action="{{ route('workers.attendance.store') }}" enctype="multipart/form-data" class="space-y-4 mt-4" x-data="formSteps">
                 @csrf
                 <input type="hidden" name="photo_data" id="webcam-photo-data">
+                <x-form-stepper :steps="['Shift', 'Photo', 'Work done']" />
 
-                {{-- Worker & Project Pickers --}}
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                        <label class="crm-label text-xs">Worker <span class="required-marker">*</span></label>
-                        <select name="worker_id" id="modal-worker-select" onchange="onWorkerSelectChange(this)" required class="crm-select text-xs w-full">
-                            <option value="">Select Worker...</option>
-                            @foreach($activeWorkers as $w)
-                                <option value="{{ $w->id }}" data-photo="{{ $w->photo_url ?? '' }}" data-name="{{ $w->name }}" @selected(request('worker_id') == $w->id)>
-                                    {{ $w->name }} (&#8377;{{ number_format($w->daily_rate, 0) }})
-                                </option>
-                            @endforeach
-                        </select>
-                        <div id="modal-worker-preview-box" class="flex items-center gap-2 mt-1.5 p-1.5 rounded bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hidden">
-                            <img id="modal-worker-img" src="#" alt="Worker" class="w-6 h-6 rounded-full object-cover border border-slate-300">
-                            <span class="text-[11px] text-slate-700 dark:text-slate-300 font-semibold" id="modal-worker-name-preview"></span>
+                <div data-step x-show="step === 1" class="space-y-4">
+                    {{-- Worker & Project Pickers --}}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="crm-label text-xs">Worker <span class="required-marker">*</span></label>
+                            <select name="worker_id" id="modal-worker-select" onchange="onWorkerSelectChange(this)" required class="crm-select text-xs w-full">
+                                <option value="">Select Worker...</option>
+                                @foreach($activeWorkers as $w)
+                                    <option value="{{ $w->id }}" data-photo="{{ $w->photo_url ?? '' }}" data-name="{{ $w->name }}" @selected(request('worker_id') == $w->id)>
+                                        {{ $w->name }} (&#8377;{{ number_format($w->daily_rate, 0) }})
+                                    </option>
+                                @endforeach
+                            </select>
+                            <div id="modal-worker-preview-box" class="flex items-center gap-2 mt-1.5 p-1.5 rounded bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hidden">
+                                <img id="modal-worker-img" src="#" alt="Worker" class="w-6 h-6 rounded-full object-cover border border-slate-300">
+                                <span class="text-[11px] text-slate-700 dark:text-slate-300 font-semibold" id="modal-worker-name-preview"></span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="crm-label text-xs">Project Site <span class="required-marker">*</span></label>
+                            <select name="project_id" required class="crm-select text-xs w-full">
+                                <option value="">Select Project Site...</option>
+                                @foreach($activeProjects as $p)
+                                    <option value="{{ $p->id }}" @selected(request('project_id') == $p->id)>
+                                        {{ Str::limit($p->title, 26) }}
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
 
-                    <div>
-                        <label class="crm-label text-xs">Project Site <span class="required-marker">*</span></label>
-                        <select name="project_id" required class="crm-select text-xs w-full">
-                            <option value="">Select Project Site...</option>
-                            @foreach($activeProjects as $p)
-                                <option value="{{ $p->id }}" @selected(request('project_id') == $p->id)>
-                                    {{ Str::limit($p->title, 26) }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
+                    {{-- Date, Shift Type, Time --}}
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                            <label class="crm-label text-xs">Date <span class="required-marker">*</span></label>
+                            <input type="date" name="work_date" id="modal-work-date" value="{{ $viewMode === 'day' ? $selectedDate->toDateString() : now()->toDateString() }}" required class="crm-input text-xs w-full">
+                        </div>
 
-                {{-- Date, Shift Type, Time --}}
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div>
-                        <label class="crm-label text-xs">Date <span class="required-marker">*</span></label>
-                        <input type="date" name="work_date" id="modal-work-date" value="{{ $viewMode === 'day' ? $selectedDate->toDateString() : now()->toDateString() }}" required class="crm-input text-xs w-full">
-                    </div>
+                        <div>
+                            <label class="crm-label text-xs">Shift Type <span class="required-marker">*</span></label>
+                            <select name="attendance_type" required class="crm-select text-xs w-full">
+                                <option value="full" selected>Full Day (1.0x)</option>
+                                <option value="half">Half Day (0.5x)</option>
+                            </select>
+                        </div>
 
-                    <div>
-                        <label class="crm-label text-xs">Shift Type <span class="required-marker">*</span></label>
-                        <select name="attendance_type" required class="crm-select text-xs w-full">
-                            <option value="full" selected>Full Day (1.0x)</option>
-                            <option value="half">Half Day (0.5x)</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="crm-label text-xs">Punch Time</label>
-                        <input type="time" name="check_in_time" value="{{ now()->format('H:i') }}" class="crm-input text-xs w-full">
+                        <div>
+                            <label class="crm-label text-xs">Punch Time</label>
+                            <input type="time" name="check_in_time" value="{{ now()->format('H:i') }}" class="crm-input text-xs w-full">
+                        </div>
                     </div>
                 </div>
 
                 {{-- PHOTO CAPTURE SECTION (Tabs: File Upload / Live Camera) --}}
-                <div class="p-3 bg-slate-50 dark:bg-slate-800/50 rounded border border-slate-200 dark:border-slate-700">
+                <div data-step x-show="step === 2" x-cloak class="p-3 bg-slate-50 dark:bg-slate-800/50 rounded border border-slate-200 dark:border-slate-700">
                     <label class="block text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wide mb-1.5 flex items-center justify-between">
                         <span>Attendance Photo (Selfie / Work Site)</span>
                         <span class="text-[10px] text-slate-400 font-normal">Optional but Recommended</span>
@@ -916,41 +919,46 @@
                     </div>
                 </div>
 
-                {{-- Output Metrics: Cabling Meters & Cameras Installed --}}
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                        <label class="crm-label text-xs">Cabling Metres Done</label>
-                        <input type="number" step="0.1" min="0" name="cabling_metres" placeholder="e.g. 75.0" class="crm-input text-xs w-full">
-                        <p class="text-[10px] text-slate-400 mt-0.5">Physical cable pulled today</p>
+                <div data-step x-show="step === 3" x-cloak class="space-y-4">
+                    {{-- Output Metrics: Cabling Meters & Cameras Installed --}}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="crm-label text-xs">Cabling Metres Done</label>
+                            <input type="number" step="0.1" min="0" name="cabling_metres" placeholder="e.g. 75.0" class="crm-input text-xs w-full">
+                            <p class="text-[10px] text-slate-400 mt-0.5">Physical cable pulled today</p>
+                        </div>
+
+                        <div>
+                            <label class="crm-label text-xs">Cameras Installed</label>
+                            <input type="number" min="0" name="cameras_installed" placeholder="e.g. 4" class="crm-input text-xs w-full">
+                            <p class="text-[10px] text-slate-400 mt-0.5">Units mounted/configured</p>
+                        </div>
+                    </div>
+
+                    {{-- Extra Allowance & Notes --}}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="crm-label text-xs">Extra Allowance (₹)</label>
+                            <input type="number" step="any" min="0" name="extra_amount" placeholder="e.g. 150" class="crm-input text-xs w-full">
+                        </div>
+                        <div>
+                            <label class="crm-label text-xs">Extra Reason</label>
+                            <input type="text" name="extra_description" placeholder="e.g. Night shift / Travel allowance" class="crm-input text-xs w-full">
+                        </div>
                     </div>
 
                     <div>
-                        <label class="crm-label text-xs">Cameras Installed</label>
-                        <input type="number" min="0" name="cameras_installed" placeholder="e.g. 4" class="crm-input text-xs w-full">
-                        <p class="text-[10px] text-slate-400 mt-0.5">Units mounted/configured</p>
+                        <label class="crm-label text-xs">Work Notes / Summary</label>
+                        <textarea name="notes" rows="2" placeholder="Summary of work performed..." class="crm-input text-xs w-full"></textarea>
                     </div>
-                </div>
-
-                {{-- Extra Allowance & Notes --}}
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                        <label class="crm-label text-xs">Extra Allowance (₹)</label>
-                        <input type="number" step="any" min="0" name="extra_amount" placeholder="e.g. 150" class="crm-input text-xs w-full">
-                    </div>
-                    <div>
-                        <label class="crm-label text-xs">Extra Reason</label>
-                        <input type="text" name="extra_description" placeholder="e.g. Night shift / Travel allowance" class="crm-input text-xs w-full">
-                    </div>
-                </div>
-
-                <div>
-                    <label class="crm-label text-xs">Work Notes / Summary</label>
-                    <textarea name="notes" rows="2" placeholder="Summary of work performed..." class="crm-input text-xs w-full"></textarea>
                 </div>
 
                 <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-200 dark:border-slate-800">
                     <button type="button" onclick="closeAttendanceModal()" class="btn-secondary text-xs">Cancel</button>
-                    <button type="submit" class="btn-primary text-xs">✓ Save Attendance</button>
+                    <x-form-step-buttons />
+                    <template x-if="isLast()">
+                        <button type="submit" class="btn-primary text-xs">✓ Save Attendance</button>
+                    </template>
                 </div>
             </form>
         </div>

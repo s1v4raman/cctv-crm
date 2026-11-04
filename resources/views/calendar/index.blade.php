@@ -713,111 +713,121 @@
                         <button type="button" @click="openCreateTaskModal = false" class="text-slate-400 hover:text-slate-600 text-lg cursor-pointer">&times;</button>
                     </div>
 
-                    <form action="{{ route('calendar.tasks.store') }}" method="POST" class="p-6 space-y-4">
+                    <form action="{{ route('calendar.tasks.store') }}" method="POST" class="p-6 space-y-4" x-data="formSteps">
                         @csrf
+                        <x-form-stepper :steps="['Task', 'Schedule', 'Who & where']" />
 
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                                Project <span class="text-rose-500">*</span>
-                            </label>
-                            <select aria-label="Project" name="project_id" required class="w-full text-xs rounded-[4px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-900 dark:text-white p-2.5">
-                                <option value="">-- Choose Associated Project --</option>
-                                @foreach($projects as $p)
-                                    <option value="{{ $p->id }}">{{ $p->title }} ({{ $p->company_name ?? 'Client' }})</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                                Work Title <span class="text-rose-500">*</span>
-                            </label>
-                            <input aria-label="Work Title" type="text" name="title" required placeholder="e.g. Cat6 Cabling & Conduit Routing on 2nd Floor"
-                                   class="w-full text-xs rounded-[4px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-900 dark:text-white p-2.5">
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Category / Phase</label>
-                            <input aria-label="Category / Phase" type="text" name="phase_name" placeholder="e.g. Cabling, Installation, NVR Setup, Testing..."
-                                   class="w-full text-xs rounded-[4px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-900 dark:text-white p-2.5">
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Work Description / Instructions</label>
-                            <textarea aria-label="Work Description / Instructions" name="description" rows="2" placeholder="Specific technical guidelines, tools required, or scope details..."
-                                      class="w-full text-xs rounded-[4px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-900 dark:text-white p-2.5"></textarea>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-3">
+                        <div data-step x-show="step === 1" class="space-y-4">
                             <div>
-                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Assignee</label>
-                                <select aria-label="Assignee" name="assigned_to" class="w-full text-xs rounded-[4px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-900 dark:text-white p-2.5">
-                                    <option value="">-- Unassigned --</option>
-                                    @foreach($assignees as $u)
-                                        <option value="{{ $u->id }}">{{ $u->name }} ({{ ucfirst($u->role) }})</option>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                                    Project <span class="text-rose-500">*</span>
+                                </label>
+                                <select aria-label="Project" name="project_id" required class="w-full text-xs rounded-[4px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-900 dark:text-white p-2.5">
+                                    <option value="">-- Choose Associated Project --</option>
+                                    @foreach($projects as $p)
+                                        <option value="{{ $p->id }}">{{ $p->title }} ({{ $p->company_name ?? 'Client' }})</option>
                                     @endforeach
                                 </select>
                             </div>
+
                             <div>
-                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Shift</label>
-                                <select aria-label="Shift" name="shift" class="w-full text-xs rounded-[4px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-900 dark:text-white p-2.5">
-                                    @foreach($shifts as $k => $label)
-                                        <option value="{{ $k }}">{{ $label }}</option>
-                                    @endforeach
-                                </select>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                                    Work Title <span class="text-rose-500">*</span>
+                                </label>
+                                <input aria-label="Work Title" type="text" name="title" required placeholder="e.g. Cat6 Cabling & Conduit Routing on 2nd Floor"
+                                       class="w-full text-xs rounded-[4px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-900 dark:text-white p-2.5">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Category / Phase</label>
+                                <input aria-label="Category / Phase" type="text" name="phase_name" placeholder="e.g. Cabling, Installation, NVR Setup, Testing..."
+                                       class="w-full text-xs rounded-[4px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-900 dark:text-white p-2.5">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Work Description / Instructions</label>
+                                <textarea aria-label="Work Description / Instructions" name="description" rows="2" placeholder="Specific technical guidelines, tools required, or scope details..."
+                                          class="w-full text-xs rounded-[4px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-900 dark:text-white p-2.5"></textarea>
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Start Date</label>
-                                <input aria-label="Start Date" type="date" name="start_date" value="{{ now()->format('Y-m-d') }}"
-                                       class="w-full text-xs rounded-[4px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-900 dark:text-white p-2.5">
+                        <div data-step x-show="step === 2" x-cloak class="space-y-4">
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Start Date</label>
+                                    <input aria-label="Start Date" type="date" name="start_date" value="{{ now()->format('Y-m-d') }}"
+                                           class="w-full text-xs rounded-[4px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-900 dark:text-white p-2.5">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Due Date</label>
+                                    <input aria-label="Due Date" type="date" name="due_date" value="{{ now()->format('Y-m-d') }}"
+                                           class="w-full text-xs rounded-[4px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-900 dark:text-white p-2.5">
+                                </div>
                             </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Due Date</label>
-                                <input aria-label="Due Date" type="date" name="due_date" value="{{ now()->format('Y-m-d') }}"
-                                       class="w-full text-xs rounded-[4px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-900 dark:text-white p-2.5">
+
+                            <div class="grid grid-cols-3 gap-3">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Estimated Hours</label>
+                                    <input aria-label="Estimated Hours" type="number" step="0.5" name="estimated_hours" value="4.0"
+                                           class="w-full text-xs rounded-[4px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-900 dark:text-white p-2.5">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Priority</label>
+                                    <select aria-label="Priority" name="priority" class="w-full text-xs rounded-[4px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-900 dark:text-white p-2.5">
+                                        <option value="low">Low</option>
+                                        <option value="medium" selected>Medium</option>
+                                        <option value="high">High</option>
+                                        <option value="urgent">Urgent</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Status</label>
+                                    <select aria-label="Status" name="status" class="w-full text-xs rounded-[4px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-900 dark:text-white p-2.5">
+                                        <option value="pending" selected>Pending</option>
+                                        <option value="in_progress">In Progress</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-3 gap-3">
+                        <div data-step x-show="step === 3" x-cloak class="space-y-4">
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Assignee</label>
+                                    <select aria-label="Assignee" name="assigned_to" class="w-full text-xs rounded-[4px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-900 dark:text-white p-2.5">
+                                        <option value="">-- Unassigned --</option>
+                                        @foreach($assignees as $u)
+                                            <option value="{{ $u->id }}">{{ $u->name }} ({{ ucfirst($u->role) }})</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Shift</label>
+                                    <select aria-label="Shift" name="shift" class="w-full text-xs rounded-[4px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-900 dark:text-white p-2.5">
+                                        @foreach($shifts as $k => $label)
+                                            <option value="{{ $k }}">{{ $label }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
                             <div>
-                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Estimated Hours</label>
-                                <input aria-label="Estimated Hours" type="number" step="0.5" name="estimated_hours" value="4.0"
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Location / Site Address</label>
+                                <input aria-label="Location / Site Address" type="text" name="location" placeholder="e.g. Server Room, Ground Floor, Main Block"
                                        class="w-full text-xs rounded-[4px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-900 dark:text-white p-2.5">
                             </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Priority</label>
-                                <select aria-label="Priority" name="priority" class="w-full text-xs rounded-[4px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-900 dark:text-white p-2.5">
-                                    <option value="low">Low</option>
-                                    <option value="medium" selected>Medium</option>
-                                    <option value="high">High</option>
-                                    <option value="urgent">Urgent</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Status</label>
-                                <select aria-label="Status" name="status" class="w-full text-xs rounded-[4px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-900 dark:text-white p-2.5">
-                                    <option value="pending" selected>Pending</option>
-                                    <option value="in_progress">In Progress</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Location / Site Address</label>
-                            <input aria-label="Location / Site Address" type="text" name="location" placeholder="e.g. Server Room, Ground Floor, Main Block"
-                                   class="w-full text-xs rounded-[4px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-900 dark:text-white p-2.5">
                         </div>
 
                         <div class="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100 dark:border-slate-800">
                             <button type="button" @click="openCreateTaskModal = false" class="px-4 py-2 rounded-[4px] border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 transition cursor-pointer">
                                 Cancel
                             </button>
-                            <button type="submit" class="px-5 py-2 rounded-[4px] bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition shadow-xs cursor-pointer">
-                                Create &amp; Dispatch Task
-                            </button>
+                            <x-form-step-buttons />
+                            <template x-if="isLast()">
+                                <button type="submit" class="px-5 py-2 rounded-[4px] bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition shadow-xs cursor-pointer">
+                                    Create &amp; Dispatch Task
+                                </button>
+                            </template>
                         </div>
                     </form>
 

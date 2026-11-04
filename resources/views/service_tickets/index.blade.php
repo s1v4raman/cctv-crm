@@ -173,62 +173,70 @@
                             <span class="text-[11px] text-slate-500 font-mono">Test instant conversion</span>
                         </div>
 
-                        <form method="POST" action="{{ route('service-tickets.simulate-email') }}" class="space-y-3.5">
+                        <form method="POST" action="{{ route('service-tickets.simulate-email') }}" class="space-y-3.5" x-data="formSteps">
                             @csrf
+                            <x-form-stepper :steps="['Customer', 'Email']" />
 
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block text-sm font-semibold text-slate-300 mb-1.5">Customer Full Name *</label>
-                                    <input aria-label="Customer Full Name" type="text" name="customer_name" required placeholder="e.g. Ramesh Kumar" value="Ramesh Kumar"
-                                        class="w-full text-xs rounded-[4px] border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
+                            <div data-step x-show="step === 1" class="space-y-3.5">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-300 mb-1.5">Customer Full Name *</label>
+                                        <input aria-label="Customer Full Name" type="text" name="customer_name" required placeholder="e.g. Ramesh Kumar" value="Ramesh Kumar"
+                                            class="w-full text-xs rounded-[4px] border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-300 mb-1.5">Customer Email Address *</label>
+                                        <input aria-label="Customer Email Address" type="email" name="email" required placeholder="e.g. ramesh@techcorp.com" value="customer@example.com"
+                                            class="w-full text-xs rounded-[4px] border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
+                                    </div>
                                 </div>
-                                <div>
-                                    <label class="block text-sm font-semibold text-slate-300 mb-1.5">Customer Email Address *</label>
-                                    <input aria-label="Customer Email Address" type="email" name="email" required placeholder="e.g. ramesh@techcorp.com" value="customer@example.com"
-                                        class="w-full text-xs rounded-[4px] border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-300 mb-1.5">Phone Number (Optional)</label>
+                                        <input aria-label="Phone Number (Optional)" type="tel" name="phone" placeholder="e.g. +91 98765 43210" value="+91 98765 43210"
+                                            class="w-full text-xs rounded-[4px] border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-300 mb-1.5">Priority Override</label>
+                                        <select aria-label="Priority Override" name="priority" class="w-full text-xs rounded-[4px] border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
+                                            <option value="">Auto-Detect from Email Keywords</option>
+                                            <option value="critical">Critical / Emergency</option>
+                                            <option value="high">High</option>
+                                            <option value="medium">Medium</option>
+                                            <option value="low">Low</option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div data-step x-show="step === 2" x-cloak class="space-y-3.5">
                                 <div>
-                                    <label class="block text-sm font-semibold text-slate-300 mb-1.5">Phone Number (Optional)</label>
-                                    <input aria-label="Phone Number (Optional)" type="tel" name="phone" placeholder="e.g. +91 98765 43210" value="+91 98765 43210"
+                                    <label class="block text-sm font-semibold text-slate-300 mb-1.5">Email Subject *</label>
+                                    <input aria-label="Email Subject" type="text" name="subject" required placeholder="e.g. Camera 3 offline" value="Camera 3 offline and NVR beeping sound at Sector 18 site"
                                         class="w-full text-xs rounded-[4px] border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
                                 </div>
+
                                 <div>
-                                    <label class="block text-sm font-semibold text-slate-300 mb-1.5">Priority Override</label>
-                                    <select aria-label="Priority Override" name="priority" class="w-full text-xs rounded-[4px] border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
-                                        <option value="">Auto-Detect from Email Keywords</option>
-                                        <option value="critical">Critical / Emergency</option>
-                                        <option value="high">High</option>
-                                        <option value="medium">Medium</option>
-                                        <option value="low">Low</option>
-                                    </select>
+                                    <label class="block text-sm font-semibold text-slate-300 mb-1.5">Email Body Description *</label>
+                                    <textarea aria-label="Email Body Description" name="body" required rows="3" placeholder="Describe the fault..."
+                                        class="w-full text-xs rounded-[4px] border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">Hi Support Team, Our main entrance camera #3 went black this morning and the NVR recorder has started making a continuous beeping alert sound. Please dispatch a technician urgently.</textarea>
                                 </div>
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-semibold text-slate-300 mb-1.5">Email Subject *</label>
-                                <input aria-label="Email Subject" type="text" name="subject" required placeholder="e.g. Camera 3 offline" value="Camera 3 offline and NVR beeping sound at Sector 18 site"
-                                    class="w-full text-xs rounded-[4px] border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-semibold text-slate-300 mb-1.5">Email Body Description *</label>
-                                <textarea aria-label="Email Body Description" name="body" required rows="3" placeholder="Describe the fault..."
-                                    class="w-full text-xs rounded-[4px] border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 p-2.5">Hi Support Team, Our main entrance camera #3 went black this morning and the NVR recorder has started making a continuous beeping alert sound. Please dispatch a technician urgently.</textarea>
                             </div>
 
                             <div class="pt-2 flex items-center justify-end gap-2">
                                 <button type="button" @click="emailModalOpen = false" class="px-4 py-2 rounded-xl border border-slate-700 text-slate-400 font-bold text-xs hover:text-white hover:bg-slate-800 transition">
                                     Cancel
                                 </button>
-                                <button type="submit" class="px-4 py-2 rounded-[4px] bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs transition inline-flex items-center gap-1.5">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
-                                    </svg>
-                                    <span>Process Inbound Email</span>
-                                </button>
+                                <x-form-step-buttons />
+                                <template x-if="isLast()">
+                                    <button type="submit" class="px-4 py-2 rounded-[4px] bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs transition inline-flex items-center gap-1.5">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                                        </svg>
+                                        <span>Process Inbound Email</span>
+                                    </button>
+                                </template>
                             </div>
                         </form>
                     </div>
