@@ -178,85 +178,94 @@
                 <x-close-button onclick="document.getElementById('salaryModal').classList.add('hidden')" />
             </div>
 
-            <form id="salaryForm" method="POST" action="" class="space-y-3 mt-4 text-xs">
+            <form id="salaryForm" method="POST" action="" class="space-y-3 mt-4 text-xs" x-data="formSteps">
                 @csrf
-                <div>
-                    <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">Base Monthly Salary (&#8377;) *</label>
-                    <input aria-label="Base Monthly Salary (&#8377;)" type="number" step="100" name="base_salary_monthly" id="fBaseMonthly" required placeholder="35000" oninput="recalcRates()" class="w-full text-xs font-bold rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
-                </div>
+                <x-form-stepper :steps="['Pay rates', 'Payment details']" />
 
-                <div class="grid grid-cols-2 gap-3">
+                <div data-step x-show="step === 1" class="space-y-3">
                     <div>
-                        <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">Daily Rate (&#8377;)</label>
-                        <input aria-label="Daily Rate (&#8377;)" type="number" step="10" name="daily_rate" id="fDailyRate" placeholder="1346.15" class="w-full text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
+                        <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">Base Monthly Salary (&#8377;) *</label>
+                        <input aria-label="Base Monthly Salary (&#8377;)" type="number" step="100" name="base_salary_monthly" id="fBaseMonthly" required placeholder="35000" oninput="recalcRates()" class="w-full text-xs font-bold rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
                     </div>
-                    <div>
-                        <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">Weekly Rate (&#8377;)</label>
-                        <input aria-label="Weekly Rate (&#8377;)" type="number" step="50" name="weekly_rate" id="fWeeklyRate" placeholder="8076.92" class="w-full text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
-                    </div>
-                </div>
 
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">Hourly Base (&#8377;)</label>
-                        <input aria-label="Hourly Base (&#8377;)" type="number" step="1" name="hourly_rate" id="fHourlyRate" placeholder="168.27" class="w-full text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">Daily Rate (&#8377;)</label>
+                            <input aria-label="Daily Rate (&#8377;)" type="number" step="10" name="daily_rate" id="fDailyRate" placeholder="1346.15" class="w-full text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
+                        </div>
+                        <div>
+                            <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">Weekly Rate (&#8377;)</label>
+                            <input aria-label="Weekly Rate (&#8377;)" type="number" step="50" name="weekly_rate" id="fWeeklyRate" placeholder="8076.92" class="w-full text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
+                        </div>
                     </div>
-                    <div>
-                        <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">Overtime / Hr (&#8377;)</label>
-                        <input aria-label="Overtime / Hr (&#8377;)" type="number" step="1" name="overtime_hourly_rate" id="fOvertimeHourlyRate" placeholder="210.00" class="w-full text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
-                    </div>
-                </div>
 
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">Travel / Site Allowance (&#8377;)</label>
-                        <input aria-label="Travel / Site Allowance (&#8377;)" type="number" step="50" name="travel_allowance" id="fTravelAllowance" placeholder="0.00" class="w-full text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">Hourly Base (&#8377;)</label>
+                            <input aria-label="Hourly Base (&#8377;)" type="number" step="1" name="hourly_rate" id="fHourlyRate" placeholder="168.27" class="w-full text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
+                        </div>
+                        <div>
+                            <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">Overtime / Hr (&#8377;)</label>
+                            <input aria-label="Overtime / Hr (&#8377;)" type="number" step="1" name="overtime_hourly_rate" id="fOvertimeHourlyRate" placeholder="210.00" class="w-full text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
+                        </div>
                     </div>
-                    <div>
-                        <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">Monthly Deductions (&#8377;)</label>
-                        <input aria-label="Monthly Deductions (&#8377;)" type="number" step="50" name="deductions" id="fDeductions" placeholder="0.00" class="w-full text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
-                    </div>
-                </div>
 
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">Payment Method</label>
-                        <select aria-label="Payment Method" name="payment_method" id="fPaymentMethod" class="w-full text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
-                            <option value="bank_transfer">Bank Transfer (NEFT/IMPS)</option>
-                            <option value="upi">UPI / GPay</option>
-                            <option value="cash">Cash Voucher</option>
-                            <option value="cheque">Cheque</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">UPI ID</label>
-                        <input aria-label="UPI ID" type="text" name="upi_id" id="fUpiId" placeholder="mobile@upi" class="w-full text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">Travel / Site Allowance (&#8377;)</label>
+                            <input aria-label="Travel / Site Allowance (&#8377;)" type="number" step="50" name="travel_allowance" id="fTravelAllowance" placeholder="0.00" class="w-full text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
+                        </div>
+                        <div>
+                            <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">Monthly Deductions (&#8377;)</label>
+                            <input aria-label="Monthly Deductions (&#8377;)" type="number" step="50" name="deductions" id="fDeductions" placeholder="0.00" class="w-full text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
+                        </div>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-3 gap-2">
-                    <div>
-                        <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">Bank Name</label>
-                        <input aria-label="Bank Name" type="text" name="bank_name" id="fBankName" placeholder="HDFC, SBI" class="w-full text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
+                <div data-step x-show="step === 2" x-cloak class="space-y-3">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">Payment Method</label>
+                            <select aria-label="Payment Method" name="payment_method" id="fPaymentMethod" class="w-full text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
+                                <option value="bank_transfer">Bank Transfer (NEFT/IMPS)</option>
+                                <option value="upi">UPI / GPay</option>
+                                <option value="cash">Cash Voucher</option>
+                                <option value="cheque">Cheque</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">UPI ID</label>
+                            <input aria-label="UPI ID" type="text" name="upi_id" id="fUpiId" placeholder="mobile@upi" class="w-full text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
+                        </div>
                     </div>
-                    <div>
-                        <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">Account No.</label>
-                        <input aria-label="Account No." type="text" name="bank_account_number" id="fBankAcc" placeholder="1234567890" class="w-full text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
-                    </div>
-                    <div>
-                        <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">IFSC Code</label>
-                        <input aria-label="IFSC Code" type="text" name="bank_ifsc" id="fBankIfsc" placeholder="HDFC0001234" class="w-full text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
-                    </div>
-                </div>
 
-                <div>
-                    <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">Notes</label>
-                    <input aria-label="Notes" type="text" name="notes" id="fNotes" placeholder="Notes" class="w-full text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
+                    <div class="grid grid-cols-3 gap-2">
+                        <div>
+                            <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">Bank Name</label>
+                            <input aria-label="Bank Name" type="text" name="bank_name" id="fBankName" placeholder="HDFC, SBI" class="w-full text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
+                        </div>
+                        <div>
+                            <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">Account No.</label>
+                            <input aria-label="Account No." type="text" name="bank_account_number" id="fBankAcc" placeholder="1234567890" class="w-full text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
+                        </div>
+                        <div>
+                            <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">IFSC Code</label>
+                            <input aria-label="IFSC Code" type="text" name="bank_ifsc" id="fBankIfsc" placeholder="HDFC0001234" class="w-full text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1">Notes</label>
+                        <input aria-label="Notes" type="text" name="notes" id="fNotes" placeholder="Notes" class="w-full text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white focus:outline-none" style="height: 38px;">
+                    </div>
                 </div>
 
                 <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
                     <button type="button" onclick="document.getElementById('salaryModal').classList.add('hidden')" class="px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 rounded transition">Cancel</button>
-                    <button type="submit" class="px-4 py-2 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded transition">Save Salary Structure</button>
+                    <x-form-step-buttons />
+                    <template x-if="isLast()">
+                        <button type="submit" class="px-4 py-2 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded transition">Save Salary Structure</button>
+                    </template>
                 </div>
             </form>
         </div>

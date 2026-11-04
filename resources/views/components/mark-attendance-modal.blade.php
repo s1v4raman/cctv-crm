@@ -17,30 +17,42 @@
                     <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     <span>{{ __('Mark Worker Attendance') }}</span>
                 </h3>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{{ __('Two-step guided check-in & work performance logging') }}</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{{ __('Three-step guided check-in & work performance logging') }}</p>
             </div>
             <x-close-button onclick="closeAttendanceModal()" :label="__('Close')" />
         </div>
 
         {{-- Stepper Progress Indicator --}}
-        <div class="mt-3.5 mb-4 bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-lg border border-slate-200 dark:border-slate-700/60 flex items-center justify-between text-xs">
+        <div class="mt-3 mb-3 bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-lg border border-slate-200 dark:border-slate-700/60 flex items-center justify-between text-xs">
             <div class="flex items-center gap-2" id="step-pill-1">
-                <span id="step-badge-1" class="w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs bg-blue-600 text-white shadow-xs">1</span>
+                <span id="step-badge-1" class="w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs bg-blue-600 text-white shadow-xs shrink-0">1</span>
                 <div>
-                    <div class="font-bold text-slate-900 dark:text-white leading-tight" id="step-title-1">{{ __('Step 1: Shift & Photo') }}</div>
-                    <div class="text-[10px] text-slate-400">{{ __('Worker & site verification') }}</div>
+                    <div class="font-bold text-slate-900 dark:text-white leading-tight" id="step-title-1">{{ __('Step 1: Shift') }}</div>
+                    <div class="text-[10px] text-slate-400 hidden sm:block">{{ __('Worker & site verification') }}</div>
                 </div>
             </div>
 
-            <div class="flex-1 mx-3 flex items-center">
-                <div id="step-connector-line" class="h-0.5 w-full bg-slate-200 dark:bg-slate-700 transition-colors"></div>
+            <div class="flex-1 mx-2 sm:mx-3 flex items-center">
+                <div id="step-connector-line-1" class="h-0.5 w-full bg-slate-200 dark:bg-slate-700 transition-colors"></div>
             </div>
 
             <div class="flex items-center gap-2 opacity-60" id="step-pill-2">
-                <span id="step-badge-2" class="w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300">2</span>
+                <span id="step-badge-2" class="w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 shrink-0">2</span>
                 <div>
-                    <div class="font-bold text-slate-700 dark:text-slate-300 leading-tight" id="step-title-2">{{ __('Step 2: Work Output') }}</div>
-                    <div class="text-[10px] text-slate-400">{{ __('Cabling & summary metrics') }}</div>
+                    <div class="font-bold text-slate-700 dark:text-slate-300 leading-tight" id="step-title-2">{{ __('Step 2: Photo') }}</div>
+                    <div class="text-[10px] text-slate-400 hidden sm:block">{{ __('Optional but Recommended') }}</div>
+                </div>
+            </div>
+
+            <div class="flex-1 mx-2 sm:mx-3 flex items-center">
+                <div id="step-connector-line-2" class="h-0.5 w-full bg-slate-200 dark:bg-slate-700 transition-colors"></div>
+            </div>
+
+            <div class="flex items-center gap-2 opacity-60" id="step-pill-3">
+                <span id="step-badge-3" class="w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 shrink-0">3</span>
+                <div>
+                    <div class="font-bold text-slate-700 dark:text-slate-300 leading-tight" id="step-title-3">{{ __('Step 3: Work Output') }}</div>
+                    <div class="text-[10px] text-slate-400 hidden sm:block">{{ __('Cabling & summary metrics') }}</div>
                 </div>
             </div>
         </div>
@@ -51,9 +63,9 @@
             <input type="hidden" name="photo_data" id="webcam-photo-data">
 
             {{-- ══════════════════════════════════════════════════════ --}}
-            {{-- STEP 1: SHIFT SELECTION & PHOTO VERIFICATION           --}}
+            {{-- STEP 1: SHIFT SELECTION                                --}}
             {{-- ══════════════════════════════════════════════════════ --}}
-            <div id="att-step-1" class="space-y-4">
+            <div id="att-step-1" class="space-y-3">
                 <div id="modal-validation-error-step1" class="hidden p-3 rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs"></div>
 
                 {{-- Worker & Project Selectors --}}
@@ -108,6 +120,22 @@
                     </div>
                 </div>
 
+                {{-- Step 1 Actions --}}
+                <div class="flex items-center justify-between pt-3 border-t border-slate-200 dark:border-slate-800">
+                    <button type="button" onclick="closeAttendanceModal()" class="btn-secondary text-xs">
+                        {{ __('Cancel') }}
+                    </button>
+                    <button type="button" onclick="goToAttendanceStep(2)" class="btn-primary text-xs inline-flex items-center gap-1.5">
+                        <span>{{ __('Next: Photo') }}</span>
+                        <span>&rarr;</span>
+                    </button>
+                </div>
+            </div>
+
+            {{-- ══════════════════════════════════════════════════════ --}}
+            {{-- STEP 2: PHOTO VERIFICATION                             --}}
+            {{-- ══════════════════════════════════════════════════════ --}}
+            <div id="att-step-2" class="hidden space-y-3">
                 {{-- PHOTO CAPTURE SECTION --}}
                 <div class="p-3.5 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-200 dark:border-slate-700">
                     <div class="flex items-center justify-between mb-2">
@@ -151,7 +179,7 @@
                             {{-- Snapped Preview Surface (Replaces video feed completely upon snap) --}}
                             <div id="camera-snapped-container" class="hidden flex flex-col items-center justify-center p-3.5 w-full">
                                 <div class="relative">
-                                    <img id="camera-snapped-img" alt="{{ __('Captured Selfie') }}" class="w-36 h-36 object-cover rounded-xl border-2 border-emerald-500 shadow-md">
+                                    <img id="camera-snapped-img" alt="{{ __('Captured Selfie') }}" class="w-28 h-28 object-cover rounded-xl border-2 border-emerald-500 shadow-md">
                                     <span class="absolute -top-2 -right-2 bg-emerald-600 text-white rounded-full p-1 shadow">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
                                     </span>
@@ -192,19 +220,19 @@
                             <input aria-label="{{ __('Site photo') }}" type="file" name="photo" id="modal-photo-input" accept="image/*" class="mt-2 cursor-pointer w-full max-w-xs">
                             <p class="text-[10px] text-slate-400 mt-1">{{ __('JPEG, PNG or WebP up to 10MB') }}</p>
                         </div>
-                        <div id="file-preview-wrap" class="mt-3 hidden text-center">
-                            <img id="file-preview-img" alt="{{ __('Preview') }}" class="w-32 h-32 object-cover rounded-xl border-2 border-blue-500 shadow-md mx-auto">
-                            <span class="inline-block mt-1 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">✓ {{ __('File selected & ready') }}</span>
+                        <div id="file-preview-wrap" class="mt-3 hidden flex items-center justify-center gap-3">
+                            <img id="file-preview-img" alt="{{ __('Preview') }}" class="w-16 h-16 object-cover rounded-xl border-2 border-blue-500 shadow-md">
+                            <span class="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">✓ {{ __('File selected & ready') }}</span>
                         </div>
                     </div>
                 </div>
 
-                {{-- Step 1 Actions --}}
+                {{-- Step 2 Actions --}}
                 <div class="flex items-center justify-between pt-3 border-t border-slate-200 dark:border-slate-800">
-                    <button type="button" onclick="closeAttendanceModal()" class="btn-secondary text-xs">
-                        {{ __('Cancel') }}
+                    <button type="button" onclick="goToAttendanceStep(1)" class="btn-secondary text-xs inline-flex items-center gap-1">
+                        <span>&larr; {{ __('Back') }}</span>
                     </button>
-                    <button type="button" onclick="goToAttendanceStep(2)" class="btn-primary text-xs inline-flex items-center gap-1.5">
+                    <button type="button" onclick="goToAttendanceStep(3)" class="btn-primary text-xs inline-flex items-center gap-1.5">
                         <span>{{ __('Next: Work Output & Metrics') }}</span>
                         <span>&rarr;</span>
                     </button>
@@ -212,16 +240,16 @@
             </div>
 
             {{-- ══════════════════════════════════════════════════════ --}}
-            {{-- STEP 2: WORK PERFORMANCE METRICS & SUMMARY            --}}
+            {{-- STEP 3: WORK PERFORMANCE METRICS & SUMMARY            --}}
             {{-- ══════════════════════════════════════════════════════ --}}
-            <div id="att-step-2" class="hidden space-y-4">
+            <div id="att-step-3" class="hidden space-y-3">
                 <div id="modal-validation-error-step2" class="hidden p-3 rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs"></div>
 
                 {{-- Step 1 Summary Banner Confirmation Card --}}
-                <div class="p-3.5 rounded-lg bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800/80 flex items-center justify-between flex-wrap gap-3">
+                <div class="p-3 rounded-lg bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800/80 flex items-center justify-between flex-wrap gap-3">
                     <div class="flex items-center gap-3">
-                        <img id="summary-worker-thumb" src="" alt="{{ __('Worker') }}" class="w-10 h-10 rounded-full object-cover border-2 border-blue-400 shrink-0 hidden">
-                        <div id="summary-worker-avatar-fallback" class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-xs shrink-0">
+                        <img id="summary-worker-thumb" src="" alt="{{ __('Worker') }}" class="w-9 h-9 rounded-full object-cover border-2 border-blue-400 shrink-0 hidden">
+                        <div id="summary-worker-avatar-fallback" class="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-xs shrink-0">
                             WK
                         </div>
                         <div>
@@ -229,7 +257,7 @@
                             <div class="text-[11px] text-slate-500 dark:text-slate-400" id="summary-project-details">{{ __('Project Site') }} &bull; {{ __('Date') }}</div>
                         </div>
                     </div>
-                    <button type="button" onclick="goToAttendanceStep(1)" class="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1">
+                    <button type="button" onclick="goToAttendanceStep(2)" class="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1">
                         <span>&larr; {{ __('Retake Photo / Edit') }}</span>
                     </button>
                 </div>
@@ -271,10 +299,10 @@
                     </x-tamil-input>
                 </div>
 
-                {{-- Step 2 Actions --}}
+                {{-- Step 3 Actions --}}
                 <div class="flex items-center justify-between pt-3 border-t border-slate-200 dark:border-slate-800">
-                    <button type="button" onclick="goToAttendanceStep(1)" class="btn-secondary text-xs inline-flex items-center gap-1">
-                        <span>&larr; {{ __('Back to Step 1') }}</span>
+                    <button type="button" onclick="goToAttendanceStep(2)" class="btn-secondary text-xs inline-flex items-center gap-1">
+                        <span>&larr; {{ __('Back') }}</span>
                     </button>
                     <button type="submit" id="btn-save-attendance" class="btn-primary text-xs inline-flex items-center gap-1.5 font-semibold">
                         <span>✓ {{ __('Save Attendance') }}</span>
@@ -347,22 +375,15 @@
     }
 
     function goToAttendanceStep(step) {
-        const step1 = document.getElementById('att-step-1');
-        const step2 = document.getElementById('att-step-2');
         const err1 = document.getElementById('modal-validation-error-step1');
         const err2 = document.getElementById('modal-validation-error-step2');
 
-        const pill1 = document.getElementById('step-pill-1');
-        const pill2 = document.getElementById('step-pill-2');
-        const badge1 = document.getElementById('step-badge-1');
-        const badge2 = document.getElementById('step-badge-2');
-        const line = document.getElementById('step-connector-line');
-
-        if (step === 2) {
+        if (step > 1) {
             const workerSelect = document.getElementById('modal-worker-select');
             const projectSelect = document.getElementById('att-project-id');
 
             if (!workerSelect || !workerSelect.value) {
+                goToAttendanceStep(1);
                 if (err1) {
                     err1.textContent = attendanceModalText.pickWorker;
                     err1.classList.remove('hidden');
@@ -372,6 +393,7 @@
             }
 
             if (!projectSelect || !projectSelect.value) {
+                goToAttendanceStep(1);
                 if (err1) {
                     err1.textContent = attendanceModalText.pickProject;
                     err1.classList.remove('hidden');
@@ -381,8 +403,15 @@
             }
 
             if (err1) err1.classList.add('hidden');
+        } else if (err2) {
+            err2.classList.add('hidden');
+        }
 
-            // Populate Step 2 Confirmation Card
+        if (step === 3) {
+            const workerSelect = document.getElementById('modal-worker-select');
+            const projectSelect = document.getElementById('att-project-id');
+
+            // Populate Step 3 Confirmation Card
             const workerOpt = workerSelect.options[workerSelect.selectedIndex];
             const projOpt = projectSelect.options[projectSelect.selectedIndex];
             const dateVal = document.getElementById('modal-work-date').value;
@@ -409,29 +438,22 @@
                 fallback.classList.remove('hidden');
                 fallback.textContent = (workerOpt.getAttribute('data-name') || 'WK').substring(0, 2).toUpperCase();
             }
-
-            // Transition Panes
-            step1.classList.add('hidden');
-            step2.classList.remove('hidden');
-
-            // Update Stepper Visuals
-            badge1.innerHTML = '&#10003;';
-            badge1.className = 'w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs bg-emerald-600 text-white shadow-xs';
-            line.className = 'h-0.5 w-full bg-blue-600 dark:bg-blue-500 transition-colors';
-            pill2.className = 'flex items-center gap-2';
-            badge2.className = 'w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs bg-blue-600 text-white shadow-xs';
-        } else {
-            // Step 1
-            if (err2) err2.classList.add('hidden');
-            step2.classList.add('hidden');
-            step1.classList.remove('hidden');
-
-            badge1.innerHTML = '1';
-            badge1.className = 'w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs bg-blue-600 text-white shadow-xs';
-            line.className = 'h-0.5 w-full bg-slate-200 dark:bg-slate-700 transition-colors';
-            pill2.className = 'flex items-center gap-2 opacity-60';
-            badge2.className = 'w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300';
         }
+
+        // Transition Panes & Update Stepper Visuals: done steps get a tick, later ones are dimmed
+        const badgeBase = 'w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs shrink-0 ';
+        [1, 2, 3].forEach((n) => {
+            document.getElementById(`att-step-${n}`).classList.toggle('hidden', n !== step);
+            document.getElementById(`step-pill-${n}`).className = n > step ? 'flex items-center gap-2 opacity-60' : 'flex items-center gap-2';
+            const badge = document.getElementById(`step-badge-${n}`);
+            badge.innerHTML = n < step ? '&#10003;' : n;
+            badge.className = badgeBase + (n < step
+                ? 'bg-emerald-600 text-white shadow-xs'
+                : n === step ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300');
+        });
+        [1, 2].forEach((n) => {
+            document.getElementById(`step-connector-line-${n}`).className = 'h-0.5 w-full transition-colors ' + (n < step ? 'bg-blue-600 dark:bg-blue-500' : 'bg-slate-200 dark:bg-slate-700');
+        });
     }
 
     function onWorkerSelectChange(sel) {

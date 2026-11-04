@@ -4223,6 +4223,80 @@ html.dark body :is(button, a[class*="btn"], .btn-secondary, .ld-outline) svg.ico
     color: var(--text-main) !important;
 }
 
+/* A centred dialog taller than the screen starts at the top and scrolls, instead of spilling
+   above the top edge, where its title can't be reached */
+.fixed.inset-0.flex.items-center:not(.flex-col) {
+    align-items: flex-start;
+    overflow-y: auto;
+}
+.fixed.inset-0.flex.items-center:not(.flex-col) > :not(.fixed):not(.absolute) {
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+/* Long dialog forms shown one step at a time (resources/js/form-steps.js, x-form-stepper) */
+.form-stepper {
+    display: flex;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.form-stepper li {
+    flex: 1 1 0;
+    min-width: 0;
+}
+.form-stepper button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    padding: 8px 0 0;
+    border: 0;
+    border-top: 3px solid var(--card-border);
+    background: none;
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+}
+.form-stepper li:is(.is-current, .is-done) button {
+    border-top-color: var(--crm-accent);
+    color: var(--text-main);
+}
+.form-stepper li.is-current button {
+    font-weight: 600;
+}
+.form-stepper-dot {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border: 1px solid var(--card-border);
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+}
+.form-stepper li:is(.is-current, .is-done) .form-stepper-dot {
+    background: var(--crm-accent);
+    border-color: var(--crm-accent);
+    color: #ffffff;
+}
+.form-stepper-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+/* Phones: only the current step keeps its name */
+@media (max-width: 479px) {
+    .form-stepper li:not(.is-current) .form-stepper-label {
+        display: none;
+    }
+}
+
 /* Precision IT Systems Adaptive Brand Logo */
 .crm-brand-logo {
     display: inline-flex;

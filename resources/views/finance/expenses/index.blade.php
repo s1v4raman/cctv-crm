@@ -498,112 +498,117 @@
                 </button>
             </div>
 
-            <form action="{{ route('finance.expenses.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4 text-xs">
+            <form action="{{ route('finance.expenses.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4 text-xs" x-data="formSteps">
                 @csrf
+                <x-form-stepper :steps="['Expense & amount', 'Purpose & receipt']" />
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {{-- Category --}}
-                    <div>
-                        <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Expense Category *</label>
-                        <select aria-label="Expense Category" name="expense_category" id="expenseCategorySelect" onchange="toggleKmSection(this.value)" required class="w-full text-sm min-h-[44px] rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5">
-                            <option value="fuel_travel">Fuel &amp; Travel (Per-KM Calculation)</option>
-                            <option value="hardware_tools">Hardware Tools, Cables &amp; Connectors</option>
-                            <option value="food_lodging">Meals &amp; On-Site Allowance</option>
-                            <option value="toll_parking">Toll Gates &amp; Parking Fees</option>
-                            <option value="emergency_materials">Emergency Site Materials</option>
-                            <option value="other">Other Operational Expense</option>
-                        </select>
-                    </div>
-
-                    {{-- Expense Date --}}
-                    <div>
-                        <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Expense Date *</label>
-                        <input aria-label="Expense Date" type="date" name="expense_date" required value="{{ now()->toDateString() }}" 
-                               class="w-full text-sm min-h-[44px] rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5">
-                    </div>
-                </div>
-
-                {{-- Interactive KM Calculator Strip (for Fuel & Travel) --}}
-                <div id="kmCalculatorSection" class="p-3.5 rounded-xl bg-purple-50/70 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-900/50 space-y-3">
-                    <div class="flex items-center justify-between">
-                        <span class="font-bold text-purple-900 dark:text-purple-300 flex items-center gap-1.5">
-                            Smart Travel KM Calculator
-                        </span>
-                        <div class="flex items-center gap-2">
-                            <span class="text-[11px] text-purple-700 dark:text-purple-400 font-semibold">Standard: ₹6.00 / KM</span>
-                            <button type="button" onclick="resetKmCalculator()" title="Reset / Clear KM Calculator" class="text-[11px] text-purple-600 dark:text-purple-400 hover:text-purple-900 dark:hover:text-purple-200 font-semibold inline-flex items-center gap-1 px-2 py-0.5 rounded hover:bg-purple-100 dark:hover:bg-purple-900/50 transition cursor-pointer">
-                                <span>✕ Reset</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <div data-step x-show="step === 1" class="space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {{-- Category --}}
                         <div>
-                            <input aria-label="From Location (e.g. Office / HSR Layout)" type="text" name="travel_from" placeholder="From Location (e.g. Office / HSR Layout)" 
-                                   class="w-full text-sm min-h-[44px] rounded-xl border-purple-200 dark:border-purple-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2">
+                            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Expense Category *</label>
+                            <select aria-label="Expense Category" name="expense_category" id="expenseCategorySelect" onchange="toggleKmSection(this.value)" required class="w-full text-sm min-h-[44px] rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5">
+                                <option value="fuel_travel">Fuel &amp; Travel (Per-KM Calculation)</option>
+                                <option value="hardware_tools">Hardware Tools, Cables &amp; Connectors</option>
+                                <option value="food_lodging">Meals &amp; On-Site Allowance</option>
+                                <option value="toll_parking">Toll Gates &amp; Parking Fees</option>
+                                <option value="emergency_materials">Emergency Site Materials</option>
+                                <option value="other">Other Operational Expense</option>
+                            </select>
                         </div>
+
+                        {{-- Expense Date --}}
                         <div>
-                            <input aria-label="To Client Site (e.g. Cyber City Tower)" type="text" name="travel_to" placeholder="To Client Site (e.g. Cyber City Tower)" 
-                                   class="w-full text-sm min-h-[44px] rounded-xl border-purple-200 dark:border-purple-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2">
+                            <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Expense Date *</label>
+                            <input aria-label="Expense Date" type="date" name="expense_date" required value="{{ now()->toDateString() }}" 
+                                   class="w-full text-sm min-h-[44px] rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5">
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-2.5 items-center">
-                        <div>
-                            <label class="block text-sm font-semibold text-purple-800 dark:text-purple-300 mb-1">Total Kilometers</label>
-                            <input aria-label="Total Kilometers" type="number" step="0.1" name="travel_distance_km" id="kmInput" oninput="calculateKmAmount()" placeholder="e.g. 25.5" 
-                                   class="w-full text-sm min-h-[44px] rounded-xl border-purple-200 dark:border-purple-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2">
+                    {{-- Interactive KM Calculator Strip (for Fuel & Travel) --}}
+                    <div id="kmCalculatorSection" class="p-3.5 rounded-xl bg-purple-50/70 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-900/50 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="font-bold text-purple-900 dark:text-purple-300 flex items-center gap-1.5">
+                                Smart Travel KM Calculator
+                            </span>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[11px] text-purple-700 dark:text-purple-400 font-semibold">Standard: ₹6.00 / KM</span>
+                                <button type="button" onclick="resetKmCalculator()" title="Reset / Clear KM Calculator" class="text-[11px] text-purple-600 dark:text-purple-400 hover:text-purple-900 dark:hover:text-purple-200 font-semibold inline-flex items-center gap-1 px-2 py-0.5 rounded hover:bg-purple-100 dark:hover:bg-purple-900/50 transition cursor-pointer">
+                                    <span>✕ Reset</span>
+                                </button>
+                            </div>
                         </div>
-                        <div>
-                            <label class="block text-sm font-semibold text-purple-800 dark:text-purple-300 mb-1">Rate / KM (₹)</label>
-                            <input aria-label="Rate / KM (₹)" type="number" step="0.5" name="rate_per_km" id="rateInput" value="6.0" oninput="calculateKmAmount()" 
-                                   class="w-full text-sm min-h-[44px] rounded-xl border-purple-200 dark:border-purple-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2">
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                            <div>
+                                <input aria-label="From Location (e.g. Office / HSR Layout)" type="text" name="travel_from" placeholder="From Location (e.g. Office / HSR Layout)" 
+                                       class="w-full text-sm min-h-[44px] rounded-xl border-purple-200 dark:border-purple-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2">
+                            </div>
+                            <div>
+                                <input aria-label="To Client Site (e.g. Cyber City Tower)" type="text" name="travel_to" placeholder="To Client Site (e.g. Cyber City Tower)" 
+                                       class="w-full text-sm min-h-[44px] rounded-xl border-purple-200 dark:border-purple-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2.5 items-center">
+                            <div>
+                                <label class="block text-sm font-semibold text-purple-800 dark:text-purple-300 mb-1">Total Kilometers</label>
+                                <input aria-label="Total Kilometers" type="number" step="0.1" name="travel_distance_km" id="kmInput" oninput="calculateKmAmount()" placeholder="e.g. 25.5" 
+                                       class="w-full text-sm min-h-[44px] rounded-xl border-purple-200 dark:border-purple-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-purple-800 dark:text-purple-300 mb-1">Rate / KM (₹)</label>
+                                <input aria-label="Rate / KM (₹)" type="number" step="0.5" name="rate_per_km" id="rateInput" value="6.0" oninput="calculateKmAmount()" 
+                                       class="w-full text-sm min-h-[44px] rounded-xl border-purple-200 dark:border-purple-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2">
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                {{-- Amount Field --}}
-                <div>
-                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Claim Amount (₹) *</label>
-                    <input aria-label="Claim Amount (₹)" type="number" step="0.01" name="amount" id="claimAmountInput" required placeholder="0.00" 
-                           class="w-full text-sm font-bold rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white p-2.5">
-                </div>
-
-                {{-- Optional Link to Project / Service Ticket --}}
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {{-- Amount Field --}}
                     <div>
-                        <label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Link to Installation Job (Optional)</label>
-                        <select aria-label="Link to Installation Job (Optional)" name="installation_job_id" class="w-full text-sm min-h-[44px] rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5">
-                            <option value="">None / General Expense</option>
-                            @foreach($activeJobs as $job)
-                                <option value="{{ $job->id }}">{{ $job->job_no }} - {{ $job->quotation?->lead?->customer_name }}</option>
-                            @endforeach
-                        </select>
+                        <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Claim Amount (₹) *</label>
+                        <input aria-label="Claim Amount (₹)" type="number" step="0.01" name="amount" id="claimAmountInput" required placeholder="0.00" 
+                               class="w-full text-sm font-bold rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white p-2.5">
+                    </div>
+                </div>
+
+                <div data-step x-show="step === 2" x-cloak class="space-y-4">
+                    {{-- Optional Link to Project / Service Ticket --}}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Link to Installation Job (Optional)</label>
+                            <select aria-label="Link to Installation Job (Optional)" name="installation_job_id" class="w-full text-sm min-h-[44px] rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5">
+                                <option value="">None / General Expense</option>
+                                @foreach($activeJobs as $job)
+                                    <option value="{{ $job->id }}">{{ $job->job_no }} - {{ $job->quotation?->lead?->customer_name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Link to Service Ticket (Optional)</label>
+                            <select aria-label="Link to Service Ticket (Optional)" name="service_ticket_id" class="w-full text-sm min-h-[44px] rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5">
+                                <option value="">None / General</option>
+                                @foreach($activeTickets as $ticket)
+                                    <option value="{{ $ticket->id }}">{{ $ticket->ticket_no }} - {{ $ticket->title }}</option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
 
+                    {{-- Description --}}
                     <div>
-                        <label class="block font-semibold text-slate-600 dark:text-slate-400 mb-1">Link to Service Ticket (Optional)</label>
-                        <select aria-label="Link to Service Ticket (Optional)" name="service_ticket_id" class="w-full text-sm min-h-[44px] rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5">
-                            <option value="">None / General</option>
-                            @foreach($activeTickets as $ticket)
-                                <option value="{{ $ticket->id }}">{{ $ticket->ticket_no }} - {{ $ticket->title }}</option>
-                            @endforeach
-                        </select>
+                        <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Description / Purpose *</label>
+                        <textarea aria-label="Description / Purpose" name="description" rows="2" required placeholder="State exact purpose of travel or list items bought on-site..." 
+                                  class="w-full text-sm min-h-[44px] rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5"></textarea>
                     </div>
-                </div>
 
-                {{-- Description --}}
-                <div>
-                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Description / Purpose *</label>
-                    <textarea aria-label="Description / Purpose" name="description" rows="2" required placeholder="State exact purpose of travel or list items bought on-site..." 
-                              class="w-full text-sm min-h-[44px] rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2.5"></textarea>
-                </div>
-
-                {{-- Receipt Upload --}}
-                <div>
-                    <label for="f-receipt" class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Receipt / Invoice Photo (Recommended)</label>
-                    <input id="f-receipt" type="file" name="receipt" accept=".pdf,.jpg,.jpeg,.png,.webp" 
-                           class="w-full">
+                    {{-- Receipt Upload --}}
+                    <div>
+                        <label for="f-receipt" class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Receipt / Invoice Photo (Recommended)</label>
+                        <input id="f-receipt" type="file" name="receipt" accept=".pdf,.jpg,.jpeg,.png,.webp" 
+                               class="w-full">
+                    </div>
                 </div>
 
                 <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
@@ -612,9 +617,12 @@
                         <svg class="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                         <span>Cancel</span>
                     </button>
-                    <button type="submit" class="px-6 py-2.5 min-h-[44px] text-sm font-bold text-white rounded-xl shadow-md transition cursor-pointer" style="background-color: var(--crm-accent, #2563eb);">
-                        Submit Claim
-                    </button>
+                    <x-form-step-buttons />
+                    <template x-if="isLast()">
+                        <button type="submit" class="px-6 py-2.5 min-h-[44px] text-sm font-bold text-white rounded-xl shadow-md transition cursor-pointer" style="background-color: var(--crm-accent, #2563eb);">
+                            Submit Claim
+                        </button>
+                    </template>
                 </div>
             </form>
         </div>
