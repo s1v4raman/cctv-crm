@@ -40,7 +40,8 @@
             {{-- Group Header --}}
             <div class="px-5 py-3.5 bg-slate-50/80 dark:bg-slate-800/40 border-b border-slate-200/80 dark:border-slate-800 flex items-center justify-between">
                 <div class="flex items-center gap-2.5">
-                    <span class="text-base">{{ $meta['icon'] }}</span>
+                    {{-- Icons are the fixed markup in $groupMeta above, never user input --}}
+                    <span class="text-base">{!! $meta['icon'] !!}</span>
                     <h3 class="text-sm font-extrabold text-slate-900 dark:text-white tracking-tight">{{ $groupName }}</h3>
                     <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-[4px] border {{ $meta['badge'] }}">
                         {{ $groupTasks->count() }} {{ Str::plural('Task', $groupTasks->count()) }}
@@ -180,7 +181,7 @@
                                     @if(empty($task['is_worker_view']) && !empty($task['assigned_user']))
                                         <div class="inline-flex items-center gap-1.5 font-medium">
                                             <div class="w-5 h-5 rounded-[4px] bg-blue-100 text-blue-700 dark:bg-blue-900/60 dark:text-blue-300 font-bold flex items-center justify-center text-[11px]">
-                                                {{ substr($task['assigned_user']['name'], 0, 1) }}
+                                                {{ mb_substr($task['assigned_user']['name'], 0, 1) }}
                                             </div>
                                             <span>{{ $task['assigned_user']['name'] }}</span>
                                         </div>

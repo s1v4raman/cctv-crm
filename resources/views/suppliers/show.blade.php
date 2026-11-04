@@ -1,7 +1,12 @@
 <x-app-layout>
     <x-slot name="header">
         <div>
-            <a href="{{ route('suppliers.index') }}" class="back-link">&larr; Back</a>
+            @if(auth()->user()->isTechnician())
+                {{-- Technicians reach a supplier from a purchase order or RMA, not the supplier list --}}
+                <a href="{{ route('technician.dashboard') }}" onclick="if (history.length > 1) { history.back(); return false; }" class="back-link">&larr; Back</a>
+            @else
+                <a href="{{ route('suppliers.index') }}" class="back-link">&larr; Back</a>
+            @endif
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-1">
                 <div>
                     <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ $supplier->name }}</h2>

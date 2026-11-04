@@ -51,7 +51,7 @@
                                     </div>
                                 </div>
                                 <div class="text-right">
-                                    <span class="font-mono font-bold text-[#2563eb]">
+                                    <span class="font-mono font-bold text-blue-600">
                                         S/N: {{ $prefilledEquipment->serial_number }}
                                     </span>
                                 </div>
@@ -181,7 +181,7 @@
             const feedback = document.getElementById('rma-scan-feedback');
             if (feedback) {
                 feedback.style.display = 'block';
-                feedback.innerHTML = `<span class="text-[#2563eb] font-semibold">Looking up serial ${code}...</span>`;
+                feedback.innerHTML = `<span class="text-blue-600 font-semibold">Looking up serial ${code}...</span>`;
             }
 
             try {

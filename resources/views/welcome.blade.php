@@ -16,11 +16,11 @@
     <!-- Signature Brand Colors Permanently Locked (Independent from CRM user themes) -->
     <style>
         :root {
-            --crm-accent: #1366e2 !important;
-            --crm-accent-hover: #0e4db0 !important;
-            --crm-accent-shadow: rgba(19, 102, 226, 0.25) !important;
-            --brand-blue: #1366e2 !important;
-            --brand-blue-hover: #0e4db0 !important;
+            --crm-accent: #2563eb !important;
+            --crm-accent-hover: #1d4ed8 !important;
+            --crm-accent-shadow: rgba(37, 99, 235, 0.25) !important;
+            --brand-blue: #2563eb !important;
+            --brand-blue-hover: #1d4ed8 !important;
         }
     </style>
 
@@ -112,21 +112,14 @@
     <header class="sticky top-0 z-50 bg-white/95 dark:bg-[#060913]/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 transition-colors">
         <div class="max-w-[1400px] mx-auto px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3 flex items-center justify-between gap-2 sm:gap-3 xl:gap-6">
             
-            <!-- Brand Logo & Company Name (Maximized Logo & Clean Responsive Lockup) -->
-            <a href="{{ route('home') }}" class="flex items-center gap-2 sm:gap-3.5 group min-w-0 shrink">
-                <img src="{{ asset('logo.png') }}" alt="Precision IT Systems" class="crm-brand-logo h-10 w-10 sm:h-14 sm:w-14 md:h-[68px] md:w-[68px] lg:h-[72px] lg:w-[72px] object-contain group-hover:scale-105 transition-transform shrink-0 drop-shadow-xs">
-                <div class="flex flex-col min-w-0">
-                    <span class="text-base sm:text-2xl lg:text-[26px] font-black font-heading tracking-tight text-slate-900 dark:text-white leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate">
-                        Precision IT <span class="crm-brand-accent-text text-blue-600 dark:text-blue-400">Systems</span>
-                    </span>
-                    <span class="hidden sm:block text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 font-mono mt-0.5">
-                        Security &amp; AI Surveillance
-                    </span>
-                </div>
+            <!-- Brand: the wordmark already spells the name, so it stands alone at its real shape (white version at night) -->
+            <a href="{{ route('home') }}" class="crm-brand-logo flex items-center gap-4 shrink-0" aria-label="Precision IT Systems home">
+                <x-brand-logo color="#2563eb" class="h-8 sm:h-9 lg:h-10 w-auto max-w-[190px] shrink-0" />
+                <span class="hidden 2xl:block pl-4 border-l border-slate-200 dark:border-slate-700 text-xs leading-snug text-slate-500 dark:text-slate-400">Security &amp; AI<br>surveillance</span>
             </a>
 
             <!-- Navigation Links (Centered, seamlessly filling the gap on lg and xl viewports) -->
-            <nav class="hidden lg:flex items-center space-x-3.5 xl:space-x-6 text-sm xl:text-[15px] font-semibold text-slate-600 dark:text-slate-300">
+            <nav class="hidden lg:flex items-center space-x-3.5 xl:space-x-6 text-sm xl:text-[15px] font-semibold text-slate-600 dark:text-slate-300 whitespace-nowrap">
                 <a href="#home" class="px-2 py-1.5 rounded-lg text-blue-600 dark:text-blue-400 font-bold hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors">Home</a>
                 <a href="#about" class="px-2 py-1.5 rounded-lg hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors">About Us</a>
                 <div class="relative group py-1.5">
@@ -180,7 +173,7 @@
                             class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl flex items-center justify-center font-black text-xs sm:text-base text-white shadow-md transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none ring-2 ring-slate-200/90 dark:ring-slate-700/80 hover:ring-blue-500/50 cursor-pointer select-none shrink-0"
                             style="background: var(--crm-accent, #2563eb);"
                             title="My Account: {{ Auth::user()->name }} (Click to view profile)">
-                            <span class="drop-shadow-xs">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
+                            <span class="drop-shadow-xs">{{ strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}</span>
                         </button>
                     @else
                         <!-- Guest Portal / Profile Access Button -->
@@ -203,7 +196,7 @@
                             <div class="px-4 py-3 bg-gradient-to-r from-blue-50/80 to-slate-50 dark:from-blue-950/40 dark:to-slate-900/60 border-b border-blue-100 dark:border-blue-900/50 flex items-center gap-3">
                                 <div class="w-9 h-9 rounded-xl flex items-center justify-center font-black text-sm text-white shrink-0 shadow-sm"
                                      style="background: var(--crm-accent, #2563eb);">
-                                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                                    {{ strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}
                                 </div>
                                 <div class="min-w-0 flex-1">
                                     <span class="text-[10px] text-blue-600 dark:text-blue-400 font-bold block uppercase tracking-wider">Hello, {{ explode(' ', Auth::user()->name)[0] }}</span>
@@ -222,7 +215,7 @@
                                         <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                                         <span>Worker Portal</span>
                                     </a>
-                                @else
+                                @elseif(Auth::user()->isOffice())
                                     <a href="{{ route('dashboard') }}" class="flex items-center space-x-2.5 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-800 hover:text-blue-600 rounded-xl transition-colors">
                                         <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                                         <span>ERP Dashboard</span>
@@ -271,7 +264,7 @@
                             </div>
 
                             <!-- Footer Security Assurance Note -->
-                            <div class="px-4 py-2 bg-slate-50/80 dark:bg-slate-900/80 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[10px] text-slate-400 dark:text-slate-500">
+                            <div class="px-4 py-2 bg-slate-50/80 dark:bg-slate-900/80 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400">
                                 <span class="flex items-center gap-1 font-medium">
                                     <svg class="w-3 h-3 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clip-rule="evenodd"/>
@@ -587,7 +580,7 @@
                                     <div id="heroFloatingBadgeTitle" class="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider truncate">CCTV &amp; Biometrics</div>
                                     <div id="heroFloatingBadgeSub" class="text-xs text-slate-500 dark:text-slate-400 truncate">Installation, AMC &amp; Support</div>
                                 </div>
-                                <div class="hidden sm:flex items-center gap-1.5 text-[10px] text-slate-400 dark:text-slate-500 font-medium flex-shrink-0">
+                                <div class="hidden sm:flex items-center gap-1.5 text-[10px] text-slate-500 dark:text-slate-400 font-medium flex-shrink-0">
                                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                                     <span>Live System</span>
                                 </div>
@@ -1000,21 +993,21 @@
 
                                         <div class="space-y-3.5">
                                             <div>
-                                                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Full Name *</label>
+                                                <label for="stepCustomerName" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Full Name *</label>
                                                 <input type="text" name="customer_name" id="stepCustomerName" required placeholder="John Doe"
                                                     class="w-full px-4 py-3 text-sm min-h-[44px] rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none">
                                                 <span id="nameError" class="text-[11px] text-rose-500 hidden mt-1">Please enter your full name.</span>
                                             </div>
 
                                             <div>
-                                                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Mobile Phone *</label>
+                                                <label for="stepPhone" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Mobile Phone *</label>
                                                 <input type="tel" name="phone" id="stepPhone" required placeholder="+91 98765 43210"
                                                     class="w-full px-4 py-3 text-sm min-h-[44px] rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none">
                                                 <span id="phoneError" class="text-[11px] text-rose-500 hidden mt-1">Please enter a valid mobile number.</span>
                                             </div>
 
                                             <div>
-                                                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Email Address</label>
+                                                <label for="stepEmail" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Email Address</label>
                                                 <input type="email" name="email" id="stepEmail" placeholder="john@company.com"
                                                     class="w-full px-4 py-3 text-sm min-h-[44px] rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none">
                                             </div>
@@ -1041,8 +1034,8 @@
 
                                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                                             <div>
-                                                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Facility Type</label>
-                                                <select name="property_type"
+                                                <label for="f-property-type" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Facility Type</label>
+                                                <select id="f-property-type" name="property_type"
                                                     class="w-full px-4 py-3 text-sm min-h-[44px] rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none">
                                                     <option value="Commercial Corporate Office">Commercial Corporate Office</option>
                                                     <option value="Industrial Warehouse / Factory">Industrial Warehouse / Factory</option>
@@ -1053,8 +1046,8 @@
                                             </div>
 
                                             <div>
-                                                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Camera Count / Scale</label>
-                                                <select name="camera_scale"
+                                                <label for="f-camera-scale" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Camera Count / Scale</label>
+                                                <select id="f-camera-scale" name="camera_scale"
                                                     class="w-full px-4 py-3 text-sm min-h-[44px] rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none">
                                                     <option value="4 Cameras Setup">1 - 4 Cameras (Small Office / Villa)</option>
                                                     <option value="8 Cameras Setup">5 - 8 Cameras (Medium Office / Store)</option>
@@ -1065,8 +1058,8 @@
                                         </div>
 
                                         <div>
-                                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Specific Requirements / Notes</label>
-                                            <textarea name="notes" rows="3" placeholder="e.g., Need 24/7 color night vision for warehouse perimeter, gate ANPR, and cloud mobile viewing..."
+                                            <label for="f-notes" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Specific Requirements / Notes</label>
+                                            <textarea id="f-notes" name="notes" rows="3" placeholder="e.g., Need 24/7 color night vision for warehouse perimeter, gate ANPR, and cloud mobile viewing..."
                                                 class="w-full px-4 py-3 text-sm min-h-[44px] rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none"></textarea>
                                         </div>
 
@@ -1095,26 +1088,28 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-12">
                 <!-- Col 1: Logo & Bio -->
                 <div class="lg:col-span-2 space-y-4">
-                    <div class="flex items-center gap-3.5">
-                        <img src="{{ asset('logo.png') }}" alt="Precision IT Systems" class="crm-brand-logo h-16 w-16 object-contain bg-white/95 p-1 rounded-2xl shadow-sm shrink-0">
-                        <div>
-                            <span class="font-heading font-black text-lg text-white tracking-tight">Precision IT <span class="crm-brand-accent-text text-blue-400">Systems</span></span>
-                            <span class="block text-[10px] font-bold uppercase tracking-widest text-slate-400 font-mono mt-0.5">Security Operations</span>
-                        </div>
-                    </div>
+                    {{-- The footer is always dark, so it uses the dark variant --}}
+                    <x-brand-logo :dark="true" color="#2563eb" class="h-11 w-auto max-w-[210px] shrink-0" />
+                    <p class="text-sm text-slate-300">Security &amp; AI surveillance</p>
                     <p class="text-xs text-slate-400 leading-relaxed max-w-sm">
                         Leading provider of enterprise AI video surveillance, smart security architecture, and mission-critical 24/7 maintenance engineering across modern premises.
                     </p>
                     <div class="flex items-center space-x-3 text-slate-400 pt-2">
-                        <a href="#" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-blue-600 hover:text-white flex items-center justify-center transition-colors">
+                        @if(config('services.social.facebook'))
+                        <a href="{{ config('services.social.facebook') }}" target="_blank" rel="noopener" aria-label="Precision IT Systems on Facebook" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-blue-600 hover:text-white flex items-center justify-center transition-colors">
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/></svg>
                         </a>
-                        <a href="#" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-blue-600 hover:text-white flex items-center justify-center transition-colors">
+                        @endif
+                        @if(config('services.social.x'))
+                        <a href="{{ config('services.social.x') }}" target="_blank" rel="noopener" aria-label="Precision IT Systems on X (Twitter)" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-blue-600 hover:text-white flex items-center justify-center transition-colors">
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
                         </a>
-                        <a href="#" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-blue-600 hover:text-white flex items-center justify-center transition-colors">
+                        @endif
+                        @if(config('services.social.linkedin'))
+                        <a href="{{ config('services.social.linkedin') }}" target="_blank" rel="noopener" aria-label="Precision IT Systems on LinkedIn" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-blue-600 hover:text-white flex items-center justify-center transition-colors">
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
                         </a>
+                        @endif
                     </div>
                 </div>
 
@@ -1122,11 +1117,11 @@
                 <div class="space-y-3">
                     <h4 class="text-sm font-bold text-white font-heading uppercase tracking-wider">About</h4>
                     <ul class="space-y-2 text-xs text-slate-400">
-                        <li><a href="#about" class="hover:text-blue-400 transition-colors">About Us</a></li>
-                        <li><a href="#why-us" class="hover:text-blue-400 transition-colors">Corporate Team</a></li>
-                        <li><a href="#contact" class="hover:text-blue-400 transition-colors">Careers & Jobs</a></li>
-                        <li><a href="#contact" class="hover:text-blue-400 transition-colors">Client Testimonials</a></li>
-                        <li><a href="#why-us" class="hover:text-blue-400 transition-colors">Certifications</a></li>
+                        <li><a href="#about" class="text-slate-400 hover:text-blue-400 transition-colors">About Us</a></li>
+                        <li><a href="#why-us" class="text-slate-400 hover:text-blue-400 transition-colors">Corporate Team</a></li>
+                        <li><a href="#contact" class="text-slate-400 hover:text-blue-400 transition-colors">Careers & Jobs</a></li>
+                        <li><a href="#contact" class="text-slate-400 hover:text-blue-400 transition-colors">Client Testimonials</a></li>
+                        <li><a href="#why-us" class="text-slate-400 hover:text-blue-400 transition-colors">Certifications</a></li>
                     </ul>
                 </div>
 
@@ -1134,11 +1129,11 @@
                 <div class="space-y-3">
                     <h4 class="text-sm font-bold text-white font-heading uppercase tracking-wider">Services</h4>
                     <ul class="space-y-2 text-xs text-slate-400">
-                        <li><a href="#services" class="hover:text-blue-400 transition-colors">Corporate Solutions</a></li>
-                        <li><a href="#services" class="hover:text-blue-400 transition-colors">Call Center Support</a></li>
-                        <li><a href="#services" class="hover:text-blue-400 transition-colors">Cloud Development</a></li>
-                        <li><a href="#services" class="hover:text-blue-400 transition-colors">4K AI Camera Setup</a></li>
-                        <li><a href="#contact" class="hover:text-blue-400 transition-colors">Preventive AMC Plans</a></li>
+                        <li><a href="#services" class="text-slate-400 hover:text-blue-400 transition-colors">Corporate Solutions</a></li>
+                        <li><a href="#services" class="text-slate-400 hover:text-blue-400 transition-colors">Call Center Support</a></li>
+                        <li><a href="#services" class="text-slate-400 hover:text-blue-400 transition-colors">Cloud Development</a></li>
+                        <li><a href="#services" class="text-slate-400 hover:text-blue-400 transition-colors">4K AI Camera Setup</a></li>
+                        <li><a href="#contact" class="text-slate-400 hover:text-blue-400 transition-colors">Preventive AMC Plans</a></li>
                     </ul>
                 </div>
 
@@ -1152,11 +1147,11 @@
                         </li>
                         <li class="flex items-center space-x-2">
                             <svg class="w-3.5 h-3.5 text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                            <a href="mailto:precisionitsystem@gmail.com" class="hover:text-white transition-colors">precisionitsystem@gmail.com</a>
+                            <a href="mailto:precisionitsystem@gmail.com" class="text-slate-400 hover:text-white transition-colors">precisionitsystem@gmail.com</a>
                         </li>
                         <li class="flex items-center space-x-2">
                             <svg class="w-3.5 h-3.5 text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
-                            <a href="tel:+919677257774" class="hover:text-white transition-colors">+91 96772 57774</a>
+                            <a href="tel:+919677257774" class="text-slate-400 hover:text-white transition-colors">+91 96772 57774</a>
                         </li>
                         <li class="flex items-center space-x-2">
                             <span class="text-[10px] font-mono font-bold text-blue-400">GST:</span>
@@ -1176,12 +1171,7 @@
     <!-- 10. PRODUCT INQUIRY & QUOTATION MODAL -->
     <div id="inquireModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="pathsoft-card max-w-lg w-full p-6 sm:p-8 relative shadow-2xl">
-            <button type="button" onclick="closeInquireModal()"
-                class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white p-1 rounded-lg">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-            </button>
+            <x-close-button onclick="closeInquireModal()" class="absolute top-4 right-4" />
 
             <div class="mb-5">
                 <div class="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-semibold mb-2">
@@ -1202,27 +1192,27 @@
                 <input type="hidden" name="model_no" id="modalProductSkuInput">
 
                 <div>
-                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Your Full Name *</label>
-                    <input type="text" name="customer_name" required placeholder="John Doe"
+                    <label for="f-customer-name" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Your Full Name *</label>
+                    <input id="f-customer-name" type="text" name="customer_name" required placeholder="John Doe"
                         class="w-full min-h-[44px] px-3.5 py-2.5 text-sm rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Mobile Phone *</label>
-                        <input type="tel" name="phone" required placeholder="+91 98765 43210"
+                        <label for="f-phone" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Mobile Phone *</label>
+                        <input id="f-phone" type="tel" name="phone" required placeholder="+91 98765 43210"
                             class="w-full min-h-[44px] px-3.5 py-2.5 text-sm rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Email Address</label>
-                        <input type="email" name="email" placeholder="john@enterprise.com"
+                        <label for="f-email" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Email Address</label>
+                        <input id="f-email" type="email" name="email" placeholder="john@enterprise.com"
                             class="w-full min-h-[44px] px-3.5 py-2.5 text-sm rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Estimated Units / Notes</label>
-                    <input type="text" name="notes" placeholder="e.g., Need 8 units with 8-ch NVR and installation"
+                    <label for="f-notes-2" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Estimated Units / Notes</label>
+                    <input id="f-notes-2" type="text" name="notes" placeholder="e.g., Need 8 units with 8-ch NVR and installation"
                         class="w-full min-h-[44px] px-3.5 py-2.5 text-sm rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
 
@@ -1247,10 +1237,7 @@
                         <p class="text-xs text-slate-500 dark:text-slate-400">Search enterprise security solutions, AMC packages, and CCTV architectures</p>
                     </div>
                 </div>
-                <button type="button" onclick="closeSearchModal()"
-                    class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
+                <x-close-button label="Close search" onclick="closeSearchModal()" />
             </div>
 
             <!-- Search Form -->
@@ -1259,7 +1246,7 @@
                     <svg class="w-5 h-5 text-slate-400 absolute left-3.5 pointer-events-none shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                     </svg>
-                    <input type="text" name="q" id="searchModalInput" autofocus
+                    <input aria-label="Search the website" type="text" name="q" id="searchModalInput" autofocus
                         placeholder="Type keywords (e.g. CCTV, AMC, Cloud VMS, ANPR, Access Control, Audit)..."
                         style="padding-left: 2.875rem !important;"
                         class="w-full pl-11 pr-24 py-3.5 text-sm rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-inner">
@@ -1270,7 +1257,7 @@
 
                 <!-- Quick Filters -->
                 <div class="pt-2">
-                    <p class="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2">Explore Solutions</p>
+                    <p class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Explore Solutions</p>
                     <div class="flex flex-wrap gap-2">
                         <a href="#services" onclick="closeSearchModal()" class="px-3 py-1 rounded-lg text-xs bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-blue-600 hover:text-white transition-colors">Corporate Solutions</a>
                         <a href="#services" onclick="closeSearchModal()" class="px-3 py-1 rounded-lg text-xs bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-blue-600 hover:text-white transition-colors">24/7 Call Center AMC</a>
@@ -1520,20 +1507,14 @@
                     <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                     <span id="lightboxAutoplayLabel">Auto Play</span>
                 </button>
-                <button type="button" onclick="closePictureLightbox()"
-                    class="w-9 h-9 rounded-full bg-white/10 hover:bg-rose-600 text-white flex items-center justify-center transition-all hover:scale-110"
-                    title="Close Viewer (ESC)">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                </button>
+                <x-close-button tone="dark" label="Close viewer" onclick="closePictureLightbox()" />
             </div>
         </div>
 
         <!-- Lightbox Body / Image View -->
         <div class="relative flex-1 flex items-center justify-center my-2 max-w-7xl mx-auto w-full overflow-hidden">
             <!-- Prev Button -->
-            <button type="button" onclick="prevLightboxSlide()"
+            <button aria-label="Previous photo" type="button" onclick="prevLightboxSlide()"
                 class="absolute left-2 sm:left-4 z-30 w-12 h-12 rounded-full bg-slate-900/80 hover:bg-blue-600 text-white backdrop-blur-md border border-white/20 flex items-center justify-center transition-all shadow-2xl hover:scale-110">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
@@ -1542,7 +1523,7 @@
 
             <!-- Main Display Image -->
             <div class="relative max-h-full max-w-full flex flex-col items-center justify-center p-2">
-                <img id="lightboxImage" src="" alt="" 
+                <img id="lightboxImage" alt="" 
                     class="max-h-[62vh] sm:max-h-[70vh] w-auto max-w-full object-contain rounded-xl shadow-2xl transition-all duration-300 transform scale-100">
                 <div class="mt-3 text-center max-w-2xl px-4">
                     <h3 id="lightboxTitle" class="text-base sm:text-lg font-bold font-heading text-white drop-shadow"></h3>
@@ -1551,7 +1532,7 @@
             </div>
 
             <!-- Next Button -->
-            <button type="button" onclick="nextLightboxSlide()"
+            <button aria-label="Next photo" type="button" onclick="nextLightboxSlide()"
                 class="absolute right-2 sm:right-4 z-30 w-12 h-12 rounded-full bg-slate-900/80 hover:bg-blue-600 text-white backdrop-blur-md border border-white/20 flex items-center justify-center transition-all shadow-2xl hover:scale-110">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>

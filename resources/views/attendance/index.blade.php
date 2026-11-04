@@ -34,7 +34,7 @@
                         <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         {{ session('status') }}
                     </span>
-                    <button onclick="this.parentElement.remove()" class="text-emerald-500 hover:text-emerald-700">✕</button>
+                    <x-close-button size="sm" tone="inherit" label="Dismiss message" onclick="this.parentElement.remove()" />
                 </div>
             @endif
 
@@ -44,7 +44,7 @@
                         <svg class="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/></svg>
                         {{ session('error') }}
                     </span>
-                    <button onclick="this.parentElement.remove()" class="text-rose-500 hover:text-rose-700">✕</button>
+                    <x-close-button size="sm" tone="inherit" label="Dismiss message" onclick="this.parentElement.remove()" />
                 </div>
             @endif
 
@@ -230,7 +230,7 @@
                                         <td class="py-3 px-4">
                                             <div class="flex items-center gap-3">
                                                 <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-xs">
-                                                    {{ strtoupper(substr($emp->name, 0, 1)) }}
+                                                    {{ strtoupper(mb_substr($emp->name, 0, 1)) }}
                                                 </div>
                                                 <div>
                                                     <span class="font-bold text-slate-900 dark:text-white block">{{ $emp->name }}</span>
@@ -468,7 +468,7 @@
                                         <td class="py-3 px-4">
                                             <div class="flex items-center gap-2.5">
                                                 <div class="w-7 h-7 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-xs">
-                                                    {{ strtoupper(substr($emp->name, 0, 1)) }}
+                                                    {{ strtoupper(mb_substr($emp->name, 0, 1)) }}
                                                 </div>
                                                 <div>
                                                     <span class="font-bold text-slate-900 dark:text-white block">{{ $emp->name }}</span>
@@ -613,7 +613,7 @@
                                     @foreach($monthDays as $mDay)
                                         <th class="py-2.5 px-1 text-center min-w-[32px] {{ $mDay['is_today'] ? 'bg-blue-100/60 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300 font-black' : '' }} {{ $mDay['is_sunday'] ? 'text-rose-500' : '' }}">
                                             <span class="block text-[11px]">{{ $mDay['day_num'] }}</span>
-                                            <span class="block text-[11px] font-normal opacity-70">{{ substr($mDay['day_name'], 0, 1) }}</span>
+                                            <span class="block text-[11px] font-normal opacity-70">{{ mb_substr($mDay['day_name'], 0, 1) }}</span>
                                         </th>
                                     @endforeach
                                     <th class="py-3 px-3 text-center min-w-[80px]">Days</th>
@@ -635,7 +635,7 @@
                                         <td class="py-2.5 px-3 sticky left-0 bg-white dark:bg-[#0f172a] z-10 shadow-xs">
                                             <div class="flex items-center gap-2">
                                                 <div class="w-6 h-6 rounded-md bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-[11px]">
-                                                    {{ strtoupper(substr($emp->name, 0, 1)) }}
+                                                    {{ strtoupper(mb_substr($emp->name, 0, 1)) }}
                                                 </div>
                                                 <div class="truncate max-w-[120px]">
                                                     <span class="font-bold text-slate-900 dark:text-white block truncate">{{ $emp->name }}</span>
@@ -656,7 +656,7 @@
                                                             title="{{ $mDay['date'] }}: {{ $rec->status_label }} ({{ $rec->total_hours }}h)"
                                                             class="w-6 h-6 mx-auto rounded text-[11px] font-bold flex items-center justify-center transition
                                                                 {{ $rec->status === 'present' ? 'bg-emerald-500 hover:bg-emerald-600 text-white' : '' }}
-                                                                {{ $rec->status === 'late' ? 'bg-amber-400 hover:bg-amber-500 text-slate-900 font-black' : '' }}
+                                                                {{ $rec->status === 'late' ? 'bg-amber-400 hover:bg-amber-500 text-slate-900 dark:text-slate-900 font-black' : '' }}
                                                                 {{ $rec->status === 'half_day' ? 'bg-sky-500 hover:bg-sky-600 text-white' : '' }}
                                                                 {{ $rec->status === 'absent' ? 'bg-rose-500 hover:bg-rose-600 text-white' : '' }}
                                                                 {{ $rec->status === 'on_leave' ? 'bg-purple-500 hover:bg-purple-600 text-white' : '' }}
@@ -728,7 +728,7 @@
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center gap-2.5">
                                         <div class="w-8 h-8 rounded-lg bg-blue-600 text-white font-bold text-xs flex items-center justify-center">
-                                            {{ strtoupper(substr($emp->name, 0, 1)) }}
+                                            {{ strtoupper(mb_substr($emp->name, 0, 1)) }}
                                         </div>
                                         <div>
                                             <span class="font-bold text-xs text-slate-900 dark:text-white block">{{ $emp->name }}</span>
@@ -778,7 +778,7 @@
         <div class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl">
             <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                 <h3 class="text-sm font-bold text-slate-900 dark:text-white" id="modalTitle">Record Employee Attendance</h3>
-                <button type="button" onclick="document.getElementById('manualAttendanceModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600">✕</button>
+                <x-close-button onclick="document.getElementById('manualAttendanceModal').classList.add('hidden')" />
             </div>
 
             <form method="POST" action="{{ route('attendance.store') }}" class="space-y-4 mt-4">
@@ -860,7 +860,7 @@
         <div class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-lg w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl">
             <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                 <h3 class="text-sm font-bold text-slate-900 dark:text-white">Bulk / Range Attendance Fill</h3>
-                <button type="button" onclick="document.getElementById('bulkAttendanceModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600">✕</button>
+                <x-close-button onclick="document.getElementById('bulkAttendanceModal').classList.add('hidden')" />
             </div>
 
             <form method="POST" action="{{ route('attendance.batch-store') }}" class="space-y-4 mt-4">

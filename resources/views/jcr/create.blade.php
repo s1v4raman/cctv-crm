@@ -212,7 +212,7 @@
                                         <span><svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9zM15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg></span>
                                         <span>Take Photo (Camera)</span>
                                     </button>
-                                    <label class="btn-primary text-xs px-3 py-1.5 inline-flex items-center gap-1.5 cursor-pointer" style="background-color: #2563eb; color: #ffffff;">
+                                    <label class="btn-primary text-xs px-3 py-1.5 inline-flex items-center gap-1.5 cursor-pointer" style="background-color: var(--crm-accent, #2563eb); color: #ffffff;">
                                         <span><svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg></span>
                                         <span>Choose File</span>
                                         <input type="file" name="photos[]" accept="image/*" onchange="handlePhotoFileSelected(this, 'slot-0')" style="display:none;" class="photo-file-input">
@@ -223,7 +223,7 @@
                             {{-- Filled State (Preview) --}}
                             <div class="slot-filled-state hidden flex-col">
                                 <div class="w-full h-44 rounded-xl overflow-hidden relative border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-black group">
-                                    <img src="" class="slot-preview-img w-full h-full object-cover">
+                                    <img alt="Photo preview" class="slot-preview-img w-full h-full object-cover">
                                     <div class="absolute top-2 left-2 flex items-center gap-1.5">
                                         <span class="px-2 py-0.5 rounded-full bg-emerald-600 text-white font-bold text-[11px] shadow">✓ Photo Attached</span>
                                         <span class="slot-file-size px-2 py-0.5 rounded-full bg-slate-900/80 text-slate-300 font-mono text-[11px] border border-slate-700"></span>
@@ -275,7 +275,7 @@
                                         <span><svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9zM15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg></span>
                                         <span>Take Photo (Camera)</span>
                                     </button>
-                                    <label class="btn-primary text-xs px-3 py-1.5 inline-flex items-center gap-1.5 cursor-pointer" style="background-color: #2563eb; color: #ffffff;">
+                                    <label class="btn-primary text-xs px-3 py-1.5 inline-flex items-center gap-1.5 cursor-pointer" style="background-color: var(--crm-accent, #2563eb); color: #ffffff;">
                                         <span><svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg></span>
                                         <span>Choose File</span>
                                         <input type="file" name="photos[]" accept="image/*" onchange="handlePhotoFileSelected(this, 'slot-1')" style="display:none;" class="photo-file-input">
@@ -286,7 +286,7 @@
                             {{-- Filled State (Preview) --}}
                             <div class="slot-filled-state hidden flex-col">
                                 <div class="w-full h-44 rounded-xl overflow-hidden relative border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-black group">
-                                    <img src="" class="slot-preview-img w-full h-full object-cover">
+                                    <img alt="Photo preview" class="slot-preview-img w-full h-full object-cover">
                                     <div class="absolute top-2 left-2 flex items-center gap-1.5">
                                         <span class="px-2 py-0.5 rounded-full bg-emerald-600 text-white font-bold text-[11px] shadow">✓ Photo Attached</span>
                                         <span class="slot-file-size px-2 py-0.5 rounded-full bg-slate-900/80 text-slate-300 font-mono text-[11px] border border-slate-700"></span>
@@ -390,7 +390,7 @@
                         </div>
                         <div class="jcr-canvas-container border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900">
                             <canvas id="customerCanvas" width="700" height="180" class="w-full h-44 rounded-lg cursor-crosshair bg-white dark:bg-slate-900"></canvas>
-                            <div id="sigPlaceholder" class="absolute inset-0 pointer-events-none flex items-center justify-center text-slate-400 dark:text-slate-500 text-xs">
+                            <div id="sigPlaceholder" class="absolute inset-0 pointer-events-none flex items-center justify-center text-slate-500 dark:text-slate-400 text-xs">
                                 Sign with finger, stylus, or mouse here
                             </div>
                         </div>
@@ -425,9 +425,7 @@
                         <p id="jcrModalTargetTitle" style="font-size:.75rem;color:#f59e0b;margin:0;font-weight:600;">DVR Rack Setup</p>
                     </div>
                 </div>
-                <button type="button" onclick="closeJcrCameraModal()" style="width:2rem;height:2rem;border-radius:999px;background:#1e293b;border:1px solid #334155;color:#94a3b8;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:bold;">
-                    ✕
-                </button>
+                <x-close-button tone="dark" label="Close camera" onclick="closeJcrCameraModal()" />
             </div>
 
             {{-- Viewfinder Box --}}
@@ -470,7 +468,7 @@
                     <div style="font-size:2.5rem;margin-bottom:0.5rem;"><svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg></div>
                     <h4 style="color:#fff;font-size:1rem;font-weight:800;margin-bottom:0.25rem;">Camera Blocked or In Use</h4>
                     <p style="color:#94a3b8;font-size:0.75rem;margin-bottom:1.25rem;max-width:280px;">Webcam cannot be opened. You can select a photo directly from your laptop or phone:</p>
-                    <label style="padding:.65rem 1.25rem;background:#2563eb;color:#fff;font-weight:800;font-size:.82rem;border-radius:.75rem;cursor:pointer;display:inline-flex;align-items:center;gap:.5rem;box-shadow:0 4px 15px rgba(37,99,235,0.4);">
+                    <label style="padding:.65rem 1.25rem;background:var(--crm-accent, #2563eb);color:#fff;font-weight:800;font-size:.82rem;border-radius:.75rem;cursor:pointer;display:inline-flex;align-items:center;gap:.5rem;box-shadow:0 4px 15px rgba(var(--crm-accent-rgb, 37, 99, 235),0.4);">
                         <span>Choose Photo from Files</span>
                         <input type="file" accept="image/*" onchange="handleModalFallbackUpload(event)" style="display:none;">
                     </label>
@@ -999,7 +997,7 @@
                     </div>
                     <div class="flex items-center gap-2">
                         <span class="text-[11px] font-semibold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">Extra Proof</span>
-                        <button type="button" onclick="deleteSlot('${newId}')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs font-bold cursor-pointer bg-transparent border-0">✕</button>
+                        <button type="button" onclick="deleteSlot('${newId}')" class="crm-close btn-icon crm-close--sm crm-close--danger" aria-label="Remove photo slot" title="Remove photo slot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
                     </div>
                 </div>
 
@@ -1016,7 +1014,7 @@
                             <span><svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9zM15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg></span>
                             <span>Take Photo (Camera)</span>
                         </button>
-                        <label class="btn-primary text-xs px-3 py-1.5 inline-flex items-center gap-1.5 cursor-pointer" style="background-color: #2563eb; color: #ffffff;">
+                        <label class="btn-primary text-xs px-3 py-1.5 inline-flex items-center gap-1.5 cursor-pointer" style="background-color: var(--crm-accent, #2563eb); color: #ffffff;">
                             <span><svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg></span>
                             <span>Choose File</span>
                             <input type="file" name="photos[]" accept="image/*" onchange="handlePhotoFileSelected(this, '${newId}')" style="display:none;" class="photo-file-input">
@@ -1026,7 +1024,7 @@
 
                 <div class="slot-filled-state hidden flex-col">
                     <div class="w-full h-44 rounded-xl overflow-hidden relative border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-black group">
-                        <img src="" class="slot-preview-img w-full h-full object-cover">
+                        <img alt="Photo preview" class="slot-preview-img w-full h-full object-cover">
                         <div class="absolute top-2 left-2 flex items-center gap-1.5">
                             <span class="px-2 py-0.5 rounded-full bg-emerald-600 text-white font-bold text-[11px] shadow">✓ Photo Attached</span>
                             <span class="slot-file-size px-2 py-0.5 rounded-full bg-slate-900/80 text-slate-300 font-mono text-[11px] border border-slate-700"></span>

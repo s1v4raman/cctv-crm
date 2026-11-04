@@ -2,7 +2,7 @@
     @php
         $statusColors = [
             'draft'    => ['badge' => 'border-slate-600 bg-slate-800/80 text-slate-300', 'bar' => '#64748b', 'glow' => 'rgba(100,116,139,0.3)'],
-            'sent'     => ['badge' => 'border-sky-500/30 bg-sky-500/10 text-sky-400', 'bar' => '#38bdf8', 'glow' => 'rgba(56,189,248,0.3)'],
+            'sent'     => ['badge' => 'border-sky-500/30 bg-sky-500/10 text-sky-400', 'bar' => 'var(--crm-accent, #2563eb)', 'glow' => 'rgba(var(--crm-accent-rgb, 37, 99, 235), 0.3)'],
             'accepted' => ['badge' => 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400', 'bar' => '#34d399', 'glow' => 'rgba(52,211,153,0.3)'],
             'rejected' => ['badge' => 'border-rose-500/30 bg-rose-500/10 text-rose-400', 'bar' => '#f43f5e', 'glow' => 'rgba(244,63,94,0.3)'],
             'expired'  => ['badge' => 'border-amber-500/30 bg-amber-500/10 text-amber-400', 'bar' => '#f59e0b', 'glow' => 'rgba(245,158,11,0.3)'],
@@ -21,11 +21,11 @@
                         Quotation {{ $quotation->quotation_no }}
                     </h2>
                     @php
-                        $qStatusColor = '#64748b';
-                        if ($quotation->status === 'sent') $qStatusColor = '#0284c7';
-                        elseif ($quotation->status === 'accepted') $qStatusColor = '#16a34a';
-                        elseif ($quotation->status === 'rejected') $qStatusColor = '#dc2626';
-                        elseif ($quotation->status === 'expired') $qStatusColor = '#d97706';
+                        $qStatusColor = 'var(--text-muted)';
+                        if ($quotation->status === 'sent') $qStatusColor = 'var(--link-color)';
+                        elseif ($quotation->status === 'accepted') $qStatusColor = 'var(--status-success-fg)';
+                        elseif ($quotation->status === 'rejected') $qStatusColor = 'var(--status-danger-fg)';
+                        elseif ($quotation->status === 'expired') $qStatusColor = 'var(--status-warning-fg)';
                     @endphp
                     <span class="text-sm font-bold" style="color: {{ $qStatusColor }};">
                         {{ ucfirst($quotation->status) }}
@@ -346,9 +346,7 @@
                         <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Server SMTP Delivery or Outlook Desktop Compose</p>
                     </div>
                 </div>
-                <button type="button" onclick="closeEmailModal()" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer" aria-label="Close modal">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
+                <x-close-button onclick="closeEmailModal()" />
             </div>
 
             {{-- 1-Click External Email Clients --}}
@@ -467,9 +465,7 @@
                         <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Quotation #{{ $quotation->quotation_no }} &bull; Total: <strong>₹{{ number_format((float)$quotation->total, 2) }}</strong></p>
                     </div>
                 </div>
-                <button type="button" onclick="closeWhatsAppModal()" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer" aria-label="Close modal">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
+                <x-close-button onclick="closeWhatsAppModal()" />
             </div>
 
             {{-- Condition Status --}}
@@ -586,7 +582,7 @@
                         <span>Copy Message</span>
                     </button>
                 </div>
-                <textarea id="wa-custom-message" rows="4" class="crm-input h-auto py-2.5 font-mono text-xs leading-relaxed">{{ $quotation->getWhatsAppFormattedMessage('1') }}</textarea>
+                <textarea aria-label="WhatsApp message" id="wa-custom-message" rows="4" class="crm-input h-auto py-2.5 font-mono text-xs leading-relaxed">{{ $quotation->getWhatsAppFormattedMessage('1') }}</textarea>
             </div>
 
             {{-- Action Buttons --}}

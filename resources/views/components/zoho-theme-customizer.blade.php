@@ -109,7 +109,7 @@
 
         {{-- Section 3: Accent Colors Palette (Exact 13 Zoho CRM Colors) --}}
         <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
-            <div class="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2 flex items-center justify-between">
+            <div class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 flex items-center justify-between">
                 <span>Accent Palette</span>
                 <span class="text-[11px] font-mono text-slate-400 lowercase" x-text="accent"></span>
             </div>

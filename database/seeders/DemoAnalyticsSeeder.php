@@ -32,6 +32,7 @@ use App\Models\StockMovement;
 use App\Models\Supplier;
 use App\Models\User;
 use App\Models\VendorPayment;
+use App\Support\SharedDatabase;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -47,6 +48,8 @@ class DemoAnalyticsSeeder extends Seeder
 
     public function run(): void
     {
+        SharedDatabase::refuseSeeding(static::class);
+
         $this->initDates();
         $this->cleanupAndSeedProducts();
         $this->seedUsers();

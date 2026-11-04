@@ -33,13 +33,14 @@
 
         @foreach($users as $user)
             <tr>
+                <x-list-pick :id="$user->id" :label="$user->name" />
                 <td>
                     <a href="{{ route('admin.users.show', $user) }}" class="ld-name plain-link">{{ $user->name }}</a>
                     @if($user->id === auth()->id())<span class="text-xs" style="color: var(--ld-muted)"> (you)</span>@endif
                     @if($user->isWorker() && $user->worker)
                         <div class="text-xs mt-0.5" style="color: var(--ld-muted)">
                             {{ \App\Support\Inr::money($user->worker->daily_rate) }} a day @if($user->worker->phone) · {{ $user->worker->phone }}@endif
-                            · <a href="{{ route('workers.show', $user->worker) }}" class="plain-link underline" style="color: var(--ld-muted)">worker profile</a>
+                            · <a href="{{ route('workers.show', $user->worker) }}" class="plain-link underline font-medium" style="color: var(--link-color)">worker profile</a>
                         </div>
                     @endif
                 </td>

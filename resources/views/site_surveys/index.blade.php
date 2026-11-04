@@ -41,6 +41,7 @@
 
         @foreach($surveys as $survey)
             <tr>
+                <x-list-pick :id="$survey->id" :label="'survey for ' . ($survey->lead?->customer_name ?? $survey->id)" />
                 <td>
                     <a href="{{ route('site-surveys.show', $survey) }}" class="ld-name plain-link">{{ $survey->lead->customer_name ?? '—' }}</a>
                     @if($survey->lead?->company_name)<div class="text-xs mt-0.5" style="color: var(--ld-muted)">{{ $survey->lead->company_name }}</div>@endif

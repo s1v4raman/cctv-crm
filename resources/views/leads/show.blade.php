@@ -11,10 +11,10 @@
                         {{ $lead->customer_name }}
                     </h2>
                     @php
-                        $leadStatusColor = '#2563eb';
-                        if ($lead->status === 'won') $leadStatusColor = '#16a34a';
-                        elseif ($lead->status === 'lost') $leadStatusColor = '#dc2626';
-                        elseif ($lead->status === 'quoted') $leadStatusColor = '#7c3aed';
+                        $leadStatusColor = 'var(--link-color)';
+                        if ($lead->status === 'won') $leadStatusColor = 'var(--status-success-fg)';
+                        elseif ($lead->status === 'lost') $leadStatusColor = 'var(--status-danger-fg)';
+                        elseif ($lead->status === 'quoted') $leadStatusColor = 'var(--link-hover)';
                     @endphp
                     <span class="text-sm font-bold" style="color: {{ $leadStatusColor }};">
                         {{ ucfirst($lead->status) }}
@@ -37,10 +37,12 @@
                 @endif
 
                 {{-- Secondary navigation buttons to other modules --}}
+                @unless(auth()->user()->isTechnician())
                 <a href="{{ route('site-surveys.create', ['lead_id' => $lead->id]) }}" class="btn-secondary text-xs inline-flex items-center gap-1.5">
                     <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
                     <span>Survey</span>
                 </a>
+                @endunless
 
                 <a href="{{ route('leads.vcard', $lead) }}" class="btn-secondary text-xs inline-flex items-center gap-1.5">
                     <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
@@ -267,10 +269,12 @@
             <div class="crm-section">
                 <div class="flex items-center justify-between mb-4 pb-2 border-b border-[var(--card-border)] dark:border-slate-700">
                     <h3 class="border-none pb-0 mb-0" style="border:none !important; border-bottom:none !important; margin-bottom:0 !important; padding-bottom:0 !important;">Site Surveys</h3>
+                    @unless(auth()->user()->isTechnician())
                     <a href="{{ route('site-surveys.create', ['lead_id' => $lead->id]) }}" class="btn-secondary text-xs inline-flex items-center gap-1.5">
                         <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                         <span>Schedule Survey</span>
                     </a>
+                    @endunless
                 </div>
 
                 <div class="overflow-x-auto">

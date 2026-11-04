@@ -38,7 +38,7 @@ class User extends Authenticatable
     }
     protected $fillable = [
         'name', 'email', 'password', 'role', 'lead_id', 'google_id', 'avatar',
-        'theme_accent', 'theme_mode', 'theme_style',
+        'theme_accent', 'theme_mode', 'theme_style', 'locale',
     ];
 
     public function lead(): \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -89,9 +89,31 @@ class User extends Authenticatable
         return $this->role === 'worker';
     }
 
+    /**
+     * This account's start page: the technician station, the worker portal,
+     * the office dashboard, or (for any other account) its own profile.
+     */
+    public function homeUrl(): string
+    {
+        return match (true) {
+            $this->isTechnician() => route('technician.dashboard'),
+            $this->isWorker() => route('worker.portal'),
+            $this->isOffice() => route('dashboard'),
+            default => route('profile.edit'),
+        };
+    }
+
     public function worker(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(Worker::class, 'user_id');
+    }
+
+    /**
+     * Workers and technicians can switch their pages to Tamil; every other page is English only.
+     */
+    public function canChooseLanguage(): bool
+    {
+        return $this->isWorker() || $this->isTechnician();
     }
 
     public function isInternal(): bool

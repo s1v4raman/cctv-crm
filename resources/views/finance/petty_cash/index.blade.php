@@ -51,7 +51,7 @@
         <div class="flex flex-wrap items-center justify-between gap-3 p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded">
             <span class="text-xs font-medium text-slate-600 dark:text-slate-400">Quick Actions</span>
             <div class="flex flex-wrap items-center gap-2">
-                <button type="button" @click="advanceModal = true" class="inline-flex items-center px-3 py-1.5 bg-[#2563eb] hover:bg-blue-700 text-white font-medium text-xs rounded transition">
+                <button type="button" @click="advanceModal = true" class="inline-flex items-center px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs rounded transition">
                     Issue Float Advance
                 </button>
                 <button type="button" @click="collectionModal = true" class="inline-flex items-center px-3 py-1.5 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 font-medium text-xs rounded transition">
@@ -296,9 +296,7 @@
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded max-w-lg w-full p-6 space-y-4" @click.away="advanceModal = false">
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                     <h3 class="text-sm font-bold text-slate-900 dark:text-white">Issue Cash Float Advance</h3>
-                    <button aria-label="Close" @click="advanceModal = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                    </button>
+                    <x-close-button @click="advanceModal = false" />
                 </div>
 
                 <form action="{{ route('finance.petty_cash.advance') }}" method="POST" class="space-y-4">
@@ -333,7 +331,7 @@
                         <button type="button" @click="advanceModal = false" class="px-4 py-2 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-medium text-xs rounded transition">
                             Cancel
                         </button>
-                        <button type="submit" class="px-4 py-2 bg-[#2563eb] hover:bg-blue-700 text-white font-medium text-xs rounded transition">
+                        <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs rounded transition">
                             Disburse Float
                         </button>
                     </div>
@@ -348,9 +346,7 @@
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded max-w-lg w-full p-6 space-y-4" @click.away="collectionModal = false">
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                     <h3 class="text-sm font-bold text-slate-900 dark:text-white">Record Customer Cash Collection</h3>
-                    <button aria-label="Close" @click="collectionModal = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                    </button>
+                    <x-close-button @click="collectionModal = false" />
                 </div>
 
                 <form action="{{ route('finance.petty_cash.collection') }}" method="POST" class="space-y-4">
@@ -400,7 +396,7 @@
                         <button type="button" @click="collectionModal = false" class="px-4 py-2 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-medium text-xs rounded transition">
                             Cancel
                         </button>
-                        <button type="submit" class="px-4 py-2 bg-[#2563eb] hover:bg-blue-700 text-white font-medium text-xs rounded transition">
+                        <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs rounded transition">
                             Save Collection
                         </button>
                     </div>
@@ -415,9 +411,7 @@
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded max-w-lg w-full p-6 space-y-4" @click.away="expenseModal = false">
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                     <h3 class="text-sm font-bold text-slate-900 dark:text-white">Log Site Petty Expense</h3>
-                    <button aria-label="Close" @click="expenseModal = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                    </button>
+                    <x-close-button @click="expenseModal = false" />
                 </div>
 
                 <form action="{{ route('finance.petty_cash.expense') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
@@ -472,8 +466,8 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Attach Receipt</label>
-                            <input type="file" name="receipt_photo" accept="image/*,.pdf" class="w-full text-xs text-slate-500">
+                            <label for="f-receipt-photo" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Attach Receipt</label>
+                            <input id="f-receipt-photo" type="file" name="receipt_photo" accept="image/*,.pdf" class="w-full text-xs text-slate-500">
                         </div>
                     </div>
 
@@ -486,7 +480,7 @@
                         <button type="button" @click="expenseModal = false" class="px-4 py-2 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-medium text-xs rounded transition">
                             Cancel
                         </button>
-                        <button type="submit" class="px-4 py-2 bg-[#2563eb] hover:bg-blue-700 text-white font-medium text-xs rounded transition">
+                        <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs rounded transition">
                             Record Expense
                         </button>
                     </div>
@@ -501,9 +495,7 @@
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded max-w-lg w-full p-6 space-y-4" @click.away="handoverModal = false">
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                     <h3 class="text-sm font-bold text-slate-900 dark:text-white">Cash Handover / Bank Deposit</h3>
-                    <button aria-label="Close" @click="handoverModal = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                    </button>
+                    <x-close-button @click="handoverModal = false" />
                 </div>
 
                 <form action="{{ route('finance.petty_cash.handover') }}" method="POST" class="space-y-4">
@@ -553,7 +545,7 @@
                         <button type="button" @click="handoverModal = false" class="px-4 py-2 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-medium text-xs rounded transition">
                             Cancel
                         </button>
-                        <button type="submit" class="px-4 py-2 bg-[#2563eb] hover:bg-blue-700 text-white font-medium text-xs rounded transition">
+                        <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs rounded transition">
                             Process Handover
                         </button>
                     </div>

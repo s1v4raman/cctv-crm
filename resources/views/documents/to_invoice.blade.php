@@ -46,7 +46,7 @@
         @if (session('status'))
             <div class="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-sm flex items-center justify-between">
                 <span>{{ session('status') }}</span>
-                <button type="button" onclick="this.parentElement.remove()" class="text-emerald-600 hover:text-emerald-900">&times;</button>
+                <x-close-button size="sm" tone="inherit" label="Dismiss message" onclick="this.parentElement.remove()" />
             </div>
         @endif
 
@@ -96,15 +96,15 @@
                 <div class="rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden">
                     <div class="px-5 py-3.5 bg-slate-50/80 dark:bg-slate-800/60 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
                         <div class="flex items-center gap-3">
-                            <span class="w-3 h-3 rounded-full bg-blue-600"></span>
+                            <span class="w-3 h-3 rounded-full" style="background-color: var(--crm-accent, #2563eb);"></span>
                             <h3 class="font-bold text-slate-900 dark:text-white text-sm font-heading">{{ $companyName }}</h3>
-                            <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300">
+                            <span class="text-xs font-semibold px-2 py-0.5 rounded-full" style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.12); color: var(--link-color);">
                                 {{ $docs->count() }} DCs
                             </span>
                         </div>
 
                         <div class="flex items-center gap-2 text-xs">
-                            <button type="button" @click="selectAll({{ json_encode($docIds) }})" class="text-blue-600 hover:underline">Select All</button>
+                            <button type="button" @click="selectAll({{ json_encode($docIds) }})" class="hover:underline font-semibold" style="color: var(--link-color);">Select All</button>
                             <span class="text-slate-300">&bull;</span>
                             <button type="button" @click="clearGroup({{ json_encode($docIds) }})" class="text-slate-400 hover:underline">Deselect</button>
                         </div>
@@ -146,7 +146,7 @@
                                             </div>
                                         </td>
                                         <td class="px-5 py-3.5">
-                                            <a href="{{ route('projects.show', $doc->project) }}" class="font-bold text-blue-600 dark:text-blue-400 hover:underline">
+                                            <a href="{{ route('projects.show', $doc->project) }}" class="font-bold hover:underline" style="color: var(--link-color);">
                                                 {{ $doc->project->project_code }}
                                             </a>
                                             <div class="text-xs text-slate-400 truncate max-w-xs">{{ $doc->project->title }}</div>
@@ -181,7 +181,7 @@
             <div @click.away="invoiceModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                     <h3 class="font-bold text-slate-900 dark:text-white text-base">Mark Delivery Challans as Invoiced</h3>
-                    <button type="button" @click="invoiceModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+                    <x-close-button @click="invoiceModalOpen = false" />
                 </div>
 
                 <form method="POST" action="{{ route('documents.mark-invoiced') }}" class="space-y-4">

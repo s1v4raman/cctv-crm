@@ -14,6 +14,7 @@ use App\Models\TaskMaterialConsumption;
 use App\Models\User;
 use App\Models\Vendor;
 use App\Models\Worker;
+use App\Services\ProjectMaterialLedger;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -416,7 +417,7 @@ class ProjectController extends Controller
         ]);
 
         $activeTab = $request->input('tab', 'overview');
-        $activeTaskView = $request->input('view', 'kanban');
+        $activeTaskView = $request->input('view') === 'kanban' ? 'kanban' : 'list';
         $companies = $this->getExecutingCompanies();
         $workers = Worker::where('is_active', true)->orderBy('name')->get();
         $technicians = User::whereIn('role', ['admin', 'technician', 'staff'])->orderBy('name')->get();
@@ -427,6 +428,8 @@ class ProjectController extends Controller
         $totalConsumedQuantity = (float) $project->materialConsumptions->sum('quantity_used');
         $totalCableMeters = (float) $project->materialConsumptions->where('unit', 'meters')->sum('quantity_used');
         $totalWastageQuantity = (float) $project->materialConsumptions->sum('wastage_quantity');
+        // Given to site, used, balance on site, storeroom and on order, per product
+        $stockLedger = ProjectMaterialLedger::forProject($project);
 
         // Calculate Work Days & Wages KPI for Tab 4 and Tab 1 Overview
         $totalManDays = 0;
@@ -529,7 +532,8 @@ class ProjectController extends Controller
             'totalBomQuantity',
             'totalConsumedQuantity',
             'totalCableMeters',
-            'totalWastageQuantity'
+            'totalWastageQuantity',
+            'stockLedger'
         ));
     }
 

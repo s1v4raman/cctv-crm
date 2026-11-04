@@ -157,15 +157,9 @@
         @enderror
     </div>
 
-    <div style="position: sticky; bottom: 0; z-index: 30; display: flex; align-items: center; justify-content: flex-end; gap: 12px; margin-top: 32px; border-top: 1px solid #d1d5db; background-color: #ffffff; padding: 18px 0 4px; box-shadow: 0 -8px 14px rgba(255,255,255,0.96);">
-        <a href="{{ route('products.index') }}"
-           style="display: inline-flex; align-items: center; justify-content: center; background-color: #ffffff; color: #1f2937 !important; border: 1px solid #9ca3af; border-radius: 6px; padding: 12px 22px; font-size: 14px; font-weight: 700; line-height: 20px; min-width: 100px; text-decoration: none; font-family: Arial, sans-serif; visibility: visible; opacity: 1;">
-            Cancel
-        </a>
-
-        <button type="submit"
-                style="display: inline-flex; align-items: center; justify-content: center; background-color: #4338ca !important; color: #ffffff !important; border: 1px solid #312e81; border-radius: 6px; padding: 12px 24px; font-size: 14px; font-weight: 700; line-height: 20px; min-width: 155px; font-family: Arial, sans-serif; visibility: visible; opacity: 1; cursor: pointer;">
-            {{ $isEditing ? 'Update Product' : 'Save Product' }}
-        </button>
+    {{-- Sticky action bar: the card colour of the current theme, so it never shows as a white strip in dark mode --}}
+    <div class="sticky bottom-0 z-30 flex items-center justify-end gap-3 mt-8 pt-4 pb-1 border-t border-[var(--card-border)] bg-[var(--card-bg)]">
+        <a href="{{ route('products.index') }}" class="btn-secondary">Cancel</a>
+        <button type="submit" class="btn-primary">{{ $isEditing ? 'Update Product' : 'Save Product' }}</button>
     </div>
 </form>

@@ -218,7 +218,7 @@
                             <td class="px-4 py-3">
                                 <div class="flex items-center gap-2.5">
                                     <div class="w-7 h-7 rounded-full bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center text-white font-bold text-[11px] flex-shrink-0">
-                                        {{ strtoupper(substr($emp['name'], 0, 1)) }}
+                                        {{ strtoupper(mb_substr($emp['name'], 0, 1)) }}
                                     </div>
                                     <div>
                                         <div class="font-semibold text-slate-900 dark:text-white text-xs">{{ $emp['name'] }}</div>
@@ -312,7 +312,7 @@
                     <div class="flex items-center justify-between px-5 py-3">
                         <div class="flex items-center gap-3">
                             <div class="w-7 h-7 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white font-bold text-[11px] flex-shrink-0">
-                                {{ strtoupper(substr($leave->user?->name ?? 'U', 0, 1)) }}
+                                {{ strtoupper(mb_substr($leave->user?->name ?? 'U', 0, 1)) }}
                             </div>
                             <div>
                                 <div class="text-xs font-semibold text-slate-900 dark:text-white">{{ $leave->user?->name ?? 'Unknown' }}</div>

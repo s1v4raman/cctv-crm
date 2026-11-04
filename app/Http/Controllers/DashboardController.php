@@ -10,6 +10,7 @@ use App\Models\SiteSurvey;
 use App\Models\EmployeeAttendance;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
@@ -28,7 +29,7 @@ class DashboardController extends Controller
         return view('dashboard', compact('isAdmin', 'myAttendanceToday', 'totalLeads'));
     }
 
-    public function data(): JsonResponse
+    public function data(Request $request): JsonResponse
     {
         $user = auth()->user();
         $isAdmin = $user ? $user->isAdmin() : false;
@@ -207,8 +208,10 @@ class DashboardController extends Controller
             ->groupBy('status')
             ->pluck('total', 'status');
 
-        $months = collect(range(5, 0))
-            ->map(fn ($monthOffset) => now()->subMonths($monthOffset));
+        // Revenue Overview period picker: past 3, 6 (default) or 12 months
+        $revenueMonths = in_array((int) $request->query('months'), [3, 6, 12], true) ? (int) $request->query('months') : 6;
+        $months = collect(range($revenueMonths - 1, 0))
+            ->map(fn ($monthOffset) => now()->startOfMonth()->subMonths($monthOffset));
 
         $revenueTrend = $months->map(function ($month) {
             return (float) Quotation::query()

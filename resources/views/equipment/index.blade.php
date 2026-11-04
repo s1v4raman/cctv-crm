@@ -70,6 +70,7 @@
                 [$svcText, $svcClass, $svcDate] = $warrantyCell($item->service_warranty_status, $item->service_days_remaining, $item->service_warranty_expiry);
             @endphp
             <tr>
+                <x-list-pick :id="$item->id" :label="$item->serial_number ?: $item->equipment_name" />
                 <td class="whitespace-nowrap">
                     <a href="{{ route('equipment.show', $item) }}" class="ld-name plain-link">{{ $item->serial_number }}</a>
                     @if($item->mac_address)<div class="text-xs mt-0.5" style="color: var(--ld-muted)">MAC {{ $item->mac_address }}</div>@endif

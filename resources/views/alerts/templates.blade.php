@@ -52,13 +52,13 @@
                         <input aria-label="Search template title or event key" type="text" x-model="searchTerm" placeholder="Search template title or event key..." 
                                style="padding-left: 2.25rem !important;"
                                class="w-full text-xs font-mono rounded-xl border border-slate-700 bg-[#060913] text-white placeholder-slate-500 focus:border-amber-400 focus:outline-none p-2.5">
-                        <button type="button" x-show="searchTerm" @click="searchTerm = ''" class="absolute right-2.5 top-2 text-slate-400 hover:text-white text-xs">&times;</button>
+                        <x-close-button size="sm" label="Clear search" x-show="searchTerm" @click="searchTerm = ''" class="absolute right-1 top-1/2 -translate-y-1/2" />
                     </div>
                 </div>
 
                 <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs font-mono">
                     <button type="button" @click="activeCategory = 'all'"
-                            :class="activeCategory === 'all' ? 'bg-amber-500 text-slate-950 font-black shadow-lg shadow-amber-500/20' : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'"
+                            :class="activeCategory === 'all' ? 'bg-amber-500 text-slate-950 dark:text-slate-950 font-black shadow-lg shadow-amber-500/20' : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'"
                             class="px-3 py-1.5 rounded-xl transition shrink-0 font-bold">
                         All Modules ({{ $templates->count() }})
                     </button>
@@ -83,7 +83,7 @@
                     @endphp
                     @foreach($categories as $cat)
                         <button type="button" @click="activeCategory = '{{ $cat }}'"
-                                :class="activeCategory === '{{ $cat }}' ? 'bg-amber-500 text-slate-950 font-black shadow-lg shadow-amber-500/20' : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'"
+                                :class="activeCategory === '{{ $cat }}' ? 'bg-amber-500 text-slate-950 dark:text-slate-950 font-black shadow-lg shadow-amber-500/20' : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'"
                                 class="px-3 py-1.5 rounded-xl transition shrink-0 font-bold">
                             {{ $categoryIcons[$cat] ?? ucfirst($cat) }} ({{ $templates->where('category', $cat)->count() }})
                         </button>

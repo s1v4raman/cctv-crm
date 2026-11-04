@@ -3,24 +3,20 @@
     
     {{-- Sidebar Top: Brand Logo matching 56px fixed frame --}}
     <div class="crm-sidebar-header h-[56px] min-h-[56px] max-h-[56px] shrink-0 flex items-center justify-between px-3.5 border-b border-[var(--card-border)] bg-[var(--card-bg)] text-[var(--text-main)] transition-colors duration-200">
-        <a href="{{ auth()->user()->role === 'technician' ? route('technician.dashboard') : route('dashboard') }}" class="flex items-center group overflow-hidden min-w-0" title="Precision IT Systems">
-            {{-- EXPANDED STATE: Full horizontal brand logo (Light & Dark mode adaptive) --}}
+        <a href="{{ auth()->user()->homeUrl() }}" class="flex items-center group overflow-hidden min-w-0" title="Precision IT Systems">
+            {{-- EXPANDED STATE: Full horizontal brand logo — "Precision" recolours with theme accent --}}
             <div :class="sidebarCollapsed ? 'lg:hidden' : 'flex items-center'" class="h-8 max-h-8 min-w-0">
-                <img src="{{ asset('logo.png') }}?v={{ filemtime(public_path('logo.png')) }}" alt="Precision IT Systems" class="h-7 w-auto max-w-[155px] object-contain dark:hidden group-hover:scale-105 transition-transform shrink-0">
-                <img src="{{ asset('logo-dark.png') }}?v={{ filemtime(public_path('logo-dark.png')) }}" alt="Precision IT Systems" class="h-7 w-auto max-w-[155px] object-contain hidden dark:block group-hover:scale-105 transition-transform shrink-0">
+                <x-brand-logo class="h-7 max-h-7 w-auto max-w-[155px] group-hover:scale-105 transition-transform shrink-0" />
             </div>
 
-            {{-- COLLAPSED STATE (Desktop lg:w-20): Centered square brand mark (Light & Dark mode adaptive) --}}
+            {{-- COLLAPSED STATE (Desktop lg:w-20): Centered square brand mark --}}
             <div :class="sidebarCollapsed ? 'hidden lg:flex lg:items-center lg:justify-center' : 'hidden'" class="w-full">
-                <img src="{{ asset('logo-mark.png') }}?v={{ filemtime(public_path('logo-mark.png')) }}" alt="Precision IT Systems" class="h-8 w-8 object-contain dark:hidden group-hover:scale-105 transition-transform shrink-0">
-                <img src="{{ asset('logo-mark-dark.png') }}?v={{ filemtime(public_path('logo-mark-dark.png')) }}" alt="Precision IT Systems" class="h-8 w-8 object-contain hidden dark:block group-hover:scale-105 transition-transform shrink-0">
+                <x-brand-logo :mark="true" class="h-8 w-8 group-hover:scale-105 transition-transform shrink-0" />
             </div>
         </a>
         
         {{-- Close mobile drawer button --}}
-        <button aria-label="Close menu" @click="sidebarOpen = false" class="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-        </button>
+        <x-close-button label="Close menu" @click="sidebarOpen = false" class="lg:hidden" />
     </div>
 
     {{-- Navigation Menu Items: Scrollable flex-1 container for all modules --}}
@@ -29,7 +25,7 @@
         {{-- Technician Navigation --}}
         @if(auth()->user()->role === 'technician')
             <div>
-                <div :class="sidebarCollapsed ? 'lg:hidden' : ''" class="px-3 mb-1.5 text-[11px] font-bold tracking-wider uppercase text-slate-400 dark:text-slate-500">Technician Portal</div>
+                <div :class="sidebarCollapsed ? 'lg:hidden' : ''" class="px-3 mb-1.5 text-[11px] font-bold tracking-wider uppercase text-slate-500 dark:text-slate-400">{{ __('Technician Portal') }}</div>
                 <div :class="sidebarCollapsed ? 'hidden lg:block' : 'hidden'" class="my-2 border-t border-slate-100 dark:border-slate-800"></div>
                 <div class="space-y-1">
                     {{-- Field Work Orders (Wrench icon) --}}
@@ -38,7 +34,7 @@
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/>
                         </svg>
-                        <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">Field Work Orders</span>
+                        <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">{{ __('Field Work Orders') }}</span>
                     </a>
 
                     {{-- Calendar & Tasks Module (Calendar icon) --}}
@@ -51,7 +47,7 @@
                             <line stroke-linecap="round" stroke-linejoin="round" x1="3" x2="21" y1="10" y2="10"/>
                             <path stroke-linecap="round" stroke-linejoin="round" d="M8 14h.01M12 14h.01M16 14h.01M8 17h.01M12 17h.01M16 17h.01"/>
                         </svg>
-                        <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">Calendar &amp; Tasks</span>
+                        <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">{{ __('Calendar & Tasks') }}</span>
                     </a>
 
                     {{-- Projects & Sites (Briefcase icon) --}}
@@ -62,7 +58,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
                             <line stroke-linecap="round" stroke-linejoin="round" x1="2" x2="22" y1="13" y2="13"/>
                         </svg>
-                        <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">Projects &amp; Sites</span>
+                        <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">{{ __('Projects & Sites') }}</span>
                     </a>
 
                     {{-- Installation Sites (Location pin icon) --}}
@@ -72,7 +68,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 21c-4.5-5.5-7-9.5-7-13a7 7 0 0 1 14 0c0 3.5-2.5 7.5-7 13z"/>
                             <circle cx="12" cy="8" r="2.5"/>
                         </svg>
-                        <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">Installation Sites</span>
+                        <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">{{ __('Installation Sites') }}</span>
                     </a>
 
                     {{-- Daily Wage Workers (Team/Users icon) --}}
@@ -84,7 +80,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="M22 21v-2a4 4 0 0 0-3-3.87"/>
                             <path stroke-linecap="round" stroke-linejoin="round" d="M16 3.13a4 4 0 0 1 0 7.75"/>
                         </svg>
-                        <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">Daily Wage Workers</span>
+                        <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">{{ __('Daily Wage Workers') }}</span>
                     </a>
 
                     {{-- Worker Attendance Maintenance (Calendar/Check icon) --}}
@@ -93,17 +89,17 @@
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                         </svg>
-                        <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">Worker Attendance</span>
+                        <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">{{ __('Worker Attendance') }}</span>
                     </a>
                 </div>
             </div>
 
         {{-- Admin & Staff Comprehensive Navigation --}}
-        @else
+        @elseif(auth()->user()->isOffice())
             
             {{-- 1. Main Overview --}}
             <div>
-                <div :class="sidebarCollapsed ? 'lg:hidden' : ''" class="px-3 mb-1.5 text-[11px] font-bold tracking-wider uppercase text-slate-400 dark:text-slate-500">Overview</div>
+                <div :class="sidebarCollapsed ? 'lg:hidden' : ''" class="px-3 mb-1.5 text-[11px] font-bold tracking-wider uppercase text-slate-500 dark:text-slate-400">Overview</div>
                 <div :class="sidebarCollapsed ? 'hidden lg:block' : 'hidden'" class="my-2 border-t border-slate-100 dark:border-slate-800"></div>
                 <div class="space-y-1">
                     {{-- Dashboard (Home icon) --}}
@@ -133,7 +129,7 @@
 
             {{-- 2. Sales & Pipeline --}}
             <div>
-                <div :class="sidebarCollapsed ? 'lg:hidden' : ''" class="px-3 mb-1.5 text-[11px] font-bold tracking-wider uppercase text-slate-400 dark:text-slate-500">Sales & Pipeline</div>
+                <div :class="sidebarCollapsed ? 'lg:hidden' : ''" class="px-3 mb-1.5 text-[11px] font-bold tracking-wider uppercase text-slate-500 dark:text-slate-400">Sales & Pipeline</div>
                 <div :class="sidebarCollapsed ? 'hidden lg:block' : 'hidden'" class="my-2 border-t border-slate-100 dark:border-slate-800"></div>
                 <div class="space-y-1">
                     {{-- Leads & Inquiries (User outline icon) --}}
@@ -170,7 +166,7 @@
 
             {{-- 3. Field Operations & Support --}}
             <div>
-                <div :class="sidebarCollapsed ? 'lg:hidden' : ''" class="px-3 mb-1.5 text-[11px] font-bold tracking-wider uppercase text-slate-400 dark:text-slate-500">Field Operations</div>
+                <div :class="sidebarCollapsed ? 'lg:hidden' : ''" class="px-3 mb-1.5 text-[11px] font-bold tracking-wider uppercase text-slate-500 dark:text-slate-400">Field Operations</div>
                 <div :class="sidebarCollapsed ? 'hidden lg:block' : 'hidden'" class="my-2 border-t border-slate-100 dark:border-slate-800"></div>
                 <div class="space-y-1">
                     {{-- Projects & Sites (Briefcase icon) --}}
@@ -181,7 +177,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
                             <line stroke-linecap="round" stroke-linejoin="round" x1="2" x2="22" y1="13" y2="13"/>
                         </svg>
-                        <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">Projects &amp; Sites</span>
+                        <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">{{ __('Projects & Sites') }}</span>
                     </a>
 
                     {{-- Installation Sites (Location pin icon) --}}
@@ -191,7 +187,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 21c-4.5-5.5-7-9.5-7-13a7 7 0 0 1 14 0c0 3.5-2.5 7.5-7 13z"/>
                             <circle cx="12" cy="8" r="2.5"/>
                         </svg>
-                        <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">Installation Sites</span>
+                        <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">{{ __('Installation Sites') }}</span>
                     </a>
 
                     {{-- Workers & Daily Wages (Team/Users icon) --}}
@@ -212,7 +208,7 @@
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                         </svg>
-                        <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">Worker Attendance</span>
+                        <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">{{ __('Worker Attendance') }}</span>
                     </a>
 
                     @if(auth()->user()->isAdmin())
@@ -263,7 +259,7 @@
 
             {{-- 4. Inventory & Procurement --}}
             <div>
-                <div :class="sidebarCollapsed ? 'lg:hidden' : ''" class="px-3 mb-1.5 text-[11px] font-bold tracking-wider uppercase text-slate-400 dark:text-slate-500">Inventory & Procurement</div>
+                <div :class="sidebarCollapsed ? 'lg:hidden' : ''" class="px-3 mb-1.5 text-[11px] font-bold tracking-wider uppercase text-slate-500 dark:text-slate-400">Inventory & Procurement</div>
                 <div :class="sidebarCollapsed ? 'hidden lg:block' : 'hidden'" class="my-2 border-t border-slate-100 dark:border-slate-800"></div>
                 <div class="space-y-1">
                     @if(auth()->user()->isOffice())
@@ -307,7 +303,7 @@
 
             {{-- 5. Employee & Workforce (Clean Single Link) --}}
             <div>
-                <div :class="sidebarCollapsed ? 'lg:hidden' : ''" class="px-3 mb-1.5 text-[11px] font-bold tracking-wider uppercase text-slate-400 dark:text-slate-500">Workspace</div>
+                <div :class="sidebarCollapsed ? 'lg:hidden' : ''" class="px-3 mb-1.5 text-[11px] font-bold tracking-wider uppercase text-slate-500 dark:text-slate-400">Workspace</div>
                 <div :class="sidebarCollapsed ? 'hidden lg:block' : 'hidden'" class="my-2 border-t border-slate-100 dark:border-slate-800"></div>
                 <div class="space-y-1">
                     {{-- Employee & Workspace (User outline icon) --}}
@@ -325,7 +321,7 @@
 
             {{-- 6. Finance & Accounting (Clean Single Link) --}}
             <div>
-                <div :class="sidebarCollapsed ? 'lg:hidden' : ''" class="px-3 mb-1.5 text-[11px] font-bold tracking-wider uppercase text-slate-400 dark:text-slate-500">Finance</div>
+                <div :class="sidebarCollapsed ? 'lg:hidden' : ''" class="px-3 mb-1.5 text-[11px] font-bold tracking-wider uppercase text-slate-500 dark:text-slate-400">Finance</div>
                 <div :class="sidebarCollapsed ? 'hidden lg:block' : 'hidden'" class="my-2 border-t border-slate-100 dark:border-slate-800"></div>
                 <div class="space-y-1">
                     {{-- Finance & Accounting (Briefcase icon) --}}
@@ -345,7 +341,7 @@
             {{-- 7. Analytics & Automation (analytics for office users; alerts and user accounts admin-only) --}}
             @if(auth()->user()->isOffice())
                 <div>
-                    <div :class="sidebarCollapsed ? 'lg:hidden' : ''" class="px-3 mb-1.5 text-[11px] font-bold tracking-wider uppercase text-slate-400 dark:text-slate-500">Analytics & Automation</div>
+                    <div :class="sidebarCollapsed ? 'lg:hidden' : ''" class="px-3 mb-1.5 text-[11px] font-bold tracking-wider uppercase text-slate-500 dark:text-slate-400">Analytics & Automation</div>
                     <div :class="sidebarCollapsed ? 'hidden lg:block' : 'hidden'" class="my-2 border-t border-slate-100 dark:border-slate-800"></div>
                     <div class="space-y-1">
                         @if(auth()->user()->isAdmin())
@@ -390,6 +386,27 @@
                     </div>
                 </div>
             @endif
+
+        {{-- Daily-wage workers: their portal; any other account: only its profile --}}
+        @else
+            <div class="space-y-1">
+                @if(auth()->user()->isWorker())
+                    <a :title="sidebarCollapsed ? $el.textContent.trim() : null" :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('worker.portal') }}"
+                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('worker.*') ? 'crm-active-link' : '' }}" @if(request()->routeIs('worker.*')) aria-current="page" @endif>
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                        <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">My Work &amp; Attendance</span>
+                    </a>
+                @endif
+                <a :title="sidebarCollapsed ? $el.textContent.trim() : null" :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('profile.edit') }}"
+                   class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('profile.*') ? 'crm-active-link' : '' }}" @if(request()->routeIs('profile.*')) aria-current="page" @endif>
+                    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    </svg>
+                    <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">{{ __('My Profile') }}</span>
+                </a>
+            </div>
         @endif
 
     </nav>
@@ -402,17 +419,17 @@
                     <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->name }}" class="w-9 h-9 rounded-full object-cover shrink-0 shadow-xs ring-2 ring-white dark:ring-slate-800">
                 @else
                     <div class="w-9 h-9 rounded-full text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs ring-2 ring-white dark:ring-slate-800 crm-user-avatar" style="background-color: var(--crm-accent, #2563eb);">
-                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                        {{ strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}
                     </div>
                 @endif
                 <div class="min-w-0 truncate" :class="sidebarCollapsed ? 'lg:hidden' : ''">
                     <span class="block text-sm font-semibold text-[var(--text-main)] truncate">{{ Auth::user()->name }}</span>
-                    <span class="block text-xs text-blue-600 dark:text-blue-400 font-semibold truncate">{{ Auth::user()->role_title }}</span>
+                    <span class="block text-xs text-blue-600 dark:text-blue-400 font-semibold truncate">{{ __(Auth::user()->role_title) }}</span>
                 </div>
             </div>
 
             <div class="flex items-center gap-1 shrink-0" :class="sidebarCollapsed ? 'lg:hidden' : ''">
-                <a aria-label="Profile Settings" href="{{ route('profile.edit') }}" title="Profile Settings" class="p-2 rounded-lg text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-800 transition !bg-transparent !border-0 flex items-center justify-center">
+                <a aria-label="{{ __('Profile Settings') }}" href="{{ route('profile.edit') }}" title="{{ __('Profile Settings') }}" class="p-2 rounded-lg text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-800 transition !bg-transparent !border-0 flex items-center justify-center">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                         <line stroke-linecap="round" stroke-linejoin="round" x1="4" x2="20" y1="6" y2="6"/>
                         <circle cx="8" cy="6" r="2"/>
@@ -424,7 +441,7 @@
                 </a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button aria-label="Log Out" type="submit" title="Log Out" class="p-2 rounded-lg text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer !bg-transparent !border-0 flex items-center justify-center">
+                    <button aria-label="{{ __('Log Out') }}" type="submit" title="{{ __('Log Out') }}" class="p-2 rounded-lg text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer !bg-transparent !border-0 flex items-center justify-center">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                         </svg>

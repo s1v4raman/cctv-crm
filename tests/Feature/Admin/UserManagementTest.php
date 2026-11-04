@@ -2,7 +2,14 @@
 
 namespace Tests\Feature\Admin;
 
+use App\Models\Company;
+use App\Models\Project;
+use App\Models\ProjectWorkerAttendance;
+use App\Models\Site;
 use App\Models\User;
+use App\Models\WagePayment;
+use App\Models\WorkDay;
+use App\Models\Worker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -203,5 +210,55 @@ class UserManagementTest extends TestCase
         $showResponse->assertSee('Field Worker');
         $showResponse->assertSee('Daily Wage Rate');
         $showResponse->assertSee('Shifts Worked');
+    }
+
+    public function test_admin_can_view_worker_profile_with_shifts_and_payments(): void
+    {
+        $workerUser = User::factory()->create(['name' => 'Murugan Worker', 'role' => 'worker']);
+        $worker = Worker::create([
+            'user_id' => $workerUser->id,
+            'name' => 'Murugan Worker',
+            'phone' => '9876543299',
+            'daily_rate' => 800.00,
+            'is_active' => true,
+        ]);
+
+        $company = Company::create(['name' => 'Test Company', 'code' => 'TC', 'is_active' => true]);
+        $site = Site::create(['company_id' => $company->id, 'name' => 'Test Site', 'site_code' => 'TS-001', 'address' => 'Chennai', 'is_active' => true]);
+        $project = Project::create([
+            'project_code' => 'PRJ-TEST-001',
+            'title' => 'Test Project',
+            'name' => 'Test Project',
+            'company_id' => $company->id,
+            'site_id' => $site->id,
+            'start_date' => '2026-10-19',
+            'status' => 'in_progress',
+        ]);
+        $workDay = WorkDay::create(['project_id' => $project->id, 'work_date' => '2026-10-19']);
+        ProjectWorkerAttendance::create([
+            'work_day_id' => $workDay->id,
+            'worker_id' => $worker->id,
+            'daily_rate' => 800.00,
+            'wage_amount' => 800.00,
+            'total_amount' => 800.00,
+            'is_paid' => false,
+        ]);
+        WagePayment::create([
+            'worker_id' => $worker->id,
+            'payment_type' => 'advance',
+            'amount' => 300.00,
+            'payment_date' => '2026-10-20',
+            'payment_mode' => 'cash',
+        ]);
+
+        $response = $this->actingAs($this->admin)->get(route('admin.users.show', $workerUser));
+
+        $response->assertOk();
+        $response->assertSee('Murugan Worker');
+        $response->assertSee('Shifts Worked');
+        $this->assertSame(1, $response->viewData('stats')['shifts_count']);
+        $this->assertSame(800.0, $response->viewData('stats')['total_earned']);
+        $this->assertSame(300.0, $response->viewData('stats')['total_paid']);
+        $this->assertSame(500.0, $response->viewData('stats')['balance']);
     }
 }

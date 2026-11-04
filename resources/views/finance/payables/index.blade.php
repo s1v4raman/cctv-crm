@@ -405,9 +405,7 @@
                             <h3 class="text-base font-bold text-slate-900 dark:text-white">Record Vendor Disbursement</h3>
                             <p class="text-xs text-slate-500" x-text="modalSupplierName ? (modalSupplierName + (modalPoNumber ? ' (' + modalPoNumber + ')' : '')) : 'Supplier Payment'"></p>
                         </div>
-                        <button @click="payModal = false" class="text-slate-400 hover:text-slate-600 text-lg">
-                            &times;
-                        </button>
+                        <x-close-button @click="payModal = false" />
                     </div>
 
                     <form action="{{ route('finance.payables.payment') }}" method="POST" class="space-y-4">

@@ -6,6 +6,7 @@ use App\Models\Project;
 use App\Models\ProjectDocument;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class ProjectShowLayoutTest extends TestCase
@@ -35,8 +36,10 @@ class ProjectShowLayoutTest extends TestCase
         $this->assertLessThan($posBack, $posHeader, 'crm-topbar must appear BEFORE back-link in HTML');
     }
 
-    public function test_document_download_does_not_fail_when_file_missing(): void
+    public function test_document_download_explains_when_file_missing(): void
     {
+        Storage::fake('public');
+
         $admin = User::factory()->create(['role' => 'admin', 'name' => 'Sivaraman']);
         $project = Project::create([
             'project_code' => 'PRJ-2026-TEST2',
@@ -59,8 +62,9 @@ class ProjectShowLayoutTest extends TestCase
             'uploaded_by' => $admin->id,
         ]);
 
-        $response = $this->actingAs($admin)->get(route('projects.documents.download', [$project, $document]));
-        $response->assertStatus(200);
-        $this->assertStringContainsString('attachment', $response->headers->get('content-disposition'));
+        $response = $this->actingAs($admin)->get(route('projects.documents.download', $document));
+        $response->assertNotFound();
+        $response->assertSee('This file is no longer on the server');
+        Storage::disk('public')->assertMissing($document->file_path);
     }
 }

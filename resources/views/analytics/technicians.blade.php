@@ -3,7 +3,7 @@
         <div class="flex flex-wrap items-center justify-between gap-4">
             <div>
                 <h2 class="text-2xl font-bold leading-tight text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
-                    <span class="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-[0_0_10px_#3b82f6]"></span>
+                    <span class="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-[0_0_10px_var(--crm-accent)]"></span>
                     Technician performance
                 </h2>
                 <p class="mt-1 text-sm text-slate-500 dark:text-slate-400 font-medium">First-Time Fix Rate (FTFR), Mean Time to Resolution (MTTR), completed installations &amp; engineer leaderboard</p>
@@ -269,7 +269,7 @@
                         {
                             label: 'Avg Resolution Time (Hours)',
                             data: @json($data['chart_data']['mttr']),
-                            backgroundColor: '#38bdf8',
+                            backgroundColor: window.crmAccentColor(),
                             borderRadius: 6,
                             yAxisID: 'y1',
                         }
@@ -319,7 +319,7 @@
                         {
                             label: 'Completed Site Surveys',
                             data: @json($data['chart_data']['surveys']),
-                            backgroundColor: '#38bdf8',
+                            backgroundColor: window.crmAccentColor(),
                             borderRadius: 6,
                         }
                     ]

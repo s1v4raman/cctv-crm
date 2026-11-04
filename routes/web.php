@@ -37,8 +37,10 @@ use App\Http\Controllers\AccountsReceivableController;
 use App\Http\Controllers\AccountsPayableController;
 use App\Http\Controllers\PettyCashController;
 use App\Http\Controllers\ModuleHubController;
+use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\ProjectMaterialIssueController;
 use App\Http\Controllers\SiteController;
 use App\Http\Controllers\WorkerController;
 use App\Http\Controllers\WorkerAttendanceController;
@@ -56,8 +58,8 @@ Route::get('/api/mobile-scanner/poll/{token}', [MobileScannerSyncController::cla
 Route::post('/api/mobile-scanner/heartbeat/{token}', [MobileScannerSyncController::class, 'heartbeat'])->name('api.mobile-scanner.heartbeat');
 Route::get('/api/mobile-scanner/lan-info', [MobileScannerSyncController::class, 'getLanInfo'])->name('api.mobile-scanner.lan-info');
 
-// Universal Global Omnisearch API
-Route::get('/api/global-search', [GlobalSearchController::class, 'search'])->name('api.global-search');
+// Universal Global Omnisearch API: returns customer names, phones and addresses, so internal users only
+Route::get('/api/global-search', [GlobalSearchController::class, 'search'])->middleware(['auth', 'internal'])->name('api.global-search');
 
 // Site survey photos, worker ID photos and punch selfies (from disk, or from the database copy on Render).
 // Internal users see all of them, a worker only their own; anything sent outside the app needs a
@@ -117,6 +119,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Record lists, "..." menu: each record still goes through its own delete or status action
+    Route::middleware(['internal'])->prefix('list-actions/{list}')->name('list-actions.')->group(function () {
+        Route::post('/delete', [\App\Http\Controllers\ListActionController::class, 'delete'])->name('delete');
+        Route::post('/update', [\App\Http\Controllers\ListActionController::class, 'update'])->name('update');
+        Route::post('/emails', [\App\Http\Controllers\ListActionController::class, 'emails'])->name('emails');
+        Route::get('/export', [\App\Http\Controllers\ListActionController::class, 'export'])->name('export');
+    });
 
     // ================================================================
     // OFFICE (Admin + Staff): add and edit records in every module.
@@ -324,6 +334,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/projects/{project}/reject', [ProjectController::class, 'reject'])->name('projects.reject');
         Route::post('/projects/{project}/materials', [ProjectController::class, 'addMaterial'])->name('projects.materials.store');
         Route::delete('/projects/{project}/materials/{material}', [ProjectController::class, 'deleteMaterial'])->name('projects.materials.destroy');
+        Route::post('/projects/{project}/material-issues', [ProjectMaterialIssueController::class, 'store'])->name('projects.material-issues.store');
+        Route::delete('/projects/{project}/material-issues/{issue}', [ProjectMaterialIssueController::class, 'destroy'])->name('projects.material-issues.destroy');
 
         // Project Tasks, Workflows & Checklists
         Route::get('/projects/{project}/tasks', [ProjectTaskController::class, 'index'])->name('projects.tasks.index');
@@ -568,6 +580,11 @@ Route::middleware(['auth', 'technician'])->prefix('technician')->name('technicia
     Route::get('/surveys/{siteSurvey}', [TechnicianPortalController::class, 'showSurvey'])->name('surveys.show');
     Route::post('/surveys/{siteSurvey}/complete', [TechnicianPortalController::class, 'completeSurvey'])->name('surveys.complete');
 });
+
+// English / Tamil switch on the worker sign-in, worker portal and technician pages
+Route::post('/locale', [LocaleController::class, 'update'])
+    ->middleware('throttle:30,1')
+    ->name('locale.update');
 
 // Daily Wages Worker Mobile Portal & Work Logging
 Route::post('/login/worker', [WorkerPortalController::class, 'workerLogin'])

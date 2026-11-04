@@ -5,8 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\Mime\MimeTypes;
 
 class ProjectDocument extends Model
 {
@@ -20,6 +22,8 @@ class ProjectDocument extends Model
         'file_name',
         'file_size',
         'file_type',
+        'mime_type',
+        'storage_disk',
         'dc_number',
         'dc_date',
         'is_invoiced',
@@ -45,6 +49,8 @@ class ProjectDocument extends Model
             'shop_bill'         => 'Shop / Purchase Bill',
             'quotation'         => 'Quotation / Estimate',
             'purchase_order'    => 'Purchase Order (PO)',
+            'site_drawing'      => 'Site Blueprint / Wiring Drawing',
+            'completion_signoff' => 'Completion Sign-off Sheet',
             'invoice'           => 'Tax Invoice',
             'site_photo'        => 'Site Survey / Progress Photo',
             'completion_report' => 'Job Completion Report (JCR)',
@@ -60,6 +66,14 @@ class ProjectDocument extends Model
     public function uploader(): BelongsTo
     {
         return $this->belongsTo(User::class, 'uploaded_by');
+    }
+
+    /**
+     * The copy of the file kept in the database, which survives the server disk being wiped.
+     */
+    public function storedFile(): HasOne
+    {
+        return $this->hasOne(ProjectDocumentFile::class);
     }
 
     public function getDocumentTypeLabelAttribute(): string
@@ -80,12 +94,41 @@ class ProjectDocument extends Model
 
     public function isPdf(): bool
     {
-        return strtolower($this->file_type) === 'pdf' || str_ends_with(strtolower($this->file_name), '.pdf');
+        return $this->extension() === 'pdf';
     }
 
     public function isImage(): bool
     {
-        return in_array(strtolower($this->file_type), ['png', 'jpg', 'jpeg', 'webp', 'gif']);
+        return in_array($this->extension(), ['png', 'jpg', 'jpeg', 'webp', 'gif']);
+    }
+
+    public function extension(): string
+    {
+        return strtolower(pathinfo((string) $this->file_name, PATHINFO_EXTENSION)) ?: strtolower((string) $this->file_type);
+    }
+
+    public function contentType(): string
+    {
+        return $this->mime_type
+            ?: (MimeTypes::getDefault()->getMimeTypes($this->extension())[0] ?? 'application/octet-stream');
+    }
+
+    /**
+     * The file's bytes: from the storage disk while the copy there lasts, otherwise from
+     * the database copy. Null when the file was lost before database copies were kept.
+     */
+    public function fileContents(): ?string
+    {
+        foreach (array_unique([$this->storage_disk ?: 'public', 'public']) as $disk) {
+            if ($this->file_path && config("filesystems.disks.{$disk}") && Storage::disk($disk)->exists($this->file_path)) {
+                return Storage::disk($disk)->get($this->file_path);
+            }
+        }
+
+        $data = $this->storedFile?->data;
+        $contents = $data !== null ? base64_decode($data, true) : false;
+
+        return $contents === false ? null : $contents;
     }
 
     public function getUrlAttribute(): string

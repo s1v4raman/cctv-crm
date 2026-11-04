@@ -17,7 +17,8 @@
                 <div class="mt-4">
                     @if(auth()->user()->isOffice())
                     <a href="{{ route('leads.create', ['return_to' => 'quotation', 'for_quote' => 1]) }}" class="btn-primary">
-                        + Add New Customer
+                        <x-icon.plus />
+                        <span>Add New Customer</span>
                     </a>
                     @endif
                 </div>
@@ -30,9 +31,10 @@
                             </label>
                             @if(auth()->user()->isOffice())
                             <a href="{{ route('leads.create', ['return_to' => 'quotation', 'for_quote' => 1]) }}" 
-                               class="btn-subtle text-white font-semibold"
+                               class="btn-subtle gap-1.5 text-white font-semibold"
                                style="color: #ffffff !important;">
-                                <span class="text-white font-semibold" style="color: #ffffff !important;">+ Add New Customer</span>
+                                <x-icon.plus />
+                                <span class="text-white font-semibold" style="color: #ffffff !important;">Add New Customer</span>
                             </a>
                             @endif
                         </div>

@@ -10,9 +10,9 @@
                         AMC {{ $amc->contract_no }}
                     </h2>
                     @php
-                        $amcStatusColor = '#2563eb';
-                        if ($amc->status === 'active') $amcStatusColor = '#16a34a';
-                        elseif ($amc->status === 'expired' || $amc->status === 'cancelled') $amcStatusColor = '#dc2626';
+                        $amcStatusColor = 'var(--link-color)';
+                        if ($amc->status === 'active') $amcStatusColor = 'var(--status-success-fg)';
+                        elseif ($amc->status === 'expired' || $amc->status === 'cancelled') $amcStatusColor = 'var(--status-danger-fg)';
                     @endphp
                     <span class="text-sm font-bold" style="color: {{ $amcStatusColor }};">
                         {{ ucfirst($amc->status) }}

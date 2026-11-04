@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Middleware\SetLocale;
 use App\Models\Project;
 use App\Models\ProjectAuditLog;
+use App\Models\ProjectMaterialIssue;
 use App\Models\ProjectTask;
 use App\Models\ProjectWorkerAttendance;
 use App\Models\TaskMaterialConsumption;
 use App\Models\User;
 use App\Models\WorkDay;
 use App\Models\Worker;
+use App\Services\ProjectMaterialLedger;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -50,17 +53,17 @@ class WorkerPortalController extends Controller
             ]);
 
             return back()->withInput()->with('login_portal', 'worker')
-                ->with('status', "Thanks, {$name}. Your request has been sent to the office. You can sign in once the admin approves it.");
+                ->with('status', __('Thanks, :name. Your request has been sent to the office. You can sign in once the admin approves it.', ['name' => $name]));
         }
 
         if ($worker->isPendingApproval()) {
             return back()->withInput()->with('login_portal', 'worker')
-                ->withErrors(['phone' => 'Your request is waiting for the admin to approve it. Please try again later.']);
+                ->withErrors(['phone' => __('Your request is waiting for the admin to approve it. Please try again later.')]);
         }
 
         if (!$worker->is_active) {
             return back()->withInput()->with('login_portal', 'worker')
-                ->withErrors(['phone' => 'This worker account is turned off. Please contact the office.']);
+                ->withErrors(['phone' => __('This worker account is turned off. Please contact the office.')]);
         }
 
         // Find or create associated user account with 'worker' role
@@ -84,7 +87,7 @@ class WorkerPortalController extends Controller
         // The phone sign-in must never open an office account
         if (!$user->isWorker()) {
             return back()->withInput()->with('login_portal', 'worker')
-                ->withErrors(['phone' => 'This number cannot be used for the worker sign-in. Please contact the office.']);
+                ->withErrors(['phone' => __('This number cannot be used for the worker sign-in. Please contact the office.')]);
         }
 
         // Authenticate user session
@@ -93,8 +96,11 @@ class WorkerPortalController extends Controller
         $request->session()->put('portal_type', 'worker');
         $request->session()->put('worker_id', $worker->id);
 
+        $locale = SetLocale::rememberOnSignIn($request, $user);
+
         return redirect()->route('worker.portal')
-            ->with('status', "Welcome, {$worker->name}! You are logged in to the Daily Wages Worker Portal.");
+            ->withCookie(cookie()->forever(SetLocale::COOKIE, $locale))
+            ->with('status', __('Welcome, :name! You are logged in to the Daily Wages Worker Portal.', ['name' => $worker->name]));
     }
 
     /**
@@ -259,12 +265,12 @@ class WorkerPortalController extends Controller
             DB::commit();
 
             return redirect()->route('worker.portal')
-                ->with('status', "✓ Attendance successfully punched for {$project->title} with verified photo!");
+                ->with('status', __('✓ Attendance successfully punched for :project with verified photo!', ['project' => $project->title]));
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Error punching worker attendance: ' . $e->getMessage());
 
-            return back()->with('error', 'Failed to punch attendance: ' . $e->getMessage());
+            return back()->with('error', __('Failed to punch attendance: :error', ['error' => $e->getMessage()]));
         }
     }
 
@@ -345,9 +351,12 @@ class WorkerPortalController extends Controller
 
             // If cabling meters were recorded, log cable consumption
             if ($addedCabling > 0 && $task) {
+                [$cableProductId, $cableMaterialId] = $this->projectCableProduct($project);
                 TaskMaterialConsumption::create([
                     'project_id' => $project->id,
                     'project_task_id' => $task->id,
+                    'project_material_id' => $cableMaterialId,
+                    'product_id' => $cableProductId,
                     'item_name' => "Cat6 Cabling Pulled by {$worker->name}",
                     'quantity_used' => $addedCabling,
                     'unit' => 'meters',
@@ -384,12 +393,16 @@ class WorkerPortalController extends Controller
             DB::commit();
 
             return redirect()->route('worker.portal')
-                ->with('status', "✓ Successfully logged {$addedCabling}m cabling and {$addedCameras} cameras for {$project->title}!");
+                ->with('status', __('✓ Successfully logged :metresm cabling and :cameras cameras for :project!', [
+                    'metres' => $addedCabling,
+                    'cameras' => $addedCameras,
+                    'project' => $project->title,
+                ]));
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Error logging worker work: ' . $e->getMessage());
 
-            return back()->with('error', 'Failed to log work data: ' . $e->getMessage());
+            return back()->with('error', __('Failed to log work data: :error', ['error' => $e->getMessage()]));
         }
     }
 
@@ -399,7 +412,7 @@ class WorkerPortalController extends Controller
     protected function currentWorker(): Worker
     {
         $user = Auth::user();
-        abort_unless($user->isWorker(), 403, 'The worker portal is only for daily-wage workers.');
+        abort_unless($user->isWorker(), 403, __('The worker portal is only for daily-wage workers.'));
 
         $worker = $user->worker;
 
@@ -409,9 +422,9 @@ class WorkerPortalController extends Controller
             $worker = $cleanPhone === '' ? null : Worker::where('phone', $cleanPhone)->whereNull('user_id')->first();
         }
 
-        abort_unless($worker, 403, 'No worker record is linked to this account. Please contact the office.');
-        abort_if($worker->isPendingApproval(), 403, 'Your sign-up is waiting for the admin to approve it.');
-        abort_unless($worker->is_active, 403, 'This worker account is turned off. Please contact the office.');
+        abort_unless($worker, 403, __('No worker record is linked to this account. Please contact the office.'));
+        abort_if($worker->isPendingApproval(), 403, __('Your sign-up is waiting for the admin to approve it.'));
+        abort_unless($worker->is_active, 403, __('This worker account is turned off. Please contact the office.'));
 
         return $worker;
     }
@@ -457,5 +470,32 @@ class WorkerPortalController extends Controller
                 })
                 ->firstOrFail();
         }
+    }
+
+    /**
+     * The project's cable product, so a worker's metres count against its stock:
+     * the one cable item in the BOM, or else the one cable product given to the site.
+     *
+     * @return array{0: int|null, 1: int|null} product id, BOM item id
+     */
+    protected function projectCableProduct(Project $project): array
+    {
+        $bomCable = $project->materials()->with('product')->get()
+            ->filter(fn ($m) => ProjectMaterialLedger::isCableProduct($m->product));
+        if ($bomCable->isNotEmpty()) {
+            if ($bomCable->pluck('product_id')->unique()->count() !== 1) {
+                return [null, null];
+            }
+            // Only tie metres to a BOM line counted in metres, not one planned in rolls
+            $inMetres = $bomCable->first(fn ($m) => ProjectMaterialLedger::isMetreUnit($m->unit));
+
+            return [$bomCable->first()->product_id, $inMetres?->id];
+        }
+
+        $issuedCable = ProjectMaterialIssue::with('product')->where('project_id', $project->id)->get()
+            ->filter(fn ($i) => ProjectMaterialLedger::isCableProduct($i->product))
+            ->pluck('product_id')->unique();
+
+        return $issuedCable->count() === 1 ? [$issuedCable->first(), null] : [null, null];
     }
 }

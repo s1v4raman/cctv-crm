@@ -3,7 +3,7 @@
         <div class="flex flex-wrap items-center justify-between gap-4">
             <div>
                 <h2 class="text-2xl font-bold leading-tight text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
-                    <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 shadow-[0_0_10px_#6366f1]"></span>
+                    <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 shadow-[0_0_10px_var(--crm-accent)]"></span>
                     Revenue and renewals
                 </h2>
                 <p class="mt-1 text-sm text-slate-500 dark:text-slate-400 font-medium">Monthly recurring revenue (MRR), annual recurring revenue (ARR), AMC contract renewal retention, and sales funnel conversion</p>
@@ -283,7 +283,7 @@
                             {{ $data['snapshot']['frequency_counts']['quarterly'] }},
                             {{ $data['snapshot']['frequency_counts']['monthly'] }}
                         ],
-                        backgroundColor: ['#f59e0b', '#38bdf8', '#a855f7', '#34d399'],
+                        backgroundColor: ['#f59e0b', window.crmAccentColor(), '#94a3b8', '#34d399'],
                         borderWidth: 2,
                         borderColor: '#0F172A',
                     }]
@@ -307,13 +307,13 @@
                         {
                             label: 'Leads Created',
                             data: @json($data['conversion']['monthly_trend']['leads']),
-                            backgroundColor: '#6366f1',
+                            backgroundColor: window.crmAccentColor(),
                             borderRadius: 4,
                         },
                         {
                             label: 'Quotations Sent',
                             data: @json($data['conversion']['monthly_trend']['quotations']),
-                            backgroundColor: '#38bdf8',
+                            backgroundColor: '#94a3b8',
                             borderRadius: 4,
                         },
                         {

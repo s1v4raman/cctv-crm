@@ -17,7 +17,7 @@
 
     <x-list-page-assets />
 
-    <div class="ld-root" x-data="listPage(@js($quotations->pluck('id')), 'quotations', { phone: true, date: true, valid: true, total: true, status: true })" @keydown.escape.window="menu = null">
+    <div class="ld-root" x-data="listPage(@js($quotations->pluck('id')), 'quotations', { phone: true, date: true, valid: true, total: true, status: true }, @js($filterCount > 0))" @keydown.escape.window="menu = null">
 
         @if (session('status'))
             <div class="px-4 py-2 text-sm bg-emerald-50 text-emerald-800 border-b border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-900">{{ session('status') }}</div>
@@ -93,13 +93,13 @@
                             @csrf
                             <input type="hidden" name="action" value="delete">
                             <template x-for="id in selected" :key="id"><input type="hidden" name="ids[]" :value="id"></template>
-                            <button type="submit" class="ld-outline btn-cancel" style="color: #b91c1c !important">Delete drafts</button>
+                            <button type="submit" class="ld-outline btn-cancel" style="color: var(--status-danger-fg) !important">Delete drafts</button>
                         </form>
                     @endif
                 </div>
                 @endif
 
-                <div class="flex items-center gap-2 ml-auto" x-show="selected.length === 0">
+                <div class="flex items-center gap-2 ml-auto">
                     @if($isOffice)
                         <div class="relative" @click.outside="menu === 'create' && (menu = null)">
                             {{-- one shape: shared outline and corners, a thin divider before the arrow --}}
@@ -120,11 +120,12 @@
                         <button type="button" class="ld-outline" title="More actions" aria-label="More actions" :aria-expanded="menu === 'more'" @click="open('more')">
                             <svg class="w-4 h-4 icon-solid" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><circle cx="4" cy="10" r="1.6"/><circle cx="10" cy="10" r="1.6"/><circle cx="16" cy="10" r="1.6"/></svg>
                         </button>
-                        <div class="ld-menu right-0" x-show="menu === 'more'" x-cloak>
+                        <div class="ld-menu right-0" x-show="menu === 'more'" x-cloak style="min-width: 220px">
+                            <x-list-mass-actions list="quotations" part="menu" />
                             @if($isOffice)
-                                <a href="{{ route('quotations.export', request()->except('page', 'layout', 'per_page')) }}" class="plain-link">Export these quotations (CSV)</a>
+                                <a href="{{ route('quotations.export', request()->except('page', 'layout', 'per_page')) }}" class="plain-link">Export this view (CSV)</a>
                             @endif
-                            <button type="button" @click="menu = null; window.print()">Print this page</button>
+                            <button type="button" @click="menu = null; $nextTick(() => window.print())">Print View</button>
                         </div>
                     </div>
                 </div>
@@ -312,10 +313,10 @@
                                             <td colspan="10" style="padding: 48px 16px; text-align: center; color: var(--ld-muted)">
                                                 @if($filterCount > 0 || $letter || $view !== 'all')
                                                     No quotations match these filters.
-                                                    <a href="{{ route('quotations.index') }}" class="ml-1 underline plain-link" style="color: var(--ld-text)">Show all quotations</a>
+                                                    <a href="{{ route('quotations.index') }}" class="ml-1 underline plain-link" style="color: var(--ld-accent, var(--crm-accent, #2563eb)); font-weight: 600;">Show all quotations</a>
                                                 @else
                                                     No quotations yet.
-                                                    @if($isOffice)<a href="{{ route('quotations.create-general') }}" class="ml-1 underline plain-link" style="color: var(--ld-text)">Create the first one</a>@endif
+                                                    @if($isOffice)<a href="{{ route('quotations.create-general') }}" class="ml-1 underline plain-link" style="color: var(--ld-accent, var(--crm-accent, #2563eb)); font-weight: 600;">Create the first one</a>@endif
                                                 @endif
                                             </td>
                                         </tr>
@@ -364,5 +365,7 @@
                 @endif
             </section>
         </div>
+
+        <x-list-mass-actions list="quotations" part="dialogs" />
     </div>
 </x-app-layout>

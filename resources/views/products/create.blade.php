@@ -129,7 +129,7 @@
                     <div class="mb-4">
                         <input type="hidden" name="is_active" value="0">
                         <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" name="is_active" value="1" @checked((int)old('is_active', 1) === 1) class="w-4 h-4 rounded-[4px] border-[#ccc] text-[#2563eb]">
+                            <input type="checkbox" name="is_active" value="1" @checked((int)old('is_active', 1) === 1) class="w-4 h-4 rounded-[4px] border-[#ccc] text-blue-600">
                             <span class="text-sm text-gray-700">Available for new quotations</span>
                         </label>
                     </div>

@@ -8,12 +8,17 @@ use App\Models\Company;
 use App\Models\ProjectAuditLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Filesystem\FilesystemAdapter;
-use Symfony\Component\HttpFoundation\StreamedResponse;
+use Illuminate\Support\Str;
+use Symfony\Component\HttpFoundation\HeaderUtils;
+use Symfony\Component\HttpFoundation\Response;
 
 class ProjectDocumentController extends Controller
 {
+    // Types a browser can show safely in its own tab; anything else is downloaded.
+    private const INLINE_TYPES = ['application/pdf', 'image/png', 'image/jpeg', 'image/webp', 'image/gif'];
+
     /**
      * Upload document or Delivery Challan to a project.
      */
@@ -22,7 +27,7 @@ class ProjectDocumentController extends Controller
         $validated = $request->validate([
             'document_type' => 'required|in:delivery_challan,purchase_order,site_drawing,completion_signoff,invoice,other',
             'title' => 'nullable|string|max:255',
-            'file' => 'required|file|max:51200', // max 50MB
+            'file' => 'required|file|mimes:pdf,jpg,jpeg,png,webp,gif,doc,docx,xls,xlsx|max:20480', // max 20MB, a copy is kept in the database
             'dc_number' => 'required_if:document_type,delivery_challan|nullable|string|max:100',
             'dc_date' => 'nullable|date',
             'items_summary' => 'nullable|string',
@@ -46,9 +51,11 @@ class ProjectDocumentController extends Controller
         }
 
         $uploadedFile = $request->file('file');
-        $fileName = $uploadedFile->getClientOriginalName();
+        $fileName = str_replace(['/', '\\'], '-', $uploadedFile->getClientOriginalName());
         $fileSize = $uploadedFile->getSize();
         $mimeType = $uploadedFile->getMimeType();
+        $extension = strtolower($uploadedFile->getClientOriginalExtension() ?: (string) $uploadedFile->guessExtension());
+        $contents = $uploadedFile->get();
 
         // Determine storage disk (Cloudflare R2 / S3 if configured, otherwise public disk)
         $disk = config('filesystems.disks.r2.key') ? 'r2' : 'public';
@@ -64,22 +71,29 @@ class ProjectDocumentController extends Controller
             }
         }
 
-        $document = ProjectDocument::create([
-            'project_id' => $project->id,
-            'title' => $title,
-            'document_type' => $validated['document_type'],
-            'dc_number' => $validated['dc_number'] ?? null,
-            'dc_date' => $validated['dc_date'] ?? null,
-            'items_summary' => $validated['items_summary'] ?? null,
-            'file_name' => $fileName,
-            'file_path' => $filePath,
-            'file_size' => $fileSize,
-            'mime_type' => $mimeType,
-            'storage_disk' => $disk,
-            'uploaded_by' => Auth::id(),
-            'notes' => $validated['notes'] ?? null,
-            'is_invoiced' => false,
-        ]);
+        // The server disk is wiped on every restart, so the database copy is what keeps the file.
+        $document = DB::transaction(function () use ($project, $validated, $title, $fileName, $filePath, $fileSize, $extension, $mimeType, $disk, $contents) {
+            $document = ProjectDocument::create([
+                'project_id' => $project->id,
+                'title' => $title,
+                'document_type' => $validated['document_type'],
+                'dc_number' => $validated['dc_number'] ?? null,
+                'dc_date' => $validated['dc_date'] ?? null,
+                'items_summary' => $validated['items_summary'] ?? null,
+                'file_name' => $fileName,
+                'file_path' => $filePath,
+                'file_size' => $fileSize,
+                'file_type' => $extension ?: 'file',
+                'mime_type' => $mimeType,
+                'storage_disk' => $disk,
+                'uploaded_by' => Auth::id(),
+                'notes' => $validated['notes'] ?? null,
+                'is_invoiced' => false,
+            ]);
+            $document->storedFile()->create(['data' => base64_encode($contents)]);
+
+            return $document;
+        });
 
         ProjectAuditLog::logChange(
             $project,
@@ -183,53 +197,17 @@ class ProjectDocumentController extends Controller
     /**
      * Download project document.
      */
-    public function download(ProjectDocument $document)
+    public function download(ProjectDocument $document): Response
     {
-        $disk = $document->storage_disk ?? 'public';
-
-        if (!Storage::disk($disk)->exists($document->file_path)) {
-            // Check fallback
-            if (Storage::disk('public')->exists($document->file_path)) {
-                $disk = 'public';
-            } else {
-                // Ensure placeholder file is generated so download never fails with missing file
-                $dir = dirname($document->file_path);
-                Storage::disk('public')->makeDirectory($dir);
-                $placeholder = "%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n2 0 obj<</Type/Pages/Count 1/Kids[3 0 R]>>endobj\n3 0 obj<</Type/Page/MediaBox[0 0 595 842]/Parent 2 0 R/Resources<<>>>>endobj\nxref\n0 4\n0000000000 65535 f \n0000000009 00000 n \n0000000052 00000 n \n0000000101 00000 n \ntrailer<</Size 4/Root 1 0 R>>\nstartxref\n178\n%%EOF";
-                Storage::disk('public')->put($document->file_path, $placeholder);
-                $disk = 'public';
-            }
-        }
-
-        /** @var FilesystemAdapter $storage */
-        $storage = Storage::disk($disk);
-
-        return $storage->download($document->file_path, $document->file_name);
+        return $this->fileResponse($document, false);
     }
 
     /**
      * Preview project document in browser.
      */
-    public function view(ProjectDocument $document)
+    public function view(ProjectDocument $document): Response
     {
-        $disk = $document->storage_disk ?? 'public';
-
-        if (!Storage::disk($disk)->exists($document->file_path)) {
-            if (Storage::disk('public')->exists($document->file_path)) {
-                $disk = 'public';
-            } else {
-                $dir = dirname($document->file_path);
-                Storage::disk('public')->makeDirectory($dir);
-                $placeholder = "%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n2 0 obj<</Type/Pages/Count 1/Kids[3 0 R]>>endobj\n3 0 obj<</Type/Page/MediaBox[0 0 595 842]/Parent 2 0 R/Resources<<>>>>endobj\nxref\n0 4\n0000000000 65535 f \n0000000009 00000 n \n0000000052 00000 n \n0000000101 00000 n \ntrailer<</Size 4/Root 1 0 R>>\nstartxref\n178\n%%EOF";
-                Storage::disk('public')->put($document->file_path, $placeholder);
-                $disk = 'public';
-            }
-        }
-
-        /** @var FilesystemAdapter $storage */
-        $storage = Storage::disk($disk);
-
-        return $storage->response($document->file_path, $document->file_name);
+        return $this->fileResponse($document, true);
     }
 
     /**
@@ -245,10 +223,11 @@ class ProjectDocumentController extends Controller
         $title = $document->title;
         $disk = $document->storage_disk ?? 'public';
 
-        if (Storage::disk($disk)->exists($document->file_path)) {
+        if (config("filesystems.disks.{$disk}") && Storage::disk($disk)->exists($document->file_path)) {
             Storage::disk($disk)->delete($document->file_path);
         }
 
+        $document->storedFile()->delete();
         $document->delete();
 
         ProjectAuditLog::logChange(
@@ -260,5 +239,26 @@ class ProjectDocumentController extends Controller
         );
 
         return back()->with('status', "Document '{$title}' removed.");
+    }
+
+    private function fileResponse(ProjectDocument $document, bool $inline): Response
+    {
+        $contents = $document->fileContents();
+        if ($contents === null) {
+            return response()->view('documents.file_missing', ['document' => $document], 404);
+        }
+
+        $type = $document->contentType();
+        $disposition = $inline && in_array($type, self::INLINE_TYPES, true) ? 'inline' : 'attachment';
+        $name = str_replace(['/', '\\'], '-', $document->file_name) ?: 'document';
+        $asciiName = str_replace('%', '', Str::ascii($name)) ?: 'document';
+
+        return response($contents, 200, [
+            'Content-Type' => $type,
+            'Content-Length' => strlen($contents),
+            'Content-Disposition' => HeaderUtils::makeDisposition($disposition, $name, $asciiName),
+            'X-Content-Type-Options' => 'nosniff',
+            'Cache-Control' => 'private, no-store',
+        ]);
     }
 }

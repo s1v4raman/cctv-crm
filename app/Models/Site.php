@@ -14,7 +14,9 @@ class Site extends Model
 
     protected $fillable = [
         'site_code',
+        'lead_id',
         'name',
+        'type',
         'client_name',
         'contact_person',
         'phone',
@@ -79,6 +81,11 @@ class Site extends Model
     public function projects(): HasMany
     {
         return $this->hasMany(Project::class);
+    }
+
+    public function lead(): BelongsTo
+    {
+        return $this->belongsTo(Lead::class);
     }
 
     public function creator(): BelongsTo

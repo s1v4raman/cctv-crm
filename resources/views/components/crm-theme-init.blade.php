@@ -36,6 +36,24 @@
         }
     } catch(e) {}
 
+    // Paper is white: a page printed from dark mode (quotation, invoice, payslip) prints in the light theme
+    window.addEventListener('beforeprint', function() {
+        const root = document.documentElement;
+        if (root.classList.contains('dark')) {
+            root.dataset.printedFromDark = '1';
+            root.classList.remove('dark');
+            root.setAttribute('data-theme', 'light');
+        }
+    });
+    window.addEventListener('afterprint', function() {
+        const root = document.documentElement;
+        if (root.dataset.printedFromDark) {
+            delete root.dataset.printedFromDark;
+            root.classList.add('dark');
+            root.setAttribute('data-theme', 'dark');
+        }
+    });
+
     window.crmLogoCache = window.crmLogoCache || {};
 
     const currentUserId = {!! json_encode($userId ?? (auth()->check() ? auth()->id() : null)) !!};
@@ -83,6 +101,22 @@
             hoverHex = '#' + ((1 << 24) + (hr << 16) + (hg << 8) + hb).toString(16).slice(1);
         } catch(e) {}
 
+        // The accent as text (links, accent labels): a shade that keeps 4.5:1 contrast, darker on the
+        // light theme's white cards and lighter on the dark theme's #0f172a / #1e293b panels.
+        const linkShade = function(towards, isReadable) {
+            for (let t = 0; t <= 1.0001; t += 0.05) {
+                const rgb = [tr, tg, tb].map(function(c) { return Math.round(c + (towards - c) * t); });
+                const lum = rgb.map(function(c) { c /= 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); });
+                if (isReadable(0.2126 * lum[0] + 0.7152 * lum[1] + 0.0722 * lum[2])) {
+                    return '#' + rgb.map(function(c) { return c.toString(16).padStart(2, '0'); }).join('');
+                }
+            }
+            return towards ? '#ffffff' : '#000000';
+        };
+        const linkLight = linkShade(0, function(l) { return l <= 0.16; });
+        const linkDark = linkShade(255, function(l) { return l >= 0.28; });
+        const linkDarkHover = linkShade(255, function(l) { return l >= 0.42; });
+
         document.documentElement.style.setProperty('--crm-accent', hex);
         document.documentElement.style.setProperty('--crm-accent-hover', hoverHex);
         document.documentElement.style.setProperty('--crm-accent-rgb', tr + ', ' + tg + ', ' + tb);
@@ -104,8 +138,29 @@
                 --crm-accent-hover: ${hoverHex} !important;
                 --crm-accent-shadow: rgba(${tr}, ${tg}, ${tb}, 0.25) !important;
                 --crm-accent-rgb: ${tr}, ${tg}, ${tb} !important;
+                --crm-accent-soft: rgba(${tr}, ${tg}, ${tb}, 0.12) !important;
+                --crm-accent-border: rgba(${tr}, ${tg}, ${tb}, 0.28) !important;
                 --brand-blue: ${hex} !important;
                 --brand-blue-hover: ${hoverHex} !important;
+                --primary-btn-bg: ${hex} !important;
+                --color-blue-600: ${hex} !important;
+                --color-blue-700: ${hoverHex} !important;
+                --color-indigo-600: ${hex} !important;
+                --color-indigo-700: ${hoverHex} !important;
+                --ld-accent: ${hex} !important;
+                --ld-accent-hover: ${hoverHex} !important;
+                --ld-accent-soft: rgba(${tr}, ${tg}, ${tb}, 0.14) !important;
+                --link-color: ${linkLight} !important;
+                --link-hover: ${hoverHex} !important;
+            }
+            html.dark {
+                --link-color: ${linkDark} !important;
+                --link-hover: ${linkDarkHover} !important;
+            }
+
+            /* Brand Logo: PRECISION wordmark mask dynamically recolored */
+            .crm-brand-logo .crm-logo-prec-mask {
+                background-color: ${hex} !important;
             }
             
             /* 1. BRAND WORDMARK: Precision IT [Systems] */
@@ -529,7 +584,7 @@
             div[x-data*="open"] > button.crm-quick-action-btn {
                 background-color: rgba(${tr}, ${tg}, ${tb}, 0.12) !important;
                 background-image: none !important;
-                color: ${hex} !important;
+                color: var(--link-color) !important;
                 border: 1px solid rgba(${tr}, ${tg}, ${tb}, 0.3) !important;
             }
             .crm-quick-action-btn:hover,
@@ -550,13 +605,13 @@
             .crm-customer-pill,
             span.crm-customer-pill {
                 background-color: rgba(${tr}, ${tg}, ${tb}, 0.12) !important;
-                color: ${hex} !important;
+                color: var(--link-color) !important;
                 border: 1px solid rgba(${tr}, ${tg}, ${tb}, 0.28) !important;
             }
             .crm-customer-icon-box,
             div.crm-customer-icon-box {
                 background-color: rgba(${tr}, ${tg}, ${tb}, 0.12) !important;
-                color: ${hex} !important;
+                color: var(--link-color) !important;
                 border: 1px solid rgba(${tr}, ${tg}, ${tb}, 0.28) !important;
             }
             .crm-customer-badge,
@@ -593,7 +648,7 @@
             button.btn-view {
                 background-color: rgba(${tr}, ${tg}, ${tb}, 0.1) !important;
                 background-image: none !important;
-                color: ${hex} !important;
+                color: var(--link-color) !important;
                 border: 1px solid rgba(${tr}, ${tg}, ${tb}, 0.25) !important;
             }
             .btn-view:hover,
@@ -633,21 +688,127 @@
                 outline-color: ${hex} !important;
             }
 
-            /* 12. TEXT ACCENTS (Excluding buttons and white text) */
+            /* 12. TEXT ACCENTS, LABELS & ALL MODULE CONTENT LINKS */
             .text-blue-600:not(.btn-primary):not([class*="bg-blue"]):not([class*="bg-[#2563eb]"]):not(.btn-search):not(.btn-filter):not(.text-white),
             .text-blue-500:not(.btn-primary):not([class*="bg-blue"]):not([class*="bg-[#2563eb]"]):not(.btn-search):not(.btn-filter):not(.text-white),
             .text-blue-700:not(.btn-primary):not([class*="bg-blue"]):not([class*="bg-[#2563eb]"]):not(.btn-search):not(.btn-filter):not(.text-white),
+            .text-blue-800:not(.btn-primary):not([class*="bg-blue"]):not(.text-white),
+            .text-indigo-600:not(.btn-primary):not([class*="bg-indigo"]):not(.text-white),
+            .text-indigo-700:not(.btn-primary):not([class*="bg-indigo"]):not(.text-white),
+            .text-indigo-800:not(.btn-primary):not([class*="bg-indigo"]):not(.text-white),
+            .text-sky-600:not(.btn-primary):not([class*="bg-sky"]):not(.text-white),
+            .text-sky-700:not(.btn-primary):not([class*="bg-sky"]):not(.text-white),
+            .text-purple-600:not(.btn-primary):not([class*="bg-purple"]):not(.text-white),
+            .text-purple-700:not(.btn-primary):not([class*="bg-purple"]):not(.text-white),
+            .text-purple-800:not(.btn-primary):not([class*="bg-purple"]):not(.text-white),
+            html.dark .dark\:text-blue-400:not(.btn-primary):not(.text-white),
+            html.dark .dark\:text-blue-300:not(.btn-primary):not(.text-white),
+            html.dark .dark\:text-indigo-400:not(.btn-primary):not(.text-white),
+            html.dark .dark\:text-indigo-300:not(.btn-primary):not(.text-white),
+            html.dark .dark\:text-sky-400:not(.btn-primary):not(.text-white),
+            html.dark .dark\:text-sky-300:not(.btn-primary):not(.text-white),
+            html.dark .dark\:text-purple-400:not(.btn-primary):not(.text-white),
+            html.dark .dark\:text-purple-300:not(.btn-primary):not(.text-white),
             .cell-name a,
             .cell-no a,
             .leads-table .cell-name a,
-            .dark .dark\\:text-blue-400:not(.btn-primary):not([class*="bg-blue"]):not(.text-white),
-            .dark .dark\\:text-blue-300:not(.btn-primary):not([class*="bg-blue"]):not(.text-white) {
-                color: ${hex} !important;
+            .ld-root .ld-scroll table.ld-table td a.ld-name,
+            a.ld-name,
+            table td a:not(.btn):not([class*="btn"]):not([class*="text-emerald"]):not([class*="text-green"]):not([class*="text-amber"]):not([class*="text-yellow"]):not([class*="text-rose"]):not([class*="text-red"]):not([class*="text-slate"]):not([class*="text-gray"]):not(.text-white),
+            a:not(.btn):not(.btn-primary):not(.btn-secondary):not(.btn-subtle):not(.btn-inline-add):not([class*="btn-"]):not(aside a):not(.crm-brand-logo):not(.text-white):not([class*="text-white"]):not(.crm-filter-tab):not(.filter-tab):not(.active):not([class*="active"]):not(.filter-tabs a):not(.section-nav-link):not([class*="text-emerald"]):not([class*="text-amber"]):not([class*="text-rose"]):not([class*="text-red"]):not([class*="text-slate"]):not([class*="text-gray"]:not([class*="underline"])),
+            td[x-show*="map"] a,
+            a[href*="projects/"]:not(.btn):not([class*="text-emerald"]):not([class*="text-rose"]),
+            a[href*="workers/"]:not(.btn),
+            a[href*="suppliers/"]:not(.btn),
+            a[href*="leads/"]:not(.btn),
+            a[href*="quotations/"]:not(.btn) {
+                color: var(--link-color) !important;
             }
             .cell-name a:hover,
             .cell-no a:hover,
-            .leads-table .cell-name a:hover {
-                color: ${hoverHex} !important;
+            .leads-table .cell-name a:hover,
+            .ld-root .ld-scroll table.ld-table td a.ld-name:hover,
+            a.ld-name:hover,
+            table td a:hover,
+            td[x-show*="map"] a:hover {
+                color: var(--link-hover) !important;
+            }
+
+            /* 13. ACCENT BADGES, STATUS PILLS, DOTS & TIMELINE */
+            span.rounded-full.bg-blue-600,
+            span.rounded-full.bg-blue-500,
+            span.rounded-full.bg-sky-500,
+            span.rounded-full.bg-indigo-600,
+            span.rounded-full.bg-indigo-500,
+            span.w-3.h-3.rounded-full.bg-blue-600,
+            span.w-2\.5.h-2\.5.rounded-full.bg-blue-500,
+            span.w-2\.5.h-2\.5.rounded-full.bg-blue-600 {
+                background-color: ${hex} !important;
+            }
+
+            .bg-blue-50:not(.btn-primary):not(.btn),
+            .bg-blue-100:not(.btn-primary):not(.btn),
+            .bg-indigo-50:not(.btn-primary):not(.btn),
+            .bg-indigo-100:not(.btn-primary):not(.btn),
+            .bg-purple-50:not(.btn-primary):not(.btn),
+            .bg-purple-100:not(.btn-primary):not(.btn),
+            .bg-sky-50:not(.btn-primary):not(.btn),
+            .bg-sky-100:not(.btn-primary):not(.btn),
+            html.dark .dark\:bg-blue-950\/60,
+            html.dark .dark\:bg-blue-950\/70,
+            html.dark .dark\:bg-blue-950\/30,
+            html.dark .dark\:bg-indigo-900\/30,
+            html.dark .dark\:bg-indigo-950\/30,
+            html.dark .dark\:bg-indigo-950,
+            html.dark .dark\:bg-purple-950\/30,
+            html.dark .dark\:bg-purple-950\/40,
+            html.dark .dark\:bg-sky-950\/40 {
+                background-color: rgba(${tr}, ${tg}, ${tb}, 0.12) !important;
+            }
+
+            .border-blue-100,
+            .border-blue-200,
+            .border-blue-300,
+            .border-indigo-100,
+            .border-indigo-200,
+            .border-purple-100,
+            .border-purple-200,
+            .border-sky-100,
+            .border-sky-200,
+            html.dark .dark\:border-blue-800,
+            html.dark .dark\:border-blue-900\/40,
+            html.dark .dark\:border-indigo-800,
+            html.dark .dark\:border-purple-800,
+            html.dark .dark\:border-sky-800 {
+                border-color: rgba(${tr}, ${tg}, ${tb}, 0.3) !important;
+            }
+
+            .border-l-2.border-blue-500,
+            .border-l-2.border-blue-600,
+            .border-l-2.border-indigo-500,
+            .border-b-2.border-blue-600,
+            .border-b-2.border-indigo-600 {
+                border-color: ${hex} !important;
+            }
+
+            /* Plain tabs (e.g. Calendar tabs) */
+            .crm-plain-tab.active,
+            html.dark .crm-plain-tab.active {
+                color: var(--link-color) !important;
+                border-bottom-color: ${hex} !important;
+            }
+
+            /* Active Timeframe & Tab Pills */
+            .crm-tab-active,
+            .crm-tab-active *,
+            .crm-pill-active,
+            .crm-pill-active *,
+            a.crm-tab-active,
+            a.crm-tab-active *,
+            a.crm-pill-active,
+            a.crm-pill-active * {
+                background-color: ${hex} !important;
+                color: #ffffff !important;
             }
 
             /* Search icon dimensional guard */
@@ -665,6 +826,35 @@
         if (typeof window.recolorCrmBrandLogo === 'function') {
             window.recolorCrmBrandLogo(hex);
         }
+
+        // Charts draw their main series with window.crmAccentColor(); swap the old theme colour
+        // for the new one and leave the other series (green, amber, grey...) as they are
+        const previous = window.crmChartAccent;
+        window.crmChartAccent = hex;
+        try {
+            if (previous && previous.toLowerCase() !== hex.toLowerCase() && window.Chart && window.Chart.instances) {
+                const swap = function(value) {
+                    if (Array.isArray(value)) return value.map(swap);
+                    return (typeof value === 'string' && value.toLowerCase() === previous.toLowerCase()) ? hex : value;
+                };
+                Object.values(window.Chart.instances).forEach(function(chart) {
+                    if (!chart || !chart.data || !chart.data.datasets) return;
+                    chart.data.datasets.forEach(function(ds) {
+                        ['backgroundColor', 'borderColor', 'hoverBackgroundColor', 'pointBackgroundColor', 'pointBorderColor'].forEach(function(key) {
+                            if (ds[key] !== undefined) ds[key] = swap(ds[key]);
+                        });
+                    });
+                    chart.update('none');
+                });
+            }
+        } catch(e) {}
+    };
+
+    // The current theme colour as a plain hex, for charts and other canvas drawing
+    window.crmAccentColor = function() {
+        return window.crmChartAccent
+            || getComputedStyle(document.documentElement).getPropertyValue('--crm-accent').trim()
+            || '#2563eb';
     };
 
     // Cross-page mode lookup: checks user-scoped key, generic key, legacy 'theme' key, and cookie

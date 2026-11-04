@@ -10,9 +10,9 @@
                         Tax Invoice {{ $invoice->invoice_no }}
                     </h2>
                     @php
-                        $invStatusColor = '#2563eb';
-                        if ($invoice->status === 'paid') $invStatusColor = '#16a34a';
-                        elseif ($invoice->status === 'cancelled') $invStatusColor = '#dc2626';
+                        $invStatusColor = 'var(--link-color)';
+                        if ($invoice->status === 'paid') $invStatusColor = 'var(--status-success-fg)';
+                        elseif ($invoice->status === 'cancelled') $invStatusColor = 'var(--status-danger-fg)';
                     @endphp
                     <span class="text-sm font-bold" style="color: {{ $invStatusColor }};">
                         {{ ucfirst(str_replace('_', ' ', $invoice->status)) }}

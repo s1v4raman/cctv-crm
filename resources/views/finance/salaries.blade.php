@@ -22,7 +22,7 @@
         @if(session('status'))
             <div class="p-3 rounded border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 text-xs font-medium flex items-center justify-between">
                 <span>{{ session('status') }}</span>
-                <button onclick="this.parentElement.remove()" class="text-emerald-500 hover:text-emerald-700">✕</button>
+                <x-close-button size="sm" tone="inherit" label="Dismiss message" onclick="this.parentElement.remove()" />
             </div>
         @endif
 
@@ -175,7 +175,7 @@
                     <h3 class="text-sm font-bold text-slate-900 dark:text-white" id="salaryModalTitle">Configure Salary Structure</h3>
                     <p class="text-xs text-slate-500" id="salaryModalSub">Set monthly base, daily and weekly wages</p>
                 </div>
-                <button type="button" onclick="document.getElementById('salaryModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600">✕</button>
+                <x-close-button onclick="document.getElementById('salaryModal').classList.add('hidden')" />
             </div>
 
             <form id="salaryForm" method="POST" action="" class="space-y-3 mt-4 text-xs" x-data="formSteps">
@@ -264,7 +264,7 @@
                     <button type="button" onclick="document.getElementById('salaryModal').classList.add('hidden')" class="px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 rounded transition">Cancel</button>
                     <x-form-step-buttons />
                     <template x-if="isLast()">
-                        <button type="submit" class="px-4 py-2 text-xs font-medium text-white bg-[#2563eb] hover:bg-blue-700 rounded transition">Save Salary Structure</button>
+                        <button type="submit" class="px-4 py-2 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded transition">Save Salary Structure</button>
                     </template>
                 </div>
             </form>

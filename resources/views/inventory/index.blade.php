@@ -72,7 +72,7 @@
         html.dark .filter-bar input, html.dark .filter-bar select {
             background: #0b1120; border-color: #475569; color: #ffffff;
         }
-        .filter-bar input:focus, .filter-bar select:focus { border-color: #2563eb; }
+        .filter-bar input:focus, .filter-bar select:focus { border-color: var(--crm-accent, #2563eb); }
 
         .p-table { width: 100%; border-collapse: collapse; }
         .p-table thead { background: #f8fafc; border-bottom: 1px solid var(--card-border); }
@@ -210,15 +210,15 @@
                                 </td>
                                 <td class="center">
                                     @if($prod->stock_quantity <= 0)
-                                        <span class="status-text" style="color: #dc2626; font-weight: bold;">
+                                        <span class="status-text" style="color: var(--status-danger-fg); font-weight: bold;">
                                             Out of Stock (0 {{ $prod->unit }})
                                         </span>
                                     @elseif($prod->isLowStock())
-                                        <span class="status-text" style="color: #d97706; font-weight: bold;">
+                                        <span class="status-text" style="color: var(--status-warning-fg); font-weight: bold;">
                                             Low: {{ $prod->stock_quantity }} {{ $prod->unit }}
                                         </span>
                                     @else
-                                        <span class="status-text" style="color: #16a34a; font-weight: bold;">
+                                        <span class="status-text" style="color: var(--status-success-fg); font-weight: bold;">
                                             {{ $prod->stock_quantity }} {{ $prod->unit }}
                                         </span>
                                     @endif
@@ -338,7 +338,7 @@
             <div class="bg-white dark:bg-[#0f172a] rounded-[4px] max-w-md w-full p-5 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200" @click.outside="adjustModal = false">
                 <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 mb-4">
                     <h3 class="text-base font-bold text-slate-900 dark:text-white">Update Stock Level</h3>
-                    <button @click="adjustModal = false" class="text-slate-400 hover:text-slate-700 text-2xl font-bold leading-none">&times;</button>
+                    <x-close-button @click="adjustModal = false" />
                 </div>
 
                 <template x-if="selectedProductId">

@@ -82,6 +82,8 @@ class SiteController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'lead_id' => 'nullable|exists:leads,id',
+            'type' => 'nullable|string|max:50',
             'client_name' => 'nullable|string|max:255',
             'client_phone' => 'nullable|string|max:50',
             'client_email' => 'nullable|email|max:150',
@@ -93,9 +95,56 @@ class SiteController extends Controller
             'longitude' => 'nullable|numeric|between:-180,180',
             'google_maps_url' => 'nullable|string|max:500',
             'contact_person' => 'nullable|string|max:150',
+            'client_contact_person' => 'nullable|string|max:150',
             'contact_phone' => 'nullable|string|max:50',
             'notes' => 'nullable|string',
         ]);
+
+        if (empty($validated['contact_person']) && !empty($validated['client_contact_person'])) {
+            $validated['contact_person'] = $validated['client_contact_person'];
+        }
+        unset($validated['client_contact_person']);
+
+        // Sync emails bidirectionally
+        if (!empty($validated['client_email'])) {
+            $validated['email'] = $validated['client_email'];
+        } elseif (!empty($validated['email'])) {
+            $validated['client_email'] = $validated['email'];
+        }
+
+        // Sync phones bidirectionally
+        if (!empty($validated['client_phone'])) {
+            $validated['phone'] = $validated['client_phone'];
+            $validated['contact_phone'] = $validated['client_phone'];
+        } elseif (!empty($validated['contact_phone'])) {
+            $validated['client_phone'] = $validated['contact_phone'];
+            $validated['phone'] = $validated['contact_phone'];
+        } elseif (!empty($validated['phone'])) {
+            $validated['client_phone'] = $validated['phone'];
+            $validated['contact_phone'] = $validated['phone'];
+        }
+
+        // Auto-populate client & contact details from lead if linked
+        if (!empty($validated['lead_id'])) {
+            $lead = Lead::find($validated['lead_id']);
+            if ($lead) {
+                if (empty($validated['client_name'])) {
+                    $validated['client_name'] = $lead->company_name ?: $lead->customer_name;
+                }
+                if (empty($validated['client_phone'])) {
+                    $validated['client_phone'] = $lead->phone;
+                    $validated['phone'] = $lead->phone;
+                    $validated['contact_phone'] = $lead->phone;
+                }
+                if (empty($validated['client_email'])) {
+                    $validated['client_email'] = $lead->email;
+                    $validated['email'] = $lead->email;
+                }
+                if (empty($validated['contact_person']) || $validated['contact_person'] === 'Site Manager') {
+                    $validated['contact_person'] = $lead->customer_name;
+                }
+            }
+        }
 
         $validated['site_code'] = Site::generateSiteCode();
 
@@ -145,7 +194,7 @@ class SiteController extends Controller
      */
     public function show(Site $site)
     {
-        $site->load(['projects.company', 'projects.leadTechnician']);
+        $site->load(['lead', 'projects.company', 'projects.leadTechnician']);
 
         return view('sites.show', compact('site'));
     }
@@ -166,6 +215,8 @@ class SiteController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'lead_id' => 'nullable|exists:leads,id',
+            'type' => 'nullable|string|max:50',
             'client_name' => 'nullable|string|max:255',
             'client_phone' => 'nullable|string|max:50',
             'client_email' => 'nullable|email|max:150',
@@ -177,9 +228,56 @@ class SiteController extends Controller
             'longitude' => 'nullable|numeric|between:-180,180',
             'google_maps_url' => 'nullable|string|max:500',
             'contact_person' => 'nullable|string|max:150',
+            'client_contact_person' => 'nullable|string|max:150',
             'contact_phone' => 'nullable|string|max:50',
             'notes' => 'nullable|string',
         ]);
+
+        if (empty($validated['contact_person']) && !empty($validated['client_contact_person'])) {
+            $validated['contact_person'] = $validated['client_contact_person'];
+        }
+        unset($validated['client_contact_person']);
+
+        // Sync emails bidirectionally
+        if (!empty($validated['client_email'])) {
+            $validated['email'] = $validated['client_email'];
+        } elseif (!empty($validated['email'])) {
+            $validated['client_email'] = $validated['email'];
+        }
+
+        // Sync phones bidirectionally
+        if (!empty($validated['client_phone'])) {
+            $validated['phone'] = $validated['client_phone'];
+            $validated['contact_phone'] = $validated['client_phone'];
+        } elseif (!empty($validated['contact_phone'])) {
+            $validated['client_phone'] = $validated['contact_phone'];
+            $validated['phone'] = $validated['contact_phone'];
+        } elseif (!empty($validated['phone'])) {
+            $validated['client_phone'] = $validated['phone'];
+            $validated['contact_phone'] = $validated['phone'];
+        }
+
+        // Auto-populate from lead if linked and not specified
+        if (!empty($validated['lead_id'])) {
+            $lead = Lead::find($validated['lead_id']);
+            if ($lead) {
+                if (empty($validated['client_name'])) {
+                    $validated['client_name'] = $lead->company_name ?: $lead->customer_name;
+                }
+                if (empty($validated['client_phone'])) {
+                    $validated['client_phone'] = $lead->phone;
+                    $validated['phone'] = $lead->phone;
+                    $validated['contact_phone'] = $lead->phone;
+                }
+                if (empty($validated['client_email'])) {
+                    $validated['client_email'] = $lead->email;
+                    $validated['email'] = $lead->email;
+                }
+                if (empty($validated['contact_person']) || $validated['contact_person'] === 'Site Manager') {
+                    $validated['contact_person'] = $lead->customer_name;
+                }
+            }
+        }
 
         if (!empty($validated['google_maps_url']) && (empty($validated['latitude']) || empty($validated['longitude']))) {
             $parsed = $this->extractCoordinatesFromUrl($validated['google_maps_url']);

@@ -43,7 +43,7 @@
             }
         }" class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40">
             <input type="hidden" name="remove_avatar" :value="removeAvatar ? '1' : '0'">
-            <input type="file" 
+            <input aria-label="Profile photo" type="file" 
                    x-ref="photo" 
                    name="avatar" 
                    id="avatar-input"
@@ -72,7 +72,7 @@
                     <template x-if="!photoPreview && (removeAvatar || !'{{ $user->avatar_url }}')">
                         <div class="w-16 h-16 rounded-full text-white flex items-center justify-center font-bold text-2xl shadow-sm ring-2 ring-slate-200 dark:ring-slate-700" 
                              style="background-color: var(--crm-accent, #2563eb);">
-                            {{ strtoupper(substr($user->name, 0, 1)) }}
+                            {{ strtoupper(mb_substr($user->name, 0, 1)) }}
                         </div>
                     </template>
                 </div>

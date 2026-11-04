@@ -95,7 +95,7 @@
                     </div>
 
                     <div class="mb-4 flex items-center gap-2">
-                        <input type="checkbox" id="is_active" name="is_active" value="1" @checked(old('is_active', $supplier->is_active)) class="w-4 h-4 rounded-[4px] border-[#ccc] text-[#2563eb]">
+                        <input type="checkbox" id="is_active" name="is_active" value="1" @checked(old('is_active', $supplier->is_active)) class="w-4 h-4 rounded-[4px] border-[#ccc] text-blue-600">
                         <label for="is_active" class="text-sm text-gray-700">
                             Active Supplier
                         </label>

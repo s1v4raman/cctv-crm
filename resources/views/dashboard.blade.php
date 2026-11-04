@@ -1,4 +1,4 @@
-<x-app-layout>
+﻿<x-app-layout>
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <div>
@@ -70,7 +70,7 @@
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-3 border-b border-[var(--card-border)] mb-4">
                         <h3 class="text-sm font-bold text-[var(--text-main)]">Revenue Overview</h3>
                         <div class="flex items-center gap-3">
-                            <select class="h-[32px] px-2.5 text-xs rounded-md border border-[var(--input-border)] bg-[var(--card-bg)] text-[var(--text-main)] focus:outline-none focus:ring-2 focus:ring-blue-500/30">
+                            <select id="revenue-months" aria-label="Revenue period" class="h-[32px] px-2.5 text-xs rounded-md border border-[var(--input-border)] bg-[var(--card-bg)] text-[var(--text-main)] focus:outline-none focus:ring-2 focus:ring-blue-500/30">
                                 <option value="3">Past 3 Months</option>
                                 <option value="6" selected>Past 6 Months</option>
                                 <option value="12">Past 12 Months</option>
@@ -341,7 +341,7 @@
                             <div class="space-y-2.5">
                                 <a href="{{ route('calendar.index') }}" class="flex items-center justify-between p-3 rounded-[4px] bg-slate-50 dark:bg-slate-800/60 hover:bg-blue-50 dark:hover:bg-blue-950/40 border border-[#eee] dark:border-slate-800 transition">
                                     <div class="flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded-[4px] bg-blue-100 dark:bg-blue-900/50 text-[#2563eb] dark:text-blue-400 flex items-center justify-center font-bold">
+                                        <div class="w-8 h-8 rounded-[4px] bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                                         </div>
                                         <div>
@@ -349,7 +349,7 @@
                                             <div class="text-[11px] text-slate-400">View daily schedule</div>
                                         </div>
                                     </div>
-                                    <span class="text-xs text-[#2563eb] font-semibold">Open &rarr;</span>
+                                    <span class="text-xs text-blue-600 font-semibold">Open &rarr;</span>
                                 </a>
 
                                 <a href="{{ route('projects.index') }}" class="flex items-center justify-between p-3 rounded-[4px] bg-slate-50 dark:bg-slate-800/60 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 border border-[#eee] dark:border-slate-800 transition">
@@ -381,7 +381,7 @@
                         </div>
 
                         <div class="pt-4 mt-4 border-t border-[#eee] dark:border-slate-800 text-center">
-                            <a href="{{ route('attendance.index') }}" class="text-xs font-semibold text-[#2563eb] dark:text-blue-400 hover:underline">
+                            <a href="{{ route('attendance.index') }}" class="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline">
                                 Go to Daily Attendance System &rarr;
                             </a>
                         </div>
@@ -400,13 +400,13 @@
 
     const IS_ADMIN = {{ $isAdmin ? 'true' : 'false' }};
 
-    /* Clean SaaS Colour Palette */
+    /* Clean SaaS Colour Palette — primary follows the live theme accent */
     const C = {
-        primary: '#2563eb',
-        sky:     '#38bdf8',
+        get primary() { return getComputedStyle(document.documentElement).getPropertyValue('--crm-accent').trim() || '#2563eb'; },
+        get sky() { return this.primary; },
         emerald: '#10b981',
         amber:   '#f59e0b',
-        purple:  '#8b5cf6',
+        purple:  '#94a3b8',
         rose:    '#f43f5e',
         slate:   '#64748b',
     };
@@ -432,24 +432,17 @@
 
     function statusBadge(status) {
         const s = (status || '').toLowerCase();
-        let color = 'var(--text-main)';
-        let bg = 'var(--table-header-bg)';
-        let border = 'var(--card-border)';
+        // Status colours come from the theme tokens, so the pill reads in light and dark mode alike
+        let tone = 'neutral';
         if (s.includes('won') || s.includes('accepted') || s.includes('completed') || s.includes('active') || s.includes('paid')) {
-            color = 'var(--status-green)';
-            bg = isDarkTheme() ? 'rgba(74, 222, 128, 0.15)' : 'rgba(22, 163, 74, 0.12)';
-            border = 'var(--status-green)';
+            tone = 'success';
         } else if (s.includes('lost') || s.includes('rejected') || s.includes('cancelled') || s.includes('critical') || s.includes('expired')) {
-            color = 'var(--status-red)';
-            bg = isDarkTheme() ? 'rgba(248, 113, 113, 0.15)' : 'rgba(220, 38, 38, 0.12)';
-            border = 'var(--status-red)';
+            tone = 'danger';
         } else if (s.includes('pending') || s.includes('draft') || s.includes('sent') || s.includes('progress') || s.includes('scheduled')) {
-            color = 'var(--status-orange)';
-            bg = isDarkTheme() ? 'rgba(251, 191, 36, 0.15)' : 'rgba(217, 119, 6, 0.12)';
-            border = 'var(--status-orange)';
+            tone = 'warning';
         }
         const label = (status || '').replace(/_/g, ' ');
-        return `<span style="border: 1px solid ${border}; border-radius: 4px; padding: 2px 8px; font-size: 11px; color: ${color}; text-transform: capitalize; background: ${bg}; font-weight: 600;">${escapeHtml(label)}</span>`;
+        return `<span style="border: 1px solid var(--status-${tone}-bd); border-radius: 4px; padding: 2px 8px; font-size: 11px; color: var(--status-${tone}-fg); text-transform: capitalize; background: var(--status-${tone}-bg); font-weight: 600;">${escapeHtml(label)}</span>`;
     }
 
     function getInitials(name) {
@@ -693,7 +686,7 @@
                         datasets: [{
                             label: 'Accepted Revenue',
                             data: data.revenueChart.data,
-                            backgroundColor: '#2563eb',
+                            backgroundColor: C.primary,
                             borderRadius: 4,
                             maxBarThickness: 44,
                         }]
@@ -800,7 +793,7 @@
                     datasets: [{
                         label: 'Jobs',
                         data: data.jobChart.data,
-                        backgroundColor: '#2563eb',
+                        backgroundColor: C.primary,
                         borderRadius: 6,
                         borderSkipped: false,
                         maxBarThickness: 32,
@@ -875,29 +868,31 @@
     }
 
     /* Dynamic Chart Theme Switching */
-    window.addEventListener('theme-changed', () => {
-        if (!latestChartData) return;
-
+    window.addEventListener('theme-changed', (e) => {
+        const liveAccent = (e && e.detail && e.detail.accent) ? e.detail.accent : C.primary;
         const grid = getGridColor();
         const tick = getTickColor();
         const borderColor = isDarkTheme() ? '#0f172a' : '#ffffff';
 
         @if($isAdmin)
-        if (revenueChart) {
-            revenueChart.options.scales.x.ticks.color = tick;
-            revenueChart.options.scales.y.ticks.color = tick;
-            revenueChart.options.scales.y.grid.color  = grid;
+        if (revenueChart && revenueChart.data && revenueChart.data.datasets && revenueChart.data.datasets[0]) {
+            revenueChart.data.datasets[0].backgroundColor = liveAccent;
+            if (revenueChart.options && revenueChart.options.scales) {
+                if (revenueChart.options.scales.x && revenueChart.options.scales.x.ticks) revenueChart.options.scales.x.ticks.color = tick;
+                if (revenueChart.options.scales.y && revenueChart.options.scales.y.ticks) revenueChart.options.scales.y.ticks.color = tick;
+                if (revenueChart.options.scales.y && revenueChart.options.scales.y.grid) revenueChart.options.scales.y.grid.color = grid;
+            }
             revenueChart.update();
         }
 
-        if (quotationChart) {
+        if (quotationChart && latestChartData && latestChartData.quotationChart) {
             quotationChart.data.datasets[0].borderColor = borderColor;
             quotationChart.update();
             buildLegend('quotation-legend', latestChartData.quotationChart.labels,
-                [C.slate, C.primary, C.emerald, C.rose, C.amber]);
+                [C.slate, liveAccent, C.emerald, C.rose, C.amber]);
         }
 
-        if (leadChart) {
+        if (leadChart && latestChartData && latestChartData.leadChart) {
             leadChart.data.datasets[0].borderColor = borderColor;
             leadChart.update();
             buildLegend('lead-legend', latestChartData.leadChart.labels,
@@ -919,7 +914,8 @@
     async function refreshDashboard(firstLoad = false) {
         const errorBox = document.getElementById('dashboard-error');
         try {
-            const res = await fetch(dataUrl, { headers: { Accept: 'application/json' } });
+            const months = document.getElementById('revenue-months')?.value || 6;
+            const res = await fetch(dataUrl + '?months=' + encodeURIComponent(months), { headers: { Accept: 'application/json' } });
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const data = await res.json();
 
@@ -958,5 +954,6 @@
 
     refreshDashboard(true);
     setInterval(() => refreshDashboard(false), 30_000);
+    document.getElementById('revenue-months')?.addEventListener('change', () => refreshDashboard(false));
     </script>
 </x-app-layout>

@@ -85,7 +85,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ $crmPageTitle }} | {{ config('app.name', 'Precision IT Systems CRM') }}</title>
+        <title>{{ __($crmPageTitle) }} | {{ config('app.name', 'Precision IT Systems CRM') }}</title>
 
         <!-- Favicon / App Icon -->
         <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}?v={{ filemtime(public_path('favicon.png')) }}">
@@ -97,6 +97,12 @@
 
         <!-- Scripts & Styles via Vite -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+        {{-- Technicians can switch their pages to Tamil, and fill text boxes by voice or the Tamil keyboard --}}
+        @if(auth()->user()->canChooseLanguage())
+            <x-tamil-font />
+            <x-tamil-input-script />
+        @endif
 
         <style>
             /* Colour, size and corner tokens live in resources/css/app.css (one source for every page) */
@@ -270,8 +276,8 @@
             .crm-cal-select:focus,
             .ts-control.focus,
             .ts-control:focus-within {
-                border-color: #2563eb !important;
-                box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.28) !important;
+                border-color: var(--crm-accent, #2563eb) !important;
+                box-shadow: 0 0 0 3px rgba(var(--crm-accent-rgb, 37, 99, 235), 0.28) !important;
                 outline: none !important;
             }
             html.dark input:focus:not([class*="border-0"]),
@@ -284,8 +290,8 @@
             html.dark .crm-cal-select:focus,
             html.dark .ts-control.focus,
             html.dark .ts-control:focus-within {
-                border-color: #3b82f6 !important;
-                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.35) !important;
+                border-color: color-mix(in srgb, var(--crm-accent, #2563eb) 80%, #fff) !important;
+                box-shadow: 0 0 0 3px rgba(var(--crm-accent-rgb, 37, 99, 235), 0.35) !important;
                 outline: none !important;
             }
 
@@ -571,8 +577,8 @@
             }
             .crm-topbar input[type="text"]:focus,
             .crm-topbar .crm-search-input:focus {
-                border-color: #2563eb !important;
-                box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.28) !important;
+                border-color: var(--crm-accent, #2563eb) !important;
+                box-shadow: 0 0 0 3px rgba(var(--crm-accent-rgb, 37, 99, 235), 0.28) !important;
                 outline: none !important;
             }
             html.dark .crm-topbar input[type="text"],
@@ -584,8 +590,8 @@
             }
             html.dark .crm-topbar input[type="text"]:focus,
             html.dark .crm-topbar .crm-search-input:focus {
-                border-color: #3b82f6 !important;
-                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.35) !important;
+                border-color: color-mix(in srgb, var(--crm-accent, #2563eb) 80%, #fff) !important;
+                box-shadow: 0 0 0 3px rgba(var(--crm-accent-rgb, 37, 99, 235), 0.35) !important;
                 outline: none !important;
             }
 
@@ -826,15 +832,15 @@
             .btn-primary,
             .crm-btn-primary,
             .crm-filter-btn {
-                background-color: #2563eb !important;
-                border: 1px solid #2563eb !important;
+                background-color: var(--crm-accent, #2563eb) !important;
+                border: 1px solid var(--crm-accent, #2563eb) !important;
                 color: #ffffff !important;
             }
             .btn-primary:hover,
             .crm-btn-primary:hover,
             .crm-filter-btn:hover {
-                background-color: #1d4ed8 !important;
-                border-color: #1d4ed8 !important;
+                background-color: var(--crm-accent-hover, #1d4ed8) !important;
+                border-color: var(--crm-accent-hover, #1d4ed8) !important;
             }
             .btn-primary *,
             .crm-btn-primary *,
@@ -877,14 +883,14 @@
                 font-size: 12px !important;
                 font-weight: 600 !important;
                 border-radius: 8px !important;
-                background-color: #2563eb !important;
-                border: 1px solid #2563eb !important;
+                background-color: var(--crm-accent, #2563eb) !important;
+                border: 1px solid var(--crm-accent, #2563eb) !important;
                 color: #ffffff !important;
                 cursor: pointer !important;
                 text-decoration: none !important;
                 white-space: nowrap !important;
                 transition: all 0.15s ease !important;
-                box-shadow: 0 1px 2px rgba(37, 99, 235, 0.25) !important;
+                box-shadow: 0 1px 2px rgba(var(--crm-accent-rgb, 37, 99, 235), 0.25) !important;
             }
             .btn-subtle:hover,
             .btn-inline-add:hover,
@@ -892,8 +898,8 @@
             button.btn-subtle:hover,
             a[class*="btn-subtle"]:hover,
             button[class*="btn-subtle"]:hover {
-                background-color: #1d4ed8 !important;
-                border-color: #1d4ed8 !important;
+                background-color: var(--crm-accent-hover, #1d4ed8) !important;
+                border-color: var(--crm-accent-hover, #1d4ed8) !important;
                 color: #ffffff !important;
             }
             .btn-subtle *,
@@ -911,8 +917,8 @@
             html.dark button.btn-subtle,
             html.dark a[class*="btn-subtle"],
             html.dark button[class*="btn-subtle"] {
-                background-color: #2563eb !important;
-                border: 1px solid #3b82f6 !important;
+                background-color: var(--crm-accent, #2563eb) !important;
+                border: 1px solid color-mix(in srgb, var(--crm-accent, #2563eb) 80%, #fff) !important;
                 color: #ffffff !important;
             }
             html.dark .btn-subtle:hover,
@@ -921,8 +927,8 @@
             html.dark button.btn-subtle:hover,
             html.dark a[class*="btn-subtle"]:hover,
             html.dark button[class*="btn-subtle"]:hover {
-                background-color: #1d4ed8 !important;
-                border-color: #2563eb !important;
+                background-color: var(--crm-accent-hover, #1d4ed8) !important;
+                border-color: var(--crm-accent, #2563eb) !important;
                 color: #ffffff !important;
             }
             html.dark .btn-subtle *,
@@ -937,7 +943,7 @@
 
             select.crm-select:invalid,
             select.crm-select option[value=""] {
-                color: #60a5fa !important;
+                color: color-mix(in srgb, var(--crm-accent, #2563eb) 60%, #fff) !important;
             }
 
             html.dark select,
@@ -951,9 +957,9 @@
 
             select:focus,
             .crm-select:focus {
-                border-color: #2563eb !important;
+                border-color: var(--crm-accent, #2563eb) !important;
                 outline: none !important;
-                box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.28) !important;
+                box-shadow: 0 0 0 3px rgba(var(--crm-accent-rgb, 37, 99, 235), 0.28) !important;
             }
 
             /* Clean Single-Border Dropdown Select Styling (Matches Reference Design) */
@@ -995,9 +1001,9 @@
             .search-input-box:focus,
             input[type="search"]:focus,
             input[name="search"]:not([type="hidden"]):focus {
-                border-color: #2563eb !important;
+                border-color: var(--crm-accent, #2563eb) !important;
                 outline: none !important;
-                box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.28) !important;
+                box-shadow: 0 0 0 3px rgba(var(--crm-accent-rgb, 37, 99, 235), 0.28) !important;
             }
 
             /* Universal Badge, Label & Status Pill System with Crisp Single 1px Dark Border (Matching Image 4) */
@@ -1152,7 +1158,7 @@
                 if (!isInput && e.altKey) {
                     if (e.key === 'd' || e.key === 'D') {
                         e.preventDefault();
-                        window.location.href = '{{ auth()->user()->role === 'technician' ? route('technician.dashboard') : route('dashboard') }}';
+                        window.location.href = '{{ auth()->user()->homeUrl() }}';
                     } else if (e.key === 'a' || e.key === 'A') {
                         e.preventDefault();
                         window.location.href = '{{ route('attendance.index') }}';
@@ -1197,7 +1203,7 @@
           @shortcuts-toggle.window="shortcutsModalOpen = (typeof $event.detail?.open === 'boolean') ? $event.detail.open : !shortcutsModalOpen"
           @shortcuts-open.window="shortcutsModalOpen = true"
           @shortcuts-close.window="shortcutsModalOpen = false">
-            <a href="#main-content" class="crm-skip-link">Skip to main content</a>
+            <a href="#main-content" class="crm-skip-link text-white">Skip to main content</a>
         
             {{-- ════════════════════════════════════════════════════════════════ --}}
             {{-- SECUREVISION UNIFIED ENTERPRISE SAAS CRM SUITE (ALL ROLES)        --}}
@@ -1340,8 +1346,8 @@
                             @keydown.window.prevent.ctrl.k="handleShortcut(window.innerWidth < 768)"
                             @keydown.window.prevent.cmd.k="handleShortcut(window.innerWidth < 768)">
                         
-                        {{-- 1. Page Name (Left) --}}
-                        <div class="flex items-center gap-2 shrink-0">
+                        {{-- 1. Page Name (Left): min-w-0 so a long (e.g. Tamil) title truncates instead of pushing the account menu off a phone screen --}}
+                        <div class="flex items-center gap-2 min-w-0">
                             {{-- Mobile Hamburger Toggle --}}
                             <button @click="sidebarOpen = !sidebarOpen" 
                                     type="button"
@@ -1364,9 +1370,10 @@
                                 </svg>
                             </button>
 
-                            <span class="crm-page-title text-sm font-bold text-[var(--text-main)] truncate">{{ $crmPageTitle }}</span>
+                            <span class="crm-page-title text-sm font-bold text-[var(--text-main)] truncate">{{ __($crmPageTitle) }}</span>
                         </div>
 
+                        @if(auth()->user()->isInternal())
                         {{-- 2. One Search Box (Center) --}}
                         <div class="hidden md:flex flex-1 items-center justify-center px-4 max-w-md mx-auto">
                             <div class="relative w-full" @click.away="open = false">
@@ -1397,9 +1404,7 @@
                                             </svg>
                                         </template>
                                         <template x-if="!loading && query.length > 0">
-                                            <button @click="clear()" type="button" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs font-bold leading-none p-0.5 cursor-pointer">
-                                                &times;
-                                            </button>
+                                            <x-close-button size="sm" label="Clear search" @click="clear()" />
                                         </template>
                                     </div>
                                 </div>
@@ -1436,6 +1441,9 @@
                                 </div>
                             </div>
                         </div>
+                        @else
+                            <div class="hidden md:block flex-1"></div>
+                        @endif
 
                         @php
                             $headerNotifs = \App\Services\HeaderNotificationService::getNotificationsForUser(Auth::user());
@@ -1443,6 +1451,7 @@
 
                         {{-- 3. Topbar Controls: Search, Theme Toggle, Notification Bell & Pill Profile (Right) --}}
                         <div class="flex items-center gap-2.5 shrink-0">
+                            @if(auth()->user()->isInternal())
                             {{-- Mobile search trigger icon --}}
                             <button @click="mobileSearchOpen = true; $nextTick(() => { $refs.mobileSearchInput.focus(); if (query.trim().length >= 2) open = true; })" 
                                     type="button"
@@ -1450,6 +1459,7 @@
                                     title="Search">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                             </button>
+                            @endif
 
                             {{-- Universal 1-Click Dark/Light Mode Button on Every Page for All Users --}}
                             <button @click="toggleThemeMode()" 
@@ -1548,7 +1558,8 @@
                                     {{-- Items List --}}
                                     <div class="max-h-80 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800/80">
                                         @forelse($headerNotifs['items'] as $item)
-                                            <a href="{{ $item['url'] }}" 
+                                            @php $rowTag = $item['url'] ? 'a' : 'div'; @endphp
+                                            <{{ $rowTag }} @if($item['url']) href="{{ $item['url'] }}" @endif
                                                @click="notifOpen = false"
                                                class="flex items-start gap-3 px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition group block">
                                                 
@@ -1577,29 +1588,33 @@
                                                 <div class="flex-1 min-w-0">
                                                     <div class="flex items-center justify-between gap-1">
                                                         <p class="font-bold text-slate-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition">{{ $item['title'] }}</p>
-                                                        <span class="text-[11px] text-slate-400 dark:text-slate-500 shrink-0">{{ $item['time'] }}</span>
+                                                        <span class="text-[11px] text-slate-500 dark:text-slate-400 shrink-0">{{ $item['time'] }}</span>
                                                     </div>
                                                     <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">{{ $item['description'] }}</p>
                                                 </div>
-                                            </a>
+                                            </{{ $rowTag }}>
                                         @empty
                                             <div class="p-6 text-center text-slate-400">
-                                                <p class="text-xs">No pending notifications</p>
+                                                <p class="text-xs">{{ __('No pending notifications') }}</p>
                                             </div>
                                         @endforelse
                                     </div>
 
                                     {{-- Footer Action Link --}}
                                     <div class="px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border-t border-[var(--card-border)] text-center">
-                                        @if(Auth::user()->isAdmin() || Auth::user()->isStaff())
+                                        @if(Auth::user()->isAdmin())
                                             <a href="{{ route('alerts.index') }}" class="text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:underline">
                                                 View Automated Alerts Engine →
                                             </a>
                                         @elseif(Auth::user()->isTechnician())
                                             <a href="{{ route('technician.dashboard') }}" class="text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:underline">
-                                                View All Assigned Work Orders →
+                                                {{ __('View All Assigned Work Orders') }} →
                                             </a>
-                                        @else
+                                        @elseif(Auth::user()->isWorker())
+                                            <a href="{{ route('worker.portal') }}" class="text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:underline">
+                                                {{ __('Open My Work & Attendance') }} →
+                                            </a>
+                                        @elseif(Auth::user()->isOffice())
                                             <a href="{{ route('dashboard') }}" class="text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:underline">
                                                 View Operations Dashboard →
                                             </a>
@@ -1619,18 +1634,18 @@
                                         aria-haspopup="true"
                                         aria-controls="crm-user-panel"
                                         :aria-expanded="userMenuOpen.toString()"
-                                        aria-label="Account menu for {{ Auth::user()->name }}"
+                                        aria-label="{{ __('Account menu for :name', ['name' => Auth::user()->name]) }}"
                                         class="flex items-center gap-2 pl-1.5 pr-2.5 py-1 rounded-[6px] border border-[var(--card-border)] bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/60 transition cursor-pointer select-none shadow-2xs">
                                     @if(Auth::user()->avatar_url)
                                         <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->name }}" class="w-7 h-7 rounded-full object-cover shrink-0 ring-1 ring-slate-200 dark:ring-slate-700">
                                     @else
                                         <div class="w-7 h-7 rounded-full text-white flex items-center justify-center font-bold text-xs shrink-0" style="background-color: var(--crm-accent, #2563eb);">
-                                            {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                                            {{ strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}
                                         </div>
                                     @endif
                                     <div class="text-left hidden sm:block min-w-0 pr-0.5">
                                         <span class="block text-xs font-bold text-slate-900 dark:text-slate-100 leading-tight truncate max-w-[120px]">{{ Auth::user()->name }}</span>
-                                        <span class="block text-[11px] text-blue-600 dark:text-blue-400 font-semibold leading-tight truncate">{{ Auth::user()->role_title }}</span>
+                                        <span class="block text-[11px] text-blue-600 dark:text-blue-400 font-semibold leading-tight truncate">{{ __(Auth::user()->role_title) }}</span>
                                     </div>
                                     <svg class="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 shrink-0 transition-transform duration-150" :class="{ 'rotate-180': userMenuOpen }" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
@@ -1642,7 +1657,7 @@
                                      x-ref="userPanel"
                                      id="crm-user-panel"
                                      role="region"
-                                     aria-label="Account menu"
+                                     aria-label="{{ __('Account menu') }}"
                                      @keydown.tab="crmTrapTab($event, $refs.userPanel)"
                                      @click.away="userMenuOpen = false"
                                      x-transition:enter="transition ease-out duration-100"
@@ -1660,14 +1675,14 @@
                                             <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->name }}" class="w-9 h-9 rounded-full object-cover shrink-0 ring-1 ring-slate-200 dark:ring-slate-700">
                                         @else
                                             <div class="w-9 h-9 rounded-full text-white flex items-center justify-center font-bold text-xs shrink-0" style="background-color: var(--crm-accent, #2563eb);">
-                                                {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                                                {{ strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}
                                             </div>
                                         @endif
                                         <div class="min-w-0 flex-1">
                                             <p class="font-bold text-slate-900 dark:text-white truncate leading-tight">{{ Auth::user()->name }}</p>
                                             <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate leading-tight">{{ Auth::user()->email }}</p>
                                             <span class="inline-block mt-1 text-[11px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-slate-200/70 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-                                                {{ Auth::user()->role_title }}
+                                                {{ __(Auth::user()->role_title) }}
                                             </span>
                                         </div>
                                     </div>
@@ -1675,7 +1690,7 @@
                                     <div class="py-1">
                                         <a href="{{ route('profile.edit') }}" class="flex items-center gap-2.5 px-3.5 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
                                             <svg class="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                                            <span>Profile Settings &amp; Photo</span>
+                                            <span>{{ __('Profile Settings & Photo') }}</span>
                                         </a>
 
                                         @if(Auth::user()->isAdmin())
@@ -1688,15 +1703,15 @@
                                         <button type="button" @click="toggleThemeMode()" class="w-full text-left flex items-center justify-between px-3.5 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer">
                                             <span class="flex items-center gap-2.5">
                                                 <svg class="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
-                                                <span>Toggle Theme</span>
+                                                <span>{{ __('Toggle Theme') }}</span>
                                             </span>
-                                            <span class="text-[11px] font-bold px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300" x-text="isDarkMode ? 'Night' : 'Day'"></span>
+                                            <span class="text-[11px] font-bold px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300" x-text="isDarkMode ? {{ Js::from(__('Night')) }} : {{ Js::from(__('Day')) }}"></span>
                                         </button>
 
                                         <button type="button" @click="userMenuOpen = false; window.crmOpenShortcuts()" class="hidden lg:flex w-full text-left items-center justify-between px-3.5 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer">
                                             <span class="flex items-center gap-2.5">
                                                 <svg class="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M6 9h.01M10 9h.01M14 9h.01M18 9h.01M6 13h.01M18 13h.01M9 15h6"/></svg>
-                                                <span>Keyboard Shortcuts</span>
+                                                <span>{{ __('Keyboard Shortcuts') }}</span>
                                             </span>
                                             <kbd class="crm-kbd">?</kbd>
                                         </button>
@@ -1706,13 +1721,14 @@
                                         @csrf
                                         <button type="submit" class="w-full text-left flex items-center gap-2.5 px-3.5 py-2 text-rose-600 dark:text-rose-400 font-semibold hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer">
                                             <svg class="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-                                            <span>Log Out</span>
+                                            <span>{{ __('Log Out') }}</span>
                                         </button>
                                     </form>
                                 </div>
                             </div>
                         </div>
 
+                        @if(auth()->user()->isInternal())
                         {{-- Mobile Omnisearch Full-Width Overlay --}}
                         <div x-show="mobileSearchOpen"
                              x-cloak
@@ -1723,6 +1739,7 @@
                                 <div class="relative flex-1 flex items-center">
                                     <input type="text" 
                                            x-ref="mobileSearchInput"
+                                           aria-label="Search leads, projects and products"
                                            x-model="query"
                                            @input.debounce.250ms="search()"
                                            @focus="if(query.length >= 2) open = true"
@@ -1770,6 +1787,7 @@
                                 </template>
                             </div>
                         </div>
+                        @endif
                     </header>
 
                     {{-- Main Content Area: Responsive padding p-3 on mobile, p-5 on desktop --}}
@@ -1799,14 +1817,14 @@
                         <a href="{{ route('technician.dashboard') }}" 
                            class="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl transition {{ request()->routeIs('technician.dashboard') ? 'text-blue-600 dark:text-blue-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200' }}">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"/></svg>
-                            <span class="text-[11px] tracking-tight">Jobs</span>
+                            <span class="text-[11px] tracking-tight">{{ __('Jobs') }}</span>
                         </a>
 
                         <button @click="sidebarOpen = true" 
                                 type="button"
                                 class="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition cursor-pointer">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
-                            <span class="text-[11px] tracking-tight">Modules</span>
+                            <span class="text-[11px] tracking-tight">{{ __('Modules') }}</span>
                         </button>
 
                         {{-- Elevated Center Action: Shift & Attendance --}}
@@ -1815,22 +1833,22 @@
                             <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-emerald-600 to-teal-600 text-white flex items-center justify-center shadow-lg shadow-emerald-500/35 border-2 border-white dark:border-[#0f172a] active:scale-95 transition-transform">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                             </div>
-                            <span class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 mt-0.5">Shift</span>
+                            <span class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 mt-0.5">{{ __('Shift') }}</span>
                         </a>
 
                         <a href="{{ route('projects.index') }}" 
                            class="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl transition {{ request()->routeIs('projects.*') ? 'text-blue-600 dark:text-blue-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200' }}">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="7" rx="3"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line stroke-linecap="round" stroke-linejoin="round" x1="2" x2="22" y1="13" y2="13"/></svg>
-                            <span class="text-[11px] tracking-tight">Projects</span>
+                            <span class="text-[11px] tracking-tight">{{ __('Projects') }}</span>
                         </a>
 
                         <a href="{{ route('profile.edit') }}" 
                            class="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl transition {{ request()->routeIs('profile.*') ? 'text-blue-600 dark:text-blue-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200' }}">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                            <span class="text-[11px] tracking-tight">Profile</span>
+                            <span class="text-[11px] tracking-tight">{{ __('Profile') }}</span>
                         </a>
 
-                    @else
+                    @elseif(auth()->user()->isOffice())
                         {{-- Admin & Staff Mobile Dock --}}
                         <a href="{{ route('dashboard') }}" 
                            class="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl transition {{ request()->routeIs('dashboard') ? 'text-blue-600 dark:text-blue-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200' }}">
@@ -1915,6 +1933,21 @@
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                             <span class="text-[11px] tracking-tight">Profile</span>
                         </a>
+                    @else
+                        {{-- Worker / other accounts: their own page and profile --}}
+                        @if(auth()->user()->isWorker())
+                        <a href="{{ route('worker.portal') }}" 
+                           class="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl transition {{ request()->routeIs('worker.*') ? 'text-blue-600 dark:text-blue-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200' }}">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                            <span class="text-[11px] tracking-tight">My Work</span>
+                        </a>
+                        @endif
+
+                        <a href="{{ route('profile.edit') }}" 
+                           class="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl transition {{ request()->routeIs('profile.*') ? 'text-blue-600 dark:text-blue-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200' }}">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                            <span class="text-[11px] tracking-tight">Profile</span>
+                        </a>
                     @endif
                 </div>
             </nav>
@@ -1939,9 +1972,7 @@
                 <div role="dialog" aria-modal="true" aria-labelledby="crm-shortcuts-title" class="crm-shortcuts-panel w-full max-w-md rounded-xl bg-[var(--card-bg)] text-[var(--text-main)]">
                     <div class="flex items-center justify-between px-5 py-3.5 border-b border-[var(--card-border)]">
                         <h2 id="crm-shortcuts-title" class="text-sm font-bold">Keyboard Shortcuts</h2>
-                        <button type="button" x-ref="shortcutsClose" @click="shortcutsModalOpen = false" class="crm-shortcuts-close btn-icon" aria-label="Close keyboard shortcuts">
-                            <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                        </button>
+                        <x-close-button label="Close keyboard shortcuts" x-ref="shortcutsClose" @click="shortcutsModalOpen = false" />
                     </div>
                     @php
                         $crmShortcuts = [

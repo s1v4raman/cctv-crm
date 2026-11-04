@@ -7,9 +7,9 @@
                 <div class="flex items-center gap-3">
                     <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ $project->title }}</h2>
                     @php
-                        $projStatusColor = '#2563eb';
-                        if ($project->status === 'completed') $projStatusColor = '#16a34a';
-                        elseif (in_array($project->status, ['cancelled', 'on_hold'])) $projStatusColor = '#dc2626';
+                        $projStatusColor = 'var(--link-color)';
+                        if ($project->status === 'completed') $projStatusColor = 'var(--status-success-fg)';
+                        elseif (in_array($project->status, ['cancelled', 'on_hold'])) $projStatusColor = 'var(--status-danger-fg)';
                     @endphp
                     <span class="text-sm font-bold" style="color: {{ $projStatusColor }};">
                         {{ $project->status_label ?? ucfirst(str_replace('_', ' ', $project->status)) }}
@@ -25,7 +25,7 @@
                         <form method="POST" action="{{ route('projects.updateStatus', $project) }}" class="inline-block">
                             @csrf
                             @method('PATCH')
-                            <select name="status" onchange="this.form.submit()" class="crm-select text-xs py-1" style="height: 38px;">
+                            <select aria-label="Project status" name="status" onchange="this.form.submit()" class="crm-select text-xs py-1" style="height: 38px;">
                                 @foreach(['draft' => 'Draft', 'pending_approval' => 'Pending Approval', 'approved' => 'Approved', 'in_progress' => 'In Progress', 'completed' => 'Completed', 'on_hold' => 'On Hold', 'cancelled' => 'Cancelled'] as $sVal => $sLbl)
                                     <option value="{{ $sVal }}" {{ $project->status === $sVal ? 'selected' : '' }}>{{ $sLbl }}</option>
                                 @endforeach
@@ -42,10 +42,22 @@
         </div>
     </x-slot>
 
+    @php
+        // For the Stock by product filters and the give / return form
+        $stockRowsJs = collect($stockLedger['rows'])->map(fn ($r) => ['key' => $r['key'], 'name' => $r['name'], 'category' => $r['category']])->values();
+        $stockHistoryKeys = collect($stockLedger['history'])->pluck('key')->unique()->values();
+        $siteBalanceByProduct = collect($stockLedger['rows'])->filter(fn ($r) => $r['product_id'])->mapWithKeys(fn ($r) => [$r['product_id'] => $r['balance']]);
+        $issueStockJs = $availableProducts->mapWithKeys(fn ($p) => [$p->id => [
+            'store' => $qty($p->stock_quantity),
+            'site' => $siteBalanceByProduct->has($p->id) ? $qty($siteBalanceByProduct[$p->id]) : null,
+            'unit' => $p->unit,
+        ]]);
+        $issueFormFailed = $errors->any() && old('type');
+    @endphp
     <div class="py-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-6"
          x-data="{
-             currentTab: '{{ $activeTab }}',
-             activeTaskView: '{{ $activeTaskView ?? 'kanban' }}',
+             currentTab: '{{ $issueFormFailed ? 'materials' : $activeTab }}',
+             activeTaskView: '{{ $activeTaskView ?? 'list' }}',
              taskSearchQuery: '',
              approveModalOpen: false,
              rejectModalOpen: false,
@@ -64,6 +76,32 @@
              consumeDrumNo: '',
              consumeDeductStock: true,
              consumeNotes: '',
+             stockCategory: 'all',
+             stockProduct: 'all',
+             stockRows: @js($stockRowsJs),
+             stockHistoryKeys: @js($stockHistoryKeys),
+             issueModalOpen: false,
+             issueType: 'issue',
+             issueProductId: '',
+             issueStock: @js($issueStockJs),
+             openIssueModal(type = 'issue', productId = '') {
+                 this.issueType = type;
+                 this.issueProductId = productId ? String(productId) : '';
+                 this.issueModalOpen = true;
+             },
+             stockShows(key, category) {
+                 return (this.stockCategory === 'all' || this.stockCategory === category)
+                     && (this.stockProduct === 'all' || this.stockProduct === key);
+             },
+             stockRowName() {
+                 const row = this.stockRows.find(r => r.key === this.stockProduct);
+                 return row ? row.name : '';
+             },
+             issueHint() {
+                 const s = this.issueStock[this.issueProductId];
+                 if (!s) return '';
+                 return 'In storeroom: ' + s.store + ' ' + s.unit + (s.site !== null ? ' · On this site: ' + s.site + ' ' + s.unit : '');
+             },
              documentModalOpen: false,
              workDayModalOpen: false,
              workerPhotoModalUrl: null,
@@ -368,20 +406,27 @@
                  });
              }
          }"
-         x-init="initSortableKanban()">
+         x-init="initSortableKanban(); $watch('currentTab', (v) => { const u = new URL(window.location); u.searchParams.set('tab', v); history.replaceState(null, '', u); }); $watch('activeTaskView', (v) => { const u = new URL(window.location); u.searchParams.set('view', v); history.replaceState(null, '', u); })">
 
         {{-- Flash Alerts --}}
         @if (session('status'))
             <div class="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-sm flex items-center justify-between">
                 <span>{{ session('status') }}</span>
-                <button type="button" onclick="this.parentElement.remove()" class="text-emerald-600 hover:text-emerald-900">&times;</button>
+                <x-close-button size="sm" tone="inherit" label="Dismiss message" onclick="this.parentElement.remove()" />
             </div>
         @endif
 
         @if (session('error'))
             <div class="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 text-sm flex items-center justify-between">
                 <span>{{ session('error') }}</span>
-                <button type="button" onclick="this.parentElement.remove()" class="text-rose-600 hover:text-rose-900">&times;</button>
+                <x-close-button size="sm" tone="inherit" label="Dismiss message" onclick="this.parentElement.remove()" />
+            </div>
+        @endif
+
+        @if ($errors->hasAny(['file', 'document_type', 'dc_number', 'dc_date', 'items_summary']))
+            <div class="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 text-sm flex items-center justify-between">
+                <span>Document not uploaded: {{ collect(['file', 'document_type', 'dc_number', 'dc_date', 'items_summary'])->map(fn ($f) => $errors->first($f))->filter()->implode(' ') }}</span>
+                <x-close-button size="sm" tone="inherit" label="Dismiss message" onclick="this.parentElement.remove()" />
             </div>
         @endif
 
@@ -426,7 +471,7 @@
                 <button type="button" @click="currentTab = 'materials'" :class="currentTab === 'materials' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 dark:text-slate-400 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'" class="inline-flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
                     <span>Materials</span> <span class="text-slate-400 font-normal">{{ $project->materials->count() }}</span>
                     @if($totalCableMeters > 0)
-                        <span class="px-1.5 py-0.5 text-[11px] rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 font-bold">{{ number_format($totalCableMeters, 0) }}m</span>
+                        <span class="px-1.5 py-0.5 text-[11px] rounded-full font-bold" style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.12); color: var(--link-color);">{{ number_format($totalCableMeters, 0) }}m</span>
                     @endif
                 </button>
                 <button type="button" @click="currentTab = 'documents'" :class="currentTab === 'documents' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 dark:text-slate-400 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'" class="inline-flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
@@ -444,7 +489,7 @@
                 <button type="button" @click="currentTab = 'tasks'" :class="currentTab === 'tasks' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 dark:text-slate-400 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'" class="inline-flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
                     <span>Tasks</span> <span class="text-slate-400 font-normal">{{ $tasksCount }}</span>
                     @if($tasksCount > 0)
-                        <span class="px-1.5 py-0.5 text-[11px] rounded-full {{ $taskCompletionPercentage === 100 ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300' }} font-bold">{{ $taskCompletionPercentage }}%</span>
+                        <span class="px-1.5 py-0.5 text-[11px] rounded-full font-bold" style="{{ $taskCompletionPercentage === 100 ? 'background-color: rgba(16, 185, 129, 0.15); color: #10b981;' : 'background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.12); color: var(--link-color);' }}">{{ $taskCompletionPercentage }}%</span>
                     @endif
                 </button>
             </nav>
@@ -819,7 +864,7 @@
                     <div class="p-6 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
                         <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                             <h3 class="font-extrabold text-slate-900 dark:text-white text-sm flex items-center gap-2">
-                                <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+                                <span class="w-2.5 h-2.5 rounded-full" style="background-color: var(--crm-accent, #2563eb);"></span>
                                 Project Team
                             </h3>
                             <div class="flex items-center gap-1.5">
@@ -831,7 +876,7 @@
                                 </a>
                                 @endif
                                 @if(auth()->user()->isAdmin() || ($project->created_by === auth()->id() && in_array($project->status, ['draft', 'pending_approval'])))
-                                    <a href="{{ route('projects.edit', $project) }}" class="text-xs text-blue-600 dark:text-blue-400 font-semibold hover:underline px-1 py-0.5">
+                                    <a href="{{ route('projects.edit', $project) }}" class="text-xs font-semibold hover:underline px-1 py-0.5" style="color: var(--link-color);">
                                         Edit
                                     </a>
                                 @endif
@@ -862,11 +907,11 @@
 
                         <div class="space-y-3 text-xs">
                             {{-- Lead Technician --}}
-                            <div x-data="{ showAssignForm: false }" class="p-3 rounded-xl bg-blue-50/50 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/40">
+                            <div x-data="{ showAssignForm: false }" class="p-3 rounded-xl border" style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.08); border-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.25);">
                                 <div class="flex items-center justify-between mb-1">
-                                    <span class="text-[11px] text-blue-600 dark:text-blue-400 uppercase tracking-wider block font-bold">Lead Technician (In-Charge)</span>
-                                    <button type="button" @click="showAssignForm = !showAssignForm" class="text-[11px] text-blue-600 dark:text-blue-400 font-semibold hover:underline">
-                                        <span x-text="showAssignForm ? 'Cancel' : '{{ $project->leadTechnician ? 'Change' : '+ Assign' }}'"></span>
+                                    <span class="text-[11px] uppercase tracking-wider block font-bold" style="color: var(--link-color);">Lead Technician (In-Charge)</span>
+                                    <button type="button" @click="showAssignForm = !showAssignForm" class="text-[11px] font-semibold hover:underline" style="color: var(--link-color);">
+                                        <span x-text="showAssignForm ? 'Cancel' : '{{ $project->leadTechnician ? 'Change' : 'Assign' }}'"></span>
                                     </button>
                                 </div>
 
@@ -878,7 +923,7 @@
                                                 <span class="text-slate-500 text-[11px]">{{ $project->leadTechnician->email }}</span>
                                             </div>
                                             @if($project->leadTechnician->phone)
-                                                <a href="tel:{{ $project->leadTechnician->phone }}" class="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-[11px] shadow-xs">
+                                                <a href="tel:{{ $project->leadTechnician->phone }}" class="px-2.5 py-1 rounded-lg text-white font-bold text-[11px] shadow-xs" style="background-color: var(--crm-accent, #2563eb);">
                                                     Call
                                                 </a>
                                             @endif
@@ -888,9 +933,10 @@
                                             <span class="text-slate-500">Not assigned yet</span>
                                             @if(auth()->user()->isAdmin())
                                             <a href="{{ route('admin.users.create', ['role' => 'technician', 'return_to' => route('projects.show', [$project->id, 'tab' => 'overview'])]) }}" 
-                                               class="btn-subtle text-white font-semibold"
+                                               class="btn-subtle gap-1.5 text-white font-semibold"
                                                style="color: #ffffff !important;">
-                                                <span class="text-white font-semibold" style="color: #ffffff !important;">+ Add New Technician</span>
+                                                <x-icon.plus />
+                                                <span class="text-white font-semibold" style="color: #ffffff !important;">Add New Technician</span>
                                             </a>
                                             @endif
                                         </div>
@@ -902,7 +948,7 @@
                                     <form action="{{ route('projects.assign-technician', $project) }}" method="POST" class="space-y-2">
                                         @csrf
                                         <div>
-                                            <select name="lead_technician_id" class="w-full text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 p-2 focus:ring-1 focus:ring-blue-500" required>
+                                            <select aria-label="Lead technician" name="lead_technician_id" class="w-full text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 p-2 focus:ring-1 focus:ring-blue-500" required>
                                                 <option value="">-- Choose Lead Technician --</option>
                                                 @foreach($technicians as $tech)
                                                     <option value="{{ $tech->id }}" @selected($project->lead_technician_id == $tech->id)>
@@ -975,7 +1021,7 @@
 
                         <div class="space-y-3 max-h-60 overflow-y-auto pr-1">
                             @forelse($project->auditLogs as $log)
-                                <div class="text-xs border-l-2 border-blue-500 pl-3 py-1">
+                                <div class="text-xs pl-3 py-1" style="border-left: 2px solid var(--crm-accent, #2563eb);">
                                     <div class="font-bold text-slate-800 dark:text-slate-200">{{ $log->action_label }}</div>
                                     @if($log->reason)<div class="text-[11px] text-slate-500">{{ $log->reason }}</div>@endif
                                     <div class="text-[11px] text-slate-400 mt-0.5">{{ $log->user?->name ?? 'System' }} &bull; {{ $log->created_at->diffForHumans() }}</div>
@@ -996,36 +1042,202 @@
         {{-- ════════════════════════════════════════════════════════════════ --}}
         <div x-show="currentTab === 'materials'" x-cloak class="space-y-6">
 
-            {{-- Materials summary: one line until something has been used --}}
+            {{-- Materials summary: cable from the storeroom to the site, then everything else --}}
             @php
-                $hardwareInstalled = $project->materialConsumptions->where('unit', '!=', 'meters')->sum('quantity_used');
-                $nothingUsedYet = $totalCableMeters == 0 && $hardwareInstalled == 0 && $totalWastageQuantity == 0;
+                $cable = $stockLedger['cable'];
+                $hardware = $stockLedger['hardware'];
             @endphp
-            <div class="rounded-lg bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 px-5 py-4">
-                @if($nothingUsedYet)
-                    <p class="text-sm text-slate-600 dark:text-slate-300">
-                        {{ $project->materials->count() }} {{ Str::plural('item', $project->materials->count()) }} planned ({{ $qty($totalBomQuantity) }} units) · nothing used yet
-                    </p>
-                @else
-                    <dl class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                        <div>
-                            <dt class="text-xs text-slate-500 dark:text-slate-400">Planned</dt>
-                            <dd class="text-lg font-semibold text-slate-900 dark:text-white">{{ $project->materials->count() }} {{ Str::plural('item', $project->materials->count()) }} <span class="text-sm font-normal text-slate-500">· {{ $qty($totalBomQuantity) }} units</span></dd>
-                        </div>
-                        <div>
-                            <dt class="text-xs text-slate-500 dark:text-slate-400">Cable pulled</dt>
-                            <dd class="text-lg font-semibold text-slate-900 dark:text-white">{{ $qty($totalCableMeters) }} m</dd>
-                        </div>
-                        <div>
-                            <dt class="text-xs text-slate-500 dark:text-slate-400">Hardware installed</dt>
-                            <dd class="text-lg font-semibold text-slate-900 dark:text-white">{{ $qty($hardwareInstalled) }}</dd>
-                        </div>
-                        <div>
-                            <dt class="text-xs text-slate-500 dark:text-slate-400">Wastage</dt>
-                            <dd class="text-lg font-semibold {{ $totalWastageQuantity > 0 ? 'text-amber-700 dark:text-amber-400' : 'text-slate-900 dark:text-white' }}">{{ $qty($totalWastageQuantity) }}</dd>
-                        </div>
-                    </dl>
+            <div class="rounded-lg bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 px-5 py-4 space-y-4">
+                <dl class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div>
+                        <dt class="text-xs text-slate-500 dark:text-slate-400">Cable given to site</dt>
+                        <dd class="text-lg font-semibold text-slate-900 dark:text-white">{{ $qty($cable['given']) }} m</dd>
+                        <dd class="text-[11px] text-slate-500 dark:text-slate-400">from the storeroom, less returns</dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs text-slate-500 dark:text-slate-400">Cable pulled</dt>
+                        <dd class="text-lg font-semibold text-slate-900 dark:text-white">{{ $qty($cable['pulled']) }} m</dd>
+                        <dd class="text-[11px] text-slate-500 dark:text-slate-400">{{ $cable['wastage'] > 0 ? '+ ' . $qty($cable['wastage']) . ' m wastage' : 'laid on site' }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs text-slate-500 dark:text-slate-400">Cable balance on site</dt>
+                        @if($cable['balance'] === null)
+                            <dd class="text-lg font-semibold text-slate-900 dark:text-white">—</dd>
+                            <dd class="text-[11px] text-slate-500 dark:text-slate-400">no cable given yet</dd>
+                        @elseif($cable['balance'] < 0)
+                            <dd class="text-lg font-semibold text-rose-600 dark:text-rose-400">{{ $qty($cable['balance']) }} m</dd>
+                            <dd class="text-[11px] text-rose-600 dark:text-rose-400">more pulled than given</dd>
+                        @else
+                            <dd class="text-lg font-semibold text-slate-900 dark:text-white">{{ $qty($cable['balance']) }} m</dd>
+                            <dd class="text-[11px] text-slate-500 dark:text-slate-400">with the team, to use or return</dd>
+                        @endif
+                    </div>
+                    <div>
+                        <dt class="text-xs text-slate-500 dark:text-slate-400">Cable in storeroom</dt>
+                        <dd class="text-lg font-semibold text-slate-900 dark:text-white">{{ $qty($cable['in_store']) }} m</dd>
+                        <dd class="text-[11px] text-slate-500 dark:text-slate-400">
+                            {{ $cable['all_cable'] ? 'all cable products' : 'this project\'s cable' }}{{ $cable['on_order'] > 0 ? ' · ' . $qty($cable['on_order']) . ' m on order' : '' }}
+                        </dd>
+                    </div>
+                </dl>
+                <dl class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+                    <div>
+                        <dt class="text-xs text-slate-500 dark:text-slate-400">Planned</dt>
+                        <dd class="text-lg font-semibold text-slate-900 dark:text-white">{{ $project->materials->count() }} {{ Str::plural('item', $project->materials->count()) }} <span class="text-sm font-normal text-slate-500">· {{ $qty($totalBomQuantity) }} units</span></dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs text-slate-500 dark:text-slate-400">Hardware given to site</dt>
+                        <dd class="text-lg font-semibold text-slate-900 dark:text-white">{{ $qty($hardware['given']) }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs text-slate-500 dark:text-slate-400">Hardware installed</dt>
+                        <dd class="text-lg font-semibold text-slate-900 dark:text-white">{{ $qty($hardware['installed']) }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs text-slate-500 dark:text-slate-400">Wastage</dt>
+                        <dd class="text-lg font-semibold {{ $totalWastageQuantity > 0 ? 'text-amber-700 dark:text-amber-400' : 'text-slate-900 dark:text-white' }}">{{ $qty($totalWastageQuantity) }}</dd>
+                    </div>
+                </dl>
+            </div>
+
+            {{-- Stock by product: given to site, used, balance on site, storeroom, on order --}}
+            <div class="rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden">
+                <div class="p-5 border-b border-slate-100 dark:border-slate-800 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <div>
+                        <h3 class="font-extrabold text-slate-900 dark:text-white text-base">Stock by product</h3>
+                        <p class="text-xs text-slate-500 mt-0.5">What was given to this site, what was used, what is left with the team and what the storeroom still holds.</p>
+                    </div>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <select aria-label="Filter by category" x-model="stockCategory" @change="stockProduct = 'all'" class="crm-select text-xs">
+                            <option value="all">All categories</option>
+                            @foreach($stockLedger['categories'] as $stockCat)
+                                <option value="{{ $stockCat }}">{{ $stockCat }}</option>
+                            @endforeach
+                        </select>
+                        <select aria-label="Filter by product" x-model="stockProduct" class="crm-select text-xs">
+                            <option value="all">All products</option>
+                            <template x-for="r in stockRows.filter(r => stockCategory === 'all' || r.category === stockCategory)" :key="r.key">
+                                <option :value="r.key" x-text="r.name" :selected="r.key === stockProduct"></option>
+                            </template>
+                        </select>
+                        @if(auth()->user()->isOffice())
+                            <button type="button" @click="openIssueModal('issue')" class="btn-primary text-xs">Give to site</button>
+                            <button type="button" @click="openIssueModal('return')" class="btn-secondary text-xs">Return to storeroom</button>
+                        @endif
+                    </div>
+                </div>
+
+                @if($issueFormFailed)
+                    <div class="mx-5 mt-4 p-3 rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs" role="alert">
+                        @foreach($errors->all() as $issueError)
+                            <p>{{ $issueError }}</p>
+                        @endforeach
+                    </div>
                 @endif
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-slate-600 dark:text-slate-300">
+                        <thead class="bg-slate-50/80 dark:bg-slate-800/50 text-xs uppercase font-bold text-slate-500 border-b border-slate-100 dark:border-slate-800">
+                            <tr>
+                                <th class="px-5 py-3.5">Product</th>
+                                <th class="px-4 py-3.5 text-right">Planned</th>
+                                <th class="px-4 py-3.5 text-right">Given to site</th>
+                                <th class="px-4 py-3.5 text-right">Used</th>
+                                <th class="px-4 py-3.5 text-right">Wastage</th>
+                                <th class="px-4 py-3.5 text-right">Balance on site</th>
+                                <th class="px-4 py-3.5 text-right">In storeroom</th>
+                                <th class="px-4 py-3.5 text-right">On order</th>
+                                <th class="px-5 py-3.5 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                            @forelse($stockLedger['rows'] as $row)
+                                <tr x-show="stockShows(@js($row['key']), @js($row['category']))" class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40">
+                                    <td class="px-5 py-3">
+                                        <div class="font-bold text-slate-900 dark:text-white flex items-center gap-1.5 flex-wrap">
+                                            <span>{{ $row['name'] }}</span>
+                                            @if($row['sku'])
+                                                <span class="px-1.5 py-0.5 rounded text-[11px] font-mono bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">{{ $row['sku'] }}</span>
+                                            @endif
+                                        </div>
+                                        <span class="text-[11px] text-slate-500 dark:text-slate-400">{{ $row['category'] }}</span>
+                                        @if($row['warning'])
+                                            <span class="block text-[11px] font-semibold {{ $row['balance'] < 0 ? 'text-rose-600 dark:text-rose-400' : 'text-amber-700 dark:text-amber-400' }}">{{ $row['warning'] }}</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-4 py-3 text-right font-mono whitespace-nowrap">{{ collect([$row['planned'] > 0 ? $qty($row['planned']) . ' ' . $row['unit'] : null])->merge($row['planned_other'])->filter()->implode(' + ') ?: '—' }}</td>
+                                    <td class="px-4 py-3 text-right font-mono whitespace-nowrap">{{ $qty($row['given']) }} {{ $row['unit'] }}</td>
+                                    <td class="px-4 py-3 text-right font-mono whitespace-nowrap">{{ $qty($row['used']) }} {{ $row['unit'] }}</td>
+                                    <td class="px-4 py-3 text-right font-mono whitespace-nowrap {{ $row['wastage'] > 0 ? 'text-amber-700 dark:text-amber-400' : '' }}">{{ $row['wastage'] > 0 ? $qty($row['wastage']) . ' ' . $row['unit'] : '—' }}</td>
+                                    <td class="px-4 py-3 text-right font-mono whitespace-nowrap font-bold {{ $row['given'] > 0 && $row['balance'] < 0 ? 'text-rose-600 dark:text-rose-400' : 'text-slate-900 dark:text-white' }}">
+                                        {{ $row['given'] > 0 ? $qty($row['balance']) . ' ' . $row['unit'] : '—' }}
+                                    </td>
+                                    <td class="px-4 py-3 text-right font-mono whitespace-nowrap">{{ $row['in_store'] !== null ? $qty($row['in_store']) . ' ' . $row['unit'] : '—' }}</td>
+                                    <td class="px-4 py-3 text-right font-mono whitespace-nowrap">{{ $row['on_order'] ? $qty($row['on_order']) . ' ' . $row['unit'] : '—' }}</td>
+                                    <td class="px-5 py-3 text-right whitespace-nowrap">
+                                        <div class="inline-flex items-center gap-3">
+                                            <button type="button" @click="stockProduct = @js($row['key'])" class="action-link text-xs">History</button>
+                                            @if($row['product_id'] && auth()->user()->isOffice())
+                                                <button type="button" @click="openIssueModal('issue', {{ $row['product_id'] }})" class="action-link text-xs">Give</button>
+                                                <button type="button" @click="openIssueModal('return', {{ $row['product_id'] }})" class="action-link text-xs">Return</button>
+                                            @endif
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="9" class="px-5 py-10 text-center text-slate-400 text-xs">
+                                        Nothing planned, given or used on this site yet.
+                                        @if(auth()->user()->isOffice()) Use <strong>Give to site</strong> when material leaves the storeroom. @endif
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+
+                {{-- One product's history, newest first --}}
+                <div x-show="stockProduct !== 'all'" x-cloak class="border-t border-slate-100 dark:border-slate-800 px-5 py-4">
+                    <div class="flex items-center justify-between gap-3">
+                        <h4 class="text-sm font-bold text-slate-900 dark:text-white">History: <span x-text="stockRowName()"></span></h4>
+                        <button type="button" @click="stockProduct = 'all'" class="action-link text-xs">Show all products</button>
+                    </div>
+                    <ol class="mt-2 divide-y divide-slate-100 dark:divide-slate-800">
+                        @foreach($stockLedger['history'] as $entry)
+                            <li x-show="stockProduct === @js($entry['key'])" class="py-2.5 flex flex-wrap items-baseline gap-x-4 gap-y-1 text-sm">
+                                <span class="w-24 shrink-0 text-xs text-slate-500 dark:text-slate-400">{{ $entry['date']?->format('d M Y') }}</span>
+                                @if($entry['kind'] === 'issue')
+                                    <span class="w-36 shrink-0 font-semibold text-slate-900 dark:text-white">Given to site</span>
+                                    <span class="w-28 shrink-0 font-mono">+{{ $qty($entry['quantity']) }} {{ $entry['unit'] }}</span>
+                                @elseif($entry['kind'] === 'return')
+                                    <span class="w-36 shrink-0 font-semibold text-slate-900 dark:text-white">Returned to storeroom</span>
+                                    <span class="w-28 shrink-0 font-mono">−{{ $qty($entry['quantity']) }} {{ $entry['unit'] }}</span>
+                                @else
+                                    <span class="w-36 shrink-0 font-semibold text-slate-900 dark:text-white">Used</span>
+                                    <span class="w-28 shrink-0 font-mono">−{{ $qty($entry['quantity']) }} {{ $entry['unit'] }}@if($entry['wastage'] > 0)<span class="text-amber-700 dark:text-amber-400"> (+{{ $qty($entry['wastage']) }} waste)</span>@endif</span>
+                                @endif
+                                <span class="flex-1 min-w-[12rem] text-xs text-slate-500 dark:text-slate-400">
+                                    {{ collect([
+                                        $entry['who'] ? ($entry['kind'] === 'issue' ? 'to ' : ($entry['kind'] === 'return' ? 'from ' : 'by ')) . $entry['who'] : null,
+                                        $entry['drum'] ? 'drum ' . $entry['drum'] : null,
+                                        $entry['detail'] ?: null,
+                                    ])->filter()->implode(' · ') }}
+                                </span>
+                                @if($entry['kind'] !== 'use' && auth()->user()->isAdmin())
+                                    <form method="POST" action="{{ route('projects.material-issues.destroy', ['project' => $project, 'issue' => $entry['id']]) }}" data-confirm="Undo this hand-over? The storeroom stock is put back as it was." class="inline-block">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="danger-link text-xs bg-transparent border-0 p-0 cursor-pointer">Undo</button>
+                                    </form>
+                                @endif
+                            </li>
+                        @endforeach
+                    </ol>
+                    <p x-show="!stockHistoryKeys.includes(stockProduct)" class="py-2.5 text-xs text-slate-500 dark:text-slate-400">Nothing given or used for this product yet.</p>
+                </div>
+                <p x-show="stockProduct === 'all'" class="border-t border-slate-100 dark:border-slate-800 px-5 py-3 text-xs text-slate-500 dark:text-slate-400">
+                    Pick a product above, or press <strong>History</strong>, to see each hand-over and use by date. Balance on site = given to site − used − wastage.
+                </p>
             </div>
 
             {{-- 1. Bill of Materials (BOM) & Reconciliation Table --}}
@@ -1141,9 +1353,7 @@
                                             <form method="POST" action="{{ route('projects.materials.destroy', ['project' => $project, 'material' => $mat]) }}" data-confirm="Remove this material from BOM?" class="inline-block">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="p-1 rounded text-slate-400 hover:text-rose-600 text-xs font-bold" title="Delete BOM Item">
-                                                    &times;
-                                                </button>
+                                                <x-close-button size="sm" tone="danger" label="Delete BOM item" type="submit" />
                                             </form>
                                             @endif
                                         </div>
@@ -1175,7 +1385,8 @@
                     </div>
 
                     <button type="button" @click="openConsumeModal()" class="btn-secondary text-xs">
-                        + Record Field Usage
+                        <x-icon.plus />
+                        <span>Record Field Usage</span>
                     </button>
                 </div>
 
@@ -1232,7 +1443,7 @@
                                     <td class="px-5 py-3.5 whitespace-nowrap text-xs">
                                         <div class="flex items-center gap-1.5">
                                             <span class="w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-[11px] font-bold flex items-center justify-center">
-                                                {{ strtoupper(substr($cLog->consumedBy?->name ?? 'T', 0, 1)) }}
+                                                {{ strtoupper(mb_substr($cLog->consumedBy?->name ?? 'T', 0, 1)) }}
                                             </span>
                                             <span class="font-medium text-slate-700 dark:text-slate-300">{{ $cLog->consumedBy?->name ?? 'Technician' }}</span>
                                         </div>
@@ -1261,7 +1472,7 @@
                             @empty
                                 <tr>
                                     <td colspan="9" class="px-5 py-12 text-center text-slate-400 text-xs">
-                                        No task-level material or cable consumption logged yet. Use <strong>+ Record Field Usage</strong> or log directly from any task in the Kanban board.
+                                        No task-level material or cable consumption logged yet. Use <strong>Record Field Usage</strong> or log directly from any task in the Kanban board.
                                     </td>
                                 </tr>
                             @endforelse
@@ -1284,7 +1495,8 @@
                     </div>
 
                     <button type="button" @click="documentModalOpen = true" class="btn-primary text-xs shadow-md">
-                        + Upload Document / DC
+                        <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4m0 0L7.5 8.5M12 4l4.5 4.5M4 15v3a2 2 0 002 2h12a2 2 0 002-2v-3"/></svg>
+                        <span>Upload Document / DC</span>
                     </button>
                 </div>
 
@@ -1304,7 +1516,7 @@
                                 <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40">
                                     <td class="px-5 py-3.5">
                                         <div class="font-bold text-slate-900 dark:text-white">{{ $doc->title }}</div>
-                                        <div class="text-xs text-slate-400">{{ $doc->document_type_label }} &bull; {{ $doc->formatted_file_size }}</div>
+                                        <div class="text-xs text-slate-400">{{ $doc->document_type_label }} &bull; {{ $doc->formatted_size }}</div>
                                     </td>
                                     <td class="px-5 py-3.5 font-mono text-xs">
                                         @if($doc->dc_number)
@@ -1486,13 +1698,19 @@
                 </div>
             @endif
 
-            <div class="flex justify-between items-center pt-2">
+            <div class="flex justify-between items-center pt-2 flex-wrap gap-2">
                 <h3 class="font-extrabold text-slate-900 dark:text-white text-base">Work days</h3>
-                @can('logWorkDay', $project)
-                    <button type="button" @click="workDayModalOpen = true" class="btn-primary text-xs">
-                        Log work day
+                <div class="flex items-center gap-2 flex-wrap">
+                    <button type="button" onclick="openAttendanceModal('{{ $project->id }}')" class="btn-primary text-xs flex items-center gap-1.5 cursor-pointer" title="Mark attendance with a photo">
+                        <svg class="w-3.5 h-3.5 text-white shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                        <span>Mark Attendance</span>
                     </button>
-                @endcan
+                    @can('logWorkDay', $project)
+                        <button type="button" @click="workDayModalOpen = true" class="btn-secondary text-xs">
+                            Batch Work Day Log
+                        </button>
+                    @endcan
+                </div>
             </div>
 
             <div class="space-y-4">
@@ -1546,7 +1764,7 @@
                                                         </div>
                                                     @else
                                                         <div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 flex items-center justify-center text-xs font-bold text-slate-500 shrink-0">
-                                                            {{ strtoupper(substr($att->worker?->name ?? 'WK', 0, 2)) }}
+                                                            {{ strtoupper(mb_substr($att->worker?->name ?? 'WK', 0, 2)) }}
                                                         </div>
                                                     @endif
 
@@ -1661,7 +1879,7 @@
                 <div class="relative bg-white dark:bg-[#0f172a] rounded-2xl overflow-hidden max-w-md w-full border border-slate-200 dark:border-slate-800 shadow-2xl">
                     <div class="p-3 bg-slate-900 text-white flex items-center justify-between">
                         <span class="text-xs font-bold">Worker Attendance Verified Selfie</span>
-                        <button type="button" @click="workerPhotoModalUrl = null" class="text-slate-400 hover:text-white text-base leading-none">&times;</button>
+                        <x-close-button size="sm" tone="dark" label="Close photo" @click="workerPhotoModalUrl = null" />
                     </div>
                     <div class="p-3 bg-slate-100 dark:bg-slate-950 flex items-center justify-center">
                         <img :src="workerPhotoModalUrl" alt="Worker Punch Photo" class="max-h-[70vh] w-auto object-contain rounded-xl">
@@ -1791,216 +2009,326 @@
             </div>
             @endif
 
-            {{-- Workflow KPI & Action Header --}}
-            <div class="p-6 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-5">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div>
-                        <h3 class="font-extrabold text-slate-900 dark:text-white text-base flex items-center gap-2">
-                            <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+            {{-- ══ Tasks: one checklist grouped by phase. Tick to finish, add in place, click a task for its details.
+                 The board stays available from the ··· menu. ══ --}}
+            @php
+                $me = auth()->id();
+                $today = now()->startOfDay();
+                $taskRows = $project->tasks->sortBy([['order_column', 'asc'], ['id', 'asc']])->values();
+                $phaseGroups = $taskRows->groupBy(fn ($t) => $t->phase_name ?: 'General');
+                $isOpenTask = fn ($t) => $t->status !== 'completed';
+                $taskFlags = $taskRows->mapWithKeys(fn ($t) => [$t->id => array_values(array_filter([
+                    $isOpenTask($t) && (int) $t->assigned_to === (int) $me ? 'mine' : null,
+                    $isOpenTask($t) && $t->due_date && $t->due_date->lt($today) ? 'overdue' : null,
+                    $t->status === 'blocked' ? 'blocked' : null,
+                ]))]);
+                $flagCount = fn ($flag) => $taskFlags->filter(fn ($f) => in_array($flag, $f, true))->count();
+                $closedPhases = $phaseGroups->values()->keys()->filter(fn ($i) => $phaseGroups->values()[$i]->every(fn ($t) => $t->status === 'completed'))->values();
+                $statusWords = ['pending' => 'To do', 'in_progress' => 'Doing', 'under_review' => 'Needs checking', 'completed' => 'Done', 'blocked' => 'Blocked', 'rejected' => 'Needs a new person'];
+            @endphp
+
+            <style>
+                .tk-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius-card); }
+                .tk-muted { color: var(--text-muted); }
+                .tk-chip { font-size: 13px; padding: 3px 11px; border-radius: 999px; border: 1px solid var(--input-border); color: var(--text-muted); background: transparent; cursor: pointer; }
+                .tk-chip.on { border-color: var(--crm-accent); color: var(--crm-accent); background: color-mix(in srgb, var(--crm-accent) 10%, transparent); }
+                .tk-phase-head { display: flex; width: 100%; align-items: center; gap: 10px; padding: 10px 16px; background: var(--row-hover); border-top: 1px solid var(--table-border); font-size: 14px; text-align: left; color: var(--text-main); cursor: pointer; }
+                .tk-caret { width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 5px solid currentColor; transition: transform .15s; }
+                .tk-caret.shut { transform: rotate(-90deg); }
+                .tk-row { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-top: 1px solid var(--table-border); font-size: 14px; }
+                .tk-row:hover { background: var(--row-hover); }
+                .tk-box { position: relative; flex-shrink: 0; width: 18px; height: 18px; border: 1.5px solid var(--input-border); border-radius: 4px; background: var(--card-bg); cursor: pointer; }
+                .tk-box.on { background: var(--status-success, #16a34a); border-color: var(--status-success, #16a34a); }
+                .tk-box.on::after { content: ''; position: absolute; left: 5px; top: 1px; width: 5px; height: 10px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+                .tk-title { flex: 1; min-width: 0; text-align: left; background: transparent; border: 0; padding: 0; color: var(--text-main); font-size: 14px; cursor: pointer; }
+                .tk-title:hover { text-decoration: underline; }
+                .tk-row.is-done .tk-title { color: var(--text-muted); text-decoration: line-through; }
+                .tk-meta { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px 14px; font-size: 13px; color: var(--text-muted); white-space: nowrap; }
+                html body .tk-card .tk-add input.tk-add-input, html body .tk-card .tk-add input.tk-add-input:focus { flex: 1; width: 100% !important; max-width: none !important; border: 0 !important; background: transparent !important; box-shadow: none !important; outline: none !important; padding: 0 !important; height: auto !important; min-height: 0 !important; font-size: 14px !important; color: var(--text-main) !important; }
+                .tk-drawer { background: var(--card-bg); border-left: 1px solid var(--card-border); }
+                .tk-drawer dt { color: var(--text-muted); font-size: 13px; }
+                .tk-drawer dd { font-size: 14px; color: var(--text-main); }
+                @media (pointer: coarse) { .tk-box { width: 24px; height: 24px; } .tk-box.on::after { left: 8px; top: 3px; } }
+            </style>
+
+            <div class="tk-card"
+                 x-data="{
+                     taskFilter: 'all',
+                     drawer: null,
+                     busy: null,
+                     moreOpen: false,
+                     done: @js($taskRows->where('status', 'completed')->pluck('id')->values()),
+                     total: {{ $tasksCount }},
+                     closed: @js($closedPhases),
+                     show(flags) { return this.taskFilter === 'all' || flags.includes(this.taskFilter); },
+                     anyShown(list) { return list.some((f) => this.show(f)); },
+                     isDone(id) { return this.done.includes(id); },
+                     doneIn(ids) { return ids.filter((i) => this.done.includes(i)).length; },
+                     togglePhase(i) { this.closed = this.closed.includes(i) ? this.closed.filter((x) => x !== i) : [...this.closed, i]; },
+                     async setDone(id, makeDone, assigned) {
+                         this.busy = id;
+                         try {
+                             const res = await fetch(`/projects/{{ $project->id }}/tasks/${id}/status`, {
+                                 method: 'PATCH',
+                                 headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                                 body: JSON.stringify({ status: makeDone ? 'completed' : (assigned ? 'in_progress' : 'pending') })
+                             });
+                             const data = await res.json();
+                             if (!res.ok || !data.success) throw new Error(data.message || 'failed');
+                             this.done = makeDone ? [...this.done, id] : this.done.filter((x) => x !== id);
+                         } catch (e) {
+                             crmAlert('That task could not be updated. Try again.', 'error');
+                         } finally {
+                             this.busy = null;
+                         }
+                     },
+                     async quickAdd(phase, input) {
+                         const title = input.value.trim();
+                         if (!title) return;
+                         input.disabled = true;
+                         try {
+                             const res = await fetch(`/projects/{{ $project->id }}/tasks`, {
+                                 method: 'POST',
+                                 headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                                 body: JSON.stringify({ title: title, phase_name: phase, priority: 'medium', status: 'pending' })
+                             });
+                             const data = await res.json();
+                             if (!res.ok || !data.success) throw new Error(data.message || 'failed');
+                             window.location.reload();
+                         } catch (e) {
+                             crmAlert('That task could not be added. Try again.', 'error');
+                             input.disabled = false;
+                         }
+                     }
+                 }"
+                 @keydown.escape.window="drawer = null; moreOpen = false">
+
+                {{-- Header: progress, one main button, the rest under ··· --}}
+                <div class="flex flex-wrap items-center gap-3 px-4 py-3.5">
+                    <div class="flex-1 min-w-[180px]">
+                        <div class="text-[15px] font-semibold" style="color: var(--text-main)">
                             Tasks
-                        </h3>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                            Drag a card to another column to change its status.
-                        </p>
+                            @if($tasksCount > 0)<span class="font-normal tk-muted" x-text="'· ' + done.length + ' of ' + total + ' done'"></span>@endif
+                        </div>
+                        @if($tasksCount > 0)
+                            <div class="mt-2 h-1 max-w-[280px] rounded-full overflow-hidden" style="background: var(--table-border)">
+                                <div class="h-full rounded-full transition-all" style="background: var(--status-success, #16a34a)" :style="{ width: (total ? Math.round(done.length / total * 100) : 0) + '%' }"></div>
+                            </div>
+                        @endif
                     </div>
-
-                    <div class="flex items-center gap-2 flex-wrap">
-                        <button type="button" @click="taskModalOpen = true" class="btn-primary text-xs">
-                            <span>Add task</span>
+                    <button type="button" @click="taskModalOpen = true" class="btn-primary">Add task</button>
+                    <div class="relative" @click.outside="moreOpen = false">
+                        <button type="button" @click="moreOpen = !moreOpen" class="btn-secondary" style="padding: 0 10px !important" aria-label="More task actions" :aria-expanded="moreOpen">
+                            <svg class="w-4 h-4 icon-solid" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><circle cx="4" cy="10" r="1.6"/><circle cx="10" cy="10" r="1.6"/><circle cx="16" cy="10" r="1.6"/></svg>
                         </button>
-
-                        <button type="button" @click="templateModalOpen = true" class="btn-secondary text-xs inline-flex items-center gap-1.5">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                            <span>Use a template</span>
-                        </button>
-
-                        <button type="button" @click="openBlockerModal(null, null)" class="btn-secondary text-xs inline-flex items-center gap-1.5">
-                            <span>Flag a blocker</span>
-                        </button>
-
+                        <div x-show="moreOpen" x-cloak class="absolute right-0 mt-1 z-30 w-52 py-1 tk-card shadow-lg text-sm">
+                            <button type="button" class="block w-full h-auto text-left px-3 py-2 hover:bg-[var(--row-hover)]" @click="moreOpen = false; templateModalOpen = true">Use a template</button>
+                            @if($tasksCount > 0)
+                                <button type="button" class="block w-full h-auto text-left px-3 py-2 hover:bg-[var(--row-hover)]" @click="moreOpen = false; openBlockerModal(null, null)">Flag a blocker</button>
+                                <button type="button" class="block w-full h-auto text-left px-3 py-2 hover:bg-[var(--row-hover)]" @click="moreOpen = false; activeTaskView = activeTaskView === 'kanban' ? 'list' : 'kanban'" x-text="activeTaskView === 'kanban' ? 'Show as a list' : 'Show as a board'"></button>
+                            @endif
+                        </div>
                     </div>
                 </div>
 
-                {{-- Overall Progress Bar --}}
-                @if($tasksCount > 0)
-                <div class="space-y-1.5 pt-1">
-                    <div class="flex items-center justify-between text-xs font-bold text-slate-600 dark:text-slate-400">
-                        <span>Workflow Completion Rate</span>
-                        <span class="text-blue-600 dark:text-blue-400 font-extrabold">{{ $taskCompletionPercentage }}%</span>
+                @if($tasksCount === 0)
+                    {{-- Empty project: start from a ready list of steps, or add your own --}}
+                    <div class="px-4 pb-6 pt-2 border-t" style="border-color: var(--table-border)">
+                        <p class="text-sm mt-3" style="color: var(--text-main)">No tasks yet. Start from a ready list of steps for this kind of job, or add your own.</p>
+                        <div class="flex flex-wrap gap-2 mt-3">
+                            @foreach($workflowTemplates as $tKey => $tpl)
+                                <button type="button" class="btn-secondary" @click="selectedTemplateKey = @js($tKey); templateModalOpen = true">{{ $tpl['name'] ?? Str::headline($tKey) }}</button>
+                            @endforeach
+                            <button type="button" class="btn-secondary" @click="taskModalOpen = true">Add my own task</button>
+                        </div>
                     </div>
-                    <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2.5 overflow-hidden">
-                        <div class="bg-gradient-to-r from-blue-600 to-emerald-500 h-2.5 rounded-full transition-all duration-500" style="width: {{ $taskCompletionPercentage }}%"></div>
+                @else
+                    {{-- Quick filters --}}
+                    <div class="flex flex-wrap gap-2 px-4 pb-3" x-show="activeTaskView !== 'kanban'">
+                        <button type="button" class="tk-chip h-auto" :class="taskFilter === 'all' && 'on'" @click="taskFilter = 'all'">All {{ $tasksCount }}</button>
+                        <button type="button" class="tk-chip h-auto" :class="taskFilter === 'mine' && 'on'" @click="taskFilter = 'mine'">Mine {{ $flagCount('mine') }}</button>
+                        <button type="button" class="tk-chip h-auto" :class="taskFilter === 'overdue' && 'on'" @click="taskFilter = 'overdue'">Overdue {{ $flagCount('overdue') }}</button>
+                        <button type="button" class="tk-chip h-auto {{ $blockedTasksCount > 0 ? 'text-rose-700 dark:text-rose-400' : '' }}" :class="taskFilter === 'blocked' && 'on'" @click="taskFilter = 'blocked'">Blocked {{ $blockedTasksCount }}</button>
                     </div>
-                </div>
+
+                    {{-- The checklist, one section per phase --}}
+                    <div x-show="activeTaskView !== 'kanban'">
+                        @foreach($phaseGroups as $phaseName => $phaseTasks)
+                            @php
+                                $pi = $loop->index;
+                                $ids = $phaseTasks->pluck('id')->values();
+                                $phaseFlags = $phaseTasks->map(fn ($t) => $taskFlags[$t->id])->values();
+                            @endphp
+                            <div x-show="taskFilter === 'all' || anyShown(@js($phaseFlags))">
+                                <button type="button" class="tk-phase-head h-auto" @click="togglePhase({{ $pi }})" :aria-expanded="!closed.includes({{ $pi }})">
+                                    <span class="tk-caret" :class="closed.includes({{ $pi }}) && 'shut'" aria-hidden="true"></span>
+                                    <span class="font-medium">{{ $phaseName }}</span>
+                                    <span class="text-[13px] tk-muted" x-text="doneIn(@js($ids)) + ' of {{ $ids->count() }} done'"></span>
+                                </button>
+
+                                <div x-show="!closed.includes({{ $pi }})">
+                                    @foreach($phaseTasks as $task)
+                                        @php
+                                            $overdue = $isOpenTask($task) && $task->due_date && $task->due_date->lt($today);
+                                            $dueToday = $isOpenTask($task) && $task->due_date && $task->due_date->isSameDay($today);
+                                            $checkTotal = $task->checklists->count();
+                                            $checkDone = $task->checklists->where('is_completed', true)->count();
+                                        @endphp
+                                        <div class="tk-row" x-show="show(@js($taskFlags[$task->id]))" :class="isDone({{ $task->id }}) && 'is-done'">
+                                            <button type="button" class="tk-box h-auto" :class="isDone({{ $task->id }}) && 'on'" :disabled="busy === {{ $task->id }}"
+                                                    @click="setDone({{ $task->id }}, !isDone({{ $task->id }}), {{ $task->assigned_to ? 'true' : 'false' }})"
+                                                    :aria-label="(isDone({{ $task->id }}) ? 'Mark not done: ' : 'Mark done: ') + @js($task->title)"></button>
+                                            <button type="button" class="tk-title h-auto truncate" @click="drawer = {{ $task->id }}">{{ $task->title }}</button>
+                                            <div class="tk-meta" x-show="!isDone({{ $task->id }})">
+                                                @if($task->status === 'blocked')
+                                                    <span class="text-rose-700 dark:text-rose-400 truncate max-w-[260px]" title="{{ $task->blocker_reason }}">Blocked: {{ $task->blocker_reason ?: 'waiting' }}</span>
+                                                @elseif($task->status === 'under_review')
+                                                    <span style="color: var(--link-color)">Needs checking</span>
+                                                @elseif($task->status === 'rejected')
+                                                    <span class="text-amber-700 dark:text-amber-400">Needs a new person</span>
+                                                @endif
+                                                @if(in_array($task->priority, ['high', 'urgent'], true))
+                                                    <span class="text-amber-700 dark:text-amber-400">{{ ucfirst($task->priority) }}</span>
+                                                @endif
+                                                @if($checkTotal > 0)<span>{{ $checkDone }}/{{ $checkTotal }} checks</span>@endif
+                                                <span>{{ $task->assignedUser?->name ?? 'Anyone' }}</span>
+                                                @if($task->due_date)
+                                                    <span class="{{ $overdue ? 'text-rose-700 dark:text-rose-400' : ($dueToday ? 'text-amber-700 dark:text-amber-400' : '') }}">{{ $overdue ? 'Overdue · ' . $task->due_date->format('d M') : ($dueToday ? 'Due today' : $task->due_date->format('d M')) }}</span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    @endforeach
+
+                                    <div class="tk-row tk-add tk-muted cursor-text" x-show="taskFilter === 'all'" @click="$el.querySelector('input').focus()">
+                                        <span class="w-[18px] text-center text-base leading-none" aria-hidden="true">+</span>
+                                        <input type="text" class="tk-add-input border-0 bg-transparent" style="border: 0 !important; box-shadow: none !important; background: transparent !important" placeholder="Add a task to {{ $phaseName }}" aria-label="Add a task to {{ $phaseName }}" @keydown.enter.prevent="quickAdd(@js($phaseName), $el)">
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+
+                        <div class="tk-row tk-muted" x-show="taskFilter !== 'all' && !anyShown(@js($taskFlags->values()))"
+                             x-text="({ mine: 'No open tasks for you.', overdue: 'Nothing is overdue.', blocked: 'Nothing is blocked.' })[taskFilter]"></div>
+                        <div class="tk-row tk-muted text-[13px]" x-show="taskFilter === 'all'">
+                            <button type="button" class="h-auto underline" @click="taskModalOpen = true">Add a task in a new phase</button>
+                        </div>
+                    </div>
+
+                    {{-- Details panel for each task --}}
+                    @foreach($taskRows as $task)
+                        @php
+                            $pmPhone = preg_replace('/[^0-9]/', '', (string) ($project->leadTechnician?->phone ?? $project->assignedUser?->phone ?? ''));
+                            if (strlen($pmPhone) === 10) { $pmPhone = '91' . $pmPhone; }
+                            $waLink = $task->status === 'blocked' && $pmPhone !== ''
+                                ? 'https://wa.me/' . $pmPhone . '?text=' . rawurlencode("Task blocked on {$project->title} ({$project->project_code})\nTask: {$task->title}\nPhase: {$task->phase_name}\nReason: " . ($task->blocker_reason ?? 'waiting'))
+                                : null;
+                        @endphp
+                        <div x-show="drawer === {{ $task->id }}" x-cloak class="fixed inset-0 z-50 flex justify-end" role="dialog" aria-modal="true" aria-label="Task details">
+                            <div class="absolute inset-0 bg-slate-900/40" @click="drawer = null"></div>
+                            <div class="tk-drawer relative h-full w-full max-w-md overflow-y-auto">
+                                <div class="flex items-start justify-between gap-3 px-5 py-4 border-b" style="border-color: var(--table-border)">
+                                    <div class="min-w-0">
+                                        <div class="text-xs tk-muted">{{ $task->phase_name ?: 'General' }}</div>
+                                        <h3 class="text-base font-semibold mt-0.5" style="color: var(--text-main)">{{ $task->title }}</h3>
+                                    </div>
+                                    <x-close-button @click="drawer = null" />
+                                </div>
+
+                                <div class="px-5 py-4 space-y-5">
+                                    <div>
+                                        <label class="block text-xs tk-muted mb-1" for="tk-status-{{ $task->id }}">Status</label>
+                                        @if($task->status === 'blocked')
+                                            <div class="p-3 rounded border text-sm" style="border-color: var(--card-border)">
+                                                <div class="text-rose-700 dark:text-rose-400 font-medium">Blocked</div>
+                                                <div class="mt-0.5" style="color: var(--text-main)">{{ $task->blocker_reason ?: 'Waiting' }}</div>
+                                                <div class="text-xs tk-muted mt-1">by {{ $task->blockedByUser?->name ?? 'someone' }} · {{ $task->blocked_at?->diffForHumans() ?? 'recently' }}</div>
+                                                <div class="flex flex-wrap gap-2 mt-3">
+                                                    <button type="button" class="btn-primary" @click="unblockTask({{ $task->id }})">Resolve</button>
+                                                    @if($waLink)
+                                                        <a href="{{ $waLink }}" target="_blank" rel="noopener" class="btn-secondary"><x-icon.whatsapp class="w-4 h-4" /> WhatsApp the manager</a>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        @else
+                                            <div class="flex flex-wrap items-center gap-2">
+                                                <select id="tk-status-{{ $task->id }}" class="max-w-[200px]" data-task-title="{{ $task->title }}" @change="updateTaskStatus({{ $task->id }}, $el)">
+                                                    @foreach(['pending', 'in_progress', 'under_review', 'completed'] as $st)
+                                                        <option value="{{ $st }}" @selected($task->status === $st)>{{ $statusWords[$st] }}</option>
+                                                    @endforeach
+                                                    @if($task->status === 'rejected')<option value="rejected" selected disabled>{{ $statusWords['rejected'] }}</option>@endif
+                                                </select>
+                                                <button type="button" class="btn-secondary" @click="drawer = null; openBlockerModal({{ $task->id }}, @js($task->title))">Flag a blocker</button>
+                                            </div>
+                                        @endif
+                                    </div>
+
+                                    <dl class="grid grid-cols-2 gap-x-4 gap-y-3">
+                                        <div><dt>Assigned to</dt><dd>{{ $task->assignedUser?->name ?? 'Anyone' }}</dd></div>
+                                        <div><dt>Priority</dt><dd>{{ ucfirst($task->priority ?? 'medium') }}</dd></div>
+                                        <div><dt>Start</dt><dd>{{ $task->start_date?->format('d M Y') ?? '—' }}</dd></div>
+                                        <div><dt>Due</dt><dd>{{ $task->due_date?->format('d M Y') ?? '—' }}</dd></div>
+                                        @if($task->estimated_hours || $task->actual_hours)
+                                            <div><dt>Hours</dt><dd>{{ $task->actual_hours ? ($task->actual_hours + 0) . ' of ' : '' }}{{ ($task->estimated_hours ?? 0) + 0 }} planned</dd></div>
+                                        @endif
+                                        @if($task->shift)<div><dt>Shift</dt><dd>{{ $task->shift }}</dd></div>@endif
+                                        @if($task->location)<div class="col-span-2"><dt>Location</dt><dd>{{ $task->location }}</dd></div>@endif
+                                        @if($task->dependsOnTask)<div class="col-span-2"><dt>Starts after</dt><dd>{{ $task->dependsOnTask->title }}</dd></div>@endif
+                                        @if($task->completed_at)<div class="col-span-2"><dt>Finished</dt><dd>{{ $task->completed_at->format('d M Y, h:i A') }} by {{ $task->completedByUser?->name ?? 'someone' }}</dd></div>@endif
+                                    </dl>
+
+                                    @if($task->description)
+                                        <div>
+                                            <div class="text-xs tk-muted mb-1">Notes</div>
+                                            <p class="text-sm whitespace-pre-line" style="color: var(--text-main)">{{ $task->description }}</p>
+                                        </div>
+                                    @endif
+
+                                    <div>
+                                        <div class="text-xs tk-muted mb-1.5">Checklist</div>
+                                        @foreach($task->checklists as $item)
+                                            <label class="flex items-start gap-2 py-1 text-sm cursor-pointer" x-data="{ on: {{ $item->is_completed ? 'true' : 'false' }} }">
+                                                <input type="checkbox" class="mt-0.5" :checked="on" @change="on = !on; toggleChecklist({{ $item->id }}, $el)">
+                                                <span :class="on && 'line-through tk-muted'" style="color: var(--text-main)">{{ $item->item_text }}</span>
+                                            </label>
+                                        @endforeach
+                                        <form method="POST" action="{{ route('tasks.checklists.store', $task) }}" class="flex gap-2 mt-2">
+                                            @csrf
+                                            <input type="text" name="item_text" required placeholder="Add a check" aria-label="Add a check to {{ $task->title }}" class="flex-1 min-w-0">
+                                            <button type="submit" class="btn-secondary btn-submit">Add</button>
+                                        </form>
+                                    </div>
+
+                                    @if($task->materialConsumptions->isNotEmpty())
+                                        <div>
+                                            <div class="text-xs tk-muted mb-1.5">Materials used</div>
+                                            <ul class="text-sm space-y-1" style="color: var(--text-main)">
+                                                @foreach($task->materialConsumptions as $use)
+                                                    <li class="flex justify-between gap-3"><span>{{ $use->item_name }}</span><span class="tk-muted whitespace-nowrap">{{ $use->quantity_used + 0 }} {{ $use->unit }}</span></li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    @endif
+                                </div>
+
+                                <div class="flex flex-wrap items-center gap-2 px-5 py-4 border-t" style="border-color: var(--table-border)">
+                                    <button type="button" class="btn-secondary" @click="drawer = null; openEditTaskModal(@js($task->only(['id', 'title', 'phase_name', 'description', 'priority', 'status', 'assigned_to', 'estimated_hours', 'depends_on_task_id', 'blocker_reason']) + ['start_date' => $task->start_date?->toDateString(), 'due_date' => $task->due_date?->toDateString()]))">Edit details</button>
+                                    <button type="button" class="btn-secondary" @click="drawer = null; openConsumeModal({{ $task->id }}, @js($task->title))">Log material used</button>
+                                    @if(auth()->user()->isAdmin())
+                                        <form method="POST" action="{{ route('projects.tasks.destroy', ['project' => $project, 'task' => $task]) }}" class="ml-auto" data-confirm="Delete the task {{ $task->title }}?">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn-secondary btn-cancel" style="color: var(--status-danger-fg) !important">Delete</button>
+                                        </form>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
                 @endif
             </div>
 
-            {{-- ACTIVE BLOCKER ALERT HERO (If tasks are blocked) --}}
-            @if($blockedTasksCount > 0)
-            @php
-                $blockedTasks = $project->tasks->where('status', 'blocked');
-            @endphp
-            <div class="p-5 rounded-2xl bg-gradient-to-r from-rose-500/10 via-rose-50 to-amber-50/40 dark:from-rose-950/50 dark:via-rose-900/20 dark:to-amber-950/20 border-2 border-rose-300 dark:border-rose-800 shadow-sm space-y-3">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-rose-600 text-white flex items-center justify-center font-bold text-lg shadow-sm shrink-0 animate-pulse">
-                            <svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
-                        </div>
-                        <div>
-                            <h4 class="font-extrabold text-rose-950 dark:text-rose-200 text-sm flex items-center gap-2">
-                                <span>{{ $blockedTasksCount }} Critical Blocker(s) Active</span>
-                                <span class="px-2 py-0.5 rounded-full text-[11px] font-extrabold bg-rose-600 text-white">Action Required</span>
-                            </h4>
-                            <p class="text-xs text-rose-700 dark:text-rose-400 mt-0.5">
-                                Dependencies or site bottlenecks are impeding installation. Review reasons below and alert stakeholders.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
-                    @foreach($blockedTasks as $bTask)
-                    @php
-                        $pmPhone = $project->leadTechnician?->phone ?? $project->assignedUser?->phone ?? '919677257774';
-                        $pmPhoneClean = preg_replace('/[^0-9]/', '', (string)$pmPhone);
-                        if (!str_starts_with($pmPhoneClean, '91') && strlen($pmPhoneClean) === 10) {
-                            $pmPhoneClean = '91' . $pmPhoneClean;
-                        }
-                        $waText = "🚨 *TASK BLOCKED ALERT*\n\n*Project:* {$project->title} ({$project->project_code})\n*Task:* {$bTask->title}\n*Phase:* {$bTask->phase_name}\n*Reason:* \"{$bTask->blocker_reason}\"\n*Flagged By:* " . ($bTask->blockedByUser?->name ?? 'Technician') . "\n\n👉 *Review:* " . route('projects.show', [$project, 'tab' => 'tasks']);
-                        $waLink = "https://wa.me/{$pmPhoneClean}?text=" . urlencode($waText);
-                    @endphp
-                    <div class="p-3.5 rounded-xl bg-white dark:bg-[#0b1329] border border-rose-200 dark:border-rose-800/60 shadow-xs flex flex-col justify-between space-y-2">
-                        <div class="space-y-1">
-                            <div class="flex items-center justify-between text-[11px]">
-                                <span class="font-extrabold text-rose-600 dark:text-rose-400">{{ $bTask->phase_name }}</span>
-                                <span class="text-slate-400">{{ $bTask->blocked_at?->diffForHumans() ?? 'Recently' }}</span>
-                            </div>
-                            <h5 class="text-xs font-bold text-slate-900 dark:text-white leading-snug">{{ $bTask->title }}</h5>
-                            <div class="p-2 rounded-lg bg-rose-50/80 dark:bg-rose-950/40 text-[11px] font-medium text-rose-900 dark:text-rose-300 border border-rose-100 dark:border-rose-900/40">
-                                <strong>Blocker:</strong> "{{ $bTask->blocker_reason ?? 'Awaiting clearance' }}"
-                            </div>
-                        </div>
-
-                        <div class="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800 text-xs">
-                            <span class="text-[11px] text-slate-500">
-                                By: <strong>{{ $bTask->blockedByUser?->name ?? 'Staff' }}</strong>
-                            </span>
-                            <div class="flex items-center gap-1.5">
-                                <button type="button" @click="unblockTask({{ $bTask->id }})" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 transition">
-                                    ✓ Resolve / Unblock
-                                </button>
-                                <a href="{{ $waLink }}" target="_blank" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition flex items-center gap-1" title="Alert Project Manager via WhatsApp">
-                                    <x-icon.whatsapp class="w-3.5 h-3.5 fill-current" />
-                                    <span>WhatsApp PM</span>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    @endforeach
-                </div>
-            </div>
-            @endif
-
-            {{-- EMPTY STATE: 1-Click Template Launchpad (When 0 tasks exist) --}}
-            @if($tasksCount === 0)
-            <div class="p-8 rounded-2xl bg-gradient-to-br from-blue-50/60 via-white to-indigo-50/40 dark:from-slate-900 dark:via-[#0f172a] dark:to-indigo-950/20 border-2 border-dashed border-blue-200 dark:border-blue-900/50 space-y-6 text-center">
-                <div class="max-w-xl mx-auto space-y-2">
-                    <div class="w-14 h-14 mx-auto rounded-2xl bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center text-2xl font-bold shadow-xs">
-                        <svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                    </div>
-                    <h4 class="text-lg font-extrabold text-slate-900 dark:text-white">
-                        Fast-Track Execution with Pre-Built Industry Workflows
-                    </h4>
-                    <p class="text-xs text-slate-500 dark:text-slate-400">
-                        Select a specialized standard operating procedure below to instantly generate phase-wise milestones, technical tasks, quality assurance checklists, and SOP guidelines.
-                    </p>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-left max-w-5xl mx-auto">
-                    @foreach($workflowTemplates as $tKey => $tpl)
-                    <div class="p-5 rounded-2xl bg-white dark:bg-[#0b1329] border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-4">
-                        <div class="space-y-2.5">
-                            <div class="flex items-center justify-between">
-                                <span class="px-2 py-0.5 rounded-md text-[11px] font-extrabold uppercase tracking-wide bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
-                                    {{ count($tpl['phases']) }} Phases &bull; ~{{ $tpl['estimated_days'] }} Days
-                                </span>
-                            </div>
-                            <h5 class="font-extrabold text-sm text-slate-900 dark:text-white leading-snug">
-                                {{ $tpl['name'] }}
-                            </h5>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                                {{ $tpl['description'] }}
-                            </p>
-
-                            <div class="pt-2 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-600 dark:text-slate-400 space-y-1">
-                                <div class="font-bold text-slate-700 dark:text-slate-300">Included Phases:</div>
-                                @foreach(array_slice($tpl['phases'], 0, 3) as $ph)
-                                    <div class="flex items-center gap-1.5 text-xs">
-                                        <span class="text-blue-500 font-bold">&bull;</span>
-                                        <span>{{ $ph['phase_name'] }}</span>
-                                    </div>
-                                @endforeach
-                                @if(count($tpl['phases']) > 3)
-                                    <div class="text-[11px] text-slate-400 italic">+ {{ count($tpl['phases']) - 3 }} more phases</div>
-                                @endif
-                            </div>
-                        </div>
-
-                        <form method="POST" action="{{ route('projects.tasks.apply-template', $project) }}" class="pt-2">
-                            @csrf
-                            <input type="hidden" name="template_key" value="{{ $tKey }}">
-                            <button type="submit" class="w-full py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs shadow-xs transition flex items-center justify-center gap-2">
-                                <span>Apply {{ explode(' ', $tpl['name'])[0] }} Workflow</span>
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-                            </button>
-                        </form>
-                    </div>
-                    @endforeach
-                </div>
-            </div>
-
-            {{-- ACTIVE TASKS MAIN CONTAINER --}}
-            @else
+            @if($tasksCount > 0)
             <div class="space-y-5">
-
-                {{-- View Controls & Search Bar --}}
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 p-3 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs">
-                    {{-- 3 View Modes Switcher --}}
-                    <div class="inline-flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800/80 rounded-xl">
-                        <button type="button" @click="activeTaskView = 'kanban'" :class="activeTaskView === 'kanban' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-300 shadow-xs font-extrabold' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 font-semibold'" class="px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1.5">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"/></svg>
-                            <span>Board</span>
-                        </button>
-                        <button type="button" @click="activeTaskView = 'gantt'" :class="activeTaskView === 'gantt' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-300 shadow-xs font-extrabold' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 font-semibold'" class="px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1.5">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                            <span>Timeline</span>
-                        </button>
-                        <button type="button" @click="activeTaskView = 'list'" :class="activeTaskView === 'list' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-300 shadow-xs font-extrabold' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 font-semibold'" class="px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1.5">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
-                            <span>Phase List &amp; SOPs</span>
-                        </button>
-                    </div>
-
-                    {{-- Search & Phase Filter (Medium 38px Height Level) --}}
-                    <div class="flex items-center gap-2.5 flex-wrap">
-                        <div class="relative flex items-center">
-                            <svg class="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                            <input type="text" x-model="taskSearchQuery" placeholder="Filter tasks or assignee..." 
-                                   style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; padding-left: 36px !important; border-radius: var(--radius-control) !important;"
-                                   class="text-xs border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200 outline-none w-56 sm:w-64 focus:ring-2 focus:ring-blue-500">
-                        </div>
-
-                        {{-- Phase Pill Dropdown / Selector --}}
-                        <select x-model="activePhaseFilter" 
-                                style="height: var(--control-height) !important; min-height: var(--control-height) !important; max-height: var(--control-height) !important; border-radius: var(--radius-control) !important;"
-                                class="text-xs font-semibold px-3 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 outline-none">
-                            <option value="all">All Phases ({{ $tasksCount }})</option>
-                            @foreach($tasksByPhase as $phaseName => $phaseTasks)
-                                <option value="{{ md5($phaseName) }}">{{ $phaseName }} ({{ $phaseTasks->count() }})</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
 
                 {{-- ════════════════════════════════════════════════════════════ --}}
                 {{-- VIEW 1: VISUAL KANBAN BOARD                                  --}}
@@ -2193,8 +2521,9 @@
                                                 <span><svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg></span>
                                                 <span>Consumed ({{ $task->materialConsumptions->count() }})</span>
                                             </span>
-                                            <button type="button" @click.stop="openConsumeModal({{ $task->id }}, '{{ addslashes($task->title) }}')" class="hover:underline text-[11px] text-indigo-600 dark:text-indigo-400 font-bold">
-                                                + Log More
+                                            <button type="button" @click.stop="openConsumeModal({{ $task->id }}, '{{ addslashes($task->title) }}')" class="inline-flex items-center gap-0.5 hover:underline text-[11px] text-indigo-600 dark:text-indigo-400 font-bold">
+                                                <x-icon.plus class="w-3 h-3 shrink-0" />
+                                                <span>Log More</span>
                                             </button>
                                         </div>
                                         <div class="flex flex-wrap gap-1">
@@ -2215,7 +2544,7 @@
                                         {{-- Assignee Avatar & Name --}}
                                         <div class="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-300 text-[11px] truncate max-w-[120px]">
                                             <span class="w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-[11px] font-bold flex items-center justify-center shrink-0">
-                                                {{ strtoupper(substr($task->assignedUser?->name ?? 'U', 0, 1)) }}
+                                                {{ strtoupper(mb_substr($task->assignedUser?->name ?? 'U', 0, 1)) }}
                                             </span>
                                             <span class="truncate">{{ $task->assignedUser?->name ?? 'Unassigned' }}</span>
                                         </div>
@@ -2241,9 +2570,7 @@
                                             <form method="POST" action="{{ route('projects.tasks.destroy', ['project' => $project, 'task' => $task]) }}" data-confirm="Delete this task?" class="inline">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="p-1 rounded text-slate-300 hover:text-rose-600 transition" title="Delete Task">
-                                                    &times;
-                                                </button>
+                                                <x-close-button size="sm" tone="danger" label="Delete task" type="submit" />
                                             </form>
                                             @endif
                                         </div>
@@ -2254,333 +2581,6 @@
                         </div>
                         @endforeach
                     </div>
-                </div>
-
-                {{-- ════════════════════════════════════════════════════════════ --}}
-                {{-- VIEW 2: INTERACTIVE TIMELINE (GANTT)                         --}}
-                {{-- ════════════════════════════════════════════════════════════ --}}
-                <div x-show="activeTaskView === 'gantt'" class="space-y-4">
-                    <div class="p-5 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
-                            <div>
-                                <h4 class="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-2">
-                                    <span>Gantt Chart &amp; Dependency Timeline</span>
-                                    <span class="px-2 py-0.5 rounded-full text-[11px] bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 font-bold">Chronological Schedule</span>
-                                </h4>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                                    Track phase milestones, dependency prerequisites, and identify schedule bottlenecks at a glance.
-                                </p>
-                            </div>
-
-                            <div class="flex items-center gap-3 text-xs">
-                                <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-blue-500"></span> <span>In Progress</span></div>
-                                <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-purple-500"></span> <span>QA Review</span></div>
-                                <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-emerald-500"></span> <span>Done</span></div>
-                                <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-rose-500"></span> <span>Blocked</span></div>
-                            </div>
-                        </div>
-
-                        {{-- Gantt Chart Container --}}
-                        <div class="overflow-x-auto">
-                            <div class="min-w-[850px] space-y-3">
-                                {{-- Timeline Header Days (14 Days Window from project start or today) --}}
-                                @php
-                                    $today = now()->startOfDay();
-                                    $ganttStart = $project->created_at ? $project->created_at->startOfDay() : $today->copy()->subDays(3);
-                                    if ($ganttStart->diffInDays($today) > 20) {
-                                        $ganttStart = $today->copy()->subDays(3);
-                                    }
-                                    $totalTimelineDays = 18;
-                                @endphp
-
-                                <div class="grid grid-cols-12 gap-1 text-[11px] font-bold text-slate-400 border-b border-slate-200 dark:border-slate-800 pb-2">
-                                    <div class="col-span-4 pl-2 text-slate-700 dark:text-slate-300">Phase &amp; Task Milestone</div>
-                                    <div class="col-span-8 grid grid-cols-14 text-center" style="grid-template-columns: repeat({{ $totalTimelineDays }}, minmax(0, 1fr));">
-                                        @for($d = 0; $d < $totalTimelineDays; $d++)
-                                        @php
-                                            $currDate = $ganttStart->copy()->addDays($d);
-                                            $isToday = $currDate->isSameDay($today);
-                                        @endphp
-                                        <div class="py-1 px-0.5 rounded text-[11px] {{ $isToday ? 'bg-blue-600 text-white font-extrabold shadow-xs' : 'text-slate-500 dark:text-slate-400' }}">
-                                            <div>{{ $currDate->format('D') }}</div>
-                                            <div>{{ $currDate->format('d') }}</div>
-                                        </div>
-                                        @endfor
-                                    </div>
-                                </div>
-
-                                {{-- Timeline Rows per Phase --}}
-                                @foreach($tasksByPhase as $pName => $pTasks)
-                                <div class="space-y-1.5 pt-2"
-                                     x-show="activePhaseFilter === 'all' || activePhaseFilter === '{{ md5($pName) }}'">
-                                    {{-- Phase Label Row --}}
-                                    <div class="py-1 px-2 rounded-lg bg-slate-100/80 dark:bg-slate-800/80 text-xs font-extrabold text-slate-700 dark:text-slate-300 flex items-center justify-between">
-                                        <span>{{ $pName }}</span>
-                                        <span class="text-[11px] font-normal text-slate-500">{{ $pTasks->count() }} milestones</span>
-                                    </div>
-
-                                    {{-- Tasks in this Phase --}}
-                                    @foreach($pTasks as $task)
-                                    @php
-                                        // Calculate timeline bar offset and span
-                                        $taskStart = $task->start_date ? $task->start_date->startOfDay() : ($task->created_at ? $task->created_at->startOfDay() : $ganttStart);
-                                        $taskDue = $task->due_date ? $task->due_date->startOfDay() : $taskStart->copy()->addDays(max(1, (int)ceil(($task->estimated_hours ?? 4) / 8)));
-
-                                        $dayOffset = max(0, $ganttStart->diffInDays($taskStart, false));
-                                        $dayDuration = max(1, min($totalTimelineDays - $dayOffset, $taskStart->diffInDays($taskDue) + 1));
-
-                                        if ($dayOffset >= $totalTimelineDays) {
-                                            $dayOffset = $totalTimelineDays - 2;
-                                            $dayDuration = 2;
-                                        }
-
-                                        $barColor = match($task->status) {
-                                            'completed' => 'bg-emerald-500 text-white',
-                                            'under_review' => 'bg-purple-500 text-white',
-                                            'in_progress' => 'bg-blue-600 text-white',
-                                            'blocked' => 'bg-rose-600 text-white border-2 border-rose-300 animate-pulse',
-                                            default => 'bg-slate-400 text-white',
-                                        };
-                                    @endphp
-                                    <div class="grid grid-cols-12 gap-1 items-center py-1 hover:bg-slate-50 dark:hover:bg-slate-800/40 rounded-lg transition"
-                                         x-show="!taskSearchQuery || '{{ strtolower(addslashes($task->title . ' ' . ($task->assignedUser?->name ?? ''))) }}'.includes(taskSearchQuery.toLowerCase())">
-                                        {{-- Left Task Info --}}
-                                        <div class="col-span-4 pl-3 pr-2 flex items-center justify-between gap-2">
-                                            <div class="truncate">
-                                                <div class="text-xs font-bold text-slate-900 dark:text-white truncate flex items-center gap-1.5">
-                                                    @if($task->status === 'blocked')
-                                                        <span class="text-rose-500"><svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg></span>
-                                                    @elseif($task->status === 'completed')
-                                                        <span class="text-emerald-500 font-extrabold">✓</span>
-                                                    @endif
-                                                    <span class="truncate">{{ $task->title }}</span>
-                                                </div>
-                                                <div class="text-[11px] text-slate-400 flex items-center gap-1 mt-0.5">
-                                                    <span>{{ $task->assignedUser?->name ?? 'Unassigned' }}</span>
-                                                    @if($task->dependsOnTask)
-                                                        <span class="text-amber-500 font-semibold">&bull; Req: #{{ $task->dependsOnTask->id }}</span>
-                                                    @endif
-                                                </div>
-                                            </div>
-                                            <span class="px-1.5 py-0.2 rounded text-[11px] font-extrabold uppercase {{ $task->priority_badge_classes }} shrink-0">
-                                                {{ substr($task->priority, 0, 3) }}
-                                            </span>
-                                        </div>
-
-                                        {{-- Right Timeline Bar Grid --}}
-                                        <div class="col-span-8 relative h-7 bg-slate-50/50 dark:bg-slate-900/30 rounded-lg flex items-center px-1 border border-dashed border-slate-200/60 dark:border-slate-800/60">
-                                            <div class="absolute h-5 rounded-md px-2 flex items-center text-[11px] font-bold shadow-xs truncate cursor-pointer transition hover:brightness-110 {{ $barColor }}"
-                                                 style="left: {{ ($dayOffset / $totalTimelineDays) * 100 }}%; width: {{ max(6, ($dayDuration / $totalTimelineDays) * 100) }}%;"
-                                                 @click="openEditTaskModal({{ json_encode($task) }})"
-                                                 title="{{ $task->title }} ({{ ucfirst(str_replace('_', ' ', $task->status)) }}) - Click to inspect">
-                                                <span class="truncate">{{ $task->title }}</span>
-                                                @if($task->status === 'blocked')
-                                                    <span class="ml-1 text-[11px] font-extrabold bg-rose-900 px-1 rounded shrink-0">BLOCKED</span>
-                                                @endif
-                                            </div>
-                                        </div>
-                                    </div>
-                                    @endforeach
-                                </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- ════════════════════════════════════════════════════════════ --}}
-                {{-- VIEW 3: PHASE LIST & SOPS                                    --}}
-                {{-- ════════════════════════════════════════════════════════════ --}}
-                <div x-show="activeTaskView === 'list'" class="space-y-4">
-                    {{-- Phase Filter Pills --}}
-                    <div class="flex items-center gap-2 overflow-x-auto pb-1 text-xs font-bold">
-                        <button type="button" @click="activePhaseFilter = 'all'" :class="activePhaseFilter === 'all' ? 'bg-blue-600 text-white shadow-xs' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'" class="px-3.5 py-1.5 rounded-xl transition shrink-0">
-                            All Phases ({{ $tasksCount }})
-                        </button>
-                        @foreach($tasksByPhase as $phaseName => $phaseTasks)
-                        <button type="button" @click="activePhaseFilter = '{{ md5($phaseName) }}'" :class="activePhaseFilter === '{{ md5($phaseName) }}' ? 'bg-blue-600 text-white shadow-xs' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'" class="px-3.5 py-1.5 rounded-xl transition shrink-0 flex items-center gap-1.5">
-                            <span>{{ $phaseName }}</span>
-                            <span class="px-1.5 py-0.2 rounded-full text-[11px] {{ $phaseTasks->where('status', 'completed')->count() === $phaseTasks->count() ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-200' }}">
-                                {{ $phaseTasks->where('status', 'completed')->count() }}/{{ $phaseTasks->count() }}
-                            </span>
-                        </button>
-                        @endforeach
-                    </div>
-
-                    {{-- Phase Group Accordions / Sections --}}
-                    @foreach($tasksByPhase as $phaseName => $phaseTasks)
-                    @php
-                        $phaseTotal = $phaseTasks->count();
-                        $phaseCompleted = $phaseTasks->where('status', 'completed')->count();
-                        $phasePct = $phaseTotal > 0 ? (int) round(($phaseCompleted / $phaseTotal) * 100) : 0;
-                        $phaseEstHours = (float) $phaseTasks->sum('estimated_hours');
-                    @endphp
-                    <div x-show="activePhaseFilter === 'all' || activePhaseFilter === '{{ md5($phaseName) }}'" class="space-y-4" x-data="{ expanded: true }">
-                        {{-- Phase Header Bar --}}
-                        <div class="flex items-center justify-between p-4 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs cursor-pointer select-none" @click="expanded = !expanded">
-                            <div class="flex items-center gap-3">
-                                <span class="w-8 h-8 rounded-xl flex items-center justify-center font-extrabold text-xs {{ $phaseCompleted === $phaseTotal ? 'bg-emerald-500 text-white' : 'bg-blue-500 text-white' }}">
-                                    @if($phaseCompleted === $phaseTotal)
-                                        ✓
-                                    @else
-                                        {{ $loop->iteration }}
-                                    @endif
-                                </span>
-                                <div>
-                                    <h4 class="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-2">
-                                        <span>{{ $phaseName }}</span>
-                                        <span class="text-xs font-semibold text-slate-400">({{ $phaseCompleted }}/{{ $phaseTotal }} done)</span>
-                                    </h4>
-                                    @if($phaseEstHours > 0)
-                                    <span class="text-[11px] text-slate-400">Est. {{ $phaseEstHours }} hrs total</span>
-                                    @endif
-                                </div>
-                            </div>
-
-                            <div class="flex items-center gap-3">
-                                <div class="hidden sm:block w-28 bg-slate-100 dark:bg-slate-800 rounded-full h-2 overflow-hidden">
-                                    <div class="bg-emerald-500 h-2 rounded-full" style="width: {{ $phasePct }}%"></div>
-                                </div>
-                                <span class="text-xs font-extrabold {{ $phasePct === 100 ? 'text-emerald-600' : 'text-slate-600 dark:text-slate-300' }}">
-                                    {{ $phasePct }}%
-                                </span>
-                                <svg class="w-4 h-4 text-slate-400 transition-transform duration-200" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-                            </div>
-                        </div>
-
-                        {{-- Tasks Cards Grid --}}
-                        <div x-show="expanded" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            @foreach($phaseTasks as $task)
-                            @php
-                                $chkProg = $task->checklist_progress;
-                            @endphp
-                            <div class="p-5 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs flex flex-col justify-between space-y-4 transition hover:border-slate-300 dark:hover:border-slate-700"
-                                 x-show="!taskSearchQuery || '{{ strtolower(addslashes($task->title . ' ' . ($task->assignedUser?->name ?? ''))) }}'.includes(taskSearchQuery.toLowerCase())">
-                                {{-- Top Bar: Priority & Status Dropdown --}}
-                                <div class="space-y-3">
-                                    <div class="flex items-center justify-between gap-2">
-                                        <span class="px-2 py-0.5 text-[11px] font-extrabold uppercase tracking-wide rounded-md border {{ $task->priority_badge_classes }}">
-                                            {{ ucfirst($task->priority) }} Priority
-                                        </span>
-
-                                        {{-- Live Status Dropdown --}}
-                                        <div class="flex items-center gap-1.5">
-                                            <select @change="updateTaskStatus({{ $task->id }}, $el)" data-task-title="{{ $task->title }}" class="text-xs font-bold py-1 px-2.5 rounded-lg border outline-none cursor-pointer {{ $task->status_badge_classes }}">
-                                                @foreach(\App\Models\ProjectTask::statusOptions() as $stVal => $stLbl)
-                                                    <option value="{{ $stVal }}" {{ $task->status === $stVal ? 'selected' : '' }}>{{ $stLbl }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    {{-- Task Title & Description --}}
-                                    <div>
-                                        <h5 class="font-extrabold text-sm text-slate-900 dark:text-white flex items-start gap-2">
-                                            @if($task->status === 'completed')
-                                                <span class="text-emerald-500 font-bold shrink-0">✓</span>
-                                            @endif
-                                            <span class="{{ $task->status === 'completed' ? 'line-through text-slate-400' : '' }}">{{ $task->title }}</span>
-                                        </h5>
-                                        @if($task->description)
-                                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
-                                            {{ $task->description }}
-                                        </p>
-                                        @endif
-                                    </div>
-
-                                    {{-- Blocker Callout if blocked --}}
-                                    @if($task->status === 'blocked')
-                                    <div class="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900/60 space-y-1">
-                                        <div class="flex items-center justify-between text-xs font-bold text-rose-700 dark:text-rose-300">
-                                            <span><svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg> Flagged Blocker</span>
-                                            <button type="button" @click="unblockTask({{ $task->id }})" class="underline text-[11px] font-extrabold">Mark Resolved</button>
-                                        </div>
-                                        <p class="text-xs font-semibold text-rose-900 dark:text-rose-200">
-                                            "{{ $task->blocker_reason }}"
-                                        </p>
-                                        <span class="text-[11px] text-rose-500 block">Flagged by {{ $task->blockedByUser?->name ?? 'Staff' }} on {{ $task->blocked_at?->format('d M Y, h:i A') }}</span>
-                                    </div>
-                                    @endif
-
-                                    {{-- Metadata Row --}}
-                                    <div class="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400 flex-wrap pt-1">
-                                        <div class="flex items-center gap-1.5 font-semibold text-slate-700 dark:text-slate-300">
-                                            <span class="w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-[11px] font-bold flex items-center justify-center">
-                                                {{ strtoupper(substr($task->assignedUser?->name ?? 'U', 0, 1)) }}
-                                            </span>
-                                            <span>{{ $task->assignedUser?->name ?? 'Unassigned' }}</span>
-                                        </div>
-
-                                        @if($task->estimated_hours)
-                                        <div class="flex items-center gap-1 text-[11px]">
-                                            <span class="text-slate-400">Est:</span>
-                                            <span class="font-bold text-slate-700 dark:text-slate-300">{{ $task->estimated_hours }}h</span>
-                                        </div>
-                                        @endif
-
-                                        @if($task->due_date)
-                                        <div class="flex items-center gap-1 text-[11px] {{ $task->due_date->isPast() && $task->status !== 'completed' ? 'text-rose-600 font-bold' : '' }}">
-                                            <span class="text-slate-400">Due:</span>
-                                            <span>{{ $task->due_date->format('d M') }}</span>
-                                        </div>
-                                        @endif
-                                    </div>
-
-                                    {{-- Quality Assurance Checklist Section --}}
-                                    @if($task->checklists->isNotEmpty())
-                                    <div class="pt-3 border-t border-slate-100 dark:border-slate-800/80 space-y-2">
-                                        <div class="flex items-center justify-between text-[11px] font-bold text-slate-500 dark:text-slate-400">
-                                            <span>SOP Quality Checklist</span>
-                                            <span id="task-progress-{{ $task->id }}" class="text-blue-600 dark:text-blue-400">
-                                                {{ $chkProg['completed'] }}/{{ $chkProg['total'] }} ({{ $chkProg['percentage'] }}%)
-                                            </span>
-                                        </div>
-
-                                        <div class="space-y-1.5 max-h-48 overflow-y-auto pr-1">
-                                            @foreach($task->checklists as $chk)
-                                            <label class="flex items-start gap-2.5 p-1.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer text-xs">
-                                                <input type="checkbox" {{ $chk->is_completed ? 'checked' : '' }} @change="toggleChecklist({{ $chk->id }}, $el)" class="mt-0.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500">
-                                                <span id="checklist-label-{{ $chk->id }}" class="flex-1 leading-snug {{ $chk->is_completed ? 'line-through text-slate-400' : 'text-slate-700 dark:text-slate-300' }}">
-                                                    {{ $chk->item_text }}
-                                                </span>
-                                            </label>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                    @endif
-                                </div>
-
-                                {{-- Card Footer --}}
-                                <div class="pt-2 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs">
-                                    <form method="POST" action="{{ route('tasks.checklists.store', $task) }}" class="flex items-center gap-1.5 flex-1 mr-2">
-                                        @csrf
-                                        <input type="text" name="item_text" placeholder="+ Add check item..." required class="w-full text-xs py-1 px-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none">
-                                        <button type="submit" class="px-2 py-1 text-xs font-bold rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200">+</button>
-                                    </form>
-
-                                    <div class="flex items-center gap-1">
-                                        <button type="button" @click="openBlockerModal({{ $task->id }}, '{{ addslashes($task->title) }}')" class="text-xs p-1 text-slate-400 hover:text-rose-600" title="Flag Blocker">
-                                            <svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 21V4m0 0h13l-2 4 2 4H3"/></svg>
-                                        </button>
-                                        <button type="button" @click="openEditTaskModal({{ json_encode($task) }})" class="text-xs p-1 text-slate-400 hover:text-blue-600" title="Edit Task">
-                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                                        </button>
-                                        @if(auth()->user()->isAdmin())
-                                        <form method="POST" action="{{ route('projects.tasks.destroy', ['project' => $project, 'task' => $task]) }}" data-confirm="Delete this task?">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="text-rose-500 hover:text-rose-700 text-xs font-bold p-1" title="Delete Task">
-                                                &times;
-                                            </button>
-                                        </form>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-                            @endforeach
-                        </div>
-                    </div>
-                    @endforeach
                 </div>
 
             </div>
@@ -2596,14 +2596,14 @@
             <div @click.away="approveModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                     <h3 class="font-bold text-slate-900 dark:text-white text-base">Approve &amp; Assign Executing Company</h3>
-                    <button type="button" @click="approveModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+                    <x-close-button @click="approveModalOpen = false" />
                 </div>
 
                 <form method="POST" action="{{ route('projects.approve', $project) }}" class="space-y-4">
                     @csrf
                     <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Select Executing Company *</label>
-                        <select name="company_id" required class="crm-select w-full font-bold">
+                        <label for="f-company-id" class="block text-xs font-bold uppercase text-slate-500 mb-1">Select Executing Company *</label>
+                        <select id="f-company-id" name="company_id" required class="crm-select w-full font-bold">
                             <option value="">-- Select Executing Company --</option>
                             @forelse($companies as $comp)
                                 <option value="{{ $comp->id }}" {{ (old('company_id', $project->company_id) == $comp->id) ? 'selected' : '' }}>
@@ -2618,18 +2618,18 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Per-Metre Cabling Rate (₹/m) *</label>
-                        <input type="number" step="0.5" name="per_metre_rate" value="{{ old('per_metre_rate', $project->per_metre_rate ?? 8.0) }}" required class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold font-mono outline-none">
+                        <label for="f-per-metre-rate" class="block text-xs font-bold uppercase text-slate-500 mb-1">Per-Metre Cabling Rate (₹/m) *</label>
+                        <input id="f-per-metre-rate" type="number" step="0.5" name="per_metre_rate" value="{{ old('per_metre_rate', $project->per_metre_rate ?? 8.0) }}" required class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold font-mono outline-none">
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Approved Project Value (₹)</label>
-                        <input type="number" step="0.5" name="approved_value" value="{{ old('approved_value', $project->budget ?? $project->approved_value ?? 0) }}" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold font-mono outline-none">
+                        <label for="f-approved-value" class="block text-xs font-bold uppercase text-slate-500 mb-1">Approved Project Value (₹)</label>
+                        <input id="f-approved-value" type="number" step="0.5" name="approved_value" value="{{ old('approved_value', $project->budget ?? $project->approved_value ?? 0) }}" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold font-mono outline-none">
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Customer PO Number</label>
-                        <input type="text" name="po_number" value="{{ old('po_number', $project->po_number) }}" placeholder="e.g. PO-892" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-mono">
+                        <label for="f-po-number" class="block text-xs font-bold uppercase text-slate-500 mb-1">Customer PO Number</label>
+                        <input id="f-po-number" type="text" name="po_number" value="{{ old('po_number', $project->po_number) }}" placeholder="e.g. PO-892" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-mono">
                     </div>
 
                     <div class="flex items-center justify-end gap-2 pt-2">
@@ -2645,14 +2645,14 @@
             <div @click.away="rejectModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                     <h3 class="font-bold text-slate-900 dark:text-white text-base">Reject Project</h3>
-                    <button type="button" @click="rejectModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+                    <x-close-button @click="rejectModalOpen = false" />
                 </div>
 
                 <form method="POST" action="{{ route('projects.reject', $project) }}" class="space-y-4">
                     @csrf
                     <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Rejection Reason *</label>
-                        <textarea name="rejection_reason" rows="3" required placeholder="Specify why this project cannot be approved..." class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none"></textarea>
+                        <label for="f-rejection-reason" class="block text-xs font-bold uppercase text-slate-500 mb-1">Rejection Reason *</label>
+                        <textarea id="f-rejection-reason" name="rejection_reason" rows="3" required placeholder="Specify why this project cannot be approved..." class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none"></textarea>
                     </div>
 
                     <div class="flex items-center justify-end gap-2 pt-2">
@@ -2668,15 +2668,15 @@
             <div @click.away="materialModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                     <h3 class="font-bold text-slate-900 dark:text-white text-base">Add Material Line Item to BOM</h3>
-                    <button type="button" @click="materialModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+                    <x-close-button @click="materialModalOpen = false" />
                 </div>
 
                 <form method="POST" action="{{ route('projects.materials.store', $project) }}" class="space-y-4">
                     @csrf
 
                     <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Select from Catalog (Optional)</label>
-                        <select name="product_id" onchange="if(this.value) { const opt = this.selectedOptions[0]; document.getElementById('bom_item_name').value = opt.dataset.name; document.getElementById('bom_unit').value = opt.dataset.unit || 'nos'; }" class="w-full px-3.5 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                        <label for="f-product-id" class="block text-xs font-bold uppercase text-slate-500 mb-1">Select from Catalog (Optional)</label>
+                        <select id="f-product-id" name="product_id" onchange="if(this.value) { const opt = this.selectedOptions[0]; document.getElementById('bom_item_name').value = opt.dataset.name; document.getElementById('bom_unit').value = opt.dataset.unit || 'nos'; }" class="w-full px-3.5 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
                             <option value="">-- Custom Non-Catalog Item --</option>
                             @foreach($availableProducts as $prod)
                                 <option value="{{ $prod->id }}" data-name="{{ $prod->name }}" data-unit="{{ $prod->unit }}">
@@ -2687,17 +2687,17 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Item Description *</label>
+                        <label for="bom_item_name" class="block text-xs font-bold uppercase text-slate-500 mb-1">Item Description *</label>
                         <input type="text" id="bom_item_name" name="item_name" required placeholder="e.g. 4-Channel SMPS Power Supply or Cat6 Cable" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-medium">
                     </div>
 
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Quantity *</label>
-                            <input type="number" step="any" min="0.01" name="quantity" required placeholder="1" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-bold font-mono text-blue-600 dark:text-blue-400">
+                            <label for="f-quantity" class="block text-xs font-bold uppercase text-slate-500 mb-1">Quantity *</label>
+                            <input id="f-quantity" type="number" step="any" min="0.01" name="quantity" required placeholder="1" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-bold font-mono text-blue-600 dark:text-blue-400">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Unit *</label>
+                            <label for="bom_unit" class="block text-xs font-bold uppercase text-slate-500 mb-1">Unit *</label>
                             <select id="bom_unit" name="unit" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-semibold">
                                 <option value="meters">meters (mtr)</option>
                                 <option value="nos">nos (units)</option>
@@ -2711,12 +2711,12 @@
 
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Est. Unit Cost (₹)</label>
-                            <input type="number" step="any" min="0" name="unit_cost" placeholder="0.00" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-mono">
+                            <label for="f-unit-cost" class="block text-xs font-bold uppercase text-slate-500 mb-1">Est. Unit Cost (₹)</label>
+                            <input id="f-unit-cost" type="number" step="any" min="0" name="unit_cost" placeholder="0.00" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-mono">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Sourcing Channel *</label>
-                            <select name="source" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                            <label for="f-source" class="block text-xs font-bold uppercase text-slate-500 mb-1">Sourcing Channel *</label>
+                            <select id="f-source" name="source" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
                                 <option value="warehouse">Warehouse Dispatch</option>
                                 <option value="local_purchase">Direct Local Purchase</option>
                             </select>
@@ -2724,13 +2724,13 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Shop Name (if local purchase)</label>
-                        <input type="text" name="shop_name" placeholder="Vendor / Hardware shop name" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                        <label for="f-shop-name" class="block text-xs font-bold uppercase text-slate-500 mb-1">Shop Name (if local purchase)</label>
+                        <input id="f-shop-name" type="text" name="shop_name" placeholder="Vendor / Hardware shop name" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Notes / Location Tag</label>
-                        <input type="text" name="notes" placeholder="e.g. For Floor 1 perimeter cameras" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                        <label for="f-notes" class="block text-xs font-bold uppercase text-slate-500 mb-1">Notes / Location Tag</label>
+                        <input id="f-notes" type="text" name="notes" placeholder="e.g. For Floor 1 perimeter cameras" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
                     </div>
 
                     <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
@@ -2740,6 +2740,94 @@
                 </form>
             </div>
         </div>
+
+        {{-- Give material to the site / return it to the storeroom --}}
+        @if(auth()->user()->isOffice())
+        <div x-show="issueModalOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+            <div @click.away="issueModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 max-h-[90vh] overflow-y-auto">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                    <h3 class="font-bold text-slate-900 dark:text-white text-base" x-text="issueType === 'return' ? 'Return material to the storeroom' : 'Give material to the site'"></h3>
+                    <x-close-button @click="issueModalOpen = false" />
+                </div>
+
+                <form method="POST" action="{{ route('projects.material-issues.store', $project) }}" class="space-y-4">
+                    @csrf
+                    <input type="hidden" name="type" :value="issueType">
+
+                    <div class="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Direction">
+                        <button type="button" role="radio" :aria-checked="issueType === 'issue'" @click="issueType = 'issue'"
+                                class="px-3 py-2 rounded-lg border text-xs font-semibold"
+                                :class="issueType === 'issue' ? 'border-blue-600 bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300' : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300'">
+                            Give to site
+                        </button>
+                        <button type="button" role="radio" :aria-checked="issueType === 'return'" @click="issueType = 'return'"
+                                class="px-3 py-2 rounded-lg border text-xs font-semibold"
+                                :class="issueType === 'return' ? 'border-blue-600 bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300' : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300'">
+                            Return to storeroom
+                        </button>
+                    </div>
+
+                    <div>
+                        <label for="issue-product-id" class="block text-xs font-bold uppercase text-slate-500 mb-1">Product *</label>
+                        <select id="issue-product-id" name="product_id" x-model="issueProductId" required class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                            <option value="">-- Choose a product --</option>
+                            @foreach($availableProducts as $prod)
+                                <option value="{{ $prod->id }}">[{{ $prod->sku }}] {{ $prod->name }}</option>
+                            @endforeach
+                        </select>
+                        <p x-show="issueProductId" x-text="issueHint()" class="mt-1 text-[11px] text-slate-500 dark:text-slate-400"></p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label for="issue-quantity" class="block text-xs font-bold uppercase text-slate-500 mb-1">Quantity *</label>
+                            <input id="issue-quantity" type="number" step="1" min="1" name="quantity" required value="{{ old('quantity') }}" placeholder="e.g. 305" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-bold font-mono">
+                        </div>
+                        <div>
+                            <label for="issue-date" class="block text-xs font-bold uppercase text-slate-500 mb-1">Date *</label>
+                            <input id="issue-date" type="date" name="issued_on" required value="{{ old('issued_on', now()->toDateString()) }}" max="{{ now()->toDateString() }}" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="issue-handled-by" class="block text-xs font-bold uppercase text-slate-500 mb-1" x-text="issueType === 'return' ? 'Brought back by' : 'Given to'"></label>
+                        <select id="issue-handled-by" name="handled_by" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                            <option value="">-- Not recorded --</option>
+                            @if($workers->isNotEmpty())
+                                <optgroup label="Workers">
+                                    @foreach($workers as $w)
+                                        <option value="worker:{{ $w->id }}" @selected(old('handled_by') === 'worker:' . $w->id)>{{ $w->name }}</option>
+                                    @endforeach
+                                </optgroup>
+                            @endif
+                            <optgroup label="Staff and technicians">
+                                @foreach($technicians as $t)
+                                    <option value="user:{{ $t->id }}" @selected(old('handled_by') === 'user:' . $t->id)>{{ $t->name }}</option>
+                                @endforeach
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="issue-drum" class="block text-xs font-bold uppercase text-slate-500 mb-1">Drum / batch no.</label>
+                        <input id="issue-drum" type="text" name="drum_or_batch_no" maxlength="100" value="{{ old('drum_or_batch_no') }}" placeholder="e.g. D-0425" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-mono">
+                    </div>
+
+                    <div>
+                        <label for="issue-notes" class="block text-xs font-bold uppercase text-slate-500 mb-1">Notes</label>
+                        <input id="issue-notes" type="text" name="notes" maxlength="255" value="{{ old('notes') }}" placeholder="e.g. For Block A cabling" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                    </div>
+
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400" x-text="issueType === 'return' ? 'Adds the quantity back to the storeroom stock.' : 'Takes the quantity out of the storeroom stock. Usage logged later for this product is not taken out again.'"></p>
+
+                    <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                        <button type="button" @click="issueModalOpen = false" class="btn-secondary text-xs">Cancel</button>
+                        <button type="submit" class="btn-primary text-xs shadow-md" x-text="issueType === 'return' ? 'Return to storeroom' : 'Give to site'"></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        @endif
 
         {{-- Log Material & Cable Consumption Modal --}}
         <div x-show="consumeModalOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto">
@@ -2752,7 +2840,7 @@
                         </h3>
                         <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Record actual meters laid or hardware installed for a specific task</p>
                     </div>
-                    <button type="button" @click="consumeModalOpen = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 text-lg leading-none p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition">&times;</button>
+                    <x-close-button @click="consumeModalOpen = false" />
                 </div>
 
                 {{-- Two-Step Navigation Tabs --}}
@@ -2800,8 +2888,9 @@
                                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Associated Project Task *</label>
                                     <button type="button" 
                                             @click="consumeModalOpen = false; taskModalOpen = true" 
-                                            class="text-xs font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 cursor-pointer">
-                                        + Add New Task
+                                            class="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 cursor-pointer">
+                                        <x-icon.plus class="w-3 h-3 shrink-0" />
+                                        <span>Add New Task</span>
                                     </button>
                                 </div>
 
@@ -2829,7 +2918,7 @@
                                         </div>
                                     </div>
                                 @else
-                                    <select name="project_task_id" x-model="consumeTaskId" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl outline-none font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+                                    <select aria-label="Task the material was used for" name="project_task_id" x-model="consumeTaskId" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl outline-none font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
                                         <option value="">-- Select Project Task --</option>
                                         @foreach($project->tasks as $tItem)
                                             <option value="{{ $tItem->id }}">
@@ -2843,8 +2932,8 @@
                             {{-- BOM Item Link (Optional) --}}
                             @if($project->materials->isNotEmpty())
                             <div>
-                                <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Link to Planned BOM Item (Optional)</label>
-                                <select name="project_material_id" x-model="consumeMaterialId" @change="onBomSelectChange($event)" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                                <label for="f-project-material-id" class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Link to Planned BOM Item (Optional)</label>
+                                <select id="f-project-material-id" name="project_material_id" x-model="consumeMaterialId" @change="onBomSelectChange($event)" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
                                     <option value="" data-item-name="" data-unit="meters" data-product-id="">-- Direct Entry / Unplanned Item --</option>
                                     @foreach($project->materials as $bItem)
                                         <option value="{{ $bItem->id }}" data-item-name="{{ $bItem->item_name }}" data-unit="{{ $bItem->unit }}" data-product-id="{{ $bItem->product_id }}">
@@ -2857,19 +2946,19 @@
 
                             {{-- Item Description --}}
                             <div>
-                                <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Material / Cable Description *</label>
-                                <input type="text" name="item_name" x-model="consumeItemName" placeholder="e.g. D-Link Cat6 UTP Solid Cable" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-medium">
+                                <label for="f-item-name" class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Material / Cable Description *</label>
+                                <input id="f-item-name" type="text" name="item_name" x-model="consumeItemName" placeholder="e.g. D-Link Cat6 UTP Solid Cable" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-medium">
                             </div>
 
                             {{-- Quantity and Unit --}}
                             <div class="grid grid-cols-2 gap-3">
                                 <div>
-                                    <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Quantity Used *</label>
-                                    <input type="number" step="any" min="0.01" name="quantity_used" x-model="consumeQty" placeholder="e.g. 125" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-bold font-mono text-indigo-600 dark:text-indigo-400">
+                                    <label for="f-quantity-used" class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Quantity Used *</label>
+                                    <input id="f-quantity-used" type="number" step="any" min="0.01" name="quantity_used" x-model="consumeQty" placeholder="e.g. 125" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-bold font-mono text-indigo-600 dark:text-indigo-400">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Unit of Measure *</label>
-                                    <select name="unit" x-model="consumeUnit" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-semibold">
+                                    <label for="f-unit" class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Unit of Measure *</label>
+                                    <select id="f-unit" name="unit" x-model="consumeUnit" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-semibold">
                                         <option value="meters">meters (mtr)</option>
                                         <option value="nos">nos (units)</option>
                                         <option value="rolls">rolls</option>
@@ -2886,22 +2975,22 @@
                         <div x-show="consumeStep === 2" class="space-y-4">
                             {{-- Execution Notes / Location (Prominent & Clear) --}}
                             <div>
-                                <label class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1 flex items-center justify-between">
+                                <label for="f-notes-2" class="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1 flex items-center justify-between">
                                     <span>Execution Notes / Location</span>
                                     <span class="text-[11px] font-normal text-slate-400">(Where installed / cable routing)</span>
                                 </label>
-                                <textarea name="notes" x-model="consumeNotes" rows="3" placeholder="e.g. Pulled from server rack on 1st floor to Reception desk and front gate camera." class="w-full px-3.5 py-2.5 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-medium text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none"></textarea>
+                                <textarea id="f-notes-2" name="notes" x-model="consumeNotes" rows="3" placeholder="e.g. Pulled from server rack on 1st floor to Reception desk and front gate camera." class="w-full px-3.5 py-2.5 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-medium text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none"></textarea>
                             </div>
 
                             {{-- Wastage & Drum / Reel # --}}
                             <div class="grid grid-cols-2 gap-3">
                                 <div>
-                                    <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Scrap / Cut Wastage</label>
-                                    <input type="number" step="any" min="0" name="wastage_quantity" x-model="consumeWastage" placeholder="0" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-mono">
+                                    <label for="f-wastage-quantity" class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Scrap / Cut Wastage</label>
+                                    <input id="f-wastage-quantity" type="number" step="any" min="0" name="wastage_quantity" x-model="consumeWastage" placeholder="0" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-mono">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Cable Drum / Reel #</label>
-                                    <input type="text" name="drum_or_batch_no" x-model="consumeDrumNo" placeholder="e.g. Drum #2 (140m-265m)" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-mono">
+                                    <label for="f-drum-or-batch-no" class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Cable Drum / Reel #</label>
+                                    <input id="f-drum-or-batch-no" type="text" name="drum_or_batch_no" x-model="consumeDrumNo" placeholder="e.g. Drum #2 (140m-265m)" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-mono">
                                 </div>
                             </div>
 
@@ -2914,7 +3003,7 @@
                                         <span>Auto-deduct stock</span>
                                     </label>
                                 </div>
-                                <select name="product_id" x-model="consumeProductId" class="w-full px-3 py-2 text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg outline-none">
+                                <select aria-label="Product" name="product_id" x-model="consumeProductId" class="w-full px-3 py-2 text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg outline-none">
                                     <option value="">-- Match Catalog Product (Optional) --</option>
                                     @foreach($availableProducts as $pItem)
                                         <option value="{{ $pItem->id }}">
@@ -2922,6 +3011,7 @@
                                         </option>
                                     @endforeach
                                 </select>
+                                <p class="text-[11px] text-slate-500 dark:text-slate-400">A product already given to this site is not taken from the storeroom again.</p>
                             </div>
                         </div>
                     </div>
@@ -2958,15 +3048,15 @@
             <div @click.away="documentModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                     <h3 class="font-bold text-slate-900 dark:text-white text-base">Upload Document / Delivery Challan</h3>
-                    <button type="button" @click="documentModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+                    <x-close-button @click="documentModalOpen = false" />
                 </div>
 
                 <form method="POST" action="{{ route('projects.documents.store', $project) }}" enctype="multipart/form-data" class="space-y-4"
                       x-data="{ docType: 'delivery_challan' }">
                     @csrf
                     <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Document Type *</label>
-                        <select name="document_type" x-model="docType" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-semibold">
+                        <label for="f-document-type" class="block text-xs font-bold uppercase text-slate-500 mb-1">Document Type *</label>
+                        <select id="f-document-type" name="document_type" x-model="docType" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-semibold">
                             <option value="delivery_challan">Delivery Challan (DC)</option>
                             <option value="purchase_order">Customer Purchase Order (PO)</option>
                             <option value="site_drawing">Site Blueprint / Wiring Drawing</option>
@@ -2977,10 +3067,10 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
+                        <label for="f-title" class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
                             Document Title <span class="text-slate-400 font-normal lowercase">(optional)</span>
                         </label>
-                        <input type="text" 
+                        <input id="f-title" type="text" 
                                name="title" 
                                placeholder="e.g. Delivery Challan (Optional - will default to DC Number or File Name)" 
                                class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl outline-none text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
@@ -2988,18 +3078,18 @@
 
                     <div x-show="docType === 'delivery_challan'" class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
+                            <label for="f-dc-number" class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
                                 DC Number <span class="text-rose-500 font-bold">*</span>
                             </label>
-                            <input type="text" 
+                            <input id="f-dc-number" type="text" 
                                    name="dc_number" 
                                    :required="docType === 'delivery_challan'" 
                                    placeholder="DC-2026-0042" 
                                    class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl font-mono font-bold text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">DC Date</label>
-                            <input type="date" 
+                            <label for="f-dc-date" class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">DC Date</label>
+                            <input id="f-dc-date" type="date" 
                                    name="dc_date" 
                                    value="{{ now()->toDateString() }}" 
                                    class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl outline-none text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
@@ -3007,13 +3097,13 @@
                     </div>
 
                     <div x-show="docType === 'delivery_challan'">
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Items Summary in Challan</label>
-                        <textarea name="items_summary" rows="2" placeholder="e.g. 4x Dome Camera, 1x NVR, 150m CAT6 Cable" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl outline-none text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"></textarea>
+                        <label for="f-items-summary" class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Items Summary in Challan</label>
+                        <textarea id="f-items-summary" name="items_summary" rows="2" placeholder="e.g. 4x Dome Camera, 1x NVR, 150m CAT6 Cable" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl outline-none text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"></textarea>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Attach File (PDF, Image, up to 50MB) *</label>
-                        <input type="file" name="file" required class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                        <label for="f-file" class="block text-xs font-bold uppercase text-slate-500 mb-1">Attach File (PDF, photo, Word or Excel, up to 20MB) *</label>
+                        <input id="f-file" type="file" name="file" required accept=".pdf,.jpg,.jpeg,.png,.webp,.gif,.doc,.docx,.xls,.xlsx" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
                     </div>
 
                     <div class="flex items-center justify-end gap-2 pt-2">
@@ -3162,7 +3252,7 @@
                             <p class="text-xs text-slate-500 dark:text-slate-400">Worker attendance &amp; cabling incentives (₹{{ number_format((float)($project->per_metre_rate ?? 8.0), 2) }}/m)</p>
                         </div>
                     </div>
-                    <button type="button" @click="workDayModalOpen = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 text-lg leading-none p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition">&times;</button>
+                    <x-close-button @click="workDayModalOpen = false" />
                 </div>
 
                 {{-- Scrollable Form Body --}}
@@ -3173,16 +3263,16 @@
                     </div>
 
                     <div class="p-5 overflow-y-auto space-y-4 flex-1">
-
+                        
                         {{-- Shift Date & General Notes (Compact) --}}
                         <div data-step x-show="step === 1" class="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3.5 rounded-xl bg-slate-50/80 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800">
                             <div class="sm:col-span-1">
-                                <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Shift Date *</label>
-                                <input type="date" name="work_date" value="{{ now()->toDateString() }}" required class="w-full px-2.5 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg outline-none font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+                                <label for="f-work-date" class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Shift Date *</label>
+                                <input id="f-work-date" type="date" name="work_date" value="{{ now()->toDateString() }}" required class="w-full px-2.5 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg outline-none font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
                             </div>
                             <div class="sm:col-span-2">
-                                <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">General Shift Notes</label>
-                                <input type="text" name="notes" placeholder="e.g. Ground floor cabling &amp; camera mounting" class="w-full px-2.5 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg outline-none text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+                                <label for="f-notes-3" class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">General Shift Notes</label>
+                                <input id="f-notes-3" type="text" name="notes" placeholder="e.g. Ground floor cabling &amp; camera mounting" class="w-full px-2.5 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg outline-none text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
                             </div>
                         </div>
 
@@ -3203,13 +3293,13 @@
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                                     <div>
                                         <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Full Name *</label>
-                                        <input type="text" x-model="newWorkerName" placeholder="e.g. Ramesh Kumar" class="w-full px-2.5 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg outline-none font-semibold text-slate-900 dark:text-white">
+                                        <input aria-label="Worker name" type="text" x-model="newWorkerName" placeholder="e.g. Ramesh Kumar" class="w-full px-2.5 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg outline-none font-semibold text-slate-900 dark:text-white">
                                     </div>
                                     <div>
                                         <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Daily Wage Rate (₹) *</label>
                                         <div class="flex items-center rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 overflow-hidden">
                                             <span class="px-2.5 py-1.5 text-xs font-bold text-slate-500 bg-slate-100 dark:bg-slate-800 border-r border-slate-300 dark:border-slate-700 select-none">₹</span>
-                                            <input type="number" step="10" min="0" x-model="newWorkerDailyRate" placeholder="750" class="w-full px-2 py-1.5 text-xs bg-transparent outline-none font-mono font-bold text-blue-600 dark:text-blue-400">
+                                            <input aria-label="Daily rate" type="number" step="10" min="0" x-model="newWorkerDailyRate" placeholder="750" class="w-full px-2 py-1.5 text-xs bg-transparent outline-none font-mono font-bold text-blue-600 dark:text-blue-400">
                                         </div>
                                     </div>
                                 </div>
@@ -3217,11 +3307,11 @@
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                                     <div>
                                         <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Phone Number</label>
-                                        <input type="text" x-model="newWorkerPhone" placeholder="e.g. 9876543210" class="w-full px-2.5 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg outline-none font-mono text-slate-900 dark:text-white">
+                                        <input aria-label="Worker phone" type="text" x-model="newWorkerPhone" placeholder="e.g. 9876543210" class="w-full px-2.5 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg outline-none font-mono text-slate-900 dark:text-white">
                                     </div>
                                     <div>
                                         <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Role / Notes</label>
-                                        <input type="text" x-model="newWorkerNotes" placeholder="e.g. Cable puller" class="w-full px-2.5 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg outline-none text-slate-900 dark:text-white">
+                                        <input aria-label="Worker notes" type="text" x-model="newWorkerNotes" placeholder="e.g. Cable puller" class="w-full px-2.5 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg outline-none text-slate-900 dark:text-white">
                                     </div>
                                 </div>
 
@@ -3249,7 +3339,8 @@
                                             <span>Add New Worker</span>
                                         </button>
                                         <button type="button" @click="addRow()" class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition inline-flex items-center gap-1 cursor-pointer">
-                                            <span>+ Row</span>
+                                            <x-icon.plus />
+                                            <span>Add Row</span>
                                         </button>
                                     </div>
                                 </div>
@@ -3267,8 +3358,9 @@
                                                 </template>
                                             </div>
                                             <div class="flex items-center gap-2.5">
-                                                <button type="button" @click="openNewWorkerModal(idx)" class="text-[11px] font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 cursor-pointer">
-                                                    + New Person
+                                                <button type="button" @click="openNewWorkerModal(idx)" class="inline-flex items-center gap-1 text-[11px] font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 cursor-pointer">
+                                                    <x-icon.plus class="w-3 h-3 shrink-0" />
+                                                    <span>New Person</span>
                                                 </button>
                                                 <button type="button" @click="removeRow(idx)" class="text-rose-500 hover:text-rose-700 text-xs font-semibold cursor-pointer" x-show="rows.length > 1">
                                                     &times; Remove
@@ -3280,7 +3372,7 @@
                                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                                             <div>
                                                 <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Worker *</label>
-                                                <select :name="`attendances[${idx}][worker_id]`" x-model="r.worker_id" @change="updateRate(r)" required class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg outline-none font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+                                                <select aria-label="Worker" :name="`attendances[${idx}][worker_id]`" x-model="r.worker_id" @change="updateRate(r)" required class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg outline-none font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
                                                     <option value="">-- Select Worker --</option>
                                                     <template x-for="w in workersList" :key="w.id">
                                                         <option :value="w.id" x-text="`${w.name} (₹${w.daily_rate}/d)`"></option>
@@ -3290,7 +3382,7 @@
 
                                             <div>
                                                 <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Shift Duration *</label>
-                                                <select :name="`attendances[${idx}][attendance_type]`" x-model="r.attendance_type" @change="calcRow(r)" class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg outline-none font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+                                                <select aria-label="Attendance type" :name="`attendances[${idx}][attendance_type]`" x-model="r.attendance_type" @change="calcRow(r)" class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg outline-none font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
                                                     <option value="full_day">Full Day (1.0 Shift • 100%)</option>
                                                     <option value="half_day">Half Day (0.5 Shift • 50%)</option>
                                                 </select>
@@ -3302,20 +3394,20 @@
                                                 <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">
                                                     Cabling (Metres)
                                                 </label>
-                                                <input type="number" step="1" min="0" :name="`attendances[${idx}][cabling_metres]`" x-model="r.cabling_metres" @input="calcRow(r)" placeholder="0" class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg font-mono font-bold outline-none text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+                                                <input aria-label="Cabling metres" type="number" step="1" min="0" :name="`attendances[${idx}][cabling_metres]`" x-model="r.cabling_metres" @input="calcRow(r)" placeholder="0" class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg font-mono font-bold outline-none text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
                                             </div>
 
                                             <div>
                                                 <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Extra Allowance</label>
                                                 <div class="flex items-center rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 overflow-hidden focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500">
                                                     <span class="px-2 py-1 text-xs font-bold text-slate-500 bg-slate-100 dark:bg-slate-700/60 border-r border-slate-300 dark:border-slate-700 select-none">₹</span>
-                                                    <input type="number" step="0.5" min="0" :name="`attendances[${idx}][extra_amount]`" x-model="r.extra_amount" @input="calcRow(r)" placeholder="0" class="w-full px-2 py-1 text-xs bg-transparent outline-none font-mono text-slate-900 dark:text-white">
+                                                    <input aria-label="Extra amount" type="number" step="0.5" min="0" :name="`attendances[${idx}][extra_amount]`" x-model="r.extra_amount" @input="calcRow(r)" placeholder="0" class="w-full px-2 py-1 text-xs bg-transparent outline-none font-mono text-slate-900 dark:text-white">
                                                 </div>
                                             </div>
 
                                             <div>
                                                 <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Reason for Extra</label>
-                                                <input type="text" :name="`attendances[${idx}][extra_description]`" x-model="r.extra_description" placeholder="Overtime / travel" class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg outline-none text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+                                                <input aria-label="Extra description" type="text" :name="`attendances[${idx}][extra_description]`" x-model="r.extra_description" placeholder="Overtime / travel" class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg outline-none text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
                                             </div>
                                         </div>
 
@@ -3377,46 +3469,46 @@
             <div @click.away="deviceModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                     <h3 class="font-bold text-slate-900 dark:text-white text-base">Add IP Device</h3>
-                    <button type="button" @click="deviceModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+                    <x-close-button @click="deviceModalOpen = false" />
                 </div>
 
                 <form method="POST" action="{{ route('projects.devices.store', $project) }}" class="space-y-3">
                     @csrf
                     <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Device Name *</label>
-                        <input type="text" name="device_name" required placeholder="e.g. CAM-01 Front Gate" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-bold">
+                        <label for="f-device-name" class="block text-xs font-bold uppercase text-slate-500 mb-1">Device Name *</label>
+                        <input id="f-device-name" type="text" name="device_name" required placeholder="e.g. CAM-01 Front Gate" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-bold">
                     </div>
 
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">IP Address *</label>
-                            <input type="text" name="ip_address" required placeholder="192.168.1.101" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono font-bold outline-none">
+                            <label for="f-ip-address" class="block text-xs font-bold uppercase text-slate-500 mb-1">IP Address *</label>
+                            <input id="f-ip-address" type="text" name="ip_address" required placeholder="192.168.1.101" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono font-bold outline-none">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Device Type</label>
-                            <input type="text" name="device_type" placeholder="Dome Camera" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Web Port</label>
-                            <input type="number" name="web_port" value="80" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">RTSP Port</label>
-                            <input type="number" name="rtsp_port" value="554" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono outline-none">
+                            <label for="f-device-type" class="block text-xs font-bold uppercase text-slate-500 mb-1">Device Type</label>
+                            <input id="f-device-type" type="text" name="device_type" placeholder="Dome Camera" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Username</label>
-                            <input type="text" name="username" value="admin" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono outline-none">
+                            <label for="f-web-port" class="block text-xs font-bold uppercase text-slate-500 mb-1">Web Port</label>
+                            <input id="f-web-port" type="number" name="web_port" value="80" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono outline-none">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Password (Encrypted)</label>
-                            <input type="password" name="password" placeholder="••••••••" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono outline-none">
+                            <label for="f-rtsp-port" class="block text-xs font-bold uppercase text-slate-500 mb-1">RTSP Port</label>
+                            <input id="f-rtsp-port" type="number" name="rtsp_port" value="554" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono outline-none">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label for="f-username" class="block text-xs font-bold uppercase text-slate-500 mb-1">Username</label>
+                            <input id="f-username" type="text" name="username" value="admin" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono outline-none">
+                        </div>
+                        <div>
+                            <label for="f-password" class="block text-xs font-bold uppercase text-slate-500 mb-1">Password (Encrypted)</label>
+                            <input id="f-password" type="password" name="password" placeholder="••••••••" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono outline-none">
                         </div>
                     </div>
 
@@ -3436,40 +3528,40 @@
                         <h3 class="font-bold text-slate-900 dark:text-white text-base">Bulk Sequential IP Generator</h3>
                         <p class="text-xs text-slate-400">Generate multiple sequential camera IP rows in 1-click</p>
                     </div>
-                    <button type="button" @click="bulkDeviceModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+                    <x-close-button @click="bulkDeviceModalOpen = false" />
                 </div>
 
                 <form method="POST" action="{{ route('projects.devices.bulk', $project) }}" class="space-y-3">
                     @csrf
                     <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Start IP Address *</label>
-                        <input type="text" name="start_ip" value="192.168.1.101" required placeholder="192.168.1.101" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold font-mono outline-none">
+                        <label for="f-start-ip" class="block text-xs font-bold uppercase text-slate-500 mb-1">Start IP Address *</label>
+                        <input id="f-start-ip" type="text" name="start_ip" value="192.168.1.101" required placeholder="192.168.1.101" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold font-mono outline-none">
                     </div>
 
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Total Devices Count *</label>
-                            <input type="number" min="1" max="100" name="count" value="16" required class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold font-mono outline-none">
+                            <label for="f-count" class="block text-xs font-bold uppercase text-slate-500 mb-1">Total Devices Count *</label>
+                            <input id="f-count" type="number" min="1" max="100" name="count" value="16" required class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold font-mono outline-none">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Device Prefix</label>
-                            <input type="text" name="name_prefix" value="Camera" required placeholder="Camera" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-bold">
+                            <label for="f-name-prefix" class="block text-xs font-bold uppercase text-slate-500 mb-1">Device Prefix</label>
+                            <input id="f-name-prefix" type="text" name="name_prefix" value="Camera" required placeholder="Camera" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-bold">
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Device Type</label>
-                        <input type="text" name="device_type" value="IP Camera" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                        <label for="f-device-type-2" class="block text-xs font-bold uppercase text-slate-500 mb-1">Device Type</label>
+                        <input id="f-device-type-2" type="text" name="device_type" value="IP Camera" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
                     </div>
 
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Default Username</label>
-                            <input type="text" name="username" value="admin" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono outline-none">
+                            <label for="f-username-2" class="block text-xs font-bold uppercase text-slate-500 mb-1">Default Username</label>
+                            <input id="f-username-2" type="text" name="username" value="admin" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono outline-none">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Default Password</label>
-                            <input type="password" name="password" placeholder="Pass123" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono outline-none">
+                            <label for="f-password-2" class="block text-xs font-bold uppercase text-slate-500 mb-1">Default Password</label>
+                            <input id="f-password-2" type="password" name="password" placeholder="Pass123" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono outline-none">
                         </div>
                     </div>
 
@@ -3489,14 +3581,14 @@
                         <span class="w-7 h-7 rounded-lg bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-sm"><svg class="w-5 h-5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></span>
                         <h3 class="font-bold text-slate-900 dark:text-white text-base">Apply Pre-Built Workflow Template</h3>
                     </div>
-                    <button type="button" @click="templateModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+                    <x-close-button @click="templateModalOpen = false" />
                 </div>
 
                 <form method="POST" action="{{ route('projects.tasks.apply-template', $project) }}" class="space-y-4">
                     @csrf
                     <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Select Industry Template *</label>
-                        <select name="template_key" required x-model="selectedTemplateKey" class="w-full px-3.5 py-2.5 text-sm font-semibold bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
+                        <label for="f-template-key" class="block text-xs font-bold uppercase text-slate-500 mb-1">Select Industry Template *</label>
+                        <select id="f-template-key" name="template_key" required x-model="selectedTemplateKey" class="w-full px-3.5 py-2.5 text-sm font-semibold bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
                             @foreach($allWorkflowTemplates as $k => $t)
                                 <option value="{{ $k }}" {{ $k === array_key_first($workflowTemplates) ? 'selected' : '' }}>
                                     {{ $t['name'] }} ({{ count($t['phases']) }} Phases &bull; ~{{ $t['estimated_days'] }} Days)
@@ -3506,8 +3598,8 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Assign All Tasks By Default To</label>
-                        <select name="assigned_to" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                        <label for="f-assigned-to" class="block text-xs font-bold uppercase text-slate-500 mb-1">Assign All Tasks By Default To</label>
+                        <select id="f-assigned-to" name="assigned_to" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
                             <option value="">Lead Technician ({{ $project->leadTechnician?->name ?? 'Project Assignee' }})</option>
                             @foreach($technicians as $tech)
                                 <option value="{{ $tech->id }}">{{ $tech->name }} ({{ ucfirst($tech->role) }})</option>
@@ -3535,7 +3627,7 @@
             <div @click.away="taskModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 max-h-[90vh] overflow-y-auto">
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                     <h3 class="font-bold text-slate-900 dark:text-white text-base">Add Custom Project Task</h3>
-                    <button type="button" @click="taskModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+                    <x-close-button @click="taskModalOpen = false" />
                 </div>
 
                 <form method="POST" action="{{ route('projects.tasks.store', $project) }}" class="space-y-3.5" x-data="formSteps">
@@ -3544,8 +3636,8 @@
 
                     <div data-step x-show="step === 1" class="space-y-3.5">
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Phase / Milestone Name *</label>
-                            <input type="text" name="phase_name" list="existing_phases" required placeholder="e.g. Phase 2: Cabling &amp; Tagging" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-semibold">
+                            <label for="f-phase-name" class="block text-xs font-bold uppercase text-slate-500 mb-1">Phase / Milestone Name *</label>
+                            <input id="f-phase-name" type="text" name="phase_name" list="existing_phases" required placeholder="e.g. Phase 2: Cabling &amp; Tagging" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-semibold">
                             <datalist id="existing_phases">
                                 @foreach($tasksByPhase->keys() as $pName)
                                     <option value="{{ $pName }}">
@@ -3559,21 +3651,21 @@
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Task Title *</label>
-                            <input type="text" name="title" required placeholder="e.g. Pull Cat6 drop to Admin Block Entrance" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                            <label for="f-title-2" class="block text-xs font-bold uppercase text-slate-500 mb-1">Task Title *</label>
+                            <input id="f-title-2" type="text" name="title" required placeholder="e.g. Pull Cat6 drop to Admin Block Entrance" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Description</label>
-                            <textarea name="description" rows="2" placeholder="Technical instructions or notes for technician..." class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none"></textarea>
+                            <label for="f-description" class="block text-xs font-bold uppercase text-slate-500 mb-1">Description</label>
+                            <textarea id="f-description" name="description" rows="2" placeholder="Technical instructions or notes for technician..." class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none"></textarea>
                         </div>
                     </div>
 
                     <div data-step x-show="step === 2" x-cloak class="space-y-3.5">
                         <div class="grid grid-cols-2 gap-3">
                             <div>
-                                <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Priority *</label>
-                                <select name="priority" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-semibold">
+                                <label for="f-priority" class="block text-xs font-bold uppercase text-slate-500 mb-1">Priority *</label>
+                                <select id="f-priority" name="priority" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-semibold">
                                     <option value="low">Low</option>
                                     <option value="medium" selected>Medium</option>
                                     <option value="high">High</option>
@@ -3581,8 +3673,8 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Status *</label>
-                                <select name="status" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-semibold">
+                                <label for="f-status" class="block text-xs font-bold uppercase text-slate-500 mb-1">Status *</label>
+                                <select id="f-status" name="status" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-semibold">
                                     <option value="pending" selected>Backlog / Pending</option>
                                     <option value="in_progress">Assigned / In Progress</option>
                                     <option value="under_review">Under Review / QA</option>
@@ -3594,18 +3686,18 @@
 
                         <div class="grid grid-cols-2 gap-3">
                             <div>
-                                <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Start Date</label>
-                                <input type="date" name="start_date" value="{{ date('Y-m-d') }}" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                                <label for="f-start-date" class="block text-xs font-bold uppercase text-slate-500 mb-1">Start Date</label>
+                                <input id="f-start-date" type="date" name="start_date" value="{{ date('Y-m-d') }}" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Due Date</label>
-                                <input type="date" name="due_date" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                                <label for="f-due-date" class="block text-xs font-bold uppercase text-slate-500 mb-1">Due Date</label>
+                                <input id="f-due-date" type="date" name="due_date" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
                             </div>
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Prerequisite Task Dependency</label>
-                            <select name="depends_on_task_id" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                            <label for="f-depends-on-task-id" class="block text-xs font-bold uppercase text-slate-500 mb-1">Prerequisite Task Dependency</label>
+                            <select id="f-depends-on-task-id" name="depends_on_task_id" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
                                 <option value="">No Prerequisite (Can Start Immediately)</option>
                                 @foreach($project->tasks as $otherTask)
                                     <option value="{{ $otherTask->id }}">
@@ -3619,8 +3711,8 @@
                     <div data-step x-show="step === 3" x-cloak class="space-y-3.5">
                         <div class="grid grid-cols-2 gap-3">
                             <div>
-                                <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Assigned Technician</label>
-                                <select name="assigned_to" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                                <label for="f-assigned-to-2" class="block text-xs font-bold uppercase text-slate-500 mb-1">Assigned Technician</label>
+                                <select id="f-assigned-to-2" name="assigned_to" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
                                     <option value="">Select Technician</option>
                                     @foreach($technicians as $tech)
                                         <option value="{{ $tech->id }}" {{ $project->lead_technician_id == $tech->id ? 'selected' : '' }}>
@@ -3630,21 +3722,21 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Estimated Hours</label>
-                                <input type="number" step="0.5" min="0" name="estimated_hours" placeholder="4.0" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono outline-none">
+                                <label for="f-estimated-hours" class="block text-xs font-bold uppercase text-slate-500 mb-1">Estimated Hours</label>
+                                <input id="f-estimated-hours" type="number" step="0.5" min="0" name="estimated_hours" placeholder="4.0" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono outline-none">
                             </div>
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Blocker Reason (If Blocked)</label>
-                            <input type="text" name="blocker_reason" placeholder="e.g. Cannot start Camera Mounting until Client Finishes False Ceiling Paint" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                            <label for="f-blocker-reason" class="block text-xs font-bold uppercase text-slate-500 mb-1">Blocker Reason (If Blocked)</label>
+                            <input id="f-blocker-reason" type="text" name="blocker_reason" placeholder="e.g. Cannot start Camera Mounting until Client Finishes False Ceiling Paint" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
                         </div>
 
                         <div class="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-                            <label class="block text-xs font-bold uppercase text-slate-500">Initial SOP Quality Checkpoints</label>
-                            <input type="text" name="checklist_items[]" placeholder="Checkpoint 1 (e.g. Conduit properly clamped)" class="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none">
-                            <input type="text" name="checklist_items[]" placeholder="Checkpoint 2 (e.g. Waterproof junction box installed)" class="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none">
-                            <input type="text" name="checklist_items[]" placeholder="Checkpoint 3 (e.g. Cable ferrule marked at both ends)" class="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none">
+                            <label for="f-checklist-items" class="block text-xs font-bold uppercase text-slate-500">Initial SOP Quality Checkpoints</label>
+                            <input id="f-checklist-items" type="text" name="checklist_items[]" placeholder="Checkpoint 1 (e.g. Conduit properly clamped)" class="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none">
+                            <input aria-label="Checkpoint 2" type="text" name="checklist_items[]" placeholder="Checkpoint 2 (e.g. Waterproof junction box installed)" class="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none">
+                            <input aria-label="Checkpoint 3" type="text" name="checklist_items[]" placeholder="Checkpoint 3 (e.g. Cable ferrule marked at both ends)" class="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none">
                         </div>
                     </div>
 
@@ -3670,7 +3762,7 @@
                             <p class="text-[11px] text-slate-400">Instantly alerts Project Managers via Dashboard Notification &amp; WhatsApp</p>
                         </div>
                     </div>
-                    <button type="button" @click="blockerModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+                    <x-close-button @click="blockerModalOpen = false" />
                 </div>
 
                 <x-form-stepper :steps="['Blocker', 'Details & alert']" />
@@ -3701,7 +3793,7 @@
                         <label class="block text-xs font-bold uppercase text-slate-600 dark:text-slate-300 mb-1">
                             Blocker Reason / Bottleneck Details *
                         </label>
-                        <textarea x-model="blockerReason" rows="3" required placeholder="e.g., Cannot start Camera Mounting until Client Finishes False Ceiling Paint" class="w-full px-3.5 py-2.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-rose-500 font-medium"></textarea>
+                        <textarea aria-label="What is blocking this task" x-model="blockerReason" rows="3" required placeholder="e.g., Cannot start Camera Mounting until Client Finishes False Ceiling Paint" class="w-full px-3.5 py-2.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-rose-500 font-medium"></textarea>
                     </div>
 
                     {{-- Auto-Alert Channels Callout --}}
@@ -3734,7 +3826,7 @@
             <div @click.away="editTaskModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 max-h-[90vh] overflow-y-auto">
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                     <h3 class="font-bold text-slate-900 dark:text-white text-base">Edit Project Task</h3>
-                    <button type="button" @click="editTaskModalOpen = false" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+                    <x-close-button @click="editTaskModalOpen = false" />
                 </div>
 
                 <form :action="`/projects/{{ $project->id }}/tasks/${editTaskId}`" method="POST" class="space-y-3.5" x-data="formSteps">
@@ -3744,26 +3836,26 @@
 
                     <div data-step x-show="step === 1" class="space-y-3.5">
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Phase / Milestone Name *</label>
-                            <input type="text" name="phase_name" x-model="editTaskPhase" required class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-semibold">
+                            <label for="f-phase-name-2" class="block text-xs font-bold uppercase text-slate-500 mb-1">Phase / Milestone Name *</label>
+                            <input id="f-phase-name-2" type="text" name="phase_name" x-model="editTaskPhase" required class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-semibold">
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Task Title *</label>
-                            <input type="text" name="title" x-model="editTaskTitle" required class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-bold">
+                            <label for="f-title-3" class="block text-xs font-bold uppercase text-slate-500 mb-1">Task Title *</label>
+                            <input id="f-title-3" type="text" name="title" x-model="editTaskTitle" required class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-bold">
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Description</label>
-                            <textarea name="description" x-model="editTaskDescription" rows="2" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none"></textarea>
+                            <label for="f-description-2" class="block text-xs font-bold uppercase text-slate-500 mb-1">Description</label>
+                            <textarea id="f-description-2" name="description" x-model="editTaskDescription" rows="2" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none"></textarea>
                         </div>
                     </div>
 
                     <div data-step x-show="step === 2" x-cloak class="space-y-3.5">
                         <div class="grid grid-cols-2 gap-3">
                             <div>
-                                <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Priority *</label>
-                                <select name="priority" x-model="editTaskPriority" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-semibold">
+                                <label for="f-priority-2" class="block text-xs font-bold uppercase text-slate-500 mb-1">Priority *</label>
+                                <select id="f-priority-2" name="priority" x-model="editTaskPriority" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-semibold">
                                     <option value="low">Low</option>
                                     <option value="medium">Medium</option>
                                     <option value="high">High</option>
@@ -3771,8 +3863,8 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Status *</label>
-                                <select name="status" x-model="editTaskStatus" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-semibold">
+                                <label for="f-status-2" class="block text-xs font-bold uppercase text-slate-500 mb-1">Status *</label>
+                                <select id="f-status-2" name="status" x-model="editTaskStatus" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-semibold">
                                     <option value="pending">Backlog / Pending</option>
                                     <option value="in_progress">Assigned / In Progress</option>
                                     <option value="under_review">Under Review / QA</option>
@@ -3784,18 +3876,18 @@
 
                         <div class="grid grid-cols-2 gap-3">
                             <div>
-                                <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Start Date</label>
-                                <input type="date" name="start_date" x-model="editTaskStartDate" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                                <label for="f-start-date-2" class="block text-xs font-bold uppercase text-slate-500 mb-1">Start Date</label>
+                                <input id="f-start-date-2" type="date" name="start_date" x-model="editTaskStartDate" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Due Date</label>
-                                <input type="date" name="due_date" x-model="editTaskDueDate" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                                <label for="f-due-date-2" class="block text-xs font-bold uppercase text-slate-500 mb-1">Due Date</label>
+                                <input id="f-due-date-2" type="date" name="due_date" x-model="editTaskDueDate" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
                             </div>
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Prerequisite Task Dependency</label>
-                            <select name="depends_on_task_id" x-model="editTaskDependsOn" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                            <label for="f-depends-on-task-id-2" class="block text-xs font-bold uppercase text-slate-500 mb-1">Prerequisite Task Dependency</label>
+                            <select id="f-depends-on-task-id-2" name="depends_on_task_id" x-model="editTaskDependsOn" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
                                 <option value="">No Prerequisite (Can Start Immediately)</option>
                                 @foreach($project->tasks as $otherTask)
                                     <option value="{{ $otherTask->id }}">
@@ -3809,8 +3901,8 @@
                     <div data-step x-show="step === 3" x-cloak class="space-y-3.5">
                         <div class="grid grid-cols-2 gap-3">
                             <div>
-                                <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Assigned Technician</label>
-                                <select name="assigned_to" x-model="editTaskAssignedTo" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                                <label for="f-assigned-to-3" class="block text-xs font-bold uppercase text-slate-500 mb-1">Assigned Technician</label>
+                                <select id="f-assigned-to-3" name="assigned_to" x-model="editTaskAssignedTo" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
                                     <option value="">Select Technician</option>
                                     @foreach($technicians as $tech)
                                         <option value="{{ $tech->id }}">{{ $tech->name }}</option>
@@ -3818,15 +3910,15 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Estimated Hours</label>
-                                <input type="number" step="0.5" min="0" name="estimated_hours" x-model="editTaskEstHours" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono outline-none">
+                                <label for="f-estimated-hours-2" class="block text-xs font-bold uppercase text-slate-500 mb-1">Estimated Hours</label>
+                                <input id="f-estimated-hours-2" type="number" step="0.5" min="0" name="estimated_hours" x-model="editTaskEstHours" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-mono outline-none">
                             </div>
                         </div>
 
                         {{-- Conditional Blocker Reason --}}
                         <div x-show="editTaskStatus === 'blocked'" class="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 space-y-1">
-                            <label class="block text-xs font-extrabold uppercase text-rose-700 dark:text-rose-300">Blocker Reason *</label>
-                            <input type="text" name="blocker_reason" x-model="editTaskBlockerReason" placeholder="e.g. Cannot start Camera Mounting until Client Finishes False Ceiling Paint" class="w-full px-3 py-2 text-xs bg-white dark:bg-slate-800 border border-rose-300 dark:border-rose-800 rounded-lg outline-none font-medium">
+                            <label for="f-blocker-reason-2" class="block text-xs font-extrabold uppercase text-rose-700 dark:text-rose-300">Blocker Reason *</label>
+                            <input id="f-blocker-reason-2" type="text" name="blocker_reason" x-model="editTaskBlockerReason" placeholder="e.g. Cannot start Camera Mounting until Client Finishes False Ceiling Paint" class="w-full px-3 py-2 text-xs bg-white dark:bg-slate-800 border border-rose-300 dark:border-rose-800 rounded-lg outline-none font-medium">
                         </div>
 
                         {{-- Quick Log Material / Cable Action --}}
@@ -3850,6 +3942,9 @@
         </div>
 
     </div>
+
+    {{-- TWO-STEP SPLIT GUIDED ATTENDANCE MODAL COMPONENT --}}
+    <x-mark-attendance-modal :workers="$workers" :projects="collect([$project])" :default-project-id="$project->id" />
 
     {{-- Sortable.js CDN for Drag-and-Drop Kanban Interaction --}}
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>

@@ -98,6 +98,10 @@ return [
             'sslmode' => env('DB_SSLMODE', 'prefer'),
             'options' => extension_loaded('pdo_pgsql') ? array_filter([
                 PDO::ATTR_PERSISTENT => env('DB_PERSISTENT', false),
+                // No named prepared statements: Neon's pooler shares them between connections by
+                // query text, so after a column is added the old plan fails with "cached plan must
+                // not change result type". Sending query and values together also saves a round trip.
+                PDO::PGSQL_ATTR_DISABLE_PREPARES => env('DB_DISABLE_PREPARES', true),
             ]) : [],
         ],
 

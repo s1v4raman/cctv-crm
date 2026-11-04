@@ -77,6 +77,7 @@
         @foreach ($tickets as $ticket)
             @php $isDelayed = in_array($ticket->status, ['open', 'assigned', 'in_progress']) && $ticket->created_at->diffInHours(now()) >= 48; @endphp
             <tr>
+                <x-list-pick :id="$ticket->id" :label="$ticket->ticket_no" />
                 <td class="whitespace-nowrap">
                     <a href="{{ route('service-tickets.show', $ticket) }}" class="ld-name plain-link">{{ $ticket->ticket_no }}</a>
                     <div class="text-xs mt-0.5 {{ $isDelayed ? 'text-amber-700 dark:text-amber-400' : '' }}" style="{{ $isDelayed ? '' : 'color: var(--ld-muted)' }}">
@@ -148,9 +149,7 @@
                                 <p class="text-xs text-slate-400">How customer emails automatically convert into CRM tickets</p>
                             </div>
                         </div>
-                        <button type="button" @click="emailModalOpen = false" class="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition">
-                            ✕
-                        </button>
+                        <x-close-button tone="dark" @click="emailModalOpen = false" />
                     </div>
 
                     <!-- Webhook Info Box -->

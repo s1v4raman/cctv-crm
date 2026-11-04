@@ -304,9 +304,7 @@
                             <h3 class="text-base font-bold text-slate-900 dark:text-white">Send Reminder</h3>
                             <p class="text-xs text-slate-500" x-text="reminderInvoice"></p>
                         </div>
-                        <button @click="reminderModal = false" class="text-slate-400 hover:text-slate-600 text-lg">
-                            &times;
-                        </button>
+                        <x-close-button @click="reminderModal = false" />
                     </div>
 
                     <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded space-y-1 text-sm" style="border-radius: 4px;">

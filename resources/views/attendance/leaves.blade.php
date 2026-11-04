@@ -517,9 +517,7 @@
                 <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 font-heading">
                     <span><svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></span> Submit Leave Application
                 </h3>
-                <button type="button" onclick="document.getElementById('applyLeaveModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xl font-bold">
-                    &times;
-                </button>
+                <x-close-button onclick="document.getElementById('applyLeaveModal').classList.add('hidden')" />
             </div>
 
             <form action="{{ route('leaves.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4 text-xs">
@@ -576,9 +574,9 @@
 
                 {{-- Attachment --}}
                 <div>
-                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Attachment (Optional, e.g. Doctor's Note / Proof)</label>
-                    <input type="file" name="attachment" accept=".pdf,.jpg,.jpeg,.png" 
-                           class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                    <label for="f-attachment" class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Attachment (Optional, e.g. Doctor's Note / Proof)</label>
+                    <input id="f-attachment" type="file" name="attachment" accept=".pdf,.jpg,.jpeg,.png" 
+                           class="w-full">
                 </div>
 
                 <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
@@ -600,9 +598,7 @@
                 <h3 class="text-base font-bold text-rose-600 dark:text-rose-400 flex items-center gap-2 font-heading">
                     <span><svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg></span> Reject Leave Application
                 </h3>
-                <button type="button" onclick="document.getElementById('rejectLeaveModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 text-xl font-bold">
-                    &times;
-                </button>
+                <x-close-button onclick="document.getElementById('rejectLeaveModal').classList.add('hidden')" />
             </div>
 
             <p id="rejectModalPrompt" class="text-xs text-slate-600 dark:text-slate-300">

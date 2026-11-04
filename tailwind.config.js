@@ -2,6 +2,29 @@ import defaultTheme from 'tailwindcss/defaultTheme';
 import colors from 'tailwindcss/colors';
 import forms from '@tailwindcss/forms';
 
+// The theme colour (Profile -> Theme) is --crm-accent; every blue shade is mixed from it so
+// buttons, links, tabs and badges follow the colour the user picks. 600 is the colour itself.
+const accentShade = (mix) => ({ opacityValue }) => {
+    if (opacityValue === undefined || opacityValue === 1 || opacityValue === '1') return mix;
+    const amount = typeof opacityValue === 'number' ? `${opacityValue * 100}%` : `calc(${opacityValue} * 100%)`;
+    return `color-mix(in srgb, ${mix} ${amount}, transparent)`;
+};
+const tint = (pct) => accentShade(`color-mix(in srgb, var(--crm-accent, #2563eb) ${pct}%, #fff)`);
+const shade = (pct) => accentShade(`color-mix(in srgb, var(--crm-accent, #2563eb) ${pct}%, #000)`);
+export const accent = {
+    50: tint(6),
+    100: tint(12),
+    200: tint(24),
+    300: tint(42),
+    400: tint(68),
+    500: tint(85),
+    600: accentShade('var(--crm-accent, #2563eb)'),
+    700: shade(82),
+    800: shade(64),
+    900: shade(48),
+    950: shade(30),
+};
+
 /** @type {import('tailwindcss').Config} */
 export default {
     darkMode: 'class',
@@ -47,22 +70,16 @@ export default {
                 md: 'none',
             },
             colors: {
-                brand: {
-                    50: '#eff6ff',
-                    100: '#dbeafe',
-                    200: '#bfdbfe',
-                    500: '#3b82f6',
-                    600: '#2563eb',
-                    700: '#1d4ed8',
-                },
-                // One accent colour: the decorative hues used across the views fold into
-                // blue. Green, amber and red stay for status (done, waiting, problem).
-                indigo: colors.blue,
-                violet: colors.blue,
-                purple: colors.blue,
-                fuchsia: colors.blue,
-                sky: colors.blue,
-                cyan: colors.blue,
+                brand: accent,
+                // One accent colour: blue and the decorative hues used across the views are
+                // all the theme colour. Green, amber and red stay for status (done, waiting, problem).
+                blue: accent,
+                indigo: accent,
+                violet: accent,
+                purple: accent,
+                fuchsia: accent,
+                sky: accent,
+                cyan: accent,
                 teal: colors.emerald,
                 lime: colors.emerald,
                 pink: colors.rose,

@@ -22,20 +22,20 @@
                 <form method="POST" action="{{ route('workers.store') }}" enctype="multipart/form-data">
                     @csrf
 
-                    <h3 class="mb-4 pb-2 border-b border-[#ddd] font-bold text-base text-gray-900">Personal & Wage Details</h3>
+                    <h3 class="mb-4 pb-2 border-b border-[#ddd] dark:border-slate-700 font-bold text-base text-gray-900 dark:text-slate-100">Personal & Wage Details</h3>
 
                     {{-- Worker Profile Photo / Login Photo --}}
-                    <div class="mb-5 p-3 rounded bg-slate-50 border border-slate-200 flex items-center gap-4">
-                        <div class="w-16 h-16 rounded-full bg-slate-200 border-2 border-slate-300 flex items-center justify-center overflow-hidden shrink-0 shadow-sm" id="photo-preview-wrap">
-                            <span id="photo-placeholder" class="text-xs font-semibold text-slate-500 uppercase">Photo</span>
-                            <img id="photo-preview" src="#" alt="Worker Photo" class="w-full h-full object-cover hidden">
+                    <div class="mb-5 p-3 rounded bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 flex items-center gap-4">
+                        <div class="w-16 h-16 rounded-full bg-slate-200 dark:bg-slate-700 border-2 border-slate-300 dark:border-slate-600 flex items-center justify-center overflow-hidden shrink-0 shadow-sm" id="photo-preview-wrap">
+                            <span id="photo-placeholder" class="text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase">Photo</span>
+                            <img id="photo-preview" alt="Worker Photo" class="w-full h-full object-cover hidden">
                         </div>
                         <div class="flex-1">
-                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1">
+                            <label for="worker-photo-input" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide mb-1">
                                 Worker Profile Photo (Login & Verification Photo)
                             </label>
-                            <input type="file" name="photo" id="worker-photo-input" accept="image/*" class="text-xs text-slate-600 file:mr-2 file:py-1 file:px-2.5 file:rounded file:border file:border-slate-300 file:text-xs file:font-semibold file:bg-white hover:file:bg-slate-50 cursor-pointer">
-                            <p class="text-[11px] text-slate-500 mt-0.5">Used to verify identity against daily attendance punch photos. Max 5MB (JPG, PNG).</p>
+                            <input type="file" name="photo" id="worker-photo-input" accept="image/*" class="cursor-pointer">
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Used to verify identity against daily attendance punch photos. Max 5MB (JPG, PNG).</p>
                             @error('photo') <p class="error-text">{{ $message }}</p> @enderror
                         </div>
                     </div>
@@ -64,7 +64,7 @@
                             <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-1">
                                 @foreach(['cabling' => 'Cabling & Conduit', 'mounting' => 'Camera Mounting', 'termination' => 'RJ45 Termination', 'networking' => 'IP Networking', 'civil' => 'Drilling / Civil', 'helper' => 'General Helper'] as $val => $lbl)
                                     <label class="flex items-center gap-2 p-2 border border-[#ddd] rounded-[4px] cursor-pointer text-xs text-gray-700">
-                                        <input type="checkbox" name="skills[]" value="{{ $val }}" class="rounded-[4px] border-[#ccc] text-[#2563eb]">
+                                        <input type="checkbox" name="skills[]" value="{{ $val }}" class="rounded-[4px] border-[#ccc] text-blue-600">
                                         <span>{{ $lbl }}</span>
                                     </label>
                                 @endforeach
@@ -79,7 +79,7 @@
 
                         <div class="sm:col-span-2">
                             <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="checkbox" name="is_active" value="1" checked class="w-4 h-4 rounded-[4px] border-[#ccc] text-[#2563eb]">
+                                <input type="checkbox" name="is_active" value="1" checked class="w-4 h-4 rounded-[4px] border-[#ccc] text-blue-600">
                                 <span class="text-sm text-gray-700">Active (Available for daily shifts)</span>
                             </label>
                         </div>

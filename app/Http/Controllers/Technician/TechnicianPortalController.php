@@ -54,20 +54,34 @@ class TechnicianPortalController extends Controller
 
         $allProjectsCount = \App\Models\Project::count();
 
+        // Active Workers and Projects for Technician On-Site Daily Attendance Logging
+        $activeWorkers = \App\Models\Worker::where('is_active', true)->orderBy('name')->get();
+        $activeProjects = \App\Models\Project::whereIn('status', ['approved', 'in_progress'])
+            ->orderBy('title')
+            ->get();
+
+        // Current Authenticated Technician Attendance Record for Today
+        $myAttendanceToday = \App\Models\EmployeeAttendance::where('user_id', $technicianId)
+            ->whereDate('date', now()->toDateString())
+            ->first();
+
         return view('technician.dashboard', compact(
             'activeJobs',
             'completedJobs',
             'activeSurveys',
             'completedSurveys',
             'assignedProjects',
-            'allProjectsCount'
+            'allProjectsCount',
+            'activeWorkers',
+            'activeProjects',
+            'myAttendanceToday'
         ));
     }
 
     public function updateJobStatus(Request $request, InstallationJob $job)
     {
         if ($job->assigned_technician_id !== auth()->id() && !auth()->user()->isAdmin()) {
-            abort(403, 'Unauthorized action.');
+            abort(403, __('Unauthorized action.'));
         }
 
         $validated = $request->validate([
@@ -80,7 +94,7 @@ class TechnicianPortalController extends Controller
             'installation_notes' => $validated['notes'] ?? $job->installation_notes,
         ]);
 
-        return back()->with('status', 'Installation job status updated successfully.');
+        return back()->with('status', __('Installation job status updated successfully.'));
     }
 
     /**
@@ -89,7 +103,7 @@ class TechnicianPortalController extends Controller
     public function showSurvey(SiteSurvey $siteSurvey)
     {
         if ($siteSurvey->surveyed_by !== auth()->id() && !auth()->user()->isAdmin()) {
-            abort(403, 'Unauthorized action.');
+            abort(403, __('Unauthorized action.'));
         }
 
         $siteSurvey->load('lead', 'photos');
@@ -103,7 +117,7 @@ class TechnicianPortalController extends Controller
     public function completeSurvey(Request $request, SiteSurvey $siteSurvey)
     {
         if ($siteSurvey->surveyed_by !== auth()->id() && !auth()->user()->isAdmin()) {
-            abort(403, 'Unauthorized action.');
+            abort(403, __('Unauthorized action.'));
         }
 
         $validated = $request->validate([
@@ -155,13 +169,13 @@ class TechnicianPortalController extends Controller
         }
 
         return redirect()->route('technician.dashboard')
-            ->with('status', "Site Survey for {$siteSurvey->lead->customer_name} completed successfully and photos uploaded!");
+            ->with('status', __('Site Survey for :customer completed successfully and photos uploaded!', ['customer' => $siteSurvey->lead->customer_name]));
     }
 
     public function completeAmcVisit(Request $request, \App\Models\AmcVisit $visit)
     {
         if ($visit->assigned_technician_id !== auth()->id() && !auth()->user()->isAdmin()) {
-            abort(403, 'Unauthorized action.');
+            abort(403, __('Unauthorized action.'));
         }
 
         $validated = $request->validate([
@@ -174,13 +188,13 @@ class TechnicianPortalController extends Controller
             'completion_notes' => $validated['completion_notes'],
         ]);
 
-        return back()->with('status', 'AMC visit marked as completed.');
+        return back()->with('status', __('AMC visit marked as completed.'));
     }
 
     public function updateServiceTicket(Request $request, \App\Models\ServiceTicket $ticket)
     {
         if ($ticket->assigned_technician_id !== auth()->id() && !auth()->user()->isAdmin()) {
-            abort(403, 'Unauthorized action.');
+            abort(403, __('Unauthorized action.'));
         }
 
         $validated = $request->validate([
@@ -210,6 +224,6 @@ class TechnicianPortalController extends Controller
 
         $ticket->update($updateData);
 
-        return back()->with('status', 'Service ticket updated.');
+        return back()->with('status', __('Service ticket updated.'));
     }
 }

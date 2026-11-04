@@ -42,6 +42,7 @@
         @foreach ($amcs as $amc)
             @php $endsSoon = $amc->status === 'active' && $amc->end_date && $amc->end_date->isBetween(now(), now()->addDays(30)); @endphp
             <tr>
+                <x-list-pick :id="$amc->id" :label="$amc->contract_no" />
                 <td class="whitespace-nowrap"><a href="{{ route('amcs.show', $amc) }}" class="ld-name plain-link">{{ $amc->contract_no }}</a></td>
                 <td>
                     <div>{{ $amc->lead->customer_name ?? '—' }}</div>

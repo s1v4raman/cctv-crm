@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Middleware\SetLocale;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -112,7 +113,11 @@ class GoogleAuthController extends Controller
         $request->session()->put('portal_type', 'staff');
 
         if ($user->role === 'technician') {
-            return redirect()->intended(route('technician.dashboard'));
+            // English / Tamil picked on the sign-in page's Technician tab carries over to the technician pages
+            $locale = SetLocale::rememberOnSignIn($request, $user);
+
+            return redirect()->intended(route('technician.dashboard'))
+                ->withCookie(cookie()->forever(SetLocale::COOKIE, $locale));
         }
 
         return redirect()->intended(route('dashboard'));
