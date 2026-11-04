@@ -101,7 +101,7 @@ class AuthenticationTest extends TestCase
         $response = $this->get(route('staff.login'));
 
         $response->assertOk()
-            ->assertSee('Operations Sign In')
+            ->assertSee('Admin &amp; Employee Sign In', false)
             ->assertSee('Staff &amp; Admin ERP', false)
             ->assertDontSee('Customer Sign In');
     }

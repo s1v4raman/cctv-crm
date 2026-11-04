@@ -63,6 +63,17 @@ Route::get('login', [AuthenticatedSessionController::class, 'create'])
 Route::post('login', [AuthenticatedSessionController::class, 'store'])
     ->middleware('throttle:15,1');
 
+// Technicians' and daily workers' sign-in has its own link; /login is the admins' and employees'
+Route::get('field', fn () => redirect()->route('field.login'))
+    ->name('field');
+
+Route::get('field/login', [AuthenticatedSessionController::class, 'create'])
+    ->name('field.login');
+
+Route::post('field/login', [AuthenticatedSessionController::class, 'store'])
+    ->middleware('throttle:15,1')
+    ->name('field.login.post');
+
 // Staff/ERP Portal Login — accessible via Cloudflare Tunnel without port detection
 // Use: https://your-admin-tunnel.trycloudflare.com/staff/login
 Route::middleware('guest')->group(function () {

@@ -80,7 +80,7 @@ class TechnicianPortalTest extends TestCase
 
     public function test_guests_are_redirected_to_login(): void
     {
-        $this->get(route('technician.dashboard'))->assertRedirect(route('login'));
+        $this->get(route('technician.dashboard'))->assertRedirect(route('field.login'));
     }
 
     public function test_staff_and_customer_cannot_access_technician_portal(): void

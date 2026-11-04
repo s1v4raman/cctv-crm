@@ -30,14 +30,14 @@ class TamilLocaleTest extends TestCase
 
     public function test_guest_can_switch_the_worker_sign_in_page_to_tamil(): void
     {
-        $this->from('/login')
+        $this->from('/field/login')
             ->post(route('locale.update'), ['locale' => 'ta', 'portal' => 'worker'])
-            ->assertRedirect('/login')
+            ->assertRedirect('/field/login')
             ->assertCookie(SetLocale::COOKIE, 'ta')
             ->assertSessionHas('login_portal', 'worker');
 
         $this->withCookie(SetLocale::COOKIE, 'ta')
-            ->get('/login')
+            ->get('/field/login')
             ->assertOk()
             ->assertSee('lang="ta"', false)
             ->assertSee('Noto+Sans+Tamil', false)
@@ -51,7 +51,7 @@ class TamilLocaleTest extends TestCase
 
     public function test_sign_in_page_stays_english_without_a_choice(): void
     {
-        $this->get('/login')
+        $this->get('/field/login')
             ->assertOk()
             ->assertSee('lang="en"', false)
             ->assertSee('Worker Full Name')
@@ -156,16 +156,16 @@ class TamilLocaleTest extends TestCase
     public function test_sign_in_validation_errors_are_in_tamil(): void
     {
         $this->withCookie(SetLocale::COOKIE, 'ta')
-            ->from('/login')
+            ->from('/field/login')
             ->post(route('login.worker'), ['name' => '', 'phone' => '123'])
-            ->assertRedirect('/login')
+            ->assertRedirect('/field/login')
             ->assertSessionHasErrors([
                 'name' => 'பெயர் கட்டாயம் தேவை.',
                 'phone' => 'மொபைல் எண் குறைந்தது 8 எழுத்துகள் இருக்க வேண்டும்.',
             ]);
 
         $this->withCookie(SetLocale::COOKIE, 'en')
-            ->from('/login')
+            ->from('/field/login')
             ->post(route('login.worker'), ['name' => '', 'phone' => '9840123456'])
             ->assertSessionHasErrors(['name' => 'The name field is required.']);
     }
@@ -252,13 +252,13 @@ class TamilLocaleTest extends TestCase
 
     public function test_technician_sign_in_switches_to_tamil_and_stays_on_the_technician_tab(): void
     {
-        $this->get('/login')
+        $this->get('/field/login')
             ->assertOk()
             ->assertSee('name="portal" value="technician"', false);
 
-        $this->from('/login')
+        $this->from('/field/login')
             ->post(route('locale.update'), ['locale' => 'ta', 'portal' => 'technician'])
-            ->assertRedirect('/login')
+            ->assertRedirect('/field/login')
             ->assertCookie(SetLocale::COOKIE, 'ta')
             ->assertSessionHas('login_portal', 'technician');
 
@@ -282,7 +282,7 @@ class TamilLocaleTest extends TestCase
         $technician = User::factory()->create(['role' => 'technician', 'locale' => 'en']);
 
         $this->withCookie(SetLocale::COOKIE, 'ta')
-            ->post('/login', ['email' => $technician->email, 'password' => 'password'])
+            ->post('/field/login', ['email' => $technician->email, 'password' => 'password'])
             ->assertRedirect(route('technician.dashboard'))
             ->assertCookie(SetLocale::COOKIE, 'ta');
         $this->assertSame('ta', $technician->fresh()->locale);
@@ -313,7 +313,8 @@ class TamilLocaleTest extends TestCase
 
     public function test_microphone_is_allowed_only_where_there_is_voice_input(): void
     {
-        $this->get('/login')->assertHeader('Permissions-Policy', 'camera=(self), microphone=(self), geolocation=()');
+        $this->get('/field/login')->assertHeader('Permissions-Policy', 'camera=(self), microphone=(self), geolocation=()');
+        $this->get('/login')->assertHeader('Permissions-Policy', 'camera=(self), microphone=(), geolocation=()');
 
         $technician = User::factory()->create(['role' => 'technician']);
         $this->actingAs($technician)

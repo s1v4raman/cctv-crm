@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Middleware\EnforceLoginPortal;
 use App\Http\Middleware\SetLocale;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -24,7 +25,11 @@ class GoogleAuthController extends Controller
 
         if (empty($clientId) || empty($clientSecret)) {
             $isStaff = $request->input('portal') === 'staff' || $request->is('staff/*');
-            $redirectRoute = $isStaff ? 'staff.login' : 'login';
+            $redirectRoute = match (true) {
+                $request->input('portal') === 'field' => EnforceLoginPortal::loginRoute('technician'),
+                $isStaff => 'staff.login',
+                default => 'login',
+            };
 
             return redirect()->route($redirectRoute)->withErrors([
                 'email' => 'Google Client ID & Secret are not yet configured in your .env file. Please add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET to enable Google sign in.',
@@ -55,7 +60,11 @@ class GoogleAuthController extends Controller
     {
         $portalIntent = session('oauth_portal', 'customer');
         $mode         = session('oauth_mode', 'login');
-        $fallbackRoute = ($portalIntent === 'staff') ? 'staff.login' : ($mode === 'register' ? 'register' : 'login');
+        $fallbackRoute = match (true) {
+            $portalIntent === 'field' => EnforceLoginPortal::loginRoute('technician'),
+            $portalIntent === 'staff' => 'staff.login',
+            default => $mode === 'register' ? 'register' : 'login',
+        };
 
         try {
             /** @var \Laravel\Socialite\Two\User $googleUser */
@@ -99,6 +108,14 @@ class GoogleAuthController extends Controller
         if ($user->isCustomer()) {
             return redirect()->route('login')->withErrors([
                 'email' => 'Customer self-service portal login has been retired. Please contact support for assistance.',
+            ]);
+        }
+
+        // The field sign-in page's Google button lets in technicians, the office page's admins and employees
+        $portal = config('app.login_portal') ?? ($portalIntent === 'field' ? 'technician' : 'admin');
+        if (!EnforceLoginPortal::allows($portal, $user)) {
+            return redirect()->route(EnforceLoginPortal::loginRoute($portal))->withErrors([
+                'email' => EnforceLoginPortal::wrongAccountMessage($portal),
             ]);
         }
 
