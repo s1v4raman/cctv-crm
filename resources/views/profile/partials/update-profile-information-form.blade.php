@@ -81,7 +81,7 @@
                     <div class="flex flex-wrap items-center gap-2">
                         <button type="button" 
                                 @click="$refs.photo.click()" 
-                                class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-white dark:bg-slate-800 border border-[#ddd] dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 transition shadow-2xs cursor-pointer">
+                                class="btn-md inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-white dark:bg-slate-800 border border-[#ddd] dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 transition shadow-2xs cursor-pointer">
                             <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
                             <span x-text="photoPreview || '{{ $user->avatar_url }}' ? 'Change Photo' : 'Upload Photo'"></span>
                         </button>

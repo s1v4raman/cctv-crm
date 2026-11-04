@@ -9,13 +9,13 @@
             <div class="flex items-center gap-2">
                 @if(auth()->user()->isAdmin())
                 <a href="{{ route('finance.salaries.index') }}"
-                   class="inline-flex items-center px-3 py-1.5 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition">
+                   class="btn-md inline-flex items-center px-3 py-1.5 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition">
                     Salary Master
                 </a>
                 @endif
                 @if(auth()->user()->isAdmin())
                 <a href="{{ route('finance.payroll.index') }}"
-                   class="inline-flex items-center px-3 py-1.5 rounded bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium transition">
+                   class="btn-md inline-flex items-center px-3 py-1.5 rounded bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium transition">
                     Payrolls
                 </a>
                 @endif

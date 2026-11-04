@@ -90,7 +90,7 @@
                     <!-- Submit Button -->
                     <div class="pt-2 flex justify-end">
                         <button type="submit" 
-                                class="w-full sm:w-auto px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-[4px] transition-colors cursor-pointer">
+                                class="btn-md w-full sm:w-auto px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-[4px] transition-colors cursor-pointer">
                             <span>Email Password Reset Link</span>
                         </button>
                     </div>

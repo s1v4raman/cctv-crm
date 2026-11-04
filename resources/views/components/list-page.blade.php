@@ -110,7 +110,7 @@
                 {{ $tools ?? '' }}
             </div>
 
-            <div class="flex items-center gap-2 ml-auto">
+            <div class="ld-head-actions flex items-center gap-2 ml-auto">
                 @if($createUrl)
                     @if(count($createMenu) > 0)
                         <div class="relative" @click.outside="menu === 'create' && (menu = null)">

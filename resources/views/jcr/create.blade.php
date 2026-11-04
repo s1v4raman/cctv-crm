@@ -15,7 +15,7 @@
                 </div>
             </div>
             <a href="{{ auth()->user()->isTechnician() ? route('technician.dashboard') : url()->previous() }}"
-               class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-700 bg-slate-800/80 text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-700 transition shadow-sm">
+               class="btn-md inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-700 bg-slate-800/80 text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-700 transition shadow-sm">
                 &larr; Back
             </a>
         </div>

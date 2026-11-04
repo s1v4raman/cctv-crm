@@ -18,7 +18,7 @@
             </div>
             <div class="flex items-center gap-2 flex-wrap">
                 <a href="{{ route('attendance.index') }}" 
-                   class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0f172a] text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-semibold shadow-xs transition">
+                   class="btn-md inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0f172a] text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-semibold shadow-xs transition">
                     <svg class="w-4 h-4 text-slate-500 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
@@ -27,7 +27,7 @@
 
                 <button type="button" 
                         onclick="document.getElementById('applyLeaveModal').classList.remove('hidden')"
-                        class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-500/20 transition">
+                        class="btn-md inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-500/20 transition">
                     <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
                     </svg>
@@ -250,7 +250,7 @@
                                         @csrf
                                         @method('PATCH')
                                         <button type="submit" 
-                                                class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition">
+                                                class="btn-md inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition">
                                             <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
                                             </svg>
@@ -263,7 +263,7 @@
                                     @if(auth()->user()->canDecideFor($req->user_id))
                                     <button type="button" 
                                             onclick="openRejectModal('{{ $req->id }}', '{{ addslashes($req->user->name) }}', '{{ $req->leave_type_label }}')"
-                                            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white dark:bg-[#0f172a] hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900/50 text-xs font-bold transition">
+                                            class="btn-md inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white dark:bg-[#0f172a] hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900/50 text-xs font-bold transition">
                                         <svg class="w-4 h-4 text-rose-600 dark:text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                                         </svg>
@@ -580,10 +580,10 @@
                 </div>
 
                 <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
-                    <button type="button" onclick="document.getElementById('applyLeaveModal').classList.add('hidden')" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 dark:text-slate-400">
+                    <button type="button" onclick="document.getElementById('applyLeaveModal').classList.add('hidden')" class="btn-md px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 dark:text-slate-400">
                         Cancel
                     </button>
-                    <button type="submit" class="px-6 py-2.5 min-h-[44px] text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-md transition">
+                    <button type="submit" class="btn-md px-6 py-2.5 min-h-[44px] text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-md transition">
                         Submit Application
                     </button>
                 </div>
@@ -616,10 +616,10 @@
                 </div>
 
                 <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
-                    <button type="button" onclick="document.getElementById('rejectLeaveModal').classList.add('hidden')" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 dark:text-slate-400">
+                    <button type="button" onclick="document.getElementById('rejectLeaveModal').classList.add('hidden')" class="btn-md px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 dark:text-slate-400">
                         Back
                     </button>
-                    <button type="submit" class="px-6 py-2.5 min-h-[44px] text-sm font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-xl shadow-md transition">
+                    <button type="submit" class="btn-md px-6 py-2.5 min-h-[44px] text-sm font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-xl shadow-md transition">
                         Confirm Rejection
                     </button>
                 </div>

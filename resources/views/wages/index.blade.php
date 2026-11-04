@@ -641,8 +641,8 @@
                         </div>
 
                         <div class="flex items-center justify-end gap-2 pt-2">
-                            <button type="button" @click="advanceModalOpen = false" class="px-3 py-2 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 text-sm font-medium rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition" style="border-radius: 4px;">Cancel</button>
-                            <button type="submit" class="px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition" style="border-radius: 4px;">Record Advance</button>
+                            <button type="button" @click="advanceModalOpen = false" class="btn-md px-3 py-2 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 text-sm font-medium rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition" style="border-radius: 4px;">Cancel</button>
+                            <button type="submit" class="btn-md px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition" style="border-radius: 4px;">Record Advance</button>
                         </div>
                     </form>
                 </div>
@@ -688,8 +688,8 @@
                         </div>
 
                         <div class="flex items-center justify-end gap-2 pt-2">
-                            <button type="button" @click="payPartModalOpen = false" class="px-3 py-2 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 text-sm font-medium rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition" style="border-radius: 4px;">Cancel</button>
-                            <button type="submit" class="px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition" style="border-radius: 4px;">Confirm Partial Payment</button>
+                            <button type="button" @click="payPartModalOpen = false" class="btn-md px-3 py-2 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 text-sm font-medium rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition" style="border-radius: 4px;">Cancel</button>
+                            <button type="submit" class="btn-md px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition" style="border-radius: 4px;">Confirm Partial Payment</button>
                         </div>
                     </form>
                 </div>
@@ -1036,19 +1036,19 @@
 
                     {{-- Modal Footer Actions --}}
                     <div class="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-slate-800">
-                        <button type="button" @click="analysisModalOpen = false" class="px-4 py-2 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded text-sm font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                        <button type="button" @click="analysisModalOpen = false" class="btn-md px-4 py-2 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded text-sm font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition">
                             Close
                         </button>
 
                         <div class="flex items-center gap-2">
-                            <button type="button" @click="openAdvance(selectedAnalysis.id, selectedAnalysis.name)" class="inline-flex items-center gap-1.5 px-3 py-2 rounded bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-700 hover:bg-amber-100 text-sm font-semibold transition">
+                            <button type="button" @click="openAdvance(selectedAnalysis.id, selectedAnalysis.name)" class="btn-md inline-flex items-center gap-1.5 px-3 py-2 rounded bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-700 hover:bg-amber-100 text-sm font-semibold transition">
                                 <x-icon.plus />
                                 <span>Record Advance</span>
                             </button>
 
                             <template x-if="selectedAnalysis?.total_due > 0">
                                 <div class="flex items-center gap-2">
-                                    <button type="button" @click="openPayPart(selectedAnalysis.id, selectedAnalysis.name, selectedAnalysis.total_due)" class="px-3 py-2 rounded bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-300 dark:border-blue-700 hover:bg-blue-100 text-sm font-semibold transition">
+                                    <button type="button" @click="openPayPart(selectedAnalysis.id, selectedAnalysis.name, selectedAnalysis.total_due)" class="btn-md px-3 py-2 rounded bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-300 dark:border-blue-700 hover:bg-blue-100 text-sm font-semibold transition">
                                         Pay Part
                                     </button>
 
@@ -1058,7 +1058,7 @@
                                         <input type="hidden" name="settlement_action" value="pay_full">
                                         <input type="hidden" name="week_start" value="{{ $weekStart->toDateString() }}">
                                         <input type="hidden" name="payment_mode" value="cash">
-                                        <button type="submit" class="px-4 py-2 rounded bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold shadow transition">
+                                        <button type="submit" class="btn-md px-4 py-2 rounded bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold shadow transition">
                                             Pay Full (₹<span x-text="selectedAnalysis?.total_due?.toFixed(2)"></span>)
                                         </button>
                                     </form>

@@ -326,8 +326,8 @@
                           placeholder="e.g. Price too high, customer chose another vendor…"></textarea>
                 <div class="flex justify-end gap-3">
                     <button type="button" onclick="document.getElementById('reject-modal').classList.remove('open')"
-                            class="min-h-[44px] px-5 py-2.5 rounded-xl border border-slate-700 bg-slate-800 text-slate-300 text-sm font-semibold hover:bg-slate-700 transition">Cancel</button>
-                    <button type="submit" class="min-h-[44px] px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-sm font-bold transition">Confirm Rejection</button>
+                            class="btn-md min-h-[44px] px-5 py-2.5 rounded-xl border border-slate-700 bg-slate-800 text-slate-300 text-sm font-semibold hover:bg-slate-700 transition">Cancel</button>
+                    <button type="submit" class="btn-md min-h-[44px] px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-sm font-bold transition">Confirm Rejection</button>
                 </div>
             </form>
         </div>

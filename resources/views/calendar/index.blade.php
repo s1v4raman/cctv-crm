@@ -8,10 +8,10 @@
             <div class="flex items-center gap-2 flex-wrap">
                 @if($canManageTasks)
                     <button type="button" @click="window.dispatchEvent(new CustomEvent('open-create-task-modal'))" 
-                            class="inline-flex items-center justify-center px-3.5 py-2 rounded-[4px] text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition active:scale-95 cursor-pointer">
+                            class="btn-md inline-flex items-center justify-center px-3.5 py-2 rounded-[4px] text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition active:scale-95 cursor-pointer">
                         Create Task
                     </button>
-                    <a href="{{ route('site-surveys.create') }}" class="inline-flex items-center justify-center px-3.5 py-2 rounded-[4px] text-xs font-semibold bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200/90 dark:border-slate-700 shadow-2xs transition active:scale-95">
+                    <a href="{{ route('site-surveys.create') }}" class="btn-md inline-flex items-center justify-center px-3.5 py-2 rounded-[4px] text-xs font-semibold bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200/90 dark:border-slate-700 shadow-2xs transition active:scale-95">
                         Schedule Survey
                     </a>
                 @endif
@@ -464,7 +464,7 @@
                 </div>
                 @if($canManageTasks)
                     <button type="button" @click="openCreateTaskModal = true" 
-                            class="inline-flex items-center justify-center px-3.5 py-2 rounded-[4px] text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition active:scale-95 cursor-pointer">
+                            class="btn-md inline-flex items-center justify-center px-3.5 py-2 rounded-[4px] text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition active:scale-95 cursor-pointer">
                         Create Task
                     </button>
                 @endif
@@ -608,10 +608,10 @@
                     </div>
 
                     <div class="flex items-center justify-end gap-2.5 pt-2">
-                        <button type="button" @click="rejectModalOpen = false" class="px-4 py-2 rounded-[4px] border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 transition cursor-pointer">
+                        <button type="button" @click="rejectModalOpen = false" class="btn-md px-4 py-2 rounded-[4px] border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 transition cursor-pointer">
                             Cancel
                         </button>
-                        <button type="submit" class="px-4 py-2 rounded-[4px] bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition shadow-xs cursor-pointer">
+                        <button type="submit" class="btn-md px-4 py-2 rounded-[4px] bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition shadow-xs cursor-pointer">
                             Confirm Rejection &amp; Return
                         </button>
                     </div>
@@ -684,10 +684,10 @@
                         </div>
 
                         <div class="flex items-center justify-end gap-2.5 pt-2">
-                            <button type="button" @click="reassignModalOpen = false" class="px-4 py-2 rounded-[4px] border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 transition cursor-pointer">
+                            <button type="button" @click="reassignModalOpen = false" class="btn-md px-4 py-2 rounded-[4px] border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 transition cursor-pointer">
                                 Cancel
                             </button>
-                            <button type="submit" class="px-4 py-2 rounded-[4px] bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition shadow-xs cursor-pointer">
+                            <button type="submit" class="btn-md px-4 py-2 rounded-[4px] bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition shadow-xs cursor-pointer">
                                 Save Assignment
                             </button>
                         </div>
@@ -819,12 +819,12 @@
                         </div>
 
                         <div class="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100 dark:border-slate-800">
-                            <button type="button" @click="openCreateTaskModal = false" class="px-4 py-2 rounded-[4px] border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 transition cursor-pointer">
+                            <button type="button" @click="openCreateTaskModal = false" class="btn-md px-4 py-2 rounded-[4px] border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 transition cursor-pointer">
                                 Cancel
                             </button>
                             <x-form-step-buttons />
                             <template x-if="isLast()">
-                                <button type="submit" class="px-5 py-2 rounded-[4px] bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition shadow-xs cursor-pointer">
+                                <button type="submit" class="btn-md px-5 py-2 rounded-[4px] bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition shadow-xs cursor-pointer">
                                     Create &amp; Dispatch Task
                                 </button>
                             </template>
@@ -885,11 +885,11 @@
                 </div>
 
                 <div class="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/90 flex items-center justify-between gap-3">
-                    <button type="button" @click="closeDrawer()" class="px-3.5 py-2 rounded-[4px] border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-white dark:hover:bg-slate-800 transition cursor-pointer">
+                    <button type="button" @click="closeDrawer()" class="btn-md px-3.5 py-2 rounded-[4px] border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-white dark:hover:bg-slate-800 transition cursor-pointer">
                         Close
                     </button>
                     <template x-if="selectedEvent && selectedEvent.url">
-                        <a :href="selectedEvent.url" class="px-4 py-2 rounded-[4px] bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 shadow-sm transition inline-flex items-center gap-1.5">
+                        <a :href="selectedEvent.url" class="btn-md px-4 py-2 rounded-[4px] bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 shadow-sm transition inline-flex items-center gap-1.5">
                             <span>Open Details</span>
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                         </a>
