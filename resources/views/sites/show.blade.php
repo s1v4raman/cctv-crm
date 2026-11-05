@@ -166,14 +166,22 @@
 
             {{-- 3. Projects on this Site --}}
             <div class="crm-section">
-                <h3>Site Projects ({{ $site->projects->count() }})</h3>
+                <div class="flex items-center justify-between mb-4 pb-2 border-b border-[#ddd]">
+                    <h3 class="border-b-0 pb-0 mb-0">Site Projects ({{ $site->projects->count() }})</h3>
+                    @if(auth()->user()->can('create', \App\Models\Project::class))
+                    <a href="{{ route('projects.create', ['site_id' => $site->id]) }}" class="btn-primary text-xs">
+                        + New Project
+                    </a>
+                    @endif
+                </div>
                 
                 <div class="overflow-x-auto">
                     <table class="crm-table w-full">
                         <thead>
                             <tr>
                                 <th>Project Code</th>
-                                <th>Title</th>
+                                <th>Project Title</th>
+                                <th>Project Type</th>
                                 <th>Budget</th>
                                 <th>Status</th>
                                 <th class="text-right">Action</th>
@@ -187,7 +195,16 @@
                                             {{ $prj->project_code }}
                                         </a>
                                     </td>
-                                    <td class="font-semibold text-slate-900">{{ $prj->title }}</td>
+                                    <td class="font-semibold text-slate-900 dark:text-slate-100">
+                                        <a href="{{ route('projects.show', $prj) }}" class="plain-link hover:underline">
+                                            {{ $prj->title }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border {{ $prj->project_type_badge_classes }}">
+                                            {{ $prj->project_type_label }}
+                                        </span>
+                                    </td>
                                     <td style="white-space: nowrap;">₹{{ number_format($prj->budget, 2) }}</td>
                                     <td>
                                         <span class="status-{{ strtolower($prj->status) }}">
@@ -202,7 +219,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="text-center py-6 text-slate-500 text-sm">
+                                    <td colspan="6" class="text-center py-6 text-slate-500 text-sm">
                                         No projects linked to this site yet
                                     </td>
                                 </tr>

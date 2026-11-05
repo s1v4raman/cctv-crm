@@ -217,15 +217,11 @@
                             this.hardware_specs = Object.assign({}, this.hardware_specs, this.oldHardwareSpecs);
                         }
                     } else {
-                        this.applyTemplate(this.project_type, false);
-                    }
-                    if (this.selectedSite && (!this.title || this.title === '')) {
-                        const tpl = this.templates[this.project_type] || this.templates['hardware_cctv'];
-                        this.title = `${this.selectedSite.name} - ${tpl.nameSuffix}`;
+                        this.applyTemplate(this.project_type);
                     }
                 },
 
-                applyTemplate(type, forceTitle = false) {
+                applyTemplate(type) {
                     const tpl = this.templates[type] || this.templates['hardware_cctv'];
                     this.req = Object.assign({}, tpl.requirements, { special_requirements: this.req.special_requirements || '' });
                     this.hardware_specs = Object.assign({
@@ -236,13 +232,7 @@
                         attendance_sync_mode: 'face_recognition'
                     }, tpl.hardware_specs || {});
                     this.materials = JSON.parse(JSON.stringify(tpl.materials));
-                    if (forceTitle || !this.title || this.title.includes('Surveillance') || this.title.includes('System') || this.title.includes('Cabling') || this.title.includes('Application')) {
-                        if (this.selectedSite) {
-                            this.title = `${this.selectedSite.name} - ${tpl.nameSuffix}`;
-                        } else {
-                            this.title = `${tpl.nameSuffix}`;
-                        }
-                    }
+                    // Keep user's project title untouched when selecting or changing project type
                 },
 
                 addMaterialRow() {
@@ -289,9 +279,6 @@
                     this.selectedSite = site;
                     this.siteResults = [];
                     this.siteSearch = '';
-                    if (!this.title) {
-                        this.title = `${site.name} - CCTV Surveillance System`;
-                    }
                 },
                 async createSite() {
                     if (!this.newSite.name || !this.newSite.address) {
@@ -477,13 +464,15 @@
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div class="sm:col-span-2">
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Project Title *</label>
-                            <input aria-label="Project Title" type="text" name="title" x-model="title" required placeholder="e.g. 16-Camera IP Surveillance Installation" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 font-bold">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">
+                                Project Title <span class="text-slate-400 font-normal lowercase">(optional)</span>
+                            </label>
+                            <input aria-label="Project Title" type="text" name="title" x-model="title" placeholder="e.g. 16-Camera IP Surveillance Installation (or leave blank to auto-generate)" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 font-bold">
                         </div>
 
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Project Type *</label>
-                            <select aria-label="Project Type" name="project_type" x-model="project_type" @change="applyTemplate(project_type, true)" required class="w-full px-3.5 py-2.5 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
+                            <select aria-label="Project Type" name="project_type" x-model="project_type" @change="applyTemplate(project_type)" required class="w-full px-3.5 py-2.5 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
                                 @foreach($projectTypes as $val => $lbl)
                                     <option value="{{ $val }}">{{ $lbl }}</option>
                                 @endforeach
@@ -553,7 +542,7 @@
                     <button type="button" @click="step = 1" class="btn-secondary text-sm">Back</button>
                     <div class="flex items-center gap-2">
                         <button type="button" @click="saveDraft()" class="btn-secondary text-sm">Save Draft</button>
-                        <button type="button" @click="if(!title){ crmAlert('Project title is required'); } else { step = 3; }" class="btn-primary text-sm px-6 py-2.5">Next</button>
+                        <button type="button" @click="step = 3" class="btn-primary text-sm px-6 py-2.5">Next</button>
                     </div>
                 </div>
             </div>

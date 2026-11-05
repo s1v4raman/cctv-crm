@@ -14,7 +14,15 @@
     <!-- Favicon / App Icon -->
     <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}?v={{ filemtime(public_path('favicon.png')) }}">
     <link rel="shortcut icon" href="{{ asset('favicon.ico') }}?v={{ filemtime(public_path('favicon.ico')) }}">
-    <link rel="apple-touch-icon" href="{{ asset('logo-mark.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('icons/field-192.png') }}">
+
+    <!-- PWA Web App Manifest & Mobile Meta Tags -->
+    <link rel="manifest" href="{{ url('/field/manifest.webmanifest') }}">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PrecisionField">
 
 
     <!-- Scripts & Styles via Vite -->
@@ -790,6 +798,9 @@
         </div>
 
     </div>
+
+    {{-- Progressive Web App (PWA) Offline & Install Handler --}}
+    <x-pwa-installer />
 
 </body>
 </html>

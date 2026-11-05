@@ -11,6 +11,16 @@
 
     <title>{{ $worker->name }} - {{ __('Daily Wages Worker Portal') }} | Precision IT Systems</title>
 
+    <!-- PWA Web App Manifest & Mobile Meta Tags -->
+    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('icons/field-192.png') }}">
+    <link rel="manifest" href="{{ url('/field/manifest.webmanifest') }}">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PrecisionField">
+
     <style>
         :root {
             --crm-accent: #2563eb;
@@ -790,5 +800,8 @@
             };
         }
     </script>
+
+    {{-- Progressive Web App (PWA) Offline & Install Handler --}}
+    <x-pwa-installer />
 </body>
 </html>

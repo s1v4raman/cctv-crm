@@ -581,6 +581,60 @@ Route::middleware(['auth', 'technician'])->prefix('technician')->name('technicia
     Route::post('/surveys/{siteSurvey}/complete', [TechnicianPortalController::class, 'completeSurvey'])->name('surveys.complete');
 });
 
+// PWA Field Tasks Start URL Route (Direct entry for Field Operations)
+Route::get('/field/tasks', function (\Illuminate\Http\Request $request) {
+    if (auth()->check()) {
+        $user = auth()->user();
+        if ($user->isWorker()) {
+            return redirect()->route('worker.portal');
+        }
+        if ($user->isTechnician()) {
+            return redirect()->route('technician.dashboard');
+        }
+        return redirect()->route('dashboard');
+    }
+
+    // Guest users opening the field app: redirect to login
+    return redirect()->route('login', ['source' => 'app']);
+})->name('field.tasks');
+
+// PWA Field Web Manifest (public, no auth, application/manifest+json)
+Route::get('/field/manifest.webmanifest', function () {
+    $path = public_path('field/manifest.webmanifest');
+    return response(file_get_contents($path), 200, [
+        'Content-Type' => 'application/manifest+json',
+        'Cache-Control' => 'public, max-age=3600',
+        'Access-Control-Allow-Origin' => '*',
+    ]);
+})->name('field.manifest');
+
+// PWA Field Service Worker (public, no auth, application/javascript)
+Route::get('/field/sw.js', function () {
+    $path = public_path('field/sw.js');
+    return response(file_get_contents($path), 200, [
+        'Content-Type' => 'application/javascript; charset=utf-8',
+        'Cache-Control' => 'no-cache, no-store, must-revalidate',
+        'Service-Worker-Allowed' => '/field/',
+    ]);
+})->name('field.sw');
+
+// Public PWA Icons (200 OK without auth)
+Route::get('/icons/{filename}', function ($filename) {
+    $path = public_path('icons/' . basename($filename));
+    if (file_exists($path)) {
+        return response(file_get_contents($path), 200, [
+            'Content-Type' => 'image/png',
+            'Cache-Control' => 'public, max-age=86400',
+        ]);
+    }
+    abort(404);
+})->where('filename', '.*\.png$')->name('field.icons');
+
+// PWA Offline Fallback Page
+Route::get('/offline', function () {
+    return view('offline');
+})->name('offline');
+
 // English / Tamil switch on the worker sign-in, worker portal and technician pages
 Route::post('/locale', [LocaleController::class, 'update'])
     ->middleware('throttle:30,1')

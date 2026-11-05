@@ -53,9 +53,9 @@
                     {{-- Project Title --}}
                     <div>
                         <label for="title" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                            Project Title <span class="text-rose-500">*</span>
+                            Project Title <span class="text-slate-400 font-normal text-xs">(Optional)</span>
                         </label>
-                        <input type="text" id="title" name="title" value="{{ old('title') }}" required
+                        <input type="text" id="title" name="title" value="{{ old('title') }}"
                                placeholder="e.g. 64-Camera IP Surveillance & NVR Upgrade"
                                class="w-full text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500">
                     </div>

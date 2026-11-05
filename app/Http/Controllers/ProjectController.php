@@ -208,7 +208,7 @@ class ProjectController extends Controller
         $rules = [
             'site_id' => 'nullable|exists:sites,id',
             'project_code' => 'nullable|string|max:100',
-            'title' => $isDraft ? 'nullable|string|max:255' : 'required|string|max:255',
+            'title' => 'nullable|string|max:255',
             'project_type' => $isDraft ? 'nullable|string' : 'required|in:hardware_cctv,hardware_attendance,networking,access_control,software_web,hybrid',
             'lead_technician_id' => 'nullable|exists:users,id',
             'budget' => 'nullable|numeric|min:0',
@@ -247,6 +247,11 @@ class ProjectController extends Controller
             $validated['priority'] = in_array($validated['priority'] ?? null, ['low','medium','high','urgent']) 
                 ? $validated['priority'] 
                 : 'medium';
+        }
+
+        if (empty($validated['title'])) {
+            $siteName = $site ? $site->name : 'Project';
+            $validated['title'] = $site ? "{$site->name} Project" : 'New Project (' . date('d M Y') . ')';
         }
 
         $validated['company_name'] = $validated['company_name'] ?? ($site?->client_name ?? $site?->name ?? 'Direct Client');
@@ -732,7 +737,7 @@ class ProjectController extends Controller
         }
 
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
+            'title' => 'nullable|string|max:255',
             'project_type' => 'required|in:hardware_cctv,hardware_attendance,networking,access_control,software_web,hybrid',
             'site_id' => 'nullable|exists:sites,id',
             'company_id' => 'nullable|exists:companies,id',
@@ -758,6 +763,10 @@ class ProjectController extends Controller
             'software_specs' => 'nullable|array',
             'requirements' => 'nullable|array',
         ]);
+
+        if (empty($validated['title'])) {
+            $validated['title'] = $project->title ?: ($project->site ? "{$project->site->name} Project" : 'Project');
+        }
 
         // Keep lead_technician_id and assigned_to in sync
         if (!empty($validated['lead_technician_id']) && empty($validated['assigned_to'])) {

@@ -21,5 +21,16 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         SharedDatabase::guardDestructiveCommands();
+
+        // Enforce HTTPS in production or when running behind an SSL-terminating reverse proxy (Render, Cloudflare, etc.)
+        if (
+            app()->environment('production') ||
+            str_starts_with((string) config('app.url'), 'https://') ||
+            request()->header('X-Forwarded-Proto') === 'https' ||
+            request()->server('HTTP_X_FORWARDED_PROTO') === 'https' ||
+            request()->isSecure()
+        ) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
     }
 }
