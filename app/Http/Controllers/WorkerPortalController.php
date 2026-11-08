@@ -129,10 +129,21 @@ class WorkerPortalController extends Controller
         ->orderByDesc('updated_at')
         ->get();
 
-        // Today's logged work statistics
+        // Today's logged work statistics and mathematical breakdown
         $todayCablingMetres = (float) ($todayAttendance?->cabling_metres ?? 0);
         $todayCamerasCount = (int) ($todayAttendance?->cameras_installed ?? 0);
         $todayEarnings = (float) ($todayAttendance?->total_amount ?? 0);
+        $todayBaseRate = (float) ($todayAttendance?->daily_rate_snapshot ?? $worker->daily_rate);
+        $todayMultiplier = in_array($todayAttendance?->attendance_type, ['half', 'half_day']) ? 0.5 : 1.0;
+        $todayBaseWage = $todayAttendance ? ($todayBaseRate * $todayMultiplier) : 0.0;
+        $todayCablingRate = (float) ($todayAttendance?->cabling_rate ?? ($activeProjects->first()?->per_metre_rate ?? 8.00));
+        $todayCablingAmount = (float) ($todayAttendance?->cabling_amount ?? ($todayCablingMetres * $todayCablingRate));
+        $todayExtraAmount = (float) ($todayAttendance?->extra_amount ?? 0);
+
+        // Map of project per-metre rates for dynamic calculation in the frontend
+        $projectRates = $activeProjects->mapWithKeys(function ($p) {
+            return [$p->id => (float)($p->per_metre_rate ?? 8.00)];
+        })->toArray();
 
         // Last 30 attendance days for this worker, with the work logged on each day
         $recentAttendances = ProjectWorkerAttendance::with(['workDay.project'])
@@ -149,15 +160,24 @@ class WorkerPortalController extends Controller
         $totalEarned = $worker->getTotalEarnedLifetime();
         $totalPaid = $worker->getTotalPaidLifetime();
         $runningBalance = $worker->getRunningBalance();
-        $recentPayments = $worker->wagePayments()->take(10)->get();
+        $recentPayments = $worker->wagePayments()
+            ->where('amount', '>', 0)
+            ->latest('payment_date')
+            ->take(10)
+            ->get();
 
         return view('worker.portal', compact(
             'worker',
             'todayAttendance',
             'activeProjects',
+            'projectRates',
             'todayCablingMetres',
             'todayCamerasCount',
             'todayEarnings',
+            'todayBaseWage',
+            'todayCablingRate',
+            'todayCablingAmount',
+            'todayExtraAmount',
             'recentAttendances',
             'lifetimeCablingMetres',
             'lifetimeCamerasInstalled',

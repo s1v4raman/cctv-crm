@@ -26,7 +26,17 @@ class Vendor extends Model
             if (!empty($vendor->name)) {
                 $vendor->name = self::cleanName($vendor->name);
                 if (empty($vendor->name_key)) {
-                    $vendor->name_key = self::normalizeNameKey($vendor->name);
+                    $baseKey = self::normalizeNameKey($vendor->name);
+                    if ($baseKey === '') {
+                        $baseKey = 'vendor';
+                    }
+                    $candidate = $baseKey;
+                    $counter = 1;
+                    while (self::where('name_key', $candidate)->where('id', '!=', $vendor->id ?? 0)->exists()) {
+                        $candidate = "{$baseKey}-{$counter}";
+                        $counter++;
+                    }
+                    $vendor->name_key = $candidate;
                 }
             }
         });

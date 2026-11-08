@@ -117,14 +117,16 @@
             </div>
         @endif
 
-        @if (session('error') || $errors->any())
+        @if (session('error') || (isset($errors) && $errors->any()))
             <div class="p-3.5 rounded-[4px] bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 text-xs font-medium space-y-1">
                 @if (session('error'))
                     <div>• {{ session('error') }}</div>
                 @endif
-                @foreach ($errors->all() as $error)
-                    <div>• {{ $error }}</div>
-                @endforeach
+                @if (isset($errors))
+                    @foreach ($errors->all() as $error)
+                        <div>• {{ $error }}</div>
+                    @endforeach
+                @endif
             </div>
         @endif
 
@@ -151,7 +153,7 @@
                             <h2 class="text-lg font-bold text-slate-900 dark:text-white leading-tight">{{ $worker->name }}</h2>
                             @if ($todayAttendance)
                                 <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-100 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-                                    ✓ {{ __('Punched') }} ({{ in_array($todayAttendance->attendance_type, ['half', 'half_day']) ? __('Half Day') : __('Full Day') }})
+                                    &#10003; {{ __('Punched') }} ({{ in_array($todayAttendance->attendance_type, ['half', 'half_day']) ? __('Half Day') : __('Full Day') }})
                                 </span>
                             @else
                                 <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
@@ -161,9 +163,9 @@
                         </div>
                         <div class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-1">
                             <span>{{ $worker->phone }}</span>
-                            <span>•</span>
-                            <span>{{ __('Rate') }}: <strong class="text-slate-700 dark:text-slate-200">₹{{ number_format($worker->daily_rate, 2) }}</strong>/{{ __('day') }}</span>
-                            <span>•</span>
+                            <span>&bull;</span>
+                            <span>{{ __('Rate') }}: <strong class="text-slate-700 dark:text-slate-200">&#8377;{{ number_format($worker->daily_rate, 2) }}</strong>/{{ __('day') }}</span>
+                            <span>&bull;</span>
                             <span>{{ __('Today') }}: <strong class="text-slate-700 dark:text-slate-200">{{ now()->translatedFormat('D, d M Y') }}</strong></span>
                         </div>
                     </div>
@@ -173,7 +175,14 @@
                 <div class="flex items-center gap-2 bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 px-3 py-2 rounded-[4px] self-start sm:self-auto">
                     <div>
                         <span class="block text-[11px] uppercase font-bold text-slate-500 dark:text-slate-400 tracking-wider">{{ __("Today's Total Pay") }}</span>
-                        <span class="text-base font-extrabold text-blue-600 dark:text-blue-400">₹{{ number_format($todayEarnings, 2) }}</span>
+                        <div class="flex items-baseline gap-1.5 flex-wrap">
+                            <span class="text-lg font-extrabold text-blue-600 dark:text-blue-400">&#8377;{{ number_format($todayEarnings, 2) }}</span>
+                            @if ($todayAttendance)
+                                <span class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                                    (&#8377;{{ number_format($todayBaseWage, 0) }} base + &#8377;{{ number_format($todayCablingAmount, 0) }} cabling [{{ number_format($todayCablingMetres, 1) }}m @ &#8377;{{ number_format($todayCablingRate, 2) }}/m]@if($todayExtraAmount > 0) + &#8377;{{ number_format($todayExtraAmount, 0) }} extra @endif)
+                                </span>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>
@@ -270,7 +279,7 @@
                                 <input type="radio" name="attendance_type" value="full_day" x-model="attendanceType" class="text-blue-600 focus:ring-0">
                                 <div>
                                     <span class="block text-xs font-bold text-slate-900 dark:text-white">{{ __('Full Day (100% Rate)') }}</span>
-                                    <span class="block text-[11px] text-slate-500 dark:text-slate-400">{{ __(':amount wage payout', ['amount' => '₹' . number_format($worker->daily_rate, 2)]) }}</span>
+                                    <span class="block text-[11px] text-slate-500 dark:text-slate-400">&#8377;{{ number_format($worker->daily_rate, 2) }} {{ __('wage payout') }}</span>
                                 </div>
                             </label>
 
@@ -279,7 +288,7 @@
                                 <input type="radio" name="attendance_type" value="half_day" x-model="attendanceType" class="text-blue-600 focus:ring-0">
                                 <div>
                                     <span class="block text-xs font-bold text-slate-900 dark:text-white">{{ __('Half Day (50% Rate)') }}</span>
-                                    <span class="block text-[11px] text-slate-500 dark:text-slate-400">{{ __(':amount wage payout', ['amount' => '₹' . number_format($worker->daily_rate * 0.5, 2)]) }}</span>
+                                    <span class="block text-[11px] text-slate-500 dark:text-slate-400">&#8377;{{ number_format($worker->daily_rate * 0.5, 2) }} {{ __('wage payout') }}</span>
                                 </div>
                             </label>
                         </div>
@@ -433,7 +442,9 @@
                             <label for="cabling_metres" class="block text-xs font-bold text-blue-900 dark:text-blue-300 uppercase tracking-wider">
                                 {{ __('Cabling Meters Pulled (Cat6 / 3+1 / Fiber)') }}
                             </label>
-                            <span class="text-xs font-semibold text-blue-700 dark:text-blue-400">{{ __('Per Metre Payout: :rate', ['rate' => '₹8.00/m']) }}</span>
+                            <span class="text-xs font-semibold text-blue-700 dark:text-blue-400">
+                                {{ __('Per Metre Payout') }}: <strong class="font-bold" x-text="'&#8377;' + getProjectRate().toFixed(2) + '/m'"></strong>
+                            </span>
                         </div>
                         <div class="relative">
                             <input type="number" id="cabling_metres" name="cabling_metres" 
@@ -452,6 +463,17 @@
                             <button type="button" @click="addCabling(50)" class="px-2 py-0.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700">+50m</button>
                             <button type="button" @click="addCabling(100)" class="px-2 py-0.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700">+100m</button>
                             <button type="button" @click="cablingMetres = 0" class="px-2 py-0.5 bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-300 rounded text-xs font-medium hover:bg-rose-100">{{ __('Clear') }}</button>
+                        </div>
+
+                        <!-- Live Incentive Calculation Pill -->
+                        <div class="mt-2 text-xs font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 p-2.5 rounded border border-emerald-200 dark:border-emerald-800" x-show="cablingMetres > 0">
+                            <div class="flex items-center justify-between">
+                                <span>{{ __('Cabling Incentive Preview') }}:</span>
+                                <span class="font-mono font-bold" x-html="cablingMetres + 'm &times; &#8377;' + getProjectRate().toFixed(2) + '/m = +&#8377;' + (parseFloat(cablingMetres) * getProjectRate()).toFixed(2)"></span>
+                            </div>
+                            <div class="text-[11px] text-slate-500 dark:text-slate-400 font-normal mt-0.5">
+                                {{ __('Base shift wage (&#8377;:base) + Cabling incentive = Total Day Pay', ['base' => number_format($worker->daily_rate, 0)]) }}
+                            </div>
                         </div>
                     </div>
 
@@ -557,15 +579,15 @@
                     <div class="grid grid-cols-3 gap-2.5 mt-2 text-center">
                         <div class="p-2.5 bg-slate-50 dark:bg-slate-800/60 rounded-[4px] border border-slate-200 dark:border-slate-700">
                             <span class="block text-[11px] font-bold text-slate-500 dark:text-slate-400">{{ __('Earned') }}</span>
-                            <span class="text-sm sm:text-base font-bold text-slate-900 dark:text-white">₹{{ number_format($totalEarned, 0) }}</span>
+                            <span class="text-sm sm:text-base font-bold text-slate-900 dark:text-white">&#8377;{{ number_format($totalEarned, 0) }}</span>
                         </div>
                         <div class="p-2.5 bg-slate-50 dark:bg-slate-800/60 rounded-[4px] border border-slate-200 dark:border-slate-700">
                             <span class="block text-[11px] font-bold text-slate-500 dark:text-slate-400">{{ __('Paid to you') }}</span>
-                            <span class="text-sm sm:text-base font-bold text-emerald-700 dark:text-emerald-400">₹{{ number_format($totalPaid, 0) }}</span>
+                            <span class="text-sm sm:text-base font-bold text-emerald-700 dark:text-emerald-400">&#8377;{{ number_format($totalPaid, 0) }}</span>
                         </div>
                         <div class="p-2.5 bg-slate-50 dark:bg-slate-800/60 rounded-[4px] border border-slate-200 dark:border-slate-700">
                             <span class="block text-[11px] font-bold text-slate-500 dark:text-slate-400">{{ __('Balance due') }}</span>
-                            <span class="text-sm sm:text-base font-bold text-blue-700 dark:text-blue-400">₹{{ number_format(max($runningBalance, 0), 0) }}</span>
+                            <span class="text-sm sm:text-base font-bold text-blue-700 dark:text-blue-400">&#8377;{{ number_format(max($runningBalance, 0), 0) }}</span>
                         </div>
                     </div>
                 </div>
@@ -590,7 +612,7 @@
                                             <td class="py-2 px-3 whitespace-nowrap text-slate-900 dark:text-white">{{ $wagePayment->payment_date?->translatedFormat('d M Y') }}</td>
                                             <td class="py-2 px-3 text-slate-700 dark:text-slate-300">{{ $wagePayment->payment_type === 'advance' ? __('Advance') : __('Wages') }}</td>
                                             <td class="py-2 px-3 text-slate-700 dark:text-slate-300">{{ ['cash' => __('Cash'), 'upi' => __('UPI / GPay'), 'bank' => __('Bank')][$wagePayment->payment_mode] ?? ucfirst((string) $wagePayment->payment_mode) }}</td>
-                                            <td class="py-2 px-3 text-right font-bold text-emerald-700 dark:text-emerald-400 whitespace-nowrap">₹{{ number_format($wagePayment->amount, 0) }}</td>
+                                            <td class="py-2 px-3 text-right font-bold text-emerald-700 dark:text-emerald-400 whitespace-nowrap">&#8377;{{ number_format($wagePayment->amount, 0) }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -603,7 +625,7 @@
 
                 <div class="border-b border-slate-100 dark:border-slate-800 pb-3 pt-2">
                     <h3 class="text-sm font-bold text-slate-900 dark:text-white">{{ __('Your attendance & work (last 30 days)') }}</h3>
-                    <p class="text-xs text-slate-500 dark:text-slate-400">{{ __('Each day you punched in, the site, your shift, the work you logged and the pay for that day.') }}</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">{{ __('Each day you punched in, the site, your shift, the work you logged and the exact pay breakdown.') }}</p>
                 </div>
 
                 @if ($recentAttendances->count() > 0)
@@ -622,6 +644,12 @@
                             </thead>
                             <tbody class="divide-y divide-slate-200 dark:divide-slate-800 bg-white dark:bg-[#0f172a]">
                                 @foreach ($recentAttendances as $att)
+                                    @php
+                                        $attMultiplier = in_array($att->attendance_type, ['half', 'half_day']) ? 0.5 : 1.0;
+                                        $attBaseWage = (float) $att->daily_rate_snapshot * $attMultiplier;
+                                        $attCablingRate = (float) ($att->cabling_rate ?: 20.00);
+                                        $attCablingAmount = (float) ($att->cabling_amount ?: ($att->cabling_metres * $attCablingRate));
+                                    @endphp
                                     <tr class="hover:bg-slate-50/70 dark:hover:bg-slate-800/50 transition-colors">
                                         <td class="py-2 px-3 font-semibold text-slate-900 dark:text-white whitespace-nowrap">
                                             {{ $att->workDay?->work_date ? $att->workDay->work_date->translatedFormat('d M Y') : __('N/A') }}
@@ -643,15 +671,22 @@
                                             <span class="px-2 py-0.5 rounded text-[11px] font-bold {{ !in_array($att->attendance_type, ['half', 'half_day']) ? 'bg-blue-100 dark:bg-blue-950/70 text-blue-800 dark:text-blue-300' : 'bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300' }}">
                                                 {{ in_array($att->attendance_type, ['half', 'half_day']) ? __('Half Day') : __('Full Day') }}
                                             </span>
+                                            <div class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 font-mono">&#8377;{{ number_format($attBaseWage, 0) }}</div>
                                         </td>
                                         <td class="py-2 px-3 text-right font-mono font-semibold text-slate-800 dark:text-slate-200">
-                                            {{ number_format($att->cabling_metres, 1) }}m
+                                            <div>{{ number_format($att->cabling_metres, 1) }}m</div>
+                                            @if($attCablingAmount > 0)
+                                                <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-normal">+&#8377;{{ number_format($attCablingAmount, 0) }} (@ &#8377;{{ number_format($attCablingRate, 2) }}/m)</div>
+                                            @endif
                                         </td>
                                         <td class="py-2 px-3 text-right font-mono font-semibold text-slate-800 dark:text-slate-200">
                                             {{ $att->cameras_installed }}
                                         </td>
                                         <td class="py-2 px-3 text-right font-mono font-bold text-blue-700 dark:text-blue-400 whitespace-nowrap">
-                                            ₹{{ number_format($att->total_amount, 2) }}
+                                            <div class="text-sm">&#8377;{{ number_format($att->total_amount, 2) }}</div>
+                                            <div class="text-[10px] text-slate-500 dark:text-slate-400 font-normal">
+                                                &#8377;{{ number_format($attBaseWage, 0) }} base + &#8377;{{ number_format($attCablingAmount, 0) }} cabling
+                                            </div>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -697,6 +732,7 @@
                 activeTab: 'attendance',
                 attendanceType: '{{ $todayAttendance?->attendance_type ?? "full_day" }}',
                 selectedProjectId: '{{ $todayAttendance?->workDay?->project_id ?? ($activeProjects->first()?->id ?? "") }}',
+                projectRates: {{ \Illuminate\Support\Js::from($projectRates ?? []) }},
                 cablingMetres: 0,
                 camerasInstalled: 0,
                 cameraActive: false,
@@ -705,6 +741,13 @@
                 hasExistingPhoto: {{ ($todayAttendance && $todayAttendance->photo_path) ? 'true' : 'false' }},
                 modalPhotoUrl: null,
                 mediaStream: null,
+
+                getProjectRate() {
+                    if (this.selectedProjectId && this.projectRates && this.projectRates[this.selectedProjectId]) {
+                        return parseFloat(this.projectRates[this.selectedProjectId]);
+                    }
+                    return 20.00;
+                },
 
                 init() {
                     // Sync Alpine state if dark class toggled

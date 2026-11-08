@@ -73,6 +73,7 @@ Route::middleware('photo.access')->group(function () {
     // the files itself (docker/nginx.conf, public/.htaccess). A plain file name only: no "/" or "%".
     Route::get('/storage/attendance_photos/{filename}', [WorkerAttendanceController::class, 'serveStoragePhoto'])->where('filename', '[A-Za-z0-9_-][A-Za-z0-9_.-]*');
     Route::get('/storage/worker_photos/{filename}', [WorkerController::class, 'serveStoragePhoto'])->where('filename', '[A-Za-z0-9_-][A-Za-z0-9_.-]*');
+    Route::get('/storage/avatars/{filename}', [ProfileController::class, 'serveStorageAvatar'])->where('filename', '[A-Za-z0-9_-][A-Za-z0-9_.-]*');
 });
 
 // Public Amazon-style CCTV Storefront Homepage & Inquiry Engine

@@ -58,6 +58,14 @@ class WorkerController extends Controller
             $totalOutstandingLiability += $w->getRunningBalance();
         }
 
+        $activeProjects = \App\Models\Project::whereIn('status', ['in_progress', 'scheduled', 'draft'])
+            ->orderBy('title')
+            ->get();
+        if ($activeProjects->isEmpty()) {
+            $activeProjects = \App\Models\Project::orderBy('title')->get();
+        }
+        $activeWorkersList = Worker::where('is_active', true)->orderBy('name')->get();
+
         return view('workers.index', compact(
             'workers',
             'pendingWorkers',
@@ -65,7 +73,9 @@ class WorkerController extends Controller
             'statusFilter',
             'activeWorkersCount',
             'totalWorkersCount',
-            'totalOutstandingLiability'
+            'totalOutstandingLiability',
+            'activeProjects',
+            'activeWorkersList'
         ));
     }
 

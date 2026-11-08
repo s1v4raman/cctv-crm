@@ -18,8 +18,8 @@
         {{-- Section 1: Mode --}}
         <div class="mb-3.5">
             <h4 class="text-xs font-bold text-slate-900 dark:text-white mb-2 font-heading tracking-tight flex items-center justify-between">
-                <span>Mode</span>
-                <span class="text-[11px] font-semibold text-slate-400 capitalize" x-text="mode === 'auto' ? 'Auto (System)' : mode"></span>
+                <span>{{ __('Mode') }}</span>
+                <span class="text-[11px] font-semibold text-slate-400 capitalize" x-text="mode === 'auto' ? {{ Js::from(__('Auto (System)')) }} : (mode === 'day' ? {{ Js::from(__('Day')) }} : {{ Js::from(__('Night')) }})"></span>
             </h4>
 
             {{-- Mode Segmented Pill Buttons (Matches Zoho CRM UI) --}}
@@ -34,7 +34,7 @@
                         <circle cx="12" cy="12" r="4"/>
                         <path stroke-linecap="round" d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41m14.14-14.14l-1.41 1.41"/>
                     </svg>
-                    <span>Day</span>
+                    <span>{{ __('Day') }}</span>
                 </button>
 
                 {{-- Night Option --}}
@@ -46,7 +46,7 @@
                     <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
                     </svg>
-                    <span>Night</span>
+                    <span>{{ __('Night') }}</span>
                 </button>
 
                 {{-- Auto Option --}}
@@ -55,13 +55,13 @@
                         class="flex-1 py-1.5 px-2.5 rounded-full text-xs font-bold flex items-center justify-center gap-1.5 transition-all duration-200 cursor-pointer relative group/auto"
                         :style="mode === 'auto' ? { backgroundColor: accent, color: '#ffffff', boxShadow: '0 2px 8px -1px ' + accent + '80' } : {}"
                         :class="mode !== 'auto' ? 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white' : ''"
-                        title="Automatically syncs with your device / browser system setting">
+                        title="{{ __('Automatically syncs with your device / browser system setting') }}">
                     <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                         <rect x="2" y="3" width="20" height="14" rx="2"/>
                         <line x1="8" y1="21" x2="16" y2="21"/>
                         <line x1="12" y1="17" x2="12" y2="21"/>
                     </svg>
-                    <span>Auto</span>
+                    <span>{{ __('Auto') }}</span>
                 </button>
             </div>
         </div>
@@ -69,7 +69,7 @@
         {{-- Section 2: Themes (Dark vs Lite) --}}
         <div class="mb-3 pt-2 border-t border-slate-100 dark:border-slate-800">
             <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-slate-900 dark:text-white font-heading">Header Theme</span>
+                <span class="text-xs font-bold text-slate-900 dark:text-white font-heading">{{ __('Header Theme') }}</span>
 
                 <div class="flex items-center gap-3 text-xs">
                     {{-- Dark Theme Radio --}}
@@ -85,7 +85,7 @@
                               :style="themeStyle === 'dark' ? { borderColor: accent } : {}">
                             <span x-show="themeStyle === 'dark'" class="w-2 h-2 rounded-full" :style="{ backgroundColor: accent }"></span>
                         </span>
-                        <span>Dark</span>
+                        <span>{{ __('Dark') }}</span>
                     </label>
 
                     {{-- Lite Theme Radio --}}
@@ -101,7 +101,7 @@
                               :style="themeStyle === 'lite' ? { borderColor: accent } : {}">
                             <span x-show="themeStyle === 'lite'" class="w-2 h-2 rounded-full" :style="{ backgroundColor: accent }"></span>
                         </span>
-                        <span>Lite</span>
+                        <span>{{ __('Lite') }}</span>
                     </label>
                 </div>
             </div>
@@ -110,7 +110,7 @@
         {{-- Section 3: Accent Colors Palette (Exact 13 Zoho CRM Colors) --}}
         <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
             <div class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 flex items-center justify-between">
-                <span>Accent Palette</span>
+                <span>{{ __('Accent Palette') }}</span>
                 <span class="text-[11px] font-mono text-slate-400 lowercase" x-text="accent"></span>
             </div>
             

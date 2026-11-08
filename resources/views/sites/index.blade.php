@@ -1,6 +1,6 @@
 <x-app-layout>
     @php
-        $views = collect(['all' => 'All Sites'] + $cities->mapWithKeys(fn ($c) => [$c => $c . ' Sites'])->all())->map(fn ($label, $city) => [
+        $views = collect(['all' => __('All Sites')] + $cities->mapWithKeys(fn ($c) => [$c => $c . ' ' . __('Sites')])->all())->map(fn ($label, $city) => [
             'label' => $label,
             'url' => route('sites.index', array_filter(['city' => $city === 'all' ? null : $city])),
             'active' => $cityFilter === $city,
@@ -10,19 +10,19 @@
 
     <x-list-page key="sites" :paginator="$sites" :views="$views"
         :sorts="['date_desc' => 'Newest first', 'name' => 'Name, A to Z', 'city' => 'City', 'projects_desc' => 'Most projects']"
-        :create-url="route('sites.create')" create-label="New Site"
-        filter-title="Filter Sites by" :filter-action="route('sites.index')" :keep="['sort' => request('sort'), 'per_page' => request('per_page')]"
+        :create-url="route('sites.create')" :create-label="__('New Site')"
+        :filter-title="__('Filter Sites by')" :filter-action="route('sites.index')" :keep="['sort' => request('sort'), 'per_page' => request('per_page')]"
         :filter-count="$filterCount" :clear-url="route('sites.index')"
-        :columns="['client' => 'Client & Contact', 'address' => 'Address', 'map' => 'Map', 'projects' => 'Projects']"
-        empty-text="No installation sites yet." filtered-text="No sites match these filters.">
+        :columns="['client' => __('Client & Contact'), 'address' => __('Address'), 'map' => __('Map'), 'projects' => __('Projects')]"
+        :empty-text="__('No installation sites yet.')" :filtered-text="__('No sites match these filters.')">
 
         <x-slot name="filters">
-            <div class="ld-sub">Site, code, client, phone or address</div>
-            <input type="text" name="search" value="{{ $search }}" class="ld-input" aria-label="Site, code, client, phone or address">
+            <div class="ld-sub">{{ __('Site, code, client, phone or address') }}</div>
+            <input type="text" name="search" value="{{ $search }}" class="ld-input" aria-label="{{ __('Site, code, client, phone or address') }}">
 
-            <div class="ld-sub">City</div>
-            <select name="city" class="ld-input" aria-label="City">
-                <option value="all">Any city</option>
+            <div class="ld-sub">{{ __('City') }}</div>
+            <select name="city" class="ld-input" aria-label="{{ __('City') }}">
+                <option value="all">{{ __('Any city') }}</option>
                 @foreach($cities as $city)
                     <option value="{{ $city }}" @selected($cityFilter === $city)>{{ $city }}</option>
                 @endforeach
@@ -30,11 +30,11 @@
         </x-slot>
 
         <x-slot name="head">
-            <th style="min-width: 230px">Site</th>
-            <th x-show="cols.client" style="min-width: 190px">Client & Contact</th>
-            <th x-show="cols.address" style="min-width: 260px">Address</th>
-            <th x-show="cols.map" style="min-width: 90px">Map</th>
-            <th x-show="cols.projects" style="min-width: 80px; text-align: right">Projects</th>
+            <th style="min-width: 230px">{{ __('Site') }}</th>
+            <th x-show="cols.client" style="min-width: 190px">{{ __('Client & Contact') }}</th>
+            <th x-show="cols.address" style="min-width: 260px">{{ __('Address') }}</th>
+            <th x-show="cols.map" style="min-width: 90px">{{ __('Map') }}</th>
+            <th x-show="cols.projects" style="min-width: 80px; text-align: right">{{ __('Projects') }}</th>
         </x-slot>
 
         @foreach($sites as $site)

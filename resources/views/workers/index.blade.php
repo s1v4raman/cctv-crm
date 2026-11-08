@@ -1,21 +1,21 @@
 <x-app-layout>
     @php
         $views = [
-            ['label' => 'Active Workers (' . $activeWorkersCount . ')', 'url' => route('workers.index'), 'active' => $statusFilter === 'active'],
-            ['label' => 'Inactive Workers', 'url' => route('workers.index', ['status' => 'inactive']), 'active' => $statusFilter === 'inactive'],
-            ['label' => 'All Workers (' . $totalWorkersCount . ')', 'url' => route('workers.index', ['status' => 'all']), 'active' => $statusFilter === 'all'],
+            ['label' => __('Active Workers (:count)', ['count' => $activeWorkersCount]), 'url' => route('workers.index'), 'active' => $statusFilter === 'active'],
+            ['label' => __('Inactive Workers'), 'url' => route('workers.index', ['status' => 'inactive']), 'active' => $statusFilter === 'inactive'],
+            ['label' => __('All Workers (:count)', ['count' => $totalWorkersCount]), 'url' => route('workers.index', ['status' => 'all']), 'active' => $statusFilter === 'all'],
         ];
         $filterCount = $search !== '' ? 1 : 0;
     @endphp
 
     <x-list-page key="workers" :paginator="$workers" :views="$views"
         :sorts="['name' => 'Name, A to Z', 'rate_desc' => 'Daily rate, high to low', 'days_desc' => 'Most days logged', 'newest' => 'Newest first']"
-        :create-url="auth()->user()->isOffice() ? route('workers.create') : null" create-label="Add Worker"
-        filter-title="Filter Workers by" :filter-action="route('workers.index')"
+        :create-url="auth()->user()->isOffice() ? route('workers.create') : null" :create-label="__('Add Worker')"
+        :filter-title="__('Filter Workers by')" :filter-action="route('workers.index')"
         :keep="['status' => $statusFilter === 'active' ? null : $statusFilter, 'sort' => request('sort'), 'per_page' => request('per_page')]"
         :filter-count="$filterCount" :clear-url="route('workers.index', array_filter(['status' => $statusFilter === 'active' ? null : $statusFilter]))"
-        :columns="['phone' => 'Phone', 'rate' => 'Daily Rate', 'skills' => 'Skills', 'balance' => 'Balance', 'status' => 'Status']"
-        empty-text="No workers yet." filtered-text="No workers match these filters.">
+        :columns="['phone' => __('Phone'), 'rate' => __('Daily Rate'), 'skills' => __('Skills'), 'balance' => __('Balance'), 'status' => __('Status')]"
+        :empty-text="__('No workers yet.')" :filtered-text="__('No workers match these filters.')">
 
         @if (auth()->user()->isAdmin() && $pendingWorkers->isNotEmpty())
             <x-slot name="above">
@@ -50,24 +50,28 @@
         @endif
 
         <x-slot name="actions">
-            <a href="{{ route('workers.attendance.index') }}" class="ld-outline plain-link">Attendance</a>
+            <a href="{{ route('workers.attendance.index') }}" class="ld-outline plain-link">{{ __('Attendance') }}</a>
+            <button type="button" onclick="openBulkAttendanceModal()" class="ld-outline cursor-pointer" style="font-weight: 600;">
+                <svg class="w-4 h-4 mr-1.5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"/></svg>
+                <span>{{ __('Bulk Attendance') }}</span>
+            </button>
             @if(auth()->user()->isAdmin())
-                <a href="{{ route('wages.index') }}" class="ld-outline plain-link">Weekly wages</a>
+                <a href="{{ route('wages.index') }}" class="ld-outline plain-link">{{ __('Weekly wages') }}</a>
             @endif
         </x-slot>
 
         <x-slot name="filters">
-            <div class="ld-sub">Name, phone or notes</div>
-            <input type="text" name="search" value="{{ $search }}" class="ld-input" aria-label="Name, phone or notes">
+            <div class="ld-sub">{{ __('Name, phone or notes') }}</div>
+            <input type="text" name="search" value="{{ $search }}" class="ld-input" aria-label="{{ __('Name, phone or notes') }}">
         </x-slot>
 
         <x-slot name="head">
-            <th style="min-width: 220px">Worker</th>
-            <th x-show="cols.phone" style="min-width: 140px">Phone</th>
-            <th x-show="cols.rate" style="min-width: 110px; text-align: right">Daily Rate</th>
-            <th x-show="cols.skills" style="min-width: 180px">Skills</th>
-            <th x-show="cols.balance" style="min-width: 120px; text-align: right">Balance</th>
-            <th x-show="cols.status" style="min-width: 90px">Status</th>
+            <th style="min-width: 220px">{{ __('Worker') }}</th>
+            <th x-show="cols.phone" style="min-width: 140px">{{ __('Phone') }}</th>
+            <th x-show="cols.rate" style="min-width: 110px; text-align: right">{{ __('Daily Rate') }}</th>
+            <th x-show="cols.skills" style="min-width: 180px">{{ __('Skills') }}</th>
+            <th x-show="cols.balance" style="min-width: 120px; text-align: right">{{ __('Balance') }}</th>
+            <th x-show="cols.status" style="min-width: 90px">{{ __('Status') }}</th>
         </x-slot>
 
         @foreach($workers as $worker)
@@ -76,17 +80,20 @@
                 <x-list-pick :id="$worker->id" :label="$worker->name" />
                 <td>
                     <a href="{{ route('workers.show', $worker) }}" class="ld-name plain-link">{{ $worker->name }}</a>
-                    <div class="text-xs mt-0.5" style="color: var(--ld-muted)">{{ $worker->attendances_count }} {{ Str::plural('day', $worker->attendances_count) }} logged</div>
+                    <div class="text-xs mt-0.5" style="color: var(--ld-muted)">{{ $worker->attendances_count }} {{ __('days logged') }}</div>
                 </td>
                 <td x-show="cols.phone" class="whitespace-nowrap">{{ $worker->phone ?: '—' }}</td>
                 <td x-show="cols.rate" class="whitespace-nowrap" style="text-align: right">{{ \App\Support\Inr::money($worker->daily_rate) }}</td>
-                <td x-show="cols.skills">{{ $worker->skills && is_array($worker->skills) ? implode(', ', array_map('ucfirst', $worker->skills)) : 'General assistant' }}</td>
+                <td x-show="cols.skills">{{ $worker->skills && is_array($worker->skills) ? implode(', ', array_map('ucfirst', $worker->skills)) : __('General assistant') }}</td>
                 <td x-show="cols.balance" class="whitespace-nowrap" style="text-align: right">
                     <span class="{{ $balance > 0 ? 'text-amber-700 dark:text-amber-400 font-medium' : '' }}">{{ \App\Support\Inr::money($balance) }}</span>
                 </td>
-                <td x-show="cols.status">{!! $worker->is_active ? 'Active' : '<span style="color: var(--ld-muted)">Inactive</span>' !!}</td>
+                <td x-show="cols.status">{!! $worker->is_active ? __('Active') : '<span style="color: var(--ld-muted)">' . __('Inactive') . '</span>' !!}</td>
                 <td>
                     <div class="ld-row-actions">
+                        <button type="button" onclick="openAttendanceModal(null, '{{ $worker->id }}')" class="plain-link p-1 text-slate-400 hover:text-blue-600 transition cursor-pointer" title="{{ __('Punch Attendance') }}" aria-label="{{ __('Punch Attendance for :name', ['name' => $worker->name]) }}">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </button>
                         @if(auth()->user()->isOffice())
                             <a href="{{ route('workers.edit', $worker) }}" class="plain-link" title="Edit" aria-label="Edit {{ $worker->name }}">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.2 5.2l3.6 3.6M4 20l4.5-1 10.3-10.3a2.5 2.5 0 00-3.5-3.5L5 15.5 4 20z"/></svg>
@@ -106,4 +113,6 @@
             </tr>
         @endforeach
     </x-list-page>
+
+    <x-mark-attendance-modal :workers="$activeWorkersList ?? $workers" :projects="$activeProjects ?? collect()" />
 </x-app-layout>

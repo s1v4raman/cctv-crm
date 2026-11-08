@@ -7,7 +7,7 @@
                     {{ __('Account & Security Settings') }}
                 </h1>
                 <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                    Manage your Precision IT Systems identity credentials, security password, display theme, and portal permissions.
+                    {{ __('Manage your Precision IT Systems identity credentials, security password, display theme, and portal permissions.') }}
                 </p>
             </div>
         </div>
@@ -21,7 +21,11 @@
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                     <div class="flex items-center gap-5">
                         @if(auth()->user()->avatar_url)
-                            <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}" class="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover shadow-md ring-4 ring-slate-100 dark:ring-slate-800 shrink-0">
+                            <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}" class="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover shadow-md ring-4 ring-slate-100 dark:ring-slate-800 shrink-0" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';">
+                            <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full items-center justify-center font-bold text-2xl sm:text-3xl text-white shadow-md ring-4 ring-slate-100 dark:ring-slate-800 crm-user-avatar shrink-0"
+                                 style="display: none; background-color: var(--crm-accent, #2563eb);">
+                                {{ strtoupper(mb_substr(auth()->user()->name, 0, 1)) }}
+                            </div>
                         @else
                             <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center font-bold text-2xl sm:text-3xl text-white shadow-md ring-4 ring-slate-100 dark:ring-slate-800 crm-user-avatar shrink-0"
                                  style="background-color: var(--crm-accent, #2563eb);">
@@ -42,18 +46,18 @@
                                     elseif ($currentUser->isCustomer()) $roleBadgeClass = 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800';
                                 @endphp
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider border {{ $roleBadgeClass }}">
-                                    {{ $currentUser->role === 'staff' ? 'Employee' : ucfirst($currentUser->role) }}
+                                    {{ $currentUser->role === 'staff' ? __('Employee') : __($currentUser->role === 'technician' ? 'Technician' : ucfirst($currentUser->role)) }}
                                 </span>
                                 <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
-                                    ✓ Active
+                                    ✓ {{ __('Active') }}
                                 </span>
                             </div>
                             <div class="flex flex-wrap items-center gap-y-1 gap-x-4 text-xs sm:text-sm text-slate-500 dark:text-slate-400">
                                 <span>{{ $currentUser->email }}</span>
                                 <span>•</span>
-                                <span>User ID #{{ $currentUser->id }}</span>
+                                <span>{{ __('User ID #') }}{{ $currentUser->id }}</span>
                                 <span>•</span>
-                                <span>Member since {{ $currentUser->created_at?->format('M Y') ?? 'N/A' }}</span>
+                                <span>{{ __('Member since :date', ['date' => $currentUser->created_at?->translatedFormat('M Y') ?? __('N/A')]) }}</span>
                             </div>
                         </div>
                     </div>

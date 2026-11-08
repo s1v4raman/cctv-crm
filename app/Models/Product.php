@@ -34,7 +34,18 @@ class Product extends Model
             if (!empty($product->name)) {
                 $product->name = self::cleanName($product->name);
                 if (empty($product->name_key)) {
-                    $product->name_key = self::normalizeNameKey($product->name);
+                    $baseKey = self::normalizeNameKey($product->name);
+                    if ($baseKey === '') {
+                        $baseKey = 'product';
+                    }
+                    $candidate = $baseKey;
+                    $counter = 1;
+                    while (self::where('name_key', $candidate)->where('id', '!=', $product->id ?? 0)->exists()) {
+                        $suffix = $product->sku ? strtolower($product->sku) : ($product->id ?: $counter);
+                        $candidate = ($counter === 1) ? "{$baseKey}-{$suffix}" : "{$baseKey}-{$counter}";
+                        $counter++;
+                    }
+                    $product->name_key = $candidate;
                 }
             }
         });

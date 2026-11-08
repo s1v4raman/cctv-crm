@@ -19,6 +19,8 @@
 
         {{-- Interactive Avatar / Photo Upload Component --}}
         <div x-data="{
+            hasExistingAvatar: {{ Js::from(!empty($user->avatar_url)) }},
+            existingAvatarUrl: {{ Js::from($user->avatar_url) }},
             photoName: null,
             photoPreview: null,
             removeAvatar: false,
@@ -37,6 +39,7 @@
                 this.photoPreview = null;
                 this.photoName = null;
                 this.removeAvatar = true;
+                this.hasExistingAvatar = false;
                 if (this.$refs.photo) {
                     this.$refs.photo.value = null;
                 }
@@ -64,12 +67,15 @@
                     </template>
 
                     {{-- 2. Existing avatar photo --}}
-                    <template x-if="!photoPreview && !removeAvatar && '{{ $user->avatar_url }}'">
-                        <img src="{{ $user->avatar_url }}" alt="{{ $user->name }}" class="w-16 h-16 rounded-full object-cover ring-2 ring-slate-200 dark:ring-slate-700 shadow-sm">
+                    <template x-if="!photoPreview && !removeAvatar && hasExistingAvatar">
+                        <img :src="existingAvatarUrl" 
+                             alt="{{ $user->name }}" 
+                             class="w-16 h-16 rounded-full object-cover ring-2 ring-slate-200 dark:ring-slate-700 shadow-sm"
+                             onerror="hasExistingAvatar = false">
                     </template>
 
                     {{-- 3. Fallback Initial Monogram --}}
-                    <template x-if="!photoPreview && (removeAvatar || !'{{ $user->avatar_url }}')">
+                    <template x-if="!photoPreview && (removeAvatar || !hasExistingAvatar)">
                         <div class="w-16 h-16 rounded-full text-white flex items-center justify-center font-bold text-2xl shadow-sm ring-2 ring-slate-200 dark:ring-slate-700" 
                              style="background-color: var(--crm-accent, #2563eb);">
                             {{ strtoupper(mb_substr($user->name, 0, 1)) }}
@@ -83,15 +89,15 @@
                                 @click="$refs.photo.click()" 
                                 class="btn-md inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-white dark:bg-slate-800 border border-[#ddd] dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 transition shadow-2xs cursor-pointer">
                             <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
-                            <span x-text="photoPreview || '{{ $user->avatar_url }}' ? 'Change Photo' : 'Upload Photo'"></span>
+                            <span x-text="photoPreview || (hasExistingAvatar && !removeAvatar) ? '{{ __('Change Photo') }}' : '{{ __('Upload Photo') }}'"></span>
                         </button>
 
                         <button type="button" 
-                                x-show="(photoPreview || ('{{ $user->avatar_url }}' && !removeAvatar))" 
+                                x-show="photoPreview || (hasExistingAvatar && !removeAvatar)" 
                                 @click="clearPhoto()" 
                                 class="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium rounded-lg text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                            Remove
+                            {{ __('Remove') }}
                         </button>
                     </div>
                     <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-tight">

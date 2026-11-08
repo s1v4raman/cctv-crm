@@ -2,7 +2,7 @@
     @php $qty = fn ($n) => rtrim(rtrim(number_format((float) $n, 2), '0'), '.'); @endphp
     <x-slot name="header">
         <div>
-            <a href="{{ route('projects.index') }}" class="back-link">&larr; Back</a>
+            <a href="{{ route('projects.index') }}" class="back-link">&larr; {{ __('Back') }}</a>
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-1">
                 <div class="flex items-center gap-3">
                     <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ $project->title }}</h2>
@@ -18,7 +18,7 @@
 
                 <div class="flex items-center gap-2 flex-wrap">
                     @if(auth()->user()->isAdmin() || ($project->created_by === auth()->id() && in_array($project->status, ['draft', 'pending_approval'])))
-                        <a href="{{ route('projects.edit', $project) }}" class="btn-secondary">Edit Details</a>
+                        <a href="{{ route('projects.edit', $project) }}" class="btn-secondary">{{ __('Edit Details') }}</a>
                     @endif
 
                     @if(auth()->user()->isAdmin())
@@ -34,7 +34,7 @@
                         <form method="POST" action="{{ route('projects.destroy', $project) }}" data-confirm="Are you sure you want to delete this project? All associated records will be removed." class="inline">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="danger-link p-0 bg-transparent border-0 cursor-pointer text-xs ml-2">Delete</button>
+                            <button type="submit" class="danger-link p-0 bg-transparent border-0 cursor-pointer text-xs ml-2">{{ __('Delete') }}</button>
                         </form>
                     @endif
                 </div>
@@ -52,7 +52,7 @@
             'site' => $siteBalanceByProduct->has($p->id) ? $qty($siteBalanceByProduct[$p->id]) : null,
             'unit' => $p->unit,
         ]]);
-        $issueFormFailed = $errors->any() && old('type');
+        $issueFormFailed = (isset($errors) && $errors->any() && old('type'));
     @endphp
     <div class="py-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-6"
          x-data="{
@@ -466,28 +466,28 @@
         <div class="bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200/80 dark:border-slate-800 px-6 pt-3 shadow-xs overflow-hidden">
             <nav class="flex items-center space-x-6 text-sm font-bold overflow-x-auto whitespace-nowrap scrollbar-none">
                 <button type="button" @click="currentTab = 'overview'" :class="currentTab === 'overview' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 dark:text-slate-400 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'" class="inline-flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
-                    <span>Overview</span>
+                    <span>{{ __('Overview') }}</span>
                 </button>
                 <button type="button" @click="currentTab = 'materials'" :class="currentTab === 'materials' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 dark:text-slate-400 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'" class="inline-flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
-                    <span>Materials</span> <span class="text-slate-400 font-normal">{{ $project->materials->count() }}</span>
+                    <span>{{ __('Materials') }}</span> <span class="text-slate-400 font-normal">{{ $project->materials->count() }}</span>
                     @if($totalCableMeters > 0)
                         <span class="px-1.5 py-0.5 text-[11px] rounded-full font-bold" style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.12); color: var(--link-color);">{{ number_format($totalCableMeters, 0) }}m</span>
                     @endif
                 </button>
                 <button type="button" @click="currentTab = 'documents'" :class="currentTab === 'documents' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 dark:text-slate-400 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'" class="inline-flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
-                    <span>Documents</span> <span class="text-slate-400 font-normal">{{ $project->documents->count() }}</span>
+                    <span>{{ __('Documents') }}</span> <span class="text-slate-400 font-normal">{{ $project->documents->count() }}</span>
                     @if($uninvoicedDcCount > 0)
-                        <span class="px-1.5 py-0.5 text-[11px] rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300 font-bold">{{ $uninvoicedDcCount }} unbilled</span>
+                        <span class="px-1.5 py-0.5 text-[11px] rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300 font-bold">{{ $uninvoicedDcCount }} {{ __('unbilled') }}</span>
                     @endif
                 </button>
                 <button type="button" @click="currentTab = 'work_days'" :class="currentTab === 'work_days' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 dark:text-slate-400 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'" class="inline-flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
-                    <span>Work days</span> <span class="text-slate-400 font-normal">{{ $project->workDays->count() }}</span>
+                    <span>{{ __('Work days') }}</span> <span class="text-slate-400 font-normal">{{ $project->workDays->count() }}</span>
                 </button>
                 <button type="button" @click="currentTab = 'ip_devices'" :class="currentTab === 'ip_devices' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 dark:text-slate-400 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'" class="inline-flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
-                    <span>IP devices</span> <span class="text-slate-400 font-normal">{{ $project->ipDevices->count() }}</span>
+                    <span>{{ __('IP devices') }}</span> <span class="text-slate-400 font-normal">{{ $project->ipDevices->count() }}</span>
                 </button>
                 <button type="button" @click="currentTab = 'tasks'" :class="currentTab === 'tasks' ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 pb-3 font-extrabold' : 'text-slate-500 dark:text-slate-400 pb-3 hover:text-slate-800 dark:hover:text-slate-200 transition-colors'" class="inline-flex items-center gap-1.5 whitespace-nowrap cursor-pointer">
-                    <span>Tasks</span> <span class="text-slate-400 font-normal">{{ $tasksCount }}</span>
+                    <span>{{ __('Tasks') }}</span> <span class="text-slate-400 font-normal">{{ $tasksCount }}</span>
                     @if($tasksCount > 0)
                         <span class="px-1.5 py-0.5 text-[11px] rounded-full font-bold" style="{{ $taskCompletionPercentage === 100 ? 'background-color: rgba(16, 185, 129, 0.15); color: #10b981;' : 'background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.12); color: var(--link-color);' }}">{{ $taskCompletionPercentage }}%</span>
                     @endif
@@ -510,25 +510,25 @@
                             <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                                 <h3 class="font-extrabold text-slate-900 dark:text-white text-sm flex items-center gap-2">
                                     <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                                    Site
+                                    {{ __('Site') }}
                                 </h3>
                                 <a href="{{ $project->site->navigate_url }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100 transition">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                                    <span>Directions</span>
+                                    <span>{{ __('Directions') }}</span>
                                 </a>
                             </div>
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                                 <div>
-                                    <span class="text-xs text-slate-400 block">Site Name</span>
+                                    <span class="text-xs text-slate-400 block">{{ __('Site Name') }}</span>
                                     <span class="font-bold text-slate-900 dark:text-white">{{ $project->site->name }}</span>
                                 </div>
                                 <div>
-                                    <span class="text-xs text-slate-400 block">Client Contact</span>
-                                    <span class="font-semibold text-slate-800 dark:text-slate-200">{{ $project->site->client_name ?? '—' }} ({{ $project->site->client_phone ?? 'No phone' }})</span>
+                                    <span class="text-xs text-slate-400 block">{{ __('Client Contact') }}</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200">{{ $project->site->client_name ?? '—' }} ({{ $project->site->client_phone ?? __('No phone') }})</span>
                                 </div>
                                 <div class="sm:col-span-2">
-                                    <span class="text-xs text-slate-400 block">Address</span>
+                                    <span class="text-xs text-slate-400 block">{{ __('Address') }}</span>
                                     <span class="text-slate-700 dark:text-slate-300">{{ $project->site->address }}, {{ $project->site->city }} {{ $project->site->pincode }}</span>
                                 </div>
                             </div>
@@ -541,26 +541,26 @@
                             <h3 class="font-extrabold text-slate-900 dark:text-white text-sm flex items-center gap-2">
                                 @if($project->project_type === 'software_web')
                                     <span class="w-2.5 h-2.5 rounded-full bg-cyan-500"></span>
-                                    <span>Web Engineering &amp; Application Scope</span>
+                                    <span>{{ __('Web Engineering & Application Scope') }}</span>
                                 @elseif($project->project_type === 'networking')
                                     <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                                    <span>Network Cabling &amp; Infrastructure Scope</span>
+                                    <span>{{ __('Network Cabling & Infrastructure Scope') }}</span>
                                 @elseif($project->project_type === 'access_control')
                                     <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-                                    <span>Access Control &amp; Security Scope</span>
+                                    <span>{{ __('Access Control & Security Scope') }}</span>
                                 @elseif($project->project_type === 'hardware_attendance')
                                     <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
-                                    <span>Scope</span>
+                                    <span>{{ __('Scope') }}</span>
                                 @elseif($project->project_type === 'hybrid')
                                     <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
-                                    <span>Scope</span>
+                                    <span>{{ __('Scope') }}</span>
                                 @else
                                     <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
-                                    <span>Scope</span>
+                                    <span>{{ __('Scope') }}</span>
                                 @endif
                             </h3>
                             <span class="text-[11px] font-bold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200/70 dark:border-slate-700">
-                                {{ $project->project_type_label }}
+                                {{ __($project->project_type_label) }}
                             </span>
                         </div>
 
@@ -570,147 +570,147 @@
                         <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm">
                             @if($project->project_type === 'software_web')
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
-                                    <span class="text-xs text-slate-400 block">Architecture</span>
+                                    <span class="text-xs text-slate-400 block">{{ __('Architecture') }}</span>
                                     <span class="font-extrabold text-slate-900 dark:text-white text-sm">{{ $project->requirements['app_architecture'] ?? 'Modular Web App' }}</span>
                                 </div>
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
-                                    <span class="text-xs text-slate-400 block">Primary Tech Stack</span>
+                                    <span class="text-xs text-slate-400 block">{{ __('Primary Tech Stack') }}</span>
                                     <span class="font-extrabold text-slate-900 dark:text-white text-sm">{{ $project->requirements['tech_stack'] ?? 'Laravel, Tailwind, Alpine' }}</span>
                                 </div>
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
-                                    <span class="text-xs text-slate-400 block">Cloud Hosting</span>
+                                    <span class="text-xs text-slate-400 block">{{ __('Cloud Hosting') }}</span>
                                     <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['cloud_hosting'] ?? 'Cloud Server' }}</span>
                                 </div>
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 sm:col-span-2">
-                                    <span class="text-xs text-slate-400 block">Core Modules</span>
+                                    <span class="text-xs text-slate-400 block">{{ __('Core Modules') }}</span>
                                     <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['core_modules'] ?? 'Auth, Dashboard, REST API' }}</span>
                                 </div>
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
-                                    <span class="text-xs text-slate-400 block">Domain &amp; SSL</span>
+                                    <span class="text-xs text-slate-400 block">{{ __('Domain & SSL') }}</span>
                                     <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['domain_ssl'] ?? 'Configured' }}</span>
                                 </div>
 
                             @elseif($project->project_type === 'networking')
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
-                                    <span class="text-xs text-slate-400 block">Network Drops</span>
-                                    <span class="font-extrabold text-slate-900 dark:text-white text-base">{{ isset($project->requirements['network_drops']) ? $project->requirements['network_drops'] . ' drops' : 'Not set' }}</span>
+                                    <span class="text-xs text-slate-400 block">{{ __('Network Drops') }}</span>
+                                    <span class="font-extrabold text-slate-900 dark:text-white text-base">{{ isset($project->requirements['network_drops']) ? $project->requirements['network_drops'] . ' drops' : __('Not set') }}</span>
                                 </div>
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
-                                    <span class="text-xs text-slate-400 block">Wi-Fi Access Points</span>
-                                    <span class="font-extrabold text-slate-900 dark:text-white text-base">{{ isset($project->requirements['wifi_access_points']) ? $project->requirements['wifi_access_points'] . ' aps' : 'Not set' }}</span>
+                                    <span class="text-xs text-slate-400 block">{{ __('Wi-Fi Access Points') }}</span>
+                                    <span class="font-extrabold text-slate-900 dark:text-white text-base">{{ isset($project->requirements['wifi_access_points']) ? $project->requirements['wifi_access_points'] . ' aps' : __('Not set') }}</span>
                                 </div>
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
-                                    <span class="text-xs text-slate-400 block">Est. Cabling</span>
-                                    <span class="font-extrabold text-slate-900 dark:text-white text-base">{{ isset($project->requirements['cabling_metres']) ? $project->requirements['cabling_metres'] . ' m' : 'Not set' }}</span>
+                                    <span class="text-xs text-slate-400 block">{{ __('Est. Cabling') }}</span>
+                                    <span class="font-extrabold text-slate-900 dark:text-white text-base">{{ isset($project->requirements['cabling_metres']) ? $project->requirements['cabling_metres'] . ' m' : __('Not set') }}</span>
                                 </div>
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
-                                    <span class="text-xs text-slate-400 block">Server Rack Size</span>
-                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['server_rack_size'] ?? 'Not set' }}</span>
+                                    <span class="text-xs text-slate-400 block">{{ __('Server Rack Size') }}</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['server_rack_size'] ?? __('Not set') }}</span>
                                 </div>
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
-                                    <span class="text-xs text-slate-400 block">Switch Specification</span>
-                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['switch_spec'] ?? 'Not set' }}</span>
+                                    <span class="text-xs text-slate-400 block">{{ __('Switch Specification') }}</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['switch_spec'] ?? __('Not set') }}</span>
                                 </div>
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
-                                    <span class="text-xs text-slate-400 block">Router / Gateway</span>
-                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['router_gateway'] ?? 'Not set' }}</span>
+                                    <span class="text-xs text-slate-400 block">{{ __('Router / Gateway') }}</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['router_gateway'] ?? __('Not set') }}</span>
                                 </div>
 
                             @elseif($project->project_type === 'access_control')
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
-                                    <span class="text-xs text-slate-400 block">Controlled Doors</span>
-                                    <span class="font-extrabold text-slate-900 dark:text-white text-base">{{ isset($project->requirements['doors_count']) ? $project->requirements['doors_count'] . ' doors' : 'Not set' }}</span>
+                                    <span class="text-xs text-slate-400 block">{{ __('Controlled Doors') }}</span>
+                                    <span class="font-extrabold text-slate-900 dark:text-white text-base">{{ isset($project->requirements['doors_count']) ? $project->requirements['doors_count'] . ' doors' : __('Not set') }}</span>
                                 </div>
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
-                                    <span class="text-xs text-slate-400 block">Auth Method</span>
-                                    <span class="font-extrabold text-slate-900 dark:text-white text-sm">{{ $project->requirements['auth_method'] ?? 'Not set' }}</span>
+                                    <span class="text-xs text-slate-400 block">{{ __('Auth Method') }}</span>
+                                    <span class="font-extrabold text-slate-900 dark:text-white text-sm">{{ __($project->requirements['auth_method'] ?? 'Not set') }}</span>
                                 </div>
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
-                                    <span class="text-xs text-slate-400 block">Lock Hardware</span>
-                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['lock_type'] ?? 'Not set' }}</span>
+                                    <span class="text-xs text-slate-400 block">{{ __('Lock Hardware') }}</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ __($project->requirements['lock_type'] ?? 'Not set') }}</span>
                                 </div>
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
-                                    <span class="text-xs text-slate-400 block">Exit Device</span>
-                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['exit_device'] ?? 'Not set' }}</span>
+                                    <span class="text-xs text-slate-400 block">{{ __('Exit Device') }}</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ __($project->requirements['exit_device'] ?? 'Not set') }}</span>
                                 </div>
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
-                                    <span class="text-xs text-slate-400 block">Controller Spec</span>
-                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['controller_spec'] ?? 'Not set' }}</span>
+                                    <span class="text-xs text-slate-400 block">{{ __('Controller Spec') }}</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['controller_spec'] ?? __('Not set') }}</span>
                                 </div>
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
-                                    <span class="text-xs text-slate-400 block">Power Backup</span>
-                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['backup_battery'] ?? 'Not set' }}</span>
+                                    <span class="text-xs text-slate-400 block">{{ __('Power Backup') }}</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['backup_battery'] ?? __('Not set') }}</span>
                                 </div>
 
                             @elseif($project->project_type === 'hardware_attendance')
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
-                                    <span class="text-xs text-slate-400 block">User Capacity</span>
+                                    <span class="text-xs text-slate-400 block">{{ __('User Capacity') }}</span>
                                     <span class="font-extrabold text-slate-900 dark:text-white text-base">{{ $project->requirements['user_capacity'] ?? ($project->requirements['terminal_users'] ?? 'N/A') }} Users</span>
                                 </div>
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
-                                    <span class="text-xs text-slate-400 block">Comm. Protocol</span>
+                                    <span class="text-xs text-slate-400 block">{{ __('Comm. Protocol') }}</span>
                                     <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['comm_protocol'] ?? ($project->requirements['communication'] ?? 'TCP/IP Network') }}</span>
                                 </div>
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
-                                    <span class="text-xs text-slate-400 block">HRMS Sync</span>
+                                    <span class="text-xs text-slate-400 block">{{ __('HRMS Sync') }}</span>
                                     <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['hrms_software'] ?? 'Automated Sync' }}</span>
                                 </div>
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
-                                    <span class="text-xs text-slate-400 block">Mounting Location</span>
+                                    <span class="text-xs text-slate-400 block">{{ __('Mounting Location') }}</span>
                                     <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['mounting_location'] ?? 'Entry / Reception' }}</span>
                                 </div>
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 sm:col-span-2">
-                                    <span class="text-xs text-slate-400 block">Battery &amp; Backup</span>
+                                    <span class="text-xs text-slate-400 block">{{ __('Battery & Backup') }}</span>
                                     <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['power_backup'] ?? ($project->requirements['power_battery'] ?? 'Internal Battery') }}</span>
                                 </div>
 
                             @elseif($project->project_type === 'hybrid')
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
-                                    <span class="text-xs text-slate-400 block">Hardware Endpoints</span>
-                                    <span class="font-extrabold text-slate-900 dark:text-white text-base">{{ isset($project->requirements['hardware_endpoints']) ? $project->requirements['hardware_endpoints'] . ' devices' : 'Not set' }}</span>
+                                    <span class="text-xs text-slate-400 block">{{ __('Hardware Endpoints') }}</span>
+                                    <span class="font-extrabold text-slate-900 dark:text-white text-base">{{ isset($project->requirements['hardware_endpoints']) ? $project->requirements['hardware_endpoints'] . ' devices' : __('Not set') }}</span>
                                 </div>
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
-                                    <span class="text-xs text-slate-400 block">Edge Gateway</span>
+                                    <span class="text-xs text-slate-400 block">{{ __('Edge Gateway') }}</span>
                                     <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['edge_gateway'] ?? 'IoT Hub' }}</span>
                                 </div>
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
-                                    <span class="text-xs text-slate-400 block">Storage / Server</span>
+                                    <span class="text-xs text-slate-400 block">{{ __('Storage / Server') }}</span>
                                     <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['server_storage'] ?? 'Micro-Server' }}</span>
                                 </div>
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 sm:col-span-2">
-                                    <span class="text-xs text-slate-400 block">Software Platform</span>
+                                    <span class="text-xs text-slate-400 block">{{ __('Software Platform') }}</span>
                                     <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['software_platform'] ?? 'Web & Mobile' }}</span>
                                 </div>
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
-                                    <span class="text-xs text-slate-400 block">Alert Channels</span>
+                                    <span class="text-xs text-slate-400 block">{{ __('Alert Channels') }}</span>
                                     <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['alert_channels'] ?? 'Real-time' }}</span>
                                 </div>
 
                             @else
                                 {{-- Default CCTV Surveillance Scope --}}
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
-                                    <span class="text-xs text-slate-400 block">CCTV Cameras</span>
-                                    <span class="font-extrabold text-slate-900 dark:text-white text-base">{{ isset($project->requirements['cctv_count']) ? $project->requirements['cctv_count'] . ' nos' : 'Not set' }}</span>
+                                    <span class="text-xs text-slate-400 block">{{ __('CCTV Cameras') }}</span>
+                                    <span class="font-extrabold text-slate-900 dark:text-white text-base">{{ isset($project->requirements['cctv_count']) ? $project->requirements['cctv_count'] . ' nos' : __('Not set') }}</span>
                                 </div>
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
-                                    <span class="text-xs text-slate-400 block">NVR Channels</span>
-                                    <span class="font-extrabold text-slate-900 dark:text-white text-base">{{ isset($project->requirements['nvr_channels']) ? $project->requirements['nvr_channels'] . ' ch' : 'Not set' }}</span>
+                                    <span class="text-xs text-slate-400 block">{{ __('NVR Channels') }}</span>
+                                    <span class="font-extrabold text-slate-900 dark:text-white text-base">{{ isset($project->requirements['nvr_channels']) ? $project->requirements['nvr_channels'] . ' ch' : __('Not set') }}</span>
                                 </div>
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
-                                    <span class="text-xs text-slate-400 block">Est. Cabling</span>
-                                    <span class="font-extrabold text-slate-900 dark:text-white text-base">{{ isset($project->requirements['cabling_metres']) ? $project->requirements['cabling_metres'] . ' m' : 'Not set' }}</span>
+                                    <span class="text-xs text-slate-400 block">{{ __('Est. Cabling') }}</span>
+                                    <span class="font-extrabold text-slate-900 dark:text-white text-base">{{ isset($project->requirements['cabling_metres']) ? $project->requirements['cabling_metres'] . ' m' : __('Not set') }}</span>
                                 </div>
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
-                                    <span class="text-xs text-slate-400 block">Power Supply</span>
-                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['power_supply'] ?? 'Not set' }}</span>
+                                    <span class="text-xs text-slate-400 block">{{ __('Power Supply') }}</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['power_supply'] ?? __('Not set') }}</span>
                                 </div>
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
-                                    <span class="text-xs text-slate-400 block">Storage HDD</span>
-                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['storage_hdd'] ?? 'Not set' }}</span>
+                                    <span class="text-xs text-slate-400 block">{{ __('Storage HDD') }}</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['storage_hdd'] ?? __('Not set') }}</span>
                                 </div>
                                 <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
-                                    <span class="text-xs text-slate-400 block">Display / Screen</span>
-                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['display_screen'] ?? 'Not set' }}</span>
+                                    <span class="text-xs text-slate-400 block">{{ __('Display / Screen') }}</span>
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200 text-xs">{{ $project->requirements['display_screen'] ?? __('Not set') }}</span>
                                 </div>
                             @endif
                         </div>
@@ -1701,9 +1701,13 @@
             <div class="flex justify-between items-center pt-2 flex-wrap gap-2">
                 <h3 class="font-extrabold text-slate-900 dark:text-white text-base">Work days</h3>
                 <div class="flex items-center gap-2 flex-wrap">
-                    <button type="button" onclick="openAttendanceModal('{{ $project->id }}')" class="btn-primary text-xs flex items-center gap-1.5 cursor-pointer" title="Mark attendance with a photo">
+                    <button type="button" onclick="openAttendanceModal('{{ $project->id }}')" class="btn-primary text-xs flex items-center gap-1.5 cursor-pointer" title="{{ __('Mark attendance with a photo') }}">
                         <svg class="w-3.5 h-3.5 text-white shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-                        <span>Mark Attendance</span>
+                        <span>{{ __('Mark Attendance') }}</span>
+                    </button>
+                    <button type="button" onclick="openBulkAttendanceModal('{{ $project->id }}')" class="btn-secondary text-xs flex items-center gap-1.5 cursor-pointer" title="{{ __('Bulk mark attendance for multiple workers') }}">
+                        <svg class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"/></svg>
+                        <span>{{ __('Bulk Attendance') }}</span>
                     </button>
                     @can('logWorkDay', $project)
                         <button type="button" @click="workDayModalOpen = true" class="btn-secondary text-xs">

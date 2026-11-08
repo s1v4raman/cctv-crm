@@ -65,6 +65,12 @@ class TechnicianPortalController extends Controller
             ->whereDate('date', now()->toDateString())
             ->first();
 
+        // Recent Field Work Activities & Attendance Punches for Activity Stream
+        $recentActivity = \App\Models\ProjectWorkerAttendance::with(['worker', 'workDay.project'])
+            ->latest()
+            ->take(6)
+            ->get();
+
         return view('technician.dashboard', compact(
             'activeJobs',
             'completedJobs',
@@ -74,7 +80,8 @@ class TechnicianPortalController extends Controller
             'allProjectsCount',
             'activeWorkers',
             'activeProjects',
-            'myAttendanceToday'
+            'myAttendanceToday',
+            'recentActivity'
         ));
     }
 

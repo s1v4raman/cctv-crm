@@ -1645,7 +1645,10 @@
                                         aria-label="{{ __('Account menu for :name', ['name' => Auth::user()->name]) }}"
                                         class="flex items-center gap-2 pl-1.5 pr-2.5 py-1 rounded-[6px] border border-[var(--card-border)] bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/60 transition cursor-pointer select-none shadow-2xs">
                                     @if(Auth::user()->avatar_url)
-                                        <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->name }}" class="w-7 h-7 rounded-full object-cover shrink-0 ring-1 ring-slate-200 dark:ring-slate-700">
+                                        <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->name }}" class="w-7 h-7 rounded-full object-cover shrink-0 ring-1 ring-slate-200 dark:ring-slate-700" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';">
+                                        <div class="w-7 h-7 rounded-full text-white items-center justify-center font-bold text-xs shrink-0" style="background-color: var(--crm-accent, #2563eb); display: none;">
+                                            {{ strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}
+                                        </div>
                                     @else
                                         <div class="w-7 h-7 rounded-full text-white flex items-center justify-center font-bold text-xs shrink-0" style="background-color: var(--crm-accent, #2563eb);">
                                             {{ strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}
@@ -1680,7 +1683,10 @@
                                     {{-- User identity card in menu --}}
                                     <div class="px-3.5 py-2.5 border-b border-[var(--card-border)] bg-slate-50/70 dark:bg-slate-900/60 flex items-center gap-3">
                                         @if(Auth::user()->avatar_url)
-                                            <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->name }}" class="w-9 h-9 rounded-full object-cover shrink-0 ring-1 ring-slate-200 dark:ring-slate-700">
+                                            <img src="{{ Auth::user()->avatar_url }}" alt="{{ Auth::user()->name }}" class="w-9 h-9 rounded-full object-cover shrink-0 ring-1 ring-slate-200 dark:ring-slate-700" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';">
+                                            <div class="w-9 h-9 rounded-full text-white items-center justify-center font-bold text-xs shrink-0" style="background-color: var(--crm-accent, #2563eb); display: none;">
+                                                {{ strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}
+                                            </div>
                                         @else
                                             <div class="w-9 h-9 rounded-full text-white flex items-center justify-center font-bold text-xs shrink-0" style="background-color: var(--crm-accent, #2563eb);">
                                                 {{ strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}
@@ -1821,39 +1827,35 @@
             <nav class="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-[#0f172a]/95 backdrop-blur-md border-t border-slate-200/90 dark:border-slate-800 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] px-3 py-1.5 transition-colors">
                 <div class="max-w-md mx-auto flex items-center justify-between">
                     @if(auth()->user()->role === 'technician')
-                        {{-- Technician Mobile Dock --}}
+                        {{-- Field App Style Technician 5-Tab Fixed Bottom Dock --}}
                         <a href="{{ route('technician.dashboard') }}" 
-                           class="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl transition {{ request()->routeIs('technician.dashboard') ? 'text-blue-600 dark:text-blue-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200' }}">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"/></svg>
-                            <span class="text-[11px] tracking-tight">{{ __('Jobs') }}</span>
+                           class="flex flex-col items-center justify-center flex-1 py-2 transition {{ request()->routeIs('technician.dashboard') ? 'text-[#2563eb] font-bold' : 'text-[#64748b] hover:text-[#0f172a]' }}">
+                            <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>
+                            <span class="text-[12px] leading-tight mt-1">{{ __('Home') }}</span>
                         </a>
 
-                        <button @click="sidebarOpen = true" 
-                                type="button"
-                                class="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition cursor-pointer">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
-                            <span class="text-[11px] tracking-tight">{{ __('Modules') }}</span>
-                        </button>
-
-                        {{-- Elevated Center Action: Shift & Attendance --}}
-                        <a href="{{ route('attendance.index') }}" 
-                           class="-mt-5 flex flex-col items-center group">
-                            <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-emerald-600 to-teal-600 text-white flex items-center justify-center shadow-lg shadow-emerald-500/35 border-2 border-white dark:border-[#0f172a] active:scale-95 transition-transform">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                            </div>
-                            <span class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 mt-0.5">{{ __('Shift') }}</span>
+                        <a href="{{ route('calendar.index') }}" 
+                           class="flex flex-col items-center justify-center flex-1 py-2 transition {{ request()->routeIs('calendar.*') ? 'text-[#2563eb] font-bold' : 'text-[#64748b] hover:text-[#0f172a]' }}">
+                            <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 9v7.5"/></svg>
+                            <span class="text-[12px] leading-tight mt-1">{{ __('Calendar') }}</span>
                         </a>
 
-                        <a href="{{ route('projects.index') }}" 
-                           class="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl transition {{ request()->routeIs('projects.*') ? 'text-blue-600 dark:text-blue-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200' }}">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="7" rx="3"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line stroke-linecap="round" stroke-linejoin="round" x1="2" x2="22" y1="13" y2="13"/></svg>
-                            <span class="text-[11px] tracking-tight">{{ __('Projects') }}</span>
+                        <a href="{{ route('sites.index') }}" 
+                           class="flex flex-col items-center justify-center flex-1 py-2 transition {{ request()->routeIs('sites.*') ? 'text-[#2563eb] font-bold' : 'text-[#64748b] hover:text-[#0f172a]' }}">
+                            <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/></svg>
+                            <span class="text-[12px] leading-tight mt-1">{{ __('Sites') }}</span>
+                        </a>
+
+                        <a href="{{ route('workers.index') }}" 
+                           class="flex flex-col items-center justify-center flex-1 py-2 transition {{ (request()->routeIs('workers.*') && !request()->routeIs('workers.attendance.*')) ? 'text-[#2563eb] font-bold' : 'text-[#64748b] hover:text-[#0f172a]' }}">
+                            <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.999-3.199a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"/></svg>
+                            <span class="text-[12px] leading-tight mt-1">{{ __('Workers') }}</span>
                         </a>
 
                         <a href="{{ route('profile.edit') }}" 
-                           class="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl transition {{ request()->routeIs('profile.*') ? 'text-blue-600 dark:text-blue-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200' }}">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                            <span class="text-[11px] tracking-tight">{{ __('Profile') }}</span>
+                           class="flex flex-col items-center justify-center flex-1 py-2 transition {{ request()->routeIs('profile.*') ? 'text-[#2563eb] font-bold' : 'text-[#64748b] hover:text-[#0f172a]' }}">
+                            <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>
+                            <span class="text-[12px] leading-tight mt-1">{{ __('Profile') }}</span>
                         </a>
 
                     @elseif(auth()->user()->isOffice())

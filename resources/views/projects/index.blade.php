@@ -2,8 +2,8 @@
     @php
         $statuses = \App\Models\Project::statusOptions();
         $priorities = \App\Models\Project::priorityOptions();
-        $views = collect(['all' => 'All Projects'] + $statuses)->map(fn ($label, $value) => [
-            'label' => $value === 'all' ? $label : $label,
+        $views = collect(['all' => __('All Projects')] + $statuses)->map(fn ($label, $value) => [
+            'label' => $value === 'all' ? $label : __($label),
             'url' => route('projects.index', array_filter(['status' => $value === 'all' ? null : $value])),
             'active' => $statusFilter === $value,
         ])->values()->all();
@@ -14,12 +14,12 @@
 
     <x-list-page key="projects" :paginator="$projects" :views="$views"
         :sorts="['status' => 'Open work first', 'newest' => 'Newest first', 'updated' => 'Recently updated', 'deadline_asc' => 'Deadline, soonest', 'budget_desc' => 'Budget, high to low']"
-        :create-url="$canCreate ? route('projects.create') : null" create-label="New Project"
+        :create-url="$canCreate ? route('projects.create') : null" :create-label="__('New Project')"
         :export-url="route('projects.export-csv', request()->all())"
-        filter-title="Filter Projects by" :filter-action="route('projects.index')" :keep="['sort' => request('sort'), 'per_page' => request('per_page')]"
+        :filter-title="__('Filter Projects by')" :filter-action="route('projects.index')" :keep="['sort' => request('sort'), 'per_page' => request('per_page')]"
         :filter-count="$filterCount" :clear-url="route('projects.index')"
-        :columns="['customer' => 'Customer', 'type' => 'Type', 'team' => 'Team', 'progress' => 'Progress', 'budget' => 'Budget / due', 'priority' => 'Priority', 'status' => 'Status']"
-        empty-text="No projects yet." filtered-text="No projects match these filters.">
+        :columns="['customer' => __('Customer'), 'type' => __('Type'), 'team' => __('Team'), 'progress' => __('Progress'), 'budget' => __('Budget / due'), 'priority' => __('Priority'), 'status' => __('Status')]"
+        :empty-text="__('No projects yet.')" :filtered-text="__('No projects match these filters.')">
 
         <x-slot name="filters">
             <div class="ld-sub">Project, code, customer or site</div>
@@ -69,14 +69,14 @@
         </x-slot>
 
         <x-slot name="head">
-            <th style="min-width: 240px">Project</th>
-            <th x-show="cols.customer" style="min-width: 200px">Customer</th>
-            <th x-show="cols.type" style="min-width: 190px">Type</th>
-            <th x-show="cols.team" style="min-width: 160px">Team</th>
-            <th x-show="cols.progress" style="min-width: 110px">Progress</th>
-            <th x-show="cols.budget" style="min-width: 130px; text-align: right">Budget / due</th>
-            <th x-show="cols.priority" style="min-width: 90px">Priority</th>
-            <th x-show="cols.status" style="min-width: 150px">Status</th>
+            <th style="min-width: 240px">{{ __('Project') }}</th>
+            <th x-show="cols.customer" style="min-width: 200px">{{ __('Customer') }}</th>
+            <th x-show="cols.type" style="min-width: 190px">{{ __('Type') }}</th>
+            <th x-show="cols.team" style="min-width: 160px">{{ __('Team') }}</th>
+            <th x-show="cols.progress" style="min-width: 110px">{{ __('Progress') }}</th>
+            <th x-show="cols.budget" style="min-width: 130px; text-align: right">{{ __('Budget / due') }}</th>
+            <th x-show="cols.priority" style="min-width: 90px">{{ __('Priority') }}</th>
+            <th x-show="cols.status" style="min-width: 150px">{{ __('Status') }}</th>
         </x-slot>
 
         @foreach($projects as $project)

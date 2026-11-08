@@ -189,7 +189,7 @@
                             @click="switchTab('overall_calendar')" 
                             class="crm-plain-tab"
                             :class="activeTab === 'overall_calendar' ? 'active' : ''">
-                        Overall Calendar
+                        {{ __('Overall Calendar') }}
                     </button>
                 @endif
 
@@ -198,7 +198,7 @@
                         @click="switchTab('my_calendar')" 
                         class="crm-plain-tab"
                         :class="activeTab === 'my_calendar' ? 'active' : ''">
-                    My Calendar
+                    {{ __('My Calendar') }}
                 </button>
 
                 {{-- 3. Overall Tasks --}}
@@ -207,7 +207,7 @@
                             @click="switchTab('overall_tasks')" 
                             class="crm-plain-tab"
                             :class="activeTab === 'overall_tasks' ? 'active' : ''">
-                        Overall Tasks
+                        {{ __('Overall Tasks') }}
                     </button>
                 @endif
 
@@ -216,7 +216,7 @@
                         @click="switchTab('my_tasks')" 
                         class="crm-plain-tab"
                         :class="activeTab === 'my_tasks' ? 'active' : ''">
-                    My Tasks
+                    {{ __('My Tasks') }}
                 </button>
 
             </div>
@@ -230,28 +230,28 @@
             {{-- Stat Cards --}}
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
                 <div class="stat-card bg-white dark:bg-[#0f172a] rounded-[4px] border border-[var(--card-border)] dark:border-slate-700 p-4 shadow-xs">
-                    <span class="text-xs font-normal text-gray-500 dark:text-slate-400 block" x-text="activeTab === 'my_calendar' ? 'My Scheduled Items' : 'Scheduled Operations'">Scheduled Operations</span>
+                    <span class="text-xs font-normal text-gray-500 dark:text-slate-400 block" x-text="activeTab === 'my_calendar' ? {{ Js::from(__('My Scheduled Items')) }} : {{ Js::from(__('Scheduled Operations')) }}">{{ __('Scheduled Operations') }}</span>
                     <div class="text-[24px] font-semibold tabular-nums text-slate-900 dark:text-white mt-1" x-text="events.length">
                         {{ $stats['total'] }}
                     </div>
                 </div>
 
                 <div class="stat-card bg-white dark:bg-[#0f172a] rounded-[4px] border border-[var(--card-border)] dark:border-slate-700 p-4 shadow-xs">
-                    <span class="text-xs font-normal text-gray-500 dark:text-slate-400 block">Scheduled Today</span>
+                    <span class="text-xs font-normal text-gray-500 dark:text-slate-400 block">{{ __('Scheduled Today') }}</span>
                     <div class="text-[24px] font-semibold tabular-nums text-slate-900 dark:text-white mt-1" x-text="todayEvents.length">
                         {{ $stats['today'] }}
                     </div>
                 </div>
 
                 <div class="stat-card bg-white dark:bg-[#0f172a] rounded-[4px] border border-[var(--card-border)] dark:border-slate-700 p-4 shadow-xs">
-                    <span class="text-xs font-normal text-gray-500 dark:text-slate-400 block">My Assigned Tasks</span>
+                    <span class="text-xs font-normal text-gray-500 dark:text-slate-400 block">{{ __('My Assigned Tasks') }}</span>
                     <div class="text-[24px] font-semibold tabular-nums text-slate-900 dark:text-white mt-1">
                         {{ $stats['my_tasks_total'] }}
                     </div>
                 </div>
 
                 <div class="stat-card bg-white dark:bg-[#0f172a] rounded-[4px] border border-[var(--card-border)] dark:border-slate-700 p-4 shadow-xs">
-                    <span class="text-xs font-normal text-gray-500 dark:text-slate-400 block">Pending Actions</span>
+                    <span class="text-xs font-normal text-gray-500 dark:text-slate-400 block">{{ __('Pending Actions') }}</span>
                     <div class="text-[24px] font-semibold tabular-nums text-slate-900 dark:text-white mt-1">
                         {{ $stats['my_pending'] }}
                     </div>
@@ -265,7 +265,7 @@
                         <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                             <circle cx="11" cy="11" r="7"/><line x1="21" x2="16.65" y1="21" y2="16.65"/>
                         </svg>
-                        <input aria-label="Filter events" type="text" x-model="searchQuery" placeholder="Filter events..." 
+                        <input aria-label="Filter events" type="text" x-model="searchQuery" placeholder="{{ __('Filter events...') }}" 
                                class="crm-cal-input w-full h-9 pl-9 pr-3 text-xs rounded-[4px] border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 transition"
                                style="padding-left: 36px !important;">
                     </div>
@@ -273,7 +273,7 @@
                     @if(!$isWorker)
                         <select aria-label="Tech" x-model="filterTech"
                                 class="crm-cal-select h-9 px-3 text-xs rounded-[4px] border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500 transition cursor-pointer shrink-0">
-                            <option value="all">All Assignees</option>
+                            <option value="all">{{ __('All Assignees') }}</option>
                             @foreach($assignees as $tech)
                                 <option value="{{ $tech->id }}">{{ $tech->name }} ({{ ucfirst($tech->role) }})</option>
                             @endforeach
@@ -282,18 +282,18 @@
 
                     <select aria-label="Status" x-model="filterStatus"
                             class="crm-cal-select h-9 px-3 text-xs rounded-[4px] border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500 transition cursor-pointer shrink-0">
-                        <option value="all">All Statuses</option>
-                        <option value="pending">Pending</option>
-                        <option value="in_progress">In Progress</option>
-                        <option value="completed">Completed</option>
-                        <option value="rejected">Rejected</option>
+                        <option value="all">{{ __('All Statuses') }}</option>
+                        <option value="pending">{{ __('Pending') }}</option>
+                        <option value="in_progress">{{ __('In Progress') }}</option>
+                        <option value="completed">{{ __('Completed') }}</option>
+                        <option value="rejected">{{ __('Rejected') }}</option>
                     </select>
 
                     <button type="button" 
                             x-show="searchQuery !== '' || filterTech !== 'all' || filterStatus !== 'all'"
                             @click="searchQuery = ''; filterTech = 'all'; filterStatus = 'all'"
                             class="h-9 px-3 text-xs rounded-[4px] border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 transition shrink-0 inline-flex items-center gap-1 font-semibold cursor-pointer">
-                        <span>Reset</span>
+                        <span>{{ __('Reset') }}</span>
                     </button>
                 </div>
 
@@ -301,17 +301,17 @@
                     <button type="button" @click="currentView = 'month'"
                             :class="currentView === 'month' ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-semibold shadow-xs' : 'text-slate-600 dark:text-slate-400 font-medium'"
                             class="h-7 px-3 text-xs rounded-[4px] transition cursor-pointer">
-                        Month
+                        {{ __('Month') }}
                     </button>
                     <button type="button" @click="currentView = 'week'"
                             :class="currentView === 'week' ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-semibold shadow-xs' : 'text-slate-600 dark:text-slate-400 font-medium'"
                             class="h-7 px-3 text-xs rounded-[4px] transition cursor-pointer">
-                        Week
+                        {{ __('Week') }}
                     </button>
                     <button type="button" @click="currentView = 'agenda'"
                             :class="currentView === 'agenda' ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-semibold shadow-xs' : 'text-slate-600 dark:text-slate-400 font-medium'"
                             class="h-7 px-3 text-xs rounded-[4px] transition cursor-pointer">
-                        Agenda
+                        {{ __('Agenda') }}
                     </button>
                 </div>
             </div>
@@ -323,15 +323,15 @@
                 <div class="lg:col-span-8 space-y-3">
                     <div class="flex flex-wrap items-center justify-between gap-2.5 px-0.5">
                         <div class="flex items-center gap-1.5">
-                            <button type="button" @click="prevMonth()" class="h-8 px-2.5 rounded-[4px] border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold shadow-2xs transition inline-flex items-center gap-1 cursor-pointer" title="Previous Month">
+                            <button type="button" @click="prevMonth()" class="h-8 px-2.5 rounded-[4px] border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold shadow-2xs transition inline-flex items-center gap-1 cursor-pointer" title="{{ __('Previous Month') }}">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
-                                <span>Prev</span>
+                                <span>{{ __('Prev') }}</span>
                             </button>
                             <button type="button" @click="goToToday()" class="h-8 px-3 rounded-[4px] border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold shadow-2xs transition cursor-pointer">
-                                Today
+                                {{ __('Today') }}
                             </button>
-                            <button type="button" @click="nextMonth()" class="h-8 px-2.5 rounded-[4px] border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold shadow-2xs transition inline-flex items-center gap-1 cursor-pointer" title="Next Month">
-                                <span>Next</span>
+                            <button type="button" @click="nextMonth()" class="h-8 px-2.5 rounded-[4px] border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold shadow-2xs transition inline-flex items-center gap-1 cursor-pointer" title="{{ __('Next Month') }}">
+                                <span>{{ __('Next') }}</span>
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
                             </button>
                         </div>
@@ -342,7 +342,7 @@
                     {{-- Month View Grid --}}
                     <div x-show="currentView === 'month'" class="bg-white dark:bg-[#0f172a] rounded-[4px] border border-[var(--card-border)] dark:border-slate-700 overflow-hidden shadow-xs">
                         <div class="grid grid-cols-7 border-b border-slate-200/80 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/50 text-center">
-                            <template x-for="day in ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']" :key="day">
+                            <template x-for="day in {{ Js::from([__('Mon'), __('Tue'), __('Wed'), __('Thu'), __('Fri'), __('Sat'), __('Sun')]) }}" :key="day">
                                 <div class="py-2 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider" x-text="day"></div>
                             </template>
                         </div>
@@ -417,15 +417,15 @@
                     <div class="bg-white dark:bg-[#0f172a] rounded-[4px] border border-[var(--card-border)] dark:border-slate-700 p-4 shadow-xs">
                         <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                             <div>
-                                <h3 class="text-sm font-bold text-slate-900 dark:text-white">Today's Schedule</h3>
-                                <p class="text-[11px] text-slate-500 mt-0.5">{{ now()->format('l, d M Y') }}</p>
+                                <h3 class="text-sm font-bold text-slate-900 dark:text-white">{{ __("Today's Schedule") }}</h3>
+                                <p class="text-[11px] text-slate-500 mt-0.5">{{ now()->locale(app()->getLocale())->translatedFormat('l, d M Y') }}</p>
                             </div>
                         </div>
 
                         <div class="mt-3 space-y-2.5 max-h-[500px] overflow-y-auto">
                             <template x-if="todayEvents.length === 0">
                                 <div class="py-10 text-center text-slate-400 text-xs">
-                                    No items scheduled for today.
+                                    {{ __('No items scheduled for today.') }}
                                 </div>
                             </template>
                             <template x-for="event in todayEvents" :key="event.id">
@@ -459,13 +459,13 @@
             
             <div class="flex items-center justify-between">
                 <div>
-                    <h2 class="text-base font-bold text-slate-900 dark:text-white" x-text="activeTab === 'overall_tasks' ? 'Company Tasks Workflow' : 'My Assigned Tasks'"></h2>
-                    <p class="text-xs text-slate-500 dark:text-slate-400" x-text="activeTab === 'overall_tasks' ? 'Grouped by scheduled date with full operations filtering' : 'Tasks assigned directly to you — accept or reject work items'"></p>
+                    <h2 class="text-base font-bold text-slate-900 dark:text-white" x-text="activeTab === 'overall_tasks' ? {{ Js::from(__('Company Tasks Workflow')) }} : {{ Js::from(__('My Assigned Tasks')) }}"></h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400" x-text="activeTab === 'overall_tasks' ? {{ Js::from(__('Grouped by scheduled date with full operations filtering')) }} : {{ Js::from(__('Tasks assigned directly to you — accept or reject work items')) }}"></p>
                 </div>
                 @if($canManageTasks)
                     <button type="button" @click="openCreateTaskModal = true" 
                             class="btn-md inline-flex items-center justify-center px-3.5 py-2 rounded-[4px] text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition active:scale-95 cursor-pointer">
-                        Create Task
+                        {{ __('Create Task') }}
                     </button>
                 @endif
             </div>
@@ -477,9 +477,9 @@
 
                     {{-- Search filter --}}
                     <div class="flex-1 min-w-[220px]">
-                        <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Search</label>
+                        <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">{{ __('Search') }}</label>
                         <div class="relative">
-                            <input aria-label="Search" type="text" name="search" value="{{ $filters['search'] }}" placeholder="Task, scope, or location..."
+                            <input aria-label="{{ __('Search') }}" type="text" name="search" value="{{ $filters['search'] }}" placeholder="{{ __('Task, scope, or location...') }}"
                                    class="crm-cal-input w-full h-9 pl-9 pr-3 text-xs rounded-[4px] border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 transition"
                                    style="padding-left: 36px !important;">
                             <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" x2="16.65" y1="21" y2="16.65"/></svg>
@@ -488,31 +488,31 @@
 
                     {{-- Status filter --}}
                     <div class="w-36 shrink-0">
-                        <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Status</label>
-                        <select aria-label="Status" name="status" class="crm-cal-select w-full h-9 px-3 text-xs rounded-[4px] border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500 transition">
-                            <option value="">All Statuses</option>
+                        <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">{{ __('Status') }}</label>
+                        <select aria-label="{{ __('Status') }}" name="status" class="crm-cal-select w-full h-9 px-3 text-xs rounded-[4px] border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500 transition">
+                            <option value="">{{ __('All Statuses') }}</option>
                             @foreach($statuses as $k => $label)
-                                <option value="{{ $k }}" {{ $filters['status'] === $k ? 'selected' : '' }}>{{ $label }}</option>
+                                <option value="{{ $k }}" {{ $filters['status'] === $k ? 'selected' : '' }}>{{ __($label) }}</option>
                             @endforeach
                         </select>
                     </div>
 
                     {{-- Category / Phase filter --}}
                     <div class="w-36 shrink-0">
-                        <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Category</label>
-                        <select aria-label="Category" name="category" class="crm-cal-select w-full h-9 px-3 text-xs rounded-[4px] border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500 transition">
-                            <option value="">All Categories</option>
+                        <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">{{ __('Category') }}</label>
+                        <select aria-label="{{ __('Category') }}" name="category" class="crm-cal-select w-full h-9 px-3 text-xs rounded-[4px] border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500 transition">
+                            <option value="">{{ __('All Categories') }}</option>
                             @foreach($categories as $cat)
-                                <option value="{{ $cat }}" {{ $filters['category'] === $cat ? 'selected' : '' }}>{{ $cat }}</option>
+                                <option value="{{ $cat }}" {{ $filters['category'] === $cat ? 'selected' : '' }}>{{ __($cat) }}</option>
                             @endforeach
                         </select>
                     </div>
 
                     {{-- Assignee filter (hidden in My Tasks) --}}
                     <div x-show="activeTab === 'overall_tasks'" class="w-44 shrink-0">
-                        <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">Assignee</label>
-                        <select aria-label="Assignee" name="assignee" class="crm-cal-select w-full h-9 px-3 text-xs rounded-[4px] border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500 transition">
-                            <option value="">All Team Members</option>
+                        <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">{{ __('Assignee') }}</label>
+                        <select aria-label="{{ __('Assignee') }}" name="assignee" class="crm-cal-select w-full h-9 px-3 text-xs rounded-[4px] border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0b132b] text-slate-700 dark:text-slate-200 focus:outline-none focus:border-blue-500 transition">
+                            <option value="">{{ __('All Team Members') }}</option>
                             @foreach($assignees as $assignee)
                                 <option value="{{ $assignee->id }}" {{ $filters['assignee'] == $assignee->id ? 'selected' : '' }}>
                                     {{ $assignee->name }} ({{ ucfirst($assignee->role) }})
@@ -982,7 +982,8 @@
                     if (!this.currentMonth) return;
                     const parts = this.currentMonth.split('-');
                     const date = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, 1);
-                    this.monthTitle = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+                    const lang = '{{ app()->getLocale() }}';
+                    this.monthTitle = date.toLocaleDateString(lang === 'ta' ? 'ta-IN' : 'en-US', { month: 'long', year: 'numeric' });
                 },
 
                 updateCalendarDays() {
@@ -996,6 +997,7 @@
 
                     const days = [];
                     const startDate = new Date(year, month, 1 - startDayOffset);
+                    const lang = '{{ app()->getLocale() }}';
 
                     for (let i = 0; i < 35; i++) {
                         const cellDate = new Date(startDate);
@@ -1011,7 +1013,7 @@
                             dayNumber: cellDate.getDate(),
                             isCurrentMonth: cellDate.getMonth() === month,
                             isToday: dateStr === this.todayDate,
-                            dayName: cellDate.toLocaleDateString('en-US', { weekday: 'short' }),
+                            dayName: cellDate.toLocaleDateString(lang === 'ta' ? 'ta-IN' : 'en-US', { weekday: 'short' }),
                         });
                     }
 
@@ -1023,6 +1025,7 @@
                     const dayOffset = (baseDate.getDay() + 6) % 7;
                     const monday = new Date(baseDate);
                     monday.setDate(baseDate.getDate() - dayOffset);
+                    const lang = '{{ app()->getLocale() }}';
 
                     const days = [];
                     for (let i = 0; i < 7; i++) {
@@ -1037,8 +1040,8 @@
                         days.push({
                             date: dateStr,
                             dayNumber: d.getDate(),
-                            dayName: d.toLocaleDateString('en-US', { weekday: 'short' }),
-                            formattedDate: d.toLocaleDateString('en-US', { day: 'numeric', month: 'short' }),
+                            dayName: d.toLocaleDateString(lang === 'ta' ? 'ta-IN' : 'en-US', { weekday: 'short' }),
+                            formattedDate: d.toLocaleDateString(lang === 'ta' ? 'ta-IN' : 'en-US', { day: 'numeric', month: 'short' }),
                             isToday: dateStr === this.todayDate,
                         });
                     }

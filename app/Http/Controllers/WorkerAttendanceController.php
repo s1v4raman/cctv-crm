@@ -12,11 +12,14 @@ use Carbon\Constants\UnitValue;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class WorkerAttendanceController extends Controller
 {
@@ -24,7 +27,7 @@ class WorkerAttendanceController extends Controller
      * Display the Worker Attendance Maintenance Console.
      * Supports views: 'day', 'week', 'month'.
      */
-    public function index(Request $request): View
+    public function index(Request $request): View|StreamedResponse
     {
         $viewMode = $request->input('view', 'day');
         if (!in_array($viewMode, ['day', 'week', 'month'], true)) {
@@ -72,7 +75,7 @@ class WorkerAttendanceController extends Controller
         string $search,
         mixed $workerFilter,
         mixed $projectFilter
-    ): View {
+    ): View|StreamedResponse {
         $dateParam = $request->input('date');
         try {
             $selectedDate = $dateParam ? Carbon::parse($dateParam) : Carbon::today();
@@ -80,32 +83,18 @@ class WorkerAttendanceController extends Controller
             $selectedDate = Carbon::today();
         }
 
-        $query = ProjectWorkerAttendance::query()
+        // 1. Fetch all logged attendances for this date
+        $attendances = ProjectWorkerAttendance::query()
             ->join('work_days', 'project_worker_attendances.work_day_id', '=', 'work_days.id')
             ->leftJoin('workers', 'project_worker_attendances.worker_id', '=', 'workers.id')
             ->whereDate('work_days.work_date', $selectedDate->toDateString())
             ->select('project_worker_attendances.*')
-            ->with(['worker', 'workDay.project']);
-
-        if ($workerFilter) {
-            $query->where('project_worker_attendances.worker_id', $workerFilter);
-        }
-
-        if ($projectFilter) {
-            $query->where('work_days.project_id', $projectFilter);
-        }
-
-        if ($search !== '') {
-            $query->where(function ($q) use ($search) {
-                $q->where('workers.name', 'like', "%{$search}%")
-                  ->orWhere('workers.phone', 'like', "%{$search}%")
-                  ->orWhere('project_worker_attendances.notes', 'like', "%{$search}%");
-            });
-        }
-
-        $attendances = $query->orderBy('project_worker_attendances.check_in_at', 'asc')
+            ->with(['worker', 'workDay.project'])
+            ->orderBy('project_worker_attendances.check_in_at', 'asc')
             ->orderBy('workers.name', 'asc')
             ->get();
+
+        $punchedByWorkerId = $attendances->keyBy('worker_id');
 
         // Summary metrics for the day
         $metrics = [
@@ -117,16 +106,199 @@ class WorkerAttendanceController extends Controller
             'total_labor_cost' => (float) $attendances->sum('total_amount'),
         ];
 
+        // 2. Build complete workforce roster (all active workers + any punched inactive/archived workers)
+        $punchedWorkers = $attendances->map(fn ($att) => $att->worker)->filter();
+        $allWorkersPool = $activeWorkers->concat($punchedWorkers)->unique('id')->values();
+
+        $rosterItems = $allWorkersPool->map(function ($worker) use ($punchedByWorkerId) {
+            /** @var ProjectWorkerAttendance|null $att */
+            $att = $punchedByWorkerId->get($worker->id);
+            $isPresent = !is_null($att);
+
+            return (object) [
+                'worker' => $worker,
+                'worker_id' => $worker->id,
+                'name' => $worker->name,
+                'phone' => $worker->phone,
+                'attendance' => $att,
+                'is_present' => $isPresent,
+                'status' => $isPresent ? 'present' : 'unpunched',
+                'check_in_at' => $att?->check_in_at,
+                'project' => $att?->workDay?->project,
+                'project_id' => $att?->workDay?->project_id,
+                'notes' => $att?->notes,
+            ];
+        });
+
+        // Workforce status counts before status/project filtering
+        $statusCounts = [
+            'all' => $rosterItems->count(),
+            'present' => $rosterItems->where('is_present', true)->count(),
+            'unpunched' => $rosterItems->where('is_present', false)->count(),
+        ];
+
+        // 3. Status filter tab ('all' [default], 'present', 'unpunched' / 'absent')
+        $statusFilter = strtolower((string) $request->input('status', 'all'));
+        if (!in_array($statusFilter, ['all', 'present', 'unpunched', 'absent'], true)) {
+            $statusFilter = 'all';
+        }
+
+        if ($statusFilter === 'present') {
+            $rosterItems = $rosterItems->where('is_present', true);
+        } elseif ($statusFilter === 'unpunched' || $statusFilter === 'absent') {
+            $rosterItems = $rosterItems->where('is_present', false);
+        }
+
+        // 4. Worker filter
+        if ($workerFilter) {
+            $rosterItems = $rosterItems->where('worker_id', (int) $workerFilter);
+        }
+
+        // 5. Project filter
+        if ($projectFilter) {
+            $rosterItems = $rosterItems->where('project_id', (int) $projectFilter);
+        }
+
+        // 6. Search filter (name, phone, notes, project title)
+        if ($search !== '') {
+            $searchLower = mb_strtolower($search);
+            $rosterItems = $rosterItems->filter(function ($item) use ($searchLower) {
+                return str_contains(mb_strtolower($item->name ?? ''), $searchLower)
+                    || str_contains(mb_strtolower($item->phone ?? ''), $searchLower)
+                    || str_contains(mb_strtolower($item->notes ?? ''), $searchLower)
+                    || str_contains(mb_strtolower($item->project?->title ?? ''), $searchLower);
+            });
+        }
+
+        // 7. Sort: Present workers first (by check-in time), followed by unpunched workers alphabetically
+        $sortedRoster = $rosterItems->sort(function ($a, $b) {
+            if ($a->is_present !== $b->is_present) {
+                return $a->is_present ? -1 : 1;
+            }
+            if ($a->is_present && $b->is_present) {
+                $aTime = $a->check_in_at ? $a->check_in_at->timestamp : 0;
+                $bTime = $b->check_in_at ? $b->check_in_at->timestamp : 0;
+                if ($aTime !== $bTime) {
+                    return $aTime <=> $bTime;
+                }
+            }
+            return strcasecmp($a->name ?? '', $b->name ?? '');
+        })->values();
+
+        // 8. Stream CSV Export if requested
+        if ($request->input('export') === 'csv') {
+            return $this->exportDayViewCsv($selectedDate, $sortedRoster);
+        }
+
+        // 9. Pagination
+        $perPageParam = $request->input('per_page', 20);
+        $perPage = is_numeric($perPageParam) ? (int) $perPageParam : 20;
+        if ($perPageParam === 'all' || $perPage <= 0) {
+            $perPage = max(1, $sortedRoster->count());
+        } elseif ($perPage > 200) {
+            $perPage = 200;
+        }
+
+        $currentPage = Paginator::resolveCurrentPage('page') ?: 1;
+        $totalItems = $sortedRoster->count();
+        $currentPageItems = $sortedRoster->slice(($currentPage - 1) * $perPage, $perPage)->values();
+
+        $roster = new LengthAwarePaginator(
+            $currentPageItems,
+            $totalItems,
+            $perPage,
+            $currentPage,
+            ['path' => Paginator::resolveCurrentPath(), 'query' => $request->query()]
+        );
+
+        // List of currently unpunched active workers for the bulk punch action
+        $unpunchedWorkers = $activeWorkers->whereNotIn('id', $punchedByWorkerId->keys()->toArray())->values();
+
         return view('workers.attendance.index', compact(
             'selectedDate',
+            'roster',
             'attendances',
+            'unpunchedWorkers',
             'metrics',
+            'statusCounts',
+            'statusFilter',
+            'perPage',
             'activeWorkers',
             'activeProjects',
             'search',
             'workerFilter',
             'projectFilter'
         ))->with('viewMode', 'day');
+    }
+
+    /**
+     * Stream CSV export of daily attendance roster for spreadsheet analysis.
+     *
+     * @param \Illuminate\Support\Collection<int, object> $rosterItems
+     */
+    protected function exportDayViewCsv(Carbon $selectedDate, \Illuminate\Support\Collection $rosterItems): StreamedResponse
+    {
+        $fileName = 'worker-attendance-' . $selectedDate->format('Y-m-d') . '.csv';
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$fileName}\"",
+            'Pragma' => 'no-cache',
+            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires' => '0',
+        ];
+
+        return response()->stream(function () use ($selectedDate, $rosterItems) {
+            $handle = fopen('php://output', 'w');
+            if ($handle === false) {
+                return;
+            }
+            // UTF-8 BOM for Microsoft Excel compatibility
+            fputs($handle, "\xEF\xBB\xBF");
+
+            fputcsv($handle, [
+                'Date',
+                'Worker ID',
+                'Worker Name',
+                'Phone',
+                'Status',
+                'Project / Site',
+                'Check-in Time',
+                'Shift Type',
+                'Cabling (m)',
+                'Cameras Installed',
+                'Daily Wage (INR)',
+                'Extra Allowance (INR)',
+                'Payment Status',
+                'Punch Photo Logged',
+                'Notes',
+            ]);
+
+            foreach ($rosterItems as $item) {
+                $w = $item->worker;
+                $att = $item->attendance;
+                $p = $item->project;
+
+                fputcsv($handle, [
+                    $selectedDate->format('Y-m-d'),
+                    $w?->id ?? '',
+                    $w?->name ?? 'Unknown',
+                    $w?->phone ?? '',
+                    $item->is_present ? 'Present' : 'Absent / Not Punched',
+                    $p ? ($p->title . ($p->site?->site_name ? ' (' . $p->site->site_name . ')' : '')) : ($item->is_present ? 'Direct Labor Shift' : 'Not Assigned'),
+                    $att?->check_in_at ? $att->check_in_at->format('h:i A') : ($item->is_present ? 'Standard Day' : '-'),
+                    $att ? ($att->attendance_type === 'half' ? 'Half Day (0.5x)' : 'Full Day (1.0x)') : 'None',
+                    $att ? number_format((float) $att->cabling_metres, 1, '.', '') : '0.0',
+                    $att ? (int) $att->cameras_installed : 0,
+                    $att ? number_format((float) $att->total_amount, 2, '.', '') : '0.00',
+                    $att ? number_format((float) $att->extra_amount, 2, '.', '') : '0.00',
+                    $att ? ($att->is_paid ? 'Paid' : 'Pending') : '-',
+                    $att && $att->photo_path ? 'Yes' : 'No',
+                    $att?->notes ?? '',
+                ]);
+            }
+
+            fclose($handle);
+        }, 200, $headers);
     }
 
     /**
@@ -434,11 +606,14 @@ class WorkerAttendanceController extends Controller
 
     /**
      * Store attendance entry with photo, shift type, and work output metrics.
+     * Supports both single worker check-in and bulk multi-worker attendance logging.
      */
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'worker_id' => 'required|exists:workers,id',
+            'worker_id' => 'nullable|exists:workers,id',
+            'worker_ids' => 'nullable|array',
+            'worker_ids.*' => 'exists:workers,id',
             'project_id' => 'required|exists:projects,id',
             'work_date' => 'required|date',
             'attendance_type' => 'required|string',
@@ -452,6 +627,17 @@ class WorkerAttendanceController extends Controller
             'notes' => 'nullable|string',
         ]);
 
+        $workerIds = [];
+        if (!empty($validated['worker_ids']) && is_array($validated['worker_ids'])) {
+            $workerIds = array_values(array_unique(array_filter(array_map('intval', $validated['worker_ids']))));
+        } elseif (!empty($validated['worker_id'])) {
+            $workerIds = [(int) $validated['worker_id']];
+        }
+
+        if (empty($workerIds)) {
+            return back()->withErrors(['worker_id' => __('Please select at least one worker.')])->withInput();
+        }
+
         $attType = strtolower($validated['attendance_type']);
         if ($attType === 'half' || $attType === 'half_day') {
             $validated['attendance_type'] = 'half';
@@ -459,7 +645,11 @@ class WorkerAttendanceController extends Controller
             $validated['attendance_type'] = 'full';
         }
 
-        $worker = Worker::findOrFail($validated['worker_id']);
+        $workers = Worker::whereIn('id', $workerIds)->get();
+        if ($workers->isEmpty()) {
+            return back()->withErrors(['worker_id' => __('Selected workers could not be found.')])->withInput();
+        }
+
         $project = Project::findOrFail($validated['project_id']);
 
         $photoPath = null;
@@ -468,7 +658,7 @@ class WorkerAttendanceController extends Controller
         // 1. Process uploaded file photo
         if ($request->hasFile('photo')) {
             $file = $request->file('photo');
-            $filename = 'attendance_' . $worker->id . '_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $filename = 'attendance_' . (count($workerIds) === 1 ? $workerIds[0] : 'bulk') . '_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
             $photoPath = $file->storeAs('attendance_photos', $filename, 'public');
             $mime = $file->getMimeType() ?: 'image/jpeg';
             $fileContent = @file_get_contents($file->getRealPath());
@@ -480,9 +670,13 @@ class WorkerAttendanceController extends Controller
             $photoData = $validated['photo_data'];
             $data = preg_replace('/^data:image\/\w+;base64,/', '', $photoData);
             $data = str_replace(' ', '+', $data);
-            $filename = 'attendance_' . $worker->id . '_' . time() . '_' . uniqid() . '.jpg';
+            $filename = 'attendance_' . (count($workerIds) === 1 ? $workerIds[0] : 'bulk') . '_' . time() . '_' . uniqid() . '.jpg';
             $photoPath = 'attendance_photos/' . $filename;
-            Storage::disk('public')->put($photoPath, base64_decode($data));
+            try {
+                Storage::disk('public')->put($photoPath, base64_decode($data));
+            } catch (\Throwable $t) {
+                // Ignore ephemeral disk write failure if database base64 is active
+            }
         }
 
         DB::beginTransaction();
@@ -501,17 +695,12 @@ class WorkerAttendanceController extends Controller
                 ]
             );
 
-            $dailyRate = (float) ($worker->daily_rate > 0 ? $worker->daily_rate : 700.00);
             $multiplier = ($validated['attendance_type'] === 'half') ? 0.5 : 1.0;
-            $basePay = $dailyRate * $multiplier;
-
             $cablingMetres = (float) ($validated['cabling_metres'] ?? 0);
             $camerasInstalled = (int) ($validated['cameras_installed'] ?? 0);
             $cablingRate = (float) ($project->per_metre_rate ?? 8.00);
             $cablingAmount = $cablingMetres * $cablingRate;
-
             $extraAmount = (float) ($validated['extra_amount'] ?? 0);
-            $totalAmount = $basePay + $cablingAmount + $extraAmount;
 
             $checkInAt = now();
             if (!empty($validated['check_in_time'])) {
@@ -522,63 +711,83 @@ class WorkerAttendanceController extends Controller
                 }
             }
 
-            // Check if record already exists for this work day and worker
-            $attendance = ProjectWorkerAttendance::where('work_day_id', $workDay->id)
-                ->where('worker_id', $worker->id)
-                ->first();
+            $savedWorkerNames = [];
+            foreach ($workers as $worker) {
+                $dailyRate = (float) ($worker->daily_rate > 0 ? $worker->daily_rate : 700.00);
+                $basePay = $dailyRate * $multiplier;
+                $totalAmount = $basePay + $cablingAmount + $extraAmount;
 
-            if ($attendance) {
-                $attendance->update([
-                    'attendance_type' => $validated['attendance_type'],
-                    'photo_path' => $photoPath ?: $attendance->photo_path,
-                    'photo_data' => $photoData ?: $attendance->photo_data,
-                    'check_in_at' => $attendance->check_in_at ?: $checkInAt,
-                    'daily_rate_snapshot' => $dailyRate,
-                    'rate_applied' => $basePay,
-                    'cabling_metres' => $cablingMetres,
-                    'cameras_installed' => $camerasInstalled,
-                    'cabling_rate' => $cablingRate,
-                    'cabling_amount' => $cablingAmount,
-                    'extra_amount' => $extraAmount,
-                    'extra_description' => $validated['extra_description'] ?? $attendance->extra_description,
-                    'total_amount' => $totalAmount,
-                    'notes' => $validated['notes'] ?? $attendance->notes,
-                ]);
-            } else {
-                $attendance = ProjectWorkerAttendance::create([
-                    'work_day_id' => $workDay->id,
-                    'worker_id' => $worker->id,
-                    'attendance_type' => $validated['attendance_type'],
-                    'photo_path' => $photoPath,
-                    'photo_data' => $photoData,
-                    'check_in_at' => $checkInAt,
-                    'daily_rate_snapshot' => $dailyRate,
-                    'rate_applied' => $basePay,
-                    'cabling_metres' => $cablingMetres,
-                    'cameras_installed' => $camerasInstalled,
-                    'cabling_rate' => $cablingRate,
-                    'cabling_amount' => $cablingAmount,
-                    'extra_amount' => $extraAmount,
-                    'extra_description' => $validated['extra_description'] ?? null,
-                    'total_amount' => $totalAmount,
-                    'notes' => $validated['notes'] ?? null,
-                ]);
+                // Check if record already exists for this work day and worker
+                $attendance = ProjectWorkerAttendance::where('work_day_id', $workDay->id)
+                    ->where('worker_id', $worker->id)
+                    ->first();
+
+                if ($attendance) {
+                    $attendance->update([
+                        'attendance_type' => $validated['attendance_type'],
+                        'photo_path' => $photoPath ?: $attendance->photo_path,
+                        'photo_data' => $photoData ?: $attendance->photo_data,
+                        'check_in_at' => $attendance->check_in_at ?: $checkInAt,
+                        'daily_rate_snapshot' => $dailyRate,
+                        'rate_applied' => $basePay,
+                        'cabling_metres' => $cablingMetres,
+                        'cameras_installed' => $camerasInstalled,
+                        'cabling_rate' => $cablingRate,
+                        'cabling_amount' => $cablingAmount,
+                        'extra_amount' => $extraAmount,
+                        'extra_description' => $validated['extra_description'] ?? $attendance->extra_description,
+                        'total_amount' => $totalAmount,
+                        'notes' => $validated['notes'] ?? $attendance->notes,
+                    ]);
+                } else {
+                    $attendance = ProjectWorkerAttendance::create([
+                        'work_day_id' => $workDay->id,
+                        'worker_id' => $worker->id,
+                        'attendance_type' => $validated['attendance_type'],
+                        'photo_path' => $photoPath,
+                        'photo_data' => $photoData,
+                        'check_in_at' => $checkInAt,
+                        'daily_rate_snapshot' => $dailyRate,
+                        'rate_applied' => $basePay,
+                        'cabling_metres' => $cablingMetres,
+                        'cameras_installed' => $camerasInstalled,
+                        'cabling_rate' => $cablingRate,
+                        'cabling_amount' => $cablingAmount,
+                        'extra_amount' => $extraAmount,
+                        'extra_description' => $validated['extra_description'] ?? null,
+                        'total_amount' => $totalAmount,
+                        'notes' => $validated['notes'] ?? null,
+                    ]);
+                }
+                $savedWorkerNames[] = $worker->name;
             }
 
             ProjectAuditLog::logChange(
                 $project,
-                'worker_attendance_logged',
+                count($workers) > 1 ? 'bulk_worker_attendance_logged' : 'worker_attendance_logged',
                 null,
-                null,
-                "Attendance logged for worker {$worker->name} on {$workDate} ({$validated['attendance_type']} day)" . ($photoPath ? ' with verified photo' : '')
+                [
+                    'workers_count' => count($workers),
+                    'worker_names' => implode(', ', $savedWorkerNames),
+                    'attendance_type' => $validated['attendance_type'],
+                    'work_date' => $workDate,
+                    'has_photo' => !empty($photoPath) || !empty($photoData),
+                ],
+                count($workers) > 1
+                    ? "Bulk attendance logged for " . count($workers) . " workers (" . implode(', ', $savedWorkerNames) . ") on " . $workDate . " (" . $validated['attendance_type'] . " shift)"
+                    : "Attendance logged for worker {$workers->first()->name} on {$workDate} ({$validated['attendance_type']} day)" . ($photoPath ? ' with verified photo' : '')
             );
 
             DB::commit();
 
+            $statusMessage = count($workers) > 1
+                ? __('✓ Bulk attendance successfully marked for :count workers on :project!', ['count' => count($workers), 'project' => $project->title])
+                : __('✓ Attendance successfully logged for :name on :date!', ['name' => $workers->first()->name, 'date' => $workDate]);
+
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'success' => true,
-                    'message' => __('✓ Attendance successfully logged for :name on :date!', ['name' => $worker->name, 'date' => $workDate]),
+                    'message' => $statusMessage,
                     'redirect_url' => route('workers.attendance.index', ['date' => $workDate, 'view' => 'day']),
                 ]);
             }
@@ -586,7 +795,7 @@ class WorkerAttendanceController extends Controller
             return redirect()->route('workers.attendance.index', [
                 'date' => $workDate,
                 'view' => 'day'
-            ])->with('status', __('✓ Attendance successfully logged for :name on :date!', ['name' => $worker->name, 'date' => $workDate]));
+            ])->with('status', $statusMessage);
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Error storing worker attendance: ' . $e->getMessage());

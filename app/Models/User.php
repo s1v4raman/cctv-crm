@@ -7,6 +7,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
@@ -144,12 +145,27 @@ class User extends Authenticatable
      */
     public function getAvatarUrlAttribute(): ?string
     {
-        if (!empty($this->avatar)) {
-            if (filter_var($this->avatar, FILTER_VALIDATE_URL)) {
-                return $this->avatar;
-            }
-            return asset('storage/' . $this->avatar);
+        if (empty($this->avatar)) {
+            return null;
         }
+
+        // 1. Direct Base64 Data URI (immune to ephemeral cloud container disk wiping)
+        if (str_starts_with($this->avatar, 'data:image/')) {
+            return $this->avatar;
+        }
+
+        // 2. External URL (e.g. Google OAuth profile avatar)
+        if (filter_var($this->avatar, FILTER_VALIDATE_URL)) {
+            return $this->avatar;
+        }
+
+        // 3. Local filesystem storage path (only if the physical file actually exists on disk)
+        $cleanPath = ltrim(str_replace('public/', '', $this->avatar), '/');
+        if (Storage::disk('public')->exists($cleanPath)) {
+            return asset('storage/' . $cleanPath);
+        }
+
+        // If file was purged by ephemeral container sleep/restart, return null so a clean initial badge renders instead of a broken image
         return null;
     }
 
