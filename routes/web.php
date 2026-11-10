@@ -580,6 +580,8 @@ Route::middleware(['auth', 'technician'])->prefix('technician')->name('technicia
     Route::post('/service-tickets/{ticket}/update', [TechnicianPortalController::class, 'updateServiceTicket'])->name('service-tickets.update');
     Route::get('/surveys/{siteSurvey}', [TechnicianPortalController::class, 'showSurvey'])->name('surveys.show');
     Route::post('/surveys/{siteSurvey}/complete', [TechnicianPortalController::class, 'completeSurvey'])->name('surveys.complete');
+    Route::post('/tasks/{task}/log-time', [TechnicianPortalController::class, 'logTaskTime'])->name('tasks.log-time');
+    Route::post('/tasks/{task}/status', [TechnicianPortalController::class, 'updateTaskStatus'])->name('tasks.updateStatus');
 });
 
 // PWA Field Tasks Start URL Route (Direct entry for Field Operations)

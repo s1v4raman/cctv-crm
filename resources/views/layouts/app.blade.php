@@ -982,8 +982,8 @@
             /* Also style table search inputs to have the same crisp 1px dark border */
             .crm-search-bar,
             .search-input-box,
-            input[type="search"],
-            input[name="search"]:not([type="hidden"]) {
+            input[type="search"]:not([class*="border-0"]):not([class*="bg-transparent"]),
+            input[name="search"]:not([type="hidden"]):not([class*="border-0"]):not([class*="bg-transparent"]) {
                 height: 38px !important;
                 min-height: 38px !important;
                 max-height: 38px !important;
@@ -998,8 +998,8 @@
 
             html.dark .crm-search-bar,
             html.dark .search-input-box,
-            html.dark input[type="search"],
-            html.dark input[name="search"]:not([type="hidden"]) {
+            html.dark input[type="search"]:not([class*="border-0"]):not([class*="bg-transparent"]),
+            html.dark input[name="search"]:not([type="hidden"]):not([class*="border-0"]):not([class*="bg-transparent"]) {
                 background-color: var(--card-bg) !important;
                 border: 1px solid var(--input-border) !important;
                 color: var(--text-main) !important;
@@ -1007,8 +1007,8 @@
 
             .crm-search-bar:focus,
             .search-input-box:focus,
-            input[type="search"]:focus,
-            input[name="search"]:not([type="hidden"]):focus {
+            input[type="search"]:not([class*="border-0"]):not([class*="bg-transparent"]):focus,
+            input[name="search"]:not([type="hidden"]):not([class*="border-0"]):not([class*="bg-transparent"]):focus {
                 border-color: var(--crm-accent, #2563eb) !important;
                 outline: none !important;
                 box-shadow: 0 0 0 3px rgba(var(--crm-accent-rgb, 37, 99, 235), 0.28) !important;
@@ -1549,7 +1549,7 @@
                                      x-transition:leave="transition ease-in duration-75"
                                      x-transition:leave-start="transform opacity-100 scale-100"
                                      x-transition:leave-end="transform opacity-0 scale-95"
-                                     class="absolute right-0 mt-2 w-80 sm:w-96 bg-[var(--card-bg)] rounded-xl border border-[var(--card-border)] shadow-xl py-0 z-50 overflow-hidden text-xs text-slate-700 dark:text-slate-200"
+                                     class="fixed sm:absolute inset-x-3 sm:inset-x-auto sm:right-0 top-14 sm:top-auto sm:mt-2 w-auto sm:w-96 max-w-[calc(100vw-1.5rem)] bg-[var(--card-bg)] rounded-2xl border border-[var(--card-border)] shadow-2xl py-0 z-50 overflow-hidden text-xs text-slate-700 dark:text-slate-200"
                                      style="display: none;">
                                     
                                     {{-- Popover Header --}}

@@ -158,7 +158,7 @@
                                     <div class="flex items-center gap-2.5 min-w-0">
                                         <input type="checkbox" name="worker_ids[]" value="{{ $w->id }}" data-name="{{ $w->name }}" data-rate="{{ (float) $w->daily_rate }}" data-photo="{{ $w->photo_url ?? '' }}" onchange="updateBulkCounter()" class="bulk-worker-check w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300 dark:border-slate-600 cursor-pointer">
                                         @if($w->photo_url)
-                                            <img src="{{ $w->photo_url }}" alt="{{ $w->name }}" class="w-7 h-7 rounded-full object-cover shrink-0 border border-slate-200 dark:border-slate-700">
+                                            <img src="{{ $w->photo_url }}" alt="{{ $w->name }}" class="w-7 h-7 rounded-full object-cover shrink-0 border border-slate-200 dark:border-slate-700" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'64\' height=\'64\' viewBox=\'0 0 64 64\'><rect width=\'64\' height=\'64\' rx=\'32\' fill=\'%233b82f6\'/><text x=\'50%25\' y=\'54%25\' text-anchor=\'middle\' dominant-baseline=\'middle\' fill=\'%23ffffff\' font-family=\'sans-serif\' font-size=\'22\' font-weight=\'bold\'>{{ strtoupper(mb_substr($w->name, 0, 1)) }}</text></svg>';">
                                         @else
                                             <div class="w-7 h-7 rounded-full bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300 font-bold text-xs flex items-center justify-center shrink-0">
                                                 {{ strtoupper(mb_substr($w->name, 0, 1)) }}

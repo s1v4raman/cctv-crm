@@ -232,6 +232,17 @@ class ProfileController extends Controller
             }
         }
 
-        abort(404);
+        $name = $user?->name ?? 'User';
+        $initials = collect(explode(' ', $name))->map(fn($p) => strtoupper(substr($p, 0, 1)))->take(2)->implode('') ?: 'U';
+        $svg = '<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">'
+            . '<defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#4f46e5"/><stop offset="100%" stop-color="#3730a3"/></linearGradient></defs>'
+            . '<rect width="128" height="128" rx="64" fill="url(#g)"/>'
+            . '<text x="50%" y="54%" text-anchor="middle" dominant-baseline="middle" fill="#ffffff" font-family="system-ui, -apple-system, sans-serif" font-size="44" font-weight="700">'
+            . htmlspecialchars($initials) . '</text></svg>';
+
+        return response($svg, 200, [
+            'Content-Type' => 'image/svg+xml',
+            'Cache-Control' => 'public, max-age=86400',
+        ]);
     }
 }

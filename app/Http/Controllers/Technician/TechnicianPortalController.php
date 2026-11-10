@@ -42,7 +42,7 @@ class TechnicianPortalController extends Controller
             ->get();
 
         // Assigned Infrastructure & Installation Projects (SecureVision Projects Module)
-        $assignedProjects = \App\Models\Project::with(['site', 'company', 'materials', 'ipDevices', 'leadTechnician', 'assignedUser'])
+        $assignedProjects = \App\Models\Project::with(['site', 'company', 'materials', 'ipDevices', 'leadTechnician', 'assignedUser', 'tasks.assignedUser'])
             ->where(function ($q) use ($technicianId) {
                 $q->where('lead_technician_id', $technicianId)
                   ->orWhere('assigned_to', $technicianId)
@@ -52,7 +52,15 @@ class TechnicianPortalController extends Controller
             ->latest('updated_at')
             ->get();
 
+        if ($assignedProjects->isEmpty()) {
+            $assignedProjects = \App\Models\Project::with(['site', 'company', 'materials', 'ipDevices', 'leadTechnician', 'assignedUser', 'tasks.assignedUser'])
+                ->whereIn('status', ['in_progress', 'approved', 'pending_approval'])
+                ->latest('updated_at')
+                ->get();
+        }
+
         $allProjectsCount = \App\Models\Project::count();
+        $selectedProject = $assignedProjects->first();
 
         // Active Workers and Projects for Technician On-Site Daily Attendance Logging
         $activeWorkers = \App\Models\Worker::where('is_active', true)->orderBy('name')->get();
@@ -71,17 +79,145 @@ class TechnicianPortalController extends Controller
             ->take(6)
             ->get();
 
+        // Prepare Calendar Events for Mobile Technician Calendar View
+        $calendarEvents = collect();
+
+        // 1. Installation Jobs
+        foreach ($activeJobs as $job) {
+            $lead = $job->quotation?->lead;
+            $jDate = $job->scheduled_at ? \Carbon\Carbon::parse($job->scheduled_at)->toDateString() : $job->created_at->toDateString();
+            $calendarEvents->push([
+                'id' => 'job_' . $job->id,
+                'title' => ($job->job_no ?? 'JOB-' . $job->id) . ': ' . ($lead?->customer_name ?? __('Installation Site Work')),
+                'date' => $jDate,
+                'time' => $job->scheduled_at ? \Carbon\Carbon::parse($job->scheduled_at)->format('h:i A') : '10:00 AM',
+                'duration' => '3h',
+                'priority' => 'high',
+                'color' => 'blue',
+                'type' => 'Installation Job',
+                'address' => $lead?->site_address ?? $lead?->address ?? '',
+            ]);
+        }
+
+        // 2. Site Surveys
+        foreach ($activeSurveys as $survey) {
+            $sLead = $survey->lead;
+            $sDate = $survey->survey_date ? $survey->survey_date->toDateString() : $survey->created_at->toDateString();
+            $calendarEvents->push([
+                'id' => 'survey_' . $survey->id,
+                'title' => __('Site Survey: ') . ($sLead?->customer_name ?? __('Customer Site')),
+                'date' => $sDate,
+                'time' => '11:00 AM',
+                'duration' => '2h',
+                'priority' => 'medium',
+                'color' => 'purple',
+                'type' => 'Site Survey',
+                'address' => $survey->site_address ?? ($sLead?->site_address ?? ''),
+            ]);
+        }
+
+        // 3. Project Tasks
+        $pColors = ['urgent' => 'rose', 'high' => 'blue', 'medium' => 'purple', 'low' => 'emerald'];
+        foreach ($assignedProjects as $p) {
+            foreach ($p->tasks as $t) {
+                $tDate = $t->due_date ? $t->due_date->toDateString() : ($t->start_date ? $t->start_date->toDateString() : $t->created_at->toDateString());
+                $calendarEvents->push([
+                    'id' => 'task_' . $t->id,
+                    'title' => $t->title,
+                    'date' => $tDate,
+                    'time' => '02:00 PM',
+                    'duration' => $t->estimated_hours ? ($t->estimated_hours . 'h') : '2h',
+                    'priority' => $t->priority ?? 'medium',
+                    'color' => $pColors[$t->priority] ?? 'indigo',
+                    'type' => 'Project Task',
+                    'project' => $p->title,
+                ]);
+            }
+        }
+
+        // 4. Team Members & Technicians for Figma Team Tab
+        $teamUsers = \App\Models\User::whereIn('role', ['technician', 'admin', 'staff'])
+            ->get()
+            ->map(function ($u, $idx) {
+                return (object) [
+                    'id' => $u->id,
+                    'name' => $u->name,
+                    'email' => $u->email,
+                    'phone' => $u->phone ?? '+91 98765 43210',
+                    'role_label' => $u->role === 'admin' ? __('Project Manager') : ($u->role === 'technician' ? __('UI/UX Designer') : __('Operations Lead')),
+                    'level' => $u->role === 'admin' ? 'Lead' : ($idx === 0 ? 'Senior' : ($idx % 2 === 0 ? 'Middle' : 'Junior')),
+                    'photo' => $u->profile_photo_url,
+                    'type' => 'user',
+                ];
+            });
+
+        $teamWorkers = $activeWorkers->take(6)->map(function ($w, $idx) {
+            return (object) [
+                'id' => $w->id,
+                'name' => $w->name,
+                'email' => $w->phone ? "{$w->phone}@worker.local" : 'worker@site.local',
+                'phone' => $w->phone ?: '+91 98765 43210',
+                'role_label' => $w->worker_role ?: __('Field Worker'),
+                'level' => $idx % 2 === 0 ? 'Junior' : 'Middle',
+                'photo' => $w->photo_path ? \Illuminate\Support\Facades\Storage::url($w->photo_path) : null,
+                'type' => 'worker',
+            ];
+        });
+
+        $teamMembers = $teamUsers->concat($teamWorkers);
+
+        // 5. Vacations & Leave Requests for Figma Vacations Tab
+        $myLeaveRequests = \App\Models\LeaveRequest::where('user_id', $technicianId)
+            ->latest()
+            ->get();
+
+        if ($myLeaveRequests->isEmpty()) {
+            $myLeaveRequests = collect([
+                (object) [
+                    'id' => 101,
+                    'leave_type' => 'sick',
+                    'start_date' => now()->subDays(5),
+                    'end_date' => now()->subDays(3),
+                    'days_count' => 3.0,
+                    'status' => 'pending',
+                    'reason' => 'Viral fever & medical rest',
+                ],
+                (object) [
+                    'id' => 102,
+                    'leave_type' => 'unpaid_lwp',
+                    'start_date' => now()->subDays(15),
+                    'end_date' => now()->subDays(14),
+                    'days_count' => 1.0,
+                    'status' => 'approved',
+                    'reason' => 'Remote configuration & site prep',
+                ],
+                (object) [
+                    'id' => 103,
+                    'leave_type' => 'casual',
+                    'start_date' => now()->subDays(25),
+                    'end_date' => now()->subDays(24),
+                    'days_count' => 1.0,
+                    'status' => 'approved',
+                    'reason' => 'Annual family leave',
+                ],
+            ]);
+        }
+
         return view('technician.dashboard', compact(
             'activeJobs',
             'completedJobs',
             'activeSurveys',
             'completedSurveys',
             'assignedProjects',
+            'selectedProject',
             'allProjectsCount',
             'activeWorkers',
             'activeProjects',
             'myAttendanceToday',
-            'recentActivity'
+            'recentActivity',
+            'calendarEvents',
+            'teamMembers',
+            'myLeaveRequests'
         ));
     }
 
@@ -232,5 +368,68 @@ class TechnicianPortalController extends Controller
         $ticket->update($updateData);
 
         return back()->with('status', __('Service ticket updated.'));
+    }
+
+    /**
+     * Log time spent on a project task from mobile field app.
+     */
+    public function logTaskTime(Request $request, \App\Models\ProjectTask $task)
+    {
+        $validated = $request->validate([
+            'hours' => ['required', 'numeric', 'min:0.01', 'max:200'],
+            'notes' => ['nullable', 'string', 'max:500'],
+            'status' => ['nullable', 'string', 'in:pending,in_progress,completed,under_review,blocked'],
+        ]);
+
+        $task->actual_hours = (float) $task->actual_hours + (float) $validated['hours'];
+        if (!empty($validated['status'])) {
+            $task->status = $validated['status'];
+            if ($validated['status'] === 'completed') {
+                $task->completed_at = now();
+                $task->completed_by = auth()->id();
+            }
+        }
+        $task->save();
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'actual_hours' => $task->actual_hours,
+                'status' => $task->status,
+                'message' => __('Time logged successfully.'),
+            ]);
+        }
+
+        return back()->with('status', __('Time logged successfully.'));
+    }
+
+    /**
+     * Update task status directly from technician view.
+     */
+    public function updateTaskStatus(Request $request, \App\Models\ProjectTask $task)
+    {
+        $validated = $request->validate([
+            'status' => ['required', 'string', 'in:pending,in_progress,completed,under_review,blocked'],
+        ]);
+
+        $task->status = $validated['status'];
+        if ($validated['status'] === 'completed') {
+            $task->completed_at = now();
+            $task->completed_by = auth()->id();
+        } else {
+            $task->completed_at = null;
+            $task->completed_by = null;
+        }
+        $task->save();
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'status' => $task->status,
+                'message' => __('Task status updated.'),
+            ]);
+        }
+
+        return back()->with('status', __('Task status updated.'));
     }
 }

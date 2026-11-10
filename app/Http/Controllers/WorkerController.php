@@ -376,7 +376,18 @@ class WorkerController extends Controller
             }
         }
 
-        abort(404, 'Worker photo not found');
+        // Return a clean initials SVG avatar fallback with 200 OK so broken 404 images never appear in browser console
+        $initials = collect(explode(' ', $worker->name))->map(fn($p) => strtoupper(substr($p, 0, 1)))->take(2)->implode('') ?: 'W';
+        $svg = '<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">'
+            . '<defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#3b82f6"/><stop offset="100%" stop-color="#1d4ed8"/></linearGradient></defs>'
+            . '<rect width="128" height="128" rx="64" fill="url(#g)"/>'
+            . '<text x="50%" y="54%" text-anchor="middle" dominant-baseline="middle" fill="#ffffff" font-family="system-ui, -apple-system, sans-serif" font-size="44" font-weight="700">'
+            . htmlspecialchars($initials) . '</text></svg>';
+
+        return response($svg, 200, [
+            'Content-Type' => 'image/svg+xml',
+            'Cache-Control' => 'public, max-age=86400',
+        ]);
     }
 
     /**
@@ -391,31 +402,48 @@ class WorkerController extends Controller
             ])->setPrivate();
         }
 
-        $worker = Worker::where('photo_path', 'LIKE', '%' . $filename)->first();
-        if ($worker && !empty($worker->photo_data)) {
-            $data = $worker->photo_data;
-            $mime = 'image/jpeg';
-            if (str_starts_with($data, 'data:')) {
-                if (preg_match('/^data:([^;]+);base64,/', $data, $m)) {
-                    $mime = $m[1];
+        $worker = null;
+        try {
+            $worker = Worker::where('photo_path', 'LIKE', '%' . $filename)->first();
+            if ($worker && !empty($worker->photo_data)) {
+                $data = $worker->photo_data;
+                $mime = 'image/jpeg';
+                if (str_starts_with($data, 'data:')) {
+                    if (preg_match('/^data:([^;]+);base64,/', $data, $m)) {
+                        $mime = $m[1];
+                    }
+                    $data = preg_replace('/^data:[^;]+;base64,/', '', $data);
                 }
-                $data = preg_replace('/^data:[^;]+;base64,/', '', $data);
-            }
-            $data = str_replace(' ', '+', $data);
-            $binary = base64_decode($data);
+                $data = str_replace(' ', '+', $data);
+                $binary = base64_decode($data);
 
-            if ($binary) {
-                try {
-                    Storage::disk('public')->put($path, $binary);
-                } catch (\Throwable $e) {}
+                if ($binary) {
+                    try {
+                        Storage::disk('public')->put($path, $binary);
+                    } catch (\Throwable $e) {}
 
-                return response($binary, 200, [
-                    'Content-Type' => $mime,
-                    'Cache-Control' => 'private, max-age=31536000, immutable',
-                ]);
+                    return response($binary, 200, [
+                        'Content-Type' => $mime,
+                        'Cache-Control' => 'private, max-age=31536000, immutable',
+                    ]);
+                }
             }
+        } catch (\Throwable $e) {
+            // Log warning and fall through to SVG avatar
         }
 
-        abort(404, 'Worker photo not found');
+        // Return a clean initials SVG avatar fallback with 200 OK so broken 404 images never appear in browser console
+        $name = $worker?->name ?? 'Worker';
+        $initials = collect(explode(' ', $name))->map(fn($p) => strtoupper(substr($p, 0, 1)))->take(2)->implode('') ?: 'W';
+        $svg = '<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">'
+            . '<defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#3b82f6"/><stop offset="100%" stop-color="#1d4ed8"/></linearGradient></defs>'
+            . '<rect width="128" height="128" rx="64" fill="url(#g)"/>'
+            . '<text x="50%" y="54%" text-anchor="middle" dominant-baseline="middle" fill="#ffffff" font-family="system-ui, -apple-system, sans-serif" font-size="44" font-weight="700">'
+            . htmlspecialchars($initials) . '</text></svg>';
+
+        return response($svg, 200, [
+            'Content-Type' => 'image/svg+xml',
+            'Cache-Control' => 'public, max-age=86400',
+        ]);
     }
 }
