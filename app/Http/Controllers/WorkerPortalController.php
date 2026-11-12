@@ -160,6 +160,8 @@ class WorkerPortalController extends Controller
         $totalEarned = $worker->getTotalEarnedLifetime();
         $totalPaid = $worker->getTotalPaidLifetime();
         $runningBalance = $worker->getRunningBalance();
+        $daysWorked = (int) $worker->attendances()->count();
+        $totalAdvances = (float) $worker->wagePayments()->where('payment_type', 'advance')->sum('amount');
         $recentPayments = $worker->wagePayments()
             ->where('amount', '>', 0)
             ->latest('payment_date')
@@ -184,6 +186,8 @@ class WorkerPortalController extends Controller
             'totalEarned',
             'totalPaid',
             'runningBalance',
+            'daysWorked',
+            'totalAdvances',
             'recentPayments'
         ));
     }

@@ -42,11 +42,26 @@
       x-data="workerPortalData()"
       @theme-mode-changed.window="isDarkMode = $event.detail.isDark">
 
-    {{-- TOP NAVBAR --}}
+    {{-- TOP NAVBAR (56px compact native app bar on mobile, full brand bar on desktop) --}}
     <header class="sticky top-0 z-30 bg-white dark:bg-[#0f172a] border-b border-slate-200 dark:border-slate-800">
-        {{-- On a phone the buttons wrap under the brand instead of pushing the page sideways --}}
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 py-2 flex flex-wrap items-center justify-between gap-x-3 gap-y-2" style="min-height: 4rem;">
-            <div class="flex items-center gap-3">
+        <div class="max-w-4xl mx-auto px-3 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-2">
+            {{-- Mobile (< 768px): Worker Avatar / Initials + Name --}}
+            <div class="flex md:hidden items-center gap-2.5 min-w-0">
+                @if ($todayAttendance && $todayAttendance->photo_path)
+                    <img src="{{ $todayAttendance->photo_url }}" alt="{{ $worker->name }}" class="w-8 h-8 rounded-full object-cover border border-emerald-500 shrink-0">
+                @else
+                    <div class="w-8 h-8 rounded-full bg-[#65a30d] text-white font-bold text-xs flex items-center justify-center shrink-0">
+                        {{ strtoupper(mb_substr($worker->name, 0, 1)) }}
+                    </div>
+                @endif
+                <div class="min-w-0">
+                    <div class="text-sm font-bold text-slate-900 dark:text-white truncate leading-tight">{{ $worker->name }}</div>
+                    <div class="text-[10px] font-semibold text-slate-500 dark:text-slate-400 truncate leading-tight">{{ __('Daily Wage Worker') }}</div>
+                </div>
+            </div>
+
+            {{-- Desktop & Tablet (>= 768px): Brand & Portal Title --}}
+            <div class="hidden md:flex items-center gap-3">
                 <x-brand-logo :mark="true" class="h-9 w-9 shrink-0" />
                 <div>
                     <div class="flex items-center gap-2">
@@ -57,8 +72,8 @@
                 </div>
             </div>
 
-            <div class="flex items-center gap-3 ml-auto">
-                <div class="hidden sm:flex flex-col text-right">
+            <div class="flex items-center gap-1.5 sm:gap-3 ml-auto shrink-0">
+                <div class="hidden md:flex flex-col text-right">
                     <span class="text-xs font-bold text-slate-900 dark:text-white">{{ $worker->name }}</span>
                     <span class="text-[11px] text-slate-500 dark:text-slate-400 font-mono">{{ $worker->phone }}</span>
                 </div>
@@ -97,9 +112,10 @@
                     @csrf
                     <button type="submit" 
                             title="{{ __('Sign Out') }}"
-                            class="btn-md px-3 py-1.5 rounded-[4px] border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5 transition-colors cursor-pointer">
-                        <svg class="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-                        <span>{{ __('Logout') }}</span>
+                            aria-label="{{ __('Sign Out') }}"
+                            class="inline-flex items-center justify-center w-8 h-8 sm:w-auto sm:px-3 sm:py-1.5 rounded-[6px] sm:rounded-[4px] border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300 gap-1.5 transition-colors cursor-pointer shrink-0">
+                        <svg class="w-4 h-4 sm:w-3.5 sm:h-3.5 text-slate-500 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                        <span class="hidden sm:inline">{{ __('Logout') }}</span>
                     </button>
                 </form>
             </div>
@@ -107,7 +123,7 @@
     </header>
 
     {{-- MAIN CONTENT WRAPPER --}}
-    <main class="max-w-4xl mx-auto px-4 sm:px-6 py-5 space-y-5 pb-16">
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 py-5 space-y-5 pb-24 md:pb-12">
 
         {{-- STATUS ALERTS --}}
         @if (session('status'))
@@ -130,8 +146,9 @@
             </div>
         @endif
 
-        {{-- WORKER HERO SUMMARY CARD --}}
-        <div class="bg-white dark:bg-[#0f172a] rounded-[4px] border border-slate-200 dark:border-slate-800 p-4 sm:p-5">
+        {{-- WORKER HERO SUMMARY CARD (Home tab on mobile, always visible on desktop/tablet) --}}
+        <div :class="activeTab === 'home' ? 'block' : 'hidden md:block'"
+             class="bg-white dark:bg-[#0f172a] rounded-xl md:rounded-[4px] border border-slate-200 dark:border-slate-800 p-4 sm:p-5">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div class="flex items-center gap-3.5">
                     @if ($todayAttendance && $todayAttendance->photo_path)
@@ -187,25 +204,53 @@
                 </div>
             </div>
 
-            {{-- 3-METRIC STATS GRID --}}
-            <div class="grid grid-cols-3 gap-2.5 mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-center">
-                <div class="p-2.5 bg-slate-50 dark:bg-slate-800/60 rounded-[4px] border border-slate-200 dark:border-slate-700">
-                    <span class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{{ __('Cabling Today') }}</span>
-                    <span class="text-lg font-bold text-slate-900 dark:text-white">{{ number_format($todayCablingMetres, 1) }} <span class="text-xs font-normal text-slate-500 dark:text-slate-400">{{ __('m') }}</span></span>
+            {{-- 2x2 KPI GRID ON HOME (Today's Pay, Days Worked, Pending Balance, Total Advances) --}}
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+                <div class="p-3 bg-blue-50/70 dark:bg-blue-950/30 rounded-xl md:rounded-[4px] border border-blue-200/70 dark:border-blue-900/60">
+                    <span class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{{ __("Today's Pay") }}</span>
+                    <span class="text-lg font-extrabold text-blue-700 dark:text-blue-400">&#8377;{{ number_format($todayEarnings, 0) }}</span>
                 </div>
-                <div class="p-2.5 bg-slate-50 dark:bg-slate-800/60 rounded-[4px] border border-slate-200 dark:border-slate-700">
-                    <span class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{{ __('Cameras Today') }}</span>
-                    <span class="text-lg font-bold text-slate-900 dark:text-white">{{ $todayCamerasCount }} <span class="text-xs font-normal text-slate-500 dark:text-slate-400">{{ __('nos') }}</span></span>
+                <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl md:rounded-[4px] border border-slate-200 dark:border-slate-700">
+                    <span class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{{ __('Days Worked') }}</span>
+                    <span class="text-lg font-extrabold text-slate-900 dark:text-white">{{ $daysWorked }} <span class="text-xs font-normal text-slate-500 dark:text-slate-400">{{ __('days') }}</span></span>
                 </div>
-                <div class="p-2.5 bg-slate-50 dark:bg-slate-800/60 rounded-[4px] border border-slate-200 dark:border-slate-700">
-                    <span class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{{ __('Lifetime Meters') }}</span>
-                    <span class="text-lg font-bold text-slate-900 dark:text-white">{{ number_format($lifetimeCablingMetres, 0) }} <span class="text-xs font-normal text-slate-500 dark:text-slate-400">{{ __('m') }}</span></span>
+                <div class="p-3 bg-emerald-50/60 dark:bg-emerald-950/30 rounded-xl md:rounded-[4px] border border-emerald-200/70 dark:border-emerald-900/60">
+                    <span class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{{ __('Pending Balance') }}</span>
+                    <span class="text-lg font-extrabold text-emerald-700 dark:text-emerald-400">&#8377;{{ number_format(max($runningBalance, 0), 0) }}</span>
+                </div>
+                <div class="p-3 bg-amber-50/60 dark:bg-amber-950/30 rounded-xl md:rounded-[4px] border border-amber-200/70 dark:border-amber-900/60">
+                    <span class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{{ __('Total Advances') }}</span>
+                    <span class="text-lg font-extrabold text-amber-700 dark:text-amber-400">&#8377;{{ number_format($totalAdvances, 0) }}</span>
+                </div>
+            </div>
+
+            {{-- 1-Tap Mobile Quick Actions (Home Tab < 768px) --}}
+            <div class="md:hidden grid grid-cols-1 gap-2.5 mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+                <button type="button" @click="activeTab = 'attendance'"
+                        class="w-full min-h-[48px] px-4 py-3 rounded-xl bg-[#65a30d] hover:bg-[#4d7c0f] text-white font-bold text-sm flex items-center justify-between transition cursor-pointer">
+                    <span class="flex items-center gap-2.5">
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        <span>{{ $todayAttendance ? __('Update Punch & Selfie') : __('Punch Attendance') }}</span>
+                    </span>
+                    <span class="text-xs opacity-90">&rarr;</span>
+                </button>
+                <div class="grid grid-cols-2 gap-2.5">
+                    <button type="button" @click="activeTab = 'work'"
+                            class="min-h-[48px] px-3 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-2 transition cursor-pointer">
+                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        <span>{{ __('Log Work') }}</span>
+                    </button>
+                    <button type="button" @click="activeTab = 'history'"
+                            class="min-h-[48px] px-3 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 font-bold text-xs flex items-center justify-center gap-2 transition cursor-pointer">
+                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span>{{ __('Pay & History') }}</span>
+                    </button>
                 </div>
             </div>
         </div>
 
-        {{-- WORKER NAVIGATION TABS --}}
-        <div class="flex border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0f172a] rounded-t-[4px] overflow-hidden">
+        {{-- WORKER NAVIGATION TABS (Desktop & Tablet >= 768px) --}}
+        <div class="hidden md:flex border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0f172a] rounded-t-[4px] overflow-hidden">
             <button type="button" 
                     @click="activeTab = 'attendance'" 
                     class="flex-1 py-3 px-2 text-xs font-bold text-center border-b-2 flex items-center justify-center gap-2 transition-colors cursor-pointer"
@@ -232,8 +277,8 @@
         {{-- ========================================================= --}}
         {{-- SECTION 1: ATTENDANCE PUNCH WITH PHOTO VERIFICATION        --}}
         {{-- ========================================================= --}}
-        <div x-show="activeTab === 'attendance'" class="space-y-4">
-            <div class="bg-white dark:bg-[#0f172a] rounded-b-[4px] border border-t-0 border-slate-200 dark:border-slate-800 p-4 sm:p-6 space-y-5">
+        <div x-show="activeTab === 'attendance' || (activeTab === 'home' && isDesktop)" class="space-y-4">
+            <div class="bg-white dark:bg-[#0f172a] rounded-xl md:rounded-b-[4px] border md:border-t-0 border-slate-200 dark:border-slate-800 p-4 sm:p-6 space-y-5">
                 
                 <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
                     <div>
@@ -249,7 +294,7 @@
                     @endif
                 </div>
 
-                <form method="POST" action="{{ route('worker.attendance.punch') }}" enctype="multipart/form-data" class="space-y-4">
+                <form method="POST" action="{{ route('worker.attendance.punch') }}" enctype="multipart/form-data" class="space-y-4" @submit="submittingPunch = true">
                     @csrf
 
                     <!-- Project Selection -->
@@ -307,7 +352,7 @@
                         <div class="flex flex-col sm:flex-row items-center gap-4">
                             
                             {{-- Live Video / Canvas / Image Preview Area --}}
-                            <div class="w-full sm:w-64 h-48 bg-slate-200 dark:bg-slate-800 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-[4px] flex items-center justify-center overflow-hidden relative">
+                            <div class="w-full sm:w-64 h-56 sm:h-48 bg-slate-200 dark:bg-slate-800 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl md:rounded-[4px] flex items-center justify-center overflow-hidden relative">
                                 
                                 {{-- 1. Live Camera Stream --}}
                                 <video x-ref="videoElement" 
@@ -338,14 +383,14 @@
                                 <canvas x-ref="canvasElement" class="hidden"></canvas>
                             </div>
 
-                            {{-- Camera & Upload Action Buttons --}}
-                            <div class="flex-1 w-full space-y-2">
+                            {{-- Camera & Upload Action Buttons (Full-width 48px thumb targets) --}}
+                            <div class="flex-1 w-full space-y-2.5">
                                 
                                 {{-- Button to Start Live Camera --}}
                                 <button type="button" 
                                         x-show="!cameraActive" 
                                         @click="startCamera()" 
-                                        class="btn-md w-full py-2.5 px-3 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-[4px] flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-sm">
+                                        class="w-full min-h-[48px] py-3 px-4 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 text-xs font-bold rounded-xl md:rounded-[4px] flex items-center justify-center gap-2 transition-colors cursor-pointer">
                                     <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
                                     <span x-text="previewUrl ? {{ Js::from(__('Retake Live Selfie')) }} : {{ Js::from(__('Open Front/Site Camera')) }}"></span>
                                 </button>
@@ -354,23 +399,26 @@
                                 <button type="button" 
                                         x-show="cameraActive" 
                                         @click="snapPhoto()" 
-                                        class="btn-md w-full py-2.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-[4px] flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-sm">
+                                        class="w-full min-h-[48px] py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl md:rounded-[4px] flex items-center justify-center gap-2 transition-colors cursor-pointer">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                                     <span>{{ __('Capture Selfie Photo Now') }}</span>
                                 </button>
 
-                                {{-- Standard File / Mobile Camera App Upload --}}
+                                {{-- Full-width 48px Selfie Upload Button --}}
                                 <div class="relative">
-                                    <label for="photo_file" class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">
-                                        {{ __('Or Choose File / Phone Gallery:') }}
-                                    </label>
                                     <input type="file" 
                                            id="photo_file" 
                                            name="photo" 
                                            accept="image/*" 
                                            capture="user"
                                            @change="handleFileUpload($event)"
-                                           class="block w-full cursor-pointer">
+                                           class="sr-only">
+                                    <label for="photo_file"
+                                           class="w-full min-h-[48px] py-3 px-4 rounded-xl md:rounded-[4px] border font-bold text-xs flex items-center justify-center gap-2 cursor-pointer transition-colors"
+                                           :class="(previewUrl || hasExistingPhoto) ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300' : 'bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-100 hover:bg-slate-200/70'">
+                                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M16 12l-4-4m0 0l-4 4m4-4v9"/></svg>
+                                        <span x-text="previewUrl ? {{ Js::from(__('Selfie Selected ✓ (Change Photo)')) }} : (hasExistingPhoto ? {{ Js::from(__('Selfie Verified ✓ (Upload New)')) }} : {{ Js::from(__('Upload Selfie / Choose Gallery')) }})"></span>
+                                    </label>
                                 </div>
 
                                 <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-snug">
@@ -396,9 +444,11 @@
                     <!-- Submit Punch Button -->
                     <div class="pt-2">
                         <button type="submit" 
-                                class="btn-md w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-[4px] transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-sm">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                            <span>{{ $todayAttendance ? __("Update Today's Punch & Selfie Photo") : __('Confirm Attendance & Punch Selfie') }}</span>
+                                :disabled="submittingPunch"
+                                class="w-full min-h-[48px] py-3 px-4 bg-[#65a30d] hover:bg-[#4d7c0f] disabled:opacity-70 text-white font-bold text-sm rounded-xl md:rounded-[4px] transition-colors flex items-center justify-center gap-2 cursor-pointer">
+                            <svg x-show="!submittingPunch" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <svg x-show="submittingPunch" x-cloak class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg>
+                            <span x-text="submittingPunch ? {{ Js::from(__('Saving Attendance...')) }} : {{ Js::from($todayAttendance ? __("Update Today's Punch & Selfie Photo") : __('Clock In & Confirm Attendance')) }}"></span>
                         </button>
                     </div>
                 </form>
@@ -409,14 +459,14 @@
         {{-- SECTION 2: LOG FIELD WORK (CABLING, CAMERAS & MATERIALS)  --}}
         {{-- ========================================================= --}}
         <div x-show="activeTab === 'work'" class="space-y-4">
-            <div class="bg-white dark:bg-[#0f172a] rounded-b-[4px] border border-t-0 border-slate-200 dark:border-slate-800 p-4 sm:p-6 space-y-5">
+            <div class="bg-white dark:bg-[#0f172a] rounded-xl md:rounded-b-[4px] border md:border-t-0 border-slate-200 dark:border-slate-800 p-4 sm:p-6 space-y-5">
                 
                 <div class="border-b border-slate-100 dark:border-slate-800 pb-3">
                     <h3 class="text-sm font-bold text-slate-900 dark:text-white">{{ __('Log Daily Field Work & Material Consumption') }}</h3>
                     <p class="text-xs text-slate-500 dark:text-slate-400">{{ __('Record cabling pulled and cameras mounted today. Automatically connects to Project BOM and daily wage calculations.') }}</p>
                 </div>
 
-                <form method="POST" action="{{ route('worker.work.log') }}" class="space-y-4">
+                <form method="POST" action="{{ route('worker.work.log') }}" class="space-y-4" @submit="submittingWork = true">
                     @csrf
 
                     <!-- Project Selection -->
@@ -446,13 +496,19 @@
                                 {{ __('Per Metre Payout') }}: <strong class="font-bold" x-text="'&#8377;' + getProjectRate().toFixed(2) + '/m'"></strong>
                             </span>
                         </div>
-                        <div class="relative">
-                            <input type="number" id="cabling_metres" name="cabling_metres" 
-                                   step="0.5" min="0" 
-                                   x-model="cablingMetres"
-                                   placeholder="{{ __('e.g. 120') }}" 
-                                   class="w-full px-3 py-2 text-base font-bold text-slate-900 dark:text-white rounded-[4px] border border-slate-300 dark:border-slate-700 focus:outline-none focus:border-blue-600 bg-white dark:bg-[#0b132b]">
-                            <span class="absolute right-3 top-2.5 text-xs font-bold text-slate-400">{{ __('METERS') }}</span>
+                        <div class="flex items-center gap-2">
+                            <button type="button" @click="stepCabling(-5)" aria-label="Decrease cabling metres"
+                                    class="min-h-[44px] min-w-[44px] rounded-xl md:rounded-[4px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 font-bold text-lg flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer shrink-0">&minus;</button>
+                            <div class="relative flex-1">
+                                <input type="number" id="cabling_metres" name="cabling_metres" 
+                                       step="0.5" min="0" 
+                                       x-model="cablingMetres"
+                                       placeholder="{{ __('e.g. 120') }}" 
+                                       class="w-full min-h-[44px] px-3 py-2 text-base font-bold text-slate-900 dark:text-white rounded-xl md:rounded-[4px] border border-slate-300 dark:border-slate-700 focus:outline-none focus:border-blue-600 bg-white dark:bg-[#0b132b]">
+                                <span class="absolute right-3 top-3 text-xs font-bold text-slate-400">{{ __('METERS') }}</span>
+                            </div>
+                            <button type="button" @click="stepCabling(5)" aria-label="Increase cabling metres"
+                                    class="min-h-[44px] min-w-[44px] rounded-xl md:rounded-[4px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 font-bold text-lg flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer shrink-0">+</button>
                         </div>
                         
                         <!-- Quick Add Meters Chips -->
@@ -482,13 +538,19 @@
                         <label for="cameras_installed" class="block text-xs font-bold text-emerald-900 dark:text-emerald-300 uppercase tracking-wider">
                             {{ __('Cameras Fixed & Terminated (IP / Dome / Bullet)') }}
                         </label>
-                        <div class="relative">
-                            <input type="number" id="cameras_installed" name="cameras_installed" 
-                                   step="1" min="0" 
-                                   x-model="camerasInstalled"
-                                   placeholder="{{ __('e.g. 4') }}" 
-                                   class="w-full px-3 py-2 text-base font-bold text-slate-900 dark:text-white rounded-[4px] border border-slate-300 dark:border-slate-700 focus:outline-none focus:border-blue-600 bg-white dark:bg-[#0b132b]">
-                            <span class="absolute right-3 top-2.5 text-xs font-bold text-slate-400">{{ __('UNITS') }}</span>
+                        <div class="flex items-center gap-2">
+                            <button type="button" @click="stepCameras(-1)" aria-label="Decrease cameras"
+                                    class="min-h-[44px] min-w-[44px] rounded-xl md:rounded-[4px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 font-bold text-lg flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer shrink-0">&minus;</button>
+                            <div class="relative flex-1">
+                                <input type="number" id="cameras_installed" name="cameras_installed" 
+                                       step="1" min="0" 
+                                       x-model="camerasInstalled"
+                                       placeholder="{{ __('e.g. 4') }}" 
+                                       class="w-full min-h-[44px] px-3 py-2 text-base font-bold text-slate-900 dark:text-white rounded-xl md:rounded-[4px] border border-slate-300 dark:border-slate-700 focus:outline-none focus:border-blue-600 bg-white dark:bg-[#0b132b]">
+                                <span class="absolute right-3 top-3 text-xs font-bold text-slate-400">{{ __('UNITS') }}</span>
+                            </div>
+                            <button type="button" @click="stepCameras(1)" aria-label="Increase cameras"
+                                    class="min-h-[44px] min-w-[44px] rounded-xl md:rounded-[4px] border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 font-bold text-lg flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer shrink-0">+</button>
                         </div>
 
                         <!-- Quick Add Cameras Chips -->
@@ -558,9 +620,11 @@
                     <!-- Submit Work Log Button -->
                     <div class="pt-2">
                         <button type="submit" 
-                                class="btn-md w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-[4px] transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-sm">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                            <span>{{ __('Submit Work Entry & Update Project BOM') }}</span>
+                                :disabled="submittingWork"
+                                class="w-full min-h-[48px] py-3 px-4 bg-blue-600 hover:bg-blue-700 disabled:opacity-70 text-white font-bold text-sm rounded-xl md:rounded-[4px] transition-colors flex items-center justify-center gap-2 cursor-pointer">
+                            <svg x-show="!submittingWork" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            <svg x-show="submittingWork" x-cloak class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg>
+                            <span x-text="submittingWork ? {{ Js::from(__('Saving Work Log...')) }} : {{ Js::from(__('Submit Work Entry & Update Project BOM')) }}"></span>
                         </button>
                     </div>
                 </form>
@@ -571,7 +635,7 @@
         {{-- SECTION 3: MY WORK & PAY (attendance, work logged, money)  --}}
         {{-- ========================================================= --}}
         <div x-show="activeTab === 'history'" class="space-y-4">
-            <div class="bg-white dark:bg-[#0f172a] rounded-b-[4px] border border-t-0 border-slate-200 dark:border-slate-800 p-4 sm:p-6 space-y-4">
+            <div class="bg-white dark:bg-[#0f172a] rounded-xl md:rounded-b-[4px] border md:border-t-0 border-slate-200 dark:border-slate-800 p-4 sm:p-6 space-y-4">
 
                 {{-- Pay summary --}}
                 <div>
@@ -596,7 +660,23 @@
                 <div>
                     <h3 class="text-sm font-bold text-slate-900 dark:text-white">{{ __('Payments received') }}</h3>
                     @if ($recentPayments->isNotEmpty())
-                        <div class="mt-2 overflow-x-auto border border-slate-200 dark:border-slate-800 rounded-[4px]">
+                        {{-- Mobile Payment Cards (< 768px) --}}
+                        <div class="md:hidden mt-2 space-y-2">
+                            @foreach ($recentPayments as $wagePayment)
+                                <div class="p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/50 space-y-1">
+                                    <div class="flex items-center justify-between gap-2">
+                                        <span class="text-xs font-bold text-slate-900 dark:text-white">{{ $wagePayment->payment_date?->translatedFormat('d M Y') }}</span>
+                                        <span class="shrink-0 px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-emerald-100 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">&#8377;{{ number_format($wagePayment->amount, 0) }}</span>
+                                    </div>
+                                    <div class="text-[11px] text-slate-500 dark:text-slate-400">
+                                        {{ $wagePayment->payment_type === 'advance' ? __('Advance') : __('Wages') }} &bull; {{ ['cash' => __('Cash'), 'upi' => __('UPI / GPay'), 'bank' => __('Bank')][$wagePayment->payment_mode] ?? ucfirst((string) $wagePayment->payment_mode) }}@if(!empty($wagePayment->reference_no)) &bull; {{ $wagePayment->reference_no }}@endif
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+
+                        {{-- Desktop/Tablet Payments Table (>= 768px) --}}
+                        <div class="hidden md:block mt-2 overflow-x-auto border border-slate-200 dark:border-slate-800 rounded-[4px]">
                             <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-800 text-xs">
                                 <thead class="bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-bold text-[11px]">
                                     <tr>
@@ -629,7 +709,49 @@
                 </div>
 
                 @if ($recentAttendances->count() > 0)
-                    <div class="overflow-x-auto border border-slate-200 dark:border-slate-800 rounded-[4px]">
+                    {{-- Mobile Attendance & Work Cards (< 768px) --}}
+                    <div class="md:hidden space-y-2.5">
+                        @foreach ($recentAttendances as $att)
+                            @php
+                                $attMultiplier = in_array($att->attendance_type, ['half', 'half_day']) ? 0.5 : 1.0;
+                                $attBaseWage = (float) $att->daily_rate_snapshot * $attMultiplier;
+                                $attCablingRate = (float) ($att->cabling_rate ?: 20.00);
+                                $attCablingAmount = (float) ($att->cabling_amount ?: ($att->cabling_metres * $attCablingRate));
+                            @endphp
+                            <div class="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 space-y-2">
+                                <div class="flex items-center justify-between gap-2">
+                                    <span class="text-xs font-bold text-slate-900 dark:text-white">{{ $att->workDay?->work_date ? $att->workDay->work_date->translatedFormat('d M Y') : __('N/A') }}</span>
+                                    <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold {{ !in_array($att->attendance_type, ['half', 'half_day']) ? 'bg-blue-100 dark:bg-blue-950/70 text-blue-800 dark:text-blue-300' : 'bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300' }}">
+                                        {{ in_array($att->attendance_type, ['half', 'half_day']) ? __('Half Day') : __('Full Day') }}
+                                    </span>
+                                </div>
+                                <div class="flex items-center justify-between gap-2.5">
+                                    <div class="flex items-center gap-2.5 min-w-0">
+                                        @if ($att->photo_path)
+                                            <img src="{{ $att->photo_url }}" alt="{{ __('Attendance Photo') }}"
+                                                 @click="openPhotoPreview('{{ $att->photo_url }}')"
+                                                 class="w-10 h-10 rounded-full object-cover border border-slate-300 dark:border-slate-700 cursor-pointer shrink-0">
+                                        @else
+                                            <div class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-slate-500 text-xs font-bold shrink-0">--</div>
+                                        @endif
+                                        <div class="min-w-0">
+                                            <div class="text-xs font-medium text-slate-700 dark:text-slate-200 truncate">{{ $att->workDay?->project?->title ?? __('Site Work') }}</div>
+                                            <div class="text-[11px] text-slate-500 dark:text-slate-400">
+                                                {{ number_format($att->cabling_metres, 1) }}m {{ __('cabling') }} &bull; {{ $att->cameras_installed }} {{ __('cams') }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="text-right shrink-0">
+                                        <div class="text-sm font-extrabold text-blue-700 dark:text-blue-400">&#8377;{{ number_format($att->total_amount, 0) }}</div>
+                                        <div class="text-[10px] text-slate-400">&#8377;{{ number_format($attBaseWage, 0) }} {{ __('base') }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    {{-- Desktop/Tablet Attendance Table (>= 768px) --}}
+                    <div class="hidden md:block overflow-x-auto border border-slate-200 dark:border-slate-800 rounded-[4px]">
                         <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-800 text-xs">
                             <thead class="bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-bold uppercase text-[11px] tracking-wider">
                                 <tr>
@@ -705,6 +827,37 @@
 
     </main>
 
+    {{-- MOBILE BOTTOM NAVIGATION BAR (< 768px) --}}
+    <nav aria-label="{{ __('Worker Navigation') }}"
+         class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white dark:bg-[#0f172a] border-t border-slate-200 dark:border-slate-800">
+        <div class="grid grid-cols-4 h-16">
+            <button type="button" @click="activeTab = 'home'; window.scrollTo({ top: 0, behavior: 'smooth' })"
+                    class="flex flex-col items-center justify-center gap-0.5 text-[11px] font-bold transition-colors cursor-pointer"
+                    :class="activeTab === 'home' ? 'text-[#65a30d]' : 'text-slate-500 dark:text-slate-400'">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                <span>{{ __('Home') }}</span>
+            </button>
+            <button type="button" @click="activeTab = 'attendance'; window.scrollTo({ top: 0, behavior: 'smooth' })"
+                    class="flex flex-col items-center justify-center gap-0.5 text-[11px] font-bold transition-colors cursor-pointer"
+                    :class="activeTab === 'attendance' ? 'text-[#65a30d]' : 'text-slate-500 dark:text-slate-400'">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                <span>{{ __('Attendance') }}</span>
+            </button>
+            <button type="button" @click="activeTab = 'work'; window.scrollTo({ top: 0, behavior: 'smooth' })"
+                    class="flex flex-col items-center justify-center gap-0.5 text-[11px] font-bold transition-colors cursor-pointer"
+                    :class="activeTab === 'work' ? 'text-[#65a30d]' : 'text-slate-500 dark:text-slate-400'">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                <span>{{ __('Work Log') }}</span>
+            </button>
+            <button type="button" @click="activeTab = 'history'; window.scrollTo({ top: 0, behavior: 'smooth' })"
+                    class="flex flex-col items-center justify-center gap-0.5 text-[11px] font-bold transition-colors cursor-pointer"
+                    :class="activeTab === 'history' ? 'text-[#65a30d]' : 'text-slate-500 dark:text-slate-400'">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span>{{ __('Pay & History') }}</span>
+            </button>
+        </div>
+    </nav>
+
     {{-- PHOTO PREVIEW MODAL --}}
     <div x-show="modalPhotoUrl" 
          x-cloak 
@@ -729,7 +882,10 @@
         function workerPortalData() {
             return {
                 isDarkMode: document.documentElement.classList.contains('dark'),
-                activeTab: 'attendance',
+                isDesktop: window.innerWidth >= 768,
+                activeTab: window.innerWidth < 768 ? 'home' : 'attendance',
+                submittingPunch: false,
+                submittingWork: false,
                 attendanceType: '{{ $todayAttendance?->attendance_type ?? "full_day" }}',
                 selectedProjectId: '{{ $todayAttendance?->workDay?->project_id ?? ($activeProjects->first()?->id ?? "") }}',
                 projectRates: {{ \Illuminate\Support\Js::from($projectRates ?? []) }},
@@ -755,6 +911,13 @@
                         this.isDarkMode = document.documentElement.classList.contains('dark');
                     });
                     observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+
+                    window.addEventListener('resize', () => {
+                        this.isDesktop = window.innerWidth >= 768;
+                        if (this.isDesktop && this.activeTab === 'home') {
+                            this.activeTab = 'attendance';
+                        }
+                    });
                 },
 
                 toggleTheme() {
@@ -772,8 +935,16 @@
                     this.cablingMetres = (parseFloat(this.cablingMetres) || 0) + m;
                 },
 
+                stepCabling(delta) {
+                    this.cablingMetres = Math.max(0, (parseFloat(this.cablingMetres) || 0) + delta);
+                },
+
                 addCameras(c) {
                     this.camerasInstalled = (parseInt(this.camerasInstalled) || 0) + c;
+                },
+
+                stepCameras(delta) {
+                    this.camerasInstalled = Math.max(0, (parseInt(this.camerasInstalled) || 0) + delta);
                 },
 
                 openPhotoPreview(url) {
