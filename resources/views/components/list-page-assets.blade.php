@@ -35,31 +35,119 @@
     .ld-views { display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-bottom: 1px solid var(--ld-border); }
     .ld-chip { display: inline-flex; align-items: center; height: 28px; padding: 0 10px; border-radius: 4px; background: var(--ld-chip); font-size: 13px; font-weight: 600; color: var(--ld-text); }
     .ld-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 16px; min-height: 48px; flex-wrap: wrap; }
+    
+    /* Native Scrollbar Silencing for Clean App View */
+    .no-scrollbar::-webkit-scrollbar,
+    .no-scrollbar::-webkit-scrollbar-track,
+    .no-scrollbar::-webkit-scrollbar-thumb,
+    .no-scrollbar::-webkit-scrollbar-corner {
+        display: none !important;
+        width: 0 !important;
+        height: 0 !important;
+        background: transparent !important;
+        border: none !important;
+        opacity: 0 !important;
+    }
+    .no-scrollbar {
+        -ms-overflow-style: none !important;
+        scrollbar-width: none !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
 
-    .ld-tool { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 9px; border-radius: 4px; font-size: 14px; color: var(--ld-text); background: transparent; border: 0; cursor: pointer; }
+    @media (max-width: 768px) {
+        /* Mobile App View: Hide legacy desktop view chip & 3-dots to prevent duplicates */
+        .ld-views { 
+            display: none !important; 
+        }
+        .ld-views .ld-chip,
+        .ld-chip { 
+            display: none !important; 
+        }
+        .ld-views .ld-icon-btn,
+        .ld-views .relative:has(> .ld-icon-btn) {
+            display: none !important;
+        }
+
+        /* Unified Mobile Action Toolbar */
+        .ld-toolbar { 
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: wrap !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            gap: 8px !important; 
+            padding: 10px 14px !important; 
+            min-height: auto !important;
+        }
+        .ld-toolbar > div { 
+            width: auto !important; 
+            display: flex !important;
+            align-items: center !important;
+            gap: 6px !important;
+            flex-wrap: wrap !important; 
+        }
+        .ld-toolbar .ld-head-actions {
+            margin-left: auto !important;
+            display: flex !important;
+            flex-wrap: wrap !important;
+            max-width: 100% !important;
+            align-items: center !important;
+            gap: 6px !important;
+        }
+        .ld-tool {
+            height: 32px !important;
+            padding: 0 10px !important;
+            font-size: 12px !important;
+            border-radius: 8px !important;
+            background: var(--ld-card) !important;
+            border: 1px solid var(--ld-input) !important;
+        }
+    }
+
+    .ld-tool { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px; border-radius: 6px; font-size: 13px; color: var(--ld-text); background: transparent; border: 0; cursor: pointer; white-space: nowrap !important; flex-shrink: 0 !important; }
     .ld-tool:hover, .ld-tool[aria-expanded="true"] { background: var(--ld-grey-btn); }
     .ld-tool.is-on { background: var(--ld-accent-soft); color: var(--ld-accent); }
     .ld-tool svg { width: 16px; height: 16px; flex-shrink: 0; }
-    .ld-icon-btn { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 4px; color: var(--ld-muted); }
+    .ld-icon-btn { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 6px; color: var(--ld-muted); flex-shrink: 0 !important; }
     .ld-icon-btn:hover { background: var(--ld-grey-btn); color: var(--ld-text); }
     .ld-icon-btn.is-on { background: var(--ld-accent-soft); color: var(--ld-accent); }
     .ld-icon-btn svg { width: 18px; height: 18px; }
     .ld-sep { width: 1px; height: 22px; background: var(--ld-border); margin: 0 4px; }
 
-    .ld-accent { display: inline-flex; align-items: center; height: 32px; padding: 0 14px; background: var(--ld-accent) !important; color: #fff !important; font-size: 14px; font-weight: 600; border: 1px solid var(--ld-accent-edge) !important; text-decoration: none !important; cursor: pointer; }
+    .ld-accent { display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 8px !important; min-height: 38px !important; height: auto !important; padding: 8px 16px !important; background: var(--ld-accent) !important; color: #fff !important; font-size: 13px !important; font-weight: 700 !important; border: 1px solid var(--ld-accent-edge) !important; border-radius: 12px !important; text-decoration: none !important; cursor: pointer !important; white-space: nowrap !important; flex-shrink: 0 !important; line-height: 1.25 !important; }
     .ld-accent:hover { background: var(--ld-accent-hover) !important; }
     /* an id outranks the app-wide rule that paints every filter-form submit button blue */
     #ld-apply { background: var(--ld-accent) !important; border-color: var(--ld-accent-edge) !important; color: #fff !important; }
     #ld-apply:hover { background: var(--ld-accent-hover) !important; }
-    .ld-split { --control-height: 30px; --radius-control: 0px; display: inline-flex; height: 32px; border: 1px solid var(--ld-accent-edge); border-radius: 4px; overflow: hidden; background: var(--ld-accent); }
-    .ld-split > a, .ld-split > button { display: inline-flex; align-items: center; height: 100% !important; margin: 0; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; background: var(--ld-accent) !important; color: #fff !important; font-size: 14px; font-weight: 600; text-decoration: none !important; cursor: pointer; }
-    .ld-split > a { padding: 0 14px; }
-    .ld-split > button { width: 30px; justify-content: center; padding: 0 !important; border-left: 1px solid rgba(255, 255, 255, .35) !important; }
+    .ld-split { --control-height: 38px; --radius-control: 12px; display: inline-flex; height: 38px; min-height: 38px; border: 1px solid var(--ld-accent-edge); border-radius: 12px; overflow: hidden; background: var(--ld-accent); }
+    .ld-split > a, .ld-split > button { display: inline-flex; align-items: center; justify-content: center; height: 100% !important; min-height: 38px !important; margin: 0; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; background: var(--ld-accent) !important; color: #fff !important; font-size: 13px; font-weight: 700; text-decoration: none !important; cursor: pointer; }
+    .ld-split > a { padding: 0 16px; }
+    .ld-split > button { width: 34px; justify-content: center; padding: 0 !important; border-left: 1px solid rgba(255, 255, 255, .35) !important; }
     .ld-split > a:hover, .ld-split > button:hover, .ld-split > button[aria-expanded="true"] { background: var(--ld-accent-hover) !important; }
-    .ld-outline { display: inline-flex; align-items: center; justify-content: center; height: 32px; min-width: 40px; padding: 0 10px; background: var(--ld-card) !important; color: var(--ld-text) !important; border: 1px solid var(--ld-input) !important; border-radius: 4px; font-size: 14px; cursor: pointer; text-decoration: none !important; }
+    .ld-outline { display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 8px !important; min-height: 38px !important; height: auto !important; min-width: 38px; padding: 8px 14px !important; background: var(--ld-card) !important; color: var(--ld-text) !important; border: 1px solid var(--ld-input) !important; border-radius: 12px !important; font-size: 13px !important; font-weight: 700 !important; cursor: pointer !important; text-decoration: none !important; white-space: nowrap !important; flex-shrink: 0 !important; line-height: 1.25 !important; }
     .ld-outline:hover { background: var(--ld-hover) !important; }
 
-    .ld-menu { position: absolute; z-index: 40; min-width: 190px; margin-top: 4px; padding: 4px 0; background: var(--ld-card); border: 1px solid var(--ld-border); border-radius: 6px; box-shadow: 0 8px 24px rgba(15, 23, 42, .12); }
+    .ld-menu { position: absolute; z-index: 50; min-width: 190px; max-width: calc(100vw - 32px); margin-top: 6px; padding: 6px 0; background: var(--ld-card); border: 1px solid var(--ld-border); border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1); }
+    @media (max-width: 768px) {
+        .ld-menu { 
+            position: fixed !important;
+            top: 50% !important;
+            left: 50% !important;
+            right: auto !important;
+            bottom: auto !important;
+            transform: translate(-50%, -50%) !important;
+            width: calc(100vw - 48px) !important;
+            max-width: 320px !important;
+            z-index: 99999 !important;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25), 0 8px 10px -6px rgba(0, 0, 0, 0.15), 0 0 0 100vmax rgba(15, 23, 42, 0.45) !important;
+            border-radius: 16px !important;
+            padding: 8px 0 !important;
+        }
+        .ld-menu.left-0, .ld-menu.right-0 { 
+            left: 50% !important; 
+            right: auto !important; 
+        }
+    }
     .ld-menu a, .ld-menu button, .ld-menu label { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 10px; padding: 7px 12px; font-size: 14px; color: var(--ld-text) !important; text-align: left; text-decoration: none !important; background: transparent; border: 0; cursor: pointer; }
     .ld-menu a:hover, .ld-menu button:hover, .ld-menu label:hover { background: var(--ld-hover); }
     /* the app-wide button rule (five :not() filters, app.css) centres button text; the repeated

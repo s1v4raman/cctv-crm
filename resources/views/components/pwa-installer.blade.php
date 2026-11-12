@@ -1,5 +1,5 @@
 {{-- PWA Registration & Mobile Install Banner --}}
-<div x-data="pwaAppInstaller()" x-cloak class="relative z-50">
+<div x-data="pwaAppInstaller()" x-cloak class="relative z-40">
 
     {{-- Offline Floating Notification Bar --}}
     <div x-show="!isOnline" 
@@ -31,42 +31,7 @@
         <span>{{ __('Connection Restored: Real-time sync active.') }}</span>
     </div>
 
-    {{-- Mobile "Install App" Action Banner --}}
-    <div x-show="canInstall && !isDismissed && !isStandalone" 
-         x-transition:enter="transition ease-out duration-300"
-         x-transition:enter-start="translate-y-full opacity-0"
-         x-transition:enter-end="translate-y-0 opacity-100"
-         x-transition:leave="transition ease-in duration-200"
-         x-transition:leave-start="translate-y-0 opacity-100"
-         x-transition:leave-end="translate-y-full opacity-0"
-         class="fixed bottom-3 inset-x-3 sm:max-w-md sm:mx-auto p-3.5 rounded-2xl bg-slate-900/95 dark:bg-slate-900/95 text-white border border-blue-500/30 backdrop-blur-md shadow-2xl shadow-black/60 flex items-center gap-3 z-40">
-        
-        <img src="{{ asset('icons/icon-192x192.png') }}" alt="App Icon" class="w-11 h-11 rounded-xl shrink-0 shadow-md border border-slate-700/60 object-cover">
-        
-        <div class="flex-1 min-w-0">
-            <div class="text-xs font-bold text-white tracking-tight flex items-center gap-1.5 truncate">
-                <span>Precision IT Field App</span>
-                <span class="px-1.5 py-0.2 rounded text-[9px] bg-blue-600/80 font-bold uppercase tracking-wider">PWA</span>
-            </div>
-            <div class="text-[11px] text-slate-300 truncate">
-                {{ __('Install to home screen for 1-tap offline use') }}
-            </div>
-        </div>
-
-        <div class="flex items-center gap-1.5 shrink-0">
-            <button @click="installApp()" 
-                    class="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-bold text-xs shadow-md transition cursor-pointer">
-                {{ __('Install') }}
-            </button>
-            <button @click="dismissBanner()" 
-                    class="p-1 rounded-lg text-slate-400 hover:text-white transition cursor-pointer"
-                    title="{{ __('Dismiss') }}">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-            </button>
-        </div>
-    </div>
+    {{-- Offline & Online Restored Notification Bars (top-of-viewport, non-blocking) --}}
 </div>
 
 <script>
@@ -79,12 +44,26 @@
             isOnline: navigator.onLine,
             showRestoredNotification: false,
 
+            syncGlobalState() {
+                const state = {
+                    canInstall: this.canInstall,
+                    isStandalone: this.isStandalone,
+                    isDismissed: this.isDismissed,
+                    install: () => this.installApp(),
+                    dismiss: () => this.dismissBanner(),
+                };
+                window.crmPwa = state;
+                window.dispatchEvent(new CustomEvent('crm:pwa-state', { detail: state }));
+            },
+
             init() {
+                this.syncGlobalState();
+
                 // 1. Register Service Worker
                 if ('serviceWorker' in navigator) {
                     window.addEventListener('load', () => {
                         navigator.serviceWorker.register('/field/sw.js', { scope: '/field/' })
-                            .then((reg) => {
+                            .then(() => {
                                 // Service Worker registered with scope: /field/
                             })
                             .catch((err) => {
@@ -98,13 +77,15 @@
                     e.preventDefault();
                     this.deferredPrompt = e;
                     this.canInstall = true;
+                    this.syncGlobalState();
                 });
 
                 // 3. Detect when app has been installed
                 window.addEventListener('appinstalled', () => {
                     this.canInstall = false;
+                    this.isStandalone = true;
                     this.deferredPrompt = null;
-                    // console.log('PWA installed successfully');
+                    this.syncGlobalState();
                 });
 
                 // 4. Listen for Network Status changes
@@ -132,11 +113,13 @@
                     this.canInstall = false;
                 }
                 this.deferredPrompt = null;
+                this.syncGlobalState();
             },
 
             dismissBanner() {
                 this.isDismissed = true;
                 localStorage.setItem('pwa_install_dismissed', 'true');
+                this.syncGlobalState();
             }
         };
     }

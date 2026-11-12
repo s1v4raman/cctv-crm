@@ -146,16 +146,16 @@
                         ['On leave',   $leaveCount],
                         ['Not marked', $unmarkedCount],
                     ] as [$label, $value])
-                        <div class="bg-white dark:bg-slate-900 px-4 py-3">
-                            <dt class="text-xs text-slate-500 dark:text-slate-400">{{ $label }}</dt>
-                            <dd class="text-xl font-semibold text-slate-900 dark:text-white mt-0.5">{{ $value }}</dd>
+                        <div class="bg-white dark:bg-slate-900 px-3 py-2 sm:px-4 sm:py-3">
+                            <dt class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">{{ $label }}</dt>
+                            <dd class="text-lg sm:text-xl font-semibold text-slate-900 dark:text-white mt-0.5">{{ $value }}</dd>
                         </div>
                     @endforeach
                 </dl>
 
                 {{-- Day picker and marking everyone left over --}}
-                <div class="flex flex-wrap items-center justify-between gap-3">
-                    <form method="GET" action="{{ route('attendance.index') }}" class="flex items-center gap-2">
+                <div class="flex flex-wrap items-center justify-between gap-2 sm:gap-3">
+                    <form method="GET" action="{{ route('attendance.index') }}" class="flex items-center gap-1.5 sm:gap-2">
                         <input type="hidden" name="tab" value="daily">
                         <input type="hidden" name="role" value="{{ $roleFilter }}">
                         <input type="hidden" name="search" value="{{ $search }}">
@@ -164,18 +164,45 @@
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
                         </a>
                         <input aria-label="Date" type="date" name="date" value="{{ $selectedDate }}" onchange="this.form.submit()"
-                               class="text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-1.5 text-slate-800 dark:text-slate-200">
+                               class="text-xs sm:text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-2.5 sm:px-3 py-1.5 text-slate-800 dark:text-slate-200">
                         <a href="{{ route('attendance.index', ['tab' => 'daily', 'date' => \Carbon\Carbon::parse($selectedDate)->addDay()->toDateString(), 'role' => $roleFilter, 'search' => $search]) }}"
                            class="btn-secondary px-2" title="Next day" aria-label="Next day">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
                         </a>
                         @if($selectedDate !== now()->toDateString())
-                            <a href="{{ route('attendance.index', ['tab' => 'daily', 'role' => $roleFilter, 'search' => $search]) }}" class="text-sm action-link ml-1">Today</a>
+                            <a href="{{ route('attendance.index', ['tab' => 'daily', 'role' => $roleFilter, 'search' => $search]) }}" class="text-xs sm:text-sm action-link ml-1">Today</a>
                         @endif
                     </form>
 
                     @if($unmarkedCount > 0)
-                    <div class="flex items-center gap-2 flex-wrap">
+                    {{-- Compact Bulk Mark menu on mobile (< 768px) --}}
+                    <div x-data="{ bulkOpen: false }" class="relative md:hidden" @click.outside="bulkOpen = false">
+                        <button type="button" @click="bulkOpen = !bulkOpen" class="btn-secondary text-xs px-2.5 py-1.5 inline-flex items-center gap-1">
+                            <span>Bulk Mark</span>
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                        <div x-show="bulkOpen" x-cloak class="absolute right-0 mt-1.5 w-48 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-lg py-1 z-30">
+                            <form method="POST" action="{{ route('attendance.batch-store') }}" data-confirm="Mark the {{ $unmarkedCount }} unmarked {{ Str::plural('person', $unmarkedCount) }} present (full day, 8h) for {{ \Carbon\Carbon::parse($selectedDate)->format('d M Y') }}?">
+                                @csrf
+                                <input type="hidden" name="mode" value="bulk_day">
+                                <input type="hidden" name="date" value="{{ $selectedDate }}">
+                                <input type="hidden" name="status" value="present">
+                                <input type="hidden" name="target" value="unmarked">
+                                <button type="submit" class="w-full text-left px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer">Mark unmarked present</button>
+                            </form>
+                            <form method="POST" action="{{ route('attendance.batch-store') }}" data-confirm="Mark the {{ $unmarkedCount }} unmarked {{ Str::plural('person', $unmarkedCount) }} absent for {{ \Carbon\Carbon::parse($selectedDate)->format('d M Y') }}?">
+                                @csrf
+                                <input type="hidden" name="mode" value="bulk_day">
+                                <input type="hidden" name="date" value="{{ $selectedDate }}">
+                                <input type="hidden" name="status" value="absent">
+                                <input type="hidden" name="target" value="unmarked">
+                                <button type="submit" class="w-full text-left px-3 py-2 text-xs font-medium text-rose-600 dark:text-rose-400 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer">Mark unmarked absent</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    {{-- Full buttons on Desktop & Tablet (>= 768px) --}}
+                    <div class="hidden md:flex items-center gap-2 flex-wrap">
                         <form method="POST" action="{{ route('attendance.batch-store') }}" data-confirm="Mark the {{ $unmarkedCount }} unmarked {{ Str::plural('person', $unmarkedCount) }} present (full day, 8h) for {{ \Carbon\Carbon::parse($selectedDate)->format('d M Y') }}?">
                             @csrf
                             <input type="hidden" name="mode" value="bulk_day">

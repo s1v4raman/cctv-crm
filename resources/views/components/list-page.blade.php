@@ -59,7 +59,8 @@
     @endisset
 
     <div class="ld-band">
-        <div class="ld-views">
+        {{-- Desktop / Tablet (>= 768px): Chip and optional 3-dots view switcher --}}
+        <div class="hidden md:flex ld-views items-center justify-start gap-2">
             <span class="ld-chip">{{ $currentView['label'] }}</span>
             @if(count($views) > 1)
                 <div class="relative" @click.outside="menu === 'views' && (menu = null)">
@@ -77,6 +78,21 @@
                 </div>
             @endif
         </div>
+
+        {{-- Mobile App View (< 768px): Single-row horizontal scrollable pill strip --}}
+        @if(count($views) > 1)
+            <div class="md:hidden px-2.5 py-2 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+                <div class="flex items-center flex-nowrap overflow-x-auto no-scrollbar gap-1.5">
+                    @foreach($views as $v)
+                        <a href="{{ $v['url'] }}" 
+                           class="shrink-0 whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-bold transition-all inline-flex items-center gap-1.5 border {{ $v['active'] ? 'bg-[#65a30d] text-white border-[#65a30d] shadow-xs font-black' : 'bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100' }}"
+                           @if($v['active']) style="color: #ffffff !important;" @endif>
+                            <span>{{ $v['label'] }}</span>
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+        @endif
 
         <div class="ld-toolbar">
             <x-list-mass-actions :list="$key" part="bar" />
@@ -174,6 +190,23 @@
 
         <section class="ld-main">
             <div class="ld-card flex flex-col flex-1 min-h-0">
+                @isset($mobileCards)
+                    <div class="md:hidden divide-y divide-slate-100 dark:divide-slate-800">
+                        {{ $mobileCards }}
+                        @if($paginator->isEmpty())
+                            <div class="p-8 text-center text-sm" style="color: var(--ld-muted)">
+                                @if($filterCount > 0 || (request()->except('page', 'per_page', 'sort') !== []))
+                                    {{ __($filteredText) }}
+                                    @if($clearUrl)<a href="{{ $clearUrl }}" class="ml-1 underline plain-link" style="color: var(--ld-accent, var(--crm-accent, #2563eb)); font-weight: 600;">{{ __('Show all') }}</a>@endif
+                                @else
+                                    {{ __($emptyText) }}
+                                    @if($createUrl)<a href="{{ $createUrl }}" class="ml-1 underline plain-link" style="color: var(--ld-accent, var(--crm-accent, #2563eb)); font-weight: 600;">{{ __($createLabel) }}</a>@endif
+                                @endif
+                            </div>
+                        @endif
+                    </div>
+                @endisset
+                <div class="{{ isset($mobileCards) ? 'hidden md:block flex-1 min-h-0' : 'flex-1 min-h-0' }}">
                 <div class="ld-scroll">
                     <table class="ld-table">
                         <thead>
@@ -215,6 +248,7 @@
                             @endif
                         </tbody>
                     </table>
+                </div>
                 </div>
 
                 <div class="ld-foot">

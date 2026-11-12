@@ -71,12 +71,12 @@
                 {{-- Mode Switcher: Single Worker vs Bulk Workers --}}
                 <div class="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
                     <span class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">{{ __('Attendance Mode') }}:</span>
-                    <div class="inline-flex p-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold">
-                        <button type="button" id="att-mode-btn-single" onclick="setAttendanceMode('single')" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md transition-all bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs cursor-pointer">
+                    <div class="inline-flex p-1 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold gap-1">
+                        <button type="button" id="att-mode-btn-single" onclick="setAttendanceMode('single')" class="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 min-h-[34px] rounded-lg transition-all bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs cursor-pointer">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
                             <span>{{ __('Single Worker') }}</span>
                         </button>
-                        <button type="button" id="att-mode-btn-bulk" onclick="setAttendanceMode('bulk')" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md transition-all text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer">
+                        <button type="button" id="att-mode-btn-bulk" onclick="setAttendanceMode('bulk')" class="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 min-h-[34px] rounded-lg transition-all text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"/></svg>
                             <span>{{ __('Bulk Workers (Multiple)') }}</span>
                         </button>
@@ -146,9 +146,11 @@
                         </div>
 
                         {{-- Realtime Search Filter --}}
-                        <div class="relative mb-2">
-                            <svg class="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z"/></svg>
-                            <input type="text" id="bulk-worker-search" oninput="filterBulkWorkers(this.value)" placeholder="{{ __('Search worker by name or phone...') }}" class="crm-input text-xs w-full pl-8 py-1.5 bg-white dark:bg-slate-900">
+                        <div class="relative mb-2.5 flex items-center">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z"/></svg>
+                            </div>
+                            <input type="text" id="bulk-worker-search" oninput="filterBulkWorkers(this.value)" placeholder="{{ __('Search worker by name or phone...') }}" class="crm-input text-xs w-full py-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700" style="padding-left: 2.85rem !important;">
                         </div>
 
                         {{-- Worker Clickable Checkbox List --}}
@@ -208,12 +210,12 @@
 
                 {{-- Step 1 Actions --}}
                 <div class="flex items-center justify-between pt-3 border-t border-slate-200 dark:border-slate-800">
-                    <button type="button" onclick="closeAttendanceModal()" class="btn-secondary text-xs">
+                    <button type="button" onclick="closeAttendanceModal()" class="inline-flex items-center justify-center px-4 py-2 min-h-[38px] rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs sm:text-sm hover:bg-slate-50 transition cursor-pointer">
                         {{ __('Cancel') }}
                     </button>
-                    <button type="button" onclick="goToAttendanceStep(2)" class="btn-primary text-xs inline-flex items-center gap-1.5">
-                        <span>{{ __('Next: Photo') }}</span>
-                        <span>&rarr;</span>
+                    <button type="button" onclick="goToAttendanceStep(2)" class="inline-flex items-center justify-center gap-1.5 px-5 py-2 min-h-[38px] rounded-xl bg-[#65a30d] hover:bg-[#4d7c0f] !text-white font-bold text-xs sm:text-sm shadow-xs transition cursor-pointer" style="color: #ffffff !important;">
+                        <span class="!text-white font-bold" style="color: #ffffff !important;">{{ __('Next: Photo') }}</span>
+                        <span class="!text-white" style="color: #ffffff !important;">&rarr;</span>
                     </button>
                 </div>
             </div>
@@ -319,12 +321,12 @@
 
                 {{-- Step 2 Actions --}}
                 <div class="flex items-center justify-between pt-3 border-t border-slate-200 dark:border-slate-800">
-                    <button type="button" onclick="goToAttendanceStep(1)" class="btn-secondary text-xs inline-flex items-center gap-1">
+                    <button type="button" onclick="goToAttendanceStep(1)" class="inline-flex items-center justify-center gap-1 px-4 py-2 min-h-[38px] rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs sm:text-sm hover:bg-slate-50 transition cursor-pointer">
                         <span>&larr; {{ __('Back') }}</span>
                     </button>
-                    <button type="button" onclick="goToAttendanceStep(3)" class="btn-primary text-xs inline-flex items-center gap-1.5">
-                        <span>{{ __('Next: Work Output & Metrics') }}</span>
-                        <span>&rarr;</span>
+                    <button type="button" onclick="goToAttendanceStep(3)" class="inline-flex items-center justify-center gap-1.5 px-5 py-2 min-h-[38px] rounded-xl bg-[#65a30d] hover:bg-[#4d7c0f] !text-white font-bold text-xs sm:text-sm shadow-xs transition cursor-pointer" style="color: #ffffff !important;">
+                        <span class="!text-white font-bold" style="color: #ffffff !important;">{{ __('Next: Work Output & Metrics') }}</span>
+                        <span class="!text-white" style="color: #ffffff !important;">&rarr;</span>
                     </button>
                 </div>
             </div>
@@ -410,11 +412,11 @@
 
                 {{-- Step 3 Actions --}}
                 <div class="flex items-center justify-between pt-3 border-t border-slate-200 dark:border-slate-800">
-                    <button type="button" onclick="goToAttendanceStep(2)" class="btn-secondary text-xs inline-flex items-center gap-1">
+                    <button type="button" onclick="goToAttendanceStep(2)" class="inline-flex items-center justify-center gap-1 px-4 py-2 min-h-[38px] rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs sm:text-sm hover:bg-slate-50 transition cursor-pointer">
                         <span>&larr; {{ __('Back') }}</span>
                     </button>
-                    <button type="submit" id="btn-save-attendance" class="btn-primary text-xs inline-flex items-center gap-1.5 font-semibold">
-                        <span>✓ {{ __('Save Attendance') }}</span>
+                    <button type="submit" id="btn-save-attendance" class="inline-flex items-center justify-center gap-1.5 px-5 py-2 min-h-[38px] rounded-xl bg-[#65a30d] hover:bg-[#4d7c0f] !text-white font-bold text-xs sm:text-sm shadow-xs transition cursor-pointer" style="color: #ffffff !important;">
+                        <span class="!text-white font-bold" style="color: #ffffff !important;">✓ {{ __('Save Attendance') }}</span>
                     </button>
                 </div>
             </div>

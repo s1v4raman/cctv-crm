@@ -230,6 +230,69 @@
                     </div>
                 @else
                     <div class="ld-card flex flex-col flex-1 min-h-0">
+                        {{-- Mobile Card List (< 768px) --}}
+                        <div class="md:hidden divide-y divide-slate-100 dark:divide-slate-800">
+                            @forelse($leads as $lead)
+                                <div class="p-3.5 space-y-2.5" :class="selected.includes({{ $lead->id }}) && 'bg-blue-50/40 dark:bg-blue-950/20'">
+                                    <div class="flex items-start justify-between gap-2">
+                                        <div class="flex items-start gap-2.5 min-w-0">
+                                            @if($isOffice)
+                                                <input type="checkbox" value="{{ $lead->id }}" x-model.number="selected" aria-label="Select {{ $lead->customer_name }}" class="mt-1 rounded">
+                                            @endif
+                                            <div class="min-w-0">
+                                                <a href="{{ route('leads.show', $lead) }}" class="ld-name plain-link text-sm font-bold block truncate">{{ $lead->customer_name }}</a>
+                                                @if($lead->company_name)
+                                                    <div class="text-xs text-slate-500 dark:text-slate-400 truncate">{{ $lead->company_name }}</div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <span class="shrink-0 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                                            {{ $statusLabels[$lead->status] ?? ucfirst($lead->status) }}
+                                        </span>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 gap-1 text-xs text-slate-600 dark:text-slate-300 pl-6">
+                                        @if($lead->phone)
+                                            <div><a href="tel:{{ $lead->phone }}" class="font-semibold hover:underline" style="color: var(--link-color)">{{ $lead->phone }}</a>@if($lead->source) &bull; {{ $lead->source }}@endif</div>
+                                        @elseif($lead->source)
+                                            <div>{{ $lead->source }}</div>
+                                        @endif
+                                        @if($lead->email)
+                                            <div class="truncate text-slate-500 dark:text-slate-400">{{ $lead->email }}</div>
+                                        @endif
+                                    </div>
+
+                                    <div class="flex items-center justify-between gap-2 pt-1 pl-6">
+                                        <span class="text-[11px] text-slate-400">{{ $lead->created_at?->format('d M Y') }}</span>
+                                        <div class="flex items-center gap-2">
+                                            <a href="{{ route('leads.show', $lead) }}" class="ld-outline plain-link text-xs" style="min-height: 32px !important; padding: 4px 10px !important;">View</a>
+                                            @if($isOffice)
+                                                <a href="{{ route('leads.edit', $lead) }}" class="ld-outline plain-link text-xs" style="min-height: 32px !important; padding: 4px 10px !important;">Edit</a>
+                                            @endif
+                                            @if($isAdmin)
+                                                <form method="POST" action="{{ route('leads.destroy', $lead) }}" data-confirm="Delete lead {{ $lead->customer_name }}?">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn-cancel text-xs" title="Delete" aria-label="Delete {{ $lead->customer_name }}">Delete</button>
+                                                </form>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="p-8 text-center text-sm" style="color: var(--ld-muted)">
+                                    @if($filterCount > 0 || $letter || $view !== 'all')
+                                        No leads match these filters.
+                                        <a href="{{ route('leads.index') }}" class="ml-1 underline plain-link" style="color: var(--ld-accent, var(--crm-accent, #2563eb)); font-weight: 600;">Show all leads</a>
+                                    @else
+                                        No leads yet.
+                                        @if($isOffice)<a href="{{ route('leads.create') }}" class="ml-1 underline plain-link" style="color: var(--ld-accent, var(--crm-accent, #2563eb)); font-weight: 600;">Create the first one</a>@endif
+                                    @endif
+                                </div>
+                            @endforelse
+                        </div>
+
+                        <div class="hidden md:block flex-1 min-h-0">
                         <div class="ld-scroll">
                             <table class="ld-table">
                                 <thead>
@@ -321,6 +384,7 @@
                                     @endforelse
                                 </tbody>
                             </table>
+                        </div>
                         </div>
 
                         <div class="ld-foot">

@@ -229,6 +229,65 @@
                     </div>
                 @else
                     <div class="ld-card flex flex-col flex-1 min-h-0">
+                        {{-- Mobile Card List (< 768px) --}}
+                        <div class="md:hidden divide-y divide-slate-100 dark:divide-slate-800">
+                            @forelse($quotations as $quotation)
+                                @php $lapsed = $isOpen($quotation) && $quotation->valid_until?->isPast(); @endphp
+                                <div class="p-3.5 space-y-2.5" :class="selected.includes({{ $quotation->id }}) && 'bg-blue-50/40 dark:bg-blue-950/20'">
+                                    <div class="flex items-start justify-between gap-2">
+                                        <div class="flex items-start gap-2.5 min-w-0">
+                                            @if($isOffice)
+                                                <input type="checkbox" value="{{ $quotation->id }}" x-model.number="selected" aria-label="Select {{ $quotation->quotation_no }}" class="mt-1 rounded">
+                                            @endif
+                                            <div class="min-w-0">
+                                                <a href="{{ route('quotations.show', $quotation) }}" class="ld-name plain-link text-sm font-bold block truncate">{{ $quotation->quotation_no }}</a>
+                                                <div class="text-xs text-slate-600 dark:text-slate-300 truncate">{{ $quotation->lead->customer_name ?? '—' }}</div>
+                                            </div>
+                                        </div>
+                                        <div class="text-right shrink-0">
+                                            <div class="text-sm font-black text-slate-900 dark:text-white">{{ \App\Support\Inr::money($quotation->total) }}</div>
+                                            <span class="inline-block mt-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                                                {{ $statusLabels[$quotation->status] ?? ucfirst($quotation->status) }}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center flex-wrap gap-x-3 gap-y-1 text-xs text-slate-500 dark:text-slate-400 pl-6">
+                                        @if($quotation->lead?->phone)
+                                            <a href="tel:{{ $quotation->lead->phone }}" class="font-semibold hover:underline" style="color: var(--link-color)">{{ $quotation->lead->phone }}</a>
+                                        @endif
+                                        <span>Quote: {{ ($quotation->quotation_date ?? $quotation->created_at)?->format('d M Y') }}</span>
+                                        @if($quotation->valid_until)
+                                            <span class="{{ $lapsed ? 'text-amber-700 dark:text-amber-400 font-semibold' : '' }}">Valid: {{ $quotation->valid_until->format('d M Y') }}</span>
+                                        @endif
+                                    </div>
+
+                                    <div class="flex items-center justify-end gap-2 pt-1 pl-6">
+                                        <a href="{{ route('quotations.show', $quotation) }}" class="ld-outline plain-link text-xs" style="min-height: 32px !important; padding: 4px 10px !important;">View</a>
+                                        <a href="{{ route('quotations.edit', $quotation) }}" class="ld-outline plain-link text-xs" style="min-height: 32px !important; padding: 4px 10px !important;">Edit</a>
+                                        @if($isAdmin && $quotation->status === 'draft')
+                                            <form method="POST" action="{{ route('quotations.destroy', $quotation) }}" data-confirm="Delete {{ $quotation->quotation_no }}? This cannot be undone.">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn-cancel text-xs" title="Delete" aria-label="Delete {{ $quotation->quotation_no }}">Delete</button>
+                                            </form>
+                                        @endif
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="p-8 text-center text-sm" style="color: var(--ld-muted)">
+                                    @if($filterCount > 0 || $letter || $view !== 'all')
+                                        No quotations match these filters.
+                                        <a href="{{ route('quotations.index') }}" class="ml-1 underline plain-link" style="color: var(--ld-accent, var(--crm-accent, #2563eb)); font-weight: 600;">Show all quotations</a>
+                                    @else
+                                        No quotations yet.
+                                        @if($isOffice)<a href="{{ route('quotations.create-general') }}" class="ml-1 underline plain-link" style="color: var(--ld-accent, var(--crm-accent, #2563eb)); font-weight: 600;">Create the first one</a>@endif
+                                    @endif
+                                </div>
+                            @endforelse
+                        </div>
+
+                        <div class="hidden md:block flex-1 min-h-0">
                         <div class="ld-scroll">
                             <table class="ld-table">
                                 <thead>
@@ -323,6 +382,7 @@
                                     @endforelse
                                 </tbody>
                             </table>
+                        </div>
                         </div>
 
                         <div class="ld-foot">

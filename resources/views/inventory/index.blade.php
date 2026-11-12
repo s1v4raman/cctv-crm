@@ -175,8 +175,50 @@
                     @endif
                 </form>
 
-                {{-- Table --}}
-                <div class="overflow-x-auto">
+                {{-- Mobile Summary Cards (< 768px) --}}
+                <div class="md:hidden divide-y divide-slate-100 dark:divide-slate-800">
+                    @forelse($products as $prod)
+                        <div class="p-3.5 space-y-2">
+                            <div class="flex items-start justify-between gap-2">
+                                <div class="min-w-0">
+                                    <div class="text-sm font-bold text-slate-900 dark:text-white truncate">{{ $prod->name }}</div>
+                                    <div class="text-xs text-slate-500 dark:text-slate-400 truncate">
+                                        {{ $prod->sku ?: 'No SKU' }}@if($prod->model_no) · {{ $prod->model_no }}@endif
+                                    </div>
+                                </div>
+                                @if($prod->stock_quantity <= 0)
+                                    <span class="shrink-0 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800">Out (0 {{ $prod->unit }})</span>
+                                @elseif($prod->isLowStock())
+                                    <span class="shrink-0 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">Low: {{ $prod->stock_quantity }} {{ $prod->unit }}</span>
+                                @else
+                                    <span class="shrink-0 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">{{ $prod->stock_quantity }} {{ $prod->unit }}</span>
+                                @endif
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-x-3 gap-y-1 text-xs text-slate-600 dark:text-slate-300">
+                                <div class="truncate"><span class="text-slate-400">Category:</span> {{ $prod->category ?: 'General' }}</div>
+                                <div class="truncate"><span class="text-slate-400">Cost:</span> ₹{{ number_format($prod->cost_price, 2) }}</div>
+                                <div class="truncate"><span class="text-slate-400">Brand:</span> {{ $prod->brand ?: 'Unbranded' }}</div>
+                                <div class="truncate"><span class="text-slate-400">Value:</span> <span class="font-semibold text-slate-900 dark:text-white">₹{{ number_format($prod->cost_price * $prod->stock_quantity, 2) }}</span></div>
+                            </div>
+
+                            @if(auth()->user()->isOffice())
+                                <div class="flex justify-end pt-0.5">
+                                    <button type="button"
+                                            @click="openModal({{ $prod->id }}, {{ json_encode($prod->name) }}, {{ json_encode($prod->sku ?? '') }}, {{ $prod->stock_quantity }}, {{ json_encode($prod->unit ?? 'pcs') }})"
+                                            class="action-link text-xs font-semibold">
+                                        Stock Adjust
+                                    </button>
+                                </div>
+                            @endif
+                        </div>
+                    @empty
+                        <div class="p-6 text-center text-sm text-slate-500">No products yet</div>
+                    @endforelse
+                </div>
+
+                {{-- Table (Desktop & Tablet >= 768px) --}}
+                <div class="hidden md:block overflow-x-auto">
                     <table class="p-table crm-responsive">
                         <thead>
                             <tr>

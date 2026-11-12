@@ -103,7 +103,7 @@ class LeaveRequestController extends Controller
     /**
      * Submit a new Leave Request (Employee Self-Service).
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request): RedirectResponse|\Illuminate\Http\JsonResponse
     {
         $validated = $request->validate([
             'leave_type'        => ['required', 'in:casual,sick,earned,unpaid_lwp,emergency'],
@@ -165,6 +165,26 @@ class LeaveRequestController extends Controller
             ], $leave);
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::warning("Leave submission alert failed: " . $e->getMessage());
+        }
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => __('Your leave request has been submitted successfully and is pending approval.'),
+                'leave' => [
+                    'id' => $leave->id,
+                    'leave_type' => $leave->leave_type,
+                    'start_date' => $leave->start_date->toDateString(),
+                    'end_date' => $leave->end_date->toDateString(),
+                    'days_count' => $leave->days_count,
+                    'status' => $leave->status,
+                    'reason' => $leave->reason,
+                ]
+            ]);
+        }
+
+        if (str_contains(url()->previous(), 'technician')) {
+            return back()->with('status', __('Your leave request has been submitted successfully and is pending approval.'));
         }
 
         return redirect()

@@ -1,0 +1,246 @@
+- generic [active] [ref=f8e1]:
+  - link "Skip to main content" [ref=f8e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - generic [ref=f8e3]:
+    - complementary [ref=f8e5]:
+      - generic [ref=f8e6]:
+        - link [ref=f8e7] [cursor=pointer]:
+          - /url: http://127.0.0.1:8001/dashboard
+          - img "Precision IT Systems" [ref=f8e9]
+        - button "Close menu" [ref=f8e10] [cursor=pointer]
+      - navigation [ref=f8e13]:
+        - generic [ref=f8e14]:
+          - generic [ref=f8e15]: Overview
+          - generic [ref=f8e16]:
+            - link "Dashboard" [ref=f8e17] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/dashboard
+            - link "Calendar & Dispatch" [ref=f8e22] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/calendar
+        - generic [ref=f8e27]:
+          - generic [ref=f8e28]: Sales & Pipeline
+          - generic [ref=f8e29]:
+            - link "Leads & Inquiries" [ref=f8e30] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/leads
+            - link "Site Surveys" [ref=f8e35] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/site-surveys
+            - link "Deals & Quotations" [ref=f8e40] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/quotations
+        - generic [ref=f8e45]:
+          - generic [ref=f8e46]: Field Operations
+          - generic [ref=f8e47]:
+            - link "Projects & Sites" [ref=f8e48] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/projects
+            - link "Installation Sites" [ref=f8e53] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/sites
+            - link "Workers & Daily Wages" [ref=f8e58] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/workers
+            - link "Worker Attendance" [ref=f8e65] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/workers/attendance
+            - link "Weekly wages" [ref=f8e69] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/wages
+            - link "Ready to Invoice (DCs)" [ref=f8e74] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/documents/to-invoice
+            - link "Tasks & Field Jobs" [ref=f8e79] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/jobs
+            - link "Cameras & Assets" [ref=f8e83] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/equipment
+        - generic [ref=f8e88]:
+          - generic [ref=f8e89]: Inventory & Procurement
+          - generic [ref=f8e90]:
+            - link "Products & Pricing" [ref=f8e91] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/products
+            - link "Purchase Orders (PO)" [ref=f8e98] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/purchase-orders
+            - link "Suppliers & Vendors" [ref=f8e103] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/suppliers
+        - generic [ref=f8e108]:
+          - generic [ref=f8e109]: Workspace
+          - link "Employees" [ref=f8e111] [cursor=pointer]:
+            - /url: http://127.0.0.1:8001/employee-workforce
+        - generic [ref=f8e116]:
+          - generic [ref=f8e117]: Finance
+          - link "Finance" [ref=f8e119] [cursor=pointer]:
+            - /url: http://127.0.0.1:8001/finance-accounting
+        - generic [ref=f8e124]:
+          - generic [ref=f8e125]: Analytics & Automation
+          - generic [ref=f8e126]:
+            - link "Alerts" [ref=f8e127] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/alerts
+            - link "Analytics" [ref=f8e132] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/analytics
+            - link "User Accounts & Settings" [ref=f8e138] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/admin/users
+      - generic [ref=f8e146]:
+        - generic [ref=f8e147]:
+          - generic [ref=f8e148]: S
+          - generic [ref=f8e149]:
+            - generic [ref=f8e150]: Sivaraman
+            - generic [ref=f8e151]: Administrator
+        - generic [ref=f8e152]:
+          - link "Profile Settings" [ref=f8e153] [cursor=pointer]:
+            - /url: http://127.0.0.1:8001/profile
+          - button "Log Out" [ref=f8e159] [cursor=pointer]
+    - generic [ref=f8e162]:
+      - banner [ref=f8e163]:
+        - generic [ref=f8e164]:
+          - button "Toggle navigation menu" [ref=f8e165] [cursor=pointer]
+          - generic [ref=f8e168]: Leads
+        - generic [ref=f8e169]:
+          - button "Search" [ref=f8e170] [cursor=pointer]
+          - button "Toggle dark/light mode" [ref=f8e173] [cursor=pointer]
+          - button "View notifications" [ref=f8e175] [cursor=pointer]:
+            - generic [ref=f8e178]: "2"
+          - button "Account menu for Sivaraman" [ref=f8e180] [cursor=pointer]:
+            - generic [ref=f8e181]: S
+      - main [ref=f8e184]:
+        - generic [ref=f8e186]:
+          - generic [ref=f8e188]:
+            - generic [ref=f8e189]:
+              - button "Filter" [ref=f8e190] [cursor=pointer]
+              - button "Sort" [ref=f8e195] [cursor=pointer]
+              - link "List view" [ref=f8e200] [cursor=pointer]:
+                - /url: http://127.0.0.1:8001/leads?
+              - link "Board view" [ref=f8e206] [cursor=pointer]:
+                - /url: http://127.0.0.1:8001/leads?layout=board
+            - generic [ref=f8e210]:
+              - generic [ref=f8e211]: 0 leads selected
+              - button "Clear" [ref=f8e212] [cursor=pointer]
+              - button "Change status" [ref=f8e214] [cursor=pointer]
+              - button "Delete" [ref=f8e218] [cursor=pointer]
+            - generic [ref=f8e219]:
+              - generic [ref=f8e221]:
+                - link "Create Lead" [ref=f8e222] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8001/leads/create
+                - button "More ways to create a lead" [ref=f8e223] [cursor=pointer]
+              - button "More actions" [ref=f8e226] [cursor=pointer]
+          - region "Leads" [ref=f8e232]:
+            - generic [ref=f8e233]:
+              - table [ref=f8e235]:
+                - rowgroup [ref=f8e236]:
+                  - row [ref=f8e237]:
+                    - columnheader "Select all leads on this page" [ref=f8e238]:
+                      - checkbox "Select all leads on this page" [ref=f8e239] [cursor=pointer]
+                    - columnheader "Lead Name Show names starting with a letter" [ref=f8e240]:
+                      - generic [ref=f8e241]:
+                        - generic [ref=f8e242]: Lead Name
+                        - button "Show names starting with a letter" [ref=f8e244] [cursor=pointer]: All
+                    - columnheader "Company" [ref=f8e246]
+                    - columnheader "Email" [ref=f8e247]
+                    - columnheader "Phone" [ref=f8e248]
+                    - columnheader "Lead Source" [ref=f8e249]
+                    - columnheader "Lead Status" [ref=f8e250]
+                    - columnheader "Created Time" [ref=f8e251]
+                    - columnheader "Choose columns" [ref=f8e252]:
+                      - button "Choose columns" [ref=f8e254] [cursor=pointer]
+                - rowgroup [ref=f8e259]:
+                  - row [ref=f8e260]:
+                    - cell [ref=f8e261]:
+                      - checkbox "Select Jawahar" [ref=f8e262] [cursor=pointer]
+                    - cell [ref=f8e263]:
+                      - link "Jawahar" [ref=f8e264] [cursor=pointer]:
+                        - /url: http://127.0.0.1:8001/leads/9
+                    - cell [ref=f8e265]
+                    - cell "jawa@gmail.com" [ref=f8e266]
+                    - cell "6847585748" [ref=f8e268]
+                    - cell "website" [ref=f8e269]
+                    - cell "New" [ref=f8e270]
+                    - cell "02/11/2026 12:44 PM" [ref=f8e271]
+                    - cell [ref=f8e272]:
+                      - generic [ref=f8e273]:
+                        - link "Edit Jawahar" [ref=f8e274] [cursor=pointer]:
+                          - /url: http://127.0.0.1:8001/leads/9/edit
+                        - button "Delete Jawahar" [ref=f8e278] [cursor=pointer]
+                  - row [ref=f8e281]:
+                    - cell [ref=f8e282]:
+                      - checkbox "Select Anand Textiles Pvt Ltd" [ref=f8e283] [cursor=pointer]
+                    - cell [ref=f8e284]:
+                      - link "Anand Textiles Pvt Ltd" [ref=f8e285] [cursor=pointer]:
+                        - /url: http://127.0.0.1:8001/leads/7
+                    - cell "Anand Textiles Pvt Ltd" [ref=f8e286]
+                    - cell [ref=f8e287]
+                    - cell "9876543210" [ref=f8e288]
+                    - cell "Direct" [ref=f8e289]
+                    - cell "Contacted" [ref=f8e290]
+                    - cell "30/10/2026 07:00 PM" [ref=f8e291]
+                    - cell [ref=f8e292]:
+                      - generic [ref=f8e293]:
+                        - link "Edit Anand Textiles Pvt Ltd" [ref=f8e294] [cursor=pointer]:
+                          - /url: http://127.0.0.1:8001/leads/7/edit
+                        - button "Delete Anand Textiles Pvt Ltd" [ref=f8e298] [cursor=pointer]
+                  - row [ref=f8e301]:
+                    - cell [ref=f8e302]:
+                      - checkbox "Select Sivaraman" [ref=f8e303] [cursor=pointer]
+                    - cell [ref=f8e304]:
+                      - link "Sivaraman" [ref=f8e305] [cursor=pointer]:
+                        - /url: http://127.0.0.1:8001/leads/5
+                    - cell [ref=f8e306]
+                    - cell "s1v4raman@gmail.com" [ref=f8e307]
+                    - cell "98401 23456" [ref=f8e309]
+                    - cell "website" [ref=f8e310]
+                    - cell "Contacted" [ref=f8e311]
+                    - cell "30/10/2026 05:59 PM" [ref=f8e312]
+                    - cell [ref=f8e313]:
+                      - generic [ref=f8e314]:
+                        - link "Edit Sivaraman" [ref=f8e315] [cursor=pointer]:
+                          - /url: http://127.0.0.1:8001/leads/5/edit
+                        - button "Delete Sivaraman" [ref=f8e319] [cursor=pointer]
+                  - row [ref=f8e322]:
+                    - cell [ref=f8e323]:
+                      - checkbox "Select nithish" [ref=f8e324] [cursor=pointer]
+                    - cell [ref=f8e325]:
+                      - link "nithish" [ref=f8e326] [cursor=pointer]:
+                        - /url: http://127.0.0.1:8001/leads/4
+                    - cell [ref=f8e327]
+                    - cell "srinithish2003@gmail.com" [ref=f8e328]
+                    - cell "8072649982" [ref=f8e330]
+                    - cell "website" [ref=f8e331]
+                    - cell "New" [ref=f8e332]
+                    - cell "30/10/2026 06:15 AM" [ref=f8e333]
+                    - cell [ref=f8e334]:
+                      - generic [ref=f8e335]:
+                        - link "Edit nithish" [ref=f8e336] [cursor=pointer]:
+                          - /url: http://127.0.0.1:8001/leads/4/edit
+                        - button "Delete nithish" [ref=f8e340] [cursor=pointer]
+                  - row [ref=f8e343]:
+                    - cell [ref=f8e344]:
+                      - checkbox "Select nandhini" [ref=f8e345] [cursor=pointer]
+                    - cell [ref=f8e346]:
+                      - link "nandhini" [ref=f8e347] [cursor=pointer]:
+                        - /url: http://127.0.0.1:8001/leads/2
+                    - cell [ref=f8e348]
+                    - cell "nandy7844@gmail.com" [ref=f8e349]
+                    - cell "7189839393" [ref=f8e351]
+                    - cell "call" [ref=f8e352]
+                    - cell "Won" [ref=f8e353]
+                    - cell "23/10/2026 01:53 PM" [ref=f8e354]
+                    - cell [ref=f8e355]:
+                      - generic [ref=f8e356]:
+                        - link "Edit nandhini" [ref=f8e357] [cursor=pointer]:
+                          - /url: http://127.0.0.1:8001/leads/2/edit
+                        - button "Delete nandhini" [ref=f8e361] [cursor=pointer]
+              - generic [ref=f8e364]:
+                - generic [ref=f8e365]:
+                  - text: Total Records
+                  - strong [ref=f8e366]: "5"
+                - generic [ref=f8e367]:
+                  - combobox "Records per page" [ref=f8e369]:
+                    - option "10 Records Per Page"
+                    - option "20 Records Per Page" [selected]
+                    - option "50 Records Per Page"
+                    - option "100 Records Per Page"
+                  - generic [ref=f8e374]:
+                    - strong [ref=f8e375]: "1"
+                    - text: to
+                    - strong [ref=f8e376]: "5"
+  - navigation [ref=f8e380]:
+    - generic [ref=f8e381]:
+      - link "Home" [ref=f8e382] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/dashboard
+      - button "Modules" [ref=f8e386] [cursor=pointer]
+      - generic [ref=f8e390]:
+        - button "Quick actions" [ref=f8e391] [cursor=pointer]
+        - generic [ref=f8e394]: Create
+      - link "Roster" [ref=f8e395] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/attendance
+      - link "Profile" [ref=f8e399] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/profile

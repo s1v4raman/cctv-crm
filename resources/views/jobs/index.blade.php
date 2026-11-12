@@ -46,6 +46,37 @@
             <th x-show="cols.status" style="min-width: 120px">Status</th>
         </x-slot>
 
+        <x-slot:mobileCards>
+            @foreach($jobs as $job)
+                <div class="p-3.5 space-y-2.5" :class="selected.includes({{ $job->id }}) && 'bg-blue-50/40 dark:bg-blue-950/20'">
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="flex items-start gap-2.5 min-w-0">
+                            <input type="checkbox" value="{{ $job->id }}" x-model.number="selected" aria-label="Select {{ $job->job_no }}" class="mt-1 rounded">
+                            <div class="min-w-0">
+                                <a href="{{ route('jobs.show', $job) }}" class="ld-name plain-link text-sm font-bold block truncate">{{ $job->job_no }}</a>
+                                <div class="text-xs text-slate-600 dark:text-slate-300 font-medium truncate">{{ $job->quotation?->lead?->customer_name ?? '—' }}</div>
+                            </div>
+                        </div>
+                        <span class="shrink-0 px-2.5 py-0.5 rounded-full text-[11px] font-bold border {{ $job->status === 'cancelled' ? 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700' }}">
+                            {{ $statuses[$job->status] ?? ucfirst(str_replace('_', ' ', $job->status)) }}
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-x-3 gap-y-1 text-xs text-slate-600 dark:text-slate-300 pl-6">
+                        <div class="truncate"><span class="text-slate-400">Date:</span> {{ $job->scheduled_date?->format('d/m/Y') ?? 'Not scheduled' }}</div>
+                        <div class="truncate"><span class="text-slate-400">Tech:</span> {{ $job->assignedTechnician?->name ?? '—' }}</div>
+                        @if($job->quotation?->lead?->site_address)
+                            <div class="col-span-2 truncate text-slate-500 dark:text-slate-400">{{ $job->quotation->lead->site_address }}</div>
+                        @endif
+                    </div>
+
+                    <div class="flex items-center justify-end pl-6 pt-0.5">
+                        <a href="{{ route('jobs.show', $job) }}" class="text-xs font-semibold hover:underline plain-link" style="color: var(--link-color)">Open Job &rarr;</a>
+                    </div>
+                </div>
+            @endforeach
+        </x-slot:mobileCards>
+
         @foreach($jobs as $job)
             <tr>
                 <x-list-pick :id="$job->id" :label="$job->job_no" />

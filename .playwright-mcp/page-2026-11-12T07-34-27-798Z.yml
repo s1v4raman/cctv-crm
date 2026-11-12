@@ -1,0 +1,49 @@
+- generic [ref=f3e1]:
+  - generic [ref=f3e3]:
+    - generic [ref=f3e4]:
+      - link [ref=f3e5] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001
+        - img "Precision IT Systems" [ref=f3e6]
+      - generic [ref=f3e7]:
+        - button "Toggle dark/light mode" [ref=f3e8] [cursor=pointer]
+        - generic [ref=f3e15]: Staff & Admin
+    - generic [ref=f3e17]:
+      - generic [ref=f3e18]:
+        - heading "Admin & Employee Sign In" [level=1] [ref=f3e19]
+        - paragraph [ref=f3e20]: Sign in to your Operations ERP account
+      - generic [ref=f3e22]:
+        - button "Admin" [ref=f3e23] [cursor=pointer]
+        - button "Employee" [ref=f3e24] [cursor=pointer]
+      - generic [ref=f3e25]:
+        - link "Continue with Google Workspace" [ref=f3e27] [cursor=pointer]:
+          - /url: http://127.0.0.1:8001/auth/google?portal=staff&mode=login
+        - generic [ref=f3e34]: or
+        - generic [ref=f3e38]:
+          - generic [ref=f3e39]:
+            - generic [ref=f3e40]: Email Address
+            - textbox "Email Address" [active] [ref=f3e41]:
+              - /placeholder: you@company.com
+          - generic [ref=f3e42]:
+            - generic [ref=f3e43]: Password
+            - generic [ref=f3e44]:
+              - textbox "Password" [ref=f3e45]:
+                - /placeholder: ••••••••
+              - button "Toggle password visibility" [ref=f3e46] [cursor=pointer]
+          - generic [ref=f3e50]:
+            - generic [ref=f3e51] [cursor=pointer]:
+              - checkbox "Remember me" [ref=f3e52]
+              - text: Remember me
+            - link "Forgot password?" [ref=f3e53] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/forgot-password
+          - button "Sign in to Operations ERP" [ref=f3e55] [cursor=pointer]
+    - paragraph [ref=f3e60]: © 2026 Precision IT Systems. All rights reserved.
+  - generic [ref=f3e61]:
+    - img "App Icon" [ref=f3e62]
+    - generic [ref=f3e63]:
+      - generic [ref=f3e64]:
+        - generic [ref=f3e65]: Precision IT Field App
+        - generic [ref=f3e66]: PWA
+      - generic [ref=f3e67]: Install to home screen for 1-tap offline use
+    - generic [ref=f3e68]:
+      - button "Install" [ref=f3e69] [cursor=pointer]
+      - button "Dismiss" [ref=f3e70] [cursor=pointer]

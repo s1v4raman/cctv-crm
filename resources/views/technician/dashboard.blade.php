@@ -1,1589 +1,1187 @@
 <x-app-layout>
-    {{-- FIGMA MOBILE-FIRST TECHNICIAN WORKSTATION --}}
-    {{-- High-fidelity implementation based on Figma CRM mobile app specification --}}
-    {{-- Features 4 Primary Tabs (Projects, Team, Vacations, Calendar) + My Profile View --}}
+    {{-- TECHNICIAN FIELD WORKSTATION --}}
+    {{-- Fully Responsive: Compact App View on Mobile + Expansive Enterprise Dashboard on Laptop --}}
 
     @php
-        $selectedPrj = $selectedProject ?? $assignedProjects->first();
-        $myAttendance = $myAttendanceToday ?? null;
         $currentUser = auth()->user();
+        $myAttendance = $myAttendanceToday ?? \App\Models\EmployeeAttendance::where('user_id', $currentUser->id)->whereDate('date', now()->toDateString())->first();
+        $primaryPrj = $primaryProject ?? null;
     @endphp
 
     <div x-data="{
-        currentViewTab: 'projects', // 'projects', 'team', 'vacations', 'calendar', 'profile'
-        projectSubMode: 'tasks', // 'tasks' (current active task groups) or 'cards' (Figma project cards list)
-        selectedProjectId: {{ $selectedPrj?->id ?? 'null' }},
-        currentProjectCode: '{{ addslashes($selectedPrj?->project_code ?? ('PRJ-' . ($selectedPrj?->id ?? '0001'))) }}',
-        currentProjectTitle: '{{ addslashes($selectedPrj?->title ?? __('No Project Selected')) }}',
-        
-        projectDetailsOpen: false,
-        filterModalOpen: false,
-        filterPriority: 'all',
-        filterPhase: 'all',
-        filterSearch: '',
-        supportModalOpen: false,
-        supportSubject: 'Technical difficulties',
-        supportDescription: '',
-        supportSuccess: false,
-        openFab: false,
-        projectSwitcherOpen: false,
-
-        // Vacations / Leave Request Modal state
-        leaveModalOpen: false,
-        leaveType: 'sick',
-        leaveStartDate: '{{ now()->format('Y-m-d') }}',
-        leaveEndDate: '{{ now()->addDays(2)->format('Y-m-d') }}',
-        leaveReason: '',
-        leaveSubmitting: false,
-        
-        // Collapsible Phase Groups state
-        collapsedPhases: {},
-        togglePhase(phaseName) {
-            this.collapsedPhases[phaseName] = !this.collapsedPhases[phaseName];
-        },
-        isPhaseCollapsed(phaseName) {
-            return !!this.collapsedPhases[phaseName];
-        },
-
-        // Active Selected Task & Details Modal
-        activeTask: null,
-        taskDetailsOpen: false,
-        selectedTaskId: null,
-        openTaskDetails(task) {
-            this.activeTask = task;
-            this.selectedTaskId = task.id;
-            this.taskDetailsOpen = true;
-        },
-
-        // Time Tracking Modal
-        timeTrackingModalOpen: false,
-        timeSpentInput: '2h',
-        timeTrackingDate: '{{ now()->format('Y-m-d') }}',
-        timeTrackingTime: '{{ now()->format('H:i') }}',
-        timeTrackingDescription: '',
-        timeTrackingSaving: false,
-
-        openTimeTracking() {
-            this.timeTrackingModalOpen = true;
-        },
-
-        async saveTimeTracking() {
-            if (!this.activeTask) return;
-            this.timeTrackingSaving = true;
-
-            let str = (this.timeSpentInput || '').toLowerCase().trim();
-            let hours = 0;
-            let hMatch = str.match(/(\d+(\.\d+)?)\s*h/);
-            let mMatch = str.match(/(\d+)\s*m/);
-            let dMatch = str.match(/(\d+)\s*d/);
-            if (dMatch) hours += parseFloat(dMatch[1]) * 8;
-            if (hMatch) hours += parseFloat(hMatch[1]);
-            if (mMatch) hours += parseFloat(mMatch[1]) / 60;
-            if (hours === 0) hours = parseFloat(str) || 1.0;
-
-            try {
-                let res = await fetch(`/technician/tasks/${this.activeTask.id}/log-time`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({
-                        hours: hours,
-                        notes: this.timeTrackingDescription
-                    })
-                });
-                let data = await res.json();
-                if (data.success) {
-                    this.activeTask.actual_hours = data.actual_hours;
-                    this.timeTrackingModalOpen = false;
-                    this.timeTrackingDescription = '';
-                    crmAlert('{{ __('Time logged successfully.') }}');
+        currentTab: 'overview', // 'overview', 'projects', 'jobs', 'surveys', 'workers', 'scanner'
+        scanCodeInput: '',
+        switchTab(t) {
+            this.currentTab = t;
+            this.$nextTick(() => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                const main = document.getElementById('main-content');
+                if (main && typeof main.scrollTo === 'function') {
+                    main.scrollTo({ top: 0, behavior: 'smooth' });
                 }
-            } catch (e) {
-                console.error(e);
-            } finally {
-                this.timeTrackingSaving = false;
-            }
-        },
-
-        async updateActiveTaskStatus(newStatus) {
-            if (!this.activeTask) return;
-            try {
-                let res = await fetch(`/technician/tasks/${this.activeTask.id}/status`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({ status: newStatus })
-                });
-                let data = await res.json();
-                if (data.success) {
-                    this.activeTask.status = newStatus;
-                }
-            } catch (e) {
-                console.error(e);
-            }
-        },
-
-        selectProject(id, code, title) {
-            this.selectedProjectId = id;
-            this.currentProjectCode = code;
-            this.currentProjectTitle = title;
-            this.projectSubMode = 'tasks';
-        },
-
-        async quickToggleTask(projectId, taskId, currentStatus) {
-            let nextStatus = currentStatus === 'completed' ? 'in_progress' : 'completed';
-            try {
-                let res = await fetch(`/technician/tasks/${taskId}/status`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({ status: nextStatus })
-                });
-                let data = await res.json();
-                if (data.success) {
-                    window.location.reload();
-                }
-            } catch (e) {
-                console.error(e);
-            }
-        },
-
-        submitSupport() {
-            if (!this.supportDescription.trim()) {
-                crmAlert('{{ __('Please enter a brief description of your request.') }}');
-                return;
-            }
-            this.supportSuccess = true;
-            setTimeout(() => {
-                this.supportSuccess = false;
-                this.supportModalOpen = false;
-                this.supportDescription = '';
-                crmAlert('{{ __('Support request dispatched to office team successfully.') }}');
-            }, 600);
-        },
-
-        // ==========================================
-        // FIGMA MOBILE CALENDAR STATE & LOGIC
-        // ==========================================
-        calendarEvents: {{ Js::from($calendarEvents ?? []) }},
-        calYear: {{ now()->year }},
-        calMonth: {{ now()->month - 1 }}, // 0-indexed
-        selectedDateStr: '{{ now()->format('Y-m-d') }}',
-
-        get calMonthTitle() {
-            const d = new Date(this.calYear, this.calMonth, 1);
-            return d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-        },
-
-        get selectedDateFormatted() {
-            if (!this.selectedDateStr) return '';
-            const parts = this.selectedDateStr.split('-');
-            const d = new Date(parts[0], parts[1] - 1, parts[2]);
-            return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-        },
-
-        prevCalMonth() {
-            if (this.calMonth === 0) {
-                this.calMonth = 11;
-                this.calYear--;
-            } else {
-                this.calMonth--;
-            }
-        },
-
-        nextCalMonth() {
-            if (this.calMonth === 11) {
-                this.calMonth = 0;
-                this.calYear++;
-            } else {
-                this.calMonth++;
-            }
-        },
-
-        get calendarGridDays() {
-            const firstDayIndex = new Date(this.calYear, this.calMonth, 1).getDay();
-            const startOffset = (firstDayIndex + 6) % 7; // Mon is 0
-            const daysInMonth = new Date(this.calYear, this.calMonth + 1, 0).getDate();
-            const daysInPrevMonth = new Date(this.calYear, this.calMonth, 0).getDate();
-
-            let days = [];
-
-            // Prev month leading days
-            for (let i = startOffset - 1; i >= 0; i--) {
-                const d = daysInPrevMonth - i;
-                const prevMonthNum = this.calMonth === 0 ? 12 : this.calMonth;
-                const prevYearNum = this.calMonth === 0 ? this.calYear - 1 : this.calYear;
-                const dateStr = `${prevYearNum}-${String(prevMonthNum).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-                days.push({
-                    dayNumber: d,
-                    dateStr: dateStr,
-                    isCurrentMonth: false,
-                    events: this.getEventsForDate(dateStr)
-                });
-            }
-
-            // Current month days
-            for (let i = 1; i <= daysInMonth; i++) {
-                const currentMonthNum = this.calMonth + 1;
-                const dateStr = `${this.calYear}-${String(currentMonthNum).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-                days.push({
-                    dayNumber: i,
-                    dateStr: dateStr,
-                    isCurrentMonth: true,
-                    events: this.getEventsForDate(dateStr)
-                });
-            }
-
-            // Next month trailing days
-            const remaining = (7 - (days.length % 7)) % 7;
-            for (let i = 1; i <= remaining; i++) {
-                const nextMonthNum = this.calMonth === 11 ? 1 : this.calMonth + 2;
-                const nextYearNum = this.calMonth === 11 ? this.calYear + 1 : this.calYear;
-                const dateStr = `${nextYearNum}-${String(nextMonthNum).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-                days.push({
-                    dayNumber: i,
-                    dateStr: dateStr,
-                    isCurrentMonth: false,
-                    events: this.getEventsForDate(dateStr)
-                });
-            }
-
-            return days;
-        },
-
-        getEventsForDate(dateStr) {
-            return (this.calendarEvents || []).filter(e => e.date === dateStr);
-        },
-
-        get selectedDayEvents() {
-            return this.getEventsForDate(this.selectedDateStr);
+            });
         }
-    }" class="space-y-4 sm:space-y-5 max-w-xl sm:max-w-2xl lg:max-w-3xl mx-auto pb-28 sm:pb-12 px-3 sm:px-6">
+    }" class="min-h-screen pb-24 lg:pb-10 text-slate-800 dark:text-slate-100">
 
-        {{-- ═══════════════════════════════════════════════════════════════════ --}}
-        {{-- 1. FIGMA TOP BAR (Logo Squircle, Search, Alerts, Profile Avatar)     --}}
-        {{-- ═══════════════════════════════════════════════════════════════════ --}}
-        <div class="flex items-center justify-between pt-1 pb-1">
-            <div class="flex items-center gap-3">
-                {{-- Droplet / Camera App Mark --}}
-                <div class="w-10 h-10 rounded-[14px] bg-gradient-to-tr from-blue-600 to-sky-400 flex items-center justify-center shadow-md shadow-blue-500/20 text-white shrink-0 cursor-pointer"
-                     @click="currentViewTab = 'projects'; projectSubMode = 'tasks'">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                    </svg>
+        {{-- Main Container: Adaptive Max-Width (Expansive on Laptop, Contained on Mobile) --}}
+        <div class="max-w-7xl 2xl:max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 space-y-6 sm:space-y-8">
+
+            {{-- Flash Messages --}}
+            @if (session('status'))
+                <div class="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs font-semibold flex items-center gap-2.5 shadow-sm">
+                    <svg class="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span>{{ session('status') }}</span>
                 </div>
-                <div>
-                    <span class="text-[11px] font-semibold text-slate-400 block leading-tight">
-                        {{ __('Welcome back, :name!', ['name' => explode(' ', $currentUser->name)[0]]) }}
-                    </span>
-                    <h1 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-tight"
-                        x-text="currentViewTab === 'profile' ? '{{ __('My Profile') }}' : (currentViewTab === 'calendar' ? '{{ __('Calendar') }}' : (currentViewTab === 'team' ? '{{ __('Team') }}' : (currentViewTab === 'vacations' ? '{{ __('Vacations') }}' : '{{ __('Projects') }}')))">
-                        {{ __('Projects') }}
-                    </h1>
-                </div>
-            </div>
+            @endif
 
-            <div class="flex items-center gap-2">
-                {{-- Filter / Search Trigger --}}
-                <button type="button" @click="filterModalOpen = true" 
-                        class="w-9 h-9 rounded-xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-xs flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-blue-600 transition cursor-pointer"
-                        title="{{ __('Search & Filters') }}">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
-                </button>
-
-                {{-- Notification Bell --}}
-                <button type="button" @click="supportModalOpen = true"
-                        class="w-9 h-9 rounded-xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-xs flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-blue-600 transition cursor-pointer relative"
-                        title="{{ __('Notifications & Support') }}">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/></svg>
-                    <span class="w-2 h-2 rounded-full bg-blue-600 absolute top-2 right-2 ring-2 ring-white dark:ring-slate-900"></span>
-                </button>
-
-                {{-- User Avatar (Tap opens My Profile screen - Figma Screenshot 1) --}}
-                <button type="button" @click="currentViewTab = 'profile'"
-                        class="w-9 h-9 rounded-full bg-slate-200 dark:bg-slate-700 ring-2 ring-blue-500/40 dark:ring-blue-400/40 overflow-hidden flex items-center justify-center text-xs font-bold text-slate-700 dark:text-slate-200 shadow-xs transition hover:scale-105 cursor-pointer"
-                        title="{{ __('View Profile') }}">
-                    @if($currentUser->profile_photo_url)
-                        <img src="{{ $currentUser->profile_photo_url }}" class="w-full h-full object-cover" alt="{{ $currentUser->name }}">
-                    @else
-                        {{ strtoupper(substr($currentUser->name, 0, 1)) }}
+            @if (session('error') || (isset($errors) && $errors->any()))
+                <div class="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 text-xs font-semibold space-y-1 shadow-sm">
+                    @if (session('error'))
+                        <div>{{ session('error') }}</div>
                     @endif
-                </button>
-            </div>
-        </div>
-
-        {{-- ═══════════════════════════════════════════════════════════════════ --}}
-        {{-- 2. FIGMA FILTER ROW & SEGMENTED TABS (Projects, Team, Vacations)    --}}
-        {{-- ═══════════════════════════════════════════════════════════════════ --}}
-        <div x-show="currentViewTab !== 'profile'" class="space-y-3">
-            {{-- Top Filter Row: Current Projects Dropdown & Funnel --}}
-            <div class="flex items-center justify-between gap-2">
-                {{-- Current Projects Dropdown Selector --}}
-                <div class="relative" x-data="{ prjDropdownOpen: false }">
-                    <button type="button" @click="prjDropdownOpen = !prjDropdownOpen"
-                            class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 text-xs font-bold text-slate-800 dark:text-slate-200 shadow-2xs hover:border-blue-500 transition cursor-pointer">
-                        <span class="truncate max-w-[190px]" x-text="currentProjectTitle">{{ __('Current Projects') }}</span>
-                        <svg class="w-3.5 h-3.5 text-slate-400 shrink-0 transition-transform duration-200" :class="prjDropdownOpen ? 'rotate-180 text-blue-600' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
-                    </button>
-
-                    {{-- Dropdown Menu --}}
-                    <div x-show="prjDropdownOpen"
-                         x-cloak
-                         @click.away="prjDropdownOpen = false"
-                         class="absolute left-0 top-full mt-2 w-72 max-w-[85vw] bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-800 py-2 z-40 space-y-1">
-                        <div class="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 dark:border-slate-800/80 mb-1">
-                            {{ __('Assigned Projects (:count)', ['count' => $assignedProjects->count()]) }}
-                        </div>
-                        @foreach($assignedProjects as $pOption)
-                            <button type="button" 
-                                    @click="selectProject({{ $pOption->id }}, '{{ addslashes($pOption->project_code ?? ('PRJ-' . $pOption->id)) }}', '{{ addslashes($pOption->title) }}'); prjDropdownOpen = false;"
-                                    class="w-full text-left px-3 py-2 text-xs hover:bg-slate-50 dark:hover:bg-slate-800/70 flex items-center justify-between gap-2 transition cursor-pointer"
-                                    :class="selectedProjectId == {{ $pOption->id }} ? 'bg-blue-50/70 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 font-bold' : 'text-slate-700 dark:text-slate-200'">
-                                <div class="min-w-0">
-                                    <span class="block font-mono text-[10px] text-slate-400">{{ $pOption->project_code ?? ('PRJ-' . $pOption->id) }}</span>
-                                    <span class="truncate block font-semibold">{{ $pOption->title }}</span>
-                                </div>
-                                <span class="text-[10px] px-1.5 py-0.5 rounded capitalize bg-slate-100 dark:bg-slate-800 text-slate-500 shrink-0">
-                                    {{ str_replace('_', ' ', $pOption->status) }}
-                                </span>
-                            </button>
+                    @if (isset($errors))
+                        @foreach ($errors->all() as $err)
+                            <div>{{ $err }}</div>
                         @endforeach
-                    </div>
+                    @endif
                 </div>
-
-                {{-- Funnel Filter Button --}}
-                <button type="button" @click="filterModalOpen = true"
-                        class="w-9 h-9 rounded-xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-2xs flex items-center justify-center text-slate-600 dark:text-slate-300 hover:border-blue-500 hover:text-blue-600 transition cursor-pointer"
-                        title="{{ __('Filter') }}">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z"/></svg>
-                </button>
-            </div>
-
-            {{-- SEARCH BAR (MATCHED TYPOGRAPHY & ZERO ICON OVERLAP) --}}
-            <div class="flex items-center gap-2.5 px-3.5 py-2.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-2xs focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20 transition">
-                <svg class="w-4 h-4 text-slate-400 shrink-0 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
-                </svg>
-                <input type="text" x-model="filterSearch" placeholder="{{ __('Search projects, tasks, team members, phases...') }}"
-                       class="w-full !border-0 !p-0 !bg-transparent font-sans text-xs sm:text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 placeholder:font-normal focus:outline-none focus:ring-0 !shadow-none !h-auto !min-h-0">
-                <button type="button" x-show="filterSearch.length > 0" @click="filterSearch = ''" class="text-sm text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 shrink-0 p-0.5 font-bold leading-none">
-                    &times;
-                </button>
-            </div>
-
-            {{-- FIGMA 3-PILL SEGMENTED CONTROL (Projects | Team | Vacations + Calendar) --}}
-            <div class="flex items-center p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl border border-slate-200/60 dark:border-slate-700/60">
-                <button type="button" @click="currentViewTab = 'projects'"
-                        :class="currentViewTab === 'projects' ? 'bg-blue-600 text-white font-bold shadow-xs' : 'text-slate-600 dark:text-slate-400 font-semibold hover:text-slate-900 dark:hover:text-white'"
-                        class="flex-1 py-2 text-xs rounded-xl transition text-center cursor-pointer">
-                    {{ __('Projects') }}
-                </button>
-                <button type="button" @click="currentViewTab = 'team'"
-                        :class="currentViewTab === 'team' ? 'bg-blue-600 text-white font-bold shadow-xs' : 'text-slate-600 dark:text-slate-400 font-semibold hover:text-slate-900 dark:hover:text-white'"
-                        class="flex-1 py-2 text-xs rounded-xl transition text-center cursor-pointer">
-                    {{ __('Team') }}
-                </button>
-                <button type="button" @click="currentViewTab = 'vacations'"
-                        :class="currentViewTab === 'vacations' ? 'bg-blue-600 text-white font-bold shadow-xs' : 'text-slate-600 dark:text-slate-400 font-semibold hover:text-slate-900 dark:hover:text-white'"
-                        class="flex-1 py-2 text-xs rounded-xl transition text-center cursor-pointer">
-                    {{ __('Vacations') }}
-                </button>
-                <button type="button" @click="currentViewTab = 'calendar'"
-                        :class="currentViewTab === 'calendar' ? 'bg-blue-600 text-white font-bold shadow-xs' : 'text-slate-600 dark:text-slate-400 font-semibold hover:text-slate-900 dark:hover:text-white'"
-                        class="flex-1 py-2 text-xs rounded-xl transition text-center cursor-pointer flex items-center justify-center gap-1">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="3"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/></svg>
-                    <span>{{ __('Calendar') }}</span>
-                </button>
-            </div>
-        </div>
-
-        {{-- ═══════════════════════════════════════════════════════════════════ --}}
-        {{-- VIEW TAB A: PROJECTS (Cards Overview or Active Tasks Flow)          --}}
-        {{-- ═══════════════════════════════════════════════════════════════════ --}}
-        <div x-show="currentViewTab === 'projects'" class="space-y-4">
-            
-            {{-- Quick Mode Switcher inside Projects: Summary Cards vs Task Flow --}}
-            <div class="flex items-center justify-between px-1">
-                <span class="text-xs font-bold text-slate-400">
-                    <span x-show="projectSubMode === 'cards'">{{ __('All Projects Overview') }} ({{ $assignedProjects->count() }})</span>
-                    <span x-show="projectSubMode === 'tasks'">{{ __('Project Tasks & Phases') }}</span>
-                </span>
-
-                <button type="button" @click="projectSubMode = (projectSubMode === 'cards' ? 'tasks' : 'cards')"
-                        class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1 cursor-pointer">
-                    <span x-show="projectSubMode === 'tasks'">&larr; {{ __('View All Project Cards') }}</span>
-                    <span x-show="projectSubMode === 'cards'">{{ __('Open Active Tasks') }} &rarr;</span>
-                </button>
-            </div>
-
-            {{-- --------------------------------------------------------------- --}}
-            {{-- SUBMODE 1: FIGMA PROJECT CARDS LIST (SCREENSHOT 2)               --}}
-            {{-- --------------------------------------------------------------- --}}
-            <div x-show="projectSubMode === 'cards'" class="space-y-3.5">
-                @foreach($assignedProjects as $prj)
-                    @php
-                        $pTasks = $prj->tasks;
-                        $pAllCount = $pTasks->count();
-                        $pActiveCount = $pTasks->whereIn('status', ['in_progress', 'pending', 'under_review'])->count();
-                        $pWorkers = $prj->workDays()->with('attendances.worker')->get()->pluck('attendances')->flatten()->pluck('worker')->filter()->unique('id');
-                    @endphp
-                    <div @click="selectProject({{ $prj->id }}, '{{ addslashes($prj->project_code ?? ('PRJ-' . $prj->id)) }}', '{{ addslashes($prj->title) }}')"
-                         x-show="!filterSearch || '{{ strtolower(addslashes($prj->title . ' ' . ($prj->project_code ?? '') . ' ' . ($prj->company_name ?? ''))) }}'.includes(filterSearch.toLowerCase())"
-                         class="bg-white dark:bg-slate-900 rounded-[26px] p-4 sm:p-5 border border-slate-100 dark:border-slate-800 shadow-[0_2px_14px_-2px_rgba(0,0,0,0.04)] space-y-3 cursor-pointer hover:shadow-md transition relative overflow-hidden"
-                         :class="selectedProjectId == {{ $prj->id }} ? 'ring-2 ring-blue-500/40' : ''">
-                        
-                        {{-- Top Row: Squircle Badge, Project Code & Title --}}
-                        <div class="flex items-start gap-3">
-                            {{-- Colorful Graphic Squircle Thumbnail --}}
-                            <div class="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 shadow-xs {{ $loop->index % 3 === 0 ? 'bg-gradient-to-tr from-amber-400 to-yellow-300 text-amber-900' : ($loop->index % 3 === 1 ? 'bg-gradient-to-tr from-sky-400 to-blue-500 text-white' : 'bg-gradient-to-tr from-indigo-500 to-purple-400 text-white') }}">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-                                </svg>
-                            </div>
-
-                            <div class="min-w-0 flex-1">
-                                <span class="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider block">
-                                    {{ $prj->project_code ?? ('PRJ-' . $prj->id) }}
-                                </span>
-                                <h4 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate">
-                                    {{ $prj->title }}
-                                </h4>
-                            </div>
-                        </div>
-
-                        {{-- Metadata Row: Created Date & Priority --}}
-                        <div class="flex items-center justify-between text-xs text-slate-400 pt-0.5">
-                            <div class="flex items-center gap-1.5">
-                                <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="3"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
-                                <span>{{ __('Created :date', ['date' => $prj->created_at->format('M d, Y')]) }}</span>
-                            </div>
-
-                            <div class="flex items-center gap-1 font-bold text-[11px] {{ $prj->priority === 'urgent' ? 'text-rose-500' : ($prj->priority === 'high' ? 'text-blue-500' : ($prj->priority === 'low' ? 'text-emerald-500' : 'text-amber-500')) }}">
-                                <span>&uarr;</span>
-                                <span class="capitalize">{{ $prj->priority ?: __('Medium') }}</span>
-                            </div>
-                        </div>
-
-                        {{-- Section: Project Data with 3 Columns (All Tasks, Active Tasks, Assignees) --}}
-                        <div class="pt-2 border-t border-slate-100 dark:border-slate-800/80">
-                            <span class="block text-[11px] font-bold text-slate-900 dark:text-white mb-2">
-                                {{ __('Project Data') }}
-                            </span>
-
-                            <div class="grid grid-cols-3 gap-2 text-center sm:text-left">
-                                <div>
-                                    <span class="block text-[10px] text-slate-400">{{ __('All tasks') }}</span>
-                                    <span class="text-base sm:text-lg font-black text-slate-900 dark:text-white">{{ $pAllCount }}</span>
-                                </div>
-
-                                <div>
-                                    <span class="block text-[10px] text-slate-400">{{ __('Active tasks') }}</span>
-                                    <span class="text-base sm:text-lg font-black text-slate-900 dark:text-white">{{ $pActiveCount }}</span>
-                                </div>
-
-                                <div>
-                                    <span class="block text-[10px] text-slate-400 mb-1">{{ __('Assignees') }}</span>
-                                    <div class="flex items-center -space-x-1.5 justify-center sm:justify-start">
-                                        <div class="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 border-2 border-white dark:border-slate-900 flex items-center justify-center font-bold text-[9px]">
-                                            {{ strtoupper(substr($prj->leadTechnician?->name ?? 'T', 0, 1)) }}
-                                        </div>
-                                        <div class="w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-900 text-emerald-700 dark:text-emerald-300 border-2 border-white dark:border-slate-900 flex items-center justify-center font-bold text-[9px]">
-                                            S
-                                        </div>
-                                        <div class="w-6 h-6 rounded-full bg-blue-600 text-white border-2 border-white dark:border-slate-900 flex items-center justify-center font-bold text-[9px]">
-                                            +{{ max(1, $pWorkers->count()) }}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                @endforeach
-            </div>
-
-            {{-- --------------------------------------------------------------- --}}
-            {{-- SUBMODE 2: CURRENT PROJECT DETAIL & TASK FLOW                     --}}
-            {{-- --------------------------------------------------------------- --}}
-            <div x-show="projectSubMode === 'tasks'" class="space-y-4">
-                {{-- Current Project Selector Card --}}
-                <div class="relative bg-white dark:bg-slate-900 rounded-[22px] p-4 sm:p-5 border border-slate-100 dark:border-slate-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)]">
-                    <div class="flex items-start gap-3.5">
-                        <div class="w-1.5 self-stretch bg-blue-600 rounded-full shrink-0 my-0.5"></div>
-
-                        <div class="min-w-0 flex-1">
-                            <div class="flex items-center justify-between gap-2">
-                                <span class="text-[11px] font-mono font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block"
-                                      x-text="currentProjectCode">
-                                    {{ $selectedPrj?->project_code ?? ('PRJ-' . ($selectedPrj?->id ?? '0001')) }}
-                                </span>
-
-                                <button type="button" @click="projectSubMode = 'cards'"
-                                        class="text-[11px] font-bold text-blue-600 dark:text-blue-400 hover:underline">
-                                    {{ __('Switch') }} &rarr;
-                                </button>
-                            </div>
-
-                            <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white mt-0.5 leading-snug truncate"
-                                x-text="currentProjectTitle">
-                                {{ $selectedPrj?->title ?? __('No Project Selected') }}
-                            </h2>
-
-                            <div class="mt-2 flex items-center justify-between">
-                                <button type="button" @click="projectDetailsOpen = true" 
-                                        class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 inline-flex items-center gap-1 cursor-pointer transition">
-                                    <span>{{ __('View details') }}</span>
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
-                                </button>
-
-                                <span class="text-[11px] text-slate-400">
-                                    {{ $selectedPrj?->company_name ?? ($selectedPrj?->customer?->name ?? __('Direct Client')) }}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Shift Clock-In Compact Strip --}}
-                <div class="bg-white dark:bg-slate-900 rounded-[20px] p-3 sm:p-3.5 border border-slate-100 dark:border-slate-800 shadow-[0_2px_10px_-2px_rgba(0,0,0,0.04)] flex items-center justify-between gap-3">
-                    <div class="flex items-center gap-2.5">
-                        <div class="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                        </div>
-                        <div>
-                            <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">{{ __("Today's Shift") }}</span>
-                            @if(!$myAttendance || !$myAttendance->clock_in)
-                                <span class="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-                                    <span class="w-2 h-2 rounded-full bg-amber-500"></span>
-                                    {{ __('Not Clocked In') }}
-                                </span>
-                            @elseif(!$myAttendance->clock_out)
-                                <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
-                                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                                    {{ __('In: :time', ['time' => \Carbon\Carbon::parse($myAttendance->clock_in)->format('h:i A')]) }}
-                                </span>
-                            @else
-                                <span class="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-                                    <span class="w-2 h-2 rounded-full bg-blue-500"></span>
-                                    {{ __('Shift Done (:h hrs)', ['h' => $myAttendance->total_hours]) }}
-                                </span>
-                            @endif
-                        </div>
-                    </div>
-
-                    <div>
-                        @if(!$myAttendance || !$myAttendance->clock_in)
-                            <form method="POST" action="{{ route('attendance.clock-in') }}">
-                                @csrf
-                                <input type="hidden" name="location_type" value="on_site">
-                                <button type="submit" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold text-xs shadow-xs transition cursor-pointer">
-                                    {{ __('Clock In') }}
-                                </button>
-                            </form>
-                        @elseif(!$myAttendance->clock_out)
-                            <form method="POST" action="{{ route('attendance.clock-out') }}">
-                                @csrf
-                                <button type="submit" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 active:scale-95 text-white font-bold text-xs shadow-xs transition cursor-pointer">
-                                    {{ __('Clock Out') }}
-                                </button>
-                            </form>
-                        @endif
-                    </div>
-                </div>
-
-                {{-- Task Section with Collapsible Phase Groups --}}
-                <div class="space-y-3 pt-1">
-                    @foreach($assignedProjects as $prj)
-                        @php
-                            $allPrjTasks = $prj->tasks;
-                            $activeTasks = $allPrjTasks->whereIn('status', ['in_progress', 'completed', 'under_review']);
-                            if ($activeTasks->isEmpty() && $allPrjTasks->isNotEmpty()) {
-                                $activeTasks = $allPrjTasks->take(5);
-                            }
-                            $activeGroups = $activeTasks->groupBy(function($item) {
-                                return $item->phase_name ?: __('CCTV Deployment');
-                            });
-                        @endphp
-
-                        <div x-show="selectedProjectId == {{ $prj->id }}" class="space-y-4">
-                            {{-- Section Pill: Active Tasks --}}
-                            <div class="w-full py-2 px-4 rounded-xl bg-slate-100 dark:bg-slate-800/80 text-center text-xs font-bold text-slate-700 dark:text-slate-300 shadow-xs">
-                                {{ __('Active Tasks') }} ({{ $activeTasks->count() }})
-                            </div>
-
-                            {{-- Collapsible Phase Groups (Figma Screenshots) --}}
-                            @forelse($activeGroups as $phaseName => $groupTasks)
-                                @php
-                                    $phaseKey = 'phase_' . $prj->id . '_' . \Illuminate\Support\Str::slug($phaseName);
-                                @endphp
-                                <div class="space-y-2.5">
-                                    {{-- Accordion Phase Header: ^ Group Name (N issues) --}}
-                                    <button type="button" @click="togglePhase('{{ $phaseKey }}')" 
-                                            class="w-full flex items-center justify-between text-left py-1 px-1 cursor-pointer group">
-                                        <div class="flex items-center gap-2">
-                                            <span class="text-blue-600 dark:text-blue-400 font-black text-xs transition-transform duration-200"
-                                                  :class="isPhaseCollapsed('{{ $phaseKey }}') ? 'rotate-180' : ''">
-                                                &and;
-                                            </span>
-                                            <span class="text-xs sm:text-sm font-bold text-blue-600 dark:text-blue-400 group-hover:underline">
-                                                {{ $phaseName }} ({{ $groupTasks->count() }} {{ __('issues') }})
-                                            </span>
-                                        </div>
-                                    </button>
-
-                                    {{-- Group Tasks Container --}}
-                                    <div x-show="!isPhaseCollapsed('{{ $phaseKey }}')" 
-                                         x-transition
-                                         class="space-y-3">
-                                        @foreach($groupTasks as $task)
-                                            @php
-                                                $taskSerialized = [
-                                                    'id' => $task->id,
-                                                    'title' => $task->title,
-                                                    'phase_name' => $task->phase_name,
-                                                    'status' => $task->status,
-                                                    'priority' => $task->priority,
-                                                    'estimated_hours' => $task->estimated_hours,
-                                                    'actual_hours' => $task->actual_hours,
-                                                    'description' => $task->description ?: __('Execute cable pulling, junction box installation, and camera termination as per site blueprint.'),
-                                                    'reporter_name' => $prj->leadTechnician?->name ?? 'Raman (Lead Engineer)',
-                                                    'assigned_name' => $task->assignedUser?->name ?? 'Blake Silva',
-                                                    'deadline' => $task->due_date ? $task->due_date->translatedFormat('M d, Y') : ($prj->target_completion_date ? \Carbon\Carbon::parse($prj->target_completion_date)->translatedFormat('M d, Y') : 'Nov 15, 2026'),
-                                                    'created_at' => $task->created_at ? $task->created_at->translatedFormat('M d, Y') : 'Oct 30, 2026',
-                                                    'project_code' => $prj->project_code ?? ('PRJ-' . $prj->id),
-                                                ];
-                                            @endphp
-                                            <div @click="openTaskDetails({{ Js::from($taskSerialized) }})"
-                                                 x-show="!filterSearch || '{{ strtolower(addslashes($task->title . ' ' . $task->phase_name . ' ' . ($task->assignedUser?->name ?? ''))) }}'.includes(filterSearch.toLowerCase())"
-                                                 class="bg-white dark:bg-slate-900 rounded-[22px] p-4 sm:p-5 border shadow-[0_2px_12px_-2px_rgba(0,0,0,0.04)] space-y-3 cursor-pointer hover:shadow-md transition"
-                                                 :class="selectedTaskId == {{ $task->id }} ? 'border-2 border-blue-500 ring-2 ring-blue-500/20' : 'border-slate-100 dark:border-slate-800'">
-                                                
-                                                {{-- Top Row: Task Name & Circle Status --}}
-                                                <div class="flex items-start justify-between gap-3">
-                                                    <div class="min-w-0 flex-1">
-                                                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 block mb-0.5">
-                                                            {{ __('Task Name') }}
-                                                        </span>
-                                                        <h4 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white leading-snug">
-                                                            {{ $task->title }}
-                                                        </h4>
-                                                    </div>
-
-                                                    <button type="button" @click.stop="quickToggleTask({{ $prj->id }}, {{ $task->id }}, '{{ $task->status }}')"
-                                                            class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center transition cursor-pointer hover:scale-105 active:scale-95"
-                                                            title="{{ __('Toggle status') }}">
-                                                        @if($task->status === 'completed')
-                                                            <div class="w-6 h-6 rounded-full border-2 border-emerald-500 bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shadow-xs">
-                                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
-                                                            </div>
-                                                        @elseif($task->status === 'in_progress')
-                                                            <div class="w-6 h-6 rounded-full border-2 border-blue-500 border-t-transparent flex items-center justify-center">
-                                                                <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-                                                            </div>
-                                                        @else
-                                                            <div class="w-6 h-6 rounded-full border-2 border-slate-300 dark:border-slate-600"></div>
-                                                        @endif
-                                                    </button>
-                                                </div>
-
-                                                {{-- 3 Column Row: Estimate, Spent Time, Assignee --}}
-                                                <div class="grid grid-cols-3 gap-2 pt-1 border-t border-slate-50 dark:border-slate-800/60">
-                                                    <div>
-                                                        <span class="text-[10px] text-slate-400 block mb-0.5">{{ __('Estimate') }}</span>
-                                                        <span class="text-xs font-bold text-slate-700 dark:text-slate-300">
-                                                            {{ $task->estimated_hours ? ($task->estimated_hours . 'h') : '2d 4h' }}
-                                                        </span>
-                                                    </div>
-
-                                                    <div>
-                                                        <span class="text-[10px] text-slate-400 block mb-0.5">{{ __('Spent Time') }}</span>
-                                                        <span class="text-xs font-bold text-slate-700 dark:text-slate-300">
-                                                            {{ $task->actual_hours ? ($task->actual_hours . 'h') : '1d 2h' }}
-                                                        </span>
-                                                    </div>
-
-                                                    <div>
-                                                        <span class="text-[10px] text-slate-400 block mb-0.5">{{ __('Assignee') }}</span>
-                                                        <div class="flex items-center gap-1.5">
-                                                            <div class="w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-[10px] font-bold text-slate-700 dark:text-slate-200">
-                                                                {{ strtoupper(substr($task->assignedUser?->name ?? 'T', 0, 1)) }}
-                                                            </div>
-                                                            <span class="text-xs font-medium text-slate-700 dark:text-slate-300 truncate">
-                                                                {{ explode(' ', $task->assignedUser?->name ?? 'Blake')[0] }}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                {{-- Bottom Row: Priority & Status Pill --}}
-                                                <div class="flex items-center justify-between pt-1">
-                                                    <div class="flex items-center gap-1 font-bold text-[11px] {{ $task->priority === 'urgent' ? 'text-rose-500' : ($task->priority === 'high' ? 'text-blue-500' : ($task->priority === 'low' ? 'text-emerald-500' : 'text-amber-500')) }}">
-                                                        <span>{{ $task->priority === 'low' ? '&darr;' : '&uarr;' }}</span>
-                                                        <span class="capitalize">{{ $task->priority ?: 'Medium' }}</span>
-                                                    </div>
-
-                                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold capitalize {{ $task->status === 'completed' ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400' : ($task->status === 'in_progress' ? 'bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400') }}">
-                                                        {{ str_replace('_', ' ', $task->status) }}
-                                                    </span>
-                                                </div>
-
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            @empty
-                                <div class="bg-white dark:bg-slate-900 rounded-[22px] p-6 text-center border border-slate-100 dark:border-slate-800 text-xs text-slate-400">
-                                    {{ __('No tasks assigned in this project.') }}
-                                </div>
-                            @endforelse
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-
-        </div>
-
-        {{-- ═══════════════════════════════════════════════════════════════════ --}}
-        {{-- VIEW TAB B: TEAM MEMBERS 2-COLUMN GRID (FIGMA SCREENSHOT 3)         --}}
-        {{-- ═══════════════════════════════════════════════════════════════════ --}}
-        <div x-show="currentViewTab === 'team'" class="space-y-4">
-            <div class="flex items-center justify-between px-1">
-                <span class="text-xs font-bold text-slate-400">
-                    {{ __('Field Workforce & Technicians (:count)', ['count' => count($teamMembers)]) }}
-                </span>
-                <button type="button" @click="$dispatch('open-modal', 'mark-worker-attendance')"
-                        class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline">
-                    {{ __('Log Team Attendance') }} &rarr;
-                </button>
-            </div>
-
-            {{-- 2-Column Bento Grid matching Figma Screenshot 3 --}}
-            <div class="grid grid-cols-2 gap-3 sm:gap-4">
-                @foreach($teamMembers as $member)
-                    <div x-show="!filterSearch || '{{ strtolower(addslashes($member->name . ' ' . $member->role_label . ' ' . $member->level)) }}'.includes(filterSearch.toLowerCase())"
-                         class="bg-white dark:bg-slate-900 rounded-[24px] p-4 sm:p-5 text-center border border-slate-100 dark:border-slate-800 shadow-[0_2px_12px_-2px_rgba(0,0,0,0.04)] flex flex-col items-center justify-between space-y-2.5 hover:shadow-md transition">
-                        
-                        {{-- Circular Avatar with Blue Status Ring --}}
-                        <div class="relative">
-                            <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full ring-4 ring-blue-100 dark:ring-blue-950 p-0.5 overflow-hidden flex items-center justify-center font-bold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 shadow-xs mx-auto">
-                                @if($member->photo)
-                                    <img src="{{ $member->photo }}" class="w-full h-full object-cover rounded-full" alt="{{ $member->name }}">
-                                @else
-                                    <span class="text-base sm:text-lg">{{ strtoupper(substr($member->name, 0, 1)) }}</span>
-                                @endif
-                            </div>
-                            <span class="w-3.5 h-3.5 rounded-full bg-emerald-500 absolute bottom-0 right-0 ring-2 ring-white dark:ring-slate-900"></span>
-                        </div>
-
-                        {{-- Name & Role --}}
-                        <div class="w-full">
-                            <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">
-                                {{ $member->name }}
-                            </h4>
-                            <span class="text-[10px] sm:text-[11px] text-slate-400 truncate block mt-0.5">
-                                {{ $member->role_label }}
-                            </span>
-                        </div>
-
-                        {{-- Level Badge Pill: Middle / Junior / Senior / Lead --}}
-                        <div>
-                            <span class="text-[10px] font-bold px-3 py-0.5 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
-                                {{ $member->level }}
-                            </span>
-                        </div>
-
-                        {{-- Quick Call / WhatsApp Contact link --}}
-                        @if($member->phone)
-                            <div class="pt-1 w-full flex items-center justify-center gap-2">
-                                <a href="tel:{{ $member->phone }}" 
-                                   class="p-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 hover:bg-blue-100 transition"
-                                   title="{{ __('Call') }}">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/></svg>
-                                </a>
-                                <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $member->phone) }}" target="_blank"
-                                   class="p-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 transition"
-                                   title="{{ __('WhatsApp') }}">
-                                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.007c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86.174.086.275.073.376-.044.101-.116.433-.506.549-.68.116-.173.231-.145.39-.086s1.011.477 1.184.564.289.13.332.203c.043.072.043.419-.101.824z"/></svg>
-                                </a>
-                            </div>
-                        @endif
-
-                    </div>
-                @endforeach
-            </div>
-        </div>
-
-        {{-- ═══════════════════════════════════════════════════════════════════ --}}
-        {{-- VIEW TAB C: VACATIONS / LEAVE REQUESTS (FIGMA SCREENSHOT 4)          --}}
-        {{-- ═══════════════════════════════════════════════════════════════════ --}}
-        <div x-show="currentViewTab === 'vacations'" class="space-y-4">
-            <div class="flex items-center justify-between px-1">
-                <span class="text-xs font-bold text-slate-400">
-                    {{ __('Vacations & Leave Requests (:count)', ['count' => count($myLeaveRequests)]) }}
-                </span>
-                <button type="button" @click="leaveModalOpen = true"
-                        class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1">
-                    <span class="text-base leading-none">+</span>
-                    <span>{{ __('New Request') }}</span>
-                </button>
-            </div>
-
-            {{-- Vacations List matching Figma Screenshot 4 --}}
-            <div class="space-y-3">
-                @forelse($myLeaveRequests as $leave)
-                    @php
-                        $isSick = in_array($leave->leave_type, ['sick', 'emergency']);
-                        $isRemote = in_array($leave->leave_type, ['unpaid_lwp', 'remote']);
-                        $isVacation = in_array($leave->leave_type, ['casual', 'earned', 'vacation']);
-                        $typeName = $isSick ? __('Sick Leave') : ($isRemote ? __('Work remotely') : __('Vacation'));
-                        $dotColor = $isSick ? 'bg-rose-500' : ($isRemote ? 'bg-purple-500' : 'bg-blue-500');
-                        $badgeClass = $leave->status === 'approved' ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400' : ($leave->status === 'pending' ? 'bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400' : 'bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400');
-                    @endphp
-                    <div x-show="!filterSearch || '{{ strtolower(addslashes($typeName . ' ' . $leave->status . ' ' . ($leave->reason ?? ''))) }}'.includes(filterSearch.toLowerCase())"
-                         class="bg-white dark:bg-slate-900 rounded-[24px] p-4 sm:p-5 border border-slate-100 dark:border-slate-800 shadow-[0_2px_12px_-2px_rgba(0,0,0,0.04)] space-y-3">
-                        
-                        {{-- Top Row: Request Type Label & Status Badge Pill --}}
-                        <div class="flex items-center justify-between">
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                                {{ __('Request Type') }}
-                            </span>
-                            <span class="px-3 py-1 rounded-full text-[10px] font-bold capitalize {{ $badgeClass }}">
-                                {{ $leave->status }}
-                            </span>
-                        </div>
-
-                        {{-- Middle Row: Dot indicator & Leave Name --}}
-                        <div class="flex items-center gap-2.5">
-                            <span class="w-2.5 h-2.5 rounded-full {{ $dotColor }} shrink-0"></span>
-                            <h4 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
-                                {{ $typeName }}
-                            </h4>
-                        </div>
-
-                        {{-- Bottom Row: Date Range & Duration Pill --}}
-                        <div class="flex items-center justify-between pt-1 border-t border-slate-50 dark:border-slate-800/60 text-xs">
-                            <div class="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
-                                <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="3"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
-                                <span>
-                                    {{ \Carbon\Carbon::parse($leave->start_date)->format('M d, Y') }} - {{ \Carbon\Carbon::parse($leave->end_date)->format('M d, Y') }}
-                                </span>
-                            </div>
-
-                            <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-                                {{ $leave->days_count ?? 1 }}d
-                            </span>
-                        </div>
-
-                    </div>
-                @empty
-                    <div class="bg-white dark:bg-slate-900 rounded-[24px] p-8 text-center border border-slate-100 dark:border-slate-800 text-xs text-slate-400">
-                        {{ __('No vacation or leave requests recorded.') }}
-                    </div>
-                @endforelse
-            </div>
-        </div>
-
-        {{-- ═══════════════════════════════════════════════════════════════════ --}}
-        {{-- VIEW TAB D: CALENDAR VIEW (MOBILE MONTH CALENDAR & SCHEDULE)        --}}
-        {{-- ═══════════════════════════════════════════════════════════════════ --}}
-        <div x-show="currentViewTab === 'calendar'" class="space-y-4">
-            {{-- Month Card with Navigation --}}
-            <div class="bg-white dark:bg-slate-900 rounded-[28px] p-5 sm:p-6 border border-slate-100 dark:border-slate-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] space-y-4">
-                
-                {{-- Month Header & Nav Arrows --}}
-                <div class="flex items-center justify-between px-1">
-                    <button type="button" @click="prevCalMonth()" 
-                            class="p-2 rounded-xl text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/60 transition cursor-pointer">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
-                    </button>
-
-                    <h2 class="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight"
-                        x-text="calMonthTitle">
-                        {{ now()->format('F, Y') }}
-                    </h2>
-
-                    <button type="button" @click="nextCalMonth()" 
-                            class="p-2 rounded-xl text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/60 transition cursor-pointer">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
-                    </button>
-                </div>
-
-                {{-- Weekdays Header Row --}}
-                <div class="grid grid-cols-7 gap-1 text-center">
-                    <template x-for="day in ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']" :key="day">
-                        <span class="text-[11px] font-bold text-slate-400 py-1" x-text="day"></span>
-                    </template>
-                </div>
-
-                {{-- Calendar Days Grid --}}
-                <div class="grid grid-cols-7 gap-1 text-center">
-                    <template x-for="(d, idx) in calendarGridDays" :key="idx">
-                        <button type="button" 
-                                @click="selectedDateStr = d.dateStr"
-                                class="h-10 sm:h-11 rounded-xl flex flex-col items-center justify-center relative transition cursor-pointer group"
-                                :class="{
-                                    'border-2 border-blue-500 font-bold bg-blue-50/50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400': selectedDateStr === d.dateStr,
-                                    'text-slate-900 dark:text-white font-semibold hover:bg-slate-50 dark:hover:bg-slate-800': d.isCurrentMonth && selectedDateStr !== d.dateStr,
-                                    'text-slate-300 dark:text-slate-600': !d.isCurrentMonth && selectedDateStr !== d.dateStr
-                                }">
-                            <span class="text-xs leading-none" x-text="d.dayNumber"></span>
-                            
-                            {{-- Event Dots --}}
-                            <div class="flex items-center gap-0.5 mt-1" x-show="d.events && d.events.length > 0">
-                                <template x-for="(ev, eIdx) in (d.events || []).slice(0, 3)" :key="eIdx">
-                                    <span class="w-1.5 h-1.5 rounded-full" 
-                                          :class="{
-                                              'bg-blue-500': ev.color === 'blue',
-                                              'bg-purple-500': ev.color === 'purple',
-                                              'bg-rose-500': ev.color === 'rose',
-                                              'bg-emerald-500': ev.color === 'emerald',
-                                              'bg-amber-500': ev.color === 'amber'
-                                          }"></span>
-                                </template>
-                            </div>
-                        </button>
-                    </template>
-                </div>
-
-            </div>
-
-            {{-- Daily Schedule List for Selected Date --}}
-            <div class="space-y-3">
-                <div class="flex items-center justify-between px-1">
-                    <h3 class="text-sm sm:text-base font-black text-slate-900 dark:text-white tracking-tight"
-                        x-text="selectedDateFormatted">
-                        {{ now()->format('F d, Y') }}
-                    </h3>
-                    <span class="text-xs text-slate-400"
-                          x-text="selectedDayEvents.length + ' {{ __('events') }}'">
-                    </span>
-                </div>
-
-                {{-- Schedule Cards with Left Stripe --}}
-                <div class="space-y-2.5">
-                    <template x-for="event in selectedDayEvents" :key="event.id">
-                        <div class="bg-white dark:bg-slate-900 rounded-[20px] p-3.5 sm:p-4 border border-slate-100 dark:border-slate-800 shadow-xs relative overflow-hidden flex items-center justify-between gap-3">
-                            {{-- Left Color Accent Stripe --}}
-                            <div class="w-1.5 absolute left-0 top-3 bottom-3 rounded-r-full"
-                                 :class="{
-                                     'bg-purple-500': event.color === 'purple',
-                                     'bg-blue-500': event.color === 'blue',
-                                     'bg-rose-500': event.color === 'rose',
-                                     'bg-emerald-500': event.color === 'emerald'
-                                 }"></div>
-
-                            <div class="min-w-0 flex-1 pl-2.5">
-                                <h4 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white leading-snug truncate"
-                                    x-text="event.title"></h4>
-                                <div class="flex items-center gap-2 mt-1 text-[11px] text-slate-400">
-                                    <span x-text="event.time"></span>
-                                    <span>&bull;</span>
-                                    <span x-text="event.type"></span>
-                                </div>
-                            </div>
-
-                            <div class="flex items-center gap-2 shrink-0">
-                                <span class="text-[11px] font-bold text-slate-400" x-text="event.duration"></span>
-                                <span class="text-xs font-bold"
-                                      :class="event.priority === 'high' || event.priority === 'urgent' ? 'text-blue-500' : 'text-emerald-500'"
-                                      x-text="event.priority === 'high' ? '&uarr;' : '&darr;'"></span>
-                            </div>
-                        </div>
-                    </template>
-
-                    <div x-show="selectedDayEvents.length === 0" 
-                         class="bg-white dark:bg-slate-900 rounded-[20px] p-6 text-center border border-slate-100 dark:border-slate-800 text-xs text-slate-400">
-                        {{ __('No scheduled tasks or jobs on this date.') }}
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-        {{-- ═══════════════════════════════════════════════════════════════════ --}}
-        {{-- VIEW TAB E: MY PROFILE (FIGMA SCREENSHOT 1)                          --}}
-        {{-- ═══════════════════════════════════════════════════════════════════ --}}
-        <div x-show="currentViewTab === 'profile'" class="space-y-4">
-            {{-- Profile Screen Header --}}
-            <div class="flex items-center justify-between px-1">
-                <button type="button" @click="currentViewTab = 'projects'"
-                        class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1 cursor-pointer">
-                    <span>&larr;</span>
-                    <span>{{ __('Back to Dashboard') }}</span>
-                </button>
-
-                <a href="{{ route('profile.edit') }}" 
-                   class="w-9 h-9 rounded-xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-2xs flex items-center justify-center text-slate-500 hover:text-blue-600 transition"
-                   title="{{ __('Settings') }}">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"/><circle cx="12" cy="12" r="3"/></svg>
-                </a>
-            </div>
-
-            {{-- Profile Card matching Figma Screenshot 1 --}}
-            <div class="bg-white dark:bg-slate-900 rounded-[28px] p-5 sm:p-6 border border-slate-100 dark:border-slate-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] space-y-5">
-                
-                {{-- Avatar & Edit Button Row --}}
-                <div class="flex items-start justify-between">
-                    {{-- Circular Avatar with Blue Ring --}}
-                    <div class="flex items-center gap-4">
-                        <div class="w-18 h-18 sm:w-20 sm:h-20 rounded-full ring-4 ring-blue-500/30 p-1 overflow-hidden bg-slate-100 dark:bg-slate-800 flex items-center justify-center font-bold text-slate-700 dark:text-slate-200 text-xl shadow-xs">
-                            @if($currentUser->profile_photo_url)
-                                <img src="{{ $currentUser->profile_photo_url }}" class="w-full h-full object-cover rounded-full" alt="{{ $currentUser->name }}">
-                            @else
-                                {{ strtoupper(substr($currentUser->name, 0, 1)) }}
-                            @endif
-                        </div>
-
-                        <div>
-                            <h3 class="text-lg sm:text-xl font-black text-slate-900 dark:text-white leading-tight">
-                                {{ $currentUser->name }}
-                            </h3>
-                            <span class="text-xs text-slate-400 font-semibold block mt-0.5">
-                                {{ $currentUser->role === 'technician' ? __('Lead CCTV Technician') : __('Field Operations Engineer') }}
-                            </span>
-                        </div>
-                    </div>
-
-                    {{-- Edit Profile Icon Button --}}
-                    <a href="{{ route('profile.edit') }}" 
-                       class="w-9 h-9 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-500 hover:text-blue-600 hover:border-blue-500 transition shadow-2xs"
-                       title="{{ __('Edit Profile') }}">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125"/></svg>
-                    </a>
-                </div>
-
-                {{-- SECTION: MAIN INFO --}}
-                <div class="space-y-3 pt-2">
-                    <span class="block text-xs font-bold text-slate-900 dark:text-white">
-                        {{ __('Main info') }}
-                    </span>
-
-                    {{-- Position --}}
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-400 mb-1">{{ __('Position') }}</label>
-                        <input type="text" readonly value="{{ $currentUser->role === 'technician' ? 'Lead CCTV Technician & Field Engineer' : 'Field Operations Engineer' }}"
-                               class="w-full text-xs font-sans font-medium rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 px-3.5 py-2.5 shadow-2xs">
-                    </div>
-
-                    {{-- Company --}}
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-400 mb-1">{{ __('Company') }}</label>
-                        <input type="text" readonly value="{{ config('app.name', 'SecureVision Systems Ltd.') }}"
-                               class="w-full text-xs font-sans font-medium rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 px-3.5 py-2.5 shadow-2xs">
-                    </div>
-
-                    {{-- Location with Pin Icon --}}
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-400 mb-1">{{ __('Location') }}</label>
-                        <div class="relative">
-                            <input type="text" readonly value="Coimbatore, Tamil Nadu, India"
-                                   class="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 pl-3.5 pr-9 py-2.5 shadow-2xs">
-                            <svg class="w-4 h-4 text-slate-400 absolute right-3 top-3 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg>
-                        </div>
-                    </div>
-
-                    {{-- Birthday Date with Calendar Icon --}}
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-400 mb-1">{{ __('Birthday Date') }}</label>
-                        <div class="relative">
-                            <input type="text" readonly value="May 19, 1996"
-                                   class="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 pl-3.5 pr-9 py-2.5 shadow-2xs">
-                            <svg class="w-4 h-4 text-slate-400 absolute right-3 top-3 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="3"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- SECTION: CONTACT INFO --}}
-                <div class="space-y-3 pt-3 border-t border-slate-100 dark:border-slate-800">
-                    <span class="block text-xs font-bold text-slate-900 dark:text-white">
-                        {{ __('Contact Info') }}
-                    </span>
-
-                    {{-- Email --}}
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-400 mb-1">{{ __('Email') }}</label>
-                        <input type="text" readonly value="{{ $currentUser->email }}"
-                               class="w-full text-xs font-sans font-medium rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 px-3.5 py-2.5 shadow-2xs">
-                    </div>
-
-                    {{-- Mobile Number --}}
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-400 mb-1">{{ __('Mobile Number') }}</label>
-                        <input type="text" readonly value="{{ $currentUser->phone ?? '+91 98765 43210' }}"
-                               class="w-full text-xs font-sans font-medium rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 px-3.5 py-2.5 shadow-2xs">
-                    </div>
-
-                    {{-- Skype / WhatsApp --}}
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-400 mb-1">{{ __('WhatsApp / Telegram') }}</label>
-                        <input type="text" readonly value="{{ $currentUser->phone ?? '+91 98765 43210' }}"
-                               class="w-full text-xs font-sans font-medium rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 px-3.5 py-2.5 shadow-2xs">
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-        {{-- ═══════════════════════════════════════════════════════════════════ --}}
-        {{-- FLOATING ACTION BUTTON (+) (FIGMA BLUE CIRCLE AT BOTTOM RIGHT)       --}}
-        {{-- ═══════════════════════════════════════════════════════════════════ --}}
-        <div class="fixed bottom-6 right-6 z-40">
-            <button type="button" 
-                    @click="currentViewTab === 'vacations' ? (leaveModalOpen = true) : (currentViewTab === 'team' ? $dispatch('open-modal', 'mark-worker-attendance') : (openFab = !openFab))"
-                    class="w-14 h-14 rounded-full bg-blue-600 hover:bg-blue-700 active:scale-95 text-white shadow-xl shadow-blue-500/40 flex items-center justify-center transition cursor-pointer">
-                <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-            </button>
-        </div>
-
-        {{-- ═══════════════════════════════════════════════════════════════════ --}}
-        {{-- MODAL A: TASK DETAILS BOTTOM SHEET                                  --}}
-        {{-- ═══════════════════════════════════════════════════════════════════ --}}
-        <div x-show="taskDetailsOpen" 
-             x-cloak 
-             class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
-            
-            <div @click.away="taskDetailsOpen = false" 
-                 x-show="taskDetailsOpen"
-                 x-transition:enter="ease-out duration-300"
-                 x-transition:enter-start="opacity-0 translate-y-4 scale-95"
-                 x-transition:enter-end="opacity-100 translate-y-0 scale-100"
-                 x-transition:leave="ease-in duration-200"
-                 x-transition:leave-start="opacity-100 translate-y-0 scale-100"
-                 x-transition:leave-end="opacity-0 translate-y-4 scale-95"
-                 class="bg-white dark:bg-slate-900 rounded-[28px] max-w-sm sm:max-w-md w-full p-5 sm:p-6 shadow-2xl border border-slate-100 dark:border-slate-800 space-y-4 relative max-h-[90vh] overflow-y-auto">
-                
-                {{-- Back Link & Header --}}
-                <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-                    <button type="button" @click="taskDetailsOpen = false" 
-                            class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1 cursor-pointer">
-                        <span>&larr;</span>
-                        <span>{{ __('Back to Projects') }}</span>
-                    </button>
-                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400" x-text="activeTask ? activeTask.project_code : ''"></span>
-                </div>
-
-                {{-- Task Title & Status Selector --}}
-                <div>
-                    <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-snug"
-                        x-text="activeTask ? activeTask.title : ''"></h3>
+            @endif
+
+            {{-- ═══════════════════════════════════════════════════════════════════ --}}
+            {{-- 1. WORKSTATION TOP HERO & ACTION STRIP (Laptop Wide + Mobile Stack)  --}}
+            {{-- ═══════════════════════════════════════════════════════════════════ --}}
+            <div :class="currentTab !== 'overview' ? 'hidden lg:block' : ''" class="rounded-2xl sm:rounded-3xl crm-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 sm:p-6 lg:p-7 shadow-sm space-y-3.5 sm:space-y-4">
+                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 sm:gap-4">
                     
-                    <div class="mt-2.5 flex items-center gap-2">
-                        <select @change="updateActiveTaskStatus($event.target.value)" 
-                                :value="activeTask ? activeTask.status : 'in_progress'"
-                                class="text-xs font-bold px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 capitalize">
-                            <option value="pending">{{ __('Pending / To Do') }}</option>
-                            <option value="in_progress">{{ __('In Progress') }}</option>
-                            <option value="under_review">{{ __('Under Review') }}</option>
-                            <option value="completed">{{ __('Completed') }}</option>
-                        </select>
-                    </div>
-                </div>
-
-                {{-- Task Info Card --}}
-                <div class="space-y-3 pt-1">
-                    <span class="block text-[11px] font-bold uppercase tracking-wider text-slate-400">{{ __('Task Info') }}</span>
-                    
-                    <div class="grid grid-cols-2 gap-3 text-xs">
-                        <div>
-                            <span class="text-slate-400 block mb-0.5">{{ __('Reporter') }}</span>
-                            <span class="font-bold text-slate-800 dark:text-slate-200" x-text="activeTask ? activeTask.reporter_name : ''"></span>
-                        </div>
-                        <div>
-                            <span class="text-slate-400 block mb-0.5">{{ __('Assigned') }}</span>
-                            <span class="font-bold text-slate-800 dark:text-slate-200" x-text="activeTask ? activeTask.assigned_name : ''"></span>
-                        </div>
-                        <div>
-                            <span class="text-slate-400 block mb-0.5">{{ __('Priority') }}</span>
-                            <span class="font-bold text-amber-500 capitalize" x-text="activeTask ? activeTask.priority : ''"></span>
-                        </div>
-                        <div>
-                            <span class="text-slate-400 block mb-0.5">{{ __('Dead Line') }}</span>
-                            <span class="font-bold text-slate-800 dark:text-slate-200" x-text="activeTask ? activeTask.deadline : ''"></span>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Time Tracking Card with Blue Log Time Button --}}
-                <div class="bg-blue-50/70 dark:bg-blue-950/40 rounded-2xl p-4 border border-blue-100 dark:border-blue-900/60 space-y-3">
-                    <span class="block text-xs font-bold text-slate-900 dark:text-white">{{ __('Time tracking') }}</span>
-                    
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full border-4 border-blue-500 border-t-transparent flex items-center justify-center shrink-0">
-                            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                        </div>
-                        <div>
-                            <span class="text-xs font-black text-slate-900 dark:text-white block" x-text="(activeTask && activeTask.actual_hours ? activeTask.actual_hours : '1.5') + 'h logged'"></span>
-                            <span class="text-[10px] text-slate-500" x-text="'Original Estimate: ' + (activeTask && activeTask.estimated_hours ? activeTask.estimated_hours : '8') + 'h'"></span>
-                        </div>
-                    </div>
-
-                    <button type="button" @click="openTimeTracking()" 
-                            class="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-98 text-white font-bold text-xs shadow-md shadow-blue-500/20 transition flex items-center justify-center gap-1.5 cursor-pointer">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                        <span>{{ __('Log time') }}</span>
-                    </button>
-                </div>
-
-                {{-- Description --}}
-                <div class="space-y-1">
-                    <span class="block text-[11px] font-bold uppercase tracking-wider text-slate-400">{{ __('Description') }}</span>
-                    <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed" x-text="activeTask ? activeTask.description : ''"></p>
-                </div>
-
-            </div>
-        </div>
-
-        {{-- ═══════════════════════════════════════════════════════════════════ --}}
-        {{-- MODAL B: TIME TRACKING MODAL (FIGMA SCREENSHOT 3)                   --}}
-        {{-- ═══════════════════════════════════════════════════════════════════ --}}
-        <div x-show="timeTrackingModalOpen" 
-             x-cloak 
-             class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
-            
-            <div @click.away="timeTrackingModalOpen = false" 
-                 x-show="timeTrackingModalOpen"
-                 x-transition:enter="ease-out duration-300"
-                 x-transition:enter-start="opacity-0 scale-95"
-                 x-transition:enter-end="opacity-100 scale-100"
-                 x-transition:leave="ease-in duration-200"
-                 x-transition:leave-start="opacity-100 scale-100"
-                 x-transition:leave-end="opacity-0 scale-95"
-                 class="bg-white dark:bg-slate-900 rounded-[28px] max-w-sm sm:max-w-md w-full p-5 sm:p-6 shadow-2xl border border-slate-100 dark:border-slate-800 space-y-4 relative">
-                
-                {{-- Header --}}
-                <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-                    <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight">
-                        {{ __('Time Tracking') }}
-                    </h3>
-                    <button type="button" @click="timeTrackingModalOpen = false" class="text-slate-400 hover:text-slate-600 p-1 cursor-pointer">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                    </button>
-                </div>
-
-                {{-- Time Spent Input --}}
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{{ __('Time spent') }}</label>
-                    <input type="text" x-model="timeSpentInput" placeholder="e.g. 2h 30m or 4h"
-                           class="w-full text-xs font-sans rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white px-3.5 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 shadow-2xs">
-                </div>
-
-                {{-- Date Input --}}
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{{ __('Date') }}</label>
-                    <input type="date" x-model="timeTrackingDate"
-                           class="w-full text-xs font-sans rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white px-3.5 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 shadow-2xs">
-                </div>
-
-                {{-- Work Description --}}
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{{ __('Work Description') }}</label>
-                    <textarea x-model="timeTrackingDescription" rows="3" placeholder="{{ __('Add some description of the task...') }}"
-                              class="w-full text-xs font-sans rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white p-3 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 shadow-2xs"></textarea>
-                </div>
-
-                {{-- Save Button --}}
-                <div class="pt-2">
-                    <button type="button" @click="saveTimeTracking()" :disabled="timeTrackingSaving"
-                            class="w-full py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 active:scale-98 text-white font-bold text-xs shadow-lg shadow-blue-500/30 transition flex items-center justify-center gap-2 cursor-pointer">
-                        <span x-show="!timeTrackingSaving">{{ __('Save') }}</span>
-                        <span x-show="timeTrackingSaving">{{ __('Saving...') }}</span>
-                    </button>
-                </div>
-
-            </div>
-        </div>
-
-        {{-- ═══════════════════════════════════════════════════════════════════ --}}
-        {{-- MODAL C: NEW VACATION / LEAVE REQUEST (FIGMA SCREENSHOT 4)          --}}
-        {{-- ═══════════════════════════════════════════════════════════════════ --}}
-        <div x-show="leaveModalOpen" 
-             x-cloak 
-             class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
-            
-            <div @click.away="leaveModalOpen = false" 
-                 x-show="leaveModalOpen"
-                 x-transition:enter="ease-out duration-300"
-                 x-transition:enter-start="opacity-0 scale-95"
-                 x-transition:enter-end="opacity-100 scale-100"
-                 x-transition:leave="ease-in duration-200"
-                 x-transition:leave-start="opacity-100 scale-100"
-                 x-transition:leave-end="opacity-0 scale-95"
-                 class="bg-white dark:bg-slate-900 rounded-[28px] max-w-sm sm:max-w-md w-full p-5 sm:p-6 shadow-2xl border border-slate-100 dark:border-slate-800 space-y-4 relative">
-                
-                {{-- Header --}}
-                <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-                    <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight">
-                        {{ __('New Leave / Vacation Request') }}
-                    </h3>
-                    <button type="button" @click="leaveModalOpen = false" class="text-slate-400 hover:text-slate-600 p-1 cursor-pointer">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                    </button>
-                </div>
-
-                <form method="POST" action="{{ route('leaves.store') }}" class="space-y-3.5">
-                    @csrf
+                    {{-- User Identity & Subtitle --}}
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{{ __('Request Type') }}</label>
-                        <select name="leave_type" x-model="leaveType" required
-                                class="w-full text-xs font-sans rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white px-3.5 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 shadow-2xs">
-                            <option value="sick">{{ __('Sick Leave') }} (Viral / Medical)</option>
-                            <option value="unpaid_lwp">{{ __('Work remotely') }} (Site Prep / Remote)</option>
-                            <option value="casual">{{ __('Vacation / Casual Leave') }}</option>
-                            <option value="earned">{{ __('Annual Earned Leave') }}</option>
-                            <option value="emergency">{{ __('Emergency Leave') }}</option>
-                        </select>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-2.5">
-                        <div>
-                            <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">{{ __('Start Date') }}</label>
-                            <input type="date" name="start_date" x-model="leaveStartDate" required
-                                   class="w-full text-xs font-sans rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 shadow-2xs">
+                        <div class="inline-flex items-center gap-2 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-[11px] font-bold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 mb-1.5 sm:mb-2">
+                            <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+                            <span>{{ __('Field Engineer Workstation') }}</span>
                         </div>
-                        <div>
-                            <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">{{ __('End Date') }}</label>
-                            <input type="date" name="end_date" x-model="leaveEndDate" required
-                                   class="w-full text-xs font-sans rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 shadow-2xs">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{{ __('Reason / Work Note') }}</label>
-                        <textarea name="reason" rows="3" required minlength="5" placeholder="{{ __('Explain reason for leave request (min 5 characters)...') }}"
-                                  class="w-full text-xs font-sans rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white p-3 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 shadow-2xs"></textarea>
-                    </div>
-
-                    <div class="pt-2">
-                        <button type="submit" 
-                                class="w-full py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 active:scale-98 text-white font-bold text-xs shadow-lg shadow-blue-500/30 transition cursor-pointer">
-                            {{ __('Submit Leave Request') }}
-                        </button>
-                    </div>
-                </form>
-
-            </div>
-        </div>
-
-        {{-- ═══════════════════════════════════════════════════════════════════ --}}
-        {{-- MODAL D: PROJECT DETAILS FULL SHEET                                 --}}
-        {{-- ═══════════════════════════════════════════════════════════════════ --}}
-        <div x-show="projectDetailsOpen" 
-             x-cloak 
-             class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
-            
-            @foreach($assignedProjects as $prj)
-                <div x-show="selectedProjectId == {{ $prj->id }}" 
-                     @click.away="projectDetailsOpen = false"
-                     class="bg-white dark:bg-slate-900 rounded-[28px] max-w-sm sm:max-w-md w-full p-5 sm:p-6 shadow-2xl border border-slate-100 dark:border-slate-800 space-y-4 relative">
-                    
-                    <div>
-                        <button type="button" @click="projectDetailsOpen = false" 
-                                class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1 cursor-pointer mb-2">
-                            <span>&larr;</span>
-                            <span>{{ __('Back to Projects') }}</span>
-                        </button>
-                        <h3 class="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight leading-snug">
-                            {{ $prj->title }}
-                        </h3>
-                    </div>
-
-                    <div class="flex items-center justify-between pt-1">
-                        <div>
-                            <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">{{ __('Project Number') }}</span>
-                            <span class="text-sm font-bold font-mono text-slate-900 dark:text-white">{{ $prj->project_code ?? ('PRJ-' . $prj->id) }}</span>
-                        </div>
-                        <a href="{{ route('projects.show', $prj) }}" 
-                           class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-blue-600 hover:bg-blue-50 transition"
-                           title="{{ __('Open in Full CRM') }}">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/></svg>
-                        </a>
-                    </div>
-
-                    <div class="space-y-1">
-                        <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">{{ __('Description') }}</span>
-                        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-                            {{ $prj->description ?: __('Comprehensive CCTV surveillance and access control deployment, site cable routing, NVR configuration, and remote mobile viewing client handover.') }}
+                        <h1 class="text-lg sm:text-2xl lg:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+                            {{ __('Welcome, :name', ['name' => $currentUser->name]) }}
+                        </h1>
+                        <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5 sm:mt-1">
+                            {{ now()->translatedFormat('l, d F Y') }} <span class="hidden sm:inline">&bull; {{ __('Precision Field Engineering & On-Site Operations') }}</span>
                         </p>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4 pt-1">
-                        <div>
-                            <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">{{ __('Assignees') }}</span>
-                            <div class="flex items-center -space-x-2">
-                                <div class="w-7 h-7 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 border-2 border-white dark:border-slate-900 flex items-center justify-center font-bold text-[10px]">
-                                    {{ strtoupper(substr($prj->leadTechnician?->name ?? 'T', 0, 1)) }}
-                                </div>
-                                <div class="w-7 h-7 rounded-full bg-emerald-100 dark:bg-emerald-900 text-emerald-700 dark:text-emerald-300 border-2 border-white dark:border-slate-900 flex items-center justify-center font-bold text-[10px]">
-                                    S
-                                </div>
-                                <div class="w-7 h-7 rounded-full bg-blue-600 text-white border-2 border-white dark:border-slate-900 flex items-center justify-center font-bold text-[10px]">
-                                    +{{ max(1, $activeWorkers->count()) }}
-                                </div>
+                    {{-- Shift Attendance & Language Switch --}}
+                    <div class="flex items-center gap-2.5 flex-wrap">
+                        <x-language-switch />
+
+                        {{-- Real Shift Clock In / Clock Out Form --}}
+                        @if(!$myAttendance || !$myAttendance->clock_in)
+                            <form method="POST" action="{{ route('attendance.clock-in') }}" class="inline-flex">
+                                @csrf
+                                <input type="hidden" name="location_type" value="on_site">
+                                <button type="submit" 
+                                        class="inline-flex items-center justify-center gap-2 px-4 py-2 min-h-[38px] rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 !text-white font-bold text-xs sm:text-sm shadow-md shadow-blue-500/20 transition cursor-pointer"
+                                        style="color: #ffffff !important;">
+                                    <svg class="w-4 h-4 sm:w-5 sm:h-5 !text-white" fill="none" stroke="#ffffff" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    <span class="!text-white font-bold" style="color: #ffffff !important;">{{ __('Clock In Today') }}</span>
+                                </button>
+                            </form>
+                        @elseif(!$myAttendance->clock_out)
+                            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 min-h-[38px] rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-800 text-xs sm:text-sm">
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                <span class="text-emerald-800 dark:text-emerald-300 font-bold">
+                                    {{ __('Shift: :time', ['time' => \Carbon\Carbon::parse($myAttendance->clock_in)->format('h:i A')]) }}
+                                </span>
+                                <form method="POST" action="{{ route('attendance.clock-out') }}" class="inline ml-1">
+                                    @csrf
+                                    <button type="submit" 
+                                            class="inline-flex items-center justify-center px-3.5 py-1.5 min-h-[32px] rounded-lg bg-rose-600 hover:bg-rose-700 active:scale-95 !text-white font-bold text-[11px] sm:text-xs shadow-xs transition cursor-pointer"
+                                            style="color: #ffffff !important;">
+                                        <span class="!text-white font-bold" style="color: #ffffff !important;">{{ __('Clock Out') }}</span>
+                                    </button>
+                                </form>
                             </div>
-                        </div>
-
-                        <div>
-                            <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">{{ __('Priority') }}</span>
-                            <div class="flex items-center gap-1 text-xs font-bold text-amber-500">
-                                <span>&uarr;</span>
-                                <span class="capitalize">{{ $prj->priority ?: __('Medium') }}</span>
+                        @else
+                            <div class="inline-flex items-center gap-2 px-4 py-2 min-h-[38px] rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm text-slate-700 dark:text-slate-300 font-bold">
+                                <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                <span>{{ __('Shift Done (:hours hrs)', ['hours' => $myAttendance->total_hours]) }}</span>
                             </div>
-                        </div>
+                        @endif
                     </div>
-
-                    <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
-                        <span class="text-slate-400">{{ __('Created :date', ['date' => $prj->created_at->format('M d, Y')]) }}</span>
-                        <span class="font-bold text-slate-900 dark:text-white">{{ $prj->budget ? \App\Support\Inr::money($prj->budget) : '' }}</span>
-                    </div>
-
-                </div>
-            @endforeach
-        </div>
-
-        {{-- ═══════════════════════════════════════════════════════════════════ --}}
-        {{-- MODAL E: FILTERS MODAL                                              --}}
-        {{-- ═══════════════════════════════════════════════════════════════════ --}}
-        <div x-show="filterModalOpen" 
-             x-cloak 
-             class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
-            
-            <div @click.away="filterModalOpen = false" 
-                 class="bg-white dark:bg-slate-900 rounded-[28px] max-w-sm sm:max-w-md w-full p-5 sm:p-6 shadow-2xl border border-slate-100 dark:border-slate-800 space-y-4 relative">
-                
-                <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-                    <h3 class="text-lg font-black text-slate-900 dark:text-white tracking-tight">
-                        {{ __('Filters') }}
-                    </h3>
-                    <button type="button" @click="filterModalOpen = false" class="text-slate-400 hover:text-slate-600 p-1 cursor-pointer">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                    </button>
                 </div>
 
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{{ __('Period') }}</label>
-                    <input type="text" readonly value="{{ now()->translatedFormat('M d, Y') }} - {{ now()->addDays(30)->translatedFormat('M d, Y') }}"
-                           class="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200 px-3.5 py-2.5">
-                </div>
+                {{-- Action Strip --}}
+                <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between flex-wrap gap-2.5">
+                    <div class="flex items-center gap-2 flex-wrap">
+                        {{-- New Project (Standard Flow) --}}
+                        <a href="{{ route('projects.create') }}" 
+                           class="inline-flex items-center justify-center gap-2 px-4 py-2 min-h-[38px] rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 !text-white font-bold text-xs sm:text-sm shadow-sm transition cursor-pointer"
+                           style="color: #ffffff !important;">
+                            <svg class="w-4 h-4 shrink-0 !text-white" fill="none" stroke="#ffffff" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                            <span class="!text-white font-bold" style="color: #ffffff !important;">{{ __('New Project') }}</span>
+                        </a>
 
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{{ __('Priority') }}</label>
-                    <select x-model="filterPriority"
-                            class="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2.5">
-                        <option value="all">{{ __('All Priorities') }}</option>
-                        <option value="urgent">{{ __('Urgent') }}</option>
-                        <option value="high">{{ __('High') }}</option>
-                        <option value="medium">{{ __('Medium') }}</option>
-                        <option value="low">{{ __('Low') }}</option>
-                    </select>
-                </div>
+                        {{-- Log Worker Attendance (Split Guided Modal) --}}
+                        <button type="button" onclick="openAttendanceModal()"
+                                class="inline-flex items-center justify-center gap-2 px-4 py-2 min-h-[38px] rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 font-bold text-xs sm:text-sm shadow-xs transition cursor-pointer">
+                            <svg class="w-4 h-4 shrink-0 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
+                            <span>{{ __('Log Worker Attendance') }}</span>
+                        </button>
 
-                <div class="pt-2">
-                    <button type="button" @click="filterModalOpen = false"
-                            class="w-full py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 active:scale-98 text-white font-bold text-xs shadow-lg shadow-blue-500/30 transition cursor-pointer">
-                        {{ __('Apply Filters') }}
-                    </button>
-                </div>
-
-            </div>
-        </div>
-
-        {{-- ═══════════════════════════════════════════════════════════════════ --}}
-        {{-- MODAL F: FIGMA SUPPORT MODAL ("Need some Help?")                    --}}
-        {{-- ═══════════════════════════════════════════════════════════════════ --}}
-        <div x-show="supportModalOpen" 
-             x-cloak 
-             class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-            
-            <div @click.away="supportModalOpen = false" 
-                 class="bg-white dark:bg-slate-900 rounded-[28px] max-w-sm sm:max-w-md w-full p-6 shadow-2xl border border-slate-100 dark:border-slate-800 space-y-4 relative">
-                
-                <div class="flex items-center justify-between">
-                    <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight">
-                        {{ __('Need some Help?') }}
-                    </h3>
-                    <button type="button" @click="supportModalOpen = false" class="text-slate-400 hover:text-slate-600 p-1 cursor-pointer">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                    </button>
-                </div>
-
-                <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                    {{ __('Describe your question and our specialists will answer you within 24 hours.') }}
-                </p>
-
-                <div class="space-y-3.5 pt-1">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{{ __('Request Subject') }}</label>
-                        <select x-model="supportSubject" 
-                                class="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white px-3.5 py-3 focus:outline-none focus:border-blue-600">
-                            <option>{{ __('Technical difficulties') }}</option>
-                            <option>{{ __('Equipment / Camera Defect') }}</option>
-                            <option>{{ __('Site Access / Permission Issue') }}</option>
-                            <option>{{ __('Material / Cable Shortage') }}</option>
-                            <option>{{ __('Worker Attendance Discrepancy') }}</option>
-                            <option>{{ __('Travel Claim / Advance') }}</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{{ __('Description') }}</label>
-                        <textarea x-model="supportDescription" rows="4" placeholder="{{ __('Add some description of the request') }}"
-                                  class="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white p-3.5 focus:outline-none focus:border-blue-600"></textarea>
-                    </div>
-
-                    <div class="pt-2">
-                        <button type="button" @click="submitSupport()"
-                                class="w-full py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-700 active:scale-98 text-white font-black text-sm shadow-lg shadow-blue-500/30 transition flex items-center justify-center gap-2 cursor-pointer">
-                            <span x-show="!supportSuccess">{{ __('Send Request') }}</span>
-                            <span x-show="supportSuccess" class="inline-flex items-center gap-2">
-                                <svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" class="opacity-25"></circle><path fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" class="opacity-75"></path></svg>
-                                <span>{{ __('Sending...') }}</span>
-                            </span>
+                        {{-- Hardware Scanner (Opens Full Multi-Function Modal) --}}
+                        <button type="button" onclick="openHardwareScannerModal()"
+                                class="inline-flex items-center justify-center gap-2 px-4 py-2 min-h-[38px] rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 font-bold text-xs sm:text-sm shadow-xs transition cursor-pointer">
+                            <svg class="w-4 h-4 shrink-0 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z"/></svg>
+                            <span>{{ __('Hardware Scanner') }}</span>
                         </button>
                     </div>
+
+                    <a href="{{ route('finance.expenses.index') }}" 
+                       class="inline-flex items-center justify-center gap-1.5 px-4 py-2 min-h-[38px] rounded-xl text-xs sm:text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline">
+                        <span>{{ __('Travel & Fuel Claims') }}</span>
+                        <span>&rarr;</span>
+                    </a>
+                </div>
+            </div>
+
+            {{-- ═══════════════════════════════════════════════════════════════════ --}}
+            {{-- 2. METRIC HIGHLIGHTS CARDS (4 Columns across on Laptop)             --}}
+            {{-- ═══════════════════════════════════════════════════════════════════ --}}
+            <div :class="currentTab !== 'overview' ? 'hidden lg:grid' : ''" class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
+                
+                {{-- Assigned Projects --}}
+                <div @click="switchTab('projects')"
+                     class="p-4 sm:p-5 lg:p-6 rounded-2xl sm:rounded-3xl crm-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm text-left hover:border-blue-500 hover:shadow-md transition-all group cursor-pointer"
+                     :class="currentTab === 'projects' ? 'ring-2 ring-blue-500 border-blue-500' : ''">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">{{ __('Projects') }}</span>
+                        <span class="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-xs"></span>
+                    </div>
+                    <div class="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-white mt-1.5 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition">{{ $assignedProjects->count() }}</div>
+                    <div class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-2.5 pt-2 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
+                        <span>{{ __('Active sites') }}</span>
+                        <span class="text-blue-600 dark:text-blue-400 font-bold">&rarr;</span>
+                    </div>
+                </div>
+
+                {{-- Active Installation Jobs --}}
+                <div @click="switchTab('jobs')"
+                     class="p-4 sm:p-5 lg:p-6 rounded-2xl sm:rounded-3xl crm-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm text-left hover:border-indigo-500 hover:shadow-md transition-all group cursor-pointer"
+                     :class="currentTab === 'jobs' ? 'ring-2 ring-indigo-500 border-indigo-500' : ''">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">{{ __('Installation Jobs') }}</span>
+                        <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 shadow-xs"></span>
+                    </div>
+                    <div class="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-white mt-1.5 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition">{{ $activeJobs->count() }}</div>
+                    <div class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-2.5 pt-2 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
+                        <span>{{ __('Field orders') }}</span>
+                        <span class="text-indigo-600 dark:text-indigo-400 font-bold">&rarr;</span>
+                    </div>
+                </div>
+
+                {{-- Site Surveys --}}
+                <div @click="switchTab('surveys')"
+                     class="p-4 sm:p-5 lg:p-6 rounded-2xl sm:rounded-3xl crm-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm text-left hover:border-amber-500 hover:shadow-md transition-all group cursor-pointer"
+                     :class="currentTab === 'surveys' ? 'ring-2 ring-amber-500 border-amber-500' : ''">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">{{ __('Site Surveys') }}</span>
+                        <span class="w-2.5 h-2.5 rounded-full bg-amber-500 shadow-xs"></span>
+                    </div>
+                    <div class="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-white mt-1.5 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition">{{ $activeSurveys->count() }}</div>
+                    <div class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-2.5 pt-2 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
+                        <span>{{ __('Inspection visits') }}</span>
+                        <span class="text-amber-600 dark:text-amber-400 font-bold">&rarr;</span>
+                    </div>
+                </div>
+
+                {{-- Field Workforce --}}
+                <div @click="switchTab('workers')"
+                     class="p-4 sm:p-5 lg:p-6 rounded-2xl sm:rounded-3xl crm-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm text-left hover:border-emerald-500 hover:shadow-md transition-all group cursor-pointer"
+                     :class="currentTab === 'workers' ? 'ring-2 ring-emerald-500 border-emerald-500' : ''">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">{{ __('Field Crew') }}</span>
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-xs"></span>
+                    </div>
+                    <div class="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-white mt-1.5 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition">{{ $activeWorkers->count() }}</div>
+                    <div class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-2.5 pt-2 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
+                        <span>{{ __('Daily wage workers') }}</span>
+                        <span class="text-emerald-600 dark:text-emerald-400 font-bold">&rarr;</span>
+                    </div>
                 </div>
 
             </div>
+
+            {{-- ═══════════════════════════════════════════════════════════════════ --}}
+            {{-- 3. UNIFIED TAB NAVIGATION (Desktop / Tablet Segmented Bar)         --}}
+            {{-- ═══════════════════════════════════════════════════════════════════ --}}
+            <div class="hidden lg:block p-2 sm:p-2.5 rounded-2xl crm-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm my-4">
+                <div class="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar py-0.5">
+                    <button type="button" @click="switchTab('overview')"
+                            class="shrink-0 px-4 sm:px-5 py-2 min-h-[38px] rounded-xl text-xs sm:text-sm font-bold transition-all inline-flex items-center justify-center gap-2 cursor-pointer border"
+                            :class="currentTab === 'overview' 
+                                ? 'bg-[#65a30d] !text-white border-[#65a30d] shadow-sm' 
+                                : 'bg-white hover:bg-slate-50 dark:bg-slate-800/80 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:text-slate-900 dark:hover:text-white'"
+                            :style="currentTab === 'overview' ? 'color: #ffffff !important;' : ''">
+                        <svg class="w-4 h-4 shrink-0" :class="currentTab === 'overview' ? '!text-white' : ''" :stroke="currentTab === 'overview' ? '#ffffff' : 'currentColor'" fill="none" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+                        <span :class="currentTab === 'overview' ? '!text-white font-bold' : ''">{{ __('Overview') }}</span>
+                    </button>
+
+                    <button type="button" @click="switchTab('projects')"
+                            class="shrink-0 px-4 sm:px-5 py-2 min-h-[38px] rounded-xl text-xs sm:text-sm font-bold transition-all inline-flex items-center justify-center gap-2 cursor-pointer border"
+                            :class="currentTab === 'projects' 
+                                ? 'bg-[#65a30d] !text-white border-[#65a30d] shadow-sm' 
+                                : 'bg-white hover:bg-slate-50 dark:bg-slate-800/80 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:text-slate-900 dark:hover:text-white'"
+                            :style="currentTab === 'projects' ? 'color: #ffffff !important;' : ''">
+                        <svg class="w-4 h-4 shrink-0" :class="currentTab === 'projects' ? '!text-white' : ''" :stroke="currentTab === 'projects' ? '#ffffff' : 'currentColor'" fill="none" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21"/></svg>
+                        <span :class="currentTab === 'projects' ? '!text-white font-bold' : ''">{{ __('Projects') }}</span>
+                        @if($assignedProjects->count() > 0)
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold"
+                                  :class="currentTab === 'projects' ? 'bg-white/25 !text-white' : 'bg-lime-100 dark:bg-lime-900/60 text-lime-800 dark:text-lime-300'">
+                                {{ $assignedProjects->count() }}
+                            </span>
+                        @endif
+                    </button>
+
+                    <button type="button" @click="switchTab('jobs')"
+                            class="shrink-0 px-4 sm:px-5 py-2 min-h-[38px] rounded-xl text-xs sm:text-sm font-bold transition-all inline-flex items-center justify-center gap-2 cursor-pointer border"
+                            :class="currentTab === 'jobs' 
+                                ? 'bg-[#65a30d] !text-white border-[#65a30d] shadow-sm' 
+                                : 'bg-white hover:bg-slate-50 dark:bg-slate-800/80 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:text-slate-900 dark:hover:text-white'"
+                            :style="currentTab === 'jobs' ? 'color: #ffffff !important;' : ''">
+                        <svg class="w-4 h-4 shrink-0" :class="currentTab === 'jobs' ? '!text-white' : ''" :stroke="currentTab === 'jobs' ? '#ffffff' : 'currentColor'" fill="none" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.204a4.5 4.5 0 00-6.364-6.364l-.707.707a4.5 4.5 0 006.364 6.364l.707-.707z"/></svg>
+                        <span :class="currentTab === 'jobs' ? '!text-white font-bold' : ''">{{ __('Jobs') }}</span>
+                        @if($activeJobs->count() > 0)
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold"
+                                  :class="currentTab === 'jobs' ? 'bg-white/25 !text-white' : 'bg-lime-100 dark:bg-lime-900/60 text-lime-800 dark:text-lime-300'">
+                                {{ $activeJobs->count() }}
+                            </span>
+                        @endif
+                    </button>
+
+                    <button type="button" @click="switchTab('surveys')"
+                            class="shrink-0 px-4 sm:px-5 py-2 min-h-[38px] rounded-xl text-xs sm:text-sm font-bold transition-all inline-flex items-center justify-center gap-2 cursor-pointer border"
+                            :class="currentTab === 'surveys' 
+                                ? 'bg-[#65a30d] !text-white border-[#65a30d] shadow-sm' 
+                                : 'bg-white hover:bg-slate-50 dark:bg-slate-800/80 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:text-slate-900 dark:hover:text-white'"
+                            :style="currentTab === 'surveys' ? 'color: #ffffff !important;' : ''">
+                        <svg class="w-4 h-4 shrink-0" :class="currentTab === 'surveys' ? '!text-white' : ''" :stroke="currentTab === 'surveys' ? '#ffffff' : 'currentColor'" fill="none" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25z"/></svg>
+                        <span :class="currentTab === 'surveys' ? '!text-white font-bold' : ''">{{ __('Surveys') }}</span>
+                        @if($activeSurveys->count() > 0)
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold"
+                                  :class="currentTab === 'surveys' ? 'bg-white/25 !text-white' : 'bg-lime-100 dark:bg-lime-900/60 text-lime-800 dark:text-lime-300'">
+                                {{ $activeSurveys->count() }}
+                            </span>
+                        @endif
+                    </button>
+
+                    <button type="button" @click="switchTab('workers')"
+                            class="shrink-0 px-4 sm:px-5 py-2 min-h-[38px] rounded-xl text-xs sm:text-sm font-bold transition-all inline-flex items-center justify-center gap-2 cursor-pointer border"
+                            :class="currentTab === 'workers' 
+                                ? 'bg-[#65a30d] !text-white border-[#65a30d] shadow-sm' 
+                                : 'bg-white hover:bg-slate-50 dark:bg-slate-800/80 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:text-slate-900 dark:hover:text-white'"
+                            :style="currentTab === 'workers' ? 'color: #ffffff !important;' : ''">
+                        <svg class="w-4 h-4 shrink-0" :class="currentTab === 'workers' ? '!text-white' : ''" :stroke="currentTab === 'workers' ? '#ffffff' : 'currentColor'" fill="none" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
+                        <span :class="currentTab === 'workers' ? '!text-white font-bold' : ''">{{ __('Workers') }}</span>
+                    </button>
+
+                    <button type="button" @click="switchTab('scanner')"
+                            class="shrink-0 px-4 sm:px-5 py-2 min-h-[38px] rounded-xl text-xs sm:text-sm font-bold transition-all inline-flex items-center justify-center gap-2 cursor-pointer border"
+                            :class="currentTab === 'scanner' 
+                                ? 'bg-[#65a30d] !text-white border-[#65a30d] shadow-sm' 
+                                : 'bg-white hover:bg-slate-50 dark:bg-slate-800/80 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:text-slate-900 dark:hover:text-white'"
+                            :style="currentTab === 'scanner' ? 'color: #ffffff !important;' : ''">
+                        <svg class="w-4 h-4 shrink-0" :class="currentTab === 'scanner' ? '!text-white' : ''" :stroke="currentTab === 'scanner' ? '#ffffff' : 'currentColor'" fill="none" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z"/></svg>
+                        <span :class="currentTab === 'scanner' ? '!text-white font-bold' : ''">{{ __('Scanner') }}</span>
+                    </button>
+                </div>
+            </div>
+
+            {{-- ═══════════════════════════════════════════════════════════════════ --}}
+            {{-- TAB PANE 1: OVERVIEW DASHBOARD (Adaptive 12-Column Grid on Laptop)  --}}
+            {{-- ═══════════════════════════════════════════════════════════════════ --}}
+            <div x-show="currentTab === 'overview'" class="space-y-6 sm:space-y-8">
+                
+                {{-- 12-Column Bento Layout on Laptop, Vertical Stack on Mobile --}}
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+                    
+                    {{-- Left Main Area (8 Cols on Laptop) --}}
+                    <div class="lg:col-span-8 space-y-6 lg:space-y-8">
+                        
+                        {{-- Featured Primary Project Card --}}
+                        @if($primaryPrj)
+                            <div class="rounded-2xl sm:rounded-3xl crm-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 sm:p-7 shadow-sm space-y-5">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-xs"></span>
+                                        <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{{ __('Primary Active Project') }}</span>
+                                    </div>
+                                    <button type="button" @click="switchTab('projects')" class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1 cursor-pointer">
+                                        <span>{{ __('View all projects') }}</span>
+                                        <span>&rarr;</span>
+                                    </button>
+                                </div>
+
+                                <div class="rounded-2xl p-4 sm:p-6 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 space-y-4">
+                                    <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                                        <div class="flex items-start gap-3.5">
+                                            <div class="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-950/70 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 shadow-xs">
+                                                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z"/></svg>
+                                            </div>
+                                            <div class="min-w-0">
+                                                <span class="font-mono text-xs font-bold text-slate-400 block">{{ $primaryPrj->code }}</span>
+                                                <h2 class="text-lg sm:text-xl font-black text-slate-900 dark:text-white leading-snug mt-0.5">{{ $primaryPrj->title }}</h2>
+                                                @if(!empty($primaryPrj->created_at_label))
+                                                    <span class="text-xs text-slate-400 block mt-0.5">{{ __('Created') }}: {{ $primaryPrj->created_at_label }}</span>
+                                                @endif
+                                            </div>
+                                        </div>
+
+                                        <span class="self-start px-3 py-1 rounded-full text-xs font-bold capitalize border border-amber-300 dark:border-amber-800 {{ $primaryPrj->priority_class ?? 'text-amber-600 bg-amber-50 dark:bg-amber-950/60' }}">
+                                            {{ $primaryPrj->priority }} {{ __('Priority') }}
+                                        </span>
+                                    </div>
+
+                                    {{-- Metrics Row --}}
+                                    <div class="grid grid-cols-3 gap-3 py-3.5 border-y border-slate-200 dark:border-slate-700/80 text-center">
+                                        <div class="p-2.5 sm:p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700/70 shadow-xs">
+                                            <span class="text-[10px] sm:text-[11px] text-slate-400 uppercase font-bold block">{{ __('All Tasks') }}</span>
+                                            <span class="text-lg sm:text-xl font-black text-slate-900 dark:text-white mt-0.5 block">{{ $primaryPrj->all_tasks_count }}</span>
+                                        </div>
+                                        <div class="p-2.5 sm:p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700/70 shadow-xs">
+                                            <span class="text-[10px] sm:text-[11px] text-slate-400 uppercase font-bold block">{{ __('Active Tasks') }}</span>
+                                            <span class="text-lg sm:text-xl font-black text-blue-600 dark:text-blue-400 mt-0.5 block">{{ $primaryPrj->active_tasks_count }}</span>
+                                        </div>
+                                        <div class="p-2.5 sm:p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700/70 shadow-xs">
+                                            <span class="text-[10px] sm:text-[11px] text-slate-400 uppercase font-bold block">{{ __('Completion') }}</span>
+                                            <span class="text-lg sm:text-xl font-black text-emerald-600 dark:text-emerald-400 mt-0.5 block">
+                                                {{ $primaryPrj->all_tasks_count > 0 ? round((($primaryPrj->all_tasks_count - $primaryPrj->active_tasks_count) / $primaryPrj->all_tasks_count) * 100) : 0 }}%
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    {{-- Assignees & Actions --}}
+                                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-xs font-semibold text-slate-500">{{ __('Assignees:') }}</span>
+                                            <div class="flex items-center -space-x-1.5">
+                                                @forelse($primaryPrj->assignees as $asg)
+                                                    <div class="w-8 h-8 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center ring-2 ring-white dark:ring-slate-900 shadow-xs" title="{{ $asg['name'] }}">
+                                                        {{ $asg['initials'] }}
+                                                    </div>
+                                                @empty
+                                                    <span class="text-xs text-slate-400">{{ __('No team assigned') }}</span>
+                                                @endforelse
+                                                @if(!empty($primaryPrj->remaining_assignees_count) && $primaryPrj->remaining_assignees_count > 0)
+                                                    <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-600 font-bold text-xs flex items-center justify-center ring-2 ring-white dark:ring-slate-900 shadow-xs">
+                                                        +{{ $primaryPrj->remaining_assignees_count }}
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
+
+                                        <div class="flex items-center gap-2 flex-wrap">
+                                            <button type="button" onclick="openAttendanceModal('{{ $assignedProjects->first()?->id }}')" 
+                                                    class="inline-flex items-center justify-center px-4 py-2 min-h-[38px] rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-xs sm:text-sm font-bold hover:bg-blue-100 transition cursor-pointer">
+                                                {{ __('Punch Crew') }}
+                                            </button>
+                                            <a href="{{ route('projects.show', $assignedProjects->first()?->id ?? 1) }}"
+                                               class="inline-flex items-center justify-center gap-1.5 px-4 py-2 min-h-[38px] rounded-xl bg-blue-600 hover:bg-blue-700 !text-white text-xs sm:text-sm font-bold shadow-xs transition"
+                                               style="color: #ffffff !important;">
+                                                <span class="!text-white" style="color: #ffffff !important;">{{ __('Open Workspace') }}</span>
+                                                <span class="!text-white" style="color: #ffffff !important;">&rarr;</span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+
+                        {{-- Active Jobs & Surveys Quick Overview on Laptop (2-Column Grid) --}}
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 lg:gap-6">
+                            
+                            {{-- Quick Installation Jobs Box --}}
+                            <div class="rounded-2xl sm:rounded-3xl crm-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-sm space-y-3.5">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                        <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 shadow-xs"></span>
+                                        <span>{{ __('Active Installation Jobs') }}</span>
+                                    </h3>
+                                    <button type="button" @click="switchTab('jobs')" class="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline">
+                                        {{ __('View all') }} &rarr;
+                                    </button>
+                                </div>
+
+                                <div class="space-y-2.5">
+                                    @forelse($activeJobs->take(3) as $aj)
+                                        <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/70 text-xs space-y-1 hover:border-indigo-400 transition">
+                                            <div class="flex items-center justify-between">
+                                                <strong class="font-mono text-indigo-600 dark:text-indigo-400">{{ $aj->job_no ?? ('JOB-' . $aj->id) }}</strong>
+                                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+                                                    {{ __(ucfirst(str_replace('_', ' ', $aj->status))) }}
+                                                </span>
+                                            </div>
+                                            <div class="font-bold text-slate-800 dark:text-slate-200 truncate">{{ $aj->quotation?->lead?->customer_name ?? __('Installation Site') }}</div>
+                                            <div class="text-[11px] text-slate-400 truncate">{{ $aj->quotation?->lead?->site_address ?? __('Address on file') }}</div>
+                                        </div>
+                                    @empty
+                                        <div class="p-4 text-center text-xs text-slate-400 bg-slate-50 dark:bg-slate-800/30 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700">
+                                            {{ __('No active installation jobs.') }}
+                                        </div>
+                                    @endforelse
+                                </div>
+                            </div>
+
+                            {{-- Quick Site Surveys Box --}}
+                            <div class="rounded-2xl sm:rounded-3xl crm-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-sm space-y-3.5">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                        <span class="w-2.5 h-2.5 rounded-full bg-amber-500 shadow-xs"></span>
+                                        <span>{{ __('Pending Site Surveys') }}</span>
+                                    </h3>
+                                    <button type="button" @click="switchTab('surveys')" class="text-xs font-bold text-amber-600 dark:text-amber-400 hover:underline">
+                                        {{ __('View all') }} &rarr;
+                                    </button>
+                                </div>
+
+                                <div class="space-y-2.5">
+                                    @forelse($activeSurveys->take(3) as $as)
+                                        <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/70 text-xs space-y-1 hover:border-amber-400 transition">
+                                            <div class="flex items-center justify-between">
+                                                <strong class="text-slate-900 dark:text-white truncate">{{ $as->lead?->customer_name ?? __('Customer Site') }}</strong>
+                                                <span class="text-[10px] text-slate-400">{{ $as->survey_date ? $as->survey_date->translatedFormat('d M') : __('Immediate') }}</span>
+                                            </div>
+                                            <div class="text-[11px] text-slate-400 truncate">{{ $as->site_address ?: ($as->lead?->site_address ?: __('Address on file')) }}</div>
+                                            <div class="pt-1 flex justify-end">
+                                                <a href="{{ route('technician.surveys.show', $as) }}" class="text-[11px] font-bold text-amber-600 dark:text-amber-400 hover:underline">
+                                                    {{ __('Conduct Survey') }} &rarr;
+                                                </a>
+                                            </div>
+                                        </div>
+                                    @empty
+                                        <div class="p-4 text-center text-xs text-slate-400 bg-slate-50 dark:bg-slate-800/30 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700">
+                                            {{ __('No pending site inspection surveys.') }}
+                                        </div>
+                                    @endforelse
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    {{-- Right Sidebar Area (4 Cols on Laptop) --}}
+                    <div class="lg:col-span-4 space-y-6 lg:space-y-8">
+                        
+                        {{-- Workers Today Bento Roster --}}
+                        <div class="rounded-2xl sm:rounded-3xl crm-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-sm space-y-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h3 class="text-base font-black text-slate-900 dark:text-white tracking-tight">{{ __('Field Crew Roster') }}</h3>
+                                    <p class="text-xs text-slate-400">{{ __('Today\'s on-site attendance status') }}</p>
+                                </div>
+                                <button type="button" @click="switchTab('workers')" class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline">
+                                    {{ __('View all') }} &rarr;
+                                </button>
+                            </div>
+
+                            @if($workersToday->isNotEmpty())
+                                <div class="grid grid-cols-2 gap-2.5">
+                                    @foreach($workersToday->take(6) as $w)
+                                        <div class="rounded-2xl p-3 text-center flex flex-col items-center justify-between space-y-1.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/70 hover:border-blue-400 hover:shadow-xs transition">
+                                            <div class="w-10 h-10 rounded-full border-2 border-blue-500 bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-300 font-black text-xs flex items-center justify-center shadow-xs">
+                                                {{ $w->initials }}
+                                            </div>
+                                            <div class="w-full">
+                                                <h4 class="text-xs font-extrabold text-slate-900 dark:text-white truncate">{{ $w->name }}</h4>
+                                                <span class="text-[10px] text-slate-400 block truncate">{{ $w->role_label }}</span>
+                                            </div>
+                                            <span class="inline-block text-[9.5px] font-bold px-2 py-0.2 rounded-full {{ $w->status_badge_class }}">
+                                                {{ $w->status }}
+                                            </span>
+                                        </div>
+                                    @endforeach
+                                </div>
+
+                                <div class="pt-2">
+                                    <button type="button" onclick="openAttendanceModal()"
+                                            class="w-full py-2 px-4 min-h-[38px] rounded-xl bg-blue-600 hover:bg-blue-700 !text-white font-bold text-xs sm:text-sm shadow-xs transition flex items-center justify-center gap-2 cursor-pointer"
+                                            style="color: #ffffff !important;">
+                                        <svg class="w-4 h-4 shrink-0 !text-white" fill="none" stroke="#ffffff" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                                        <span class="!text-white" style="color: #ffffff !important;">{{ __('Log Worker Attendance') }}</span>
+                                    </button>
+                                </div>
+                            @else
+                                <div class="p-6 text-center text-xs text-slate-400 bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700">
+                                    {{ __('No workers configured.') }}
+                                </div>
+                            @endif
+                        </div>
+
+                        {{-- Quick Barcode / Serial Lookup Tool --}}
+                        <div class="rounded-2xl sm:rounded-3xl crm-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-sm space-y-3.5">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 border border-blue-200/60 dark:border-blue-800/60 shadow-xs">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z"/></svg>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-slate-900 dark:text-white">{{ __('On-Site Barcode Scanner') }}</h4>
+                                    <p class="text-xs text-slate-400">{{ __('Instant serial lookup & warranty') }}</p>
+                                </div>
+                            </div>
+
+                            <button type="button" onclick="openHardwareScannerModal()"
+                                    class="w-full py-2 px-4 min-h-[38px] rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 !text-white font-bold text-xs sm:text-sm shadow-sm transition flex items-center justify-center gap-2 cursor-pointer"
+                                    style="color: #ffffff !important;">
+                                <svg class="w-4 h-4 !text-white" fill="none" stroke="#ffffff" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                <span class="!text-white font-bold" style="color: #ffffff !important;">{{ __('Open Hardware Scanner') }}</span>
+                            </button>
+                        </div>
+
+                        {{-- Recent Site Activity Stream --}}
+                        <div class="rounded-2xl sm:rounded-3xl crm-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-sm space-y-3.5">
+                            <h4 class="text-sm font-bold text-slate-900 dark:text-white">{{ __('Recent Punches & Logs') }}</h4>
+                            <div class="divide-y divide-slate-100 dark:divide-slate-800/60">
+                                @forelse($recentActivity->take(4) as $act)
+                                    <div class="py-2.5 flex items-center justify-between gap-3 text-xs">
+                                        <div class="flex items-center gap-2.5 min-w-0">
+                                            <div class="w-7 h-7 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-300 font-bold text-xs flex items-center justify-center shrink-0">
+                                                {{ mb_substr($act->worker?->name ?? 'W', 0, 1) }}
+                                            </div>
+                                            <div class="min-w-0 truncate">
+                                                <strong class="text-slate-800 dark:text-slate-200">{{ $act->worker?->name ?? __('Field Worker') }}</strong>
+                                                <span class="text-slate-400 block text-[11px] truncate">
+                                                    {{ $act->attendance_type === 'full' ? __('Full Day Attendance') : __('Site Shift') }}
+                                                    @if($act->workDay?->project) &bull; {{ $act->workDay->project->title }} @endif
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <span class="text-[10px] font-semibold text-slate-400 shrink-0">
+                                            {{ $act->workDay?->work_date ? $act->workDay->work_date->translatedFormat('d M') : '' }}
+                                        </span>
+                                    </div>
+                                @empty
+                                    <div class="py-4 text-center text-xs text-slate-400">
+                                        {{ __('No recent activity recorded.') }}
+                                    </div>
+                                @endforelse
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            {{-- ═══════════════════════════════════════════════════════════════════ --}}
+            {{-- TAB PANE 2: ASSIGNED PROJECTS & SITES (2-Cols on Laptop)            --}}
+            {{-- ═══════════════════════════════════════════════════════════════════ --}}
+            <div x-show="currentTab === 'projects'" class="space-y-4 lg:space-y-5">
+                <div class="flex items-center justify-between flex-wrap gap-2 px-1">
+                    <div>
+                        <h2 class="text-base sm:text-xl font-black text-slate-900 dark:text-white tracking-tight">{{ __('Assigned Projects') }}</h2>
+                        <p class="text-xs sm:text-sm text-slate-400">{{ __('Live site deployments and ongoing installations') }}</p>
+                    </div>
+                    <a href="{{ route('projects.create') }}" 
+                       class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 !text-white font-bold text-xs sm:text-sm shadow-xs transition"
+                       style="color: #ffffff !important;">
+                        <svg class="w-4 h-4 shrink-0 !text-white" fill="none" stroke="#ffffff" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                        <span class="!text-white font-bold" style="color: #ffffff !important;">{{ __('New Project') }}</span>
+                    </a>
+                </div>
+
+                {{-- 2 Columns on Laptop / Desktop, Single Column on Mobile --}}
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                    @forelse($assignedProjects as $prj)
+                        <div class="rounded-2xl sm:rounded-3xl crm-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-sm space-y-4 flex flex-col justify-between">
+                            
+                            <div class="space-y-3.5">
+                                {{-- Top Header Row --}}
+                                <div class="flex items-start justify-between gap-3">
+                                    <div>
+                                        <div class="flex items-center gap-2 flex-wrap">
+                                            <span class="px-2 py-0.5 rounded-md font-mono text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                                                {{ $prj->project_code }}
+                                            </span>
+                                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold capitalize bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                                                {{ __(\App\Models\Project::statusOptions()[$prj->status] ?? str_replace('_', ' ', $prj->status)) }}
+                                            </span>
+                                        </div>
+                                        <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white mt-1.5">{{ $prj->title }}</h3>
+                                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                                            {{ __('Client') }}: <strong class="text-slate-700 dark:text-slate-300">{{ $prj->company_name ?? ($prj->site?->client_name ?? __('Client')) }}</strong>
+                                            &bull; {{ __('Type') }}: {{ __($prj->project_type_label) }}
+                                        </p>
+                                    </div>
+
+                                    <a href="{{ route('projects.show', $prj) }}" 
+                                       class="inline-flex items-center gap-1 text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline shrink-0">
+                                        <span>{{ __('Workspace') }}</span>
+                                        <span>&rarr;</span>
+                                    </a>
+                                </div>
+
+                                {{-- Site Address & Phone --}}
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60 text-xs space-y-1.5">
+                                    @if($prj->site)
+                                        <div class="text-slate-600 dark:text-slate-300 flex items-start gap-1.5">
+                                            <strong class="text-slate-800 dark:text-slate-200 shrink-0">{{ __('Site:') }}</strong>
+                                            <span>{{ $prj->site->name }} &mdash; {{ $prj->site->address }}</span>
+                                        </div>
+                                    @elseif($prj->site_address)
+                                        <div class="text-slate-600 dark:text-slate-300 flex items-start gap-1.5">
+                                            <strong class="text-slate-800 dark:text-slate-200 shrink-0">{{ __('Site:') }}</strong>
+                                            <span>{{ $prj->site_address }}</span>
+                                        </div>
+                                    @endif
+
+                                    @if($prj->contact_person || $prj->contact_phone)
+                                        <div class="flex items-center gap-2">
+                                            <strong class="text-slate-800 dark:text-slate-200">{{ __('Contact:') }}</strong>
+                                            <span>{{ $prj->contact_person ?? __('Manager') }}</span>
+                                            @if($prj->contact_phone)
+                                                <a href="tel:{{ $prj->contact_phone }}" class="text-blue-600 dark:text-blue-400 font-bold hover:underline">
+                                                    ({{ $prj->contact_phone }})
+                                                </a>
+                                            @endif
+                                        </div>
+                                    @endif
+                                </div>
+
+                                {{-- Task Count & Status Pills --}}
+                                <div class="grid grid-cols-3 gap-2 text-center text-xs p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60">
+                                    <div>
+                                        <span class="text-[10px] text-slate-400 block font-semibold uppercase">{{ __('Total Tasks') }}</span>
+                                        <span class="text-sm sm:text-base font-black text-slate-900 dark:text-white">{{ $prj->tasks->count() }}</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-[10px] text-slate-400 block font-semibold uppercase">{{ __('Pending/Active') }}</span>
+                                        <span class="text-sm sm:text-base font-black text-blue-600 dark:text-blue-400">{{ $prj->tasks->whereIn('status', ['pending', 'in_progress'])->count() }}</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-[10px] text-slate-400 block font-semibold uppercase">{{ __('Completed') }}</span>
+                                        <span class="text-sm sm:text-base font-black text-emerald-600 dark:text-emerald-400">{{ $prj->tasks->where('status', 'completed')->count() }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Action Buttons (100% Working CRM Routes) --}}
+                            <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between flex-wrap gap-2">
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    @if($prj->contact_phone)
+                                        <a href="tel:{{ $prj->contact_phone }}" 
+                                           class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 min-h-[38px] rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs sm:text-sm font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+                                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                                            <span>{{ __('Call') }}</span>
+                                        </a>
+                                    @endif
+
+                                    <button type="button" onclick="openAttendanceModal('{{ $prj->id }}')" 
+                                            class="inline-flex items-center justify-center gap-1.5 px-4 py-2 min-h-[38px] rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-xs sm:text-sm font-bold hover:bg-blue-100 transition cursor-pointer">
+                                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                                        <span>{{ __('Punch Crew') }}</span>
+                                    </button>
+
+                                    <a href="{{ route('projects.tasks.index', $prj) }}" 
+                                       class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 min-h-[38px] rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs sm:text-sm font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+                                        <span>{{ __('Tasks') }}</span>
+                                    </a>
+
+                                    <a href="{{ route('projects.show', [$prj, 'tab' => 'work_days']) }}" 
+                                       class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 min-h-[38px] rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs sm:text-sm font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+                                        <span>{{ __('Work Days') }}</span>
+                                    </a>
+                                </div>
+
+                                <a href="{{ route('projects.show', $prj) }}" 
+                                   class="inline-flex items-center justify-center gap-1.5 px-4 py-2 min-h-[38px] rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-xs sm:text-sm font-bold text-blue-600 dark:text-blue-400 transition">
+                                    <span>{{ __('Workspace') }}</span>
+                                    <span>&rarr;</span>
+                                </a>
+                            </div>
+
+                        </div>
+                    @empty
+                        <div class="col-span-full rounded-2xl sm:rounded-3xl crm-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 sm:p-12 text-center space-y-3">
+                            <div class="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center mx-auto">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21"/></svg>
+                            </div>
+                            <h4 class="text-sm sm:text-base font-bold text-slate-800 dark:text-slate-200">{{ __('No Projects Assigned') }}</h4>
+                            <p class="text-xs sm:text-sm text-slate-400 max-w-sm mx-auto">{{ __('Projects assigned to you by admin or created by you appear here.') }}</p>
+                            <a href="{{ route('projects.create') }}" class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-blue-600 !text-white font-bold text-xs sm:text-sm shadow-xs hover:bg-blue-700 transition"
+                               style="color: #ffffff !important;">
+                                <svg class="w-4 h-4 shrink-0 !text-white" fill="none" stroke="#ffffff" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                                <span class="!text-white font-bold" style="color: #ffffff !important;">{{ __('New Project') }}</span>
+                            </a>
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+
+            {{-- ═══════════════════════════════════════════════════════════════════ --}}
+            {{-- TAB PANE 3: INSTALLATION JOBS & JCR SIGN-OFF (2-Cols on Laptop)     --}}
+            {{-- ═══════════════════════════════════════════════════════════════════ --}}
+            <div x-show="currentTab === 'jobs'" class="space-y-4 lg:space-y-5">
+                <div class="px-1">
+                    <h2 class="text-base sm:text-xl font-black text-slate-900 dark:text-white tracking-tight">{{ __('Active Installation Jobs') }}</h2>
+                    <p class="text-xs sm:text-sm text-slate-400">{{ __('Installation work orders assigned to you for field execution') }}</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                    @forelse($activeJobs as $job)
+                        @php $lead = $job->quotation?->lead; @endphp
+                        <div class="rounded-2xl sm:rounded-3xl crm-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-sm space-y-4 flex flex-col justify-between">
+                            <div class="space-y-3.5">
+                                <div class="flex items-start justify-between gap-3 flex-wrap">
+                                    <div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="font-mono text-xs font-bold text-indigo-600 dark:text-indigo-400">{{ $job->job_no ?? ('JOB-' . $job->id) }}</span>
+                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold capitalize bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+                                                {{ __(ucfirst(str_replace('_', ' ', $job->status))) }}
+                                            </span>
+                                        </div>
+                                        <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white mt-1">{{ $lead?->customer_name ?? __('Installation Site') }}</h3>
+                                        <p class="text-xs text-slate-400 mt-0.5">{{ __('Scheduled') }}: {{ $job->scheduled_at ? \Carbon\Carbon::parse($job->scheduled_at)->translatedFormat('d M Y, h:i A') : $job->created_at->translatedFormat('d M Y') }}</p>
+                                    </div>
+
+                                    <a href="{{ route('jcr.create-job', $job) }}" 
+                                       class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/></svg>
+                                        <span>{{ __('Sign JCR') }}</span>
+                                    </a>
+                                </div>
+
+                                <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60 text-xs space-y-1.5">
+                                    <div class="text-slate-600 dark:text-slate-300 flex items-start gap-1.5">
+                                        <strong class="text-slate-800 dark:text-slate-200 shrink-0">{{ __('Site Address:') }}</strong>
+                                        <span>{{ $lead?->site_address ?? $lead?->address ?? __('Address not specified') }}</span>
+                                    </div>
+                                    @if($lead?->phone)
+                                        <div class="flex items-center gap-2">
+                                            <strong class="text-slate-800 dark:text-slate-200">{{ __('Customer Phone:') }}</strong>
+                                            <a href="tel:{{ $lead->phone }}" class="text-blue-600 dark:text-blue-400 font-bold hover:underline">{{ $lead->phone }}</a>
+                                        </div>
+                                    @endif
+                                    @if($job->installation_notes)
+                                        <div class="text-slate-600 dark:text-slate-300 pt-1 border-t border-slate-200/40 dark:border-slate-700/40">
+                                            <strong class="text-slate-800 dark:text-slate-200">{{ __('Notes:') }}</strong>
+                                            <span>{{ $job->installation_notes }}</span>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+
+                            {{-- Update Status Form --}}
+                            <form method="POST" action="{{ route('technician.jobs.updateStatus', $job) }}" class="space-y-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+                                @csrf
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">{{ __('Update Status') }}</label>
+                                        <select name="status" class="w-full text-xs font-semibold rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2">
+                                            <option value="pending" @selected($job->status === 'pending')>{{ __('Pending') }}</option>
+                                            <option value="scheduled" @selected($job->status === 'scheduled')>{{ __('Scheduled') }}</option>
+                                            <option value="assigned" @selected($job->status === 'assigned')>{{ __('Assigned (In Progress)') }}</option>
+                                            <option value="completed" @selected($job->status === 'completed')>{{ __('Completed') }}</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">{{ __('Work Notes') }}</label>
+                                        <input type="text" name="notes" value="{{ $job->installation_notes }}" placeholder="{{ __('Findings or notes...') }}"
+                                               class="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2">
+                                    </div>
+                                </div>
+                                <div class="flex justify-end">
+                                    <button type="submit" 
+                                            class="inline-flex items-center justify-center px-4 py-2 min-h-[38px] rounded-xl bg-blue-600 hover:bg-blue-700 !text-white font-bold text-xs sm:text-sm shadow-xs transition cursor-pointer"
+                                            style="color: #ffffff !important;">
+                                        <span class="!text-white" style="color: #ffffff !important;">{{ __('Save Status') }}</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    @empty
+                        <div class="col-span-full rounded-2xl sm:rounded-3xl crm-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 sm:p-12 text-center text-xs sm:text-sm text-slate-400">
+                            {{ __('No active installation jobs assigned right now.') }}
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+
+            {{-- ═══════════════════════════════════════════════════════════════════ --}}
+            {{-- TAB PANE 4: SITE SURVEYS & INSPECTIONS (2-Cols on Laptop)           --}}
+            {{-- ═══════════════════════════════════════════════════════════════════ --}}
+            <div x-show="currentTab === 'surveys'" class="space-y-4 lg:space-y-5">
+                <div class="px-1">
+                    <h2 class="text-base sm:text-xl font-black text-slate-900 dark:text-white tracking-tight">{{ __('Site Surveys') }}</h2>
+                    <p class="text-xs sm:text-sm text-slate-400">{{ __('Customer site inspections for CCTV, cabling, and access control feasibility') }}</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                    @forelse($activeSurveys as $survey)
+                        @php $sLead = $survey->lead; @endphp
+                        <div class="rounded-2xl sm:rounded-3xl crm-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-sm space-y-4 flex flex-col justify-between">
+                            <div class="space-y-3.5">
+                                <div class="flex items-start justify-between gap-3 flex-wrap">
+                                    <div>
+                                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                                            {{ __('Pending Site Inspection') }}
+                                        </span>
+                                        <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white mt-1">
+                                            {{ __('Survey: :customer', ['customer' => $sLead?->customer_name ?? __('Customer Site')]) }}
+                                        </h3>
+                                        <p class="text-xs text-slate-400 mt-0.5">{{ __('Date') }}: {{ $survey->survey_date ? $survey->survey_date->translatedFormat('d M Y') : __('Immediate') }}</p>
+                                    </div>
+
+                                    <a href="{{ route('technician.surveys.show', $survey) }}" 
+                                       class="inline-flex items-center justify-center gap-2 px-4 py-2 min-h-[38px] rounded-xl bg-blue-600 hover:bg-blue-700 !text-white font-bold text-xs sm:text-sm shadow-xs transition"
+                                       style="color: #ffffff !important;">
+                                        <svg class="w-4 h-4 shrink-0 !text-white" fill="none" stroke="#ffffff" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                                        <span class="!text-white" style="color: #ffffff !important;">{{ __('Conduct Survey') }}</span>
+                                    </a>
+                                </div>
+
+                                <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60 text-xs space-y-1.5">
+                                    <div class="text-slate-600 dark:text-slate-300 flex items-start gap-1.5">
+                                        <strong class="text-slate-800 dark:text-slate-200 shrink-0">{{ __('Site Address:') }}</strong>
+                                        <span>{{ $survey->site_address ?: ($sLead?->site_address ?: __('Not specified')) }}</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <strong class="text-slate-800 dark:text-slate-200">{{ __('Contact:') }}</strong>
+                                        <span>{{ $survey->contact_person ?: $sLead?->customer_name }}</span>
+                                        @if($survey->contact_phone || $sLead?->phone)
+                                            <a href="tel:{{ $survey->contact_phone ?: $sLead?->phone }}" class="text-blue-600 dark:text-blue-400 font-bold hover:underline">
+                                                ({{ $survey->contact_phone ?: $sLead?->phone }})
+                                            </a>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center gap-2">
+                                @if($survey->contact_phone || $sLead?->phone)
+                                    <a href="tel:{{ $survey->contact_phone ?: $sLead?->phone }}" 
+                                       class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 min-h-[38px] rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs sm:text-sm font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+                                        <span>{{ __('Call') }}</span>
+                                    </a>
+                                @endif
+                                @if($survey->site_address || $sLead?->site_address)
+                                    <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode($survey->site_address ?: $sLead?->site_address) }}" 
+                                       target="_blank" 
+                                       class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 min-h-[38px] rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs sm:text-sm font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+                                        <span>{{ __('Google Maps') }}</span>
+                                    </a>
+                                @endif
+                            </div>
+                        </div>
+                    @empty
+                        <div class="col-span-full rounded-2xl sm:rounded-3xl crm-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 sm:p-12 text-center text-xs sm:text-sm text-slate-400">
+                            {{ __('No pending site inspection surveys assigned.') }}
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+
+            {{-- ═══════════════════════════════════════════════════════════════════ --}}
+            {{-- TAB PANE 5: FIELD WORKFORCE (3-4 Cols on Laptop/Desktop)            --}}
+            {{-- ═══════════════════════════════════════════════════════════════════ --}}
+            <div x-show="currentTab === 'workers'" class="space-y-4 lg:space-y-5">
+                <div class="flex items-center justify-between flex-wrap gap-2 px-1">
+                    <div>
+                        <h2 class="text-base sm:text-xl font-black text-slate-900 dark:text-white tracking-tight">{{ __('Field Crew Workers') }}</h2>
+                        <p class="text-xs sm:text-sm text-slate-400">{{ __('Active daily-wage technicians, cable pullers, and helpers') }}</p>
+                    </div>
+                    <button type="button" onclick="openAttendanceModal()"
+                            class="inline-flex items-center justify-center gap-2 px-4 py-2 min-h-[38px] rounded-xl bg-blue-600 hover:bg-blue-700 !text-white font-bold text-xs sm:text-sm shadow-xs transition cursor-pointer"
+                            style="color: #ffffff !important;">
+                        <span class="!text-white" style="color: #ffffff !important;">+ {{ __('Punch Attendance') }}</span>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    @foreach($workersToday as $w)
+                        <div class="rounded-2xl sm:rounded-3xl crm-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3.5 flex flex-col justify-between hover:border-blue-400 transition">
+                            <div class="space-y-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 rounded-full border-2 border-blue-500 bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-300 font-black text-sm flex items-center justify-center shrink-0 shadow-xs">
+                                        {{ $w->initials }}
+                                    </div>
+                                    <div class="min-w-0 flex-1">
+                                        <h4 class="text-sm font-black text-slate-900 dark:text-white truncate">{{ $w->name }}</h4>
+                                        <span class="text-xs text-slate-400 block truncate">{{ $w->role_label }}</span>
+                                    </div>
+                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold {{ $w->status_badge_class }}">
+                                        {{ $w->status }}
+                                    </span>
+                                </div>
+
+                                <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60 text-xs">
+                                    <span class="text-slate-400 block text-[10px] uppercase font-bold">{{ __('Phone / Direct Contact') }}</span>
+                                    @if($w->phone)
+                                        <a href="tel:{{ $w->phone }}" class="text-blue-600 dark:text-blue-400 font-bold hover:underline">
+                                            {{ $w->phone }}
+                                        </a>
+                                    @else
+                                        <span class="text-slate-400">-</span>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <div class="pt-2 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs">
+                                <span class="text-[11px] text-slate-400">{{ __('On-Duty Today') }}</span>
+
+                                <button type="button" onclick="openAttendanceModal(null, '{{ $w->id }}')" 
+                                        class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer">
+                                    {{ __('Punch Shift') }} &rarr;
+                                </button>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+
+                <div class="pt-3 text-center">
+                    <a href="{{ route('workers.attendance.index') }}" class="text-xs sm:text-sm font-bold text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:underline">
+                        {{ __('View Complete Worker Attendance Register & Wages') }} &rarr;
+                    </a>
+                </div>
+            </div>
+
+            {{-- ═══════════════════════════════════════════════════════════════════ --}}
+            {{-- TAB PANE 6: HARDWARE SCANNER & COMPLETED HISTORY (Laptop 2-Cols)    --}}
+            {{-- ═══════════════════════════════════════════════════════════════════ --}}
+            <div x-show="currentTab === 'scanner'" class="space-y-4 lg:space-y-5">
+                <div class="px-1">
+                    <h2 class="text-base sm:text-xl font-black text-slate-900 dark:text-white tracking-tight">{{ __('On-Site Hardware Barcode Scanner') }}</h2>
+                    <p class="text-xs sm:text-sm text-slate-400">{{ __('Scan camera, NVR or terminal serial barcode to verify warranty and client allocation') }}</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6 items-start">
+                    
+                    {{-- Left 7 Cols: Scanner Station --}}
+                    <div class="lg:col-span-7 rounded-2xl sm:rounded-3xl crm-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 sm:p-6 lg:p-7 shadow-sm space-y-4">
+                        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                            <button type="button" onclick="openHardwareScannerModal('camera')"
+                                    class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 min-h-[38px] rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 !text-white font-bold text-xs sm:text-sm shadow-sm transition cursor-pointer"
+                                    style="color: #ffffff !important;">
+                                <svg class="w-4 h-4 shrink-0 !text-white" fill="none" stroke="#ffffff" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                <span class="!text-white font-bold" style="color: #ffffff !important;">{{ __('Launch Camera Scanner') }}</span>
+                            </button>
+
+                            <div class="w-full sm:max-w-xs flex items-center gap-2">
+                                <input type="text" x-model="scanCodeInput" placeholder="{{ __('Type serial number...') }}" 
+                                       @keydown.enter="if(scanCodeInput.trim()) { handleTechScannedCode(scanCodeInput.trim()); scanCodeInput = ''; }"
+                                       class="w-full text-xs sm:text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 px-3.5 py-2 min-h-[38px] text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                                <button type="button" @click="if(scanCodeInput.trim()) { handleTechScannedCode(scanCodeInput.trim()); scanCodeInput = ''; }"
+                                        class="inline-flex items-center justify-center px-4 py-2 min-h-[38px] rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 !text-white text-xs sm:text-sm font-bold shadow-sm transition cursor-pointer shrink-0"
+                                        style="color: #ffffff !important;">
+                                    <span style="color: #ffffff !important;">{{ __('Lookup') }}</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        {{-- Lookup Result Card --}}
+                        <div id="tech-scan-result" class="hidden mt-4"></div>
+                    </div>
+
+                    {{-- Right 5 Cols: Completed Work History --}}
+                    <div class="lg:col-span-5 rounded-2xl sm:rounded-3xl crm-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 sm:p-6 lg:p-7 shadow-sm space-y-4">
+                        <h3 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white">{{ __('Completed Work History') }}</h3>
+                        <div class="divide-y divide-slate-100 dark:divide-slate-800 text-xs">
+                            @forelse($completedJobs as $cJob)
+                                <div class="py-3 flex items-center justify-between">
+                                    <div>
+                                        <strong class="text-slate-800 dark:text-slate-200 text-xs sm:text-sm">{{ $cJob->job_no ?? ('JOB-' . $cJob->id) }}</strong>
+                                        <span class="text-slate-400 block text-[11px] mt-0.5">{{ $cJob->quotation?->lead?->customer_name }} &bull; {{ $cJob->updated_at->translatedFormat('d M Y') }}</span>
+                                    </div>
+                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
+                                        {{ __('Completed') }}
+                                    </span>
+                                </div>
+                            @empty
+                                <div class="py-4 text-center text-slate-400">{{ __('No completed jobs yet.') }}</div>
+                            @endforelse
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
         </div>
+
+        {{-- ═══════════════════════════════════════════════════════════════════ --}}
+        {{-- 4. ULTRA-CRISP MOBILE BOTTOM DOCK (Hidden on Laptop, Visible on Mobile) --}}
+        {{-- ═══════════════════════════════════════════════════════════════════ --}}
+        <nav aria-label="{{ __('Field sections') }}" class="lg:hidden fixed bottom-0 inset-x-0 z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 px-2 pt-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
+            <div class="w-full max-w-md mx-auto flex items-center justify-between gap-1">
+                
+                {{-- Overview Tab --}}
+                <button type="button" @click="switchTab('overview')"
+                        :aria-current="currentTab === 'overview' ? 'page' : 'false'"
+                        class="flex-1 h-auto min-h-[48px] py-1.5 px-1 rounded-xl flex flex-col items-center justify-center gap-0.5 transition cursor-pointer select-none"
+                        :class="currentTab === 'overview' ? 'text-blue-600 dark:text-blue-400 font-bold bg-slate-100/70 dark:bg-slate-800/70' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'"
+                        :style="currentTab === 'overview' ? 'color: var(--crm-accent, #2563eb);' : ''">
+                    <svg class="w-5 h-5 pointer-events-none shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+                    <span class="text-[11px] leading-tight pointer-events-none">{{ __('Home') }}</span>
+                </button>
+
+                {{-- Projects Tab --}}
+                <button type="button" @click="switchTab('projects')"
+                        :aria-current="currentTab === 'projects' ? 'page' : 'false'"
+                        class="flex-1 h-auto min-h-[48px] py-1.5 px-1 rounded-xl flex flex-col items-center justify-center gap-0.5 transition cursor-pointer select-none"
+                        :class="currentTab === 'projects' ? 'text-blue-600 dark:text-blue-400 font-bold bg-slate-100/70 dark:bg-slate-800/70' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'"
+                        :style="currentTab === 'projects' ? 'color: var(--crm-accent, #2563eb);' : ''">
+                    <svg class="w-5 h-5 pointer-events-none shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21"/></svg>
+                    <span class="text-[11px] leading-tight pointer-events-none">{{ __('Projects') }}</span>
+                </button>
+
+                {{-- Jobs Tab --}}
+                <button type="button" @click="switchTab('jobs')"
+                        :aria-current="currentTab === 'jobs' ? 'page' : 'false'"
+                        class="flex-1 h-auto min-h-[48px] py-1.5 px-1 rounded-xl flex flex-col items-center justify-center gap-0.5 transition cursor-pointer select-none"
+                        :class="currentTab === 'jobs' ? 'text-blue-600 dark:text-blue-400 font-bold bg-slate-100/70 dark:bg-slate-800/70' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'"
+                        :style="currentTab === 'jobs' ? 'color: var(--crm-accent, #2563eb);' : ''">
+                    <svg class="w-5 h-5 pointer-events-none shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.204a4.5 4.5 0 00-6.364-6.364l-.707.707a4.5 4.5 0 006.364 6.364l.707-.707z"/></svg>
+                    <span class="text-[11px] leading-tight pointer-events-none">{{ __('Jobs') }}</span>
+                </button>
+
+                {{-- Surveys Tab --}}
+                <button type="button" @click="switchTab('surveys')"
+                        :aria-current="currentTab === 'surveys' ? 'page' : 'false'"
+                        class="flex-1 h-auto min-h-[48px] py-1.5 px-1 rounded-xl flex flex-col items-center justify-center gap-0.5 transition cursor-pointer select-none"
+                        :class="currentTab === 'surveys' ? 'text-blue-600 dark:text-blue-400 font-bold bg-slate-100/70 dark:bg-slate-800/70' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'"
+                        :style="currentTab === 'surveys' ? 'color: var(--crm-accent, #2563eb);' : ''">
+                    <svg class="w-5 h-5 pointer-events-none shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25z"/></svg>
+                    <span class="text-[11px] leading-tight pointer-events-none">{{ __('Surveys') }}</span>
+                </button>
+
+                {{-- Workers Tab --}}
+                <button type="button" @click="switchTab('workers')"
+                        :aria-current="currentTab === 'workers' ? 'page' : 'false'"
+                        class="flex-1 h-auto min-h-[48px] py-1.5 px-1 rounded-xl flex flex-col items-center justify-center gap-0.5 transition cursor-pointer select-none"
+                        :class="currentTab === 'workers' ? 'text-blue-600 dark:text-blue-400 font-bold bg-slate-100/70 dark:bg-slate-800/70' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'"
+                        :style="currentTab === 'workers' ? 'color: var(--crm-accent, #2563eb);' : ''">
+                    <svg class="w-5 h-5 pointer-events-none shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
+                    <span class="text-[11px] leading-tight pointer-events-none">{{ __('Crew') }}</span>
+                </button>
+
+            </div>
+        </nav>
 
     </div>
 
-    {{-- HARDWARE BARCODE SCANNER MODAL --}}
+    {{-- HARDWARE BARCODE SCANNER MODAL & COMPONENT --}}
+    <x-hardware-scanner-modal modalId="hardwareScannerModal" :projects="$activeProjects" :leads="$leads ?? collect()" />
     <x-barcode-scanner modalId="tech-barcode-modal" :title="__('Hardware Scanner')" />
 
-    {{-- SCANNER HANDLER SCRIPT --}}
+    {{-- SPLIT GUIDED WORKER ATTENDANCE MODAL COMPONENT --}}
+    <x-mark-attendance-modal :workers="$activeWorkers" :projects="$activeProjects" />
+
     <script>
         const techScanText = {{ Js::from([
             'querying' => __('Querying database for S/N :code...'),
             'underWarranty' => __('Under Warranty'),
             'warrantyExpired' => __('Warranty Expired'),
+            'customer' => __('Customer'),
+            'location' => __('Location'),
+            'siteAsset' => __('Site Asset'),
+            'warrantyExpiry' => __('Warranty Expiry'),
+            'viewHistory' => __('View Asset History'),
+            'catalogItem' => __('Catalog Inventory Item'),
+            'model' => __('Model'),
+            'stock' => __('Stock'),
+            'available' => __(':count available'),
+            'installAtSite' => __('Install at Client Site'),
             'notFound' => __('No hardware found for S/N: :code'),
+            'notRegistered' => __('This hardware serial has not yet been registered in the system.'),
+            'registerNew' => __('Register New Asset'),
             'lookupError' => __('Error looking up serial: :error'),
+            'na' => __('N/A'),
         ]) }};
 
         async function handleTechScannedCode(code) {
+            const container = document.getElementById('tech-scan-result');
+            if (!container) return;
+
+            container.classList.remove('hidden');
+            container.innerHTML = `<div class="text-slate-300 text-xs flex items-center gap-2">
+                <span class="inline-block animate-spin">&#9696;</span>
+                <span>${techScanText.querying.replace(':code', '<strong>' + code + '</strong>')}</span>
+            </div>`;
+
             try {
                 const response = await fetch(`{{ route('equipment.lookup') }}?serial=${encodeURIComponent(code)}`);
                 const data = await response.json();
-                if (data.found) {
-                    crmAlert(`Found Asset: ${data.equipment_name || data.product_name} (${data.customer_name || 'In Stock'})`);
+
+                if (data.found && data.type === 'installed_equipment') {
+                    const warrantyBadge = data.is_under_warranty 
+                        ? `<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700">${techScanText.underWarranty}</span>`
+                        : `<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-100 dark:bg-rose-900/60 text-rose-800 dark:text-rose-300 border border-rose-300 dark:border-rose-700">${techScanText.warrantyExpired}</span>`;
+
+                    container.innerHTML = `
+                        <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/80">
+                            <div class="flex items-start gap-3.5">
+                                <div class="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/60 text-emerald-600 dark:text-emerald-300 flex items-center justify-center shrink-0">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                </div>
+                                <div>
+                                    <div class="flex items-center gap-2 mb-1 flex-wrap">
+                                        <h4 class="text-sm font-black text-slate-900 dark:text-white">${data.equipment_name}</h4>
+                                        ${warrantyBadge}
+                                    </div>
+                                    <div class="text-xs text-slate-600 dark:text-slate-300 space-y-1">
+                                        <div>${techScanText.customer}: <strong class="text-slate-900 dark:text-white">${data.customer_name}</strong> (${data.customer_phone})</div>
+                                        <div>${techScanText.location}: <strong class="text-slate-900 dark:text-white">${data.location_tag || techScanText.siteAsset}</strong> &middot; S/N: <code class="font-mono bg-white dark:bg-slate-900 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-700 text-blue-600 dark:text-blue-400 font-bold">${data.serial_number}</code></div>
+                                        <div>${techScanText.warrantyExpiry}: <strong>${data.mfg_warranty_expiry}</strong></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <a href="${data.show_url}" 
+                               class="self-start sm:self-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 min-h-[38px] rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-bold transition shadow-xs">
+                                <span>${techScanText.viewHistory}</span> &rarr;
+                            </a>
+                        </div>
+                    `;
+                } else if (data.found && data.type === 'catalog_product') {
+                    container.innerHTML = `
+                        <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800/80">
+                            <div class="flex items-start gap-3.5">
+                                <div class="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/60 text-blue-600 dark:text-blue-300 flex items-center justify-center shrink-0">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9"/></svg>
+                                </div>
+                                <div>
+                                    <span class="text-[10px] font-bold text-blue-700 dark:text-blue-300 uppercase tracking-wide block">${techScanText.catalogItem}</span>
+                                    <h4 class="text-sm font-black text-slate-900 dark:text-white mt-0.5">${data.product_name}</h4>
+                                    <div class="text-xs text-slate-600 dark:text-slate-300 mt-1">SKU: <strong class="font-mono text-slate-800 dark:text-slate-200">${data.sku}</strong> &middot; ${techScanText.model}: ${data.model_no || techScanText.na} &middot; ${techScanText.stock}: <strong class="text-emerald-600 dark:text-emerald-400 font-bold">${techScanText.available.replace(':count', data.stock_quantity)}</strong></div>
+                                </div>
+                            </div>
+                            <a href="{{ route('equipment.create') }}?product_id=${data.id}&serial=${encodeURIComponent(code)}" 
+                               class="self-start sm:self-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 min-h-[38px] rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 !text-white font-bold text-xs sm:text-sm shadow-sm transition"
+                               style="color: #ffffff !important;">
+                                <span style="color: #ffffff !important;">${techScanText.installAtSite} &rarr;</span>
+                            </a>
+                        </div>
+                    `;
                 } else {
-                    crmAlert(techScanText.notFound.replace(':code', code));
+                    container.innerHTML = `
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/80">
+                            <div class="flex items-start gap-3">
+                                <div class="w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-900/60 text-amber-700 dark:text-amber-300 flex items-center justify-center shrink-0">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-amber-900 dark:text-amber-200">
+                                        ${techScanText.notFound.replace(':code', '<span class="font-mono bg-amber-200/60 dark:bg-amber-900/80 px-2 py-0.5 rounded text-amber-950 dark:text-amber-100 font-black">' + code + '</span>')}
+                                    </h4>
+                                    <p class="text-xs text-amber-800/80 dark:text-amber-300/80 mt-0.5">${techScanText.notRegistered}</p>
+                                </div>
+                            </div>
+                            <a href="{{ route('equipment.create') }}?serial=${encodeURIComponent(code)}" 
+                               class="self-start sm:self-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 min-h-[38px] rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 !text-white font-bold text-xs sm:text-sm shadow-sm transition"
+                               style="color: #ffffff !important;">
+                                <span style="color: #ffffff !important;">${techScanText.registerNew} &rarr;</span>
+                            </a>
+                        </div>
+                    `;
                 }
             } catch (e) {
-                crmAlert(techScanText.lookupError.replace(':error', e.message));
+                container.innerHTML = `<div class="text-rose-400 text-xs">${techScanText.lookupError.replace(':error', e.message)}</div>`;
             }
         }
     </script>
-
-    {{-- 2-STEP ATTENDANCE MODAL COMPONENT --}}
-    <x-mark-attendance-modal :workers="$activeWorkers" :projects="$activeProjects" />
 </x-app-layout>

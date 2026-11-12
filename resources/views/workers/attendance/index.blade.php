@@ -34,7 +34,8 @@
 
         {{-- Top Band: Saved Views (Day/Week/Month) + Date Nav & Action Toolbar --}}
         <div class="ld-band">
-            <div class="ld-views">
+            {{-- Desktop / Laptop: View Chip + Three Dots Menu --}}
+            <div class="hidden sm:flex ld-views items-center justify-start gap-2">
                 <span class="ld-chip">{{ $viewTitle }}</span>
                 <div class="relative" @click.outside="menu === 'views' && (menu = null)">
                     <button type="button" class="ld-icon-btn" title="Switch View" aria-label="Other attendance views" :aria-expanded="menu === 'views'" @click="open('views')">
@@ -57,100 +58,117 @@
                 </div>
             </div>
 
-            <div class="ld-toolbar">
-                <div class="flex items-center gap-1.5 flex-wrap">
+            {{-- Mobile App View: Exact Technician Dashboard Card Design --}}
+            <div class="sm:hidden p-2 m-2.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+                <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5 text-xs font-bold">
+                    <a href="{{ route('workers.attendance.index', array_merge(request()->query(), ['view' => 'day'])) }}" 
+                       class="flex-1 text-center py-2 px-3 rounded-xl transition-all border {{ $viewMode === 'day' ? 'bg-[#65a30d] text-white border-[#65a30d] shadow-sm font-black' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50' }}"
+                       @if($viewMode === 'day') style="color: #ffffff !important;" @endif>
+                        {{ __('Day') }}
+                    </a>
+                    <a href="{{ route('workers.attendance.index', array_merge(request()->query(), ['view' => 'week'])) }}" 
+                       class="flex-1 text-center py-2 px-3 rounded-xl transition-all border {{ $viewMode === 'week' ? 'bg-[#65a30d] text-white border-[#65a30d] shadow-sm font-black' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50' }}"
+                       @if($viewMode === 'week') style="color: #ffffff !important;" @endif>
+                        {{ __('Week') }}
+                    </a>
+                    <a href="{{ route('workers.attendance.index', array_merge(request()->query(), ['view' => 'month'])) }}" 
+                       class="flex-1 text-center py-2 px-3 rounded-xl transition-all border {{ $viewMode === 'month' ? 'bg-[#65a30d] text-white border-[#65a30d] shadow-sm font-black' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50' }}"
+                       @if($viewMode === 'month') style="color: #ffffff !important;" @endif>
+                        {{ __('Month') }}
+                    </a>
+                </div>
+            </div>
+
+            <div class="ld-toolbar p-3 sm:px-4 sm:py-2.5">
+                {{-- Left: Filter & Date Controls --}}
+                <div class="flex items-center gap-1.5 flex-wrap w-full sm:w-auto">
                     {{-- Slide-out Filter toggle button --}}
-                    <button type="button" class="ld-tool" :class="showFilter && 'is-on'" @click="showFilter = !showFilter" :aria-pressed="showFilter">
+                    <button type="button" class="ld-tool shrink-0" :class="showFilter && 'is-on'" @click="showFilter = !showFilter" :aria-pressed="showFilter">
                         <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5h18l-7 8.5V19l-4 2v-7.5L3 5z"/></svg>
                         <span>{{ __('Filter') }}</span>
                         @if($filterCount > 0)<span class="text-xs font-semibold" style="color: var(--ld-accent)">{{ $filterCount }}</span>@endif
                     </button>
 
-                    {{-- Date Navigation --}}
-                    @if($viewMode === 'day')
-                        @php
-                            $prevDay = $selectedDate->copy()->subDay()->toDateString();
-                            $nextDay = $selectedDate->copy()->addDay()->toDateString();
-                            $isToday = $selectedDate->isToday();
-                        @endphp
-                        <a href="{{ route('workers.attendance.index', array_merge(request()->query(), ['view' => 'day', 'date' => $prevDay])) }}" class="ld-tool plain-link" title="{{ __('Previous Day') }}">&larr; {{ __('Prev') }}</a>
-                        
-                        <form method="GET" action="{{ route('workers.attendance.index') }}" class="inline-flex items-center gap-1">
-                            <input type="hidden" name="view" value="day">
-                            @if(request('worker_id')) <input type="hidden" name="worker_id" value="{{ request('worker_id') }}"> @endif
-                            @if(request('project_id')) <input type="hidden" name="project_id" value="{{ request('project_id') }}"> @endif
-                            @if(request('search')) <input type="hidden" name="search" value="{{ request('search') }}"> @endif
-                            <input aria-label="Attendance date" type="date" name="date" value="{{ $selectedDate->toDateString() }}" onchange="this.form.submit()" class="ld-input text-xs font-semibold" style="height: 28px; width: 135px; padding: 0 6px;">
-                        </form>
+                    {{-- Date Navigation Group (Kept together without breaking) --}}
+                    <div class="inline-flex items-center gap-1 bg-slate-50 dark:bg-slate-800/60 p-0.5 rounded-lg border border-slate-200 dark:border-slate-700/80 shrink-0">
+                        @if($viewMode === 'day')
+                            @php
+                                $prevDay = $selectedDate->copy()->subDay()->toDateString();
+                                $nextDay = $selectedDate->copy()->addDay()->toDateString();
+                                $isToday = $selectedDate->isToday();
+                            @endphp
+                            <a href="{{ route('workers.attendance.index', array_merge(request()->query(), ['view' => 'day', 'date' => $prevDay])) }}" class="ld-tool plain-link !h-7 !px-2" title="{{ __('Previous Day') }}">&larr;</a>
+                            
+                            <form method="GET" action="{{ route('workers.attendance.index') }}" class="inline-flex items-center">
+                                <input type="hidden" name="view" value="day">
+                                @if(request('worker_id')) <input type="hidden" name="worker_id" value="{{ request('worker_id') }}"> @endif
+                                @if(request('project_id')) <input type="hidden" name="project_id" value="{{ request('project_id') }}"> @endif
+                                @if(request('search')) <input type="hidden" name="search" value="{{ request('search') }}"> @endif
+                                <input aria-label="Attendance date" type="date" name="date" value="{{ $selectedDate->toDateString() }}" onchange="this.form.submit()" class="ld-input text-xs font-semibold !h-7 !py-0" style="width: 125px; padding: 0 4px;">
+                            </form>
 
-                        <a href="{{ route('workers.attendance.index', array_merge(request()->query(), ['view' => 'day', 'date' => $nextDay])) }}" class="ld-tool plain-link" title="{{ __('Next Day') }}">{{ __('Next') }} &rarr;</a>
+                            <a href="{{ route('workers.attendance.index', array_merge(request()->query(), ['view' => 'day', 'date' => $nextDay])) }}" class="ld-tool plain-link !h-7 !px-2" title="{{ __('Next Day') }}">&rarr;</a>
 
-                        @if(!$isToday)
-                            <a href="{{ route('workers.attendance.index', array_merge(request()->query(), ['view' => 'day', 'date' => now()->toDateString()])) }}" class="ld-tool plain-link font-bold" style="color: var(--ld-accent)">{{ __('Today') }}</a>
+                            @if(!$isToday)
+                                <a href="{{ route('workers.attendance.index', array_merge(request()->query(), ['view' => 'day', 'date' => now()->toDateString()])) }}" class="ld-tool plain-link font-bold !h-7 !px-2" style="color: var(--ld-accent)">{{ __('Today') }}</a>
+                            @endif
+                        @elseif($viewMode === 'week')
+                            @php
+                                $prevWeek = $weekStart->copy()->subWeek()->toDateString();
+                                $nextWeek = $weekStart->copy()->addWeek()->toDateString();
+                                $isCurrentWeek = $weekStart->isCurrentWeek();
+                            @endphp
+                            <a href="{{ route('workers.attendance.index', array_merge(request()->query(), ['view' => 'week', 'week' => $prevWeek])) }}" class="ld-tool plain-link !h-7 !px-2">&larr;</a>
+                            <span class="px-2 text-xs font-bold text-slate-800 dark:text-slate-200">
+                                {{ $weekStart->format('d M') }} &ndash; {{ $weekEnd->format('d M') }}
+                            </span>
+                            <a href="{{ route('workers.attendance.index', array_merge(request()->query(), ['view' => 'week', 'week' => $nextWeek])) }}" class="ld-tool plain-link !h-7 !px-2">&rarr;</a>
+                        @else
+                            @php
+                                $prevMonth = $monthStart->copy()->subMonth()->format('Y-m');
+                                $nextMonth = $monthStart->copy()->addMonth()->format('Y-m');
+                            @endphp
+                            <a href="{{ route('workers.attendance.index', array_merge(request()->query(), ['view' => 'month', 'month' => $prevMonth])) }}" class="ld-tool plain-link !h-7 !px-2">&larr;</a>
+                            <form method="GET" action="{{ route('workers.attendance.index') }}" class="inline-flex items-center">
+                                <input type="hidden" name="view" value="month">
+                                @if(request('worker_id')) <input type="hidden" name="worker_id" value="{{ request('worker_id') }}"> @endif
+                                @if(request('project_id')) <input type="hidden" name="project_id" value="{{ request('project_id') }}"> @endif
+                                @if(request('search')) <input type="hidden" name="search" value="{{ request('search') }}"> @endif
+                                <input type="month" name="month" value="{{ $selectedMonth }}" onchange="this.form.submit()" class="ld-input text-xs font-semibold !h-7 !py-0" style="width: 125px; padding: 0 4px;">
+                            </form>
+                            <a href="{{ route('workers.attendance.index', array_merge(request()->query(), ['view' => 'month', 'month' => $nextMonth])) }}" class="ld-tool plain-link !h-7 !px-2">&rarr;</a>
                         @endif
-                    @elseif($viewMode === 'week')
-                        @php
-                            $prevWeek = $weekStart->copy()->subWeek()->toDateString();
-                            $nextWeek = $weekStart->copy()->addWeek()->toDateString();
-                            $isCurrentWeek = $weekStart->isCurrentWeek();
-                        @endphp
-                        <a href="{{ route('workers.attendance.index', array_merge(request()->query(), ['view' => 'week', 'week' => $prevWeek])) }}" class="ld-tool plain-link">&larr; {{ __('Prev Week') }}</a>
-                        <span class="px-2 text-xs font-bold text-slate-800 dark:text-slate-200">
-                            {{ $weekStart->format('d M') }} &ndash; {{ $weekEnd->format('d M Y') }}
-                        </span>
-                        <a href="{{ route('workers.attendance.index', array_merge(request()->query(), ['view' => 'week', 'week' => $nextWeek])) }}" class="ld-tool plain-link">{{ __('Next Week') }} &rarr;</a>
-                        @if(!$isCurrentWeek)
-                            <a href="{{ route('workers.attendance.index', array_merge(request()->query(), ['view' => 'week', 'week' => now()->startOfWeek(\Carbon\Constants\UnitValue::MONDAY)->toDateString()])) }}" class="ld-tool plain-link font-bold" style="color: var(--ld-accent)">{{ __('Current Week') }}</a>
-                        @endif
-                    @else
-                        @php
-                            $prevMonth = $monthStart->copy()->subMonth()->format('Y-m');
-                            $nextMonth = $monthStart->copy()->addMonth()->format('Y-m');
-                            $isCurrentMonth = $monthStart->isCurrentMonth();
-                        @endphp
-                        <a href="{{ route('workers.attendance.index', array_merge(request()->query(), ['view' => 'month', 'month' => $prevMonth])) }}" class="ld-tool plain-link">&larr; {{ __('Prev Month') }}</a>
-                        <form method="GET" action="{{ route('workers.attendance.index') }}" class="inline-flex items-center gap-1">
-                            <input type="hidden" name="view" value="month">
-                            @if(request('worker_id')) <input type="hidden" name="worker_id" value="{{ request('worker_id') }}"> @endif
-                            @if(request('project_id')) <input type="hidden" name="project_id" value="{{ request('project_id') }}"> @endif
-                            @if(request('search')) <input type="hidden" name="search" value="{{ request('search') }}"> @endif
-                            <input type="month" name="month" value="{{ $selectedMonth }}" onchange="this.form.submit()" class="ld-input text-xs font-semibold" style="height: 28px; width: 135px; padding: 0 6px;">
-                        </form>
-                        <a href="{{ route('workers.attendance.index', array_merge(request()->query(), ['view' => 'month', 'month' => $nextMonth])) }}" class="ld-tool plain-link">{{ __('Next Month') }} &rarr;</a>
-                        @if(!$isCurrentMonth)
-                            <a href="{{ route('workers.attendance.index', array_merge(request()->query(), ['view' => 'month', 'month' => now()->format('Y-m')])) }}" class="ld-tool plain-link font-bold" style="color: var(--ld-accent)">{{ __('Current Month') }}</a>
-                        @endif
-                    @endif
+                    </div>
 
-                    <span class="ld-sep" aria-hidden="true"></span>
-
-                    @if(auth()->user()->isAdmin())
-                        <a href="{{ route('wages.index') }}" class="ld-tool plain-link" title="{{ __('Sunday Payday Console') }}">
-                            <span>{{ __('Sunday Payday Console') }}</span>
+                    {{-- Secondary Links --}}
+                    <div class="hidden md:inline-flex items-center gap-1">
+                        <span class="ld-sep" aria-hidden="true"></span>
+                        @if(auth()->user()->isAdmin())
+                            <a href="{{ route('wages.index') }}" class="ld-tool plain-link text-xs" title="{{ __('Sunday Payday Console') }}">
+                                <span>{{ __('Wages') }}</span>
+                            </a>
+                        @endif
+                        <a href="{{ route('workers.index') }}" class="ld-tool plain-link text-xs" title="{{ __('Workers') }}">
+                            <span>{{ __('Workers') }}</span>
                         </a>
-                    @endif
-
-                    <a href="{{ route('workers.index') }}" class="ld-tool plain-link" title="{{ __('Workers List') }}">
-                        <span>{{ __('Workers List') }}</span>
-                    </a>
+                    </div>
                 </div>
 
-                <div class="flex items-center gap-2 ml-auto">
-                    {{-- Primary Action: Mark Attendance --}}
-                    <button type="button" onclick="openAttendanceModal()" class="ld-accent" style="border-radius: 4px; height: 32px; padding: 0 14px">
-                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-                        <span>{{ __('Mark Attendance') }}</span>
+                {{-- Right: Primary Action Buttons (Mark & Bulk Attendance) + More Menu --}}
+                <div class="flex items-center gap-2 w-full sm:w-auto sm:ml-auto mt-2 sm:mt-0">
+                    <button type="button" onclick="openAttendanceModal()" class="ld-accent flex-1 sm:flex-initial !inline-flex items-center justify-center gap-2 whitespace-nowrap shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold shadow-xs transition cursor-pointer" style="min-height: 38px;">
+                        <svg class="w-4 h-4 shrink-0 !text-white" fill="none" stroke="#ffffff" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                        <span class="whitespace-nowrap !text-white" style="color: #ffffff !important;">{{ __('Mark Attendance') }}</span>
                     </button>
 
-                    {{-- Bulk Action: Bulk Attendance --}}
-                    <button type="button" onclick="openBulkAttendanceModal('{{ $viewMode === 'day' ? $selectedDate->toDateString() : now()->toDateString() }}')" class="ld-outline" style="border-radius: 4px; height: 32px; padding: 0 12px; font-weight: 600;">
-                        <svg class="w-4 h-4 mr-1.5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"/></svg>
-                        <span>{{ __('Bulk Attendance') }}</span>
+                    <button type="button" onclick="openBulkAttendanceModal('{{ $viewMode === 'day' ? $selectedDate->toDateString() : now()->toDateString() }}')" class="ld-outline flex-1 sm:flex-initial !inline-flex items-center justify-center gap-2 whitespace-nowrap shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer" style="min-height: 38px;">
+                        <svg class="w-4 h-4 shrink-0 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"/></svg>
+                        <span class="whitespace-nowrap">{{ __('Bulk Attendance') }}</span>
                     </button>
 
                     <div class="relative" @click.outside="menu === 'more' && (menu = null)">
-                        <button type="button" class="ld-outline" title="More options" aria-label="More actions" :aria-expanded="menu === 'more'" @click="open('more')">
-                            <svg class="w-4 h-4 icon-solid" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><circle cx="4" cy="10" r="1.6"/><circle cx="10" cy="10" r="1.6"/><circle cx="16" cy="10" r="1.6"/></svg>
+                        <button type="button" class="ld-outline !inline-flex items-center justify-center p-2 rounded-xl shrink-0 cursor-pointer" style="min-height: 38px; width: 38px;" title="More options" aria-label="More actions" :aria-expanded="menu === 'more'" @click="open('more')">
+                            <svg class="w-4 h-4 icon-solid shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><circle cx="4" cy="10" r="1.6"/><circle cx="10" cy="10" r="1.6"/><circle cx="16" cy="10" r="1.6"/></svg>
                         </button>
                         <div class="ld-menu right-0" x-show="menu === 'more'" x-cloak>
                             @if(auth()->user()->isAdmin())
@@ -163,6 +181,7 @@
                 </div>
             </div>
         </div>
+
 
         {{-- Body: Filter Panel + Main Content --}}
         <div class="ld-body" x-ref="body">
@@ -182,8 +201,8 @@
                     <div class="ld-filter-scroll">
                         <h2>{{ __('Filter Attendance by') }}</h2>
                         <div class="relative">
-                            <svg class="w-4 h-4 absolute left-2.5 top-2" style="color: var(--ld-muted)" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z"/></svg>
-                            <input type="search" name="search" value="{{ request('search') }}" placeholder="{{ __('Search worker name, phone or notes…') }}" aria-label="Search worker notes" class="ld-input" style="padding-left: 32px !important">
+                            <svg class="w-4 h-4 absolute left-2.5 top-2.5" style="color: var(--ld-muted)" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z"/></svg>
+                            <input type="search" name="search" value="{{ request('search') }}" placeholder="{{ __('Search worker name, phone or notes…') }}" aria-label="Search worker notes" class="ld-input" style="padding-left: 2.75rem !important;">
                         </div>
 
                         <details open>
@@ -648,8 +667,8 @@
                                                 <span>{{ __('Mark Attendance for :date', ['date' => $selectedDate->format('d M')]) }}</span>
                                             </button>
                                             @if(isset($unpunchedWorkers) && $unpunchedWorkers->isNotEmpty())
-                                                <button type="button" onclick="openBulkAttendanceModal('{{ $selectedDate->toDateString() }}', {{ Js::from($unpunchedWorkers->pluck('id')->values()) }})" class="btn-secondary text-xs inline-flex items-center gap-1.5">
-                                                    <svg class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"/></svg>
+                                                <button type="button" onclick="openBulkAttendanceModal('{{ $selectedDate->toDateString() }}', {{ Js::from($unpunchedWorkers->pluck('id')->values()) }})" class="btn-secondary text-xs inline-flex items-center gap-1.5 whitespace-nowrap shrink-0">
+                                                    <svg class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"/></svg>
                                                     <span>{{ __('Bulk Attendance') }}</span>
                                                 </button>
                                             @endif

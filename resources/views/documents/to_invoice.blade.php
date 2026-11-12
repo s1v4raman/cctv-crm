@@ -51,14 +51,14 @@
         @endif
 
         {{-- Filter & Search Bar --}}
-        <div class="p-4 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3">
-            <form method="GET" action="{{ route('documents.to-invoice') }}" class="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto flex-1">
-                <div class="relative w-full sm:w-80 flex items-center">
+        <div class="p-4 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs flex flex-col lg:flex-row flex-wrap items-stretch lg:items-center justify-between gap-3">
+            <form method="GET" action="{{ route('documents.to-invoice') }}" class="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3 w-full lg:w-auto lg:flex-1 min-w-0">
+                <div class="relative w-full sm:w-64 md:w-72 flex items-center">
                     <svg class="w-4 h-4 text-slate-400 absolute left-3.5 pointer-events-none shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                     <input aria-label="Search DC number, project, site" type="text" name="search" value="{{ $search }}" placeholder="Search DC number, project, site..." style="padding-left: 2.75rem !important;" class="w-full pl-11 pr-4 py-2 text-sm bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
 
-                <div class="flex items-center gap-2 w-full sm:w-auto">
+                <div class="flex items-center flex-wrap gap-2 w-full sm:w-auto">
                     <select aria-label="Company" name="company" onchange="this.form.submit()" class="px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-700 dark:text-slate-200 outline-none">
                         <option value="all">All Executing Companies</option>
                         @foreach($companies as $comp)

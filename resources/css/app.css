@@ -2447,7 +2447,10 @@ html.dark .crm-customer-icon-box {
     background-color: var(--card-bg) !important;
     border: 1px solid var(--card-border) !important;
     color: var(--text-main) !important;
-    padding: 0 0.875rem !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    padding-right: 0.875rem !important;
+    padding-left: 0.875rem;
     outline: none !important;
     box-shadow: none !important;
     transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
@@ -3102,7 +3105,7 @@ label span[class*="text-rose"] {
 }
 
 /* Inputs, selects, and date fields: --control-height, clean background, 1px border */
-input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="color"]):not([type="range"]):not(.ts-control input):not(.ts-wrapper input):not(.ts-control),
+input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="color"]):not([type="range"]):not(.ts-control input):not(.ts-wrapper input):not(.ts-control):not([name="search"]):not([type="search"]):not(.search-icon-input):not([data-search-input]):not([class*="pl-8"]):not([class*="pl-9"]):not([class*="pl-10"]):not([class*="pl-11"]):not([class*="pl-12"]):not([class*="pl-14"]):not(.crm-search-input),
 select {
     height: var(--control-height) !important;
     min-height: var(--control-height) !important;
@@ -3876,6 +3879,24 @@ a.btn-primary {
         overflow-x: hidden !important;
     }
 
+    /* Centered View Switcher & Safe Menu for Mobile App View */
+    .ld-views {
+        justify-content: center !important;
+        text-align: center !important;
+        padding: 8px 12px !important;
+    }
+    .ld-views .ld-chip,
+    .ld-chip {
+        display: none !important;
+    }
+    .ld-views .ld-icon-btn,
+    .ld-views .relative:has(> .ld-icon-btn) {
+        display: none !important;
+    }
+    .ld-menu {
+        max-width: calc(100vw - 24px) !important;
+    }
+
     /* Mobile form touch targets */
     .crm-input,
     .crm-select,
@@ -4520,3 +4541,250 @@ html.dark nav[role="navigation"] :is(.dark\:text-gray-600, .dark\:text-gray-600 
     font-size: 13px !important;
     font-weight: 600 !important;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   GUARANTEED SEARCH BAR ICON & TEXT SPACING (Mobile App & Webpage View)
+   Ensures placeholder & typed text NEVER collide with left icons.
+   ═══════════════════════════════════════════════════════════════════════ */
+/* Universal Search Bar Icon-Text Collision Prevention */
+input.pl-8,
+input[class*="pl-8"],
+.crm-input.pl-8,
+.crm-input[class*="pl-8"] {
+    padding-left: 2.25rem !important;
+}
+
+input.pl-9,
+input[class*="pl-9"],
+.crm-input.pl-9,
+.crm-input[class*="pl-9"] {
+    padding-left: 2.5rem !important;
+}
+
+input.pl-10,
+input[class*="pl-10"],
+.crm-input.pl-10,
+.crm-input[class*="pl-10"],
+.search-icon-input,
+[data-search-input],
+.relative:has(> svg) > input,
+.relative:has(> div svg) > input,
+.relative:has(> .absolute svg) > input,
+#bulk-worker-search,
+input[name="search"],
+input[type="search"],
+input[placeholder*="Search"],
+input[placeholder*="search"] {
+    padding-left: 2.85rem !important;
+}
+
+input.pl-11,
+input[class*="pl-11"],
+input.pl-12,
+input[class*="pl-12"] {
+    padding-left: 3.25rem !important;
+}
+
+/* Universal Standard Medium Button Format (Mobile App & Webpage View) */
+.btn-primary,
+.btn-secondary,
+.btn-white,
+.btn-md,
+.btn,
+.ld-accent,
+.ld-outline,
+.ld-tool,
+button.btn-primary,
+button.btn-secondary,
+a.btn-primary,
+a.btn-secondary,
+button.ld-outline,
+button.ld-accent,
+a.ld-outline,
+a.ld-accent {
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+    box-sizing: border-box !important;
+    line-height: 1.25 !important;
+    min-height: 38px !important;
+    height: auto !important;
+    padding: 8px 16px !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    border-radius: 12px !important;
+}
+
+/* Ensure High-Contrast White Text on Primary & Accent Buttons */
+.btn-primary,
+a.btn-primary,
+button.btn-primary,
+.ld-accent,
+a.ld-accent,
+button.ld-accent {
+    color: #ffffff !important;
+}
+.btn-primary svg,
+a.btn-primary svg,
+button.btn-primary svg,
+.ld-accent svg,
+a.ld-accent svg,
+button.ld-accent svg {
+    color: #ffffff !important;
+    stroke: #ffffff !important;
+}
+
+/* Universal Scrollbar Elimination for Pills & Tabs */
+.no-scrollbar::-webkit-scrollbar,
+.no-scrollbar::-webkit-scrollbar-track,
+.no-scrollbar::-webkit-scrollbar-thumb,
+.no-scrollbar::-webkit-scrollbar-corner {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    opacity: 0 !important;
+}
+.no-scrollbar {
+    -ms-overflow-style: none !important;
+    scrollbar-width: none !important;
+    -webkit-overflow-scrolling: touch !important;
+}
+
+/* Mobile-Only Card View (< 768px) for all Admin & Module Data Tables */
+@media (max-width: 767px) {
+    .crm-content .ld-scroll:has(> table.crm-auto-cards),
+    .crm-content .overflow-x-auto:has(> table.crm-auto-cards) {
+        overflow-x: visible !important;
+        padding: 10px !important;
+        background: transparent !important;
+    }
+
+    .crm-content table.crm-auto-cards,
+    .crm-content table.crm-auto-cards tbody,
+    .crm-content table.crm-auto-cards tr,
+    .crm-content table.crm-auto-cards td {
+        display: block !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        box-sizing: border-box !important;
+    }
+
+    .crm-content table.crm-auto-cards {
+        border: 0 !important;
+        background: transparent !important;
+    }
+
+    .crm-content table.crm-auto-cards thead {
+        position: absolute !important;
+        width: 1px !important;
+        height: 1px !important;
+        overflow: hidden !important;
+        clip: rect(0, 0, 0, 0) !important;
+        white-space: nowrap !important;
+    }
+
+    .crm-content table.crm-auto-cards tbody tr {
+        margin-bottom: 12px !important;
+        padding: 8px 14px !important;
+        border: 1px solid var(--card-border) !important;
+        border-radius: 14px !important;
+        background: var(--card-bg) !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+    }
+
+    .crm-content table.crm-auto-cards td {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 12px !important;
+        padding: 8px 0 !important;
+        border: 0 !important;
+        border-bottom: 1px solid var(--table-border) !important;
+        text-align: right !important;
+        white-space: normal !important;
+        font-size: 13px !important;
+    }
+
+    .crm-content table.crm-auto-cards td:last-child {
+        border-bottom: 0 !important;
+        padding-bottom: 4px !important;
+    }
+
+    .crm-content table.crm-auto-cards td::before {
+        content: attr(data-label);
+        flex-shrink: 0;
+        max-width: 44%;
+        font-size: 12px;
+        font-weight: 600;
+        text-align: left;
+        color: var(--text-muted);
+    }
+
+    .crm-content table.crm-auto-cards td[data-label=""]::before,
+    .crm-content table.crm-auto-cards td:not([data-label])::before,
+    .crm-content table.crm-auto-cards td.ld-box::before {
+        content: none !important;
+    }
+
+    .crm-content table.crm-auto-cards td.ld-box {
+        justify-content: flex-start !important;
+        padding: 4px 0 6px !important;
+    }
+
+    .crm-content table.crm-auto-cards td[data-label=""] {
+        justify-content: flex-end !important;
+    }
+
+    .crm-content table.crm-auto-cards td[colspan] {
+        justify-content: center !important;
+        text-align: center !important;
+    }
+
+    .crm-content table.crm-auto-cards td > * {
+        min-width: 0;
+    }
+
+    .crm-content table.crm-auto-cards td .crm-card-val,
+    .crm-content table.crm-responsive td .crm-card-val {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-end !important;
+        gap: 2px !important;
+        text-align: right !important;
+        min-width: 0 !important;
+        flex: 1 1 auto !important;
+    }
+
+    .crm-content table.crm-auto-cards td.md\:hidden {
+        display: none !important;
+    }
+
+    /* Consistent bottom-nav safe clearance (pb-24 = 6rem + safe-area) on mobile */
+    .crm-content {
+        padding-bottom: calc(6rem + env(safe-area-inset-bottom, 0px)) !important;
+    }
+
+    /* 44px minimum touch targets for mobile card action links & buttons */
+    #main-content .crm-content table.crm-auto-cards td a:not(.ld-name),
+    #main-content .crm-content table.crm-auto-cards td button,
+    #main-content .crm-content table.crm-responsive td a,
+    #main-content .crm-content table.crm-responsive td button,
+    #main-content .crm-content .md\:hidden.divide-y a:not(.ld-name):not([href^="tel:"]),
+    #main-content .crm-content .md\:hidden.divide-y button,
+    #main-content .crm-content .ld-page-arrow {
+        height: auto !important;
+        max-height: none !important;
+        min-height: 44px !important;
+        min-width: 44px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding-left: 6px !important;
+        padding-right: 6px !important;
+    }
+}
+
+
+

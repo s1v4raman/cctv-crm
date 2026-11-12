@@ -29,9 +29,10 @@
 
             @if($canCreate)
                 <a href="{{ route('projects.create') }}" 
-                   class="btn-md inline-flex items-center gap-1 px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-xs transition">
-                    <span class="text-base leading-none">+</span>
-                    <span>{{ __('New Project') }}</span>
+                   class="inline-flex items-center justify-center gap-2 px-4 py-2 min-h-[38px] rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 !text-white font-bold text-xs sm:text-sm shadow-sm transition cursor-pointer"
+                   style="color: #ffffff !important;">
+                    <svg class="w-4 h-4 shrink-0 !text-white" fill="none" stroke="#ffffff" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                    <span class="!text-white font-bold" style="color: #ffffff !important;">{{ __('New Project') }}</span>
                 </a>
             @endif
         </div>
@@ -42,28 +43,34 @@
                 @if($statusFilter && $statusFilter !== 'all')
                     <input type="hidden" name="status" value="{{ $statusFilter }}">
                 @endif
-                <div class="flex items-center gap-2.5 px-3.5 py-2.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-700 shadow-2xs focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20 transition">
-                    <svg class="w-4 h-4 text-slate-400 shrink-0 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
-                    </svg>
+                <div class="relative flex items-center w-full">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
+                        </svg>
+                    </div>
                     <input type="text" name="search" value="{{ $search }}" placeholder="{{ __('Search projects, codes, customers...') }}"
-                           class="w-full !border-0 !p-0 !bg-transparent font-sans text-xs sm:text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 placeholder:font-normal focus:outline-none focus:ring-0 !shadow-none !h-auto !min-h-0">
+                           class="w-full !pl-11 pr-9 py-2.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-700 shadow-2xs font-sans text-xs sm:text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 placeholder:font-normal focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition"
+                           style="padding-left: 2.85rem !important;">
                     @if($search)
-                        <a href="{{ route('projects.index') }}" class="text-sm text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 shrink-0 p-1 font-bold leading-none">
+                        <a href="{{ route('projects.index') }}" class="absolute inset-y-0 right-0 pr-3 flex items-center text-sm text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 font-bold">
                             &times;
                         </a>
                     @endif
                 </div>
             </form>
 
-            {{-- Quick Filter Pills --}}
-            <div class="flex items-center gap-1.5 overflow-x-auto py-1 no-scrollbar text-xs">
-                @foreach($views as $v)
-                    <a href="{{ $v['url'] }}" 
-                       class="px-3 py-1.5 rounded-xl font-bold whitespace-nowrap transition {{ $v['active'] ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200' }}">
-                        {{ $v['label'] }}
-                    </a>
-                @endforeach
+            {{-- Quick Filter Pills (Card Enclosed with Horizontal Scrolling) --}}
+            <div class="p-2 sm:p-2.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm my-1">
+                <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5 text-xs font-bold">
+                    @foreach($views as $v)
+                        <a href="{{ $v['url'] }}" 
+                           class="shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all inline-flex items-center gap-1.5 border {{ $v['active'] ? 'bg-[#65a30d] text-white border-[#65a30d] shadow-sm font-black' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50' }}"
+                           @if($v['active']) style="color: #ffffff !important;" @endif>
+                            <span>{{ $v['label'] }}</span>
+                        </a>
+                    @endforeach
+                </div>
             </div>
         </div>
 

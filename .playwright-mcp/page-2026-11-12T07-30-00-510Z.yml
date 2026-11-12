@@ -1,0 +1,272 @@
+- generic [active] [ref=f2e1]:
+  - banner [ref=f2e2]:
+    - generic [ref=f2e3]:
+      - link "Precision IT Systems home" [ref=f2e4] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001
+        - img "Precision IT Systems" [ref=f2e5]
+      - navigation [ref=f2e6]:
+        - link "Home" [ref=f2e7] [cursor=pointer]:
+          - /url: "#home"
+        - link "About Us" [ref=f2e8] [cursor=pointer]:
+          - /url: "#about"
+        - link "Services" [ref=f2e10] [cursor=pointer]:
+          - /url: "#services"
+        - link "Solutions" [ref=f2e14] [cursor=pointer]:
+          - /url: "#solutions"
+        - link "Why Us" [ref=f2e15] [cursor=pointer]:
+          - /url: "#why-us"
+        - link "Contact" [ref=f2e16] [cursor=pointer]:
+          - /url: "#contact"
+      - generic [ref=f2e17]:
+        - button "Search Solutions & Services" [ref=f2e18] [cursor=pointer]
+        - button "Toggle Dark / White Mode" [ref=f2e21] [cursor=pointer]
+        - button "Profile" [ref=f2e25] [cursor=pointer]
+        - link "Get In Touch" [ref=f2e31] [cursor=pointer]:
+          - /url: "#contact"
+  - main [ref=f2e32]:
+    - generic [ref=f2e35]:
+      - generic [ref=f2e36]:
+        - generic [ref=f2e37]: Next-Gen Security Engineering
+        - heading "Innovative IT Solutions for Your Business" [level=1] [ref=f2e40]
+        - paragraph [ref=f2e41]: Since our founding, we have been committed to providing high quality and sustainable security solutions, enterprise AI surveillance, and 24/7 technical surveillance for modern businesses.
+        - generic [ref=f2e42]:
+          - link "Learn More" [ref=f2e43] [cursor=pointer]:
+            - /url: "#services"
+          - link "Get In Touch" [ref=f2e47] [cursor=pointer]:
+            - /url: "#contact"
+      - generic [ref=f2e52]:
+        - generic [ref=f2e54]:
+          - generic [ref=f2e56]:
+            - generic [ref=f2e57]: 01 / 08
+            - button "View Full Picture" [ref=f2e58] [cursor=pointer]
+          - generic [ref=f2e61]:
+            - generic [ref=f2e62] [cursor=pointer]:
+              - img "Professional CCTV Installation Technician" [ref=f2e63]
+              - generic:
+                - generic: CCTV Engineering
+                - heading "Expert Outdoor CCTV Installation & Junction Wiring" [level=3]
+            - generic:
+              - img "Bullet Camera Optical Alignment"
+              - generic:
+                - generic: Perimeter Security
+                - heading "Precision IP Bullet Camera Optical Calibration" [level=3]
+            - generic:
+              - img "AI Dome Camera Setup"
+              - generic:
+                - generic: Commercial & Indoor
+                - heading "Vandal-Resistant 360° AI Dome Camera Setup" [level=3]
+            - generic:
+              - img "Turnkey Surveillance Equipment"
+              - generic:
+                - generic: Hardware Diagnostics
+                - heading "Commercial Grade Multisensor Hardware & Tools" [level=3]
+            - generic:
+              - img "AI Face Recognition Attendance Device"
+              - generic:
+                - generic: AI Biometrics
+                - heading "AI Face Recognition Access Control & Time Attendance" [level=3]
+            - generic:
+              - img "Multiple Biometric Identification Methods"
+              - generic:
+                - generic: Access Control
+                - heading "10 Multi-Modal Identification & Security Combinations" [level=3]
+            - generic:
+              - img "Standalone Fingerprint Biometric Device"
+              - generic:
+                - generic: Door Access
+                - heading "High-Security Standalone Biometric Terminals" [level=3]
+            - generic:
+              - img "Cloud Attendance Management System"
+              - generic:
+                - generic: Cloud HR Suite
+                - heading "Unified HR Attendance & Real-Time Check-in Suite" [level=3]
+          - button "Previous Image" [ref=f2e65] [cursor=pointer]
+          - button "Next Image" [ref=f2e68] [cursor=pointer]
+          - generic [ref=f2e71]:
+            - button "Slide 1" [ref=f2e72] [cursor=pointer]
+            - button "Slide 2" [ref=f2e73] [cursor=pointer]
+            - button "Slide 3" [ref=f2e74] [cursor=pointer]
+            - button "Slide 4" [ref=f2e75] [cursor=pointer]
+            - button "Slide 5" [ref=f2e76] [cursor=pointer]
+            - button "Slide 6" [ref=f2e77] [cursor=pointer]
+            - button "Slide 7" [ref=f2e78] [cursor=pointer]
+            - button "Slide 8" [ref=f2e79] [cursor=pointer]
+        - generic [ref=f2e80]:
+          - generic [ref=f2e84]:
+            - generic [ref=f2e85]: CCTV Installation
+            - generic [ref=f2e86]: Certified Field Engineers
+          - generic [ref=f2e87]: Live System
+    - generic [ref=f2e91]:
+      - generic [ref=f2e92]:
+        - heading "Our Services" [level=2] [ref=f2e93]
+        - paragraph [ref=f2e95]: End-to-end intelligent security architecture, commercial surveillance engineering, and round-the-clock technical operations.
+      - generic [ref=f2e96]:
+        - generic [ref=f2e97]:
+          - heading "Corporate Solutions" [level=3] [ref=f2e101]
+          - paragraph [ref=f2e102]: Turnkey commercial CCTV infrastructure, thermal perimeter protection, automated access gates, and concealed cabling for enterprise premises.
+          - link "Learn More" [ref=f2e103] [cursor=pointer]:
+            - /url: "#services"
+        - generic [ref=f2e107]:
+          - heading "Call Center Solutions" [level=3] [ref=f2e111]
+          - paragraph [ref=f2e112]: 24/7 dedicated support desk, proactive telemetry health diagnostics, immediate replacement inventory, and guaranteed 2-hour technician dispatch.
+          - link "Learn More" [ref=f2e113] [cursor=pointer]:
+            - /url: "#contact"
+        - generic [ref=f2e117]:
+          - heading "Cloud Development" [level=3] [ref=f2e121]
+          - paragraph [ref=f2e122]: Multi-site unified cloud VMS, encrypted off-site cloud backups, AI license plate recognition (ANPR), and mobile biometric event triggers.
+          - link "Learn More" [ref=f2e123] [cursor=pointer]:
+            - /url: "#contact"
+    - generic [ref=f2e128]:
+      - generic [ref=f2e129]:
+        - heading "Why Choose Us" [level=2] [ref=f2e130]
+        - paragraph [ref=f2e132]: Leading corporate enterprises and organizations rely on our certified security engineering, speed, and precision.
+      - generic [ref=f2e133]:
+        - generic [ref=f2e134]:
+          - generic [ref=f2e135]:
+            - generic [ref=f2e136]: "01"
+            - heading "High Quality Hardware" [level=3] [ref=f2e137]
+          - paragraph [ref=f2e138]: Enterprise Sony Starvis optical sensors, IP67 weatherproof rating, and vandal-resistant IK10 metal housings engineered for harsh industrial environments.
+        - generic [ref=f2e139]:
+          - generic [ref=f2e140]:
+            - generic [ref=f2e141]: "02"
+            - heading "Dedicated 24/7 Support" [level=3] [ref=f2e142]
+          - paragraph [ref=f2e143]: Round-the-clock remote network diagnostics and dedicated certified field service engineers on call with a guaranteed 2-hour emergency site dispatch SLA.
+        - generic [ref=f2e144]:
+          - generic [ref=f2e145]:
+            - generic [ref=f2e146]: "03"
+            - heading "30-Day Money-back Guarantee" [level=3] [ref=f2e147]
+          - paragraph [ref=f2e148]: Uncompromising commitment to video clarity and uptime. 30-day complete satisfaction guarantee and hassle-free immediate hardware replacements.
+        - generic [ref=f2e149]:
+          - generic [ref=f2e150]:
+            - generic [ref=f2e151]: "04"
+            - heading "Agile and Fast Working Style" [level=3] [ref=f2e152]
+          - paragraph [ref=f2e153]: Comprehensive site survey completed within 24 hours, structured CAD wiring plans, and fast concealed cabling execution with zero workplace disruption.
+        - generic [ref=f2e154]:
+          - generic [ref=f2e155]:
+            - generic [ref=f2e156]: "05"
+            - heading "Complimentary Mobile Clients" [level=3] [ref=f2e157]
+          - paragraph [ref=f2e158]: Feature-rich iOS, Android, and desktop monitoring clients with instant AI push notifications included lifetime with zero recurring monthly subscription fees.
+        - generic [ref=f2e159]:
+          - generic [ref=f2e160]:
+            - generic [ref=f2e161]: "06"
+            - heading "High Level of Usability" [level=3] [ref=f2e162]
+          - paragraph [ref=f2e163]: Intuitive touchscreen-friendly NVR interfaces, AI human and vehicle smart search filters, instant playback timeline scrubbing, and single-click video evidence export.
+    - generic [ref=f2e166]:
+      - generic [ref=f2e168]:
+        - generic [ref=f2e170]: 10+
+        - generic [ref=f2e171]: Years OfExperience
+      - generic [ref=f2e172]:
+        - generic [ref=f2e173]:
+          - generic [ref=f2e174]:
+            - generic [ref=f2e175]: 2K+
+            - generic [ref=f2e176]: Installations Done
+            - paragraph [ref=f2e177]: Enterprise AI video surveillance projects deployed across corporations & institutions.
+          - generic [ref=f2e178]:
+            - generic [ref=f2e179]: 40+
+            - generic [ref=f2e180]: Consultants
+            - paragraph [ref=f2e181]: Certified CCTV engineers and network specialists on standby.
+          - generic [ref=f2e182]:
+            - generic [ref=f2e183]: 160+
+            - generic [ref=f2e184]: Employers
+            - paragraph [ref=f2e185]: Active commercial enterprise accounts and government installations.
+        - generic [ref=f2e186]: We pride ourselves on reliable installations, strict SLA adherence, and precision security engineering.
+    - generic [ref=f2e189]:
+      - generic [ref=f2e190]:
+        - generic [ref=f2e191]: Get In Touch
+        - heading "Consult with our Certified Security Engineers" [level=2] [ref=f2e193]
+        - paragraph [ref=f2e194]: Schedule a comprehensive on-site survey, request custom enterprise quotations, or ask about our annual maintenance contracts (AMC).
+        - generic [ref=f2e195]:
+          - generic [ref=f2e201]:
+            - heading "Corporate Headquarters" [level=4] [ref=f2e202]
+            - paragraph [ref=f2e203]: Plot No.553, Lig-1, 27th Street, Tamil Nadu Housing Board, Avadi, Chennai-600054.
+          - generic [ref=f2e208]:
+            - heading "Direct Support Hotline" [level=4] [ref=f2e209]
+            - paragraph [ref=f2e210]:
+              - link "+91 96772 57774" [ref=f2e211] [cursor=pointer]:
+                - /url: tel:+919677257774
+          - generic [ref=f2e216]:
+            - heading "Email Inquiries" [level=4] [ref=f2e217]
+            - paragraph [ref=f2e218]:
+              - link "precisionitsystem@gmail.com" [ref=f2e219] [cursor=pointer]:
+                - /url: mailto:precisionitsystem@gmail.com
+          - generic [ref=f2e220]:
+            - generic [ref=f2e221]: GST
+            - generic [ref=f2e222]:
+              - heading "GSTIN" [level=4] [ref=f2e223]
+              - paragraph [ref=f2e224]: 33AHLPI3531N1Z8
+      - generic [ref=f2e228]:
+        - generic [ref=f2e229]:
+          - generic [ref=f2e230]: Free On-Site Audit
+          - generic [ref=f2e231]: Guaranteed 2-Hour Response
+        - generic [ref=f2e232]:
+          - heading "Request a Fast Proposal / Site Audit" [level=3] [ref=f2e233]
+          - paragraph [ref=f2e234]: Click the button below to provide your contact info and project scope. Our certified engineers will assess your facility and deliver an itemized estimate.
+        - generic [ref=f2e235]:
+          - generic [ref=f2e240]:
+            - generic [ref=f2e241]: 2-Hour Dispatch
+            - generic [ref=f2e242]: Fast engineer call
+          - generic [ref=f2e247]:
+            - generic [ref=f2e248]: Free Site Survey
+            - generic [ref=f2e249]: Zero service cost
+          - generic [ref=f2e254]:
+            - generic [ref=f2e255]: CAD Blueprint
+            - generic [ref=f2e256]: Wiring schematics
+        - button "Request a Fast Proposal / Site Audit" [ref=f2e257] [cursor=pointer]
+  - contentinfo [ref=f2e261]:
+    - generic [ref=f2e262]:
+      - generic [ref=f2e263]:
+        - generic [ref=f2e264]:
+          - img "Precision IT Systems" [ref=f2e265]
+          - paragraph [ref=f2e266]: Security & AI surveillance
+          - paragraph [ref=f2e267]: Leading provider of enterprise AI video surveillance, smart security architecture, and mission-critical 24/7 maintenance engineering across modern premises.
+        - generic [ref=f2e269]:
+          - heading "About" [level=4] [ref=f2e270]
+          - list [ref=f2e271]:
+            - listitem [ref=f2e272]:
+              - link "About Us" [ref=f2e273] [cursor=pointer]:
+                - /url: "#about"
+            - listitem [ref=f2e274]:
+              - link "Corporate Team" [ref=f2e275] [cursor=pointer]:
+                - /url: "#why-us"
+            - listitem [ref=f2e276]:
+              - link "Careers & Jobs" [ref=f2e277] [cursor=pointer]:
+                - /url: "#contact"
+            - listitem [ref=f2e278]:
+              - link "Client Testimonials" [ref=f2e279] [cursor=pointer]:
+                - /url: "#contact"
+            - listitem [ref=f2e280]:
+              - link "Certifications" [ref=f2e281] [cursor=pointer]:
+                - /url: "#why-us"
+        - generic [ref=f2e282]:
+          - heading "Services" [level=4] [ref=f2e283]
+          - list [ref=f2e284]:
+            - listitem [ref=f2e285]:
+              - link "Corporate Solutions" [ref=f2e286] [cursor=pointer]:
+                - /url: "#services"
+            - listitem [ref=f2e287]:
+              - link "Call Center Support" [ref=f2e288] [cursor=pointer]:
+                - /url: "#services"
+            - listitem [ref=f2e289]:
+              - link "Cloud Development" [ref=f2e290] [cursor=pointer]:
+                - /url: "#services"
+            - listitem [ref=f2e291]:
+              - link "4K AI Camera Setup" [ref=f2e292] [cursor=pointer]:
+                - /url: "#services"
+            - listitem [ref=f2e293]:
+              - link "Preventive AMC Plans" [ref=f2e294] [cursor=pointer]:
+                - /url: "#contact"
+        - generic [ref=f2e295]:
+          - heading "Contact Us" [level=4] [ref=f2e296]
+          - list [ref=f2e297]:
+            - listitem [ref=f2e298]:
+              - generic [ref=f2e302]: Plot No.553, Lig-1, 27th St, TNHB, Avadi, Chennai-600054
+            - listitem [ref=f2e303]:
+              - link "precisionitsystem@gmail.com" [ref=f2e306] [cursor=pointer]:
+                - /url: mailto:precisionitsystem@gmail.com
+            - listitem [ref=f2e307]:
+              - link "+91 96772 57774" [ref=f2e310] [cursor=pointer]:
+                - /url: tel:+919677257774
+            - listitem [ref=f2e311]:
+              - generic [ref=f2e312]: "GST:"
+              - generic [ref=f2e313]: 33AHLPI3531N1Z8
+      - paragraph [ref=f2e315]: © 2026 Precision IT Systems - All Rights Reserved. Smart AI CCTV Cameras & Enterprise Security Solutions.

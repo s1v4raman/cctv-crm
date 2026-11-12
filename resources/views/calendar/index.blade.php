@@ -181,7 +181,7 @@
              Workers must NOT see Overall tabs (server-side gated)
              ══════════════════════════════════════════════════════════════ --}}
         <div class="crm-tab-container">
-            <div class="flex items-center gap-8 -mb-px overflow-x-auto scrollbar-none">
+            <div class="flex items-center flex-wrap sm:flex-nowrap gap-x-4 gap-y-1 sm:gap-8 -mb-px no-scrollbar">
                 
                 {{-- 1. Overall Calendar --}}
                 @if(!$isWorker)

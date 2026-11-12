@@ -1,0 +1,166 @@
+- generic [active] [ref=f9e1]:
+  - link "Skip to main content" [ref=f9e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - generic [ref=f9e3]:
+    - complementary [ref=f9e5]:
+      - generic [ref=f9e6]:
+        - link [ref=f9e7] [cursor=pointer]:
+          - /url: http://127.0.0.1:8001/dashboard
+          - img "Precision IT Systems" [ref=f9e9]
+        - button "Close menu" [ref=f9e10] [cursor=pointer]
+      - navigation [ref=f9e13]:
+        - generic [ref=f9e14]:
+          - generic [ref=f9e15]: Overview
+          - generic [ref=f9e16]:
+            - link "Dashboard" [ref=f9e17] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/dashboard
+            - link "Calendar & Dispatch" [ref=f9e22] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/calendar
+        - generic [ref=f9e27]:
+          - generic [ref=f9e28]: Sales & Pipeline
+          - generic [ref=f9e29]:
+            - link "Leads & Inquiries" [ref=f9e30] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/leads
+            - link "Site Surveys" [ref=f9e35] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/site-surveys
+            - link "Deals & Quotations" [ref=f9e40] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/quotations
+        - generic [ref=f9e45]:
+          - generic [ref=f9e46]: Field Operations
+          - generic [ref=f9e47]:
+            - link "Projects & Sites" [ref=f9e48] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/projects
+            - link "Installation Sites" [ref=f9e53] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/sites
+            - link "Workers & Daily Wages" [ref=f9e58] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/workers
+            - link "Worker Attendance" [ref=f9e65] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/workers/attendance
+            - link "Weekly wages" [ref=f9e69] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/wages
+            - link "Ready to Invoice (DCs)" [ref=f9e74] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/documents/to-invoice
+            - link "Tasks & Field Jobs" [ref=f9e79] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/jobs
+            - link "Cameras & Assets" [ref=f9e83] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/equipment
+        - generic [ref=f9e88]:
+          - generic [ref=f9e89]: Inventory & Procurement
+          - generic [ref=f9e90]:
+            - link "Products & Pricing" [ref=f9e91] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/products
+            - link "Purchase Orders (PO)" [ref=f9e98] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/purchase-orders
+            - link "Suppliers & Vendors" [ref=f9e103] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/suppliers
+        - generic [ref=f9e108]:
+          - generic [ref=f9e109]: Workspace
+          - link "Employees" [ref=f9e111] [cursor=pointer]:
+            - /url: http://127.0.0.1:8001/employee-workforce
+        - generic [ref=f9e116]:
+          - generic [ref=f9e117]: Finance
+          - link "Finance" [ref=f9e119] [cursor=pointer]:
+            - /url: http://127.0.0.1:8001/finance-accounting
+        - generic [ref=f9e124]:
+          - generic [ref=f9e125]: Analytics & Automation
+          - generic [ref=f9e126]:
+            - link "Alerts" [ref=f9e127] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/alerts
+            - link "Analytics" [ref=f9e132] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/analytics
+            - link "User Accounts & Settings" [ref=f9e138] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/admin/users
+      - generic [ref=f9e146]:
+        - generic [ref=f9e147]:
+          - generic [ref=f9e148]: S
+          - generic [ref=f9e149]:
+            - generic [ref=f9e150]: Sivaraman
+            - generic [ref=f9e151]: Administrator
+        - generic [ref=f9e152]:
+          - link "Profile Settings" [ref=f9e153] [cursor=pointer]:
+            - /url: http://127.0.0.1:8001/profile
+          - button "Log Out" [ref=f9e159] [cursor=pointer]
+    - generic [ref=f9e162]:
+      - banner [ref=f9e163]:
+        - generic [ref=f9e164]:
+          - button "Toggle navigation menu" [ref=f9e165] [cursor=pointer]
+          - generic [ref=f9e168]: Site Surveys
+        - generic [ref=f9e169]:
+          - button "Search" [ref=f9e170] [cursor=pointer]
+          - button "Toggle dark/light mode" [ref=f9e173] [cursor=pointer]
+          - button "View notifications" [ref=f9e175] [cursor=pointer]:
+            - generic [ref=f9e178]: "2"
+          - button "Account menu for Sivaraman" [ref=f9e180] [cursor=pointer]:
+            - generic [ref=f9e181]: S
+      - main [ref=f9e184]:
+        - generic [ref=f9e186]:
+          - generic [ref=f9e187]:
+            - generic [ref=f9e189]:
+              - link "All Surveys" [ref=f9e190] [cursor=pointer]:
+                - /url: http://127.0.0.1:8001/site-surveys
+              - link "Pending Surveys" [ref=f9e192] [cursor=pointer]:
+                - /url: http://127.0.0.1:8001/site-surveys?status=pending
+              - link "Completed Surveys" [ref=f9e194] [cursor=pointer]:
+                - /url: http://127.0.0.1:8001/site-surveys?status=completed
+              - link "Cancelled Surveys" [ref=f9e196] [cursor=pointer]:
+                - /url: http://127.0.0.1:8001/site-surveys?status=cancelled
+            - generic [ref=f9e198]:
+              - generic [ref=f9e199]:
+                - generic [ref=f9e200]: 0 site surveys selected
+                - button "Clear" [ref=f9e201] [cursor=pointer]
+                - button "Mass Email" [ref=f9e202] [cursor=pointer]
+                - link "Export" [ref=f9e203] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8001/list-actions/surveys/export?
+                - button "Mass Delete" [ref=f9e204] [cursor=pointer]
+              - generic [ref=f9e205]:
+                - button "Filter" [ref=f9e206] [cursor=pointer]
+                - button "Sort" [ref=f9e211] [cursor=pointer]
+              - generic [ref=f9e215]:
+                - generic [ref=f9e217]:
+                  - link "New Survey" [ref=f9e218] [cursor=pointer]:
+                    - /url: http://127.0.0.1:8001/site-surveys/create
+                  - button "More ways to new survey" [ref=f9e219] [cursor=pointer]
+                - button "More actions" [ref=f9e222] [cursor=pointer]
+          - generic [ref=f9e229]:
+            - table [ref=f9e231]:
+              - rowgroup [ref=f9e232]:
+                - row [ref=f9e233]:
+                  - columnheader "Select all on this page" [ref=f9e234]:
+                    - checkbox "Select all on this page" [ref=f9e235] [cursor=pointer]
+                  - columnheader "Customer" [ref=f9e236]
+                  - columnheader "Date" [ref=f9e237]
+                  - columnheader "Address" [ref=f9e238]
+                  - columnheader "Technician" [ref=f9e239]
+                  - columnheader "Cameras" [ref=f9e240]
+                  - columnheader "Status" [ref=f9e241]
+                  - columnheader "Choose columns" [ref=f9e242]:
+                    - button "Choose columns" [ref=f9e244] [cursor=pointer]
+              - rowgroup [ref=f9e249]:
+                - row [ref=f9e250]:
+                  - cell [ref=f9e251]:
+                    - text: No site surveys yet.
+                    - link "New Survey" [ref=f9e252] [cursor=pointer]:
+                      - /url: http://127.0.0.1:8001/site-surveys/create
+            - generic [ref=f9e253]:
+              - generic [ref=f9e254]:
+                - text: Total Records
+                - strong [ref=f9e255]: "0"
+              - generic [ref=f9e256]:
+                - combobox "Records per page" [ref=f9e258]:
+                  - option "10 Records Per Page"
+                  - option "20 Records Per Page" [selected]
+                  - option "50 Records Per Page"
+                  - option "100 Records Per Page"
+                - generic [ref=f9e259]: "0"
+  - navigation [ref=f9e267]:
+    - generic [ref=f9e268]:
+      - link "Home" [ref=f9e269] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/dashboard
+      - button "Modules" [ref=f9e273] [cursor=pointer]
+      - generic [ref=f9e277]:
+        - button "Quick actions" [ref=f9e278] [cursor=pointer]
+        - generic [ref=f9e281]: Create
+      - link "Roster" [ref=f9e282] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/attendance
+      - link "Profile" [ref=f9e286] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/profile

@@ -30,6 +30,50 @@
             </select>
         </x-slot>
 
+        <x-slot name="mobileCards">
+            @foreach($surveys as $survey)
+                <div class="p-3.5 space-y-2.5" :class="selected.includes({{ $survey->id }}) && 'bg-blue-50/40 dark:bg-blue-950/20'">
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="flex items-start gap-2.5 min-w-0">
+                            <input type="checkbox" value="{{ $survey->id }}" x-model.number="selected" aria-label="Select survey for {{ $survey->lead?->customer_name ?? $survey->id }}" class="mt-1 rounded">
+                            <div class="min-w-0">
+                                <a href="{{ route('site-surveys.show', $survey) }}" class="ld-name plain-link text-sm font-bold block truncate">{{ $survey->lead->customer_name ?? '—' }}</a>
+                                @if($survey->lead?->company_name)
+                                    <div class="text-xs text-slate-500 dark:text-slate-400 truncate">{{ $survey->lead->company_name }}</div>
+                                @endif
+                            </div>
+                        </div>
+                        <span class="shrink-0 px-2.5 py-0.5 rounded-full text-[11px] font-bold border {{ $survey->status === 'cancelled' ? 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-800' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700' }}">
+                            {{ $statuses[$survey->status] ?? ucfirst($survey->status) }}
+                        </span>
+                    </div>
+
+                    <div class="text-xs text-slate-600 dark:text-slate-300 space-y-1 pl-6">
+                        @if($survey->site_address ?: $survey->lead?->site_address)
+                            <div class="line-clamp-2">{{ $survey->site_address ?: $survey->lead->site_address }}</div>
+                        @endif
+                        <div class="flex items-center flex-wrap gap-x-3 gap-y-1 text-slate-500 dark:text-slate-400">
+                            @if($survey->survey_date)<span>Date: {{ $survey->survey_date->format('d/m/Y') }}</span>@endif
+                            @if($survey->surveyedBy?->name)<span>Tech: {{ $survey->surveyedBy->name }}</span>@endif
+                            @if($survey->camera_count_recommended !== null)<span>Cameras: {{ $survey->camera_count_recommended }}</span>@endif
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-end gap-2 pt-1 pl-6">
+                        <a href="{{ route('site-surveys.show', $survey) }}" class="ld-outline plain-link text-xs" style="min-height: 32px !important; padding: 4px 10px !important;">View</a>
+                        <a href="{{ route('site-surveys.edit', $survey) }}" class="ld-outline plain-link text-xs" style="min-height: 32px !important; padding: 4px 10px !important;">Edit</a>
+                        @if(auth()->user()->isAdmin())
+                            <form method="POST" action="{{ route('site-surveys.destroy', $survey) }}" data-confirm="Delete this survey and all photos?">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn-cancel text-xs" title="Delete" aria-label="Delete survey">Delete</button>
+                            </form>
+                        @endif
+                    </div>
+                </div>
+            @endforeach
+        </x-slot>
+
         <x-slot name="head">
             <th style="min-width: 220px">Customer</th>
             <th x-show="cols.date" style="min-width: 120px">Date</th>

@@ -1,0 +1,234 @@
+- generic [active] [ref=f7e1]:
+  - link "Skip to main content" [ref=f7e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - generic [ref=f7e3]:
+    - complementary [ref=f7e5]:
+      - generic [ref=f7e6]:
+        - link [ref=f7e7] [cursor=pointer]:
+          - /url: http://127.0.0.1:8001/dashboard
+          - img "Precision IT Systems" [ref=f7e9]
+        - button "Close menu" [ref=f7e10] [cursor=pointer]
+      - navigation [ref=f7e13]:
+        - generic [ref=f7e14]:
+          - generic [ref=f7e15]: Overview
+          - generic [ref=f7e16]:
+            - link "Dashboard" [ref=f7e17] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/dashboard
+            - link "Calendar & Dispatch" [ref=f7e22] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/calendar
+        - generic [ref=f7e27]:
+          - generic [ref=f7e28]: Sales & Pipeline
+          - generic [ref=f7e29]:
+            - link "Leads & Inquiries" [ref=f7e30] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/leads
+            - link "Site Surveys" [ref=f7e35] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/site-surveys
+            - link "Deals & Quotations" [ref=f7e40] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/quotations
+        - generic [ref=f7e45]:
+          - generic [ref=f7e46]: Field Operations
+          - generic [ref=f7e47]:
+            - link "Projects & Sites" [ref=f7e48] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/projects
+            - link "Installation Sites" [ref=f7e53] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/sites
+            - link "Workers & Daily Wages" [ref=f7e58] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/workers
+            - link "Worker Attendance" [ref=f7e65] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/workers/attendance
+            - link "Weekly wages" [ref=f7e69] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/wages
+            - link "Ready to Invoice (DCs)" [ref=f7e74] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/documents/to-invoice
+            - link "Tasks & Field Jobs" [ref=f7e79] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/jobs
+            - link "Cameras & Assets" [ref=f7e83] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/equipment
+        - generic [ref=f7e88]:
+          - generic [ref=f7e89]: Inventory & Procurement
+          - generic [ref=f7e90]:
+            - link "Products & Pricing" [ref=f7e91] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/products
+            - link "Purchase Orders (PO)" [ref=f7e98] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/purchase-orders
+            - link "Suppliers & Vendors" [ref=f7e103] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/suppliers
+        - generic [ref=f7e108]:
+          - generic [ref=f7e109]: Workspace
+          - link "Employees" [ref=f7e111] [cursor=pointer]:
+            - /url: http://127.0.0.1:8001/employee-workforce
+        - generic [ref=f7e116]:
+          - generic [ref=f7e117]: Finance
+          - link "Finance" [ref=f7e119] [cursor=pointer]:
+            - /url: http://127.0.0.1:8001/finance-accounting
+        - generic [ref=f7e124]:
+          - generic [ref=f7e125]: Analytics & Automation
+          - generic [ref=f7e126]:
+            - link "Alerts" [ref=f7e127] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/alerts
+            - link "Analytics" [ref=f7e132] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/analytics
+            - link "User Accounts & Settings" [ref=f7e138] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/admin/users
+      - generic [ref=f7e146]:
+        - generic [ref=f7e147]:
+          - generic [ref=f7e148]: S
+          - generic [ref=f7e149]:
+            - generic [ref=f7e150]: Sivaraman
+            - generic [ref=f7e151]: Administrator
+        - generic [ref=f7e152]:
+          - link "Profile Settings" [ref=f7e153] [cursor=pointer]:
+            - /url: http://127.0.0.1:8001/profile
+          - button "Log Out" [ref=f7e159] [cursor=pointer]
+    - generic [ref=f7e162]:
+      - banner [ref=f7e163]:
+        - generic [ref=f7e164]:
+          - button "Toggle navigation menu" [ref=f7e165] [cursor=pointer]
+          - generic [ref=f7e168]: Calendar and Tasks
+        - generic [ref=f7e169]:
+          - button "Search" [ref=f7e170] [cursor=pointer]
+          - button "Toggle dark/light mode" [ref=f7e173] [cursor=pointer]
+          - button "View notifications" [ref=f7e175] [cursor=pointer]:
+            - generic [ref=f7e178]: "2"
+          - button "Account menu for Sivaraman" [ref=f7e180] [cursor=pointer]:
+            - generic [ref=f7e181]: S
+      - main [ref=f7e184]:
+        - generic [ref=f7e185]:
+          - generic [ref=f7e187]:
+            - heading "Calendar and Tasks" [level=1] [ref=f7e189]
+            - generic [ref=f7e190]:
+              - button "Create Task" [ref=f7e191] [cursor=pointer]
+              - link "Schedule Survey" [ref=f7e192] [cursor=pointer]:
+                - /url: http://127.0.0.1:8001/site-surveys/create
+          - generic [ref=f7e193]:
+            - generic [ref=f7e195]:
+              - button "Overall Calendar" [ref=f7e196] [cursor=pointer]
+              - button "My Calendar" [ref=f7e197] [cursor=pointer]
+              - button "Overall Tasks" [ref=f7e198] [cursor=pointer]
+              - button "My Tasks" [ref=f7e199] [cursor=pointer]
+            - generic [ref=f7e200]:
+              - generic [ref=f7e201]:
+                - generic [ref=f7e202]:
+                  - generic [ref=f7e203]: Scheduled Operations
+                  - generic [ref=f7e204]: "2"
+                - generic [ref=f7e205]:
+                  - generic [ref=f7e206]: Scheduled Today
+                  - generic [ref=f7e207]: "0"
+                - generic [ref=f7e208]:
+                  - generic [ref=f7e209]: My Assigned Tasks
+                  - generic [ref=f7e210]: "0"
+                - generic [ref=f7e211]:
+                  - generic [ref=f7e212]: Pending Actions
+                  - generic [ref=f7e213]: "0"
+              - generic [ref=f7e214]:
+                - generic [ref=f7e215]:
+                  - textbox "Filter events" [ref=f7e217]:
+                    - /placeholder: Filter events...
+                  - combobox "Tech" [ref=f7e218] [cursor=pointer]:
+                    - option "All Assignees" [selected]
+                    - option "Charlie Davis (Worker)"
+                    - option "Marimuthu (Technician)"
+                    - option "Raju Kumar (Worker)"
+                    - option "Raman (Technician)"
+                    - option "Sankar (Staff)"
+                    - option "Sivaraman (Admin)"
+                    - option "Srinithish (Admin)"
+                    - option "Sugumar (Worker)"
+                    - option "Thiyagu (Worker)"
+                    - option "monish (Worker)"
+                    - option "sivaraman (Worker)"
+                    - option "அம்பானி (Worker)"
+                  - combobox "Status" [ref=f7e219] [cursor=pointer]:
+                    - option "All Statuses" [selected]
+                    - option "Pending"
+                    - option "In Progress"
+                    - option "Completed"
+                    - option "Rejected"
+                - generic [ref=f7e220]:
+                  - button "Month" [ref=f7e221] [cursor=pointer]
+                  - button "Week" [ref=f7e222] [cursor=pointer]
+                  - button "Agenda" [ref=f7e223] [cursor=pointer]
+              - generic [ref=f7e224]:
+                - generic [ref=f7e225]:
+                  - generic [ref=f7e226]:
+                    - generic [ref=f7e227]:
+                      - button "Prev" [ref=f7e228] [cursor=pointer]
+                      - button "Today" [ref=f7e232] [cursor=pointer]
+                      - button "Next" [ref=f7e233] [cursor=pointer]
+                    - heading "November 2026" [level=2] [ref=f7e237]
+                  - generic [ref=f7e238]:
+                    - generic [ref=f7e239]:
+                      - generic [ref=f7e240]: Mon
+                      - generic [ref=f7e241]: Tue
+                      - generic [ref=f7e242]: Wed
+                      - generic [ref=f7e243]: Thu
+                      - generic [ref=f7e244]: Fri
+                      - generic [ref=f7e245]: Sat
+                      - generic [ref=f7e246]: Sun
+                    - generic [ref=f7e247]:
+                      - generic [ref=f7e248]:
+                        - generic [ref=f7e249]: "26"
+                        - generic "Cable Tray & Conduit Backbone Installation (Prabhu)" [ref=f7e252] [cursor=pointer]
+                      - generic [ref=f7e254]: "27"
+                      - generic [ref=f7e257]: "28"
+                      - generic [ref=f7e260]: "29"
+                      - generic [ref=f7e263]: "30"
+                      - generic [ref=f7e266]: "31"
+                      - generic [ref=f7e269]: "1"
+                      - generic [ref=f7e272]: "2"
+                      - generic [ref=f7e275]: "3"
+                      - generic [ref=f7e278]: "4"
+                      - generic [ref=f7e281]:
+                        - generic [ref=f7e282]: "5"
+                        - generic "cat6 cabelling on the ground floor (Direct Client)" [ref=f7e285] [cursor=pointer]
+                      - generic [ref=f7e287]: "6"
+                      - generic [ref=f7e290]: "7"
+                      - generic [ref=f7e293]: "8"
+                      - generic [ref=f7e296]: "9"
+                      - generic [ref=f7e299]: "10"
+                      - generic [ref=f7e302]: "11"
+                      - generic [ref=f7e305]: "12"
+                      - generic [ref=f7e308]: "13"
+                      - generic [ref=f7e311]: "14"
+                      - generic [ref=f7e314]: "15"
+                      - generic [ref=f7e317]: "16"
+                      - generic [ref=f7e320]: "17"
+                      - generic [ref=f7e323]: "18"
+                      - generic [ref=f7e326]: "19"
+                      - generic [ref=f7e329]: "20"
+                      - generic [ref=f7e332]: "21"
+                      - generic [ref=f7e335]: "22"
+                      - generic [ref=f7e338]: "23"
+                      - generic [ref=f7e341]: "24"
+                      - generic [ref=f7e344]: "25"
+                      - generic [ref=f7e347]: "26"
+                      - generic [ref=f7e350]: "27"
+                      - generic [ref=f7e353]: "28"
+                      - generic [ref=f7e356]: "29"
+                - generic [ref=f7e360]:
+                  - generic [ref=f7e362]:
+                    - heading "Today's Schedule" [level=3] [ref=f7e363]
+                    - paragraph [ref=f7e364]: Thursday, 12 Nov 2026
+                  - generic [ref=f7e365]: No items scheduled for today.
+  - navigation [ref=f7e367]:
+    - generic [ref=f7e368]:
+      - link "Home" [ref=f7e369] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/dashboard
+      - button "Modules" [ref=f7e373] [cursor=pointer]
+      - generic [ref=f7e377]:
+        - button "Quick actions" [ref=f7e378] [cursor=pointer]
+        - generic [ref=f7e381]: Create
+      - link "Roster" [ref=f7e382] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/attendance
+      - link "Profile" [ref=f7e386] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/profile
+  - generic [ref=f7e390]:
+    - img "App Icon" [ref=f7e391]
+    - generic [ref=f7e392]:
+      - generic [ref=f7e393]:
+        - generic [ref=f7e394]: Precision IT Field App
+        - generic [ref=f7e395]: PWA
+      - generic [ref=f7e396]: Install to home screen for 1-tap offline use
+    - generic [ref=f7e397]:
+      - button "Install" [ref=f7e398] [cursor=pointer]
+      - button "Dismiss" [ref=f7e399] [cursor=pointer]

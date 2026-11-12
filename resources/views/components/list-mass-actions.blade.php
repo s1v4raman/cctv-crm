@@ -16,14 +16,16 @@
 
 @if($mass && $mass['pick'])
     @if($part === 'bar')
-        <div class="flex items-center gap-3 flex-wrap" x-show="selected.length > 0" x-cloak>
-            <span class="font-semibold" x-text="selected.length + (selected.length === 1 ? ' {{ $noun }} selected' : ' {{ $nouns }} selected')"></span>
-            <button type="button" class="text-sm underline" style="color: var(--ld-muted)" @click="selected = []">Clear</button>
-            @if($mass['fields'])<button type="button" class="ld-outline" @click="$dispatch('list-mass', 'update')">Mass Update</button>@endif
-            @if($mass['email'])<button type="button" class="ld-outline" @click="$dispatch('list-mass', 'email')">Mass Email</button>@endif
-            @if($exportUrl)<a href="{{ $exportUrl }}" :href="'{{ $exportUrl }}?' + selected.map((id) => 'ids[]=' + id).join('&')" class="ld-outline plain-link">Export</a>@endif
-            @if($mass['delete'])<button type="button" class="ld-outline ld-danger" @click="$dispatch('list-mass', 'delete')">Mass Delete</button>@endif
-        </div>
+        <template x-if="selected.length > 0">
+            <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
+                <span class="font-semibold" x-text="selected.length + (selected.length === 1 ? ' {{ $noun }} selected' : ' {{ $nouns }} selected')"></span>
+                <button type="button" class="text-sm underline" style="color: var(--ld-muted)" @click="selected = []">Clear</button>
+                @if($mass['fields'])<button type="button" class="ld-outline" @click="$dispatch('list-mass', 'update')">Mass Update</button>@endif
+                @if($mass['email'])<button type="button" class="ld-outline" @click="$dispatch('list-mass', 'email')">Mass Email</button>@endif
+                @if($exportUrl)<a href="{{ $exportUrl }}" :href="'{{ $exportUrl }}?' + selected.map((id) => 'ids[]=' + id).join('&')" class="ld-outline plain-link">Export</a>@endif
+                @if($mass['delete'])<button type="button" class="ld-outline ld-danger" @click="$dispatch('list-mass', 'delete')">Mass Delete</button>@endif
+            </div>
+        </template>
 
     @elseif($part === 'menu')
         @if($mass['delete'])<button type="button" @click="menu = null; $dispatch('list-mass', 'delete')">Mass Delete</button>@endif

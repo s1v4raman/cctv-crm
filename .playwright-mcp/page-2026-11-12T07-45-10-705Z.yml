@@ -1,0 +1,285 @@
+- generic [active] [ref=f6e1]:
+  - link "Skip to main content" [ref=f6e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - generic [ref=f6e3]:
+    - complementary [ref=f6e5]:
+      - generic [ref=f6e6]:
+        - link [ref=f6e7] [cursor=pointer]:
+          - /url: http://127.0.0.1:8001/dashboard
+          - img "Precision IT Systems" [ref=f6e9]
+        - button "Close menu" [ref=f6e10] [cursor=pointer]
+      - navigation [ref=f6e13]:
+        - generic [ref=f6e14]:
+          - generic [ref=f6e15]: Overview
+          - generic [ref=f6e16]:
+            - link "Dashboard" [ref=f6e17] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/dashboard
+            - link "Calendar & Dispatch" [ref=f6e22] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/calendar
+        - generic [ref=f6e27]:
+          - generic [ref=f6e28]: Sales & Pipeline
+          - generic [ref=f6e29]:
+            - link "Leads & Inquiries" [ref=f6e30] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/leads
+            - link "Site Surveys" [ref=f6e35] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/site-surveys
+            - link "Deals & Quotations" [ref=f6e40] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/quotations
+        - generic [ref=f6e45]:
+          - generic [ref=f6e46]: Field Operations
+          - generic [ref=f6e47]:
+            - link "Projects & Sites" [ref=f6e48] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/projects
+            - link "Installation Sites" [ref=f6e53] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/sites
+            - link "Workers & Daily Wages" [ref=f6e58] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/workers
+            - link "Worker Attendance" [ref=f6e65] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/workers/attendance
+            - link "Weekly wages" [ref=f6e69] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/wages
+            - link "Ready to Invoice (DCs)" [ref=f6e74] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/documents/to-invoice
+            - link "Tasks & Field Jobs" [ref=f6e79] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/jobs
+            - link "Cameras & Assets" [ref=f6e83] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/equipment
+        - generic [ref=f6e88]:
+          - generic [ref=f6e89]: Inventory & Procurement
+          - generic [ref=f6e90]:
+            - link "Products & Pricing" [ref=f6e91] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/products
+            - link "Purchase Orders (PO)" [ref=f6e98] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/purchase-orders
+            - link "Suppliers & Vendors" [ref=f6e103] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/suppliers
+        - generic [ref=f6e108]:
+          - generic [ref=f6e109]: Workspace
+          - link "Employees" [ref=f6e111] [cursor=pointer]:
+            - /url: http://127.0.0.1:8001/employee-workforce
+        - generic [ref=f6e116]:
+          - generic [ref=f6e117]: Finance
+          - link "Finance" [ref=f6e119] [cursor=pointer]:
+            - /url: http://127.0.0.1:8001/finance-accounting
+        - generic [ref=f6e124]:
+          - generic [ref=f6e125]: Analytics & Automation
+          - generic [ref=f6e126]:
+            - link "Alerts" [ref=f6e127] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/alerts
+            - link "Analytics" [ref=f6e132] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/analytics
+            - link "User Accounts & Settings" [ref=f6e138] [cursor=pointer]:
+              - /url: http://127.0.0.1:8001/admin/users
+      - generic [ref=f6e146]:
+        - generic [ref=f6e147]:
+          - generic [ref=f6e148]: S
+          - generic [ref=f6e149]:
+            - generic [ref=f6e150]: Sivaraman
+            - generic [ref=f6e151]: Administrator
+        - generic [ref=f6e152]:
+          - link "Profile Settings" [ref=f6e153] [cursor=pointer]:
+            - /url: http://127.0.0.1:8001/profile
+          - button "Log Out" [ref=f6e159] [cursor=pointer]
+    - generic [ref=f6e162]:
+      - banner [ref=f6e163]:
+        - generic [ref=f6e164]:
+          - button "Toggle navigation menu" [ref=f6e165] [cursor=pointer]
+          - generic [ref=f6e168]: Dashboard
+        - generic [ref=f6e169]:
+          - button "Search" [ref=f6e170] [cursor=pointer]
+          - button "Toggle dark/light mode" [ref=f6e173] [cursor=pointer]
+          - button "View notifications" [ref=f6e175] [cursor=pointer]:
+            - generic [ref=f6e178]: "2"
+          - button "Account menu for Sivaraman" [ref=f6e180] [cursor=pointer]:
+            - generic [ref=f6e181]: S
+      - main [ref=f6e184]:
+        - generic [ref=f6e186]:
+          - generic [ref=f6e187]:
+            - generic [ref=f6e188]:
+              - heading "Relationship first. Growth follows." [level=1] [ref=f6e189]
+              - paragraph [ref=f6e190]: Good morning, Sivaraman. Here's where your team stands today.
+            - generic [ref=f6e191]:
+              - button "This quarter" [ref=f6e193] [cursor=pointer]
+              - link "New deal" [ref=f6e199] [cursor=pointer]:
+                - /url: http://127.0.0.1:8001/leads/create
+          - generic [ref=f6e203]:
+            - generic [ref=f6e204]:
+              - generic [ref=f6e205]:
+                - generic [ref=f6e206]: Revenue won
+                - button "2 deals closed this quarter" [ref=f6e207]
+              - generic [ref=f6e211]: ₹58,032
+              - generic [ref=f6e216]:
+                - generic [ref=f6e217]: +18.6% vs. last quarter
+                - paragraph [ref=f6e221]: 2 deals closed this quarter
+            - generic [ref=f6e222]:
+              - generic [ref=f6e223]:
+                - generic [ref=f6e224]: Open pipeline
+                - button "4 active projects & opportunities" [ref=f6e225]
+              - generic [ref=f6e229]: ₹48,600
+              - generic [ref=f6e234]:
+                - generic [ref=f6e235]: +12.4% active pipeline
+                - paragraph [ref=f6e239]: 4 active projects & opportunities
+            - generic [ref=f6e240]:
+              - generic [ref=f6e241]:
+                - generic [ref=f6e242]: Win rate
+                - button "1 won of 1 opportunities" [ref=f6e243]
+              - generic [ref=f6e247]: 100%
+              - generic [ref=f6e252]:
+                - generic [ref=f6e253]: +4.2 pts vs. last quarter
+                - paragraph [ref=f6e257]: 1 won of 1 opportunities
+            - generic [ref=f6e258]:
+              - generic [ref=f6e259]:
+                - generic [ref=f6e260]: Average deal size
+                - button "Across accepted project scopes" [ref=f6e261]
+              - generic [ref=f6e265]: ₹29,016
+              - generic [ref=f6e270]:
+                - generic [ref=f6e271]: +8.2% across opportunities
+                - paragraph [ref=f6e275]: Across accepted project scopes
+          - generic [ref=f6e276]:
+            - generic [ref=f6e277]:
+              - generic [ref=f6e278]:
+                - generic [ref=f6e279]:
+                  - generic [ref=f6e280]:
+                    - heading "Pipeline overview" [level=2] [ref=f6e281]
+                    - paragraph [ref=f6e282]: A clear view of your next opportunities.
+                  - link "View pipeline" [ref=f6e283] [cursor=pointer]:
+                    - /url: http://127.0.0.1:8001/quotations
+                - generic [ref=f6e287]:
+                  - generic [ref=f6e288]: ₹48,600
+                  - generic [ref=f6e289]: across 4 open deals
+                - generic [ref=f6e290]:
+                  - 'generic "Qualified: ₹12,150" [ref=f6e291]'
+                  - 'generic "Discovery: ₹12,150" [ref=f6e292]'
+                  - 'generic "Proposal: ₹6,075" [ref=f6e293]'
+                  - 'generic "Negotiation: ₹18,225" [ref=f6e294]'
+                - generic [ref=f6e295]:
+                  - generic [ref=f6e296]:
+                    - generic [ref=f6e297]: Qualified
+                    - generic [ref=f6e300]: ₹12,150
+                    - generic [ref=f6e301]: 2 deals
+                  - generic [ref=f6e302]:
+                    - generic [ref=f6e303]: Discovery
+                    - generic [ref=f6e306]: ₹12,150
+                    - generic [ref=f6e307]: 2 deals
+                  - generic [ref=f6e308]:
+                    - generic [ref=f6e309]: Proposal
+                    - generic [ref=f6e312]: ₹6,075
+                    - generic [ref=f6e313]: 1 deals
+                  - generic [ref=f6e314]:
+                    - generic [ref=f6e315]: Negotiation
+                    - generic [ref=f6e318]: ₹18,225
+                    - generic [ref=f6e319]: 3 deals
+                - generic [ref=f6e320]:
+                  - generic [ref=f6e321]: ⚡
+                  - generic [ref=f6e322]: 4 active projects worth ₹48,600 are currently in operations & site deployment.
+              - generic [ref=f6e323]:
+                - generic [ref=f6e324]:
+                  - generic [ref=f6e325]:
+                    - heading "Projects & Deals to focus on 4" [level=2] [ref=f6e326]:
+                      - generic [ref=f6e327]: Projects & Deals to focus on
+                      - generic [ref=f6e328]: "4"
+                    - generic [ref=f6e329]:
+                      - button "All (4)" [ref=f6e330] [cursor=pointer]
+                      - button "Needs attention" [ref=f6e331] [cursor=pointer]
+                      - button "My projects" [ref=f6e332] [cursor=pointer]
+                  - link "View all projects" [ref=f6e334] [cursor=pointer]:
+                    - /url: http://127.0.0.1:8001/projects
+                - table [ref=f6e339]:
+                  - rowgroup [ref=f6e340]:
+                    - row [ref=f6e341]:
+                      - columnheader [ref=f6e342]:
+                        - checkbox [ref=f6e343] [cursor=pointer]
+                      - columnheader "Project / Customer" [ref=f6e344]
+                      - columnheader "Value" [ref=f6e345]
+                      - columnheader "Stage" [ref=f6e346]
+                      - columnheader "Lead Tech" [ref=f6e347]
+                      - columnheader "Next step" [ref=f6e348]
+                      - columnheader [ref=f6e349]
+                  - rowgroup [ref=f6e350]:
+                    - row [ref=f6e351]:
+                      - cell [ref=f6e352]:
+                        - checkbox [ref=f6e353] [cursor=pointer]
+                      - cell "S sample PRJ-2026-0004 • A.C.S. Medical College" [ref=f6e354]:
+                        - generic [ref=f6e355]:
+                          - generic [ref=f6e356]: S
+                          - generic [ref=f6e357]:
+                            - link "sample" [ref=f6e358] [cursor=pointer]:
+                              - /url: http://127.0.0.1:8001/projects/4
+                            - generic [ref=f6e359]: PRJ-2026-0004 • A.C.S. Medical College
+                      - cell "₹0" [ref=f6e360]
+                      - cell "Pending Approval" [ref=f6e361]
+                      - cell "ADMIN" [ref=f6e363]
+                      - cell "Pending admin approval ⚠️ Needs action" [ref=f6e365]:
+                        - generic [ref=f6e366]: Pending admin approval
+                        - generic [ref=f6e367]:
+                          - generic [ref=f6e368]: ⚠️
+                          - generic [ref=f6e369]: Needs action
+                      - cell [ref=f6e370]:
+                        - link [ref=f6e371] [cursor=pointer]:
+                          - /url: http://127.0.0.1:8001/projects/4
+                - generic [ref=f6e374]:
+                  - generic [ref=f6e375]: Showing 4 active project records
+                  - generic [ref=f6e376]: Page 1 of 1
+            - generic [ref=f6e378]:
+              - generic [ref=f6e379]:
+                - generic [ref=f6e380]:
+                  - heading "Upcoming activity" [level=2] [ref=f6e381]
+                  - link "+" [ref=f6e382] [cursor=pointer]:
+                    - /url: http://127.0.0.1:8001/calendar
+                - generic [ref=f6e383]:
+                  - generic [ref=f6e384]: Today, Thursday, Nov 12
+                  - generic [ref=f6e385]: 2 scheduled
+                - generic [ref=f6e386]:
+                  - generic [ref=f6e387]:
+                    - generic [ref=f6e389]:
+                      - generic [ref=f6e390]: 09:30 AM
+                      - generic [ref=f6e391]: 📄
+                      - heading "JOB-20261102-0002 Installation" [level=3] [ref=f6e392]
+                    - generic [ref=f6e393]: nandhini
+                    - generic [ref=f6e394]:
+                      - generic [ref=f6e395]: Pending • Field Job
+                      - link "View details" [ref=f6e396] [cursor=pointer]:
+                        - /url: http://127.0.0.1:8001/technician/dashboard
+                  - generic [ref=f6e400]:
+                    - generic [ref=f6e402]:
+                      - generic [ref=f6e403]: 09:30 AM
+                      - generic [ref=f6e404]: 📄
+                      - heading "JOB-20261031-0001 Installation" [level=3] [ref=f6e405]
+                    - generic [ref=f6e406]: Sivaraman
+                    - generic [ref=f6e407]:
+                      - generic [ref=f6e408]: Pending • Field Job
+                      - link "View details" [ref=f6e409] [cursor=pointer]:
+                        - /url: http://127.0.0.1:8001/technician/dashboard
+                - link "View full calendar" [ref=f6e414] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8001/calendar
+              - generic [ref=f6e418]:
+                - generic [ref=f6e419]:
+                  - heading "A strong quarter, so far." [level=2] [ref=f6e420]
+                  - generic [ref=f6e421]: 🏳
+                - generic [ref=f6e422]: ₹58,032 of ₹100,000
+                - generic [ref=f6e426]:
+                  - generic [ref=f6e427]: 58% of quarterly target • Q4 2026
+                  - paragraph [ref=f6e428]: Just ₹41,968 to go. Your active project deliveries will get you there.
+                - generic [ref=f6e429]: All changes saved • Updated just now
+  - navigation [ref=f6e434]:
+    - generic [ref=f6e435]:
+      - link "Home" [ref=f6e436] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/dashboard
+      - button "Modules" [ref=f6e440] [cursor=pointer]
+      - generic [ref=f6e444]:
+        - button "Quick actions" [ref=f6e445] [cursor=pointer]
+        - generic [ref=f6e448]: Create
+      - link "Roster" [ref=f6e449] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/attendance
+      - link "Profile" [ref=f6e453] [cursor=pointer]:
+        - /url: http://127.0.0.1:8001/profile
+  - generic [ref=f6e457]:
+    - img "App Icon" [ref=f6e458]
+    - generic [ref=f6e459]:
+      - generic [ref=f6e460]:
+        - generic [ref=f6e461]: Precision IT Field App
+        - generic [ref=f6e462]: PWA
+      - generic [ref=f6e463]: Install to home screen for 1-tap offline use
+    - generic [ref=f6e464]:
+      - button "Install" [ref=f6e465] [cursor=pointer]
+      - button "Dismiss" [ref=f6e466] [cursor=pointer]

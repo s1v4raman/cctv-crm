@@ -148,6 +148,24 @@
                 background-color: #475569;
             }
 
+            /* Global Scrollbar Elimination for Pills & Tabs */
+            .no-scrollbar::-webkit-scrollbar,
+            .no-scrollbar::-webkit-scrollbar-track,
+            .no-scrollbar::-webkit-scrollbar-thumb,
+            .no-scrollbar::-webkit-scrollbar-corner {
+                display: none !important;
+                width: 0 !important;
+                height: 0 !important;
+                background: transparent !important;
+                border: none !important;
+                opacity: 0 !important;
+            }
+            .no-scrollbar {
+                -ms-overflow-style: none !important;
+                scrollbar-width: none !important;
+                -webkit-overflow-scrolling: touch !important;
+            }
+
             :root {
                 --crm-accent: #2563eb;
                 --crm-accent-hover: #1d4ed8;
@@ -1345,7 +1363,7 @@
                     </script>
 
                     {{-- Fixed Top Bar: 56px high --}}
-                    <header class="crm-topbar h-[56px] min-h-[56px] max-h-[56px] shrink-0 bg-[var(--card-bg)] text-[var(--text-main)] border-b border-[var(--card-border)] px-5 flex items-center justify-between sticky top-0 z-30"
+                    <header class="crm-topbar flex h-[56px] min-h-[56px] max-h-[56px] shrink-0 bg-[var(--card-bg)] text-[var(--text-main)] border-b border-[var(--card-border)] px-5 items-center justify-between sticky top-0 z-30"
                             x-data="globalHeader()"
                             @theme-mode-changed.window="isDarkMode = $event.detail.isDark"
                             @theme-changed.window="if ($event.detail && typeof $event.detail.isDark === 'boolean') isDarkMode = $event.detail.isDark"
@@ -1493,6 +1511,34 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
                                 </svg>
                             </button>
+
+                            {{-- Compact Dismissible PWA Install Header Pill (non-overlapping) --}}
+                            <div x-data="{
+                                pwa: window.crmPwa || { canInstall: false, isStandalone: false, isDismissed: localStorage.getItem('pwa_install_dismissed') === 'true' }
+                            }"
+                                 x-init="window.addEventListener('crm:pwa-state', e => { pwa = e.detail; })"
+                                 x-show="pwa.canInstall && !pwa.isDismissed && !pwa.isStandalone"
+                                 x-cloak
+                                 class="hidden sm:inline-flex items-center rounded-[6px] border border-blue-500/30 bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 shadow-2xs overflow-hidden shrink-0">
+                                <button type="button"
+                                        @click="window.crmPwa?.install()"
+                                        class="inline-flex items-center gap-1.5 px-2.5 h-8 text-xs font-semibold hover:bg-blue-100/80 dark:hover:bg-blue-900/60 transition cursor-pointer"
+                                        title="{{ __('Install Precision IT Field App') }}">
+                                    <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V3"/>
+                                    </svg>
+                                    <span>{{ __('Install App') }}</span>
+                                </button>
+                                <button type="button"
+                                        @click="window.crmPwa?.dismiss()"
+                                        class="inline-flex items-center justify-center w-6 h-8 text-blue-500/80 hover:text-blue-700 dark:hover:text-blue-200 hover:bg-blue-100/80 dark:hover:bg-blue-900/60 border-l border-blue-500/20 transition cursor-pointer"
+                                        aria-label="{{ __('Dismiss install prompt') }}"
+                                        title="{{ __('Dismiss') }}">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>
+                                </button>
+                            </div>
 
                             {{-- Modern Notification Bell & Popover Module --}}
                             <div x-data="{
@@ -1714,6 +1760,19 @@
                                             </a>
                                         @endif
 
+                                        <div x-data="{ pwa: window.crmPwa || { canInstall: false, isStandalone: false } }"
+                                             x-init="window.addEventListener('crm:pwa-state', e => { pwa = e.detail; })"
+                                             x-show="pwa.canInstall && !pwa.isStandalone"
+                                             x-cloak>
+                                            <button type="button" @click="userMenuOpen = false; window.crmPwa?.install()" class="w-full text-left flex items-center justify-between px-3.5 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer">
+                                                <span class="flex items-center gap-2.5">
+                                                    <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V3"/></svg>
+                                                    <span>{{ __('Install Field App') }}</span>
+                                                </span>
+                                                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-950/70 text-blue-700 dark:text-blue-300 uppercase">PWA</span>
+                                            </button>
+                                        </div>
+
                                         <button type="button" @click="toggleThemeMode()" class="w-full text-left flex items-center justify-between px-3.5 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer">
                                             <span class="flex items-center gap-2.5">
                                                 <svg class="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
@@ -1824,6 +1883,7 @@
             {{-- ════════════════════════════════════════════════════════════════ --}}
             {{-- MOBILE APP-LIKE BOTTOM NAVIGATION DOCK (MOBILE VIEW ONLY)         --}}
             {{-- ════════════════════════════════════════════════════════════════ --}}
+            @unless(request()->routeIs('technician.*') || (auth()->check() && auth()->user()->isTechnician()))
             <nav class="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-[#0f172a]/95 backdrop-blur-md border-t border-slate-200/90 dark:border-slate-800 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] px-3 py-1.5 transition-colors">
                 <div class="max-w-md mx-auto flex items-center justify-between">
                     @if(auth()->user()->role === 'technician')
@@ -1961,6 +2021,7 @@
                     @endif
                 </div>
             </nav>
+            @endunless
 
             {{-- ════════════════════════════════════════════════════════════════ --}}
             {{-- KEYBOARD SHORTCUTS HELP (opened with ? or Ctrl+/, closed with Esc) --}}

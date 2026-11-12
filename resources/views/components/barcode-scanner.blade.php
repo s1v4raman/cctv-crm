@@ -16,84 +16,107 @@
 @endphp
 
 <div id="{{ $modalId }}"
-     style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,0.85);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:1rem;"
-     class="barcode-modal-wrapper"
+     style="display:none;"
+     class="barcode-modal-wrapper fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto"
      data-lan-ip="{{ $lanIp }}">
     
-    <div style="background:#0f172a;border-radius:1.5rem;border:1px solid #334155;max-width:540px;width:100%;overflow:hidden;box-shadow:0 25px 50px -12px rgba(0,0,0,0.6);display:flex;flex-direction:column;">
+    <div class="crm-card bg-white dark:bg-slate-900 rounded-2xl max-w-xl w-full p-4 sm:p-6 shadow-2xl border border-slate-200 dark:border-slate-800 my-auto transition-all flex flex-col space-y-4">
         
-        {{-- Header --}}
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;border-bottom:1px solid #1e293b;background:#1e293b/40;">
-            <div style="display:flex;align-items:center;gap:.6rem;">
-                <span style="font-size:1.3rem;">🔍</span>
+        {{-- Modal Top Bar --}}
+        <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/70 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z"/></svg>
+                </div>
                 <div>
-                    <h4 style="font-size:.95rem;font-weight:700;color:#fff;margin:0;">{{ $title }}</h4>
-                    <p style="font-size:.72rem;color:#94a3b8;margin:2px 0 0;">{{ __('Scan Barcode, Serial Number, or MAC Address tag') }}</p>
+                    <h3 class="text-base font-bold text-slate-900 dark:text-white">{{ $title }}</h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{{ __('Scan Barcode, Serial Number, or MAC Address tag') }}</p>
                 </div>
             </div>
-            <x-close-button tone="dark" :label="__('Close scanner')" onclick="closeBarcodeScanner('{{ $modalId }}')" />
+            <x-close-button onclick="closeBarcodeScanner('{{ $modalId }}')" :label="__('Close')" />
         </div>
 
+        {{-- Camera Viewport Container --}}
+        <div class="relative bg-black rounded-2xl overflow-hidden w-full h-[260px] sm:h-[300px] flex items-center justify-center border border-slate-200 dark:border-slate-800 shadow-inner">
+            <video id="{{ $modalId }}-video" autoplay playsinline muted class="w-full h-full object-cover"></video>
+            <canvas id="{{ $modalId }}-canvas" style="display:none;"></canvas>
 
-
-        {{-- ======================================================== --}}
-        {{-- VIEW 1: LAPTOP / LOCAL WEB CAMERA SCANNER                --}}
-        {{-- ======================================================== --}}
-        <div id="{{ $modalId }}-view-laptop" style="display:block;">
-            {{-- Camera Viewport --}}
-            <div style="position:relative;background:#000;width:100%;height:310px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
-                <video id="{{ $modalId }}-video" autoplay playsinline muted
-                       style="width:100%;height:100%;object-fit:cover;"></video>
-                <canvas id="{{ $modalId }}-canvas" style="display:none;"></canvas>
-
-                {{-- Scanning Reticle & Aim Animation --}}
-                <div style="position:absolute;width:240px;height:160px;border:2px dashed color-mix(in srgb, var(--crm-accent, #2563eb) 80%, #fff);border-radius:12px;box-shadow:0 0 0 4000px rgba(0,0,0,0.5);pointer-events:none;display:flex;flex-direction:column;justify-content:space-between;padding:6px;box-sizing:border-box;">
-                    <div style="display:flex;justify-content:space-between;">
-                        <div style="width:16px;height:16px;border-top:3px solid color-mix(in srgb, var(--crm-accent, #2563eb) 60%, #fff);border-left:3px solid color-mix(in srgb, var(--crm-accent, #2563eb) 60%, #fff);border-top-left-radius:6px;"></div>
-                        <div style="width:16px;height:16px;border-top:3px solid color-mix(in srgb, var(--crm-accent, #2563eb) 60%, #fff);border-right:3px solid color-mix(in srgb, var(--crm-accent, #2563eb) 60%, #fff);border-top-right-radius:6px;"></div>
-                    </div>
-                    {{-- Laser Scan Line --}}
-                    <div class="laser-scanner-line" style="width:100%;height:2px;background:#ef4444;box-shadow:0 0 10px #ef4444;animation:scanLaser 2s infinite ease-in-out;"></div>
-                    <div style="display:flex;justify-content:space-between;">
-                        <div style="width:16px;height:16px;border-bottom:3px solid color-mix(in srgb, var(--crm-accent, #2563eb) 60%, #fff);border-left:3px solid color-mix(in srgb, var(--crm-accent, #2563eb) 60%, #fff);border-bottom-left-radius:6px;"></div>
-                        <div style="width:16px;height:16px;border-bottom:3px solid color-mix(in srgb, var(--crm-accent, #2563eb) 60%, #fff);border-right:3px solid color-mix(in srgb, var(--crm-accent, #2563eb) 60%, #fff);border-bottom-right-radius:6px;"></div>
-                    </div>
+            {{-- Scanning Reticle & Aim Animation --}}
+            <div class="absolute w-[240px] h-[160px] border-2 border-dashed border-blue-400/80 rounded-2xl pointer-events-none flex flex-col justify-between p-2 box-border shadow-[0_0_0_4000px_rgba(0,0,0,0.55)]">
+                <div class="flex justify-between">
+                    <div class="w-4 h-4 border-t-3 border-l-3 border-blue-500 rounded-tl-lg"></div>
+                    <div class="w-4 h-4 border-t-3 border-r-3 border-blue-500 rounded-tr-lg"></div>
                 </div>
-
-                {{-- Status Overlay message --}}
-                <div id="{{ $modalId }}-status"
-                     style="position:absolute;bottom:12px;left:12px;right:12px;text-align:center;background:rgba(15,23,42,0.85);color:#e2e8f0;font-size:.75rem;font-weight:600;padding:.4rem .75rem;border-radius:999px;border:1px solid rgba(255,255,255,0.15);">
-                    {{ __('Initializing camera...') }}
+                <div class="laser-scanner-line w-full h-0.5 bg-red-500 shadow-[0_0_12px_#ef4444] animate-pulse"></div>
+                <div class="flex justify-between">
+                    <div class="w-4 h-4 border-b-3 border-l-3 border-blue-500 rounded-bl-lg"></div>
+                    <div class="w-4 h-4 border-b-3 border-r-3 border-blue-500 rounded-br-lg"></div>
                 </div>
             </div>
 
-            {{-- Laptop Camera Controls & Photo Fallback --}}
-            <div style="padding:1rem 1.25rem;background:#0f172a;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem;border-top:1px solid #1e293b;">
-                <div style="display:flex;gap:.5rem;">
-                    <button type="button" id="{{ $modalId }}-torch-btn" onclick="toggleTorch('{{ $modalId }}')"
-                            style="padding:.45rem .8rem;background:#1e293b;color:#f8fafc;border:1px solid #334155;border-radius:.6rem;font-size:.75rem;font-weight:700;display:inline-flex;align-items:center;gap:.35rem;cursor:pointer;">
-                        💡 {{ __('Torch') }}
-                    </button>
-                    <button type="button" id="{{ $modalId }}-flip-btn" onclick="switchCamera('{{ $modalId }}')"
-                            style="padding:.45rem .8rem;background:#1e293b;color:#f8fafc;border:1px solid #334155;border-radius:.6rem;font-size:.75rem;font-weight:700;display:inline-flex;align-items:center;gap:.35rem;cursor:pointer;transition:all 0.2s ease;">
-                        🔄 {{ __('Flip Cam') }}
-                    </button>
-                </div>
-
-                <div style="display:flex;gap:.5rem;align-items:center;">
-                    <button type="button" onclick="snapBarcodeCurrentFrame('{{ $modalId }}')"
-                            style="padding:.45rem .85rem;background:#059669;color:#fff;border-radius:.6rem;border:none;font-size:.75rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:.35rem;box-shadow:0 4px 12px rgba(5,150,105,0.3);">
-                        📸 {{ __('Snap') }}
-                    </button>
-                    <label style="padding:.45rem .85rem;background:var(--crm-accent, #2563eb);color:#fff;border-radius:.6rem;font-size:.75rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:.35rem;box-shadow:0 4px 12px rgba(var(--crm-accent-rgb, 37, 99, 235),0.25);">
-                        📁 {{ __('Upload Image') }}
-                        <input type="file" accept="image/*" onchange="handleBarcodeImageUpload(event, '{{ $modalId }}')" style="display:none;">
-                    </label>
-                </div>
+            {{-- Camera Status Overlay Pill --}}
+            <div id="{{ $modalId }}-status"
+                 class="absolute bottom-3 inset-x-3 text-center bg-slate-900/85 backdrop-blur text-white text-xs font-semibold py-1.5 px-3 rounded-full border border-white/10 shadow-sm mx-auto max-w-xs">
+                {{ __('Initializing camera...') }}
             </div>
         </div>
 
+        {{-- Camera Controls & Photo Upload --}}
+        <div class="flex items-center justify-between flex-wrap gap-2 pt-1">
+            <div class="flex items-center gap-2">
+                <button type="button" id="{{ $modalId }}-torch-btn" onclick="toggleTorch('{{ $modalId }}')"
+                        class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-slate-700 transition cursor-pointer">
+                    <svg class="w-3.5 h-3.5 text-amber-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.478a12.06 12.06 0 01-4.5 0m3.75 2.383a14.406 14.406 0 01-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 10-7.516 0c.85.493 1.509 1.333 1.509 2.316V18"/></svg>
+                    <span>{{ __('Torch') }}</span>
+                </button>
+                <button type="button" id="{{ $modalId }}-flip-btn" onclick="switchCamera('{{ $modalId }}')"
+                        class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-slate-700 transition cursor-pointer">
+                    <svg class="w-3.5 h-3.5 text-blue-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
+                    <span>{{ __('Flip Cam') }}</span>
+                </button>
+            </div>
 
+            <div class="flex items-center gap-2">
+                <button type="button" onclick="snapBarcodeCurrentFrame('{{ $modalId }}')"
+                        class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-slate-700 transition cursor-pointer">
+                    <svg class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z"/></svg>
+                    <span>{{ __('Snap Frame') }}</span>
+                </button>
+                <label class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 !text-white text-xs font-bold shadow-sm transition cursor-pointer"
+                       style="color: #ffffff !important;">
+                    <svg class="w-3.5 h-3.5 !text-white" fill="none" stroke="#ffffff" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg>
+                    <span class="!text-white font-bold" style="color: #ffffff !important;">{{ __('Upload Image') }}</span>
+                    <input type="file" accept="image/*" onchange="handleBarcodeImageUpload(event, '{{ $modalId }}')" style="display:none;">
+                </label>
+            </div>
+        </div>
+
+        {{-- Direct Manual Serial Input Row inside Modal --}}
+        <div class="pt-3 border-t border-slate-200 dark:border-slate-800 space-y-2">
+            <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block">
+                {{ __('Or Enter Serial Number Manually') }}
+            </label>
+            <div class="flex items-center gap-2">
+                <input type="text" id="{{ $modalId }}-manual-input"
+                       placeholder="{{ __('Type or paste serial barcode (e.g. SN-98213)...') }}"
+                       onkeydown="if(event.key === 'Enter') { event.preventDefault(); const val = this.value.trim(); if(val) { handleBarcodeDetected('{{ $modalId }}', val); closeBarcodeScanner('{{ $modalId }}'); } }"
+                       class="flex-1 text-xs sm:text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/70 text-slate-900 dark:text-white px-3.5 py-2.5 focus:ring-2 focus:ring-blue-500">
+                <button type="button"
+                        onclick="const val = document.getElementById('{{ $modalId }}-manual-input').value.trim(); if(val) { handleBarcodeDetected('{{ $modalId }}', val); closeBarcodeScanner('{{ $modalId }}'); }"
+                        class="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 !text-white text-xs sm:text-sm font-bold shadow-sm transition cursor-pointer shrink-0"
+                        style="color: #ffffff !important;">
+                    <span style="color: #ffffff !important;">{{ __('Lookup') }}</span>
+                </button>
+            </div>
+        </div>
+
+        {{-- Modal Action Footer --}}
+        <div class="pt-2 flex items-center justify-end">
+            <button type="button" onclick="closeBarcodeScanner('{{ $modalId }}')"
+                    class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold transition cursor-pointer">
+                {{ __('Cancel') }}
+            </button>
+        </div>
 
     </div>
 </div>
