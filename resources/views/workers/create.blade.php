@@ -25,17 +25,17 @@
                     <h3 class="mb-4 pb-2 border-b border-[#ddd] dark:border-slate-700 font-bold text-base text-gray-900 dark:text-slate-100">Personal & Wage Details</h3>
 
                     {{-- Worker Profile Photo / Login Photo --}}
-                    <div class="mb-5 p-3 rounded bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 flex items-center gap-4">
+                    <div class="mb-5 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 max-w-full overflow-hidden">
                         <div class="w-16 h-16 rounded-full bg-slate-200 dark:bg-slate-700 border-2 border-slate-300 dark:border-slate-600 flex items-center justify-center overflow-hidden shrink-0 shadow-sm" id="photo-preview-wrap">
                             <span id="photo-placeholder" class="text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase">Photo</span>
                             <img id="photo-preview" alt="Worker Photo" class="w-full h-full object-cover hidden">
                         </div>
-                        <div class="flex-1">
-                            <label for="worker-photo-input" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide mb-1">
-                                Worker Profile Photo (Login & Verification Photo)
+                        <div class="flex-1 min-w-0 max-w-full w-full">
+                            <label for="worker-photo-input" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide mb-1 break-words">
+                                Worker Profile Photo (Login &amp; Verification Photo)
                             </label>
-                            <input type="file" name="photo" id="worker-photo-input" accept="image/*" class="cursor-pointer">
-                            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Used to verify identity against daily attendance punch photos. Max 5MB (JPG, PNG).</p>
+                            <input type="file" name="photo" id="worker-photo-input" accept="image/*" class="cursor-pointer block w-full max-w-full text-xs text-slate-600 dark:text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 dark:file:bg-slate-700 dark:file:text-slate-200">
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 break-words">Used to verify identity against daily attendance punch photos. Max 5MB (JPG, PNG).</p>
                             @error('photo') <p class="error-text">{{ $message }}</p> @enderror
                         </div>
                     </div>

@@ -28,3 +28,8 @@ Thumbs.db
 Precision_IT_Systems_CRM_Credentials.pdf
 /*.pdf
 .aider-desk/
+
+strix_runs/
+~/audits/
+.security-audit/
+.playwright-mcp/

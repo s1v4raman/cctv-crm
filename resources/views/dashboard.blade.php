@@ -16,7 +16,7 @@
             this.selectedPeriod = p;
             this.periodOpen = false;
         }
-    }" class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-7 space-y-5 sm:space-y-6">
+    }" class="crm-content max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-7 space-y-5 sm:space-y-6">
 
         {{-- ════════════════════════════════════════════════════════════════ --}}
         {{-- 1. TOP HEADER BANNER (TITLE, SUBTITLE & TOP CONTROLS)           --}}
@@ -244,7 +244,7 @@
 
                     {{-- Data Table --}}
                     <div class="overflow-x-auto -mx-5 sm:mx-0">
-                        <table class="w-full text-left border-collapse text-xs">
+                        <table class="crm-auto-cards w-full text-left border-collapse text-xs">
                             <thead>
                                 <tr class="text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider border-b border-slate-100 dark:border-slate-800">
                                     <th class="py-2.5 px-3 w-8">
@@ -263,17 +263,17 @@
                                     <tr x-show="activeFilterTab === 'all' || (activeFilterTab === 'attention' && {{ !empty($deal['is_overdue']) ? 'true' : 'false' }}) || (activeFilterTab === 'my' && '{{ $deal['owner'] }}' !== 'ADMIN')"
                                         class="hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition group">
                                         {{-- Checkbox --}}
-                                        <td class="py-3 px-3">
+                                        <td class="py-3 px-3 ld-box" data-label="">
                                             <input type="checkbox" class="rounded text-indigo-600 focus:ring-indigo-500 border-slate-300 dark:border-slate-700 cursor-pointer">
                                         </td>
 
                                         {{-- Company Logo Badge & Title --}}
-                                        <td class="py-3 px-3 min-w-[200px]">
-                                            <div class="flex items-center gap-3">
+                                        <td class="py-3 px-3 min-w-0 sm:min-w-[200px]" data-card-header>
+                                            <div class="flex items-center gap-3 min-w-0 max-w-full">
                                                 <div class="w-8 h-8 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs flex items-center justify-center shrink-0">
                                                     {{ $deal['initial'] }}
                                                 </div>
-                                                <div class="min-w-0">
+                                                <div class="min-w-0 flex-1">
                                                     <a href="{{ $deal['url'] }}" class="font-bold text-slate-900 dark:text-white hover:text-indigo-600 transition truncate block">
                                                         {{ $deal['company'] }}
                                                     </a>
@@ -285,12 +285,12 @@
                                         </td>
 
                                         {{-- Value --}}
-                                        <td class="py-3 px-3 font-bold text-slate-900 dark:text-white whitespace-nowrap text-right sm:text-left">
+                                        <td class="py-3 px-3 font-bold text-slate-900 dark:text-white sm:whitespace-nowrap text-right sm:text-left">
                                             &#8377;{{ number_format($deal['value'], 0) }}
                                         </td>
 
                                         {{-- Stage Pill Badge --}}
-                                        <td class="py-3 px-3 whitespace-nowrap">
+                                        <td class="py-3 px-3 sm:whitespace-nowrap">
                                             @php
                                                 $pillStyle = match($deal['stage_color'] ?? 'indigo') {
                                                     'indigo' => 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border-indigo-200/70',
@@ -306,14 +306,14 @@
                                         </td>
 
                                         {{-- Owner Avatar Initials --}}
-                                        <td class="py-3 px-3 text-center whitespace-nowrap">
+                                        <td class="py-3 px-3 text-center sm:whitespace-nowrap">
                                             <div class="w-6 h-6 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-[10px] inline-flex items-center justify-center">
                                                 {{ $deal['owner'] }}
                                             </div>
                                         </td>
 
                                         {{-- Next Step & Due Status --}}
-                                        <td class="py-3 px-3 whitespace-nowrap text-xs">
+                                        <td class="py-3 px-3 sm:whitespace-nowrap text-xs">
                                             <div class="text-slate-800 dark:text-slate-200 font-medium">
                                                 {{ explode(' • ', $deal['next_step'])[0] }}
                                             </div>

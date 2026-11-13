@@ -453,8 +453,8 @@
                                 @endphp
                                 <tr class="hover:bg-slate-50/70 dark:hover:bg-slate-800/50 transition-colors {{ !$isPresent ? 'bg-slate-50/30 dark:bg-slate-900/30' : '' }}">
                                     {{-- Worker Column with Master Profile Photo --}}
-                                    <td class="py-2.5 px-3">
-                                        <div class="flex items-center gap-2.5">
+                                    <td class="py-2.5 px-3" data-card-header>
+                                        <div class="flex items-center gap-2.5 min-w-0 max-w-full">
                                             @if($w && $w->photo_url)
                                                 <img src="{{ $w->photo_url }}" alt="{{ $w->name }}" 
                                                      class="w-9 h-9 rounded-full object-cover border border-slate-300 dark:border-slate-600 shrink-0 shadow-xs cursor-pointer hover:opacity-90" 
@@ -465,8 +465,8 @@
                                                     {{ strtoupper(mb_substr($w?->name ?? 'W', 0, 1)) }}
                                                 </div>
                                             @endif
-                                            <div>
-                                                <div class="flex items-center gap-1.5">
+                                            <div class="min-w-0 flex-1">
+                                                <div class="flex items-center gap-1.5 flex-wrap">
                                                     @if($w)
                                                         <a href="{{ route('workers.show', $w) }}" class="font-bold text-slate-900 dark:text-white hover:text-indigo-600 transition-colors">
                                                             {{ $w->name }}
@@ -484,7 +484,7 @@
                                                         <span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 font-medium">{{ __('Deleted') }}</span>
                                                     @endif
                                                 </div>
-                                                <div class="text-[11px] text-slate-500">
+                                                <div class="text-[11px] text-slate-500 break-words">
                                                     {{ $w?->phone ?? __('No phone') }}
                                                     @if($w?->daily_rate)
                                                         &bull; &#8377;{{ number_format($w->daily_rate, 0) }}/day

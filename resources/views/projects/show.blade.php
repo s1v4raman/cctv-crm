@@ -2125,11 +2125,11 @@
                         <button type="button" @click="moreOpen = !moreOpen" class="btn-secondary" style="padding: 0 10px !important" aria-label="More task actions" :aria-expanded="moreOpen">
                             <svg class="w-4 h-4 icon-solid" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><circle cx="4" cy="10" r="1.6"/><circle cx="10" cy="10" r="1.6"/><circle cx="16" cy="10" r="1.6"/></svg>
                         </button>
-                        <div x-show="moreOpen" x-cloak class="absolute right-0 mt-1 z-30 w-52 py-1 tk-card shadow-lg text-sm">
-                            <button type="button" class="block w-full h-auto text-left px-3 py-2 hover:bg-[var(--row-hover)]" @click="moreOpen = false; templateModalOpen = true">Use a template</button>
+                        <div x-show="moreOpen" x-cloak class="absolute left-0 sm:left-auto sm:right-0 mt-1 z-50 w-52 max-w-[calc(100vw-2rem)] py-1.5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xl text-sm">
+                            <button type="button" class="block w-full text-left px-4 py-2.5 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 whitespace-nowrap" @click="moreOpen = false; templateModalOpen = true">Use a template</button>
                             @if($tasksCount > 0)
-                                <button type="button" class="block w-full h-auto text-left px-3 py-2 hover:bg-[var(--row-hover)]" @click="moreOpen = false; openBlockerModal(null, null)">Flag a blocker</button>
-                                <button type="button" class="block w-full h-auto text-left px-3 py-2 hover:bg-[var(--row-hover)]" @click="moreOpen = false; activeTaskView = activeTaskView === 'kanban' ? 'list' : 'kanban'" x-text="activeTaskView === 'kanban' ? 'Show as a list' : 'Show as a board'"></button>
+                                <button type="button" class="block w-full text-left px-4 py-2.5 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 whitespace-nowrap" @click="moreOpen = false; openBlockerModal(null, null)">Flag a blocker</button>
+                                <button type="button" class="block w-full text-left px-4 py-2.5 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 whitespace-nowrap" @click="moreOpen = false; activeTaskView = activeTaskView === 'kanban' ? 'list' : 'kanban'" x-text="activeTaskView === 'kanban' ? 'Show as a list' : 'Show as a board'"></button>
                             @endif
                         </div>
                     </div>
@@ -2139,9 +2139,9 @@
                     {{-- Empty project: start from a ready list of steps, or add your own --}}
                     <div class="px-4 pb-6 pt-2 border-t" style="border-color: var(--table-border)">
                         <p class="text-sm mt-3" style="color: var(--text-main)">No tasks yet. Start from a ready list of steps for this kind of job, or add your own.</p>
-                        <div class="flex flex-wrap gap-2 mt-3">
+                        <div class="flex flex-wrap gap-2 mt-3 max-w-full">
                             @foreach($workflowTemplates as $tKey => $tpl)
-                                <button type="button" class="btn-secondary" @click="selectedTemplateKey = @js($tKey); templateModalOpen = true">{{ $tpl['name'] ?? Str::headline($tKey) }}</button>
+                                <button type="button" class="btn-secondary max-w-full whitespace-normal break-words text-left" @click="selectedTemplateKey = @js($tKey); templateModalOpen = true">{{ $tpl['name'] ?? Str::headline($tKey) }}</button>
                             @endforeach
                             <button type="button" class="btn-secondary" @click="taskModalOpen = true">Add my own task</button>
                         </div>
@@ -3950,6 +3950,6 @@
     {{-- TWO-STEP SPLIT GUIDED ATTENDANCE MODAL COMPONENT --}}
     <x-mark-attendance-modal :workers="$workers" :projects="collect([$project])" :default-project-id="$project->id" />
 
-    {{-- Sortable.js CDN for Drag-and-Drop Kanban Interaction --}}
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+    {{-- Self-hosted Sortable.js for Drag-and-Drop Kanban Interaction (Zero CDN tracking blocks) --}}
+    <script src="{{ asset('vendor/sortable/Sortable.min.js') }}"></script>
 </x-app-layout>

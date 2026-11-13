@@ -20,7 +20,7 @@
     </x-slot>
 
     {{-- Include Chart.js via CDN --}}
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="{{ asset('vendor/chartjs/chart.umd.min.js') }}"></script>
 
     <div class="pg-wrap">
         <div class="pg-inner space-y-6">
@@ -309,39 +309,76 @@
                             <p class="text-[11px] text-slate-400">Technician job completions & customer satisfaction ratings</p>
                         </div>
                     </div>
-                    <table class="min-w-full divide-y divide-white/5 text-xs">
-                        <thead class="bg-[#0b1120]/50">
-                            <tr>
-                                <th class="px-4 py-2.5 text-left font-bold text-slate-400">Technician</th>
-                                <th class="px-4 py-2.5 text-center font-bold text-slate-400">Jobs</th>
-                                <th class="px-4 py-2.5 text-center font-bold text-slate-400">Surveys</th>
-                                <th class="px-4 py-2.5 text-center font-bold text-slate-400">Projects</th>
-                                <th class="px-4 py-2.5 text-right font-bold text-slate-400">CSAT ★</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-white/5">
-                            @forelse($overview['technicians'] as $tech)
-                                <tr class="hover:bg-slate-800/50 transition">
-                                    <td class="px-4 py-3 font-bold text-slate-200">
-                                        {{ $tech['name'] }}
-                                        <span class="text-[11px] text-slate-500 block font-normal capitalize">{{ $tech['role'] }}</span>
-                                    </td>
-                                    <td class="px-4 py-3 text-center font-semibold text-slate-300">{{ $tech['jobs_completed'] }}</td>
-                                    <td class="px-4 py-3 text-center font-semibold text-slate-300">{{ $tech['surveys_completed'] }}</td>
-                                    <td class="px-4 py-3 text-center font-semibold text-sky-400">{{ $tech['projects_count'] }}</td>
-                                    <td class="px-4 py-3 text-right">
-                                        <span class="inline-block px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30 font-bold text-[11px]">
-                                            ★ {{ $tech['average_rating'] }} / 5.0
-                                        </span>
-                                    </td>
-                                </tr>
-                            @empty
+
+                    {{-- Mobile Card View (< 768px) --}}
+                    <div class="md:hidden divide-y divide-white/5">
+                        @forelse($overview['technicians'] as $tech)
+                            <div class="p-3.5 space-y-2">
+                                <div class="flex items-start justify-between gap-2">
+                                    <div class="min-w-0">
+                                        <div class="font-bold text-slate-200 text-xs">{{ $tech['name'] }}</div>
+                                        <span class="text-[11px] text-slate-500 capitalize">{{ $tech['role'] }}</span>
+                                    </div>
+                                    <span class="shrink-0 px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30 font-bold text-[11px]">
+                                        ★ {{ $tech['average_rating'] }} / 5.0
+                                    </span>
+                                </div>
+                                <div class="grid grid-cols-3 gap-2 pt-1.5 border-t border-white/5 text-[11px] text-center">
+                                    <div class="p-1.5 rounded bg-white/5">
+                                        <span class="text-slate-400 block text-[10px]">Jobs</span>
+                                        <strong class="text-slate-200 font-semibold">{{ $tech['jobs_completed'] }}</strong>
+                                    </div>
+                                    <div class="p-1.5 rounded bg-white/5">
+                                        <span class="text-slate-400 block text-[10px]">Surveys</span>
+                                        <strong class="text-slate-200 font-semibold">{{ $tech['surveys_completed'] }}</strong>
+                                    </div>
+                                    <div class="p-1.5 rounded bg-white/5">
+                                        <span class="text-slate-400 block text-[10px]">Projects</span>
+                                        <strong class="text-sky-400 font-semibold">{{ $tech['projects_count'] }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="p-6 text-center text-slate-500 text-xs">No technician performance data recorded.</div>
+                        @endforelse
+                    </div>
+
+                    {{-- Desktop Table View (>= 768px) --}}
+                    <div class="hidden md:block overflow-x-auto">
+                        <table class="min-w-full divide-y divide-white/5 text-xs">
+                            <thead class="bg-[#0b1120]/50">
                                 <tr>
-                                    <td colspan="5" class="px-4 py-6 text-center text-slate-500">No technician performance data recorded.</td>
+                                    <th class="px-4 py-2.5 text-left font-bold text-slate-400">Technician</th>
+                                    <th class="px-4 py-2.5 text-center font-bold text-slate-400">Jobs</th>
+                                    <th class="px-4 py-2.5 text-center font-bold text-slate-400">Surveys</th>
+                                    <th class="px-4 py-2.5 text-center font-bold text-slate-400">Projects</th>
+                                    <th class="px-4 py-2.5 text-right font-bold text-slate-400">CSAT ★</th>
                                 </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody class="divide-y divide-white/5">
+                                @forelse($overview['technicians'] as $tech)
+                                    <tr class="hover:bg-slate-800/50 transition">
+                                        <td class="px-4 py-3 font-bold text-slate-200">
+                                            {{ $tech['name'] }}
+                                            <span class="text-[11px] text-slate-500 block font-normal capitalize">{{ $tech['role'] }}</span>
+                                        </td>
+                                        <td class="px-4 py-3 text-center font-semibold text-slate-300">{{ $tech['jobs_completed'] }}</td>
+                                        <td class="px-4 py-3 text-center font-semibold text-slate-300">{{ $tech['surveys_completed'] }}</td>
+                                        <td class="px-4 py-3 text-center font-semibold text-sky-400">{{ $tech['projects_count'] }}</td>
+                                        <td class="px-4 py-3 text-right">
+                                            <span class="inline-block px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30 font-bold text-[11px]">
+                                                ★ {{ $tech['average_rating'] }} / 5.0
+                                            </span>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="px-4 py-6 text-center text-slate-500">No technician performance data recorded.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
                 {{-- Top Margin Products --}}
@@ -352,35 +389,68 @@
                             <p class="text-[11px] text-slate-400">Highest gross margin hardware products</p>
                         </div>
                     </div>
-                    <table class="min-w-full divide-y divide-white/5 text-xs">
-                        <thead class="bg-[#0b1120]/50">
-                            <tr>
-                                <th class="px-4 py-2.5 text-left font-bold text-slate-400">Product Model</th>
-                                <th class="px-4 py-2.5 text-right font-bold text-slate-400">Selling Price</th>
-                                <th class="px-4 py-2.5 text-right font-bold text-slate-400">Cost Price</th>
-                                <th class="px-4 py-2.5 text-right font-bold text-slate-400">Margin %</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-white/5">
-                            @forelse($overview['top_products'] as $prod)
-                                <tr class="hover:bg-slate-800/50 transition">
-                                    <td class="px-4 py-3">
-                                        <div class="font-bold text-slate-200">{{ $prod['name'] }}</div>
+
+                    {{-- Mobile Card View (< 768px) --}}
+                    <div class="md:hidden divide-y divide-white/5">
+                        @forelse($overview['top_products'] as $prod)
+                            <div class="p-3.5 space-y-2">
+                                <div class="flex items-start justify-between gap-2">
+                                    <div class="min-w-0 flex-1">
+                                        <div class="font-bold text-slate-200 text-xs break-words">{{ $prod['name'] }}</div>
                                         <div class="text-[11px] text-slate-500 font-mono">{{ $prod['model_no'] }}</div>
-                                    </td>
-                                    <td class="px-4 py-3 text-right font-semibold text-amber-400">₹{{ number_format($prod['unit_price'], 2) }}</td>
-                                    <td class="px-4 py-3 text-right text-slate-400 font-mono">₹{{ number_format($prod['cost_price'], 2) }}</td>
-                                    <td class="px-4 py-3 text-right font-bold text-emerald-400">
+                                    </div>
+                                    <span class="shrink-0 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-bold text-[11px]">
                                         +{{ $prod['margin_percent'] }}%
-                                    </td>
-                                </tr>
-                            @empty
+                                    </span>
+                                </div>
+                                <div class="flex items-center justify-between text-xs pt-1 border-t border-white/5">
+                                    <div>
+                                        <span class="text-slate-400 text-[11px]">Selling Price:</span>
+                                        <strong class="font-semibold text-amber-400 ml-1">₹{{ number_format($prod['unit_price'], 2) }}</strong>
+                                    </div>
+                                    <div>
+                                        <span class="text-slate-400 text-[11px]">Cost Price:</span>
+                                        <span class="text-slate-300 font-mono ml-1">₹{{ number_format($prod['cost_price'], 2) }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="p-6 text-center text-slate-500 text-xs">No active products in catalog.</div>
+                        @endforelse
+                    </div>
+
+                    {{-- Desktop Table View (>= 768px) --}}
+                    <div class="hidden md:block overflow-x-auto">
+                        <table class="min-w-full divide-y divide-white/5 text-xs">
+                            <thead class="bg-[#0b1120]/50">
                                 <tr>
-                                    <td colspan="4" class="px-4 py-6 text-center text-slate-500">No active products in catalog.</td>
+                                    <th class="px-4 py-2.5 text-left font-bold text-slate-400">Product Model</th>
+                                    <th class="px-4 py-2.5 text-right font-bold text-slate-400">Selling Price</th>
+                                    <th class="px-4 py-2.5 text-right font-bold text-slate-400">Cost Price</th>
+                                    <th class="px-4 py-2.5 text-right font-bold text-slate-400">Margin %</th>
                                 </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody class="divide-y divide-white/5">
+                                @forelse($overview['top_products'] as $prod)
+                                    <tr class="hover:bg-slate-800/50 transition">
+                                        <td class="px-4 py-3">
+                                            <div class="font-bold text-slate-200">{{ $prod['name'] }}</div>
+                                            <div class="text-[11px] text-slate-500 font-mono">{{ $prod['model_no'] }}</div>
+                                        </td>
+                                        <td class="px-4 py-3 text-right font-semibold text-amber-400">₹{{ number_format($prod['unit_price'], 2) }}</td>
+                                        <td class="px-4 py-3 text-right text-slate-400 font-mono">₹{{ number_format($prod['cost_price'], 2) }}</td>
+                                        <td class="px-4 py-3 text-right font-bold text-emerald-400">
+                                            +{{ $prod['margin_percent'] }}%
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="px-4 py-6 text-center text-slate-500">No active products in catalog.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
             </div>

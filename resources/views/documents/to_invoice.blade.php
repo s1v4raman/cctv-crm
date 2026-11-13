@@ -111,10 +111,10 @@
                     </div>
 
                     <div class="overflow-x-auto">
-                        <table class="w-full text-left text-sm text-slate-600 dark:text-slate-300">
+                        <table class="w-full text-left text-sm text-slate-600 dark:text-slate-300 crm-auto-cards">
                             <thead class="bg-white dark:bg-[#0f172a] text-[11px] uppercase font-bold text-slate-400 border-b border-slate-100 dark:border-slate-800">
                                 <tr>
-                                    <th class="px-5 py-3 w-10"></th>
+                                    <th class="px-5 py-3 w-10 ld-box"></th>
                                     <th class="px-5 py-3">DC Number &amp; Date</th>
                                     <th class="px-5 py-3">Site / Client Name</th>
                                     <th class="px-5 py-3">Project</th>
@@ -126,10 +126,10 @@
                             <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
                                 @foreach($docs as $doc)
                                     <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition">
-                                        <td class="px-5 py-3.5">
+                                        <td class="px-5 py-3.5 ld-box" data-label="">
                                             <input type="checkbox" :value="{{ $doc->id }}" x-model="selectedDcs" class="rounded text-blue-600 focus:ring-blue-500">
                                         </td>
-                                        <td class="px-5 py-3.5">
+                                        <td class="px-5 py-3.5" data-card-header>
                                             <div class="font-bold font-mono text-slate-900 dark:text-white text-sm">
                                                 {{ $doc->dc_number ?? 'DC-N/A' }}
                                             </div>
@@ -141,7 +141,7 @@
                                             <div class="font-semibold text-slate-800 dark:text-slate-200">
                                                 {{ $doc->project->site?->name ?? $doc->project->company_name }}
                                             </div>
-                                            <div class="text-xs text-slate-400 truncate max-w-xs">
+                                            <div class="text-xs text-slate-400 min-w-0 max-w-full break-words">
                                                 {{ $doc->project->site?->address ?? $doc->project->site_address }}
                                             </div>
                                         </td>
@@ -149,16 +149,16 @@
                                             <a href="{{ route('projects.show', $doc->project) }}" class="font-bold hover:underline" style="color: var(--link-color);">
                                                 {{ $doc->project->project_code }}
                                             </a>
-                                            <div class="text-xs text-slate-400 truncate max-w-xs">{{ $doc->project->title }}</div>
+                                            <div class="text-xs text-slate-400 min-w-0 max-w-full truncate">{{ $doc->project->title }}</div>
                                         </td>
-                                        <td class="px-5 py-3.5 max-w-xs text-xs">
+                                        <td class="px-5 py-3.5 min-w-0 max-w-full text-xs">
                                             {{ $doc->items_summary ?? $doc->title }}
                                         </td>
                                         <td class="px-5 py-3.5 text-xs text-slate-400">
                                             {{ $doc->uploader?->name ?? 'System' }}
                                         </td>
-                                        <td class="px-5 py-3.5 text-right">
-                                            <div class="flex items-center justify-end gap-2">
+                                        <td class="px-5 py-3.5 text-right" data-card-actions="true">
+                                            <div class="flex items-center justify-end gap-2 flex-wrap">
                                                 <a aria-label="View Document" href="{{ route('projects.documents.view', $doc) }}" target="_blank" class="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition" title="View Document">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                                 </a>

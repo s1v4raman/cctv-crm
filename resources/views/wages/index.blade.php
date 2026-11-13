@@ -212,7 +212,7 @@
                 {{-- Running Ledger Table Card --}}
                 <div class="ld-card flex flex-col flex-1 min-h-0 mb-6">
                     <div class="ld-scroll">
-                        <table class="ld-table">
+                        <table class="ld-table crm-auto-cards">
                             <thead>
                                 <tr>
                                     <th style="min-width: 220px">Worker Name</th>
@@ -224,7 +224,7 @@
                                     <th style="min-width: 110px; text-align: right">Advances</th>
                                     <th style="min-width: 110px; text-align: right">Paid / Settled</th>
                                     <th style="min-width: 130px; text-align: right">Total Payable</th>
-                                    <th style="min-width: 260px; text-align: right">Settlement Actions</th>
+                                    <th style="min-width: 260px; text-align: right" data-col="actions">Settlement Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -316,8 +316,8 @@
                                         ];
                                     @endphp
                                     <tr x-show="matches('{{ addslashes($w ? $w->name : '') }}', '{{ addslashes($w ? $w->phone : '') }}', {{ (float)$due }})">
-                                        <td>
-                                            <div class="flex items-center gap-2">
+                                        <td data-card-header>
+                                            <div class="flex items-center justify-between gap-2 w-full">
                                                 <div>
                                                     @if($w)
                                                         <a href="{{ route('workers.show', $w) }}" class="ld-name font-bold">
@@ -331,7 +331,7 @@
                                                         <span class="font-bold text-slate-500">Worker #{{ $row['worker_id'] ?? '—' }}</span>
                                                     @endif
                                                 </div>
-                                                <button type="button" @click='openAnalysis(@json($rowData))' class="px-2 py-0.5 text-xs font-semibold rounded" style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.12); color: var(--link-color);" title="View Shift Analysis, Verified Photos, and Advances">
+                                                <button type="button" @click='openAnalysis(@json($rowData))' class="px-2 py-0.5 text-xs font-semibold rounded shrink-0" style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.12); color: var(--link-color);" title="View Shift Analysis, Verified Photos, and Advances">
                                                     Analysis ({{ $row['days_worked'] > 0 ? $row['days_worked'] : ($row['prior_days_worked'] > 0 ? $row['prior_days_worked'] . ' b/f' : 0) }})
                                                 </button>
                                             </div>
@@ -415,14 +415,13 @@
                                                 ₹{{ number_format($due, 2) }}
                                             @endif
                                         </td>
-                                        <td class="text-right whitespace-nowrap">
-                                            <div class="inline-flex items-center gap-1.5 justify-end text-xs">
-                                                <button type="button" @click="openAdvance({{ $w->id }}, '{{ addslashes($w->name) }}')" class="text-blue-600 dark:text-blue-400 hover:underline font-semibold cursor-pointer">
-                                                    Advance
+                                        <td class="text-right ld-actions-cell" data-card-actions="true" data-label="">
+                                            <div class="flex flex-wrap items-center gap-1.5 sm:justify-end text-xs w-full">
+                                                <button type="button" @click="openAdvance({{ $w->id }}, '{{ addslashes($w->name) }}')" class="px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 font-semibold cursor-pointer whitespace-nowrap">
+                                                    + Advance
                                                 </button>
 
                                                 @if($row['is_carried_forward'])
-                                                    <span class="text-slate-300 dark:text-slate-600">|</span>
                                                     <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-semibold" style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.12); color: var(--link-color);">
                                                         Carried Fwd
                                                     </span>
@@ -432,53 +431,47 @@
                                                         <input type="hidden" name="settlement_action" value="pay_full">
                                                         <input type="hidden" name="week_start" value="{{ $weekStart->toDateString() }}">
                                                         <input type="hidden" name="payment_mode" value="cash">
-                                                        <button type="submit" class="text-blue-600 dark:text-blue-400 hover:underline font-semibold cursor-pointer">
+                                                        <button type="submit" class="px-2.5 py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-bold cursor-pointer whitespace-nowrap shadow-sm">
                                                             Pay Now
                                                         </button>
                                                     </form>
                                                 @elseif($due > 0)
-                                                    <span class="text-slate-300 dark:text-slate-600">|</span>
                                                     <form method="POST" action="{{ route('wages.settle') }}" class="inline" data-confirm="Disburse full settlement of ₹{{ number_format($due, 2) }} to {{ $w->name }}?">
                                                         @csrf
                                                         <input type="hidden" name="worker_id" value="{{ $w->id }}">
                                                         <input type="hidden" name="settlement_action" value="pay_full">
                                                         <input type="hidden" name="week_start" value="{{ $weekStart->toDateString() }}">
                                                         <input type="hidden" name="payment_mode" value="cash">
-                                                        <button type="submit" class="text-blue-600 dark:text-blue-400 hover:underline font-semibold cursor-pointer">
+                                                        <button type="submit" class="px-2.5 py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-bold cursor-pointer whitespace-nowrap shadow-sm">
                                                             Pay Full
                                                         </button>
                                                     </form>
 
-                                                    <span class="text-slate-300 dark:text-slate-600">|</span>
-                                                    <button type="button" @click="openPayPart({{ $w->id }}, '{{ addslashes($w->name) }}', {{ $due }})" class="text-blue-600 dark:text-blue-400 hover:underline font-semibold cursor-pointer">
+                                                    <button type="button" @click="openPayPart({{ $w->id }}, '{{ addslashes($w->name) }}', {{ $due }})" class="px-2 py-1 rounded bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 hover:bg-blue-100 font-semibold cursor-pointer whitespace-nowrap">
                                                         Pay Part
                                                     </button>
 
-                                                    <span class="text-slate-300 dark:text-slate-600">|</span>
                                                     <form method="POST" action="{{ route('wages.settle') }}" class="inline" data-confirm="Carry forward remaining balance of ₹{{ number_format($due, 2) }} to next week?">
                                                         @csrf
                                                         <input type="hidden" name="worker_id" value="{{ $w->id }}">
                                                         <input type="hidden" name="settlement_action" value="carry_forward">
                                                         <input type="hidden" name="week_start" value="{{ $weekStart->toDateString() }}">
                                                         <input type="hidden" name="payment_mode" value="cash">
-                                                        <button type="submit" class="text-blue-600 dark:text-blue-400 hover:underline font-semibold cursor-pointer">
+                                                        <button type="submit" class="px-2.5 py-1 rounded bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 font-semibold cursor-pointer whitespace-nowrap">
                                                             Carry Fwd
                                                         </button>
                                                     </form>
                                                 @elseif($row['already_settled'] || $row['wages_paid'] > 0)
-                                                    <span class="text-slate-300 dark:text-slate-600">|</span>
-                                                    <span class="font-bold text-emerald-600 dark:text-emerald-400">
+                                                    <span class="font-bold text-emerald-600 dark:text-emerald-400 text-xs">
                                                         ✓ Settled
                                                     </span>
                                                 @else
-                                                    <span class="text-slate-300 dark:text-slate-600">|</span>
-                                                    <span class="text-slate-400">
+                                                    <span class="text-slate-400 text-xs">
                                                         No Shifts
                                                     </span>
                                                 @endif
 
-                                                <span class="text-slate-300 dark:text-slate-600">|</span>
-                                                <button type="button" @click='openAnalysis(@json($rowData))' class="text-xs text-blue-600 dark:text-blue-400 hover:underline font-semibold cursor-pointer">
+                                                <button type="button" @click='openAnalysis(@json($rowData))' class="px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 font-semibold cursor-pointer whitespace-nowrap sm:ml-auto">
                                                     Shifts &amp; Photos
                                                 </button>
                                             </div>
@@ -493,7 +486,7 @@
                                 @endforelse
                             </tbody>
                             @if(count($wageRows) > 0)
-                                <tfoot class="bg-slate-50 dark:bg-slate-800/80 font-bold border-t border-slate-200 dark:border-slate-700">
+                                <tfoot class="hidden md:table-footer-group bg-slate-50 dark:bg-slate-800/80 font-bold border-t border-slate-200 dark:border-slate-700">
                                     <tr>
                                         <td class="px-4 py-3 text-slate-800 dark:text-slate-200">Totals</td>
                                         <td class="px-4 py-3 text-center text-slate-800 dark:text-slate-200">{{ collect($wageRows)->sum('days_worked') }}</td>
@@ -511,8 +504,29 @@
                         </table>
                     </div>
 
-                    {{-- Table Footer (Leads Standard) --}}
-                    <div class="ld-foot">
+                    {{-- Mobile Summary Card (replaces raw unlabelled tfoot on phones) --}}
+                    @if(count($wageRows) > 0)
+                        <div class="block md:hidden p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/60 m-3 space-y-2 text-xs">
+                            <div class="font-bold text-sm text-slate-800 dark:text-slate-100 pb-1 border-b border-slate-200 dark:border-slate-700">Weekly Summary Totals</div>
+                            <div class="grid grid-cols-2 gap-2 text-slate-600 dark:text-slate-300">
+                                <div>Days Worked: <strong class="text-slate-900 dark:text-white font-mono">{{ collect($wageRows)->sum('days_worked') }}</strong></div>
+                                <div>Cabling: <strong class="text-slate-900 dark:text-white font-mono">{{ collect($wageRows)->sum('total_metres') }} m</strong></div>
+                                <div>Cameras: <strong class="text-slate-900 dark:text-white font-mono">{{ collect($wageRows)->sum('total_cameras') }}</strong></div>
+                                <div>Brought Fwd: <strong class="text-slate-900 dark:text-white font-mono">₹{{ number_format($totalBroughtForwardAll, 2) }}</strong></div>
+                                <div>Earned: <strong class="text-emerald-600 dark:text-emerald-400 font-mono">₹{{ number_format($totalEarnedAll, 2) }}</strong></div>
+                                <div>Advances: <strong class="text-amber-600 dark:text-amber-400 font-mono">-₹{{ number_format($totalAdvancesAll, 2) }}</strong></div>
+                                <div>Paid: <strong class="text-emerald-600 dark:text-emerald-400 font-mono">₹{{ number_format($totalWagesPaidAll, 2) }}</strong></div>
+                                <div>Total Workers: <strong class="text-slate-900 dark:text-white font-mono">{{ count($wageRows) }}</strong></div>
+                            </div>
+                            <div class="pt-2 border-t border-slate-200 dark:border-slate-700 flex justify-between items-center text-sm font-bold">
+                                <span class="text-slate-800 dark:text-slate-100">Total Sunday Cash Due:</span>
+                                <span class="font-mono text-rose-600 dark:text-rose-400">₹{{ number_format($totalDueAll, 2) }}</span>
+                            </div>
+                        </div>
+                    @endif
+
+                    {{-- Table Footer (Desktop standard) --}}
+                    <div class="ld-foot !hidden md:!flex">
                         <div>Total Workers: <strong>{{ count($wageRows) }}</strong></div>
                         <div class="flex items-center gap-4">
                             <div>Total Sunday Cash Due: <strong class="text-rose-600 dark:text-rose-400">₹{{ number_format($totalDueAll, 2) }}</strong></div>

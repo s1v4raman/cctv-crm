@@ -196,7 +196,7 @@
                             <span class="text-lg font-extrabold text-blue-600 dark:text-blue-400">&#8377;{{ number_format($todayEarnings, 2) }}</span>
                             @if ($todayAttendance)
                                 <span class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
-                                    (&#8377;{{ number_format($todayBaseWage, 0) }} base + &#8377;{{ number_format($todayCablingAmount, 0) }} cabling [{{ number_format($todayCablingMetres, 1) }}m @ &#8377;{{ number_format($todayCablingRate, 2) }}/m]@if($todayExtraAmount > 0) + &#8377;{{ number_format($todayExtraAmount, 0) }} extra @endif)
+                                    (&#8377;{{ number_format($todayBaseWage, 0) }} {{ __('base') }} + &#8377;{{ number_format($todayCablingAmount, 0) }} {{ __('cabling') }} [{{ number_format($todayCablingMetres, 1) }}m @ &#8377;{{ number_format($todayCablingRate, 2) }}/m]@if($todayExtraAmount > 0) + &#8377;{{ number_format($todayExtraAmount, 0) }} {{ __('extra') }} @endif)
                                 </span>
                             @endif
                         </div>
@@ -307,7 +307,7 @@
                             <option value="">-- {{ __('Choose Assigned Project / Site') }} --</option>
                             @foreach ($activeProjects as $proj)
                                 <option value="{{ $proj->id }}" {{ ($todayAttendance?->workDay?->project_id == $proj->id) ? 'selected' : '' }}>
-                                    {{ $proj->code ? '[' . $proj->code . '] ' : '' }}{{ $proj->title }} ({{ $proj->customer?->name ?? __('Customer Site') }})
+                                    {{ $proj->code ? '[' . $proj->code . '] ' : '' }}{{ $proj->title }}@if($proj->customer && !str_contains(strtolower($proj->title), strtolower($proj->customer->name))) ({{ $proj->customer->name }})@endif
                                 </option>
                             @endforeach
                         </select>
@@ -480,7 +480,7 @@
                             <option value="">-- {{ __('Choose Installation Project') }} --</option>
                             @foreach ($activeProjects as $proj)
                                 <option value="{{ $proj->id }}">
-                                    {{ $proj->code ? '[' . $proj->code . '] ' : '' }}{{ $proj->title }} ({{ $proj->customer?->name ?? __('Site') }})
+                                    {{ $proj->code ? '[' . $proj->code . '] ' : '' }}{{ $proj->title }}@if($proj->customer && !str_contains(strtolower($proj->title), strtolower($proj->customer->name))) ({{ $proj->customer->name }})@endif
                                 </option>
                             @endforeach
                         </select>
@@ -807,7 +807,7 @@
                                         <td class="py-2 px-3 text-right font-mono font-bold text-blue-700 dark:text-blue-400 whitespace-nowrap">
                                             <div class="text-sm">&#8377;{{ number_format($att->total_amount, 2) }}</div>
                                             <div class="text-[10px] text-slate-500 dark:text-slate-400 font-normal">
-                                                &#8377;{{ number_format($attBaseWage, 0) }} base + &#8377;{{ number_format($attCablingAmount, 0) }} cabling
+                                                &#8377;{{ number_format($attBaseWage, 0) }} {{ __('base') }} + &#8377;{{ number_format($attCablingAmount, 0) }} {{ __('cabling') }}
                                             </div>
                                         </td>
                                     </tr>

@@ -179,7 +179,7 @@
                             <td style="color: var(--text-main); font-weight: 500;">
                                 <div class="flex items-center gap-3 flex-wrap">
                                     <span>{{ $lead->phone }}</span>
-                                    <div class="inline-flex items-center gap-1.5">
+                                    <div class="inline-flex items-center gap-1.5 flex-wrap">
                                         <a href="tel:{{ $lead->phone }}" class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition" title="Call Contact">
                                             <svg class="w-3 h-3 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
                                             <span>Call</span>

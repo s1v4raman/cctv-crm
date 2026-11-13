@@ -72,9 +72,8 @@
                     });
                 }
 
-                // 2. Intercept beforeinstallprompt for native install button
+                // 2. Capture beforeinstallprompt for custom install triggers without causing browser warning
                 window.addEventListener('beforeinstallprompt', (e) => {
-                    e.preventDefault();
                     this.deferredPrompt = e;
                     this.canInstall = true;
                     this.syncGlobalState();
