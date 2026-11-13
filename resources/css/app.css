@@ -4698,7 +4698,9 @@ button.ld-accent svg {
 
     table.crm-auto-cards tfoot,
     table.crm-responsive tfoot,
-    .ld-table tfoot {
+    .ld-table tfoot,
+    .crm-content table tfoot,
+    table tfoot {
         display: none !important;
     }
 
@@ -4972,18 +4974,14 @@ button.ld-accent svg {
     .crm-content table.crm-responsive td.ld-actions-cell,
     .crm-content table.crm-auto-cards td.crm-card-actions,
     .crm-content table.crm-responsive td.crm-card-actions {
-        display: flex !important;
-        flex-direction: row !important;
-        flex-wrap: wrap !important;
-        align-items: center !important;
-        justify-content: flex-start !important;
-        gap: 6px !important;
+        display: block !important;
         width: 100% !important;
         max-width: 100% !important;
-        padding-top: 10px !important;
+        padding-top: 8px !important;
         margin-top: 6px !important;
         border-top: 1px solid var(--table-border) !important;
         border-bottom: 0 !important;
+        text-align: left !important;
     }
 
     table.crm-auto-cards td[data-card-actions]::before,

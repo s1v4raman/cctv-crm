@@ -6,7 +6,7 @@
         </div>
     </x-slot>
 
-    <div class="py-6 px-4 sm:px-6 max-w-[800px] mx-auto" x-data="equipmentRegisterForm(@js($products))" x-init="calculateWarranties()">
+    <div class="py-6 px-4 sm:px-6 max-w-[800px] mx-auto pb-32" x-data="equipmentRegisterForm(@js($products))" x-init="calculateWarranties()">
 
             @if ($errors->any())
                 <div class="mb-4 p-4 rounded-[4px] bg-red-50 border border-red-200 text-[#dc2626] text-sm">
@@ -176,12 +176,12 @@
                         <textarea aria-label="Technical Notes / Config Details" name="notes" rows="3" class="crm-input w-full p-3 text-sm rounded-lg" style="height: auto;" placeholder="e.g. IP 192.168.1.104, default admin credentials, Lens 2.8mm">{{ old('notes') }}</textarea>
                     </div>
 
-                    <div class="flex flex-wrap items-center gap-3 pt-4 border-t border-slate-200 dark:border-slate-800 max-w-full">
-                        <button type="submit" class="btn-md min-h-[44px] h-auto px-6 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md transition cursor-pointer inline-flex items-center gap-2 max-w-full whitespace-normal text-left">
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-4 border-t border-slate-200 dark:border-slate-800 max-w-full">
+                        <button type="submit" class="w-full sm:w-auto btn-md min-h-[44px] h-auto px-6 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md transition cursor-pointer inline-flex items-center justify-center gap-2 max-w-full text-center">
                             <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
                             <span>Save &amp; Register Equipment</span>
                         </button>
-                        <a href="{{ route('equipment.index') }}" class="btn-md min-h-[44px] h-auto px-5 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white hover:bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-semibold text-sm transition inline-flex items-center">
+                        <a href="{{ route('equipment.index') }}" class="w-full sm:w-auto btn-md min-h-[44px] h-auto px-5 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white hover:bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-semibold text-sm transition inline-flex items-center justify-center text-center">
                             Cancel
                         </a>
                     </div>

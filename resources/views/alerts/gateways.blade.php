@@ -64,12 +64,12 @@
 
                         {{-- Card 1: Active Gateway Selector --}}
                         <div class="bg-white dark:bg-[#0f172a] rounded-[4px] p-6 border border-[#ddd] dark:border-slate-800 space-y-4">
-                            <div class="flex items-center justify-between pb-3 border-b border-[#eee] dark:border-slate-800">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#eee] dark:border-slate-800">
                                 <div>
                                     <h3 class="text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white">1. Active SMS &amp; Alert Gateway</h3>
                                     <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Choose which service provider dispatches SMS and real-time triggers.</p>
                                 </div>
-                                <span class="px-2.5 py-1 rounded-[4px] text-xs font-semibold {{ $settings->active_sms_gateway === 'log' ? 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300 border border-amber-200' : 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-200' }}">
+                                <span class="px-2.5 py-1 rounded-[4px] text-xs font-semibold shrink-0 {{ $settings->active_sms_gateway === 'log' ? 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300 border border-amber-200' : 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-200' }}">
                                     Active: {{ strtoupper(str_replace('_', ' ', $settings->active_sms_gateway)) }}
                                 </span>
                             </div>
@@ -278,13 +278,13 @@
                         {{-- Card 7: SMTP Mail Gateway --}}
                         <div class="bg-white dark:bg-[#0f172a] rounded-[4px] p-6 border border-[#ddd] dark:border-slate-800 space-y-4">
                             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#eee] dark:border-slate-800">
-                                <div>
+                                <div class="min-w-0 max-w-full">
                                     <h3 class="text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white">7. SMTP Email Configuration</h3>
-                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Send transaction receipts, dispatch schedules, and PDF quotations via official company email.</p>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 break-words">Send transaction receipts, dispatch schedules, and PDF quotations via official company email.</p>
                                 </div>
-                                <div class="flex flex-wrap items-center gap-1.5 shrink-0">
-                                    <button type="button" onclick="applyMailPreset('outlook')" class="btn-secondary text-[11px] h-[30px] px-2.5">Office 365</button>
-                                    <button type="button" onclick="applyMailPreset('gmail')" class="btn-secondary text-[11px] h-[30px] px-2.5">Gmail</button>
+                                <div class="flex flex-wrap items-center gap-2 shrink-0">
+                                    <button type="button" onclick="applyMailPreset('outlook')" class="btn-secondary text-xs h-[32px] px-3">Office 365</button>
+                                    <button type="button" onclick="applyMailPreset('gmail')" class="btn-secondary text-xs h-[32px] px-3">Gmail</button>
                                 </div>
                             </div>
 

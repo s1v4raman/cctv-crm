@@ -17,7 +17,7 @@
         </div>
     </x-slot>
 
-    <div class="py-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-6"
+    <div class="py-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-6 pb-28"
          x-data="{
              selectedDcs: [],
              invoiceModalOpen: false,
@@ -110,8 +110,79 @@
                         </div>
                     </div>
 
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-sm text-slate-600 dark:text-slate-300 crm-auto-cards">
+                    {{-- Mobile App Card Layout (< 768px) --}}
+                    <div class="md:hidden divide-y divide-slate-100 dark:divide-slate-800">
+                        @foreach($docs as $doc)
+                            <div class="p-4 space-y-3 bg-white dark:bg-[#0f172a]">
+                                {{-- Card Header: Checkbox + DC No & Date + Quick View --}}
+                                <div class="flex items-center justify-between gap-2">
+                                    <label class="flex items-center gap-2.5 cursor-pointer min-w-0">
+                                        <input type="checkbox" :value="{{ $doc->id }}" x-model="selectedDcs" class="rounded text-blue-600 focus:ring-blue-500 w-4 h-4">
+                                        <div>
+                                            <span class="font-bold font-mono text-slate-900 dark:text-white text-sm">
+                                                {{ $doc->dc_number ?? 'DC-N/A' }}
+                                            </span>
+                                            <span class="text-xs text-slate-400 ml-1.5">
+                                                {{ $doc->dc_date ? $doc->dc_date->format('d M Y') : 'No date' }}
+                                            </span>
+                                        </div>
+                                    </label>
+
+                                    <a aria-label="View Document" href="{{ route('projects.documents.view', $doc) }}" target="_blank" class="p-2 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition shrink-0" title="View Document">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                    </a>
+                                </div>
+
+                                {{-- Site & Client Details --}}
+                                <div class="rounded-lg bg-slate-50/70 dark:bg-slate-800/40 p-2.5 border border-slate-100 dark:border-slate-800 space-y-1">
+                                    <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Client / Site</div>
+                                    <div class="font-semibold text-slate-800 dark:text-slate-200 text-xs break-words">
+                                        {{ $doc->project->site?->name ?? $doc->project->company_name }}
+                                    </div>
+                                    @if($doc->project->site?->address ?? $doc->project->site_address)
+                                        <div class="text-[11px] text-slate-500 dark:text-slate-400 break-words leading-relaxed">
+                                            {{ $doc->project->site?->address ?? $doc->project->site_address }}
+                                        </div>
+                                    @endif
+                                </div>
+
+                                {{-- Project Details --}}
+                                <div class="space-y-1">
+                                    <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Project</div>
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <a href="{{ route('projects.show', $doc->project) }}" class="font-bold text-xs hover:underline" style="color: var(--link-color);">
+                                            {{ $doc->project->project_code }}
+                                        </a>
+                                        <span class="text-xs text-slate-600 dark:text-slate-300 break-words flex-1 min-w-0">
+                                            {{ $doc->project->title }}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {{-- Items & Uploader Summary --}}
+                                <div class="flex items-center justify-between text-xs pt-1 border-t border-slate-100 dark:border-slate-800 text-slate-500 dark:text-slate-400">
+                                    <div class="truncate max-w-[65%]">
+                                        {{ $doc->items_summary ?? $doc->title }}
+                                    </div>
+                                    <div class="text-[11px] shrink-0 font-medium">
+                                        By {{ $doc->uploader?->name ?? 'System' }}
+                                    </div>
+                                </div>
+
+                                {{-- Card Action --}}
+                                <div class="pt-2">
+                                    <button type="button" @click="openInvoiceModal({{ $doc->id }})" class="w-full py-2.5 px-4 rounded-xl text-xs font-bold bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition text-center justify-center inline-flex items-center gap-1.5 min-h-[44px]">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                        <span>Mark Invoiced</span>
+                                    </button>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    {{-- Desktop Table View (>= 768px) --}}
+                    <div class="hidden md:block overflow-x-auto">
+                        <table class="no-auto-cards w-full text-left text-sm text-slate-600 dark:text-slate-300">
                             <thead class="bg-white dark:bg-[#0f172a] text-[11px] uppercase font-bold text-slate-400 border-b border-slate-100 dark:border-slate-800">
                                 <tr>
                                     <th class="px-5 py-3 w-10 ld-box"></th>
@@ -126,10 +197,10 @@
                             <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
                                 @foreach($docs as $doc)
                                     <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition">
-                                        <td class="px-5 py-3.5 ld-box" data-label="">
+                                        <td class="px-5 py-3.5 ld-box">
                                             <input type="checkbox" :value="{{ $doc->id }}" x-model="selectedDcs" class="rounded text-blue-600 focus:ring-blue-500">
                                         </td>
-                                        <td class="px-5 py-3.5" data-card-header>
+                                        <td class="px-5 py-3.5">
                                             <div class="font-bold font-mono text-slate-900 dark:text-white text-sm">
                                                 {{ $doc->dc_number ?? 'DC-N/A' }}
                                             </div>
@@ -157,7 +228,7 @@
                                         <td class="px-5 py-3.5 text-xs text-slate-400">
                                             {{ $doc->uploader?->name ?? 'System' }}
                                         </td>
-                                        <td class="px-5 py-3.5 text-right" data-card-actions="true">
+                                        <td class="px-5 py-3.5 text-right">
                                             <div class="flex items-center justify-end gap-2 flex-wrap">
                                                 <a aria-label="View Document" href="{{ route('projects.documents.view', $doc) }}" target="_blank" class="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition" title="View Document">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>

@@ -45,6 +45,8 @@ const labelRows = (table) => {
             const rawLabel = (cell.colSpan || 1) > 1 ? '' : (labels[column] || '');
             const isActionCol = rawLabel.toLowerCase().includes('action') || 
                                 cell.classList.contains('ld-actions-cell') ||
+                                cell.classList.contains('crm-card-actions') ||
+                                cell.hasAttribute('data-card-actions') ||
                                 cell.getAttribute('data-col') === 'actions' ||
                                 cell.querySelector('.ld-row-actions') ||
                                 (idx === totalCols - 1 && cell.querySelector('button, form, a[href*="edit"], a[href*="delete"]'));

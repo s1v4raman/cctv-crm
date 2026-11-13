@@ -416,64 +416,67 @@
                                             @endif
                                         </td>
                                         <td class="text-left sm:text-right ld-actions-cell crm-card-actions" data-card-actions="true" data-label="">
-                                            <div class="flex flex-wrap items-center gap-1.5 sm:justify-end text-xs w-full max-w-full">
-                                                <button type="button" @click="openAdvance({{ $w->id }}, '{{ addslashes($w->name) }}')" class="px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 font-semibold cursor-pointer whitespace-nowrap">
-                                                    + Advance
-                                                </button>
-
-                                                @if($row['is_carried_forward'])
-                                                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-semibold" style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.12); color: var(--link-color);">
-                                                        Carried Fwd
-                                                    </span>
-                                                    <form method="POST" action="{{ route('wages.settle') }}" class="inline ml-1" data-confirm="Disburse settlement of ₹{{ number_format($row['carried_forward_balance'], 2) }} now to {{ $w->name }}?">
-                                                        @csrf
-                                                        <input type="hidden" name="worker_id" value="{{ $w->id }}">
-                                                        <input type="hidden" name="settlement_action" value="pay_full">
-                                                        <input type="hidden" name="week_start" value="{{ $weekStart->toDateString() }}">
-                                                        <input type="hidden" name="payment_mode" value="cash">
-                                                        <button type="submit" class="px-2.5 py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-bold cursor-pointer whitespace-nowrap shadow-sm">
-                                                            Pay Now
-                                                        </button>
-                                                    </form>
-                                                @elseif($due > 0)
-                                                    <form method="POST" action="{{ route('wages.settle') }}" class="inline" data-confirm="Disburse full settlement of ₹{{ number_format($due, 2) }} to {{ $w->name }}?">
-                                                        @csrf
-                                                        <input type="hidden" name="worker_id" value="{{ $w->id }}">
-                                                        <input type="hidden" name="settlement_action" value="pay_full">
-                                                        <input type="hidden" name="week_start" value="{{ $weekStart->toDateString() }}">
-                                                        <input type="hidden" name="payment_mode" value="cash">
-                                                        <button type="submit" class="px-2.5 py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-bold cursor-pointer whitespace-nowrap shadow-sm">
-                                                            Pay Full
-                                                        </button>
-                                                    </form>
-
-                                                    <button type="button" @click="openPayPart({{ $w->id }}, '{{ addslashes($w->name) }}', {{ $due }})" class="px-2 py-1 rounded bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 hover:bg-blue-100 font-semibold cursor-pointer whitespace-nowrap">
-                                                        Pay Part
+                                            <div class="w-full pt-2 mt-2 border-t border-slate-100 dark:border-slate-800">
+                                                {{-- Mobile App Grid (2 cols) / Desktop Flex Row --}}
+                                                <div class="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 sm:justify-end text-xs w-full">
+                                                    <button type="button" @click="openAdvance({{ $w->id }}, '{{ addslashes($w->name) }}')" class="w-full sm:w-auto px-3 py-2 sm:py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 font-semibold cursor-pointer text-center justify-center inline-flex items-center">
+                                                        + Advance
                                                     </button>
 
-                                                    <form method="POST" action="{{ route('wages.settle') }}" class="inline" data-confirm="Carry forward remaining balance of ₹{{ number_format($due, 2) }} to next week?">
-                                                        @csrf
-                                                        <input type="hidden" name="worker_id" value="{{ $w->id }}">
-                                                        <input type="hidden" name="settlement_action" value="carry_forward">
-                                                        <input type="hidden" name="week_start" value="{{ $weekStart->toDateString() }}">
-                                                        <input type="hidden" name="payment_mode" value="cash">
-                                                        <button type="submit" class="px-2.5 py-1 rounded bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 font-semibold cursor-pointer whitespace-nowrap">
-                                                            Carry Fwd
-                                                        </button>
-                                                    </form>
-                                                @elseif($row['already_settled'] || $row['wages_paid'] > 0)
-                                                    <span class="font-bold text-emerald-600 dark:text-emerald-400 text-xs">
-                                                        ✓ Settled
-                                                    </span>
-                                                @else
-                                                    <span class="text-slate-400 text-xs">
-                                                        No Shifts
-                                                    </span>
-                                                @endif
+                                                    @if($row['is_carried_forward'])
+                                                        <span class="inline-flex items-center justify-center px-2 py-1 rounded text-[11px] font-semibold" style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.12); color: var(--link-color);">
+                                                            Carried Fwd
+                                                        </span>
+                                                        <form method="POST" action="{{ route('wages.settle') }}" class="w-full sm:w-auto inline" data-confirm="Disburse settlement of ₹{{ number_format($row['carried_forward_balance'], 2) }} now to {{ $w->name }}?">
+                                                            @csrf
+                                                            <input type="hidden" name="worker_id" value="{{ $w->id }}">
+                                                            <input type="hidden" name="settlement_action" value="pay_full">
+                                                            <input type="hidden" name="week_start" value="{{ $weekStart->toDateString() }}">
+                                                            <input type="hidden" name="payment_mode" value="cash">
+                                                            <button type="submit" class="w-full sm:w-auto px-3 py-2 sm:py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold cursor-pointer text-center justify-center shadow-xs inline-flex items-center">
+                                                                Pay Now
+                                                            </button>
+                                                        </form>
+                                                    @elseif($due > 0)
+                                                        <form method="POST" action="{{ route('wages.settle') }}" class="w-full sm:w-auto inline" data-confirm="Disburse full settlement of ₹{{ number_format($due, 2) }} to {{ $w->name }}?">
+                                                            @csrf
+                                                            <input type="hidden" name="worker_id" value="{{ $w->id }}">
+                                                            <input type="hidden" name="settlement_action" value="pay_full">
+                                                            <input type="hidden" name="week_start" value="{{ $weekStart->toDateString() }}">
+                                                            <input type="hidden" name="payment_mode" value="cash">
+                                                            <button type="submit" class="w-full sm:w-auto px-3 py-2 sm:py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold cursor-pointer text-center justify-center shadow-xs inline-flex items-center">
+                                                                Pay Full
+                                                            </button>
+                                                        </form>
 
-                                                <button type="button" @click='openAnalysis(@json($rowData))' class="px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 font-semibold cursor-pointer whitespace-nowrap sm:ml-auto">
-                                                    Shifts &amp; Photos
-                                                </button>
+                                                        <button type="button" @click="openPayPart({{ $w->id }}, '{{ addslashes($w->name) }}', {{ $due }})" class="w-full sm:w-auto px-3 py-2 sm:py-1 rounded-lg bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 hover:bg-blue-100 font-semibold cursor-pointer text-center justify-center inline-flex items-center">
+                                                            Pay Part
+                                                        </button>
+
+                                                        <form method="POST" action="{{ route('wages.settle') }}" class="w-full sm:w-auto inline" data-confirm="Carry forward remaining balance of ₹{{ number_format($due, 2) }} to next week?">
+                                                            @csrf
+                                                            <input type="hidden" name="worker_id" value="{{ $w->id }}">
+                                                            <input type="hidden" name="settlement_action" value="carry_forward">
+                                                            <input type="hidden" name="week_start" value="{{ $weekStart->toDateString() }}">
+                                                            <input type="hidden" name="payment_mode" value="cash">
+                                                            <button type="submit" class="w-full sm:w-auto px-3 py-2 sm:py-1 rounded-lg bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 font-semibold cursor-pointer text-center justify-center inline-flex items-center">
+                                                                Carry Fwd
+                                                            </button>
+                                                        </form>
+                                                    @elseif($row['already_settled'] || $row['wages_paid'] > 0)
+                                                        <span class="w-full sm:w-auto font-bold text-emerald-600 dark:text-emerald-400 text-xs py-1 px-2 text-center inline-flex items-center justify-center">
+                                                            ✓ Settled
+                                                        </span>
+                                                    @else
+                                                        <span class="w-full sm:w-auto text-slate-400 text-xs py-1 px-2 text-center inline-flex items-center justify-center">
+                                                            No Shifts
+                                                        </span>
+                                                    @endif
+
+                                                    <button type="button" @click='openAnalysis(@json($rowData))' class="col-span-2 sm:col-span-1 w-full sm:w-auto px-3 py-2 sm:py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 font-semibold cursor-pointer text-center justify-center inline-flex items-center sm:ml-auto">
+                                                        Shifts &amp; Photos
+                                                    </button>
+                                                </div>
                                             </div>
                                         </td>
                                     </tr>
@@ -486,7 +489,7 @@
                                 @endforelse
                             </tbody>
                             @if(count($wageRows) > 0)
-                                <tfoot class="hidden md:table-footer-group bg-slate-50 dark:bg-slate-800/80 font-bold border-t border-slate-200 dark:border-slate-700">
+                                <tfoot class="hidden md:table-footer-group bg-slate-50 dark:bg-slate-800/80 font-bold border-t border-slate-200 dark:border-slate-700" style="display: none;">
                                     <tr>
                                         <td class="px-4 py-3 text-slate-800 dark:text-slate-200">Totals</td>
                                         <td class="px-4 py-3 text-center text-slate-800 dark:text-slate-200">{{ collect($wageRows)->sum('days_worked') }}</td>
@@ -526,7 +529,7 @@
                     @endif
 
                     {{-- Table Footer (Desktop standard) --}}
-                    <div class="ld-foot !hidden md:!flex">
+                    <div class="ld-foot hidden md:flex">
                         <div>Total Workers: <strong>{{ count($wageRows) }}</strong></div>
                         <div class="flex items-center gap-4">
                             <div>Total Sunday Cash Due: <strong class="text-rose-600 dark:text-rose-400">₹{{ number_format($totalDueAll, 2) }}</strong></div>
@@ -1049,30 +1052,30 @@
                     </div>
 
                     {{-- Modal Footer Actions --}}
-                    <div class="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-slate-800">
-                        <button type="button" @click="analysisModalOpen = false" class="btn-md px-4 py-2 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded text-sm font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 pt-4 border-t border-slate-200 dark:border-slate-800 w-full">
+                        <button type="button" @click="analysisModalOpen = false" class="w-full sm:w-auto btn-md px-4 py-2 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-lg text-sm font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition text-center justify-center inline-flex items-center">
                             Close
                         </button>
 
-                        <div class="flex items-center gap-2">
-                            <button type="button" @click="openAdvance(selectedAnalysis.id, selectedAnalysis.name)" class="btn-md inline-flex items-center gap-1.5 px-3 py-2 rounded bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-700 hover:bg-amber-100 text-sm font-semibold transition">
+                        <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
+                            <button type="button" @click="openAdvance(selectedAnalysis.id, selectedAnalysis.name)" class="flex-1 sm:flex-none btn-md inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-700 hover:bg-amber-100 text-xs sm:text-sm font-semibold transition text-center">
                                 <x-icon.plus />
                                 <span>Record Advance</span>
                             </button>
 
                             <template x-if="selectedAnalysis?.total_due > 0">
-                                <div class="flex items-center gap-2">
-                                    <button type="button" @click="openPayPart(selectedAnalysis.id, selectedAnalysis.name, selectedAnalysis.total_due)" class="btn-md px-3 py-2 rounded bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-300 dark:border-blue-700 hover:bg-blue-100 text-sm font-semibold transition">
+                                <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                                    <button type="button" @click="openPayPart(selectedAnalysis.id, selectedAnalysis.name, selectedAnalysis.total_due)" class="flex-1 sm:flex-none btn-md px-3 py-2 rounded-lg bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-300 dark:border-blue-700 hover:bg-blue-100 text-xs sm:text-sm font-semibold transition text-center justify-center inline-flex items-center">
                                         Pay Part
                                     </button>
 
-                                    <form method="POST" action="{{ route('wages.settle') }}" class="inline" data-confirm="Disburse full remaining weekly settlement?">
+                                    <form method="POST" action="{{ route('wages.settle') }}" class="flex-1 sm:flex-none inline" data-confirm="Disburse full remaining weekly settlement?">
                                         @csrf
                                         <input type="hidden" name="worker_id" :value="selectedAnalysis.id">
                                         <input type="hidden" name="settlement_action" value="pay_full">
                                         <input type="hidden" name="week_start" value="{{ $weekStart->toDateString() }}">
                                         <input type="hidden" name="payment_mode" value="cash">
-                                        <button type="submit" class="btn-md px-4 py-2 rounded bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold shadow transition">
+                                        <button type="submit" class="w-full sm:w-auto btn-md px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold shadow transition text-center justify-center inline-flex items-center">
                                             Pay Full (₹<span x-text="selectedAnalysis?.total_due?.toFixed(2)"></span>)
                                         </button>
                                     </form>
