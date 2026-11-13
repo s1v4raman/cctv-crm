@@ -555,13 +555,13 @@ class WageController extends Controller implements HasMiddleware
             // UTF-8 byte order mark, so Excel shows Tamil worker names (and ₹) instead of garbled text
             fwrite($handle, "\xEF\xBB\xBF");
 
-            fputcsv($handle, ['SecureVision CRM - Sunday Weekly Wage Payout Ledger']);
-            fputcsv($handle, ['Week Cycle', $weekStart->format('d M Y') . ' to ' . $weekEnd->format('d M Y')]);
-            fputcsv($handle, ['Payday Date', $paydaySunday->format('d M Y')]);
-            fputcsv($handle, ['Generated At', now()->toDateTimeString()]);
-            fputcsv($handle, []);
+            \App\Support\CsvHelper::writeRow($handle, ['SecureVision CRM - Sunday Weekly Wage Payout Ledger']);
+            \App\Support\CsvHelper::writeRow($handle, ['Week Cycle', $weekStart->format('d M Y') . ' to ' . $weekEnd->format('d M Y')]);
+            \App\Support\CsvHelper::writeRow($handle, ['Payday Date', $paydaySunday->format('d M Y')]);
+            \App\Support\CsvHelper::writeRow($handle, ['Generated At', now()->toDateTimeString()]);
+            \App\Support\CsvHelper::writeRow($handle, []);
 
-            fputcsv($handle, [
+            \App\Support\CsvHelper::writeRow($handle, [
                 'Worker Name',
                 'Phone',
                 'Daily Rate (₹)',
@@ -614,7 +614,7 @@ class WageController extends Controller implements HasMiddleware
                     $status = 'Partially Settled';
                 }
 
-                fputcsv($handle, [
+                \App\Support\CsvHelper::writeRow($handle, [
                     $w->name,
                     $w->phone ?? '—',
                     number_format($w->daily_rate, 2),

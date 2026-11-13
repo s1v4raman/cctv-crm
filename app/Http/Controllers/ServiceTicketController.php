@@ -141,7 +141,7 @@ class ServiceTicketController extends Controller
             // Add UTF-8 Byte Order Mark (BOM) so Excel/spreadsheet viewers open it cleanly without encoding or corruption errors
             fprintf($handle, chr(0xEF) . chr(0xBB) . chr(0xBF));
 
-            fputcsv($handle, [
+            \App\Support\CsvHelper::writeRow($handle, [
                 'Ticket No',
                 'Customer Name',
                 'Phone',
@@ -162,7 +162,7 @@ class ServiceTicketController extends Controller
             ]);
 
             foreach ($tickets as $ticket) {
-                fputcsv($handle, [
+                \App\Support\CsvHelper::writeRow($handle, [
                     $ticket->ticket_no ?? '',
                     $ticket->lead?->customer_name ?? 'N/A',
                     $ticket->lead?->phone ?? '',

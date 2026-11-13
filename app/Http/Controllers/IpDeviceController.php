@@ -261,16 +261,16 @@ class IpDeviceController extends Controller
             $handle = fopen('php://output', 'w');
 
             // Metadata Header
-            fputcsv($handle, ['SecureVision CRM - IP Device Configuration Register']);
-            fputcsv($handle, ['Project Code', $project->project_code]);
-            fputcsv($handle, ['Project Title', $project->title]);
-            fputcsv($handle, ['Client / Site', $project->site?->name ?? $project->company_name]);
-            fputcsv($handle, ['Executing Company', $project->company?->name ?? 'Precision IT Systems']);
-            fputcsv($handle, ['Exported On', now()->toDateTimeString()]);
-            fputcsv($handle, []);
+            \App\Support\CsvHelper::writeRow($handle, ['SecureVision CRM - IP Device Configuration Register']);
+            \App\Support\CsvHelper::writeRow($handle, ['Project Code', $project->project_code]);
+            \App\Support\CsvHelper::writeRow($handle, ['Project Title', $project->title]);
+            \App\Support\CsvHelper::writeRow($handle, ['Client / Site', $project->site?->name ?? $project->company_name]);
+            \App\Support\CsvHelper::writeRow($handle, ['Executing Company', $project->company?->name ?? 'Precision IT Systems']);
+            \App\Support\CsvHelper::writeRow($handle, ['Exported On', now()->toDateTimeString()]);
+            \App\Support\CsvHelper::writeRow($handle, []);
 
             // Columns (Note: passwords excluded from bulk export for high security)
-            fputcsv($handle, [
+            \App\Support\CsvHelper::writeRow($handle, [
                 'Device Name',
                 'Device Type',
                 'IP Address',
@@ -286,7 +286,7 @@ class IpDeviceController extends Controller
             ]);
 
             foreach ($devices as $d) {
-                fputcsv($handle, [
+                \App\Support\CsvHelper::writeRow($handle, [
                     $d->device_name,
                     $d->device_type,
                     $d->ip_address,

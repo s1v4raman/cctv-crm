@@ -896,7 +896,7 @@ class ProjectController extends Controller
 
         $callback = function () use ($projects) {
             $file = fopen('php://output', 'w');
-            fputcsv($file, [
+            \App\Support\CsvHelper::writeRow($file, [
                 'Project Code',
                 'Executing Company',
                 'Site / Client',
@@ -925,7 +925,7 @@ class ProjectController extends Controller
                     $specsSummary = $prj->software_specs['webpage_url'] ?? 'Web Specs';
                 }
 
-                fputcsv($file, [
+                \App\Support\CsvHelper::writeRow($file, [
                     $prj->project_code,
                     $prj->company?->name ?? 'Unassigned',
                     $prj->site?->name ?? $prj->company_name,

@@ -255,7 +255,7 @@ class WorkerAttendanceController extends Controller
             // UTF-8 BOM for Microsoft Excel compatibility
             fputs($handle, "\xEF\xBB\xBF");
 
-            fputcsv($handle, [
+            \App\Support\CsvHelper::writeRow($handle, [
                 'Date',
                 'Worker ID',
                 'Worker Name',
@@ -278,7 +278,7 @@ class WorkerAttendanceController extends Controller
                 $att = $item->attendance;
                 $p = $item->project;
 
-                fputcsv($handle, [
+                \App\Support\CsvHelper::writeRow($handle, [
                     $selectedDate->format('Y-m-d'),
                     $w?->id ?? '',
                     $w?->name ?? 'Unknown',
@@ -658,7 +658,8 @@ class WorkerAttendanceController extends Controller
         // 1. Process uploaded file photo
         if ($request->hasFile('photo')) {
             $file = $request->file('photo');
-            $filename = 'attendance_' . (count($workerIds) === 1 ? $workerIds[0] : 'bulk') . '_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $ext = $file->extension() ?: 'jpg';
+            $filename = 'attendance_' . (count($workerIds) === 1 ? $workerIds[0] : 'bulk') . '_' . time() . '_' . uniqid() . '.' . $ext;
             $photoPath = $file->storeAs('attendance_photos', $filename, 'public');
             $mime = $file->getMimeType() ?: 'image/jpeg';
             $fileContent = @file_get_contents($file->getRealPath());

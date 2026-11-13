@@ -113,7 +113,8 @@ class WorkerController extends Controller
 
         if ($request->hasFile('photo')) {
             $file = $request->file('photo');
-            $filename = 'worker_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $ext = $file->extension() ?: 'jpg';
+            $filename = 'worker_' . time() . '_' . uniqid() . '.' . $ext;
             $photoPath = $file->storeAs('worker_photos', $filename, 'public');
             $validated['photo_path'] = $photoPath;
             $mime = $file->getMimeType() ?: 'image/jpeg';
@@ -264,7 +265,8 @@ class WorkerController extends Controller
                 Storage::disk('public')->delete($worker->photo_path);
             }
             $file = $request->file('photo');
-            $filename = 'worker_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $ext = $file->extension() ?: 'jpg';
+            $filename = 'worker_' . time() . '_' . uniqid() . '.' . $ext;
             $photoPath = $file->storeAs('worker_photos', $filename, 'public');
             $validated['photo_path'] = $photoPath;
             $mime = $file->getMimeType() ?: 'image/jpeg';

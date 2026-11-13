@@ -65,9 +65,9 @@ class LeadController extends Controller
 
         return response()->streamDownload(function () use ($leads) {
             $out = fopen('php://output', 'w');
-            fputcsv($out, ['Lead name', 'Company', 'Email', 'Phone', 'Lead source', 'Status', 'GSTIN', 'Site address', 'Added on']);
+            \App\Support\CsvHelper::writeRow($out, ['Lead name', 'Company', 'Email', 'Phone', 'Lead source', 'Status', 'GSTIN', 'Site address', 'Added on']);
             foreach ($leads as $lead) {
-                fputcsv($out, [
+                \App\Support\CsvHelper::writeRow($out, [
                     $lead->customer_name, $lead->company_name, $lead->email, $lead->phone, $lead->source,
                     ucfirst($lead->status), $lead->gstin, $lead->site_address, $lead->created_at?->format('Y-m-d'),
                 ]);

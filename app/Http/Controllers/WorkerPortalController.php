@@ -215,7 +215,8 @@ class WorkerPortalController extends Controller
         // Process uploaded file photo
         if ($request->hasFile('photo')) {
             $file = $request->file('photo');
-            $filename = 'attendance_' . $worker->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $ext = $file->extension() ?: 'jpg';
+            $filename = 'attendance_' . $worker->id . '_' . time() . '.' . $ext;
             $photoPath = $file->storeAs('attendance_photos', $filename, 'public');
             $mime = $file->getMimeType() ?: 'image/jpeg';
             $fileContent = @file_get_contents($file->getRealPath());

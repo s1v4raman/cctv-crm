@@ -4696,6 +4696,12 @@ button.ld-accent svg {
         box-sizing: border-box !important;
     }
 
+    table.crm-auto-cards tfoot,
+    table.crm-responsive tfoot,
+    .ld-table tfoot {
+        display: none !important;
+    }
+
     table.crm-auto-cards,
     table.crm-responsive,
     .crm-content table.crm-auto-cards,
@@ -4883,75 +4889,61 @@ button.ld-accent svg {
         overflow-wrap: anywhere !important;
     }
 
-    /* 3. Primary Card Identity / Header Row: Full Width Layout */
+    /* 3. Primary Card Identity / Header Row: Full Width Clean Card Header */
+    table.crm-auto-cards td[data-card-header],
+    table.crm-auto-cards td.crm-card-header-cell,
+    table.crm-responsive td[data-card-header],
+    table.crm-responsive td.crm-card-header-cell,
+    .crm-content table.crm-auto-cards td[data-card-header],
+    .crm-content table.crm-auto-cards td.crm-card-header-cell,
     table.crm-auto-cards td:first-child:not(.ld-box),
     table.crm-auto-cards td.ld-box + td,
-    table.crm-auto-cards td[data-card-header],
-    table.crm-auto-cards td:has(.w-8, .w-9, .w-10, [class*="rounded-full"]),
-    table.crm-auto-cards td:has(> .flex),
-    table.crm-auto-cards td:has(> .crm-card-val > .flex),
     table.crm-responsive td:first-child:not(.ld-box),
     table.crm-responsive td.ld-box + td,
-    table.crm-responsive td[data-card-header],
-    table.crm-responsive td:has(.w-8, .w-9, .w-10, [class*="rounded-full"]),
-    table.crm-responsive td:has(> .flex),
-    table.crm-responsive td:has(> .crm-card-val > .flex),
     .crm-content table.crm-auto-cards td:first-child:not(.ld-box),
-    .crm-content table.crm-auto-cards td.ld-box + td,
-    .crm-content table.crm-auto-cards td[data-card-header],
-    .crm-content table.crm-auto-cards td:has(.w-8, .w-9, .w-10, [class*="rounded-full"]),
-    .crm-content table.crm-auto-cards td:has(> .flex),
-    .crm-content table.crm-auto-cards td:has(> .crm-card-val > .flex) {
+    .crm-content table.crm-auto-cards td.ld-box + td {
+        display: flex !important;
         flex-direction: column !important;
         align-items: flex-start !important;
         text-align: left !important;
+        width: 100% !important;
+        max-width: 100% !important;
         gap: 4px !important;
         padding: 8px 0 10px 0 !important;
+        border-bottom: 1px solid var(--table-border) !important;
     }
 
+    table.crm-auto-cards td[data-card-header]::before,
+    table.crm-auto-cards td.crm-card-header-cell::before,
+    table.crm-responsive td[data-card-header]::before,
+    table.crm-responsive td.crm-card-header-cell::before,
+    .crm-content table.crm-auto-cards td[data-card-header]::before,
+    .crm-content table.crm-auto-cards td.crm-card-header-cell::before,
     table.crm-auto-cards td:first-child:not(.ld-box)::before,
     table.crm-auto-cards td.ld-box + td::before,
-    table.crm-auto-cards td[data-card-header]::before,
-    table.crm-auto-cards td:has(.w-8, .w-9, .w-10, [class*="rounded-full"])::before,
-    table.crm-auto-cards td:has(> .flex)::before,
-    table.crm-auto-cards td:has(> .crm-card-val > .flex)::before,
     table.crm-responsive td:first-child:not(.ld-box)::before,
     table.crm-responsive td.ld-box + td::before,
-    table.crm-responsive td[data-card-header]::before,
-    table.crm-responsive td:has(.w-8, .w-9, .w-10, [class*="rounded-full"])::before,
-    table.crm-responsive td:has(> .flex)::before,
-    table.crm-responsive td:has(> .crm-card-val > .flex)::before,
     .crm-content table.crm-auto-cards td:first-child:not(.ld-box)::before,
-    .crm-content table.crm-auto-cards td.ld-box + td::before,
-    .crm-content table.crm-auto-cards td[data-card-header]::before,
-    .crm-content table.crm-auto-cards td:has(.w-8, .w-9, .w-10, [class*="rounded-full"])::before,
-    .crm-content table.crm-auto-cards td:has(> .flex)::before,
-    .crm-content table.crm-auto-cards td:has(> .crm-card-val > .flex)::before {
-        max-width: 100% !important;
-        margin-bottom: 2px !important;
-        font-size: 10px !important;
+    .crm-content table.crm-auto-cards td.ld-box + td::before {
+        display: none !important;
+        content: none !important;
     }
 
+    table.crm-auto-cards td[data-card-header] > *,
+    table.crm-auto-cards td.crm-card-header-cell > *,
+    table.crm-responsive td[data-card-header] > *,
+    table.crm-responsive td.crm-card-header-cell > *,
+    .crm-content table.crm-auto-cards td[data-card-header] > *,
+    .crm-content table.crm-auto-cards td.crm-card-header-cell > *,
     table.crm-auto-cards td:first-child:not(.ld-box) > *,
     table.crm-auto-cards td.ld-box + td > *,
-    table.crm-auto-cards td[data-card-header] > *,
-    table.crm-auto-cards td:has(.w-8, .w-9, .w-10, [class*="rounded-full"]) > *,
-    table.crm-auto-cards td:has(> .flex) > *,
-    table.crm-auto-cards td:has(> .crm-card-val > .flex) > *,
     table.crm-responsive td:first-child:not(.ld-box) > *,
     table.crm-responsive td.ld-box + td > *,
-    table.crm-responsive td[data-card-header] > *,
-    table.crm-responsive td:has(.w-8, .w-9, .w-10, [class*="rounded-full"]) > *,
-    table.crm-responsive td:has(> .flex) > *,
-    table.crm-responsive td:has(> .crm-card-val > .flex) > *,
     .crm-content table.crm-auto-cards td:first-child:not(.ld-box) > *,
-    .crm-content table.crm-auto-cards td.ld-box + td > *,
-    .crm-content table.crm-auto-cards td[data-card-header] > *,
-    .crm-content table.crm-auto-cards td:has(.w-8, .w-9, .w-10, [class*="rounded-full"]) > *,
-    .crm-content table.crm-auto-cards td:has(> .flex) > *,
-    .crm-content table.crm-auto-cards td:has(> .crm-card-val > .flex) > * {
+    .crm-content table.crm-auto-cards td.ld-box + td > * {
         max-width: 100% !important;
         width: 100% !important;
+        min-width: 0 !important;
         text-align: left !important;
         justify-content: flex-start !important;
     }
@@ -4970,18 +4962,22 @@ button.ld-accent svg {
     /* 3.5 Dedicated Mobile App Action Bar at Card Bottom */
     table.crm-auto-cards td[data-card-actions],
     table.crm-responsive td[data-card-actions],
-    table.crm-auto-cards td:has(.ld-row-actions),
-    table.crm-responsive td:has(.ld-row-actions),
+    table.crm-auto-cards td.ld-actions-cell,
+    table.crm-responsive td.ld-actions-cell,
+    table.crm-auto-cards td.crm-card-actions,
+    table.crm-responsive td.crm-card-actions,
     .crm-content table.crm-auto-cards td[data-card-actions],
     .crm-content table.crm-responsive td[data-card-actions],
-    .crm-content table.crm-auto-cards td:has(.ld-row-actions),
-    .crm-content table.crm-responsive td:has(.ld-row-actions) {
+    .crm-content table.crm-auto-cards td.ld-actions-cell,
+    .crm-content table.crm-responsive td.ld-actions-cell,
+    .crm-content table.crm-auto-cards td.crm-card-actions,
+    .crm-content table.crm-responsive td.crm-card-actions {
         display: flex !important;
         flex-direction: row !important;
         flex-wrap: wrap !important;
         align-items: center !important;
         justify-content: flex-start !important;
-        gap: 8px !important;
+        gap: 6px !important;
         width: 100% !important;
         max-width: 100% !important;
         padding-top: 10px !important;
@@ -4992,24 +4988,32 @@ button.ld-accent svg {
 
     table.crm-auto-cards td[data-card-actions]::before,
     table.crm-responsive td[data-card-actions]::before,
-    table.crm-auto-cards td:has(.ld-row-actions)::before,
-    table.crm-responsive td:has(.ld-row-actions)::before,
+    table.crm-auto-cards td.ld-actions-cell::before,
+    table.crm-responsive td.ld-actions-cell::before,
+    table.crm-auto-cards td.crm-card-actions::before,
+    table.crm-responsive td.crm-card-actions::before,
     .crm-content table.crm-auto-cards td[data-card-actions]::before,
     .crm-content table.crm-responsive td[data-card-actions]::before,
-    .crm-content table.crm-auto-cards td:has(.ld-row-actions)::before,
-    .crm-content table.crm-responsive td:has(.ld-row-actions)::before {
+    .crm-content table.crm-auto-cards td.ld-actions-cell::before,
+    .crm-content table.crm-responsive td.ld-actions-cell::before,
+    .crm-content table.crm-auto-cards td.crm-card-actions::before,
+    .crm-content table.crm-responsive td.crm-card-actions::before {
         display: none !important;
         content: none !important;
     }
 
     table.crm-auto-cards td[data-card-actions] > *,
     table.crm-responsive td[data-card-actions] > *,
-    table.crm-auto-cards td:has(.ld-row-actions) > *,
-    table.crm-responsive td:has(.ld-row-actions) > *,
+    table.crm-auto-cards td.ld-actions-cell > *,
+    table.crm-responsive td.ld-actions-cell > *,
+    table.crm-auto-cards td.crm-card-actions > *,
+    table.crm-responsive td.crm-card-actions > *,
     .crm-content table.crm-auto-cards td[data-card-actions] > *,
     .crm-content table.crm-responsive td[data-card-actions] > *,
-    .crm-content table.crm-auto-cards td:has(.ld-row-actions) > *,
-    .crm-content table.crm-responsive td:has(.ld-row-actions) > * {
+    .crm-content table.crm-auto-cards td.ld-actions-cell > *,
+    .crm-content table.crm-responsive td.ld-actions-cell > *,
+    .crm-content table.crm-auto-cards td.crm-card-actions > *,
+    .crm-content table.crm-responsive td.crm-card-actions > * {
         max-width: 100% !important;
         min-width: 0 !important;
     }
@@ -5158,8 +5162,8 @@ button.ld-accent svg {
     button.btn-secondary,
     a.btn-primary,
     a.btn-secondary,
-    .tk-card button,
-    .tk-card a {
+    .tk-card button:not([x-show] button):not(.block):not([class*="whitespace-nowrap"]),
+    .tk-card a:not([x-show] a):not(.block):not([class*="whitespace-nowrap"]) {
         max-width: 100% !important;
         white-space: normal !important;
         word-break: break-word !important;
@@ -5168,6 +5172,30 @@ button.ld-accent svg {
         min-height: 40px !important;
         line-height: 1.35 !important;
         box-sizing: border-box !important;
+    }
+
+    /* Keep Dropdown & Context Menu Buttons Single-Line & Clean */
+    .tk-card [x-show] button,
+    .tk-card [x-show] a,
+    .dropdown-menu button,
+    [x-show*="Open"] button {
+        white-space: nowrap !important;
+        word-break: normal !important;
+        overflow-wrap: normal !important;
+        min-height: 0 !important;
+        height: auto !important;
+        display: block !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    /* File Input & Native Form Controls Contained on Mobile */
+    input[type="file"],
+    .file-input {
+        max-width: 100% !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
     }
 
     /* 6. Primary Title & Name Links in Auto-Cards: Strictly Contained and Wrapped */

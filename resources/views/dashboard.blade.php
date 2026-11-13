@@ -247,7 +247,7 @@
                         <table class="crm-auto-cards w-full text-left border-collapse text-xs">
                             <thead>
                                 <tr class="text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider border-b border-slate-100 dark:border-slate-800">
-                                    <th class="py-2.5 px-3 w-8">
+                                    <th class="py-2.5 px-3 w-8 hidden sm:table-cell">
                                         <input type="checkbox" class="rounded text-indigo-600 focus:ring-indigo-500 border-slate-300 dark:border-slate-700 cursor-pointer">
                                     </th>
                                     <th class="py-2.5 px-3 font-semibold">{{ __('Project / Customer') }}</th>
@@ -263,18 +263,18 @@
                                     <tr x-show="activeFilterTab === 'all' || (activeFilterTab === 'attention' && {{ !empty($deal['is_overdue']) ? 'true' : 'false' }}) || (activeFilterTab === 'my' && '{{ $deal['owner'] }}' !== 'ADMIN')"
                                         class="hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition group">
                                         {{-- Checkbox --}}
-                                        <td class="py-3 px-3 ld-box" data-label="">
+                                        <td class="py-3 px-3 ld-box hidden sm:table-cell" data-label="">
                                             <input type="checkbox" class="rounded text-indigo-600 focus:ring-indigo-500 border-slate-300 dark:border-slate-700 cursor-pointer">
                                         </td>
 
                                         {{-- Company Logo Badge & Title --}}
-                                        <td class="py-3 px-3 min-w-0 sm:min-w-[200px]" data-card-header>
-                                            <div class="flex items-center gap-3 min-w-0 max-w-full">
+                                        <td class="py-3 px-3 min-w-0 sm:min-w-[200px] w-full" data-card-header>
+                                            <div class="flex items-center gap-3 min-w-0 w-full max-w-full">
                                                 <div class="w-8 h-8 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs flex items-center justify-center shrink-0">
                                                     {{ $deal['initial'] }}
                                                 </div>
-                                                <div class="min-w-0 flex-1">
-                                                    <a href="{{ $deal['url'] }}" class="font-bold text-slate-900 dark:text-white hover:text-indigo-600 transition truncate block">
+                                                <div class="min-w-0 flex-1 max-w-full overflow-hidden">
+                                                    <a href="{{ $deal['url'] }}" class="font-bold text-slate-900 dark:text-white hover:text-indigo-600 transition truncate block text-sm">
                                                         {{ $deal['company'] }}
                                                     </a>
                                                     <span class="block text-[11px] text-slate-400 dark:text-slate-500 truncate">

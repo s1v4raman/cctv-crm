@@ -415,8 +415,8 @@
                                                 ₹{{ number_format($due, 2) }}
                                             @endif
                                         </td>
-                                        <td class="text-right ld-actions-cell" data-card-actions="true" data-label="">
-                                            <div class="flex flex-wrap items-center gap-1.5 sm:justify-end text-xs w-full">
+                                        <td class="text-left sm:text-right ld-actions-cell crm-card-actions" data-card-actions="true" data-label="">
+                                            <div class="flex flex-wrap items-center gap-1.5 sm:justify-end text-xs w-full max-w-full">
                                                 <button type="button" @click="openAdvance({{ $w->id }}, '{{ addslashes($w->name) }}')" class="px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 font-semibold cursor-pointer whitespace-nowrap">
                                                     + Advance
                                                 </button>

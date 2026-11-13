@@ -345,35 +345,35 @@
 
                     {{-- Desktop Table View (>= 768px) --}}
                     <div class="hidden md:block overflow-x-auto">
-                        <table class="min-w-full divide-y divide-white/5 text-xs">
-                            <thead class="bg-[#0b1120]/50">
+                        <table class="no-auto-cards min-w-full divide-y divide-slate-100 dark:divide-white/5 text-xs">
+                            <thead class="bg-slate-50 dark:bg-[#0b1120]/50">
                                 <tr>
-                                    <th class="px-4 py-2.5 text-left font-bold text-slate-400">Technician</th>
-                                    <th class="px-4 py-2.5 text-center font-bold text-slate-400">Jobs</th>
-                                    <th class="px-4 py-2.5 text-center font-bold text-slate-400">Surveys</th>
-                                    <th class="px-4 py-2.5 text-center font-bold text-slate-400">Projects</th>
-                                    <th class="px-4 py-2.5 text-right font-bold text-slate-400">CSAT ★</th>
+                                    <th class="px-4 py-2.5 text-left font-bold text-slate-500 dark:text-slate-400">Technician</th>
+                                    <th class="px-4 py-2.5 text-center font-bold text-slate-500 dark:text-slate-400">Jobs</th>
+                                    <th class="px-4 py-2.5 text-center font-bold text-slate-500 dark:text-slate-400">Surveys</th>
+                                    <th class="px-4 py-2.5 text-center font-bold text-slate-500 dark:text-slate-400">Projects</th>
+                                    <th class="px-4 py-2.5 text-right font-bold text-slate-500 dark:text-slate-400">CSAT ★</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-white/5">
+                            <tbody class="divide-y divide-slate-100 dark:divide-white/5">
                                 @forelse($overview['technicians'] as $tech)
-                                    <tr class="hover:bg-slate-800/50 transition">
-                                        <td class="px-4 py-3 font-bold text-slate-200">
+                                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+                                        <td class="px-4 py-3 font-bold text-slate-800 dark:text-slate-200">
                                             {{ $tech['name'] }}
-                                            <span class="text-[11px] text-slate-500 block font-normal capitalize">{{ $tech['role'] }}</span>
+                                            <span class="text-[11px] text-slate-400 dark:text-slate-500 block font-normal capitalize">{{ $tech['role'] }}</span>
                                         </td>
-                                        <td class="px-4 py-3 text-center font-semibold text-slate-300">{{ $tech['jobs_completed'] }}</td>
-                                        <td class="px-4 py-3 text-center font-semibold text-slate-300">{{ $tech['surveys_completed'] }}</td>
-                                        <td class="px-4 py-3 text-center font-semibold text-sky-400">{{ $tech['projects_count'] }}</td>
+                                        <td class="px-4 py-3 text-center font-semibold text-slate-700 dark:text-slate-300">{{ $tech['jobs_completed'] }}</td>
+                                        <td class="px-4 py-3 text-center font-semibold text-slate-700 dark:text-slate-300">{{ $tech['surveys_completed'] }}</td>
+                                        <td class="px-4 py-3 text-center font-semibold text-sky-600 dark:text-sky-400">{{ $tech['projects_count'] }}</td>
                                         <td class="px-4 py-3 text-right">
-                                            <span class="inline-block px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30 font-bold text-[11px]">
+                                            <span class="inline-block px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30 font-bold text-[11px]">
                                                 ★ {{ $tech['average_rating'] }} / 5.0
                                             </span>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="5" class="px-4 py-6 text-center text-slate-500">No technician performance data recorded.</td>
+                                        <td colspan="5" class="px-4 py-6 text-center text-slate-400 dark:text-slate-500">No technician performance data recorded.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -382,70 +382,70 @@
                 </div>
 
                 {{-- Top Margin Products --}}
-                <div class="bg-[#0f172a] rounded-2xl shadow-[0_10px_25px_-5px_rgba(0,0,0,0.5)] border border-white/5 overflow-hidden">
-                    <div class="p-4 bg-[#0b1120] border-b border-white/5 flex items-center justify-between">
+                <div class="bg-white dark:bg-[#0f172a] rounded-2xl shadow-xs border border-slate-200 dark:border-white/5 overflow-hidden">
+                    <div class="p-4 bg-slate-50 dark:bg-[#0b1120] border-b border-slate-100 dark:border-white/5 flex items-center justify-between">
                         <div>
-                            <h3 class="text-xs font-bold uppercase tracking-wider text-white">High-Margin CCTV Catalog Assets</h3>
-                            <p class="text-[11px] text-slate-400">Highest gross margin hardware products</p>
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">High-Margin CCTV Catalog Assets</h3>
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400">Highest gross margin hardware products</p>
                         </div>
                     </div>
 
                     {{-- Mobile Card View (< 768px) --}}
-                    <div class="md:hidden divide-y divide-white/5">
+                    <div class="md:hidden divide-y divide-slate-100 dark:divide-white/5">
                         @forelse($overview['top_products'] as $prod)
                             <div class="p-3.5 space-y-2">
                                 <div class="flex items-start justify-between gap-2">
                                     <div class="min-w-0 flex-1">
-                                        <div class="font-bold text-slate-200 text-xs break-words">{{ $prod['name'] }}</div>
-                                        <div class="text-[11px] text-slate-500 font-mono">{{ $prod['model_no'] }}</div>
+                                        <div class="font-bold text-slate-900 dark:text-slate-200 text-xs break-words">{{ $prod['name'] }}</div>
+                                        <div class="text-[11px] text-slate-400 dark:text-slate-500 font-mono">{{ $prod['model_no'] }}</div>
                                     </div>
-                                    <span class="shrink-0 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-bold text-[11px]">
+                                    <span class="shrink-0 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 font-bold text-[11px]">
                                         +{{ $prod['margin_percent'] }}%
                                     </span>
                                 </div>
-                                <div class="flex items-center justify-between text-xs pt-1 border-t border-white/5">
+                                <div class="flex items-center justify-between text-xs pt-1 border-t border-slate-100 dark:border-white/5">
                                     <div>
-                                        <span class="text-slate-400 text-[11px]">Selling Price:</span>
-                                        <strong class="font-semibold text-amber-400 ml-1">₹{{ number_format($prod['unit_price'], 2) }}</strong>
+                                        <span class="text-slate-500 dark:text-slate-400 text-[11px]">Selling Price:</span>
+                                        <strong class="font-semibold text-amber-600 dark:text-amber-400 ml-1">₹{{ number_format($prod['unit_price'], 2) }}</strong>
                                     </div>
                                     <div>
-                                        <span class="text-slate-400 text-[11px]">Cost Price:</span>
-                                        <span class="text-slate-300 font-mono ml-1">₹{{ number_format($prod['cost_price'], 2) }}</span>
+                                        <span class="text-slate-500 dark:text-slate-400 text-[11px]">Cost Price:</span>
+                                        <span class="text-slate-700 dark:text-slate-300 font-mono ml-1">₹{{ number_format($prod['cost_price'], 2) }}</span>
                                     </div>
                                 </div>
                             </div>
                         @empty
-                            <div class="p-6 text-center text-slate-500 text-xs">No active products in catalog.</div>
+                            <div class="p-6 text-center text-slate-400 dark:text-slate-500 text-xs">No active products in catalog.</div>
                         @endforelse
                     </div>
 
                     {{-- Desktop Table View (>= 768px) --}}
                     <div class="hidden md:block overflow-x-auto">
-                        <table class="min-w-full divide-y divide-white/5 text-xs">
-                            <thead class="bg-[#0b1120]/50">
+                        <table class="no-auto-cards min-w-full divide-y divide-slate-100 dark:divide-white/5 text-xs">
+                            <thead class="bg-slate-50 dark:bg-[#0b1120]/50">
                                 <tr>
-                                    <th class="px-4 py-2.5 text-left font-bold text-slate-400">Product Model</th>
-                                    <th class="px-4 py-2.5 text-right font-bold text-slate-400">Selling Price</th>
-                                    <th class="px-4 py-2.5 text-right font-bold text-slate-400">Cost Price</th>
-                                    <th class="px-4 py-2.5 text-right font-bold text-slate-400">Margin %</th>
+                                    <th class="px-4 py-2.5 text-left font-bold text-slate-500 dark:text-slate-400">Product Model</th>
+                                    <th class="px-4 py-2.5 text-right font-bold text-slate-500 dark:text-slate-400">Selling Price</th>
+                                    <th class="px-4 py-2.5 text-right font-bold text-slate-500 dark:text-slate-400">Cost Price</th>
+                                    <th class="px-4 py-2.5 text-right font-bold text-slate-500 dark:text-slate-400">Margin %</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-white/5">
+                            <tbody class="divide-y divide-slate-100 dark:divide-white/5">
                                 @forelse($overview['top_products'] as $prod)
-                                    <tr class="hover:bg-slate-800/50 transition">
+                                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
                                         <td class="px-4 py-3">
-                                            <div class="font-bold text-slate-200">{{ $prod['name'] }}</div>
-                                            <div class="text-[11px] text-slate-500 font-mono">{{ $prod['model_no'] }}</div>
+                                            <div class="font-bold text-slate-800 dark:text-slate-200">{{ $prod['name'] }}</div>
+                                            <div class="text-[11px] text-slate-400 dark:text-slate-500 font-mono">{{ $prod['model_no'] }}</div>
                                         </td>
-                                        <td class="px-4 py-3 text-right font-semibold text-amber-400">₹{{ number_format($prod['unit_price'], 2) }}</td>
-                                        <td class="px-4 py-3 text-right text-slate-400 font-mono">₹{{ number_format($prod['cost_price'], 2) }}</td>
-                                        <td class="px-4 py-3 text-right font-bold text-emerald-400">
+                                        <td class="px-4 py-3 text-right font-semibold text-amber-600 dark:text-amber-400">₹{{ number_format($prod['unit_price'], 2) }}</td>
+                                        <td class="px-4 py-3 text-right text-slate-600 dark:text-slate-400 font-mono">₹{{ number_format($prod['cost_price'], 2) }}</td>
+                                        <td class="px-4 py-3 text-right font-bold text-emerald-600 dark:text-emerald-400">
                                             +{{ $prod['margin_percent'] }}%
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="4" class="px-4 py-6 text-center text-slate-500">No active products in catalog.</td>
+                                        <td colspan="4" class="px-4 py-6 text-center text-slate-400 dark:text-slate-500">No active products in catalog.</td>
                                     </tr>
                                 @endforelse
                             </tbody>

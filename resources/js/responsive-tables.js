@@ -20,8 +20,8 @@ const headerLabels = (table) => {
 };
 
 const wrapMultiValue = (cell) => {
-    if (cell.classList.contains('ld-box') || (cell.colSpan || 1) > 1) return;
-    if (cell.querySelector('.ld-row-actions') || cell.querySelector('form button')) return;
+    if (cell.classList.contains('ld-box') || cell.hasAttribute('data-card-header') || cell.classList.contains('crm-card-header-cell') || (cell.colSpan || 1) > 1) return;
+    if (cell.querySelector('.ld-row-actions') || cell.querySelector('form button') || cell.classList.contains('ld-actions-cell')) return;
     if (cell.firstElementChild?.classList?.contains('crm-card-val')) return;
     const meaningful = [...cell.childNodes].filter(
         (n) => n.nodeType === 1 || (n.nodeType === 3 && n.textContent.trim() !== '')
@@ -39,14 +39,24 @@ const labelRows = (table) => {
         let column = 0;
         const cells = [...row.children].filter((el) => el.tagName === 'TD');
         const totalCols = cells.length;
+        const firstNonBoxIdx = cells.length > 0 && cells[0].classList.contains('ld-box') ? 1 : 0;
+
         cells.forEach((cell, idx) => {
             const rawLabel = (cell.colSpan || 1) > 1 ? '' : (labels[column] || '');
             const isActionCol = rawLabel.toLowerCase().includes('action') || 
+                                cell.classList.contains('ld-actions-cell') ||
+                                cell.getAttribute('data-col') === 'actions' ||
                                 cell.querySelector('.ld-row-actions') ||
                                 (idx === totalCols - 1 && cell.querySelector('button, form, a[href*="edit"], a[href*="delete"]'));
             
+            const isHeaderCol = cell.hasAttribute('data-card-header') || idx === firstNonBoxIdx;
+
             if (isActionCol) {
                 cell.setAttribute('data-card-actions', 'true');
+                cell.setAttribute('data-label', '');
+            } else if (isHeaderCol) {
+                cell.setAttribute('data-card-header', 'true');
+                cell.classList.add('crm-card-header-cell');
                 cell.setAttribute('data-label', '');
             } else if (!cell.hasAttribute('data-label')) {
                 cell.setAttribute('data-label', rawLabel);
@@ -61,7 +71,8 @@ const labelRows = (table) => {
 };
 
 const shouldAutoCard = (table) => {
-    if (table.classList.contains('no-mobile-cards') || table.hasAttribute('data-dense')) return false;
+    if (table.classList.contains('no-mobile-cards') || table.classList.contains('no-auto-cards') || table.hasAttribute('data-dense')) return false;
+    if (table.closest('.hidden.md\\:block, .md\\:table, .md\\:hidden')) return false;
     if (!table.querySelector('thead') || !table.querySelector('tbody')) return false;
     // Skip very wide matrix grids (e.g. 31-day attendance month view)
     const thCount = table.querySelectorAll('thead tr:last-child th').length;

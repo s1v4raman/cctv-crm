@@ -76,11 +76,23 @@ self.addEventListener('fetch', (event) => {
     }
 
     // 2. Static Assets (Vite build assets, fonts, icons, manifest, stylesheets)
+    // Strictly exclude private user media and uploaded photos from persistent browser cache.
+    const isPrivateMedia = url.pathname.includes('/attendance_photos/') ||
+                           url.pathname.includes('/worker_photos/') ||
+                           url.pathname.includes('/attendance-photos/') ||
+                           url.pathname.includes('/worker-photos/') ||
+                           url.pathname.includes('/site-surveys/') ||
+                           url.pathname.includes('/site_surveys/') ||
+                           url.pathname.includes('/leave_attachments/') ||
+                           url.pathname.includes('/expense_receipts/') ||
+                           url.pathname.includes('/jcr-photos/');
+
     if (
-        url.pathname.startsWith('/build/') ||
-        url.pathname.startsWith('/icons/') ||
-        url.pathname === '/field/manifest.webmanifest' ||
-        url.pathname.match(/\.(css|js|woff2?|ttf|eot|png|jpe?g|svg|webp|ico)$/)
+        !isPrivateMedia &&
+        (url.pathname.startsWith('/build/') ||
+         url.pathname.startsWith('/icons/') ||
+         url.pathname === '/field/manifest.webmanifest' ||
+         url.pathname.match(/\.(css|js|woff2?|ttf|eot|png|jpe?g|svg|webp|ico)$/))
     ) {
         event.respondWith(
             caches.match(request).then((cachedResponse) => {

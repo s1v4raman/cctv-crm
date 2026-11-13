@@ -580,9 +580,9 @@ class QuotationController extends Controller
 
         return response()->streamDownload(function () use ($quotations) {
             $out = fopen('php://output', 'w');
-            fputcsv($out, ['Quotation no', 'Customer', 'Phone', 'Quotation date', 'Valid until', 'Subtotal', 'Tax', 'Total', 'Status']);
+            \App\Support\CsvHelper::writeRow($out, ['Quotation no', 'Customer', 'Phone', 'Quotation date', 'Valid until', 'Subtotal', 'Tax', 'Total', 'Status']);
             foreach ($quotations as $q) {
-                fputcsv($out, [
+                \App\Support\CsvHelper::writeRow($out, [
                     $q->quotation_no, $q->lead?->customer_name, $q->lead?->phone, $q->quotation_date?->format('Y-m-d'),
                     $q->valid_until?->format('Y-m-d'), $q->subtotal, $q->tax_amount, $q->total, ucfirst($q->status),
                 ]);

@@ -90,9 +90,9 @@ class ListActionController extends Controller
                 $row = collect($record->attributesToArray())->map(fn ($v) => is_array($v) ? json_encode($v) : $v);
                 if ($headings === null) {
                     $headings = $row->keys()->all();
-                    fputcsv($out, array_map(fn ($h) => str($h)->headline(), $headings));
+                    \App\Support\CsvHelper::writeRow($out, array_map(fn ($h) => str($h)->headline(), $headings));
                 }
-                fputcsv($out, array_map(fn ($h) => $row[$h] ?? '', $headings));
+                \App\Support\CsvHelper::writeRow($out, array_map(fn ($h) => $row[$h] ?? '', $headings));
             }
             fclose($out);
         }, $name, ['Content-Type' => 'text/csv; charset=UTF-8']);

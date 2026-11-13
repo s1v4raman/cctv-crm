@@ -95,7 +95,7 @@ return [
             'prefix' => '',
             'prefix_indexes' => true,
             'search_path' => 'public',
-            'sslmode' => env('DB_SSLMODE', 'prefer'),
+            'sslmode' => env('DB_SSLMODE', 'require'),
             'options' => extension_loaded('pdo_pgsql') ? array_filter([
                 PDO::ATTR_PERSISTENT => env('DB_PERSISTENT', false),
                 // No named prepared statements: Neon's pooler shares them between connections by
