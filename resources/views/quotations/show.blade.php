@@ -51,7 +51,7 @@
                 {{-- Action Modals & Links --}}
                 <button type="button" onclick="openWhatsAppModal()" class="btn-secondary text-xs cursor-pointer inline-flex items-center gap-1.5 shadow-2xs">
                     <x-icon.whatsapp class="w-4 h-4 text-black dark:text-white shrink-0" />
-                    <span>Send on WhatsApp</span>
+                    <span>Share on WhatsApp</span>
                 </button>
                 <button type="button" onclick="openEmailModal()" class="btn-secondary text-xs cursor-pointer inline-flex items-center gap-1.5 shadow-2xs">
                     <x-icon.email class="w-4 h-4 text-black dark:text-white shrink-0" />
@@ -468,30 +468,6 @@
                 <x-close-button onclick="closeWhatsAppModal()" />
             </div>
 
-            {{-- Condition Status --}}
-            @php
-                $hasStoredPhone = !empty($quotation->getWhatsAppPhone());
-            @endphp
-            <div id="wa-customer-status-banner" class="mb-5 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 text-xs flex items-center justify-between gap-3">
-                <div class="flex items-start gap-2.5">
-                    <span class="w-2 h-2 rounded-full {{ $hasStoredPhone ? 'bg-emerald-500 ring-4 ring-emerald-100 dark:ring-emerald-950' : 'bg-rose-500 ring-4 ring-rose-100 dark:ring-rose-950' }} mt-1 shrink-0"></span>
-                    <div>
-                        <div class="flex items-center gap-1.5 font-bold {{ $hasStoredPhone ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400' }}">
-                            <span id="wa-status-title">{{ $hasStoredPhone ? 'Customer Contact Ready & Verified' : 'Customer Phone Number Not Stored' }}</span>
-                        </div>
-                        <span id="wa-status-desc" class="text-slate-500 dark:text-slate-400 block mt-0.5 leading-relaxed">
-                            {{ $hasStoredPhone 
-                                ? 'Target WhatsApp chat will open for ' . ($quotation->lead?->customer_name ?? 'Customer') . ' (' . $quotation->getWhatsAppPhone() . ').' 
-                                : 'Enter mobile number below. Saving will update the CRM customer record.' }}
-                        </span>
-                    </div>
-                </div>
-                <a href="{{ route('quotations.vcard', $quotation) }}" id="btn-header-vcard" class="btn-secondary text-xs py-2 px-3 flex items-center justify-center gap-1.5 shrink-0">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"/></svg>
-                    <span>Download vCard</span>
-                </a>
-            </div>
-
             {{-- Step 1: Format Selection --}}
             <div class="mb-5">
                 <div class="flex items-center justify-between mb-2.5">
@@ -506,24 +482,24 @@
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" id="wa-format-selector-grid">
-                    <label class="flex items-start gap-3 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 hover:border-blue-500 transition cursor-pointer text-xs">
-                        <input type="radio" name="wa_pdf_format" value="1" checked class="accent-blue-600 mt-0.5 shrink-0" onchange="onWhatsAppFormatChange('1')">
+                    <label data-format="1" class="wa-format-card flex items-start gap-3 p-3.5 rounded-xl border border-amber-500 bg-amber-500/5 dark:bg-amber-500/10 cursor-pointer text-xs transition">
+                        <input type="radio" name="wa_pdf_format" value="1" checked class="accent-amber-500 mt-0.5 shrink-0" onchange="onWhatsAppFormatChange('1')">
                         <div>
                             <div class="font-bold text-slate-900 dark:text-white leading-tight">Executive Modern</div>
                             <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Format 1 (Standard)</div>
                         </div>
                     </label>
 
-                    <label class="flex items-start gap-3 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 hover:border-blue-500 transition cursor-pointer text-xs">
-                        <input type="radio" name="wa_pdf_format" value="2" class="accent-blue-600 mt-0.5 shrink-0" onchange="onWhatsAppFormatChange('2')">
+                    <label data-format="2" class="wa-format-card flex items-start gap-3 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 hover:border-amber-500 transition cursor-pointer text-xs">
+                        <input type="radio" name="wa_pdf_format" value="2" class="accent-amber-500 mt-0.5 shrink-0" onchange="onWhatsAppFormatChange('2')">
                         <div>
                             <div class="font-bold text-slate-900 dark:text-white leading-tight">Technical Detailed</div>
                             <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Format 2</div>
                         </div>
                     </label>
 
-                    <label class="flex items-start gap-3 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 hover:border-blue-500 transition cursor-pointer text-xs">
-                        <input type="radio" name="wa_pdf_format" value="3" class="accent-blue-600 mt-0.5 shrink-0" onchange="onWhatsAppFormatChange('3')">
+                    <label data-format="3" class="wa-format-card flex items-start gap-3 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 hover:border-amber-500 transition cursor-pointer text-xs">
+                        <input type="radio" name="wa_pdf_format" value="3" class="accent-amber-500 mt-0.5 shrink-0" onchange="onWhatsAppFormatChange('3')">
                         <div>
                             <div class="font-bold text-slate-900 dark:text-white leading-tight">Classic Formal</div>
                             <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Format 3</div>
@@ -606,7 +582,7 @@
                     <button type="button" onclick="closeWhatsAppModal()" class="btn-secondary text-xs py-2 px-4">Cancel</button>
                     <button type="button" id="btn-do-whatsapp-dispatch" onclick="executeWhatsAppShareWithPdf()" class="btn-primary text-xs py-2 px-5 flex items-center justify-center gap-2">
                         <x-icon.whatsapp :badge="true" class="w-4 h-4 text-white" />
-                        <span id="btn-wa-dispatch-text">Send on WhatsApp</span>
+                        <span id="btn-wa-dispatch-text">Share PDF & Open WhatsApp Chat</span>
                     </button>
                 </div>
             </div>
@@ -665,13 +641,17 @@
     function onWhatsAppFormatChange(format) {
         waQuotationData.selectedFormat = format;
 
+        // Ensure matching radio is checked
+        const radio = document.querySelector(`input[name="wa_pdf_format"][value="${format}"]`);
+        if (radio) radio.checked = true;
+
         // Update card styles
         document.querySelectorAll('#wa-format-selector-grid .wa-format-card').forEach(card => {
             const cardFormat = card.getAttribute('data-format');
             if (cardFormat === format) {
-                card.className = 'wa-format-card border border-emerald-500/60 bg-emerald-500/10 rounded-xl p-3 cursor-pointer transition relative block';
+                card.className = 'wa-format-card flex items-start gap-3 p-3.5 rounded-xl border border-amber-500 bg-amber-500/5 dark:bg-amber-500/10 cursor-pointer text-xs transition';
             } else {
-                card.className = 'wa-format-card border border-slate-700 bg-[#060913] rounded-xl p-3 cursor-pointer transition relative block';
+                card.className = 'wa-format-card flex items-start gap-3 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 hover:border-amber-500 transition cursor-pointer text-xs';
             }
         });
 
@@ -694,54 +674,45 @@
     }
 
     function onWhatsAppPhoneInput(val) {
-        const clean = val.replace(/[^0-9]/g, '');
+        const phone = getNormalizedPhone();
         const badge = document.getElementById('wa-phone-preview-badge');
         if (badge) {
-            badge.innerText = clean || 'Customer Number';
+            badge.innerText = phone || 'Customer Number';
         }
         syncCustomerStatusUI();
     }
 
     function getNormalizedPhone() {
         const input = document.getElementById('wa-customer-phone');
-        let phone = (input ? input.value : '').replace(/[^0-9]/g, '');
-        if (phone.length === 10) {
+        let phone = (input ? input.value : (waQuotationData.defaultPhone || '')).replace(/[^0-9]/g, '');
+        if (phone.startsWith('0') && phone.length === 11) {
+            phone = '91' + phone.substring(1);
+        } else if (phone.length === 10) {
             phone = '91' + phone;
         }
         return phone;
     }
 
+    function getCustomerSafeName() {
+        const nameInput = document.getElementById('wa-customer-name');
+        const rawName = (nameInput ? nameInput.value : '').trim() || waQuotationData.customerName || 'customer';
+        return rawName.toLowerCase().replace(/[^a-z0-9_-]/g, '_').replace(/_+/g, '_');
+    }
+
+    function getQuotationPdfFilename() {
+        const safeName = getCustomerSafeName();
+        return `Quotation_${waQuotationData.quoteNo}_${safeName}.pdf`;
+    }
+
     function syncCustomerStatusUI() {
         const phone = getNormalizedPhone();
-        const hasPhone = phone.length >= 10;
-        const banner = document.getElementById('wa-customer-status-banner');
-        const icon = document.getElementById('wa-status-icon');
-        const title = document.getElementById('wa-status-title');
-        const desc = document.getElementById('wa-status-desc');
+        const badge = document.getElementById('wa-phone-preview-badge');
+        if (badge) {
+            badge.innerText = phone || 'Customer Number';
+        }
         const btnText = document.getElementById('btn-wa-dispatch-text');
-        const nameInput = document.getElementById('wa-customer-name');
-        const name = (nameInput ? nameInput.value : '').trim() || waQuotationData.customerName || 'Customer';
-
-        if (hasPhone) {
-            if (banner) {
-                banner.className = 'mb-4 text-xs flex items-center justify-between gap-3 pb-3 border-b border-[#eee]';
-            }
-            if (title) {
-                title.className = 'status-won font-bold';
-                title.innerText = 'Customer Contact Ready & Verified';
-            }
-            if (desc) desc.innerText = `Target WhatsApp chat will open for ${name} (+${phone}). PDF will be downloaded & text pre-filled.`;
-            if (btnText) btnText.innerText = 'Share PDF & Open WhatsApp Chat';
-        } else {
-            if (banner) {
-                banner.className = 'mb-4 text-xs flex items-center justify-between gap-3 pb-3 border-b border-[#eee]';
-            }
-            if (title) {
-                title.className = 'status-lost font-bold';
-                title.innerText = 'Customer Phone Number Not Stored';
-            }
-            if (desc) desc.innerText = 'Please enter mobile number above. Clicking below will save the customer in CRM and open WhatsApp.';
-            if (btnText) btnText.innerText = 'Save Customer & Share WhatsApp PDF';
+        if (btnText) {
+            btnText.innerText = 'Share PDF & Open WhatsApp Chat';
         }
     }
 
@@ -771,7 +742,7 @@
             });
             const data = await res.json();
             if (data.success) {
-                if (btn) btn.innerHTML = 'Saved!';
+                if (btn) btn.innerHTML = '✓ Saved!';
                 syncCustomerStatusUI();
                 setTimeout(() => { if (btn) btn.innerHTML = originalText; }, 2000);
             }
@@ -798,36 +769,104 @@
         }
     }
 
-    function downloadSelectedPdfOnly() {
+    async function downloadSelectedPdfOnly() {
         const format = waQuotationData.selectedFormat || '1';
         const pdfUrl = waQuotationData.pdfUrls[format];
-        const link = document.createElement('a');
-        link.href = pdfUrl;
-        link.download = `Quotation_${waQuotationData.quoteNo}_Format${format}.pdf`;
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
+        const filename = getQuotationPdfFilename();
+
+        try {
+            const res = await fetch(pdfUrl);
+            const blob = await res.blob();
+            const blobUrl = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = blobUrl;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
+            return blob;
+        } catch (e) {
+            console.warn('Direct blob download fallback', e);
+            const link = document.createElement('a');
+            link.href = pdfUrl;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            return null;
+        }
     }
 
-    function executeWhatsAppShareWithPdf() {
+    function showWhatsAppAttachmentBanner(filename) {
+        let existing = document.getElementById('wa-attachment-toast');
+        if (existing) existing.remove();
+
+        const toast = document.createElement('div');
+        toast.id = 'wa-attachment-toast';
+        toast.className = 'fixed bottom-6 right-6 z-[100] max-w-sm bg-slate-900 text-white rounded-2xl shadow-2xl p-4 border border-slate-700 flex items-start gap-3 transition-all duration-300 transform translate-y-0 opacity-100';
+        toast.innerHTML = `
+            <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+            <div class="flex-1 text-xs">
+                <div class="font-bold text-sm text-white flex items-center gap-2">
+                    <span>PDF Ready to Send</span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-semibold">Downloaded</span>
+                </div>
+                <p class="text-slate-300 mt-1 leading-relaxed">
+                    <span class="font-semibold text-white">${filename}</span> is downloaded. In WhatsApp chat, press <kbd class="px-1.5 py-0.5 bg-slate-800 text-amber-300 rounded border border-slate-600 font-mono text-[10px]">Ctrl + V</kbd> or drag the file into chat, then click <strong>Send</strong>.
+                </p>
+            </div>
+            <button type="button" onclick="this.parentElement.remove()" class="text-slate-400 hover:text-white p-1 text-base leading-none">&times;</button>
+        `;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            if (toast && toast.parentElement) {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(10px)';
+                setTimeout(() => toast.remove(), 400);
+            }
+        }, 12000);
+    }
+
+    async function executeWhatsAppShareWithPdf() {
         const btn = document.getElementById('btn-do-whatsapp-dispatch');
         const originalHtml = btn ? btn.innerHTML : '';
         const format = waQuotationData.selectedFormat || '1';
         const phone = getNormalizedPhone();
         const nameInput = document.getElementById('wa-customer-name');
-        const name = nameInput ? nameInput.value.trim() : '';
+        const name = nameInput ? nameInput.value.trim() : (waQuotationData.customerName || 'Customer');
         const msgBox = document.getElementById('wa-custom-message');
         const message = msgBox ? msgBox.value : waQuotationData.messages[format];
+        const filename = getQuotationPdfFilename();
 
-        // 1. Download PDF file immediately
-        downloadSelectedPdfOnly();
+        if (btn) {
+            btn.innerHTML = `<svg class="animate-spin h-4 w-4 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> <span>Preparing PDF...</span>`;
+        }
 
-        // 2. Copy message to clipboard
+        // 1. Download customer-named PDF
+        const blob = await downloadSelectedPdfOnly();
+
+        // 2. Auto-copy message text to clipboard
         if (message && navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(message).catch(() => {});
         }
 
-        // 3. Mark sent status in CRM backend via AJAX
+        // 3. Auto-copy PDF to clipboard if supported by browser ClipboardItem
+        if (blob && navigator.clipboard && window.ClipboardItem) {
+            try {
+                await navigator.clipboard.write([
+                    new ClipboardItem({
+                        'application/pdf': blob
+                    })
+                ]);
+            } catch (clipErr) {
+                console.log('ClipboardItem PDF not supported or denied by browser:', clipErr);
+            }
+        }
+
+        // 4. Record sent status & save customer details in CRM backend via AJAX
         const params = new URLSearchParams({
             format: format,
             phone: phone,
@@ -838,31 +877,86 @@
             headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
         }).catch(e => console.warn('Status log skipped', e));
 
-        // 4. Open WhatsApp
+        // 5. Check if OS Native Share with files is supported (e.g. Windows Share as shown in Attachment 4)
+        if (blob && navigator.canShare) {
+            try {
+                const pdfFile = new File([blob], filename, { type: 'application/pdf' });
+                if (navigator.canShare({ files: [pdfFile] })) {
+                    if (btn) btn.innerHTML = `<span>Opening Share...</span>`;
+                    await navigator.share({
+                        title: `Quotation #${waQuotationData.quoteNo} - ${name}`,
+                        text: message,
+                        files: [pdfFile]
+                    });
+                    if (btn) {
+                        btn.innerHTML = `<span>✓ PDF Attached & Shared!</span>`;
+                        setTimeout(() => { if (btn) btn.innerHTML = originalHtml; }, 3000);
+                    }
+                    return;
+                }
+            } catch (shareErr) {
+                if (shareErr.name === 'AbortError') {
+                    if (btn) btn.innerHTML = originalHtml;
+                    return;
+                }
+                console.warn('Native share fallback to WhatsApp Web', shareErr);
+            }
+        }
+
+        // 6. Direct WhatsApp Web fallback (opens chat directly for unsaved number)
         const encodedText = encodeURIComponent(message);
         const targetUrl = phone 
-            ? `https://api.whatsapp.com/send?phone=${phone}&text=${encodedText}`
-            : `https://api.whatsapp.com/send?text=${encodedText}`;
+            ? `https://web.whatsapp.com/send?phone=${phone}&text=${encodedText}`
+            : `https://web.whatsapp.com/send?text=${encodedText}`;
 
         window.open(targetUrl, '_blank');
 
-        // 5. Visual UI feedback
+        // 7. Visual confirmation and helper toast
+        showWhatsAppAttachmentBanner(filename);
+
         if (btn) {
-            btn.innerHTML = `<span>✓ PDF Downloaded & WhatsApp Chat Opened!</span>`;
+            btn.innerHTML = `<span>✓ PDF Ready & Chat Opened!</span>`;
             setTimeout(() => {
                 if (btn) btn.innerHTML = originalHtml;
             }, 3500);
         }
     }
 
-    function openWhatsAppDirect(type) {
+    async function openWhatsAppDirect(type) {
         const format = waQuotationData.selectedFormat || '1';
         const phone = getNormalizedPhone();
+        const nameInput = document.getElementById('wa-customer-name');
+        const name = nameInput ? nameInput.value.trim() : (waQuotationData.customerName || 'Customer');
         const msgBox = document.getElementById('wa-custom-message');
         const message = msgBox ? msgBox.value : waQuotationData.messages[format];
+        const filename = getQuotationPdfFilename();
         const encodedText = encodeURIComponent(message);
 
-        downloadSelectedPdfOnly();
+        // Download the PDF
+        const blob = await downloadSelectedPdfOnly();
+
+        // Copy message & PDF to clipboard
+        if (message && navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(message).catch(() => {});
+        }
+        if (blob && navigator.clipboard && window.ClipboardItem) {
+            try {
+                await navigator.clipboard.write([
+                    new ClipboardItem({ 'application/pdf': blob })
+                ]);
+            } catch (clipErr) {}
+        }
+
+        // Record status in CRM
+        const params = new URLSearchParams({
+            format: format,
+            phone: phone,
+            customer_name: name,
+            custom_message: message
+        });
+        fetch(`${waQuotationData.sendUrl}?${params.toString()}`, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+        }).catch(console.warn);
 
         let url = '';
         if (type === 'web') {
@@ -876,49 +970,11 @@
         }
 
         window.open(url, '_blank');
+        showWhatsAppAttachmentBanner(filename);
     }
 
     async function shareViaNativeWebShare() {
-        const format = waQuotationData.selectedFormat || '1';
-        const phone = getNormalizedPhone();
-        const msgBox = document.getElementById('wa-custom-message');
-        const message = msgBox ? msgBox.value : waQuotationData.messages[format];
-        const pdfUrl = waQuotationData.previewUrls[format] || waQuotationData.pdfUrls[format];
-        const filename = `Quotation_${waQuotationData.quoteNo}_Format${format}.pdf`;
-
-        if (navigator.share) {
-            try {
-                let shareData = {
-                    title: `Quotation #${waQuotationData.quoteNo}`,
-                    text: message,
-                    url: pdfUrl
-                };
-
-                try {
-                    const response = await fetch(waQuotationData.pdfUrls[format]);
-                    const blob = await response.blob();
-                    const file = new File([blob], filename, { type: 'application/pdf' });
-                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                        shareData = {
-                            title: `Quotation #${waQuotationData.quoteNo}`,
-                            text: message,
-                            files: [file]
-                        };
-                    }
-                } catch (blobErr) {
-                    console.warn('PDF blob fetch skipped', blobErr);
-                }
-
-                await navigator.share(shareData);
-                return;
-            } catch (err) {
-                if (err.name !== 'AbortError') {
-                    console.warn('Web Share API error:', err);
-                }
-            }
-        }
-
-        executeWhatsAppShareWithPdf();
+        return executeWhatsAppShareWithPdf();
     }
 
     function shareWhatsAppWithPdf(format = '1') {
