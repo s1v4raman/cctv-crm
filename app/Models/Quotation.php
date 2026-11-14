@@ -248,8 +248,9 @@ class Quotation extends Model
         }
         $msg .= "💵 *Grand Total:* ₹" . number_format((float)$this->total, 2) . "\n\n"
              . "----------------------------------------------\n"
-             . "📄 *Download & View PDF Proposal:*\n{$pdfUrl}\n\n"
-             . "Please review the attached proposal PDF. Reply directly to this chat for any questions or customization.\n\n"
+             . "📎 *Attached Quotation Document:* Quotation #{$this->quotation_no}.pdf\n\n"
+             . "Please review the attached official quotation PDF document above. Reply directly to this chat for any questions, customizations, or to confirm approval.\n\n"
+             . "🔗 (Online Document Backup: {$pdfUrl})\n\n"
              . "Best Regards,\n"
              . "*{$companyName}*";
 
