@@ -50,7 +50,7 @@
 
                 {{-- Action Modals & Links --}}
                 <button type="button" onclick="shareWhatsAppOneClick(this)" id="btn-main-whatsapp-share" class="btn-primary text-xs cursor-pointer inline-flex items-center gap-1.5 shadow-2xs bg-emerald-600 hover:bg-emerald-700 text-white" title="Share Quotation PDF & Message to Customer in 1 Click">
-                    <x-icon.whatsapp :badge="true" class="w-4 h-4 text-white shrink-0" />
+                    <x-icon.whatsapp class="w-4 h-4 text-white shrink-0" />
                     <span>Share on WhatsApp</span>
                 </button>
                 <button type="button" onclick="openEmailModal()" class="btn-secondary text-xs cursor-pointer inline-flex items-center gap-1.5 shadow-2xs">
@@ -617,8 +617,8 @@
 
                 <div class="flex items-center gap-2">
                     <button type="button" onclick="closeWhatsAppModal()" class="btn-secondary text-xs py-2 px-4">Cancel</button>
-                    <button type="button" id="btn-do-whatsapp-dispatch" onclick="executeWhatsAppShareWithPdf()" class="btn-primary text-xs py-2 px-5 flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white">
-                        <x-icon.whatsapp :badge="true" class="w-4 h-4 text-white" />
+                    <button type="button" id="btn-do-whatsapp-dispatch" onclick="executeWhatsAppShareWithPdf()" class="btn-primary text-xs py-2 px-5 flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-sm">
+                        <x-icon.whatsapp class="w-4 h-4 text-white" />
                         <span id="btn-wa-dispatch-text">Send Quotation PDF &amp; Message</span>
                     </button>
                 </div>
@@ -717,8 +717,11 @@
 
     function getNormalizedPhone() {
         const input = document.getElementById('wa-customer-phone');
-        let phone = (input ? input.value : '').replace(/[^0-9]/g, '');
-        if (phone.length === 10) {
+        let raw = (input && input.value ? input.value : (waQuotationData?.defaultPhone || ''));
+        let phone = ('' + raw).replace(/[^0-9]/g, '');
+        if (phone.startsWith('0') && phone.length === 11) {
+            phone = '91' + phone.substring(1);
+        } else if (phone.length === 10) {
             phone = '91' + phone;
         }
         return phone;
@@ -964,10 +967,18 @@
         }
 
         // Open WhatsApp Web or App
+        const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
         const encodedText = encodeURIComponent(message);
-        const targetUrl = phone 
-            ? `https://api.whatsapp.com/send?phone=${phone}&text=${encodedText}`
-            : `https://api.whatsapp.com/send?text=${encodedText}`;
+        let targetUrl = '';
+        if (isMobile) {
+            targetUrl = phone 
+                ? `whatsapp://send?phone=${phone}&text=${encodedText}`
+                : `https://api.whatsapp.com/send?text=${encodedText}`;
+        } else {
+            targetUrl = phone 
+                ? `https://web.whatsapp.com/send?phone=${phone}&text=${encodedText}`
+                : `https://web.whatsapp.com/send?text=${encodedText}`;
+        }
 
         window.open(targetUrl, '_blank');
 
@@ -978,10 +989,6 @@
         if (btn) {
             btn.disabled = false;
             btn.innerHTML = `<span>✓ PDF Downloaded &amp; WhatsApp Opened!</span>`;
-            setTimeout(() => {
-                if (btn) btn.innerHTML = originalHtml;
-            }, 4000);
-        }
             setTimeout(() => {
                 if (btn) btn.innerHTML = originalHtml;
             }, 4000);

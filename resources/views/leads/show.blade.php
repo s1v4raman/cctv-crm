@@ -527,10 +527,18 @@
             navigator.clipboard.writeText(message).catch(() => {});
         }
 
+        const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
         const encodedText = encodeURIComponent(message);
-        const targetUrl = cleanPhone 
-            ? `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodedText}`
-            : `https://api.whatsapp.com/send?text=${encodedText}`;
+        let targetUrl = '';
+        if (isMobile) {
+            targetUrl = cleanPhone 
+                ? `whatsapp://send?phone=${cleanPhone}&text=${encodedText}`
+                : `https://api.whatsapp.com/send?text=${encodedText}`;
+        } else {
+            targetUrl = cleanPhone 
+                ? `https://web.whatsapp.com/send?phone=${cleanPhone}&text=${encodedText}`
+                : `https://web.whatsapp.com/send?text=${encodedText}`;
+        }
 
         window.open(targetUrl, '_blank');
 
