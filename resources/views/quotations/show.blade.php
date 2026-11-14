@@ -49,7 +49,7 @@
                 </a>
 
                 {{-- Action Modals & Links --}}
-                <button type="button" onclick="shareWhatsAppOneClick(this)" id="btn-main-whatsapp-share" class="btn-primary text-xs cursor-pointer inline-flex items-center gap-1.5 shadow-2xs bg-emerald-600 hover:bg-emerald-700 text-white" title="Share Quotation PDF & Message to Customer in 1 Click">
+                <button type="button" onclick="openWhatsAppModal()" id="btn-main-whatsapp-share" class="btn-primary text-xs cursor-pointer inline-flex items-center gap-1.5 shadow-2xs bg-emerald-600 hover:bg-emerald-700 text-white" title="Open WhatsApp Share Options (Web WhatsApp, Desktop App, or Auto-Share)">
                     <x-icon.whatsapp class="w-4 h-4 text-white shrink-0" />
                     <span>Share on WhatsApp</span>
                 </button>
@@ -937,17 +937,34 @@
     function openWhatsAppDirect(type) {
         const format = waQuotationData.selectedFormat || '1';
         const phone = getNormalizedPhone();
+        const nameInput = document.getElementById('wa-customer-name');
+        const name = (nameInput ? nameInput.value.trim() : '') || waQuotationData.customerName || 'Customer';
         const msgBox = document.getElementById('wa-custom-message');
         const message = msgBox ? msgBox.value : waQuotationData.messages[format];
         const encodedText = encodeURIComponent(message);
-        const filename = `Quotation_${waQuotationData.quoteNo}_Format${format}.pdf`;
+        const safeCustomerName = name.replace(/[^a-zA-Z0-9_-]/g, '_');
+        const filename = `Quotation_${waQuotationData.quoteNo}_${safeCustomerName}.pdf`;
 
+        // 1. Download Quotation PDF Document immediately
         downloadSelectedPdfOnly();
 
+        // 2. Copy message to clipboard
         if (message && navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(message).catch(() => {});
         }
 
+        // 3. Log sent status in backend via AJAX
+        const params = new URLSearchParams({
+            format: format,
+            phone: phone,
+            customer_name: name,
+            custom_message: message
+        });
+        fetch(`${waQuotationData.sendUrl}?${params.toString()}`, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+        }).catch(() => {});
+
+        // 4. Open direct WhatsApp chat (Web or App)
         let url = '';
         if (type === 'web') {
             url = phone 
@@ -961,6 +978,8 @@
 
         window.open(url, '_blank');
         showPdfDownloadAndWhatsAppGuide(filename);
+        showQuotationToast(`✓ Opening WhatsApp for ${name}... PDF downloaded.`);
+        closeWhatsAppModal();
     }
 
     async function shareViaNativeWebShare() {
