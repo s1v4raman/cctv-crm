@@ -17,7 +17,7 @@
                     <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     <span>{{ __('Mark Worker Attendance') }}</span>
                 </h3>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{{ __('Three-step guided check-in & work performance logging') }}</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{{ __('Two-step guided check-in & work performance logging') }}</p>
             </div>
             <x-close-button onclick="closeAttendanceModal()" :label="__('Close')" />
         </div>
@@ -39,19 +39,7 @@
             <div class="flex items-center gap-2 opacity-60" id="step-pill-2">
                 <span id="step-badge-2" class="w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 shrink-0">2</span>
                 <div>
-                    <div class="font-bold text-slate-700 dark:text-slate-300 leading-tight" id="step-title-2">{{ __('Step 2: Photo') }}</div>
-                    <div class="text-[10px] text-slate-400 hidden sm:block">{{ __('Optional but Recommended') }}</div>
-                </div>
-            </div>
-
-            <div class="flex-1 mx-2 sm:mx-3 flex items-center">
-                <div id="step-connector-line-2" class="h-0.5 w-full bg-slate-200 dark:bg-slate-700 transition-colors"></div>
-            </div>
-
-            <div class="flex items-center gap-2 opacity-60" id="step-pill-3">
-                <span id="step-badge-3" class="w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 shrink-0">3</span>
-                <div>
-                    <div class="font-bold text-slate-700 dark:text-slate-300 leading-tight" id="step-title-3">{{ __('Step 3: Work Output') }}</div>
+                    <div class="font-bold text-slate-700 dark:text-slate-300 leading-tight" id="step-title-2">{{ __('Step 2: Work Output') }}</div>
                     <div class="text-[10px] text-slate-400 hidden sm:block">{{ __('Cabling & summary metrics') }}</div>
                 </div>
             </div>
@@ -60,7 +48,6 @@
         {{-- Form Container --}}
         <form id="mark-attendance-form" method="POST" action="{{ route('workers.attendance.store') }}" enctype="multipart/form-data" onsubmit="return handleAttendanceSubmit(event)">
             @csrf
-            <input type="hidden" name="photo_data" id="webcam-photo-data">
 
             {{-- ══════════════════════════════════════════════════════ --}}
             {{-- STEP 1: SHIFT SELECTION                                --}}
@@ -214,117 +201,6 @@
                         {{ __('Cancel') }}
                     </button>
                     <button type="button" onclick="goToAttendanceStep(2)" class="inline-flex items-center justify-center gap-1.5 px-5 py-2 min-h-[38px] rounded-xl bg-[#65a30d] hover:bg-[#4d7c0f] !text-white font-bold text-xs sm:text-sm shadow-xs transition cursor-pointer" style="color: #ffffff !important;">
-                        <span class="!text-white font-bold" style="color: #ffffff !important;">{{ __('Next: Photo') }}</span>
-                        <span class="!text-white" style="color: #ffffff !important;">&rarr;</span>
-                    </button>
-                </div>
-            </div>
-
-            {{-- ══════════════════════════════════════════════════════ --}}
-            {{-- STEP 2: PHOTO VERIFICATION                             --}}
-            {{-- ══════════════════════════════════════════════════════ --}}
-            <div id="att-step-2" class="hidden space-y-3">
-                {{-- PHOTO CAPTURE SECTION --}}
-                <div class="p-3.5 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-200 dark:border-slate-700">
-                    <div class="flex items-center justify-between mb-2">
-                        <label class="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wide">
-                            {{ __('Attendance Photo (Selfie / Work Site)') }}
-                        </label>
-                        <span class="text-[10px] text-slate-400 font-normal">{{ __('Optional but Recommended') }}</span>
-                    </div>
-
-                    {{-- Mode Switch Tabs --}}
-                    <div class="inline-flex items-center p-1 rounded-lg bg-slate-200/70 dark:bg-slate-800 border border-slate-300/70 dark:border-slate-700 text-xs mb-3">
-                        <button type="button" onclick="setPhotoTab('camera')" id="tab-btn-camera" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md font-semibold text-xs transition bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs cursor-pointer">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z"/></svg>
-                            <span>{{ __('Live Camera') }}</span>
-                        </button>
-                        <button type="button" onclick="setPhotoTab('file')" id="tab-btn-file" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md font-semibold text-xs transition text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg>
-                            <span>{{ __('Upload File') }}</span>
-                        </button>
-                    </div>
-
-                    {{-- Mode 1: Live Camera Stream --}}
-                    <div id="photo-tab-camera">
-                        <div class="relative bg-slate-100/90 dark:bg-slate-800/80 rounded-xl overflow-hidden min-h-[185px] flex items-center justify-center border border-slate-200 dark:border-slate-700">
-                            {{-- Camera Standby Placeholder (Shown when camera is off/idle) --}}
-                            <div id="camera-idle-placeholder" class="text-center p-5 flex flex-col items-center justify-center">
-                                <div class="w-12 h-12 rounded-full bg-blue-50 dark:bg-blue-900/40 border border-blue-200 dark:border-blue-700/60 flex items-center justify-center text-blue-600 dark:text-blue-400 mb-2 shadow-xs">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z" />
-                                    </svg>
-                                </div>
-                                <p class="text-xs font-bold text-slate-700 dark:text-slate-200">{{ __('Live Camera Standby') }}</p>
-                                <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{{ __('Click "Start Camera" below to preview worker selfie') }}</p>
-                            </div>
-
-                            {{-- Active Video Feed (Hidden until Start Camera is clicked) --}}
-                            <video id="webcam-video" autoplay playsinline class="w-full h-48 sm:h-52 object-cover hidden"></video>
-                            <canvas id="webcam-canvas" class="hidden"></canvas>
-
-                            {{-- Snapped Preview Surface (Replaces video feed completely upon snap) --}}
-                            <div id="camera-snapped-container" class="hidden flex flex-col items-center justify-center p-3.5 w-full">
-                                <div class="relative">
-                                    <img id="camera-snapped-img" alt="{{ __('Captured Selfie') }}" class="w-28 h-28 object-cover rounded-xl border-2 border-emerald-500 shadow-md">
-                                    <span class="absolute -top-2 -right-2 bg-emerald-600 text-white rounded-full p-1 shadow">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
-                                    </span>
-                                </div>
-                                <div class="mt-2.5 flex items-center gap-2">
-                                    <span class="text-xs font-semibold text-emerald-700 dark:text-emerald-400">{{ __('Photo Snapped & Ready') }}</span>
-                                    <button type="button" onclick="retakeWebcamPhoto()" class="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 hover:underline cursor-pointer">
-                                        ({{ __('Retake') }})
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        {{-- Camera Action Controls --}}
-                        <div class="flex items-center justify-between mt-2.5 flex-wrap gap-2">
-                            <div class="flex items-center gap-2">
-                                <button type="button" onclick="startWebcam()" id="btn-start-camera" class="btn-md inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 font-semibold text-xs hover:bg-slate-50 dark:hover:bg-slate-700 shadow-xs transition cursor-pointer">
-                                    <svg class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z"/></svg>
-                                    <span>{{ __('Start Camera') }}</span>
-                                </button>
-                                <button type="button" onclick="snapWebcamPhoto()" id="btn-snap-camera" class="btn-md inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-xs transition cursor-pointer hidden">
-                                    <span>📸 {{ __('Snap Photo') }}</span>
-                                </button>
-                            </div>
-                            <span id="camera-status-text" class="text-[11px] text-slate-500 dark:text-slate-400">{{ __('Click Start Camera to take selfie') }}</span>
-                        </div>
-                    </div>
-
-                    {{-- Mode 2: File Upload --}}
-                    <div id="photo-tab-file" class="hidden">
-                        <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-dashed border-slate-300 dark:border-slate-600 text-center flex flex-col items-center justify-center">
-                            <svg class="w-8 h-8 text-slate-400 mb-2" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
-                            </svg>
-                            <label for="modal-photo-input" class="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer">
-                                {{ __('Browse device photo or gallery') }}
-                            </label>
-                            <label for="modal-photo-input" class="mt-2 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900 transition shadow-2xs">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                                <span>{{ __('Choose Photo') }}</span>
-                            </label>
-                            <input aria-label="{{ __('Site photo') }}" type="file" name="photo" id="modal-photo-input" accept="image/*" class="sr-only hidden">
-                            <p class="text-[10px] text-slate-400 mt-1">{{ __('JPEG, PNG or WebP up to 10MB') }}</p>
-                        </div>
-                        <div id="file-preview-wrap" class="mt-3 hidden flex items-center justify-center gap-3">
-                            <img id="file-preview-img" alt="{{ __('Preview') }}" class="w-16 h-16 object-cover rounded-xl border-2 border-blue-500 shadow-md">
-                            <span class="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">✓ {{ __('File selected & ready') }}</span>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Step 2 Actions --}}
-                <div class="flex items-center justify-between pt-3 border-t border-slate-200 dark:border-slate-800">
-                    <button type="button" onclick="goToAttendanceStep(1)" class="inline-flex items-center justify-center gap-1 px-4 py-2 min-h-[38px] rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs sm:text-sm hover:bg-slate-50 transition cursor-pointer">
-                        <span>&larr; {{ __('Back') }}</span>
-                    </button>
-                    <button type="button" onclick="goToAttendanceStep(3)" class="inline-flex items-center justify-center gap-1.5 px-5 py-2 min-h-[38px] rounded-xl bg-[#65a30d] hover:bg-[#4d7c0f] !text-white font-bold text-xs sm:text-sm shadow-xs transition cursor-pointer" style="color: #ffffff !important;">
                         <span class="!text-white font-bold" style="color: #ffffff !important;">{{ __('Next: Work Output & Metrics') }}</span>
                         <span class="!text-white" style="color: #ffffff !important;">&rarr;</span>
                     </button>
@@ -332,9 +208,9 @@
             </div>
 
             {{-- ══════════════════════════════════════════════════════ --}}
-            {{-- STEP 3: WORK PERFORMANCE METRICS & SUMMARY            --}}
+            {{-- STEP 2: WORK PERFORMANCE METRICS & SUMMARY            --}}
             {{-- ══════════════════════════════════════════════════════ --}}
-            <div id="att-step-3" class="hidden space-y-3">
+            <div id="att-step-2" class="hidden space-y-3">
                 <div id="modal-validation-error-step2" class="hidden p-3 rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs"></div>
 
                 {{-- Step 1 Summary Banner Confirmation Card --}}
@@ -410,9 +286,9 @@
                     </x-tamil-input>
                 </div>
 
-                {{-- Step 3 Actions --}}
+                {{-- Step 2 Actions --}}
                 <div class="flex items-center justify-between pt-3 border-t border-slate-200 dark:border-slate-800">
-                    <button type="button" onclick="goToAttendanceStep(2)" class="inline-flex items-center justify-center gap-1 px-4 py-2 min-h-[38px] rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs sm:text-sm hover:bg-slate-50 transition cursor-pointer">
+                    <button type="button" onclick="goToAttendanceStep(1)" class="inline-flex items-center justify-center gap-1 px-4 py-2 min-h-[38px] rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs sm:text-sm hover:bg-slate-50 transition cursor-pointer">
                         <span>&larr; {{ __('Back') }}</span>
                     </button>
                     <button type="submit" id="btn-save-attendance" class="inline-flex items-center justify-center gap-1.5 px-5 py-2 min-h-[38px] rounded-xl bg-[#65a30d] hover:bg-[#4d7c0f] !text-white font-bold text-xs sm:text-sm shadow-xs transition cursor-pointer" style="color: #ffffff !important;">
@@ -432,17 +308,9 @@
         'halfDay' => __('Half Day (0.5x)'),
         'fullDay' => __('Full Day (1.0x)'),
         'perDay' => __('day'),
-        'cameraActive' => __('Camera active'),
-        'frameFace' => __('Frame face & snap photo'),
-        'cameraUnavailable' => __('Camera unavailable:'),
-        'permissionDenied' => __('Permission denied'),
-        'selfieCaptured' => __('Photo captured!'),
-        'readyToProceed' => __('Ready to proceed'),
-        'clickStart' => __('Click Start Camera to take photo'),
         'saving' => __('Saving Attendance...'),
         'workersSelected' => __('workers selected'),
     ]) }};
-    let globalWebcamStream = null;
     let currentAttendanceMode = 'single';
 
     function setAttendanceMode(mode) {
@@ -597,7 +465,6 @@
     }
 
     function closeAttendanceModal() {
-        stopWebcam();
         document.getElementById('markAttendanceModal').classList.add('hidden');
     }
 
@@ -646,7 +513,7 @@
             err2.classList.add('hidden');
         }
 
-        if (step === 3) {
+        if (step === 2) {
             const projectSelect = document.getElementById('att-project-id');
             const projOpt = projectSelect ? projectSelect.options[projectSelect.selectedIndex] : null;
             const dateVal = document.getElementById('modal-work-date')?.value || '';
@@ -660,7 +527,6 @@
 
                 const workerSelect = document.getElementById('modal-worker-select');
                 const workerOpt = workerSelect ? workerSelect.options[workerSelect.selectedIndex] : null;
-                const photoData = document.getElementById('webcam-photo-data')?.value;
                 const profilePhoto = workerOpt ? workerOpt.getAttribute('data-photo') : null;
 
                 if (workerOpt) {
@@ -673,11 +539,7 @@
                 const thumb = document.getElementById('summary-worker-thumb');
                 const fallback = document.getElementById('summary-worker-avatar-fallback');
 
-                if (photoData) {
-                    thumb.src = photoData;
-                    thumb.classList.remove('hidden');
-                    fallback.classList.add('hidden');
-                } else if (profilePhoto) {
+                if (profilePhoto) {
                     thumb.src = profilePhoto;
                     thumb.classList.remove('hidden');
                     fallback.classList.add('hidden');
@@ -716,158 +578,26 @@
             }
         }
 
-        // Transition Panes & Stepper Visuals
+        // Transition Panes & Stepper Visuals (2 Steps)
         const badgeBase = 'w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs shrink-0 ';
-        [1, 2, 3].forEach((n) => {
-            document.getElementById(`att-step-${n}`).classList.toggle('hidden', n !== step);
-            document.getElementById(`step-pill-${n}`).className = n > step ? 'flex items-center gap-2 opacity-60' : 'flex items-center gap-2';
-            const badge = document.getElementById(`step-badge-${n}`);
-            badge.innerHTML = n < step ? '&#10003;' : n;
-            badge.className = badgeBase + (n < step
-                ? 'bg-emerald-600 text-white shadow-xs'
-                : n === step ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300');
-        });
         [1, 2].forEach((n) => {
-            document.getElementById(`step-connector-line-${n}`).className = 'h-0.5 w-full transition-colors ' + (n < step ? 'bg-blue-600 dark:bg-blue-500' : 'bg-slate-200 dark:bg-slate-700');
+            const stepEl = document.getElementById(`att-step-${n}`);
+            if (stepEl) stepEl.classList.toggle('hidden', n !== step);
+            const pillEl = document.getElementById(`step-pill-${n}`);
+            if (pillEl) pillEl.className = n > step ? 'flex items-center gap-2 opacity-60' : 'flex items-center gap-2';
+            const badge = document.getElementById(`step-badge-${n}`);
+            if (badge) {
+                badge.innerHTML = n < step ? '&#10003;' : n;
+                badge.className = badgeBase + (n < step
+                    ? 'bg-emerald-600 text-white shadow-xs'
+                    : n === step ? 'bg-blue-600 text-white shadow-xs' : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300');
+            }
         });
-    }
-
-    function setPhotoTab(mode) {
-        const tabFile = document.getElementById('photo-tab-file');
-        const tabCamera = document.getElementById('photo-tab-camera');
-        const btnFile = document.getElementById('tab-btn-file');
-        const btnCamera = document.getElementById('tab-btn-camera');
-
-        if (mode === 'file') {
-            tabFile.classList.remove('hidden');
-            tabCamera.classList.add('hidden');
-            btnFile.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-md font-semibold text-xs transition bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs cursor-pointer";
-            btnCamera.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-md font-semibold text-xs transition text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer";
-            stopWebcam();
-        } else {
-            tabFile.classList.add('hidden');
-            tabCamera.classList.remove('hidden');
-            btnCamera.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-md font-semibold text-xs transition bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs cursor-pointer";
-            btnFile.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-md font-semibold text-xs transition text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer";
+        const connLine = document.getElementById('step-connector-line-1');
+        if (connLine) {
+            connLine.className = 'h-0.5 w-full transition-colors ' + (1 < step ? 'bg-blue-600 dark:bg-blue-500' : 'bg-slate-200 dark:bg-slate-700');
         }
     }
-
-    async function startWebcam() {
-        const video = document.getElementById('webcam-video');
-        const placeholder = document.getElementById('camera-idle-placeholder');
-        const snappedContainer = document.getElementById('camera-snapped-container');
-        const status = document.getElementById('camera-status-text');
-        const startBtn = document.getElementById('btn-start-camera');
-        const snapBtn = document.getElementById('btn-snap-camera');
-
-        try {
-            globalWebcamStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
-            video.srcObject = globalWebcamStream;
-            video.classList.remove('hidden');
-            if (placeholder) placeholder.classList.add('hidden');
-            if (snappedContainer) snappedContainer.classList.add('hidden');
-            if (status) status.innerHTML = '<span class="text-emerald-600 dark:text-emerald-400 font-semibold">🟢 ' + attendanceModalText.cameraActive + '</span> - ' + attendanceModalText.frameFace;
-            if (startBtn) startBtn.classList.add('hidden');
-            if (snapBtn) snapBtn.classList.remove('hidden');
-        } catch (err) {
-            if (status) status.innerHTML = '<span class="text-rose-500 font-semibold">⚠️ ' + attendanceModalText.cameraUnavailable + '</span> ' + (err.message || attendanceModalText.permissionDenied);
-        }
-    }
-
-    function snapWebcamPhoto() {
-        const video = document.getElementById('webcam-video');
-        const canvas = document.getElementById('webcam-canvas');
-        const dataInput = document.getElementById('webcam-photo-data');
-        const snappedContainer = document.getElementById('camera-snapped-container');
-        const previewImg = document.getElementById('camera-snapped-img');
-        const status = document.getElementById('camera-status-text');
-
-        canvas.width = video.videoWidth || 640;
-        canvas.height = video.videoHeight || 480;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-        const base64 = canvas.toDataURL('image/jpeg', 0.85);
-        dataInput.value = base64;
-        previewImg.src = base64;
-
-        video.classList.add('hidden');
-        snappedContainer.classList.remove('hidden');
-        if (status) status.innerHTML = '<span class="text-emerald-600 dark:text-emerald-400 font-semibold">✓ ' + attendanceModalText.selfieCaptured + '</span> ' + attendanceModalText.readyToProceed;
-
-        stopWebcam(true);
-    }
-
-    function retakeWebcamPhoto() {
-        const dataInput = document.getElementById('webcam-photo-data');
-        if (dataInput) dataInput.value = '';
-        startWebcam();
-    }
-
-    function stopWebcam(keepSnapped = false) {
-        if (globalWebcamStream) {
-            globalWebcamStream.getTracks().forEach(t => t.stop());
-            globalWebcamStream = null;
-        }
-        const video = document.getElementById('webcam-video');
-        const placeholder = document.getElementById('camera-idle-placeholder');
-        const snappedContainer = document.getElementById('camera-snapped-container');
-        const startBtn = document.getElementById('btn-start-camera');
-        const snapBtn = document.getElementById('btn-snap-camera');
-        const status = document.getElementById('camera-status-text');
-
-        if (video) video.classList.add('hidden');
-        if (snapBtn) snapBtn.classList.add('hidden');
-        if (startBtn) startBtn.classList.remove('hidden');
-
-        if (!keepSnapped) {
-            if (placeholder) placeholder.classList.remove('hidden');
-            if (snappedContainer) snappedContainer.classList.add('hidden');
-            if (status) status.textContent = attendanceModalText.clickStart;
-        }
-    }
-
-    document.getElementById('modal-photo-input')?.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                const tempImg = new Image();
-                tempImg.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    const maxDim = 800;
-                    let w = tempImg.width;
-                    let h = tempImg.height;
-                    if (w > maxDim || h > maxDim) {
-                        if (w > h) {
-                            h = Math.round((h * maxDim) / w);
-                            w = maxDim;
-                        } else {
-                            w = Math.round((w * maxDim) / h);
-                            h = maxDim;
-                        }
-                    }
-                    canvas.width = w;
-                    canvas.height = h;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(tempImg, 0, 0, w, h);
-                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.85);
-
-                    const dataInput = document.getElementById('webcam-photo-data');
-                    if (dataInput) dataInput.value = compressedBase64;
-
-                    const wrap = document.getElementById('file-preview-wrap');
-                    const img = document.getElementById('file-preview-img');
-                    if (img && wrap) {
-                        img.src = compressedBase64;
-                        wrap.classList.remove('hidden');
-                    }
-                };
-                tempImg.src = evt.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-    });
 
     function handleAttendanceSubmit(e) {
         const projectSelect = document.getElementById('att-project-id');

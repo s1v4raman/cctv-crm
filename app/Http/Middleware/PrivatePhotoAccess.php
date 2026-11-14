@@ -36,28 +36,6 @@ class PrivatePhotoAccess
             return $next($request);
         }
 
-        if ($user->isWorker() && $user->worker && $this->photoWorkerId($request) === $user->worker->id) {
-            return $next($request);
-        }
-
         abort(403, 'Unauthorized action.');
-    }
-
-    /**
-     * The worker a requested ID photo or punch selfie belongs to (null for other photos).
-     */
-    private function photoWorkerId(Request $request): ?int
-    {
-        $attendance = $request->route('attendance');
-        if ($attendance instanceof ProjectWorkerAttendance) {
-            return (int) $attendance->worker_id;
-        }
-
-        $worker = $request->route('worker');
-        if ($worker instanceof Worker) {
-            return (int) $worker->id;
-        }
-
-        return null;
     }
 }
