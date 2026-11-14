@@ -114,6 +114,53 @@ class HeaderNotificationService
                     'is_unread'   => true,
                 ]);
             }
+
+            // Pending Technician Site Attendances awaiting approval
+            $pendingTechAttendances = \App\Models\EmployeeAttendance::with(['user', 'project'])
+                ->where('approval_status', 'pending')
+                ->latest()
+                ->take(4)
+                ->get();
+
+            foreach ($pendingTechAttendances as $techAtt) {
+                $techName = $techAtt->user?->name ?? 'Technician';
+                $siteTitle = $techAtt->project?->title ?? 'Customer Site';
+                $items->push([
+                    'id'          => 'tech-att-' . $techAtt->id,
+                    'title'       => "Technician Attendance: {$techName}",
+                    'description' => "Site Shift for {$siteTitle} • Needs Approval",
+                    'time'        => $techAtt->created_at ? $techAtt->created_at->diffForHumans(null, true) . ' ago' : 'Recently',
+                    'timestamp'   => $techAtt->created_at ? $techAtt->created_at->timestamp : time(),
+                    'icon'        => 'attendance',
+                    'url'         => route('attendance.index', ['tab' => 'approvals']),
+                    'activity_at' => $techAtt->created_at?->timestamp,
+                    'is_unread'   => true,
+                ]);
+            }
+
+            // Pending Worker Attendances awaiting approval
+            $pendingWorkerAttendances = \App\Models\ProjectWorkerAttendance::with(['worker', 'workDay.project', 'logger'])
+                ->where('approval_status', 'pending')
+                ->latest()
+                ->take(4)
+                ->get();
+
+            foreach ($pendingWorkerAttendances as $workerAtt) {
+                $wName = $workerAtt->worker?->name ?? 'Worker';
+                $loggedByName = $workerAtt->logger?->name ?? 'Technician';
+                $projTitle = $workerAtt->workDay?->project?->title ?? 'Site';
+                $items->push([
+                    'id'          => 'worker-att-' . $workerAtt->id,
+                    'title'       => "Worker Attendance: {$wName}",
+                    'description' => "By {$loggedByName} at {$projTitle} • Needs Approval",
+                    'time'        => $workerAtt->created_at ? $workerAtt->created_at->diffForHumans(null, true) . ' ago' : 'Recently',
+                    'timestamp'   => $workerAtt->created_at ? $workerAtt->created_at->timestamp : time(),
+                    'icon'        => 'attendance',
+                    'url'         => route('attendance.index', ['tab' => 'approvals']),
+                    'activity_at' => $workerAtt->created_at?->timestamp,
+                    'is_unread'   => true,
+                ]);
+            }
         } elseif ($user->isTechnician()) {
             // Technician assigned jobs
             $jobs = InstallationJob::where('assigned_technician_id', $user->id)
@@ -180,5 +227,33 @@ class HeaderNotificationService
     public static function clearCacheForUser(int|string $userId): void
     {
         Cache::forget("topbar_notifs_user_{$userId}");
+    }
+
+    /**
+     * Notify Admin and Staff when a technician submits attendance from site.
+     */
+    public static function notifyAdminAndStaffOfAttendance(string $title, string $messageBody, ?string $url = null): void
+    {
+        $adminAndStaff = User::whereIn('role', ['admin', 'staff'])->get();
+        foreach ($adminAndStaff as $u) {
+            Cache::forget("topbar_notifs_user_{$u->id}");
+        }
+
+        try {
+            NotificationLog::create([
+                'channel'        => 'email',
+                'event_type'     => 'attendance_pending_approval',
+                'recipient_type' => 'admin',
+                'recipient_name' => 'Admin & Employee Team',
+                'subject'        => $title,
+                'message_body'   => $messageBody,
+                'action_url'     => $url ?? route('attendance.index', ['tab' => 'approvals']),
+                'status'         => 'delivered',
+                'sent_at'        => now(),
+                'created_by'     => auth()->id(),
+            ]);
+        } catch (\Throwable $e) {
+            // Log fallback if DB constraint occurs
+        }
     }
 }

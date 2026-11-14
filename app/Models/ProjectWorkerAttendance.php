@@ -41,6 +41,11 @@ class ProjectWorkerAttendance extends Model
         'unlocked_at',
         'notes',
         'work_summary',
+        'approval_status',
+        'logged_by',
+        'approved_by',
+        'approved_at',
+        'rejection_reason',
     ];
 
     protected $casts = [
@@ -58,6 +63,7 @@ class ProjectWorkerAttendance extends Model
         'paid_week_start' => 'date',
         'check_in_at' => 'datetime',
         'unlocked_at' => 'datetime',
+        'approved_at' => 'datetime',
     ];
 
     public function getPhotoUrlAttribute(): ?string
@@ -89,6 +95,43 @@ class ProjectWorkerAttendance extends Model
     public function wagePayment(): BelongsTo
     {
         return $this->belongsTo(WagePayment::class, 'wage_payment_id');
+    }
+
+    public function logger(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'logged_by');
+    }
+
+    public function approver(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    public function isPending(): bool
+    {
+        return $this->approval_status === 'pending';
+    }
+
+    public function isApproved(): bool
+    {
+        return $this->approval_status === 'approved' || empty($this->approval_status);
+    }
+
+    public function isRejected(): bool
+    {
+        return $this->approval_status === 'rejected';
+    }
+
+    public function scopePending($query)
+    {
+        return $query->where('approval_status', 'pending');
+    }
+
+    public function scopeApproved($query)
+    {
+        return $query->where(function ($q) {
+            $q->where('approval_status', 'approved')->orWhereNull('approval_status');
+        });
     }
 
     /**

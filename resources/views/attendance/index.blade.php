@@ -82,21 +82,32 @@
                 @endif
             </div>
 
-            {{-- 3 Dedicated Modes / Tabs Switcher --}}
+            {{-- 3 Dedicated Modes / Tabs Switcher + Site Approvals --}}
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-2">
-                <div class="inline-flex p-1 rounded bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 gap-1" style="border-radius: 4px;">
+                <div class="inline-flex p-1 rounded bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 gap-1 flex-wrap" style="border-radius: 4px;">
                     <a href="{{ route('attendance.index', ['tab' => 'daily', 'date' => $selectedDate, 'role' => $roleFilter, 'search' => $search]) }}"
-                       class="px-3.5 py-1.5 rounded text-xs font-semibold transition {{ $tab === 'daily' ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white' }}" style="border-radius: 4px;">
+                       class="px-3.5 py-1.5 rounded text-xs font-semibold transition {{ $tab === 'daily' ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 font-bold shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white' }}" style="border-radius: 4px;">
                         Day
                     </a>
                     <a href="{{ route('attendance.index', ['tab' => 'weekly', 'week_date' => $weekInput, 'role' => $roleFilter, 'search' => $search]) }}"
-                       class="px-3.5 py-1.5 rounded text-xs font-semibold transition {{ $tab === 'weekly' ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white' }}" style="border-radius: 4px;">
+                       class="px-3.5 py-1.5 rounded text-xs font-semibold transition {{ $tab === 'weekly' ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 font-bold shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white' }}" style="border-radius: 4px;">
                         Week
                     </a>
                     <a href="{{ route('attendance.index', ['tab' => 'monthly', 'month' => $selectedMonth, 'role' => $roleFilter, 'search' => $search]) }}"
-                       class="px-3.5 py-1.5 rounded text-xs font-semibold transition {{ $tab === 'monthly' ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white' }}" style="border-radius: 4px;">
+                       class="px-3.5 py-1.5 rounded text-xs font-semibold transition {{ $tab === 'monthly' ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 font-bold shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white' }}" style="border-radius: 4px;">
                         Month
                     </a>
+                    @if(auth()->user()->isOffice())
+                    <a href="{{ route('attendance.index', ['tab' => 'approvals']) }}"
+                       class="px-3.5 py-1.5 rounded text-xs font-semibold transition inline-flex items-center gap-1.5 {{ $tab === 'approvals' ? 'bg-white dark:bg-slate-800 text-amber-600 dark:text-amber-400 font-bold shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white' }}" style="border-radius: 4px;">
+                        <span>{{ __('Site Approvals') }}</span>
+                        @if(($pendingApprovalsCount ?? 0) > 0)
+                            <span class="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-amber-500 text-white animate-pulse">
+                                {{ $pendingApprovalsCount }}
+                            </span>
+                        @endif
+                    </a>
+                    @endif
                 </div>
 
                 {{-- Global Filters (Role & Search) --}}
@@ -106,7 +117,7 @@
                         <input type="hidden" name="date" value="{{ $selectedDate }}">
                     @elseif($tab === 'weekly')
                         <input type="hidden" name="week_date" value="{{ $weekInput }}">
-                    @else
+                    @elseif($tab === 'monthly')
                         <input type="hidden" name="month" value="{{ $selectedMonth }}">
                     @endif
 
@@ -793,6 +804,291 @@
                             </div>
                         @endforeach
                     </div>
+                </div>
+
+            @elseif($tab === 'approvals')
+                {{-- TAB 4: SITE ATTENDANCE APPROVALS & ANALYSIS (TECHNICIANS & WORKERS) --}}
+                <div class="space-y-6">
+
+                    {{-- Analysis Highlights Metric Cards --}}
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs">
+                            <div class="flex items-center justify-between text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                <span>{{ __('Pending Review Total') }}</span>
+                                <span class="w-2.5 h-2.5 rounded-full {{ ($pendingApprovalsCount ?? 0) > 0 ? 'bg-amber-500 animate-pulse' : 'bg-emerald-500' }}"></span>
+                            </div>
+                            <div class="text-2xl font-black text-slate-900 dark:text-white mt-1">
+                                {{ $pendingApprovalsCount ?? 0 }}
+                            </div>
+                            <div class="text-[11px] text-slate-400 mt-0.5">
+                                {{ __('Site attendance punches awaiting office verification') }}
+                            </div>
+                        </div>
+
+                        <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs">
+                            <div class="flex items-center justify-between text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                <span>{{ __('Technician Site Check-Ins') }}</span>
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300">
+                                    {{ $pendingTechAttendances->count() }}
+                                </span>
+                            </div>
+                            <div class="text-2xl font-black text-slate-900 dark:text-white mt-1">
+                                {{ $pendingTechAttendances->count() }}
+                            </div>
+                            <div class="text-[11px] text-slate-400 mt-0.5">
+                                {{ __('Technicians clocked in on assigned project sites') }}
+                            </div>
+                        </div>
+
+                        <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs">
+                            <div class="flex items-center justify-between text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                <span>{{ __('Worker Shifts Logged') }}</span>
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300">
+                                    {{ $pendingWorkerAttendances->count() }}
+                                </span>
+                            </div>
+                            <div class="text-2xl font-black text-slate-900 dark:text-white mt-1">
+                                {{ $pendingWorkerAttendances->count() }}
+                            </div>
+                            <div class="text-[11px] text-slate-400 mt-0.5">
+                                {{ __('Daily crew shifts & work metrics recorded on site') }}
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- 1. TECHNICIAN SITE ATTENDANCE SUBMISSIONS --}}
+                    <div class="pg-card overflow-hidden">
+                        <div class="px-5 py-3.5 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between flex-wrap gap-2">
+                            <div>
+                                <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
+                                    <span>{{ __('Technician On-Site Attendance') }} ({{ $pendingTechAttendances->count() }})</span>
+                                </h3>
+                                <p class="text-[11px] text-slate-500 dark:text-slate-400">{{ __('Review and accept or reject technician self-attendance punched on project sites') }}</p>
+                            </div>
+                            @if($pendingTechAttendances->isNotEmpty())
+                                <form method="POST" action="{{ route('attendance.technicians.bulk-accept') }}" onsubmit="return confirm('{{ __('Accept all pending technician attendance records?') }}')">
+                                    @csrf
+                                    <button type="submit" class="btn-primary text-xs !bg-emerald-600 hover:!bg-emerald-700 !text-white flex items-center gap-1.5 shadow-xs" style="color: #ffffff !important;">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                                        <span class="!text-white font-bold" style="color: #ffffff !important;">{{ __('Accept All Technicians') }}</span>
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
+
+                        @if($pendingTechAttendances->isEmpty())
+                            <div class="p-8 text-center">
+                                <div class="w-10 h-10 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto mb-2">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                                </div>
+                                <p class="text-xs font-bold text-slate-700 dark:text-slate-300">{{ __('No Pending Technician Attendances') }}</p>
+                                <p class="text-[11px] text-slate-400 mt-0.5">{{ __('All technician site attendance submissions have been verified and processed.') }}</p>
+                            </div>
+                        @else
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-xs border-collapse">
+                                    <thead>
+                                        <tr class="bg-slate-50/75 dark:bg-slate-800/40 border-b border-slate-200 dark:border-slate-800 text-slate-500 font-bold uppercase text-[10px] tracking-wider">
+                                            <th class="py-3 px-4">{{ __('Technician') }}</th>
+                                            <th class="py-3 px-4">{{ __('Project Site') }}</th>
+                                            <th class="py-3 px-4">{{ __('Date & Timing') }}</th>
+                                            <th class="py-3 px-4">{{ __('Shift Hours') }}</th>
+                                            <th class="py-3 px-4">{{ __('Site Notes') }}</th>
+                                            <th class="py-3 px-4 text-right">{{ __('Actions') }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100 dark:divide-slate-800/60">
+                                        @foreach($pendingTechAttendances as $techAtt)
+                                            <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition">
+                                                <td class="py-3 px-4">
+                                                    <div class="flex items-center gap-2.5">
+                                                        <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-xs shrink-0">
+                                                            {{ strtoupper(substr($techAtt->user?->name ?? 'T', 0, 2)) }}
+                                                        </div>
+                                                        <div>
+                                                            <div class="font-bold text-slate-900 dark:text-white">{{ $techAtt->user?->name ?? __('Technician') }}</div>
+                                                            <div class="text-[10px] text-slate-400">{{ $techAtt->user?->email }}</div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="py-3 px-4">
+                                                    @if($techAtt->project)
+                                                        <div class="font-bold text-slate-800 dark:text-slate-200">{{ $techAtt->project->title }}</div>
+                                                        <div class="text-[10px] text-slate-400">{{ $techAtt->project->customer_name ?? __('Direct Site') }}</div>
+                                                    @else
+                                                        <span class="text-slate-400 italic">{{ __('General Site Work') }}</span>
+                                                    @endif
+                                                </td>
+                                                <td class="py-3 px-4">
+                                                    <div class="font-bold text-slate-800 dark:text-slate-200">{{ $techAtt->date ? \Carbon\Carbon::parse($techAtt->date)->format('d M Y') : '—' }}</div>
+                                                    <div class="text-[11px] text-slate-500">
+                                                        In: {{ $techAtt->clock_in ? \Carbon\Carbon::parse($techAtt->clock_in)->format('h:i A') : '—' }}
+                                                        @if($techAtt->clock_out)
+                                                            &bull; Out: {{ \Carbon\Carbon::parse($techAtt->clock_out)->format('h:i A') }}
+                                                        @endif
+                                                    </div>
+                                                </td>
+                                                <td class="py-3 px-4">
+                                                    <span class="inline-block px-2 py-0.5 rounded text-[11px] font-bold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                                                        {{ $techAtt->total_hours > 0 ? $techAtt->total_hours . ' hrs' : __('Shift in Progress') }}
+                                                    </span>
+                                                </td>
+                                                <td class="py-3 px-4 max-w-xs truncate text-slate-600 dark:text-slate-300 text-[11px]">
+                                                    {{ $techAtt->notes ?: '—' }}
+                                                </td>
+                                                <td class="py-3 px-4 text-right">
+                                                    <div class="flex items-center justify-end gap-1.5">
+                                                        {{-- Accept Form --}}
+                                                        <form method="POST" action="{{ route('attendance.technicians.accept', $techAtt->id) }}">
+                                                            @csrf
+                                                            <button type="submit" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 !text-white font-bold text-xs inline-flex items-center gap-1 shadow-2xs transition cursor-pointer" style="color: #ffffff !important;" title="{{ __('Accept and store in official attendance list') }}">
+                                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                                                                <span class="!text-white font-bold" style="color: #ffffff !important;">{{ __('Accept') }}</span>
+                                                            </button>
+                                                        </form>
+
+                                                        {{-- Reject Form --}}
+                                                        <form method="POST" action="{{ route('attendance.technicians.reject', $techAtt->id) }}" onsubmit="const r = prompt('{{ __('Enter reason for rejecting this attendance:') }}', 'Not approved'); if(!r) return false; this.rejection_reason.value = r; return true;">
+                                                            @csrf
+                                                            <input type="hidden" name="rejection_reason" value="">
+                                                            <button type="submit" class="px-2.5 py-1 rounded-lg bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900 border border-rose-200 dark:border-rose-800 text-rose-600 dark:text-rose-400 font-bold text-xs inline-flex items-center gap-1 transition cursor-pointer" title="{{ __('Reject this attendance') }}">
+                                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                                                                <span>{{ __('Reject') }}</span>
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        @endif
+                    </div>
+
+                    {{-- 2. WORKER SITE ATTENDANCE SUBMISSIONS --}}
+                    <div class="pg-card overflow-hidden">
+                        <div class="px-5 py-3.5 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between flex-wrap gap-2">
+                            <div>
+                                <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"/></svg>
+                                    <span>{{ __('Worker On-Site Attendance') }} ({{ $pendingWorkerAttendances->count() }})</span>
+                                </h3>
+                                <p class="text-[11px] text-slate-500 dark:text-slate-400">{{ __('Review and accept or reject worker crew shifts and work output metrics logged by technicians on site') }}</p>
+                            </div>
+                            @if($pendingWorkerAttendances->isNotEmpty())
+                                <form method="POST" action="{{ route('attendance.workers.bulk-accept') }}" onsubmit="return confirm('{{ __('Accept all pending worker attendance records?') }}')">
+                                    @csrf
+                                    <button type="submit" class="btn-primary text-xs !bg-emerald-600 hover:!bg-emerald-700 !text-white flex items-center gap-1.5 shadow-xs" style="color: #ffffff !important;">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                                        <span class="!text-white font-bold" style="color: #ffffff !important;">{{ __('Accept All Workers') }}</span>
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
+
+                        @if($pendingWorkerAttendances->isEmpty())
+                            <div class="p-8 text-center">
+                                <div class="w-10 h-10 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto mb-2">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                                </div>
+                                <p class="text-xs font-bold text-slate-700 dark:text-slate-300">{{ __('No Pending Worker Attendances') }}</p>
+                                <p class="text-[11px] text-slate-400 mt-0.5">{{ __('All worker crew attendances submitted by technicians have been verified and processed.') }}</p>
+                            </div>
+                        @else
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-xs border-collapse">
+                                    <thead>
+                                        <tr class="bg-slate-50/75 dark:bg-slate-800/40 border-b border-slate-200 dark:border-slate-800 text-slate-500 font-bold uppercase text-[10px] tracking-wider">
+                                            <th class="py-3 px-4">{{ __('Worker') }}</th>
+                                            <th class="py-3 px-4">{{ __('Project Site') }}</th>
+                                            <th class="py-3 px-4">{{ __('Logged By') }}</th>
+                                            <th class="py-3 px-4">{{ __('Shift & Date') }}</th>
+                                            <th class="py-3 px-4">{{ __('Work Output Metrics') }}</th>
+                                            <th class="py-3 px-4">{{ __('Notes') }}</th>
+                                            <th class="py-3 px-4 text-right">{{ __('Actions') }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100 dark:divide-slate-800/60">
+                                        @foreach($pendingWorkerAttendances as $wAtt)
+                                            <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition">
+                                                <td class="py-3 px-4">
+                                                    <div class="flex items-center gap-2.5">
+                                                        <div class="w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-xs shrink-0">
+                                                            {{ strtoupper(substr($wAtt->worker?->name ?? 'W', 0, 2)) }}
+                                                        </div>
+                                                        <div>
+                                                            <div class="font-bold text-slate-900 dark:text-white">{{ $wAtt->worker?->name ?? __('Worker') }}</div>
+                                                            <div class="text-[10px] text-slate-400">{{ $wAtt->worker?->phone ?: '—' }}</div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="py-3 px-4">
+                                                    <div class="font-bold text-slate-800 dark:text-slate-200">{{ $wAtt->workDay?->project?->title ?? __('Site') }}</div>
+                                                    <div class="text-[10px] text-slate-400">{{ $wAtt->workDay?->project?->customer_name ?? '' }}</div>
+                                                </td>
+                                                <td class="py-3 px-4">
+                                                    <div class="font-bold text-blue-600 dark:text-blue-400">{{ $wAtt->logger?->name ?? __('Technician') }}</div>
+                                                    <div class="text-[10px] text-slate-400">{{ $wAtt->created_at ? $wAtt->created_at->format('h:i A') : '' }}</div>
+                                                </td>
+                                                <td class="py-3 px-4">
+                                                    <div class="font-bold text-slate-800 dark:text-slate-200">
+                                                        {{ $wAtt->workDay?->work_date ? \Carbon\Carbon::parse($wAtt->workDay->work_date)->format('d M Y') : '—' }}
+                                                    </div>
+                                                    <span class="inline-block px-1.5 py-0.5 rounded text-[10px] font-bold {{ $wAtt->attendance_type === 'half' ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300' : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' }}">
+                                                        {{ $wAtt->attendance_type === 'half' ? __('Half Day (0.5x)') : __('Full Day (1.0x)') }}
+                                                    </span>
+                                                </td>
+                                                <td class="py-3 px-4">
+                                                    <div class="text-[11px] text-slate-700 dark:text-slate-300 space-y-0.5">
+                                                        @if($wAtt->cabling_metres > 0)
+                                                            <div><strong>{{ $wAtt->cabling_metres }}m</strong> {{ __('cabling') }}</div>
+                                                        @endif
+                                                        @if($wAtt->cameras_installed > 0)
+                                                            <div><strong>{{ $wAtt->cameras_installed }}</strong> {{ __('cameras mounted') }}</div>
+                                                        @endif
+                                                        @if($wAtt->extra_amount > 0)
+                                                            <div class="text-amber-600 dark:text-amber-400 font-semibold">{{ __('Extra: ₹:amt', ['amt' => $wAtt->extra_amount]) }} ({{ $wAtt->extra_description ?: __('Allowance') }})</div>
+                                                        @endif
+                                                        @if($wAtt->cabling_metres <= 0 && $wAtt->cameras_installed <= 0 && $wAtt->extra_amount <= 0)
+                                                            <span class="text-slate-400 italic">{{ __('General Shift') }}</span>
+                                                        @endif
+                                                    </div>
+                                                </td>
+                                                <td class="py-3 px-4 max-w-xs truncate text-slate-600 dark:text-slate-300 text-[11px]">
+                                                    {{ $wAtt->notes ?: '—' }}
+                                                </td>
+                                                <td class="py-3 px-4 text-right">
+                                                    <div class="flex items-center justify-end gap-1.5">
+                                                        {{-- Accept Form --}}
+                                                        <form method="POST" action="{{ route('attendance.workers.accept', $wAtt->id) }}">
+                                                            @csrf
+                                                            <button type="submit" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 !text-white font-bold text-xs inline-flex items-center gap-1 shadow-2xs transition cursor-pointer" style="color: #ffffff !important;" title="{{ __('Accept and store in official project attendance list') }}">
+                                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                                                                <span class="!text-white font-bold" style="color: #ffffff !important;">{{ __('Accept') }}</span>
+                                                            </button>
+                                                        </form>
+
+                                                        {{-- Reject Form --}}
+                                                        <form method="POST" action="{{ route('attendance.workers.reject', $wAtt->id) }}" onsubmit="const r = prompt('{{ __('Enter reason for rejecting this attendance:') }}', 'Not approved'); if(!r) return false; this.rejection_reason.value = r; return true;">
+                                                            @csrf
+                                                            <input type="hidden" name="rejection_reason" value="">
+                                                            <button type="submit" class="px-2.5 py-1 rounded-lg bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900 border border-rose-200 dark:border-rose-800 text-rose-600 dark:text-rose-400 font-bold text-xs inline-flex items-center gap-1 transition cursor-pointer" title="{{ __('Reject this attendance') }}">
+                                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                                                                <span>{{ __('Reject') }}</span>
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        @endif
+                    </div>
+
                 </div>
 
             @endif

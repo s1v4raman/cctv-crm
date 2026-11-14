@@ -16,7 +16,7 @@ class AttendanceController extends Controller
      */
     public function index(Request $request): View
     {
-        $tab = in_array($request->input('tab'), ['daily', 'weekly', 'monthly']) 
+        $tab = in_array($request->input('tab'), ['daily', 'weekly', 'monthly', 'approvals']) 
             ? (string) $request->input('tab') 
             : 'daily';
 
@@ -43,23 +43,39 @@ class AttendanceController extends Controller
             ->whereDate('date', now()->toDateString())
             ->first();
 
+        // Pending site attendance submissions from technicians & workers
+        $pendingTechAttendances = EmployeeAttendance::with(['user', 'project'])
+            ->where('approval_status', 'pending')
+            ->orderBy('date', 'desc')
+            ->get();
+
+        $pendingWorkerAttendances = \App\Models\ProjectWorkerAttendance::with(['worker', 'workDay.project', 'logger'])
+            ->where('approval_status', 'pending')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $pendingApprovalsCount = $pendingTechAttendances->count() + $pendingWorkerAttendances->count();
+
         $dailyData = $this->getDailyStats($totalEmployees, $selectedDate);
         $weeklyData = $this->getWeeklyStats($employees, $totalEmployees, $weekStart, $weekEnd);
         $monthlyData = $this->getMonthlyStats($employees, $totalEmployees, $selectedMonth);
 
         /** @var array<string, mixed> $payload */
         $payload = array_merge([
-            'tab'               => $tab,
-            'employees'         => $employees,
-            'selectedDate'      => $selectedDate,
-            'selectedMonth'     => $selectedMonth,
-            'weekInput'         => $weekInput,
-            'weekStart'         => $weekStart,
-            'weekEnd'           => $weekEnd,
-            'roleFilter'        => $roleFilter,
-            'search'            => $search,
-            'totalEmployees'    => $totalEmployees,
-            'myAttendanceToday' => $myAttendanceToday,
+            'tab'                      => $tab,
+            'employees'                => $employees,
+            'selectedDate'             => $selectedDate,
+            'selectedMonth'            => $selectedMonth,
+            'weekInput'                => $weekInput,
+            'weekStart'                => $weekStart,
+            'weekEnd'                  => $weekEnd,
+            'roleFilter'               => $roleFilter,
+            'search'                   => $search,
+            'totalEmployees'           => $totalEmployees,
+            'myAttendanceToday'        => $myAttendanceToday,
+            'pendingTechAttendances'   => $pendingTechAttendances,
+            'pendingWorkerAttendances' => $pendingWorkerAttendances,
+            'pendingApprovalsCount'    => $pendingApprovalsCount,
         ], $dailyData, $weeklyData, $monthlyData);
 
         return view('attendance.index', $payload);
@@ -320,14 +336,37 @@ class AttendanceController extends Controller
 
         $attendance->clock_in = $nowTime;
         $attendance->status = $isLate ? 'late' : 'present';
-        $attendance->location_type = $request->input('location_type', 'office');
+        $attendance->location_type = $request->input('location_type', $user->isTechnician() ? 'on_site' : 'office');
+        $attendance->project_id = $request->input('project_id');
         $attendance->notes = $request->input('notes');
         $attendance->marked_by = $user->id;
+
+        if ($user->isTechnician()) {
+            $attendance->approval_status = 'pending';
+            $attendance->approved_by = null;
+            $attendance->approved_at = null;
+        } else {
+            $attendance->approval_status = 'approved';
+            $attendance->approved_by = $user->id;
+            $attendance->approved_at = now();
+        }
+
         $attendance->save();
 
-        $statusMsg = $isLate
-            ? __('⏰ Clocked in at :time (Marked as Late Arrival).', ['time' => now()->format('h:i A')])
-            : __('✅ Successfully clocked in at :time! Have a productive shift.', ['time' => now()->format('h:i A')]);
+        if ($user->isTechnician()) {
+            $siteName = $attendance->project?->title ?? __('Assigned Site');
+            \App\Services\HeaderNotificationService::notifyAdminAndStaffOfAttendance(
+                "Technician Check-In: {$user->name}",
+                "Technician {$user->name} clocked in on site for {$siteName}. Awaiting Admin & Employee review.",
+                route('attendance.index', ['tab' => 'approvals'])
+            );
+
+            $statusMsg = __('✅ Clocked in on site at :time! Your attendance has been submitted for Admin & Employee review.', ['time' => now()->format('h:i A')]);
+        } else {
+            $statusMsg = $isLate
+                ? __('⏰ Clocked in at :time (Marked as Late Arrival).', ['time' => now()->format('h:i A')])
+                : __('✅ Successfully clocked in at :time! Have a productive shift.', ['time' => now()->format('h:i A')]);
+        }
 
         return back()->with('status', $statusMsg);
     }
@@ -358,6 +397,63 @@ class AttendanceController extends Controller
         $attendance->save();
 
         return back()->with('status', __('🏁 Clocked out at :time! Total logged time: :hours hrs.', ['time' => now()->format('h:i A'), 'hours' => $attendance->total_hours]));
+    }
+
+    /**
+     * Accept (approve) technician site attendance (Admin & Staff).
+     */
+    public function acceptTechnicianAttendance(Request $request, EmployeeAttendance $attendance): RedirectResponse
+    {
+        $attendance->update([
+            'approval_status'  => 'approved',
+            'approved_by'      => auth()->id(),
+            'approved_at'      => now(),
+            'rejection_reason' => null,
+        ]);
+
+        \App\Services\HeaderNotificationService::clearCacheForUser(auth()->id());
+
+        return back()->with('status', __('✓ Technician attendance for :name accepted and saved to official records.', ['name' => $attendance->user?->name ?? 'Technician']));
+    }
+
+    /**
+     * Reject technician site attendance (Admin & Staff).
+     */
+    public function rejectTechnicianAttendance(Request $request, EmployeeAttendance $attendance): RedirectResponse
+    {
+        $reason = $request->input('rejection_reason', __('Not approved by office'));
+        $attendance->update([
+            'approval_status'  => 'rejected',
+            'approved_by'      => auth()->id(),
+            'approved_at'      => now(),
+            'rejection_reason' => $reason,
+        ]);
+
+        \App\Services\HeaderNotificationService::clearCacheForUser(auth()->id());
+
+        return back()->with('status', __('Technician attendance for :name has been rejected.', ['name' => $attendance->user?->name ?? 'Technician']));
+    }
+
+    /**
+     * Bulk accept technician site attendances (Admin & Staff).
+     */
+    public function bulkAcceptTechnicians(Request $request): RedirectResponse
+    {
+        $query = EmployeeAttendance::where('approval_status', 'pending');
+        if ($request->filled('ids') && is_array($request->input('ids'))) {
+            $query->whereIn('id', $request->input('ids'));
+        }
+        $count = $query->count();
+        $query->update([
+            'approval_status'  => 'approved',
+            'approved_by'      => auth()->id(),
+            'approved_at'      => now(),
+            'rejection_reason' => null,
+        ]);
+
+        \App\Services\HeaderNotificationService::clearCacheForUser(auth()->id());
+
+        return back()->with('status', __('✓ Successfully accepted :count technician attendance records.', ['count' => $count]));
     }
 
     /**

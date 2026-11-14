@@ -34,15 +34,20 @@ class EmployeeAttendance extends Model
 
     protected $fillable = [
         'user_id',
+        'project_id',
         'date',
         'clock_in',
         'clock_out',
         'status',
+        'approval_status',
         'total_hours',
         'overtime_hours',
         'location_type',
         'notes',
         'marked_by',
+        'approved_by',
+        'approved_at',
+        'rejection_reason',
     ];
 
     protected function casts(): array
@@ -51,6 +56,7 @@ class EmployeeAttendance extends Model
             'date'           => 'date',
             'total_hours'    => 'decimal:2',
             'overtime_hours' => 'decimal:2',
+            'approved_at'    => 'datetime',
         ];
     }
 
@@ -59,9 +65,46 @@ class EmployeeAttendance extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function project(): BelongsTo
+    {
+        return $this->belongsTo(Project::class);
+    }
+
     public function marker(): BelongsTo
     {
         return $this->belongsTo(User::class, 'marked_by');
+    }
+
+    public function approver(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    public function isPending(): bool
+    {
+        return $this->approval_status === 'pending';
+    }
+
+    public function isApproved(): bool
+    {
+        return $this->approval_status === 'approved' || empty($this->approval_status);
+    }
+
+    public function isRejected(): bool
+    {
+        return $this->approval_status === 'rejected';
+    }
+
+    public function scopePending($query)
+    {
+        return $query->where('approval_status', 'pending');
+    }
+
+    public function scopeApproved($query)
+    {
+        return $query->where(function ($q) {
+            $q->where('approval_status', 'approved')->orWhereNull('approval_status');
+        });
     }
 
     public function getStatusBadgeClassAttribute(): string

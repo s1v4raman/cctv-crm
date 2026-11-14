@@ -579,6 +579,16 @@
                                                 {{ __('Absent / Not Punched') }}
                                             </span>
                                         @endif
+
+                                        @if($isPresent && $att?->approval_status === 'pending')
+                                            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300 border border-amber-200 dark:border-amber-800 ml-1">
+                                                {{ __('Pending Review') }}
+                                            </span>
+                                        @elseif($isPresent && $att?->approval_status === 'rejected')
+                                            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-50 text-rose-700 dark:bg-rose-950 dark:text-rose-300 border border-rose-200 dark:border-rose-800 ml-1" title="{{ $att->rejection_reason }}">
+                                                {{ __('Rejected') }}
+                                            </span>
+                                        @endif
                                     </td>
 
                                     {{-- Cabling --}}
@@ -636,6 +646,15 @@
 
                                     {{-- Actions --}}
                                     <td class="py-2.5 px-3 text-right nowrap">
+                                        @if($isPresent && $att && $att->approval_status === 'pending' && auth()->user()->isOffice())
+                                            <form method="POST" action="{{ route('attendance.workers.accept', $att->id) }}" class="inline mr-1.5">
+                                                @csrf
+                                                <button type="submit" class="px-2 py-0.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 !text-white font-bold text-[10px] inline-flex items-center gap-1 shadow-2xs transition cursor-pointer" style="color: #ffffff !important;" title="{{ __('Accept and confirm this attendance record') }}">
+                                                    ✓ {{ __('Accept') }}
+                                                </button>
+                                            </form>
+                                        @endif
+
                                         @if($isPresent && $att && !$att->is_paid && auth()->user()->isAdmin())
                                             <form method="POST" action="{{ route('workers.attendance.destroy', $att) }}" class="inline" data-confirm="Remove attendance record for {{ $w?->name ?? 'worker' }} on this date?">
                                                 @csrf

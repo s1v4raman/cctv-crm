@@ -73,22 +73,29 @@
 
                         {{-- Real Shift Clock In / Clock Out Form --}}
                         @if(!$myAttendance || !$myAttendance->clock_in)
-                            <form method="POST" action="{{ route('attendance.clock-in') }}" class="inline-flex">
-                                @csrf
-                                <input type="hidden" name="location_type" value="on_site">
-                                <button type="submit" 
-                                        class="inline-flex items-center justify-center gap-2 px-4 py-2 min-h-[38px] rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 !text-white font-bold text-xs sm:text-sm shadow-md shadow-blue-500/20 transition cursor-pointer"
-                                        style="color: #ffffff !important;">
-                                    <svg class="w-4 h-4 sm:w-5 sm:h-5 !text-white" fill="none" stroke="#ffffff" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                    <span class="!text-white font-bold" style="color: #ffffff !important;">{{ __('Clock In Today') }}</span>
-                                </button>
-                            </form>
+                            <button type="button" onclick="document.getElementById('techSiteCheckInModal').classList.remove('hidden')"
+                                    class="inline-flex items-center justify-center gap-2 px-4 py-2 min-h-[38px] rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 !text-white font-bold text-xs sm:text-sm shadow-md shadow-blue-500/20 transition cursor-pointer"
+                                    style="color: #ffffff !important;">
+                                <svg class="w-4 h-4 sm:w-5 sm:h-5 !text-white" fill="none" stroke="#ffffff" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                <span class="!text-white font-bold" style="color: #ffffff !important;">{{ __('Site Clock-In Today') }}</span>
+                            </button>
                         @elseif(!$myAttendance->clock_out)
-                            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 min-h-[38px] rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-800 text-xs sm:text-sm">
-                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                                <span class="text-emerald-800 dark:text-emerald-300 font-bold">
-                                    {{ __('Shift: :time', ['time' => \Carbon\Carbon::parse($myAttendance->clock_in)->format('h:i A')]) }}
-                                </span>
+                            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 min-h-[38px] rounded-xl {{ $myAttendance->approval_status === 'pending' ? 'bg-amber-50 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-800' : ($myAttendance->approval_status === 'rejected' ? 'bg-rose-50 dark:bg-rose-950/60 border border-rose-300 dark:border-rose-800' : 'bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-800') }} text-xs sm:text-sm">
+                                <span class="w-2.5 h-2.5 rounded-full {{ $myAttendance->approval_status === 'pending' ? 'bg-amber-500 animate-pulse' : ($myAttendance->approval_status === 'rejected' ? 'bg-rose-500' : 'bg-emerald-500 animate-pulse') }}"></span>
+                                <div>
+                                    <span class="font-bold {{ $myAttendance->approval_status === 'pending' ? 'text-amber-800 dark:text-amber-300' : ($myAttendance->approval_status === 'rejected' ? 'text-rose-800 dark:text-rose-300' : 'text-emerald-800 dark:text-emerald-300') }}">
+                                        {{ __('Shift: :time', ['time' => \Carbon\Carbon::parse($myAttendance->clock_in)->format('h:i A')]) }}
+                                    </span>
+                                    <span class="text-[10px] block opacity-80">
+                                        @if($myAttendance->approval_status === 'pending')
+                                            {{ __('(Pending Review)') }}
+                                        @elseif($myAttendance->approval_status === 'rejected')
+                                            {{ __('(Rejected: :reason)', ['reason' => $myAttendance->rejection_reason ?? 'Office review']) }}
+                                        @else
+                                            {{ __('(Approved by Office)') }}
+                                        @endif
+                                    </span>
+                                </div>
                                 <form method="POST" action="{{ route('attendance.clock-out') }}" class="inline ml-1">
                                     @csrf
                                     <button type="submit" 
@@ -102,6 +109,9 @@
                             <div class="inline-flex items-center gap-2 px-4 py-2 min-h-[38px] rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm text-slate-700 dark:text-slate-300 font-bold">
                                 <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                 <span>{{ __('Shift Done (:hours hrs)', ['hours' => $myAttendance->total_hours]) }}</span>
+                                <span class="text-[10px] font-normal opacity-75">
+                                    {{ $myAttendance->approval_status === 'pending' ? __('(Pending Review)') : ($myAttendance->approval_status === 'rejected' ? __('(Rejected)') : __('(Approved)')) }}
+                                </span>
                             </div>
                         @endif
                     </div>
@@ -1072,6 +1082,54 @@
 
     {{-- SPLIT GUIDED WORKER ATTENDANCE MODAL COMPONENT --}}
     <x-mark-attendance-modal :workers="$activeWorkers" :projects="$activeProjects" />
+
+    {{-- TECHNICIAN SITE CHECK-IN MODAL --}}
+    <div id="techSiteCheckInModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+        <div class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-900 dark:text-white">{{ __('On-Site Shift Check-In') }}</h3>
+                        <p class="text-[11px] text-slate-400">{{ __('Record self-attendance on customer site for office review') }}</p>
+                    </div>
+                </div>
+                <x-close-button onclick="document.getElementById('techSiteCheckInModal').classList.add('hidden')" />
+            </div>
+
+            <form method="POST" action="{{ route('attendance.clock-in') }}" class="space-y-4 mt-4">
+                @csrf
+                <input type="hidden" name="location_type" value="on_site">
+
+                <div>
+                    <label for="tech-checkin-project" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{{ __('Select Project Site *') }}</label>
+                    <select id="tech-checkin-project" name="project_id" class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
+                        <option value="">{{ __('General On-Site / Field Engineering') }}</option>
+                        @foreach($assignedProjects as $p)
+                            <option value="{{ $p->id }}" @selected(isset($primaryPrj) && $primaryPrj->id === $p->id)>{{ $p->title }} ({{ $p->customer_name ?? __('Customer') }})</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div>
+                    <label for="tech-checkin-notes" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{{ __('Work Planned / Site Notes (Optional)') }}</label>
+                    <textarea id="tech-checkin-notes" name="notes" rows="2" placeholder="{{ __('e.g. CCTV wiring testing, NVR configuration...') }}" class="w-full text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200"></textarea>
+                </div>
+
+                <div class="pt-2 flex items-center justify-between">
+                    <button type="button" onclick="document.getElementById('techSiteCheckInModal').classList.add('hidden')" class="btn-secondary text-xs">
+                        {{ __('Cancel') }}
+                    </button>
+                    <button type="submit" class="btn-primary text-xs !bg-blue-600 hover:!bg-blue-700 !text-white flex items-center gap-1.5 shadow-xs" style="color: #ffffff !important;">
+                        <svg class="w-4 h-4 !text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span class="!text-white font-bold" style="color: #ffffff !important;">{{ __('Confirm Clock-In') }}</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <script>
         const techScanText = {{ Js::from([

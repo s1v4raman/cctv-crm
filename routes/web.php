@@ -180,6 +180,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/attendance/batch-store', [AttendanceController::class, 'batchStore'])->name('attendance.batch-store');
         Route::put('/attendance/{attendance}', [AttendanceController::class, 'update'])->name('attendance.update');
 
+        // Site Attendance Approvals for Technicians & Workers (Admin & Employee Review)
+        Route::post('/attendance/technicians/{attendance}/accept', [AttendanceController::class, 'acceptTechnicianAttendance'])->name('attendance.technicians.accept');
+        Route::post('/attendance/technicians/{attendance}/reject', [AttendanceController::class, 'rejectTechnicianAttendance'])->name('attendance.technicians.reject');
+        Route::post('/attendance/technicians/bulk-accept', [AttendanceController::class, 'bulkAcceptTechnicians'])->name('attendance.technicians.bulk-accept');
+
+        Route::post('/attendance/workers/{attendance}/accept', [WorkerAttendanceController::class, 'acceptWorkerAttendance'])->name('attendance.workers.accept');
+        Route::post('/attendance/workers/{attendance}/reject', [WorkerAttendanceController::class, 'rejectWorkerAttendance'])->name('attendance.workers.reject');
+        Route::post('/attendance/workers/bulk-accept', [WorkerAttendanceController::class, 'bulkAcceptWorkers'])->name('attendance.workers.bulk-accept');
+
         // Leave Requests Admin Approvals
         Route::patch('/attendance/leaves/{leave}/approve', [LeaveRequestController::class, 'approve'])->name('leaves.approve');
         Route::patch('/attendance/leaves/{leave}/reject', [LeaveRequestController::class, 'reject'])->name('leaves.reject');

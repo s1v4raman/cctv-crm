@@ -712,6 +712,11 @@ class WorkerAttendanceController extends Controller
                 }
             }
 
+            $isTechnician = Auth::user()?->isTechnician();
+            $approvalStatus = $isTechnician ? 'pending' : 'approved';
+            $approvedBy = $isTechnician ? null : Auth::id();
+            $approvedAt = $isTechnician ? null : now();
+
             $savedWorkerNames = [];
             foreach ($workers as $worker) {
                 $dailyRate = (float) ($worker->daily_rate > 0 ? $worker->daily_rate : 700.00);
@@ -739,6 +744,10 @@ class WorkerAttendanceController extends Controller
                         'extra_description' => $validated['extra_description'] ?? $attendance->extra_description,
                         'total_amount' => $totalAmount,
                         'notes' => $validated['notes'] ?? $attendance->notes,
+                        'approval_status' => $approvalStatus,
+                        'logged_by' => Auth::id(),
+                        'approved_by' => $approvedBy,
+                        'approved_at' => $approvedAt,
                     ]);
                 } else {
                     $attendance = ProjectWorkerAttendance::create([
@@ -758,6 +767,10 @@ class WorkerAttendanceController extends Controller
                         'extra_description' => $validated['extra_description'] ?? null,
                         'total_amount' => $totalAmount,
                         'notes' => $validated['notes'] ?? null,
+                        'approval_status' => $approvalStatus,
+                        'logged_by' => Auth::id(),
+                        'approved_by' => $approvedBy,
+                        'approved_at' => $approvedAt,
                     ]);
                 }
                 $savedWorkerNames[] = $worker->name;
@@ -772,25 +785,51 @@ class WorkerAttendanceController extends Controller
                     'worker_names' => implode(', ', $savedWorkerNames),
                     'attendance_type' => $validated['attendance_type'],
                     'work_date' => $workDate,
+                    'approval_status' => $approvalStatus,
                     'has_photo' => !empty($photoPath) || !empty($photoData),
                 ],
                 count($workers) > 1
-                    ? "Bulk attendance logged for " . count($workers) . " workers (" . implode(', ', $savedWorkerNames) . ") on " . $workDate . " (" . $validated['attendance_type'] . " shift)"
-                    : "Attendance logged for worker {$workers->first()->name} on {$workDate} ({$validated['attendance_type']} day)" . ($photoPath ? ' with verified photo' : '')
+                    ? "Bulk attendance logged for " . count($workers) . " workers (" . implode(', ', $savedWorkerNames) . ") on " . $workDate . " (" . $validated['attendance_type'] . " shift)" . ($isTechnician ? ' - Pending Review' : '')
+                    : "Attendance logged for worker {$workers->first()->name} on {$workDate} ({$validated['attendance_type']} day)" . ($isTechnician ? ' - Pending Review' : '')
             );
+
+            // Notify Admin and Employee (Staff) if logged by a technician on site
+            if ($isTechnician) {
+                $techName = Auth::user()?->name ?? 'Technician';
+                $wNamesStr = implode(', ', $savedWorkerNames);
+                $notifMsg = count($workers) > 1
+                    ? "Technician {$techName} submitted on-site attendance for " . count($workers) . " workers ({$wNamesStr}) on project {$project->title}. Please review and accept/reject."
+                    : "Technician {$techName} submitted on-site attendance for {$workers->first()->name} on project {$project->title}. Please review and accept/reject.";
+
+                \App\Services\HeaderNotificationService::notifyAdminAndStaffOfAttendance(
+                    "Worker Attendance: {$techName} on {$project->title}",
+                    $notifMsg,
+                    route('attendance.index', ['tab' => 'approvals'])
+                );
+            }
 
             DB::commit();
 
-            $statusMessage = count($workers) > 1
-                ? __('✓ Bulk attendance successfully marked for :count workers on :project!', ['count' => count($workers), 'project' => $project->title])
-                : __('✓ Attendance successfully logged for :name on :date!', ['name' => $workers->first()->name, 'date' => $workDate]);
+            if ($isTechnician) {
+                $statusMessage = count($workers) > 1
+                    ? __('✓ Attendance for :count workers successfully logged on site and submitted for Admin & Employee review!', ['count' => count($workers)])
+                    : __('✓ Attendance for :name successfully logged on site and submitted for Admin & Employee review!', ['name' => $workers->first()->name]);
+            } else {
+                $statusMessage = count($workers) > 1
+                    ? __('✓ Bulk attendance successfully marked for :count workers on :project!', ['count' => count($workers), 'project' => $project->title])
+                    : __('✓ Attendance successfully logged for :name on :date!', ['name' => $workers->first()->name, 'date' => $workDate]);
+            }
 
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'success' => true,
                     'message' => $statusMessage,
-                    'redirect_url' => route('workers.attendance.index', ['date' => $workDate, 'view' => 'day']),
+                    'redirect_url' => $isTechnician ? route('technician.dashboard') : route('workers.attendance.index', ['date' => $workDate, 'view' => 'day']),
                 ]);
+            }
+
+            if ($isTechnician) {
+                return back()->with('status', $statusMessage);
             }
 
             return redirect()->route('workers.attendance.index', [
@@ -952,5 +991,62 @@ class WorkerAttendanceController extends Controller
             'Content-Type' => 'image/svg+xml',
             'Cache-Control' => 'public, max-age=86400',
         ]);
+    }
+
+    /**
+     * Accept (approve) worker site attendance.
+     */
+    public function acceptWorkerAttendance(Request $request, ProjectWorkerAttendance $attendance): RedirectResponse
+    {
+        $attendance->update([
+            'approval_status'  => 'approved',
+            'approved_by'      => Auth::id(),
+            'approved_at'      => now(),
+            'rejection_reason' => null,
+        ]);
+
+        \App\Services\HeaderNotificationService::clearCacheForUser(Auth::id());
+
+        return back()->with('status', __('✓ Worker attendance for :name accepted and saved to official project records.', ['name' => $attendance->worker?->name ?? 'Worker']));
+    }
+
+    /**
+     * Reject worker site attendance.
+     */
+    public function rejectWorkerAttendance(Request $request, ProjectWorkerAttendance $attendance): RedirectResponse
+    {
+        $reason = $request->input('rejection_reason', __('Not approved by office'));
+        $attendance->update([
+            'approval_status'  => 'rejected',
+            'approved_by'      => Auth::id(),
+            'approved_at'      => now(),
+            'rejection_reason' => $reason,
+        ]);
+
+        \App\Services\HeaderNotificationService::clearCacheForUser(Auth::id());
+
+        return back()->with('status', __('Worker attendance for :name has been rejected.', ['name' => $attendance->worker?->name ?? 'Worker']));
+    }
+
+    /**
+     * Bulk accept worker site attendances.
+     */
+    public function bulkAcceptWorkers(Request $request): RedirectResponse
+    {
+        $query = ProjectWorkerAttendance::where('approval_status', 'pending');
+        if ($request->filled('ids') && is_array($request->input('ids'))) {
+            $query->whereIn('id', $request->input('ids'));
+        }
+        $count = $query->count();
+        $query->update([
+            'approval_status'  => 'approved',
+            'approved_by'      => Auth::id(),
+            'approved_at'      => now(),
+            'rejection_reason' => null,
+        ]);
+
+        \App\Services\HeaderNotificationService::clearCacheForUser(Auth::id());
+
+        return back()->with('status', __('✓ Successfully accepted :count worker attendance records into official project records.', ['count' => $count]));
     }
 }
