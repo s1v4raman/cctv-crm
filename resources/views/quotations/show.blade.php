@@ -48,11 +48,16 @@
                     <span>Classic PDF</span>
                 </a>
 
-                {{-- Action Modals & Links --}}
-                <button type="button" onclick="openWhatsAppModal()" class="text-xs font-semibold py-1.5 px-3 rounded-lg bg-[#25D366] hover:bg-[#20ba59] text-white shadow-xs transition inline-flex items-center gap-1.5 cursor-pointer" title="Share on WhatsApp">
-                    <x-icon.whatsapp class="w-4 h-4 text-white shrink-0" />
-                    <span>Share on WhatsApp</span>
-                </button>
+                {{-- Action Modals & Links: Unified btn-secondary Layout --}}
+                <div class="inline-flex items-center rounded-lg shadow-2xs">
+                    <button type="button" id="btn-header-whatsapp-share" onclick="executeWhatsAppShareWithPdf(this)" class="btn-secondary text-xs cursor-pointer inline-flex items-center gap-1.5 rounded-r-none border-r-0 hover:border-[#25D366] transition" title="1-Click Share Quotation PDF & Message (WhatsApp / Device)">
+                        <x-icon.whatsapp class="w-4 h-4 text-[#25D366] shrink-0" />
+                        <span class="font-semibold text-slate-800 dark:text-slate-200">Share on WhatsApp</span>
+                    </button>
+                    <button type="button" onclick="openWhatsAppModal()" class="btn-secondary text-xs cursor-pointer px-2 rounded-l-none hover:bg-slate-100 dark:hover:bg-slate-700 hover:border-[#25D366] transition" title="WhatsApp Message Options & Formats">
+                        <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
+                    </button>
+                </div>
                 <button type="button" onclick="openEmailModal()" class="btn-secondary text-xs cursor-pointer inline-flex items-center gap-1.5 shadow-2xs">
                     <x-icon.email class="w-4 h-4 text-black dark:text-white shrink-0" />
                     <span>Email</span>
@@ -831,8 +836,8 @@
         link.remove();
     }
 
-    async function executeWhatsAppShareWithPdf() {
-        const btn = document.getElementById('btn-do-whatsapp-dispatch');
+    async function executeWhatsAppShareWithPdf(triggerBtn) {
+        const btn = triggerBtn || document.getElementById('btn-header-whatsapp-share') || document.getElementById('btn-do-whatsapp-dispatch');
         const originalHtml = btn ? btn.innerHTML : '';
         const format = waQuotationData.selectedFormat || '1';
         const phone = getNormalizedPhone();
@@ -846,7 +851,7 @@
 
         if (btn) {
             btn.disabled = true;
-            btn.innerHTML = `<svg class="w-4 h-4 animate-spin shrink-0" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg><span>Preparing PDF &amp; WhatsApp...</span>`;
+            btn.innerHTML = `<svg class="w-3.5 h-3.5 animate-spin text-[#25D366] shrink-0 inline-block" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg><span class="ml-1 text-xs">Preparing PDF...</span>`;
         }
 
         // 1. Mark sent status in CRM backend via AJAX
@@ -860,7 +865,7 @@
             headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
         }).catch(e => console.warn('Status log skipped', e));
 
-        // 2. Fetch PDF Blob for native WebShare file attachment
+        // 2. Fetch PDF Blob for native WebShare file attachment (Windows 11 / Mobile)
         let pdfFile = null;
         try {
             const response = await fetch(pdfUrl);
@@ -872,7 +877,7 @@
             console.warn('PDF blob fetch skipped', e);
         }
 
-        // 3. If native Web Share API with file attachment is supported (Mobile Chrome, Safari, Android/iOS)
+        // 3. If native Web Share API with file attachment is supported (triggers Windows Share flyout as in Image 2)
         if (pdfFile && navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
             try {
                 await navigator.share({
@@ -882,8 +887,7 @@
                 });
                 if (btn) {
                     btn.disabled = false;
-                    btn.innerHTML = `<span>✓ PDF &amp; Message Shared!</span>`;
-                    setTimeout(() => { if (btn) btn.innerHTML = originalHtml; }, 3500);
+                    btn.innerHTML = originalHtml;
                 }
                 showQuotationToast(`✓ Quotation PDF & Message shared for ${name}!`);
                 closeWhatsAppModal();
@@ -909,20 +913,18 @@
         // Open WhatsApp Web/API with the customer's chat and pre-filled message
         const encodedText = encodeURIComponent(message);
         const targetUrl = phone 
-            ? `https://api.whatsapp.com/send?phone=${phone}&text=${encodedText}`
-            : `https://api.whatsapp.com/send?text=${encodedText}`;
+            ? `https://web.whatsapp.com/send?phone=${phone}&text=${encodedText}`
+            : `https://web.whatsapp.com/send?text=${encodedText}`;
 
         window.open(targetUrl, '_blank');
 
         if (btn) {
             btn.disabled = false;
-            btn.innerHTML = `<span>✓ Chat Opened &amp; PDF Downloaded!</span>`;
-            setTimeout(() => {
-                if (btn) btn.innerHTML = originalHtml;
-            }, 3500);
+            btn.innerHTML = originalHtml;
         }
 
         showQuotationToast(`✓ PDF downloaded & WhatsApp chat opened for ${name}!`);
+        closeWhatsAppModal();
     }
 
     function openWhatsAppDirect(type) {
