@@ -206,8 +206,8 @@
                         @endif
                     </div>
                 @endisset
-                <div class="{{ isset($mobileCards) ? 'hidden md:block flex-1 min-h-0' : 'flex-1 min-h-0' }}">
-                <div class="ld-scroll">
+                <div class="{{ isset($mobileCards) ? 'hidden md:flex flex-col flex-1 min-h-0' : 'flex flex-col flex-1 min-h-0' }} overflow-hidden">
+                <div class="ld-scroll flex-1 min-h-0 overflow-y-auto overflow-x-auto">
                     <table class="ld-table">
                         <thead>
                             <tr>

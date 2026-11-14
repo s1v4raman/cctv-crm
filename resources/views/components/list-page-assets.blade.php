@@ -183,10 +183,10 @@
     .ld-filter-actions { display: flex; gap: 8px; padding: 10px 18px; border-top: 1px solid var(--ld-line); }
 
     .ld-main { flex: 1; min-width: 0; display: flex; flex-direction: column; min-height: 0; }
-    .ld-scroll { flex: 1; overflow: auto; min-height: 0; }
+    .ld-scroll { flex: 1 1 0%; overflow-y: auto; overflow-x: auto; min-height: 0; -webkit-overflow-scrolling: touch; }
     .ld-root .ld-scroll table.ld-table { width: 100%; border: 0 !important; border-collapse: separate !important; border-spacing: 0 !important; }
     .ld-root .ld-scroll table.ld-table thead, .ld-root .ld-scroll table.ld-table thead tr { background: transparent !important; border: 0 !important; }
-    .ld-root .ld-scroll table.ld-table th { position: sticky; top: 0; z-index: 2; background: var(--ld-card) !important; height: 40px; padding: 0 14px; text-align: left; font-size: 14px; font-weight: 500; color: var(--ld-text); white-space: nowrap; border: 0 !important; box-shadow: inset 0 -1px 0 var(--ld-border), inset -1px 0 0 var(--ld-line); }
+    .ld-root .ld-scroll table.ld-table th { position: sticky; top: 0; z-index: 5; background: var(--ld-card) !important; height: 40px; padding: 0 14px; text-align: left; font-size: 14px; font-weight: 500; color: var(--ld-text); white-space: nowrap; border: 0 !important; box-shadow: inset 0 -1px 0 var(--ld-border), inset -1px 0 0 var(--ld-line); }
     .ld-root .ld-scroll table.ld-table th:last-child { box-shadow: inset 0 -1px 0 var(--ld-border); }
     .ld-root .ld-scroll table.ld-table td { padding: 14px; font-size: 14px; color: var(--ld-text); vertical-align: top; border: 0 !important; border-bottom: 1px solid var(--ld-line) !important; background: var(--ld-card) !important; }
     .ld-root .ld-scroll table.ld-table tbody tr:hover td { background: var(--ld-hover) !important; }
@@ -202,7 +202,7 @@
     .ld-root .ld-scroll table.ld-table td .ld-row-actions a, .ld-root .ld-row-actions button { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 4px; color: var(--ld-muted) !important; background: transparent !important; border: 0 !important; cursor: pointer; }
     .ld-root .ld-scroll table.ld-table td .ld-row-actions a:hover, .ld-root .ld-row-actions button:hover { background: var(--ld-grey-btn) !important; color: var(--ld-text) !important; }
 
-    .ld-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 10px 16px; border-top: 1px solid var(--ld-border); font-size: 14px; }
+    .ld-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 10px 16px; border-top: 1px solid var(--ld-border); font-size: 14px; flex-shrink: 0; background: var(--ld-card); position: relative; z-index: 10; }
     .ld-foot select { height: 28px; padding: 0 26px 0 8px; border: 1px solid var(--ld-input) !important; border-radius: 4px; background-color: var(--ld-card) !important; color: var(--ld-text) !important; font-size: 13px; }
     .ld-page-arrow { display: inline-flex; width: 26px; height: 26px; align-items: center; justify-content: center; border-radius: 4px; color: var(--ld-muted) !important; }
     a.ld-page-arrow:hover { background: var(--ld-grey-btn); color: var(--ld-text) !important; }
@@ -271,7 +271,13 @@
         fit() {
             const body = this.$refs.body;
             if (!body) return;
-            body.style.height = window.innerWidth < 1024 ? '' : Math.max(420, window.innerHeight - body.getBoundingClientRect().top) + 'px';
+            if (window.innerWidth < 1024) {
+                body.style.height = '';
+                return;
+            }
+            const top = body.getBoundingClientRect().top;
+            const available = window.innerHeight - top - 24;
+            body.style.height = Math.max(460, available) + 'px';
         },
         get allPicked() { return this.pageIds.length > 0 && this.pageIds.every((id) => this.selected.includes(id)); },
         toggleAll() { this.selected = this.allPicked ? [] : [...this.pageIds]; },

@@ -489,7 +489,7 @@
                                 @endforelse
                             </tbody>
                             @if(count($wageRows) > 0)
-                                <tfoot class="hidden md:table-footer-group bg-slate-50 dark:bg-slate-800/80 font-bold border-t border-slate-200 dark:border-slate-700" style="display: none;">
+                                <tfoot class="desktop-tfoot-only hidden md:table-footer-group bg-slate-50 dark:bg-slate-800/80 font-bold border-t border-slate-200 dark:border-slate-700">
                                     <tr>
                                         <td class="px-4 py-3 text-slate-800 dark:text-slate-200">Totals</td>
                                         <td class="px-4 py-3 text-center text-slate-800 dark:text-slate-200">{{ collect($wageRows)->sum('days_worked') }}</td>
@@ -1052,30 +1052,30 @@
                     </div>
 
                     {{-- Modal Footer Actions --}}
-                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 pt-4 border-t border-slate-200 dark:border-slate-800 w-full">
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-4 border-t border-slate-200 dark:border-slate-800 w-full">
                         <button type="button" @click="analysisModalOpen = false" class="w-full sm:w-auto btn-md px-4 py-2 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-lg text-sm font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition text-center justify-center inline-flex items-center">
                             Close
                         </button>
 
-                        <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
-                            <button type="button" @click="openAdvance(selectedAnalysis.id, selectedAnalysis.name)" class="flex-1 sm:flex-none btn-md inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-700 hover:bg-amber-100 text-xs sm:text-sm font-semibold transition text-center">
+                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto justify-end">
+                            <button type="button" @click="openAdvance(selectedAnalysis.id, selectedAnalysis.name)" class="w-full sm:w-auto btn-md inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-700 hover:bg-amber-100 text-xs sm:text-sm font-semibold transition text-center">
                                 <x-icon.plus />
                                 <span>Record Advance</span>
                             </button>
 
                             <template x-if="selectedAnalysis?.total_due > 0">
-                                <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-                                    <button type="button" @click="openPayPart(selectedAnalysis.id, selectedAnalysis.name, selectedAnalysis.total_due)" class="flex-1 sm:flex-none btn-md px-3 py-2 rounded-lg bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-300 dark:border-blue-700 hover:bg-blue-100 text-xs sm:text-sm font-semibold transition text-center justify-center inline-flex items-center">
+                                <div class="grid grid-cols-2 sm:flex items-center gap-2 w-full sm:w-auto">
+                                    <button type="button" @click="openPayPart(selectedAnalysis.id, selectedAnalysis.name, selectedAnalysis.total_due)" class="w-full sm:w-auto btn-md px-3 py-2 rounded-lg bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-300 dark:border-blue-700 hover:bg-blue-100 text-xs sm:text-sm font-semibold transition text-center justify-center inline-flex items-center">
                                         Pay Part
                                     </button>
 
-                                    <form method="POST" action="{{ route('wages.settle') }}" class="flex-1 sm:flex-none inline" data-confirm="Disburse full remaining weekly settlement?">
+                                    <form method="POST" action="{{ route('wages.settle') }}" class="w-full sm:w-auto inline-block" data-confirm="Disburse full remaining weekly settlement?">
                                         @csrf
                                         <input type="hidden" name="worker_id" :value="selectedAnalysis.id">
                                         <input type="hidden" name="settlement_action" value="pay_full">
                                         <input type="hidden" name="week_start" value="{{ $weekStart->toDateString() }}">
                                         <input type="hidden" name="payment_mode" value="cash">
-                                        <button type="submit" class="w-full sm:w-auto btn-md px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold shadow transition text-center justify-center inline-flex items-center">
+                                        <button type="submit" class="w-full sm:w-auto btn-md px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold shadow transition text-center justify-center inline-flex items-center whitespace-nowrap">
                                             Pay Full (₹<span x-text="selectedAnalysis?.total_due?.toFixed(2)"></span>)
                                         </button>
                                     </form>

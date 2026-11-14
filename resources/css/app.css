@@ -4651,6 +4651,30 @@ button.ld-accent svg {
     -webkit-overflow-scrolling: touch !important;
 }
 
+/* Universal Data Table Record Dock & Scroll Area: Prevents Footer Overlap Across All Modules */
+.ld-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 10px 16px;
+    border-top: 1px solid var(--ld-border, var(--border-table, #eceef1));
+    font-size: 14px;
+    flex-shrink: 0 !important;
+    background: var(--ld-card, var(--card-bg, #ffffff)) !important;
+    position: relative !important;
+    z-index: 10 !important;
+}
+
+.ld-scroll {
+    flex: 1 1 0% !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+}
+
 /* Mobile-Only Card View (< 768px) for all Admin & Module Data Tables */
 @media (max-width: 767px) {
     /* 1. Global Container & Overflow Shield */
@@ -4664,12 +4688,17 @@ button.ld-accent svg {
 
     .crm-section,
     .crm-card,
-    .tk-card,
     .pg-card,
     .ld-card {
         max-width: 100% !important;
         box-sizing: border-box !important;
         overflow: hidden !important;
+    }
+
+    .tk-card {
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        overflow: visible !important;
     }
 
     /* 2. Auto-Card Table Reset */
@@ -4700,7 +4729,12 @@ button.ld-accent svg {
     table.crm-responsive tfoot,
     .ld-table tfoot,
     .crm-content table tfoot,
-    table tfoot {
+    .desktop-tfoot-only,
+    .desktop-tfoot-only tr,
+    .desktop-tfoot-only td,
+    table tfoot,
+    table tfoot tr,
+    table tfoot td {
         display: none !important;
     }
 
@@ -5160,8 +5194,8 @@ button.ld-accent svg {
     button.btn-secondary,
     a.btn-primary,
     a.btn-secondary,
-    .tk-card button:not([x-show] button):not(.block):not([class*="whitespace-nowrap"]),
-    .tk-card a:not([x-show] a):not(.block):not([class*="whitespace-nowrap"]) {
+    .tk-card > button:not([class*="whitespace-nowrap"]),
+    .tk-card > a:not([class*="whitespace-nowrap"]) {
         max-width: 100% !important;
         white-space: normal !important;
         word-break: break-word !important;
@@ -5176,7 +5210,11 @@ button.ld-accent svg {
     .tk-card [x-show] button,
     .tk-card [x-show] a,
     .dropdown-menu button,
-    [x-show*="Open"] button {
+    .dropdown-menu a,
+    [x-show*="Open"] button,
+    [x-show*="Open"] a,
+    .ld-menu button,
+    .ld-menu a {
         white-space: nowrap !important;
         word-break: normal !important;
         overflow-wrap: normal !important;
@@ -5184,6 +5222,7 @@ button.ld-accent svg {
         height: auto !important;
         display: block !important;
         width: 100% !important;
+        min-width: 0 !important;
         box-sizing: border-box !important;
     }
 

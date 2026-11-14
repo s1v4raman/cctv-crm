@@ -2126,7 +2126,7 @@
                             <svg class="w-4 h-4 icon-solid" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><circle cx="4" cy="10" r="1.6"/><circle cx="10" cy="10" r="1.6"/><circle cx="16" cy="10" r="1.6"/></svg>
                         </button>
                         <div x-show="moreOpen" x-cloak 
-                             class="absolute right-0 left-auto mt-1 z-50 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl py-1.5 text-sm w-56 min-w-[14rem] max-w-[calc(100vw-2rem)]">
+                             class="absolute left-0 sm:left-auto sm:right-0 mt-1 z-50 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl py-1.5 text-sm w-56 min-w-[14rem] max-w-[calc(100vw-2rem)]">
                             <button type="button" class="block w-full text-left px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 !whitespace-nowrap cursor-pointer !h-auto !min-h-0" @click="moreOpen = false; templateModalOpen = true">Use a template</button>
                             @if($tasksCount > 0)
                                 <button type="button" class="block w-full text-left px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 !whitespace-nowrap cursor-pointer !h-auto !min-h-0" @click="moreOpen = false; openBlockerModal(null, null)">Flag a blocker</button>

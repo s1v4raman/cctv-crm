@@ -277,12 +277,12 @@
 
                         {{-- Card 7: SMTP Mail Gateway --}}
                         <div class="bg-white dark:bg-[#0f172a] rounded-[4px] p-6 border border-[#ddd] dark:border-slate-800 space-y-4">
-                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#eee] dark:border-slate-800">
-                                <div class="min-w-0 max-w-full">
+                            <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b border-[#eee] dark:border-slate-800">
+                                <div class="min-w-0 max-w-full flex-1">
                                     <h3 class="text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white">7. SMTP Email Configuration</h3>
                                     <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 break-words">Send transaction receipts, dispatch schedules, and PDF quotations via official company email.</p>
                                 </div>
-                                <div class="flex flex-wrap items-center gap-2 shrink-0">
+                                <div class="flex flex-wrap items-center gap-2 shrink-0 w-full md:w-auto">
                                     <button type="button" onclick="applyMailPreset('outlook')" class="btn-secondary text-xs h-[32px] px-3">Office 365</button>
                                     <button type="button" onclick="applyMailPreset('gmail')" class="btn-secondary text-xs h-[32px] px-3">Gmail</button>
                                 </div>

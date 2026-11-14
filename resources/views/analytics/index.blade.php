@@ -390,8 +390,8 @@
                         </div>
                     </div>
 
-                    {{-- Mobile Card View (< 768px) --}}
-                    <div class="md:hidden divide-y divide-slate-100 dark:divide-white/5">
+                    {{-- Mobile & Tablet Card View (< 1024px) --}}
+                    <div class="lg:hidden divide-y divide-slate-100 dark:divide-white/5">
                         @forelse($overview['top_products'] as $prod)
                             <div class="p-3.5 space-y-2">
                                 <div class="flex items-start justify-between gap-2">
@@ -419,9 +419,9 @@
                         @endforelse
                     </div>
 
-                    {{-- Desktop Table View (>= 768px) --}}
-                    <div class="hidden md:block overflow-x-auto">
-                        <table class="no-auto-cards min-w-full divide-y divide-slate-100 dark:divide-white/5 text-xs">
+                    {{-- Desktop Large Screen Table View (>= 1024px) --}}
+                    <div class="hidden lg:block overflow-x-auto overscroll-contain">
+                        <table class="no-auto-cards min-w-full w-full divide-y divide-slate-100 dark:divide-white/5 text-xs">
                             <thead class="bg-slate-50 dark:bg-[#0b1120]/50">
                                 <tr>
                                     <th class="px-4 py-2.5 text-left font-bold text-slate-500 dark:text-slate-400">Product Model</th>
