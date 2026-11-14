@@ -49,13 +49,9 @@
                 </a>
 
                 {{-- Action Modals & Links --}}
-                <button type="button" onclick="quickShareQuotationPdfOneClick()" class="btn-primary text-xs cursor-pointer inline-flex items-center gap-1.5 shadow-2xs bg-emerald-600 hover:bg-emerald-700 text-white" title="Send Quotation PDF Document & Message in 1 Click">
+                <button type="button" onclick="shareWhatsAppOneClick(this)" id="btn-main-whatsapp-share" class="btn-primary text-xs cursor-pointer inline-flex items-center gap-1.5 shadow-2xs bg-emerald-600 hover:bg-emerald-700 text-white" title="Share Quotation PDF & Message to Customer in 1 Click">
                     <x-icon.whatsapp :badge="true" class="w-4 h-4 text-white shrink-0" />
-                    <span>Send PDF to Customer</span>
-                </button>
-                <button type="button" onclick="openWhatsAppModal()" class="btn-secondary text-xs cursor-pointer inline-flex items-center gap-1.5 shadow-2xs" title="Choose PDF Style, Edit Message, or Dispatch">
-                    <x-icon.whatsapp class="w-4 h-4 text-black dark:text-white shrink-0" />
-                    <span>WhatsApp Options</span>
+                    <span>Share on WhatsApp</span>
                 </button>
                 <button type="button" onclick="openEmailModal()" class="btn-secondary text-xs cursor-pointer inline-flex items-center gap-1.5 shadow-2xs">
                     <x-icon.email class="w-4 h-4 text-black dark:text-white shrink-0" />
@@ -815,7 +811,7 @@
         }
     }
 
-    function quickShareQuotationPdfOneClick() {
+    function shareWhatsAppOneClick(triggerBtn) {
         const phone = getNormalizedPhone();
         if (!phone) {
             openWhatsAppModal();
@@ -826,7 +822,30 @@
             }
             return;
         }
-        executeWhatsAppShareWithPdf();
+        executeWhatsAppShareWithPdf(triggerBtn);
+    }
+
+    function quickShareQuotationPdfOneClick(triggerBtn) {
+        return shareWhatsAppOneClick(triggerBtn);
+    }
+
+    function showQuotationToast(msg) {
+        let toast = document.getElementById('wa-floating-toast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'wa-floating-toast';
+            toast.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:9999;background:#059669;color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:600;box-shadow:0 10px 25px -5px rgba(0,0,0,0.3);transition:all 0.3s ease;display:flex;align-items:center;gap:8px;';
+            document.body.appendChild(toast);
+        }
+        toast.innerHTML = `<svg style="width:18px;height:18px;flex-shrink:0;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span>${msg}</span>`;
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateY(0)';
+        setTimeout(() => {
+            if (toast) {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(10px)';
+            }
+        }, 4500);
     }
 
     function showPdfDownloadAndWhatsAppGuide(filename) {
@@ -842,7 +861,10 @@
     function downloadSelectedPdfOnly() {
         const format = waQuotationData.selectedFormat || '1';
         const pdfUrl = waQuotationData.pdfUrls[format];
-        const filename = `Quotation_${waQuotationData.quoteNo}_Format${format}.pdf`;
+        const nameInput = document.getElementById('wa-customer-name');
+        const name = (nameInput ? nameInput.value.trim() : '') || waQuotationData.customerName || 'Customer';
+        const safeCustomerName = name.replace(/[^a-zA-Z0-9_-]/g, '_');
+        const filename = `Quotation_${waQuotationData.quoteNo}_${safeCustomerName}.pdf`;
         const link = document.createElement('a');
         link.href = pdfUrl;
         link.download = filename;
@@ -851,16 +873,17 @@
         link.remove();
     }
 
-    async function executeWhatsAppShareWithPdf() {
-        const btn = document.getElementById('btn-do-whatsapp-dispatch');
+    async function executeWhatsAppShareWithPdf(triggerBtn) {
+        const btn = triggerBtn || document.getElementById('btn-main-whatsapp-share') || document.getElementById('btn-do-whatsapp-dispatch');
         const originalHtml = btn ? btn.innerHTML : '';
         const format = waQuotationData.selectedFormat || '1';
         const phone = getNormalizedPhone();
         const nameInput = document.getElementById('wa-customer-name');
-        const name = nameInput ? nameInput.value.trim() : '';
+        const name = (nameInput ? nameInput.value.trim() : '') || waQuotationData.customerName || 'Customer';
         const msgBox = document.getElementById('wa-custom-message');
         const message = msgBox ? msgBox.value : waQuotationData.messages[format];
-        const filename = `Quotation_${waQuotationData.quoteNo}_Format${format}.pdf`;
+        const safeCustomerName = name.replace(/[^a-zA-Z0-9_-]/g, '_');
+        const filename = `Quotation_${waQuotationData.quoteNo}_${safeCustomerName}.pdf`;
         const pdfUrl = waQuotationData.pdfUrls[format];
 
         if (btn) {
@@ -896,7 +919,7 @@
         if (pdfFile && navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
             try {
                 await navigator.share({
-                    title: `Quotation #${waQuotationData.quoteNo}`,
+                    title: `Quotation #${waQuotationData.quoteNo} - ${name}`,
                     text: message,
                     files: [pdfFile]
                 });
@@ -905,6 +928,8 @@
                     btn.innerHTML = `<span>✓ PDF File &amp; Message Shared!</span>`;
                     setTimeout(() => { if (btn) btn.innerHTML = originalHtml; }, 3500);
                 }
+                showQuotationToast(`✓ Quotation PDF & Message shared for ${name}!`);
+                closeWhatsAppModal();
                 return;
             } catch (err) {
                 if (err.name === 'AbortError') {
@@ -919,7 +944,7 @@
         }
 
         // 4. Desktop / Non-WebShare Fallback:
-        // Automatically download the PDF file to device immediately
+        // Automatically download the PDF file to device immediately with Customer Name
         if (pdfBlob) {
             const blobUrl = URL.createObjectURL(pdfBlob);
             const link = document.createElement('a');
@@ -948,10 +973,15 @@
 
         // Show prominent guide box in modal
         showPdfDownloadAndWhatsAppGuide(filename);
+        showQuotationToast(`✓ Quotation PDF downloaded & WhatsApp opened for ${name}!`);
 
         if (btn) {
             btn.disabled = false;
             btn.innerHTML = `<span>✓ PDF Downloaded &amp; WhatsApp Opened!</span>`;
+            setTimeout(() => {
+                if (btn) btn.innerHTML = originalHtml;
+            }, 4000);
+        }
             setTimeout(() => {
                 if (btn) btn.innerHTML = originalHtml;
             }, 4000);

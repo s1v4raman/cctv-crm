@@ -275,6 +275,14 @@
                                     </div>
 
                                     <div class="flex items-center justify-end gap-2 pt-1 pl-6">
+                                        <button type="button" 
+                                                onclick="shareQuotationListOneClick(this, '{{ $quotation->quotation_no }}', '{{ addslashes($quotation->lead?->customer_name ?? 'Customer') }}', '{{ $quotation->getWhatsAppPhone() ?: $quotation->lead?->phone }}', '{{ route('quotations.pdf', [$quotation, 1]) }}', '{{ route('quotations.send-whatsapp', $quotation) }}', @js($quotation->getWhatsAppFormattedMessage('1')))" 
+                                                class="ld-outline plain-link text-xs flex items-center gap-1 text-emerald-600 hover:text-emerald-700 dark:text-emerald-400" 
+                                                style="min-height: 32px !important; padding: 4px 10px !important;"
+                                                title="Share Quotation PDF & Message with {{ $quotation->lead?->customer_name ?? 'Customer' }} on WhatsApp">
+                                            <x-icon.whatsapp class="w-3.5 h-3.5 shrink-0" />
+                                            <span>WhatsApp</span>
+                                        </button>
                                         <a href="{{ route('quotations.show', $quotation) }}" class="ld-outline plain-link text-xs" style="min-height: 32px !important; padding: 4px 10px !important;">View</a>
                                         <a href="{{ route('quotations.edit', $quotation) }}" class="ld-outline plain-link text-xs" style="min-height: 32px !important; padding: 4px 10px !important;">Edit</a>
                                         @if($isAdmin && $quotation->status === 'draft')
@@ -364,6 +372,12 @@
                                             <td x-show="cols.status">{{ $statusLabels[$quotation->status] ?? ucfirst($quotation->status) }}</td>
                                             <td>
                                                 <div class="ld-row-actions">
+                                                    <button type="button" 
+                                                            onclick="shareQuotationListOneClick(this, '{{ $quotation->quotation_no }}', '{{ addslashes($quotation->lead?->customer_name ?? 'Customer') }}', '{{ $quotation->getWhatsAppPhone() ?: $quotation->lead?->phone }}', '{{ route('quotations.pdf', [$quotation, 1]) }}', '{{ route('quotations.send-whatsapp', $quotation) }}', @js($quotation->getWhatsAppFormattedMessage('1')))" 
+                                                            class="plain-link text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 p-1" 
+                                                            title="Share Quotation PDF & Message with {{ $quotation->lead?->customer_name ?? 'Customer' }} on WhatsApp">
+                                                        <x-icon.whatsapp class="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                                                    </button>
                                                     <a href="{{ route('quotations.edit', $quotation) }}" class="plain-link" title="Edit" aria-label="Edit {{ $quotation->quotation_no }}">
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.2 5.2l3.6 3.6M4 20l4.5-1 10.3-10.3a2.5 2.5 0 00-3.5-3.5L5 15.5 4 20z"/></svg>
                                                     </a>
@@ -453,4 +467,93 @@
 
         <x-list-mass-actions list="quotations" part="dialogs" />
     </div>
+
+    <script>
+    async function shareQuotationListOneClick(btn, quoteNo, customerName, phone, pdfUrl, sendUrl, message) {
+        const originalHtml = btn ? btn.innerHTML : '';
+        const safeCustomerName = (customerName || 'Customer').replace(/[^a-zA-Z0-9_-]/g, '_');
+        const filename = `Quotation_${quoteNo}_${safeCustomerName}.pdf`;
+
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = `<svg class="animate-spin h-3.5 w-3.5 inline-block text-emerald-600" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
+        }
+
+        // 1. Fetch PDF blob
+        let pdfBlob = null;
+        let pdfFile = null;
+        try {
+            const resp = await fetch(pdfUrl);
+            if (resp.ok) {
+                pdfBlob = await resp.blob();
+                pdfFile = new File([pdfBlob], filename, { type: 'application/pdf' });
+            }
+        } catch (e) {
+            console.warn('PDF fetch warning:', e);
+        }
+
+        // 2. Mark sent status in CRM backend via AJAX
+        let cleanPhone = (phone || '').replace(/[^0-9]/g, '');
+        if (cleanPhone.length === 10) cleanPhone = '91' + cleanPhone;
+
+        const params = new URLSearchParams({
+            format: '1',
+            phone: cleanPhone,
+            customer_name: customerName,
+            custom_message: message
+        });
+        fetch(`${sendUrl}?${params.toString()}`, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+        }).catch(e => console.warn('Status log skipped', e));
+
+        // 3. Try Native Web Share API with attached PDF file
+        if (pdfFile && navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+            try {
+                await navigator.share({
+                    title: `Quotation #${quoteNo} - ${customerName}`,
+                    text: message,
+                    files: [pdfFile]
+                });
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = originalHtml;
+                }
+                return;
+            } catch (err) {
+                if (err.name === 'AbortError') {
+                    if (btn) { btn.disabled = false; btn.innerHTML = originalHtml; }
+                    return;
+                }
+            }
+        }
+
+        // 4. Fallback for Desktop:
+        if (pdfBlob) {
+            const blobUrl = URL.createObjectURL(pdfBlob);
+            const link = document.createElement('a');
+            link.href = blobUrl;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
+        }
+
+        if (message && navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(message).catch(() => {});
+        }
+
+        const encodedText = encodeURIComponent(message);
+        const targetUrl = cleanPhone 
+            ? `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodedText}`
+            : `https://api.whatsapp.com/send?text=${encodedText}`;
+
+        window.open(targetUrl, '_blank');
+
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = originalHtml;
+        }
+    }
+    </script>
 </x-app-layout>
