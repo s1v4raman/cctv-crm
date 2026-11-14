@@ -287,8 +287,8 @@
                             @endforelse
                         </div>
 
-                        <div class="hidden md:block flex-1 min-h-0">
-                        <div class="ld-scroll">
+                        <div class="hidden md:flex flex-col flex-1 min-h-0 overflow-hidden">
+                        <div class="ld-scroll flex-1 min-h-0 overflow-y-auto overflow-x-auto">
                             <table class="ld-table">
                                 <thead>
                                     <tr>

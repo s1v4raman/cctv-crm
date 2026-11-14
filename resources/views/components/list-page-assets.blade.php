@@ -186,14 +186,14 @@
     .ld-scroll { flex: 1 1 0%; overflow-y: auto; overflow-x: auto; min-height: 0; -webkit-overflow-scrolling: touch; }
     .ld-root .ld-scroll table.ld-table { width: 100%; border: 0 !important; border-collapse: separate !important; border-spacing: 0 !important; }
     .ld-root .ld-scroll table.ld-table thead, .ld-root .ld-scroll table.ld-table thead tr { background: transparent !important; border: 0 !important; }
-    .ld-root .ld-scroll table.ld-table th { position: sticky; top: 0; z-index: 5; background: var(--ld-card) !important; height: 40px; padding: 0 14px; text-align: left; font-size: 14px; font-weight: 500; color: var(--ld-text); white-space: nowrap; border: 0 !important; box-shadow: inset 0 -1px 0 var(--ld-border), inset -1px 0 0 var(--ld-line); }
+    .ld-root .ld-scroll table.ld-table th { position: sticky; top: 0; z-index: 5; background: var(--ld-card) !important; height: 38px; padding: 0 12px; text-align: left; font-size: 13px; font-weight: 600; color: var(--ld-text); white-space: nowrap; border: 0 !important; box-shadow: inset 0 -1px 0 var(--ld-border), inset -1px 0 0 var(--ld-line); }
     .ld-root .ld-scroll table.ld-table th:last-child { box-shadow: inset 0 -1px 0 var(--ld-border); }
-    .ld-root .ld-scroll table.ld-table td { padding: 14px; font-size: 14px; color: var(--ld-text); vertical-align: top; border: 0 !important; border-bottom: 1px solid var(--ld-line) !important; background: var(--ld-card) !important; }
+    .ld-root .ld-scroll table.ld-table td { padding: 9px 12px; font-size: 13.5px; color: var(--ld-text); vertical-align: middle; line-height: 1.4; border: 0 !important; border-bottom: 1px solid var(--ld-line) !important; background: var(--ld-card) !important; }
     .ld-root .ld-scroll table.ld-table tbody tr:hover td { background: var(--ld-hover) !important; }
     .ld-root .ld-scroll table.ld-table tbody tr.is-picked td { background: var(--ld-accent-soft) !important; }
-    .ld-root .ld-scroll table.ld-table .ld-box { width: 48px; min-width: 48px !important; padding-left: 18px; padding-right: 0; }
+    .ld-root .ld-scroll table.ld-table .ld-box { width: 44px; min-width: 44px !important; padding-left: 14px; padding-right: 0; }
     .ld-root .ld-scroll table.ld-table .ld-box input { width: 14px; height: 14px; border: 1px solid #9aa3af; border-radius: 2px; accent-color: var(--ld-accent); cursor: pointer; }
-    .ld-root .ld-scroll table.ld-table td a.ld-name { color: var(--link-color) !important; font-size: 14px !important; font-weight: 600 !important; }
+    .ld-root .ld-scroll table.ld-table td a.ld-name { color: var(--link-color) !important; font-size: 13.5px !important; font-weight: 600 !important; }
     .ld-root .ld-scroll table.ld-table td a.ld-name:hover { color: var(--link-hover) !important; text-decoration: underline !important; }
     .ld-root .ld-wrap { overflow-wrap: anywhere; max-width: 240px; }
     .ld-root .ld-row-actions { display: flex; justify-content: flex-end; gap: 2px; opacity: 0; }
@@ -273,11 +273,23 @@
             if (!body) return;
             if (window.innerWidth < 1024) {
                 body.style.height = '';
+                body.style.maxHeight = '';
                 return;
             }
             const top = body.getBoundingClientRect().top;
-            const available = window.innerHeight - top - 24;
-            body.style.height = Math.max(460, available) + 'px';
+            const available = Math.max(380, window.innerHeight - top - 24);
+            const table = body.querySelector('table.ld-table');
+            const rowCount = table ? table.querySelectorAll('tbody tr').length : 0;
+
+            // When there are few records (<= 6 rows) and the filter drawer is closed,
+            // let the card hug its content naturally without creating huge empty blank voids!
+            if (rowCount <= 6 && !this.showFilter) {
+                body.style.height = '';
+                body.style.maxHeight = available + 'px';
+            } else {
+                body.style.height = available + 'px';
+                body.style.maxHeight = '';
+            }
         },
         get allPicked() { return this.pageIds.length > 0 && this.pageIds.every((id) => this.selected.includes(id)); },
         toggleAll() { this.selected = this.allPicked ? [] : [...this.pageIds]; },

@@ -224,7 +224,7 @@
                                     <th style="min-width: 110px; text-align: right">Advances</th>
                                     <th style="min-width: 110px; text-align: right">Paid / Settled</th>
                                     <th style="min-width: 130px; text-align: right">Total Payable</th>
-                                    <th style="min-width: 260px; text-align: right" data-col="actions">Settlement Actions</th>
+                                    <th style="min-width: 320px; text-align: right" data-col="actions">Settlement Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -416,64 +416,65 @@
                                             @endif
                                         </td>
                                         <td class="text-left sm:text-right ld-actions-cell crm-card-actions" data-card-actions="true" data-label="">
-                                            <div class="w-full pt-2 mt-2 border-t border-slate-100 dark:border-slate-800">
-                                                {{-- Mobile App Grid (2 cols) / Desktop Flex Row --}}
-                                                <div class="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 sm:justify-end text-xs w-full">
-                                                    <button type="button" @click="openAdvance({{ $w->id }}, '{{ addslashes($w->name) }}')" class="w-full sm:w-auto px-3 py-2 sm:py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 font-semibold cursor-pointer text-center justify-center inline-flex items-center">
+                                            <div class="w-full pt-2 mt-2 border-t border-slate-100 dark:border-slate-800 md:border-t-0 md:pt-0 md:mt-0">
+                                                {{-- Mobile App Grid (2 cols) / Desktop Clean Inline Action Bar --}}
+                                                <div class="grid grid-cols-2 md:flex md:flex-nowrap items-center gap-1.5 md:justify-end text-xs w-full">
+                                                    <button type="button" @click="openAdvance({{ $w->id }}, '{{ addslashes($w->name) }}')" class="w-full md:w-auto px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 font-semibold cursor-pointer text-center justify-center inline-flex items-center whitespace-nowrap">
                                                         + Advance
                                                     </button>
 
                                                     @if($row['is_carried_forward'])
-                                                        <span class="inline-flex items-center justify-center px-2 py-1 rounded text-[11px] font-semibold" style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.12); color: var(--link-color);">
+                                                        <span class="inline-flex items-center justify-center px-2 py-1 rounded-md text-[11px] font-semibold whitespace-nowrap" style="background-color: rgba(var(--crm-accent-rgb, 37, 99, 235), 0.12); color: var(--link-color);">
                                                             Carried Fwd
                                                         </span>
-                                                        <form method="POST" action="{{ route('wages.settle') }}" class="w-full sm:w-auto inline" data-confirm="Disburse settlement of ₹{{ number_format($row['carried_forward_balance'], 2) }} now to {{ $w->name }}?">
+                                                        <form method="POST" action="{{ route('wages.settle') }}" class="w-full md:w-auto inline" data-confirm="Disburse settlement of ₹{{ number_format($row['carried_forward_balance'], 2) }} now to {{ $w->name }}?">
                                                             @csrf
                                                             <input type="hidden" name="worker_id" value="{{ $w->id }}">
                                                             <input type="hidden" name="settlement_action" value="pay_full">
                                                             <input type="hidden" name="week_start" value="{{ $weekStart->toDateString() }}">
                                                             <input type="hidden" name="payment_mode" value="cash">
-                                                            <button type="submit" class="w-full sm:w-auto px-3 py-2 sm:py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold cursor-pointer text-center justify-center shadow-xs inline-flex items-center">
+                                                            <button type="submit" class="w-full md:w-auto px-2.5 py-1 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white font-bold cursor-pointer text-center justify-center shadow-2xs inline-flex items-center whitespace-nowrap">
                                                                 Pay Now
                                                             </button>
                                                         </form>
                                                     @elseif($due > 0)
-                                                        <form method="POST" action="{{ route('wages.settle') }}" class="w-full sm:w-auto inline" data-confirm="Disburse full settlement of ₹{{ number_format($due, 2) }} to {{ $w->name }}?">
+                                                        <form method="POST" action="{{ route('wages.settle') }}" class="w-full md:w-auto inline" data-confirm="Disburse full settlement of ₹{{ number_format($due, 2) }} to {{ $w->name }}?">
                                                             @csrf
                                                             <input type="hidden" name="worker_id" value="{{ $w->id }}">
                                                             <input type="hidden" name="settlement_action" value="pay_full">
                                                             <input type="hidden" name="week_start" value="{{ $weekStart->toDateString() }}">
                                                             <input type="hidden" name="payment_mode" value="cash">
-                                                            <button type="submit" class="w-full sm:w-auto px-3 py-2 sm:py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold cursor-pointer text-center justify-center shadow-xs inline-flex items-center">
+                                                            <button type="submit" class="w-full md:w-auto px-2.5 py-1 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white font-bold cursor-pointer text-center justify-center shadow-2xs inline-flex items-center whitespace-nowrap">
                                                                 Pay Full
                                                             </button>
                                                         </form>
 
-                                                        <button type="button" @click="openPayPart({{ $w->id }}, '{{ addslashes($w->name) }}', {{ $due }})" class="w-full sm:w-auto px-3 py-2 sm:py-1 rounded-lg bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 hover:bg-blue-100 font-semibold cursor-pointer text-center justify-center inline-flex items-center">
+                                                        <button type="button" @click="openPayPart({{ $w->id }}, '{{ addslashes($w->name) }}', {{ $due }})" class="w-full md:w-auto px-2.5 py-1 rounded-md bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 hover:bg-blue-100 font-semibold cursor-pointer text-center justify-center inline-flex items-center whitespace-nowrap">
                                                             Pay Part
                                                         </button>
 
-                                                        <form method="POST" action="{{ route('wages.settle') }}" class="w-full sm:w-auto inline" data-confirm="Carry forward remaining balance of ₹{{ number_format($due, 2) }} to next week?">
+                                                        <form method="POST" action="{{ route('wages.settle') }}" class="w-full md:w-auto inline" data-confirm="Carry forward remaining balance of ₹{{ number_format($due, 2) }} to next week?">
                                                             @csrf
                                                             <input type="hidden" name="worker_id" value="{{ $w->id }}">
                                                             <input type="hidden" name="settlement_action" value="carry_forward">
                                                             <input type="hidden" name="week_start" value="{{ $weekStart->toDateString() }}">
                                                             <input type="hidden" name="payment_mode" value="cash">
-                                                            <button type="submit" class="w-full sm:w-auto px-3 py-2 sm:py-1 rounded-lg bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 font-semibold cursor-pointer text-center justify-center inline-flex items-center">
+                                                            <button type="submit" class="w-full md:w-auto px-2.5 py-1 rounded-md bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 font-semibold cursor-pointer text-center justify-center inline-flex items-center whitespace-nowrap">
                                                                 Carry Fwd
                                                             </button>
                                                         </form>
                                                     @elseif($row['already_settled'] || $row['wages_paid'] > 0)
-                                                        <span class="w-full sm:w-auto font-bold text-emerald-600 dark:text-emerald-400 text-xs py-1 px-2 text-center inline-flex items-center justify-center">
+                                                        <span class="w-full md:w-auto font-bold text-emerald-600 dark:text-emerald-400 text-xs py-1 px-2 text-center inline-flex items-center justify-center whitespace-nowrap">
                                                             ✓ Settled
                                                         </span>
                                                     @else
-                                                        <span class="w-full sm:w-auto text-slate-400 text-xs py-1 px-2 text-center inline-flex items-center justify-center">
+                                                        <span class="w-full md:w-auto text-slate-400 text-xs py-1 px-2 text-center inline-flex items-center justify-center whitespace-nowrap">
                                                             No Shifts
                                                         </span>
                                                     @endif
 
-                                                    <button type="button" @click='openAnalysis(@json($rowData))' class="col-span-2 sm:col-span-1 w-full sm:w-auto px-3 py-2 sm:py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 font-semibold cursor-pointer text-center justify-center inline-flex items-center sm:ml-auto">
+                                                    {{-- Mobile only Shifts & Photos (on desktop, Analysis button is already next to Worker Name in col 1) --}}
+                                                    <button type="button" @click='openAnalysis(@json($rowData))' class="md:hidden col-span-2 w-full px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 font-semibold cursor-pointer text-center justify-center inline-flex items-center">
                                                         Shifts &amp; Photos
                                                     </button>
                                                 </div>

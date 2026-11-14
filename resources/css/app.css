@@ -4675,6 +4675,27 @@ button.ld-accent svg {
     -webkit-overflow-scrolling: touch !important;
 }
 
+/* Universal Desktop Compact & Balanced Table Spacing (>= 768px): Eliminates Giant Blank Voids */
+@media (min-width: 768px) {
+    .ld-root .ld-scroll table.ld-table td,
+    table.crm-table td,
+    table.ld-table td,
+    table.crm-auto-cards td {
+        padding: 9px 12px !important;
+        vertical-align: middle !important;
+        font-size: 13.5px !important;
+        line-height: 1.4 !important;
+    }
+    .ld-root .ld-scroll table.ld-table th,
+    table.crm-table th,
+    table.ld-table th,
+    table.crm-auto-cards th {
+        padding: 8px 12px !important;
+        font-size: 13px !important;
+        height: 38px !important;
+    }
+}
+
 /* Mobile-Only Card View (< 768px) for all Admin & Module Data Tables */
 @media (max-width: 767px) {
     /* 1. Global Container & Overflow Shield */

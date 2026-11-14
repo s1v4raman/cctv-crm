@@ -262,8 +262,8 @@
                 </div>
 
                 {{-- Table Card --}}
-                <div class="ld-card flex flex-col flex-1 min-h-0">
-                    <div class="ld-scroll">
+                <div class="ld-card flex flex-col flex-1 min-h-0 overflow-hidden">
+                    <div class="ld-scroll flex-1 min-h-0 overflow-y-auto overflow-x-auto">
                         <table class="ld-table">
                             <thead>
                                 <tr>
