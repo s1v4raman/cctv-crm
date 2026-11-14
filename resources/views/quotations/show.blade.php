@@ -48,16 +48,11 @@
                     <span>Classic PDF</span>
                 </a>
 
-                {{-- Action Modals & Links: Unified btn-secondary Layout --}}
-                <div class="inline-flex items-center rounded-lg shadow-2xs">
-                    <button type="button" id="btn-header-whatsapp-share" onclick="executeWhatsAppShareWithPdf(this)" class="btn-secondary text-xs cursor-pointer inline-flex items-center gap-1.5 rounded-r-none border-r-0 hover:border-[#25D366] transition" title="1-Click Share Quotation PDF & Message (WhatsApp / Device)">
-                        <x-icon.whatsapp class="w-4 h-4 text-[#25D366] shrink-0" />
-                        <span class="font-semibold text-slate-800 dark:text-slate-200">Share on WhatsApp</span>
-                    </button>
-                    <button type="button" onclick="openWhatsAppModal()" class="btn-secondary text-xs cursor-pointer px-2 rounded-l-none hover:bg-slate-100 dark:hover:bg-slate-700 hover:border-[#25D366] transition" title="WhatsApp Message Options & Formats">
-                        <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
-                    </button>
-                </div>
+                {{-- Action Modals & Links --}}
+                <button type="button" onclick="openWhatsAppModal()" class="btn-secondary text-xs cursor-pointer inline-flex items-center gap-1.5 shadow-2xs">
+                    <x-icon.whatsapp class="w-4 h-4 text-black dark:text-white shrink-0" />
+                    <span>Send on WhatsApp</span>
+                </button>
                 <button type="button" onclick="openEmailModal()" class="btn-secondary text-xs cursor-pointer inline-flex items-center gap-1.5 shadow-2xs">
                     <x-icon.email class="w-4 h-4 text-black dark:text-white shrink-0" />
                     <span>Email</span>
@@ -462,8 +457,8 @@
             {{-- Modal Header --}}
             <div class="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800 mb-5">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 flex items-center justify-center shrink-0">
-                        <x-icon.whatsapp class="w-6 h-6 text-[#25D366]" />
+                    <div class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-black dark:text-white shrink-0">
+                        <x-icon.whatsapp :badge="true" class="w-6 h-6 text-black dark:text-white" />
                     </div>
                     <div>
                         <h3 class="text-base font-bold text-slate-900 dark:text-white leading-tight">WhatsApp Proposal Dispatcher</h3>
@@ -609,9 +604,9 @@
 
                 <div class="flex items-center gap-2">
                     <button type="button" onclick="closeWhatsAppModal()" class="btn-secondary text-xs py-2 px-4">Cancel</button>
-                    <button type="button" id="btn-do-whatsapp-dispatch" onclick="executeWhatsAppShareWithPdf()" class="text-xs font-semibold py-2 px-5 rounded-lg bg-[#25D366] hover:bg-[#20ba59] text-white shadow-xs transition inline-flex items-center justify-center gap-2 cursor-pointer">
-                        <x-icon.whatsapp class="w-4 h-4 text-white shrink-0" />
-                        <span id="btn-wa-dispatch-text">Share on WhatsApp</span>
+                    <button type="button" id="btn-do-whatsapp-dispatch" onclick="executeWhatsAppShareWithPdf()" class="btn-primary text-xs py-2 px-5 flex items-center justify-center gap-2">
+                        <x-icon.whatsapp :badge="true" class="w-4 h-4 text-white" />
+                        <span id="btn-wa-dispatch-text">Send on WhatsApp</span>
                     </button>
                 </div>
             </div>
@@ -803,58 +798,36 @@
         }
     }
 
-    function showQuotationToast(msg) {
-        let toast = document.getElementById('quotation-wa-toast');
-        if (!toast) {
-            toast = document.createElement('div');
-            toast.id = 'quotation-wa-toast';
-            toast.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:9999;background:#16a34a;color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:600;box-shadow:0 10px 25px -5px rgba(0,0,0,0.3);transition:all 0.3s ease;display:flex;align-items:center;gap:8px;';
-            document.body.appendChild(toast);
-        }
-        toast.innerHTML = `<svg style="width:18px;height:18px;flex-shrink:0;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span>${msg}</span>`;
-        toast.style.opacity = '1';
-        toast.style.transform = 'translateY(0)';
-        setTimeout(() => {
-            if (toast) {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translateY(10px)';
-            }
-        }, 4500);
-    }
-
     function downloadSelectedPdfOnly() {
         const format = waQuotationData.selectedFormat || '1';
         const pdfUrl = waQuotationData.pdfUrls[format];
-        const nameInput = document.getElementById('wa-customer-name');
-        const name = (nameInput ? nameInput.value.trim() : '') || waQuotationData.customerName || 'Customer';
-        const safeCustomerName = name.replace(/[^a-zA-Z0-9_-]/g, '_');
         const link = document.createElement('a');
         link.href = pdfUrl;
-        link.download = `Quotation_${waQuotationData.quoteNo}_${safeCustomerName}.pdf`;
+        link.download = `Quotation_${waQuotationData.quoteNo}_Format${format}.pdf`;
         document.body.appendChild(link);
         link.click();
         link.remove();
     }
 
-    async function executeWhatsAppShareWithPdf(triggerBtn) {
-        const btn = triggerBtn || document.getElementById('btn-header-whatsapp-share') || document.getElementById('btn-do-whatsapp-dispatch');
+    function executeWhatsAppShareWithPdf() {
+        const btn = document.getElementById('btn-do-whatsapp-dispatch');
         const originalHtml = btn ? btn.innerHTML : '';
         const format = waQuotationData.selectedFormat || '1';
         const phone = getNormalizedPhone();
         const nameInput = document.getElementById('wa-customer-name');
-        const name = (nameInput ? nameInput.value.trim() : '') || waQuotationData.customerName || 'Customer';
+        const name = nameInput ? nameInput.value.trim() : '';
         const msgBox = document.getElementById('wa-custom-message');
         const message = msgBox ? msgBox.value : waQuotationData.messages[format];
-        const safeCustomerName = name.replace(/[^a-zA-Z0-9_-]/g, '_');
-        const filename = `Quotation_${waQuotationData.quoteNo}_${safeCustomerName}.pdf`;
-        const pdfUrl = waQuotationData.pdfUrls[format];
 
-        if (btn) {
-            btn.disabled = true;
-            btn.innerHTML = `<svg class="w-3.5 h-3.5 animate-spin text-[#25D366] shrink-0 inline-block" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg><span class="ml-1 text-xs">Preparing PDF...</span>`;
+        // 1. Download PDF file immediately
+        downloadSelectedPdfOnly();
+
+        // 2. Copy message to clipboard
+        if (message && navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(message).catch(() => {});
         }
 
-        // 1. Mark sent status in CRM backend via AJAX
+        // 3. Mark sent status in CRM backend via AJAX
         const params = new URLSearchParams({
             format: format,
             phone: phone,
@@ -865,66 +838,21 @@
             headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
         }).catch(e => console.warn('Status log skipped', e));
 
-        // 2. Fetch PDF Blob for native WebShare file attachment (Windows 11 / Mobile)
-        let pdfFile = null;
-        try {
-            const response = await fetch(pdfUrl);
-            if (response.ok) {
-                const blob = await response.blob();
-                pdfFile = new File([blob], filename, { type: 'application/pdf' });
-            }
-        } catch (e) {
-            console.warn('PDF blob fetch skipped', e);
-        }
-
-        // 3. If native Web Share API with file attachment is supported (triggers Windows Share flyout as in Image 2)
-        if (pdfFile && navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
-            try {
-                await navigator.share({
-                    title: `Quotation #${waQuotationData.quoteNo} - ${name}`,
-                    text: message,
-                    files: [pdfFile]
-                });
-                if (btn) {
-                    btn.disabled = false;
-                    btn.innerHTML = originalHtml;
-                }
-                showQuotationToast(`✓ Quotation PDF & Message shared for ${name}!`);
-                closeWhatsAppModal();
-                return;
-            } catch (err) {
-                if (err.name === 'AbortError') {
-                    if (btn) { btn.disabled = false; btn.innerHTML = originalHtml; }
-                    return;
-                }
-                console.warn('Native share cancelled or failed, falling back to WhatsApp Web/App:', err);
-            }
-        }
-
-        // 4. Desktop / WhatsApp Web Fallback:
-        // Automatically download PDF file to local device
-        downloadSelectedPdfOnly();
-
-        // Copy message to clipboard
-        if (message && navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(message).catch(() => {});
-        }
-
-        // Open WhatsApp Web/API with the customer's chat and pre-filled message
+        // 4. Open WhatsApp
         const encodedText = encodeURIComponent(message);
         const targetUrl = phone 
-            ? `https://web.whatsapp.com/send?phone=${phone}&text=${encodedText}`
-            : `https://web.whatsapp.com/send?text=${encodedText}`;
+            ? `https://api.whatsapp.com/send?phone=${phone}&text=${encodedText}`
+            : `https://api.whatsapp.com/send?text=${encodedText}`;
 
         window.open(targetUrl, '_blank');
 
+        // 5. Visual UI feedback
         if (btn) {
-            btn.disabled = false;
-            btn.innerHTML = originalHtml;
+            btn.innerHTML = `<span>✓ PDF Downloaded & WhatsApp Chat Opened!</span>`;
+            setTimeout(() => {
+                if (btn) btn.innerHTML = originalHtml;
+            }, 3500);
         }
-
-        showQuotationToast(`✓ PDF downloaded & WhatsApp chat opened for ${name}!`);
-        closeWhatsAppModal();
     }
 
     function openWhatsAppDirect(type) {
