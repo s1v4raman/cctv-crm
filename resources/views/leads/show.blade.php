@@ -362,18 +362,9 @@
                                         </span>
                                     </td>
                                     <td class="text-right">
-                                        <div class="inline-flex items-center justify-end gap-2.5">
-                                            <button type="button" 
-                                                    onclick="shareQuotationListOneClick(this, '{{ $q->quotation_no }}', '{{ addslashes($lead->customer_name ?? 'Customer') }}', '{{ $q->getWhatsAppPhone() ?: $lead->phone }}', '{{ route('quotations.pdf', [$q, 1]) }}', '{{ route('quotations.send-whatsapp', $q) }}', @js($q->getWhatsAppFormattedMessage('1')))" 
-                                                    class="plain-link text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 text-xs inline-flex items-center gap-1 font-semibold"
-                                                    title="Share Quotation PDF & Message with {{ $lead->customer_name }} on WhatsApp">
-                                                <x-icon.whatsapp class="w-3.5 h-3.5 shrink-0" />
-                                                <span>WhatsApp</span>
-                                            </button>
-                                            <a href="{{ route('quotations.show', $q) }}" class="action-link">
-                                                View
-                                            </a>
-                                        </div>
+                                        <a href="{{ route('quotations.show', $q) }}" class="action-link">
+                                            View
+                                        </a>
                                     </td>
                                 </tr>
                             @empty
@@ -451,62 +442,4 @@
 
         </div>
     </div>
-
-    <script>
-    function shareQuotationListOneClick(btn, quoteNo, customerName, phone, pdfUrl, sendUrl, message) {
-        const originalHtml = btn ? btn.innerHTML : '';
-        const safeCustomerName = (customerName || 'Customer').replace(/[^a-zA-Z0-9_-]/g, '_');
-        const filename = `Quotation_${quoteNo}_${safeCustomerName}.pdf`;
-
-        // 1. Clean phone number
-        let cleanPhone = (phone || '').replace(/[^0-9]/g, '');
-        if (cleanPhone.startsWith('0') && cleanPhone.length === 11) {
-            cleanPhone = '91' + cleanPhone.substring(1);
-        } else if (cleanPhone.length === 10) {
-            cleanPhone = '91' + cleanPhone;
-        }
-
-        // 2. Build Direct WhatsApp Chat URL
-        const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-        const encodedText = encodeURIComponent(message);
-        let targetUrl = '';
-        if (isMobile) {
-            targetUrl = cleanPhone 
-                ? `whatsapp://send?phone=${cleanPhone}&text=${encodedText}`
-                : `https://api.whatsapp.com/send?text=${encodedText}`;
-        } else {
-            targetUrl = cleanPhone 
-                ? `https://web.whatsapp.com/send?phone=${cleanPhone}&text=${encodedText}`
-                : `https://web.whatsapp.com/send?text=${encodedText}`;
-        }
-
-        // 3. Open WhatsApp IMMEDIATELY on the click event (no popup blocker)
-        window.open(targetUrl, '_blank');
-
-        // 4. Download PDF Document immediately
-        const link = document.createElement('a');
-        link.href = pdfUrl;
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-
-        // 5. Copy message to clipboard
-        if (message && navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(message).catch(() => {});
-        }
-
-        // 6. Log sent status in backend via AJAX
-        const params = new URLSearchParams({
-            format: '1',
-            phone: cleanPhone,
-            customer_name: customerName,
-            custom_message: message
-        });
-        fetch(`${sendUrl}?${params.toString()}`, {
-            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
-        }).catch(() => {});
-    }
-    }
-    </script>
 </x-app-layout>

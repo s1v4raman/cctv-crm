@@ -275,14 +275,6 @@
                                     </div>
 
                                     <div class="flex items-center justify-end gap-2 pt-1 pl-6">
-                                        <button type="button" 
-                                                onclick="shareQuotationListOneClick(this, '{{ $quotation->quotation_no }}', '{{ addslashes($quotation->lead?->customer_name ?? 'Customer') }}', '{{ $quotation->getWhatsAppPhone() ?: $quotation->lead?->phone }}', '{{ route('quotations.pdf', [$quotation, 1]) }}', '{{ route('quotations.send-whatsapp', $quotation) }}', @js($quotation->getWhatsAppFormattedMessage('1')))" 
-                                                class="ld-outline plain-link text-xs flex items-center gap-1 text-emerald-600 hover:text-emerald-700 dark:text-emerald-400" 
-                                                style="min-height: 32px !important; padding: 4px 10px !important;"
-                                                title="Share Quotation PDF & Message with {{ $quotation->lead?->customer_name ?? 'Customer' }} on WhatsApp">
-                                            <x-icon.whatsapp class="w-3.5 h-3.5 shrink-0" />
-                                            <span>WhatsApp</span>
-                                        </button>
                                         <a href="{{ route('quotations.show', $quotation) }}" class="ld-outline plain-link text-xs" style="min-height: 32px !important; padding: 4px 10px !important;">View</a>
                                         <a href="{{ route('quotations.edit', $quotation) }}" class="ld-outline plain-link text-xs" style="min-height: 32px !important; padding: 4px 10px !important;">Edit</a>
                                         @if($isAdmin && $quotation->status === 'draft')
@@ -372,12 +364,6 @@
                                             <td x-show="cols.status">{{ $statusLabels[$quotation->status] ?? ucfirst($quotation->status) }}</td>
                                             <td>
                                                 <div class="ld-row-actions">
-                                                    <button type="button" 
-                                                            onclick="shareQuotationListOneClick(this, '{{ $quotation->quotation_no }}', '{{ addslashes($quotation->lead?->customer_name ?? 'Customer') }}', '{{ $quotation->getWhatsAppPhone() ?: $quotation->lead?->phone }}', '{{ route('quotations.pdf', [$quotation, 1]) }}', '{{ route('quotations.send-whatsapp', $quotation) }}', @js($quotation->getWhatsAppFormattedMessage('1')))" 
-                                                            class="plain-link text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 p-1" 
-                                                            title="Share Quotation PDF & Message with {{ $quotation->lead?->customer_name ?? 'Customer' }} on WhatsApp">
-                                                        <x-icon.whatsapp class="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
-                                                    </button>
                                                     <a href="{{ route('quotations.edit', $quotation) }}" class="plain-link" title="Edit" aria-label="Edit {{ $quotation->quotation_no }}">
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.2 5.2l3.6 3.6M4 20l4.5-1 10.3-10.3a2.5 2.5 0 00-3.5-3.5L5 15.5 4 20z"/></svg>
                                                     </a>
@@ -467,62 +453,4 @@
 
         <x-list-mass-actions list="quotations" part="dialogs" />
     </div>
-
-    <script>
-    function shareQuotationListOneClick(btn, quoteNo, customerName, phone, pdfUrl, sendUrl, message) {
-        const originalHtml = btn ? btn.innerHTML : '';
-        const safeCustomerName = (customerName || 'Customer').replace(/[^a-zA-Z0-9_-]/g, '_');
-        const filename = `Quotation_${quoteNo}_${safeCustomerName}.pdf`;
-
-        // 1. Clean phone number
-        let cleanPhone = (phone || '').replace(/[^0-9]/g, '');
-        if (cleanPhone.startsWith('0') && cleanPhone.length === 11) {
-            cleanPhone = '91' + cleanPhone.substring(1);
-        } else if (cleanPhone.length === 10) {
-            cleanPhone = '91' + cleanPhone;
-        }
-
-        // 2. Build Direct WhatsApp Chat URL
-        const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-        const encodedText = encodeURIComponent(message);
-        let targetUrl = '';
-        if (isMobile) {
-            targetUrl = cleanPhone 
-                ? `whatsapp://send?phone=${cleanPhone}&text=${encodedText}`
-                : `https://api.whatsapp.com/send?text=${encodedText}`;
-        } else {
-            targetUrl = cleanPhone 
-                ? `https://web.whatsapp.com/send?phone=${cleanPhone}&text=${encodedText}`
-                : `https://web.whatsapp.com/send?text=${encodedText}`;
-        }
-
-        // 3. Open WhatsApp IMMEDIATELY on the click event (no popup blocker)
-        window.open(targetUrl, '_blank');
-
-        // 4. Download PDF Document immediately
-        const link = document.createElement('a');
-        link.href = pdfUrl;
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-
-        // 5. Copy message to clipboard
-        if (message && navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(message).catch(() => {});
-        }
-
-        // 6. Log sent status in backend via AJAX
-        const params = new URLSearchParams({
-            format: '1',
-            phone: cleanPhone,
-            customer_name: customerName,
-            custom_message: message
-        });
-        fetch(`${sendUrl}?${params.toString()}`, {
-            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
-        }).catch(() => {});
-    }
-    }
-    </script>
 </x-app-layout>
