@@ -453,80 +453,20 @@
     </div>
 
     <script>
-    async function shareQuotationListOneClick(btn, quoteNo, customerName, phone, pdfUrl, sendUrl, message) {
+    function shareQuotationListOneClick(btn, quoteNo, customerName, phone, pdfUrl, sendUrl, message) {
         const originalHtml = btn ? btn.innerHTML : '';
         const safeCustomerName = (customerName || 'Customer').replace(/[^a-zA-Z0-9_-]/g, '_');
         const filename = `Quotation_${quoteNo}_${safeCustomerName}.pdf`;
 
-        if (btn) {
-            btn.disabled = true;
-            btn.innerHTML = `<svg class="animate-spin h-3.5 w-3.5 inline-block text-emerald-600" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
-        }
-
-        // 1. Fetch PDF blob
-        let pdfBlob = null;
-        let pdfFile = null;
-        try {
-            const resp = await fetch(pdfUrl);
-            if (resp.ok) {
-                pdfBlob = await resp.blob();
-                pdfFile = new File([pdfBlob], filename, { type: 'application/pdf' });
-            }
-        } catch (e) {
-            console.warn('PDF fetch warning:', e);
-        }
-
-        // 2. Mark sent status in CRM backend via AJAX
+        // 1. Clean phone number
         let cleanPhone = (phone || '').replace(/[^0-9]/g, '');
-        if (cleanPhone.length === 10) cleanPhone = '91' + cleanPhone;
-
-        const params = new URLSearchParams({
-            format: '1',
-            phone: cleanPhone,
-            customer_name: customerName,
-            custom_message: message
-        });
-        fetch(`${sendUrl}?${params.toString()}`, {
-            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
-        }).catch(e => console.warn('Status log skipped', e));
-
-        // 3. Try Native Web Share API with attached PDF file
-        if (pdfFile && navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
-            try {
-                await navigator.share({
-                    title: `Quotation #${quoteNo} - ${customerName}`,
-                    text: message,
-                    files: [pdfFile]
-                });
-                if (btn) {
-                    btn.disabled = false;
-                    btn.innerHTML = originalHtml;
-                }
-                return;
-            } catch (err) {
-                if (err.name === 'AbortError') {
-                    if (btn) { btn.disabled = false; btn.innerHTML = originalHtml; }
-                    return;
-                }
-            }
+        if (cleanPhone.startsWith('0') && cleanPhone.length === 11) {
+            cleanPhone = '91' + cleanPhone.substring(1);
+        } else if (cleanPhone.length === 10) {
+            cleanPhone = '91' + cleanPhone;
         }
 
-        // 4. Fallback for Desktop:
-        if (pdfBlob) {
-            const blobUrl = URL.createObjectURL(pdfBlob);
-            const link = document.createElement('a');
-            link.href = blobUrl;
-            link.download = filename;
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
-        }
-
-        if (message && navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(message).catch(() => {});
-        }
-
+        // 2. Build Direct WhatsApp Chat URL
         const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
         const encodedText = encodeURIComponent(message);
         let targetUrl = '';
@@ -540,12 +480,33 @@
                 : `https://web.whatsapp.com/send?text=${encodedText}`;
         }
 
+        // 3. Open WhatsApp IMMEDIATELY on the click event (no popup blocker)
         window.open(targetUrl, '_blank');
 
-        if (btn) {
-            btn.disabled = false;
-            btn.innerHTML = originalHtml;
+        // 4. Download PDF Document immediately
+        const link = document.createElement('a');
+        link.href = pdfUrl;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+        // 5. Copy message to clipboard
+        if (message && navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(message).catch(() => {});
         }
+
+        // 6. Log sent status in backend via AJAX
+        const params = new URLSearchParams({
+            format: '1',
+            phone: cleanPhone,
+            customer_name: customerName,
+            custom_message: message
+        });
+        fetch(`${sendUrl}?${params.toString()}`, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+        }).catch(() => {});
+    }
     }
     </script>
 </x-app-layout>

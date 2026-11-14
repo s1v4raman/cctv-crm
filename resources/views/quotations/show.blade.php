@@ -876,7 +876,7 @@
         link.remove();
     }
 
-    async function executeWhatsAppShareWithPdf(triggerBtn) {
+    function executeWhatsAppShareWithPdf(triggerBtn) {
         const btn = triggerBtn || document.getElementById('btn-main-whatsapp-share') || document.getElementById('btn-do-whatsapp-dispatch');
         const originalHtml = btn ? btn.innerHTML : '';
         const format = waQuotationData.selectedFormat || '1';
@@ -887,86 +887,8 @@
         const message = msgBox ? msgBox.value : waQuotationData.messages[format];
         const safeCustomerName = name.replace(/[^a-zA-Z0-9_-]/g, '_');
         const filename = `Quotation_${waQuotationData.quoteNo}_${safeCustomerName}.pdf`;
-        const pdfUrl = waQuotationData.pdfUrls[format];
 
-        if (btn) {
-            btn.disabled = true;
-            btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline-block" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span>Preparing Quotation PDF...</span>`;
-        }
-
-        // 1. Fetch PDF blob so it can be attached directly as a File
-        let pdfBlob = null;
-        let pdfFile = null;
-        try {
-            const resp = await fetch(pdfUrl);
-            if (resp.ok) {
-                pdfBlob = await resp.blob();
-                pdfFile = new File([pdfBlob], filename, { type: 'application/pdf' });
-            }
-        } catch (e) {
-            console.warn('PDF blob fetch warning:', e);
-        }
-
-        // 2. Mark sent status in CRM backend via AJAX
-        const params = new URLSearchParams({
-            format: format,
-            phone: phone,
-            customer_name: name,
-            custom_message: message
-        });
-        fetch(`${waQuotationData.sendUrl}?${params.toString()}`, {
-            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
-        }).catch(e => console.warn('Status log skipped', e));
-
-        // 3. Try Native Web Share API with attached PDF file document (Supported on Android, iOS, Windows/macOS native shares)
-        if (pdfFile && navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
-            try {
-                await navigator.share({
-                    title: `Quotation #${waQuotationData.quoteNo} - ${name}`,
-                    text: message,
-                    files: [pdfFile]
-                });
-                if (btn) {
-                    btn.disabled = false;
-                    btn.innerHTML = `<span>✓ PDF File &amp; Message Shared!</span>`;
-                    setTimeout(() => { if (btn) btn.innerHTML = originalHtml; }, 3500);
-                }
-                showQuotationToast(`✓ Quotation PDF & Message shared for ${name}!`);
-                closeWhatsAppModal();
-                return;
-            } catch (err) {
-                if (err.name === 'AbortError') {
-                    if (btn) {
-                        btn.disabled = false;
-                        btn.innerHTML = originalHtml;
-                    }
-                    return;
-                }
-                console.warn('Native share failed or unhandled, triggering direct download fallback:', err);
-            }
-        }
-
-        // 4. Desktop / Non-WebShare Fallback:
-        // Automatically download the PDF file to device immediately with Customer Name
-        if (pdfBlob) {
-            const blobUrl = URL.createObjectURL(pdfBlob);
-            const link = document.createElement('a');
-            link.href = blobUrl;
-            link.download = filename;
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
-        } else {
-            downloadSelectedPdfOnly();
-        }
-
-        // Automatically copy formatted proposal text to clipboard
-        if (message && navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(message).catch(() => {});
-        }
-
-        // Open WhatsApp Web or App
+        // 1. Build Direct WhatsApp Chat URL targeting customer phone and quotation message
         const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
         const encodedText = encodeURIComponent(message);
         let targetUrl = '';
@@ -980,19 +902,36 @@
                 : `https://web.whatsapp.com/send?text=${encodedText}`;
         }
 
+        // 2. Open WhatsApp IMMEDIATELY on the click event (no async wait) to guarantee no popup blocking
         window.open(targetUrl, '_blank');
 
-        // Show prominent guide box in modal
-        showPdfDownloadAndWhatsAppGuide(filename);
-        showQuotationToast(`✓ Quotation PDF downloaded & WhatsApp opened for ${name}!`);
+        // 3. Automatically download the Quotation PDF Document immediately
+        downloadSelectedPdfOnly();
 
-        if (btn) {
-            btn.disabled = false;
-            btn.innerHTML = `<span>✓ PDF Downloaded &amp; WhatsApp Opened!</span>`;
-            setTimeout(() => {
-                if (btn) btn.innerHTML = originalHtml;
-            }, 4000);
+        // 4. Automatically copy formatted quotation proposal to clipboard
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(message).catch(() => {});
         }
+
+        // 5. Asynchronously log sent status in CRM backend
+        const params = new URLSearchParams({
+            format: format,
+            phone: phone,
+            customer_name: name,
+            custom_message: message
+        });
+        fetch(`${waQuotationData.sendUrl}?${params.toString()}`, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+        }).catch(() => {});
+
+        // 6. Visual feedback on UI
+        if (btn) {
+            btn.innerHTML = `<span>✓ Opening WhatsApp Chat for ${name}...</span>`;
+            setTimeout(() => { if (btn) btn.innerHTML = originalHtml; }, 4000);
+        }
+        showPdfDownloadAndWhatsAppGuide(filename);
+        showQuotationToast(`✓ WhatsApp chat opened for ${name}! PDF downloaded.`);
+        closeWhatsAppModal();
     }
 
     function openWhatsAppDirect(type) {
