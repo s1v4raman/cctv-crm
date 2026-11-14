@@ -114,7 +114,10 @@ class QuotationController extends Controller
 
         $pdf = Pdf::loadView('quotations.pdf.format' . $format, compact('quotation'));
 
-        return $pdf->download($quotation->quotation_no . '_format_' . $format . '.pdf');
+        $safeCustomer = \Illuminate\Support\Str::slug($quotation->lead?->customer_name ?? 'customer', '_');
+        $filename = 'Quotation_' . $quotation->quotation_no . ($safeCustomer ? '_' . $safeCustomer : '') . '.pdf';
+
+        return $pdf->download($filename);
     }
 
     public function publicPdf(Quotation $quotation, ?string $format = '1')

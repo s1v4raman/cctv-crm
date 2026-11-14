@@ -769,33 +769,18 @@
         }
     }
 
-    async function downloadSelectedPdfOnly() {
+    function downloadSelectedPdfOnly() {
         const format = waQuotationData.selectedFormat || '1';
         const pdfUrl = waQuotationData.pdfUrls[format];
         const filename = getQuotationPdfFilename();
 
-        try {
-            const res = await fetch(pdfUrl);
-            const blob = await res.blob();
-            const blobUrl = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = blobUrl;
-            link.download = filename;
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
-            return blob;
-        } catch (e) {
-            console.warn('Direct blob download fallback', e);
-            const link = document.createElement('a');
-            link.href = pdfUrl;
-            link.download = filename;
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            return null;
-        }
+        const link = document.createElement('a');
+        link.href = pdfUrl;
+        link.download = filename;
+        link.setAttribute('target', '_blank');
+        document.body.appendChild(link);
+        link.click();
+        setTimeout(() => link.remove(), 500);
     }
 
     function showWhatsAppAttachmentBanner(filename) {
@@ -830,43 +815,63 @@
         }, 12000);
     }
 
-    async function executeWhatsAppShareWithPdf() {
+    function executeWhatsAppShareWithPdf() {
         const btn = document.getElementById('btn-do-whatsapp-dispatch');
         const originalHtml = btn ? btn.innerHTML : '';
         const format = waQuotationData.selectedFormat || '1';
         const phone = getNormalizedPhone();
-        const nameInput = document.getElementById('wa-customer-name');
-        const name = nameInput ? nameInput.value.trim() : (waQuotationData.customerName || 'Customer');
-        const msgBox = document.getElementById('wa-custom-message');
-        const message = msgBox ? msgBox.value : waQuotationData.messages[format];
-        const filename = getQuotationPdfFilename();
 
-        if (btn) {
-            btn.innerHTML = `<svg class="animate-spin h-4 w-4 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> <span>Preparing PDF...</span>`;
+        if (!phone || phone.length < 10) {
+            crmAlert('Please enter a valid WhatsApp phone number for the customer (e.g. 9876543210).');
+            const phoneInput = document.getElementById('wa-customer-phone');
+            if (phoneInput) {
+                phoneInput.focus();
+                phoneInput.classList.add('ring-2', 'ring-rose-500');
+                setTimeout(() => phoneInput.classList.remove('ring-2', 'ring-rose-500'), 3000);
+            }
+            return;
         }
 
-        // 1. Download customer-named PDF
-        const blob = await downloadSelectedPdfOnly();
+        const nameInput = document.getElementById('wa-customer-name');
+        const name = (nameInput ? nameInput.value : '').trim() || waQuotationData.customerName || 'Customer';
+        const msgBox = document.getElementById('wa-custom-message');
+        const message = (msgBox ? msgBox.value : '') || waQuotationData.messages[format] || '';
+        const filename = getQuotationPdfFilename();
+        const encodedText = encodeURIComponent(message);
 
-        // 2. Auto-copy message text to clipboard
+        // Direct WhatsApp Web (desktop) or Native App (mobile) for unsaved and existing numbers
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const targetUrl = isMobile 
+            ? `https://api.whatsapp.com/send?phone=${phone}&text=${encodedText}`
+            : `https://web.whatsapp.com/send?phone=${phone}&text=${encodedText}`;
+
+        // 1. Synchronously open the customer's WhatsApp chat in a new tab (prevents popup blocker)
+        const waTab = window.open(targetUrl, '_blank');
+        if (!waTab) {
+            window.location.href = targetUrl;
+        }
+
+        // 2. Automatically trigger customer-named PDF download
+        downloadSelectedPdfOnly();
+
+        // 3. Automatically copy proposal text to clipboard
         if (message && navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(message).catch(() => {});
         }
 
-        // 3. Auto-copy PDF to clipboard if supported by browser ClipboardItem
-        if (blob && navigator.clipboard && window.ClipboardItem) {
-            try {
-                await navigator.clipboard.write([
-                    new ClipboardItem({
-                        'application/pdf': blob
-                    })
-                ]);
-            } catch (clipErr) {
-                console.log('ClipboardItem PDF not supported or denied by browser:', clipErr);
-            }
+        // 4. Auto-prime clipboard with PDF blob if browser ClipboardItem supports it
+        if (window.ClipboardItem && navigator.clipboard && navigator.clipboard.write) {
+            fetch(waQuotationData.pdfUrls[format])
+                .then(res => res.blob())
+                .then(blob => {
+                    navigator.clipboard.write([
+                        new ClipboardItem({ 'application/pdf': blob })
+                    ]).catch(() => {});
+                })
+                .catch(() => {});
         }
 
-        // 4. Record sent status & save customer details in CRM backend via AJAX
+        // 5. Automatically save new/updated customer details and record status in CRM
         const params = new URLSearchParams({
             format: format,
             phone: phone,
@@ -875,79 +880,68 @@
         });
         fetch(`${waQuotationData.sendUrl}?${params.toString()}`, {
             headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+        }).then(res => res.json()).then(data => {
+            if (data.success) {
+                waQuotationData.customerName = name;
+                waQuotationData.defaultPhone = phone;
+                syncCustomerStatusUI();
+            }
         }).catch(e => console.warn('Status log skipped', e));
 
-        // 5. Check if OS Native Share with files is supported (e.g. Windows Share as shown in Attachment 4)
-        if (blob && navigator.canShare) {
-            try {
-                const pdfFile = new File([blob], filename, { type: 'application/pdf' });
-                if (navigator.canShare({ files: [pdfFile] })) {
-                    if (btn) btn.innerHTML = `<span>Opening Share...</span>`;
-                    await navigator.share({
-                        title: `Quotation #${waQuotationData.quoteNo} - ${name}`,
-                        text: message,
-                        files: [pdfFile]
-                    });
-                    if (btn) {
-                        btn.innerHTML = `<span>✓ PDF Attached & Shared!</span>`;
-                        setTimeout(() => { if (btn) btn.innerHTML = originalHtml; }, 3000);
-                    }
-                    return;
-                }
-            } catch (shareErr) {
-                if (shareErr.name === 'AbortError') {
-                    if (btn) btn.innerHTML = originalHtml;
-                    return;
-                }
-                console.warn('Native share fallback to WhatsApp Web', shareErr);
-            }
-        }
-
-        // 6. Direct WhatsApp Web fallback (opens chat directly for unsaved number)
-        const encodedText = encodeURIComponent(message);
-        const targetUrl = phone 
-            ? `https://web.whatsapp.com/send?phone=${phone}&text=${encodedText}`
-            : `https://web.whatsapp.com/send?text=${encodedText}`;
-
-        window.open(targetUrl, '_blank');
-
-        // 7. Visual confirmation and helper toast
+        // 6. Visual notification banner & button feedback
         showWhatsAppAttachmentBanner(filename);
 
         if (btn) {
-            btn.innerHTML = `<span>✓ PDF Ready & Chat Opened!</span>`;
+            btn.innerHTML = `<span>✓ Opening WhatsApp Chat...</span>`;
             setTimeout(() => {
                 if (btn) btn.innerHTML = originalHtml;
             }, 3500);
         }
     }
 
-    async function openWhatsAppDirect(type) {
+    function openWhatsAppDirect(type) {
         const format = waQuotationData.selectedFormat || '1';
         const phone = getNormalizedPhone();
+        if (!phone || phone.length < 10) {
+            crmAlert('Please enter a valid WhatsApp phone number for the customer (e.g. 9876543210).');
+            const phoneInput = document.getElementById('wa-customer-phone');
+            if (phoneInput) {
+                phoneInput.focus();
+                phoneInput.classList.add('ring-2', 'ring-rose-500');
+                setTimeout(() => phoneInput.classList.remove('ring-2', 'ring-rose-500'), 3000);
+            }
+            return;
+        }
+
         const nameInput = document.getElementById('wa-customer-name');
-        const name = nameInput ? nameInput.value.trim() : (waQuotationData.customerName || 'Customer');
+        const name = (nameInput ? nameInput.value : '').trim() || waQuotationData.customerName || 'Customer';
         const msgBox = document.getElementById('wa-custom-message');
-        const message = msgBox ? msgBox.value : waQuotationData.messages[format];
+        const message = (msgBox ? msgBox.value : '') || waQuotationData.messages[format] || '';
         const filename = getQuotationPdfFilename();
         const encodedText = encodeURIComponent(message);
 
-        // Download the PDF
-        const blob = await downloadSelectedPdfOnly();
+        let url = '';
+        if (type === 'web') {
+            url = `https://web.whatsapp.com/send?phone=${phone}&text=${encodedText}`;
+        } else if (type === 'app') {
+            url = `whatsapp://send?phone=${phone}&text=${encodedText}`;
+        }
 
-        // Copy message & PDF to clipboard
+        // Synchronously open WhatsApp window
+        const waTab = window.open(url, '_blank');
+        if (!waTab && type === 'web') {
+            window.location.href = url;
+        }
+
+        // Trigger PDF download
+        downloadSelectedPdfOnly();
+
+        // Copy text to clipboard
         if (message && navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(message).catch(() => {});
         }
-        if (blob && navigator.clipboard && window.ClipboardItem) {
-            try {
-                await navigator.clipboard.write([
-                    new ClipboardItem({ 'application/pdf': blob })
-                ]);
-            } catch (clipErr) {}
-        }
 
-        // Record status in CRM
+        // Save customer and log status
         const params = new URLSearchParams({
             format: format,
             phone: phone,
@@ -956,20 +950,14 @@
         });
         fetch(`${waQuotationData.sendUrl}?${params.toString()}`, {
             headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+        }).then(res => res.json()).then(data => {
+            if (data.success) {
+                waQuotationData.customerName = name;
+                waQuotationData.defaultPhone = phone;
+                syncCustomerStatusUI();
+            }
         }).catch(console.warn);
 
-        let url = '';
-        if (type === 'web') {
-            url = phone 
-                ? `https://web.whatsapp.com/send?phone=${phone}&text=${encodedText}`
-                : `https://web.whatsapp.com/send?text=${encodedText}`;
-        } else if (type === 'app') {
-            url = phone 
-                ? `whatsapp://send?phone=${phone}&text=${encodedText}`
-                : `whatsapp://send?text=${encodedText}`;
-        }
-
-        window.open(url, '_blank');
         showWhatsAppAttachmentBanner(filename);
     }
 
