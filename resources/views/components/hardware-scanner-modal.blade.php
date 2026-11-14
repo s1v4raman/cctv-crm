@@ -276,8 +276,18 @@
                                class="w-full text-xs sm:text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/70 text-slate-900 dark:text-white px-3.5 py-2.5 font-mono focus:ring-2 focus:ring-blue-500">
                     </div>
 
-                    {{-- Equipment Name / Model --}}
+                    {{-- MAC Address (Optional) --}}
                     <div class="space-y-1">
+                        <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block">
+                            {{ __('MAC / IP Address (Optional)') }}
+                        </label>
+                        <input type="text" name="mac_address" x-model="registerMac"
+                               placeholder="{{ __('e.g. BC:A8:A6:11:22:33') }}"
+                               class="w-full text-xs sm:text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/70 text-slate-900 dark:text-white px-3.5 py-2.5 font-mono focus:ring-2 focus:ring-blue-500">
+                    </div>
+
+                    {{-- Equipment Name / Model --}}
+                    <div class="space-y-1 sm:col-span-2">
                         <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block">
                             {{ __('Equipment Name / Model') }} <span class="text-rose-500">*</span>
                         </label>
@@ -381,6 +391,7 @@
             // Register form pre-fill state
             registerSerial: '',
             registerName: '',
+            registerMac: '',
             registerProductId: '',
 
             // Camera scanner internal state
@@ -424,10 +435,11 @@
                 }
             },
 
-            prefillAndRegister(serial = '', name = '', productId = '') {
+            prefillAndRegister(serial = '', name = '', productId = '', mac = '') {
                 this.registerSerial = (serial || '').trim();
                 if (name) this.registerName = name;
                 if (productId) this.registerProductId = productId;
+                if (mac) this.registerMac = mac;
                 this.switchTab('register');
             },
 
@@ -443,6 +455,20 @@
                     const data = await res.json();
                     this.resultData = data;
                     this.hasResult = true;
+
+                    // Automatically pre-fill register form fields if equipment is not yet registered
+                    if (data && !data.found) {
+                        this.registerSerial = data.serial_number || code;
+                        if (data.equipment_name || data.product_name) {
+                            this.registerName = data.equipment_name || data.product_name;
+                        }
+                        if (data.product_id) {
+                            this.registerProductId = data.product_id;
+                        }
+                        if (data.mac_address) {
+                            this.registerMac = data.mac_address;
+                        }
+                    }
                 } catch (e) {
                     this.resultData = { found: false, error: e.message };
                     this.hasResult = true;
@@ -538,7 +564,11 @@
 
             onBarcodeDetected(code) {
                 this.beep();
-                this.lookupInput = code;
+                const parsed = (typeof window.parseDeviceBarcode === 'function')
+                    ? window.parseDeviceBarcode(code)
+                    : { serial: code, mac: '' };
+                this.lookupInput = parsed.serial || code;
+                if (parsed.mac) this.registerMac = parsed.mac;
                 this.stopCamera();
                 this.switchTab('lookup');
                 this.executeLookup();

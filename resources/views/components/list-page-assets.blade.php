@@ -338,28 +338,24 @@
             this.$nextTick(() => this.fit());
             window.addEventListener('resize', () => this.fit());
         },
-        // On a desktop the panels fill the window and scroll inside, so the footer stays in view
+        // On desktop, natural content hugging: eliminate giant empty blank voids for few records,
+        // and cap max-height for large tables so internal smooth scrolling and scrollbars activate cleanly.
         fit() {
             const body = this.$refs.body;
             if (!body) return;
-            if (window.innerWidth < 1024) {
-                body.style.height = '';
-                body.style.maxHeight = '';
-                return;
-            }
-            const top = body.getBoundingClientRect().top;
-            const available = Math.max(380, window.innerHeight - top - 24);
-            const table = body.querySelector('table.ld-table');
-            const rowCount = table ? table.querySelectorAll('tbody tr').length : 0;
 
-            // When there are few records (<= 6 rows) and the filter drawer is closed,
-            // let the card hug its content naturally without creating huge empty blank voids!
-            if (rowCount <= 6 && !this.showFilter) {
-                body.style.height = '';
-                body.style.maxHeight = available + 'px';
-            } else {
-                body.style.height = available + 'px';
-                body.style.maxHeight = '';
+            body.style.height = '';
+            body.style.maxHeight = '';
+
+            const scroll = body.querySelector('.ld-scroll');
+            if (scroll) {
+                if (window.innerWidth >= 1024) {
+                    const top = scroll.getBoundingClientRect().top;
+                    const maxAllowed = Math.max(340, window.innerHeight - top - 70);
+                    scroll.style.maxHeight = maxAllowed + 'px';
+                } else {
+                    scroll.style.maxHeight = '';
+                }
             }
         },
         get allPicked() { return this.pageIds.length > 0 && this.pageIds.every((id) => this.selected.includes(id)); },
@@ -368,19 +364,35 @@
         shows(label) { return label.toLowerCase().includes(this.filterQuery.trim().toLowerCase()); },
         scrollUp() {
             const scroll = this.$el.querySelector('.ld-scroll') || document.querySelector('.ld-scroll');
-            if (scroll) scroll.scrollBy({ top: -240, behavior: 'smooth' });
+            if (scroll && scroll.scrollHeight > scroll.clientHeight) {
+                scroll.scrollBy({ top: -240, behavior: 'smooth' });
+            } else {
+                window.scrollBy({ top: -240, behavior: 'smooth' });
+            }
         },
         scrollDown() {
             const scroll = this.$el.querySelector('.ld-scroll') || document.querySelector('.ld-scroll');
-            if (scroll) scroll.scrollBy({ top: 240, behavior: 'smooth' });
+            if (scroll && scroll.scrollHeight > scroll.clientHeight) {
+                scroll.scrollBy({ top: 240, behavior: 'smooth' });
+            } else {
+                window.scrollBy({ top: 240, behavior: 'smooth' });
+            }
         },
         scrollToTop() {
             const scroll = this.$el.querySelector('.ld-scroll') || document.querySelector('.ld-scroll');
-            if (scroll) scroll.scrollTo({ top: 0, behavior: 'smooth' });
+            if (scroll && scroll.scrollHeight > scroll.clientHeight) {
+                scroll.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
         },
         scrollToBottom() {
             const scroll = this.$el.querySelector('.ld-scroll') || document.querySelector('.ld-scroll');
-            if (scroll) scroll.scrollTo({ top: scroll.scrollHeight, behavior: 'smooth' });
+            if (scroll && scroll.scrollHeight > scroll.clientHeight) {
+                scroll.scrollTo({ top: scroll.scrollHeight, behavior: 'smooth' });
+            } else {
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            }
         },
     });
 

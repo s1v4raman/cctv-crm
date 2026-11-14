@@ -149,6 +149,18 @@
 
                 {{ $actions ?? '' }}
 
+                {{-- Dedicated Top Scroll Navigation Controls --}}
+                <div class="hidden sm:inline-flex items-center gap-1 border border-slate-200 dark:border-slate-700 rounded-md bg-white dark:bg-slate-800 p-0.5 shadow-2xs mr-1" title="{{ __('Scroll table records') }}">
+                    <button type="button" @click="scrollUp()" class="px-2 py-1 rounded text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition flex items-center gap-1 text-xs font-semibold cursor-pointer" title="{{ __('Scroll Up (Previous Records)') }}" aria-label="{{ __('Scroll Up') }}">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/></svg>
+                        <span class="text-[11px]">{{ __('Up') }}</span>
+                    </button>
+                    <button type="button" @click="scrollDown()" class="px-2 py-1 rounded text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition flex items-center gap-1 text-xs font-semibold cursor-pointer" title="{{ __('Scroll Down (Next Records)') }}" aria-label="{{ __('Scroll Down') }}">
+                        <span class="text-[11px]">{{ __('Down') }}</span>
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                </div>
+
                 <div class="relative" @click.outside="menu === 'more' && (menu = null)">
                     <button type="button" class="ld-outline" title="{{ __('More actions') }}" aria-label="{{ __('More actions') }}" :aria-expanded="menu === 'more'" @click="open('more')">
                         <svg class="w-4 h-4 icon-solid" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><circle cx="4" cy="10" r="1.6"/><circle cx="10" cy="10" r="1.6"/><circle cx="16" cy="10" r="1.6"/></svg>

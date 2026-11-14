@@ -81,7 +81,7 @@
                     {{-- Equipment Name --}}
                     <div class="mb-5">
                         <label class="crm-label text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2 block">Equipment Name / Description <span class="required-marker text-rose-500">*</span></label>
-                        <input aria-label="Equipment Name / Description" type="text" name="equipment_name" x-model="equipmentName" placeholder="e.g. 4MP ColorVu Bullet Camera" required class="crm-input w-full h-[44px] text-sm rounded-lg">
+                        <input aria-label="Equipment Name / Description" type="text" id="equipment_name_input" name="equipment_name" x-model="equipmentName" placeholder="e.g. 4MP ColorVu Bullet Camera" required class="crm-input w-full h-[44px] text-sm rounded-lg">
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
@@ -90,12 +90,12 @@
                             <div class="flex items-center justify-between mb-2">
                                 <label class="crm-label mb-0 text-sm font-semibold text-slate-800 dark:text-slate-200">Hardware Serial Number (S/N) <span class="required-marker text-rose-500">*</span></label>
                                 <div class="flex items-center gap-1.5">
-                                    <button type="button" onclick="openBarcodeScanner('equipment-barcode-modal', 'serial_number_input', null, 'laptop')"
+                                    <button type="button" onclick="openBarcodeScanner('equipment-barcode-modal', 'serial_number_input', window.onEquipmentScanSuccess, 'laptop')"
                                             class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 transition cursor-pointer shadow-xs">
                                         <svg class="w-3.5 h-3.5 text-slate-700 dark:text-slate-300" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0H3"/></svg>
                                         <span>Laptop Cam</span>
                                     </button>
-                                    <button type="button" onclick="openBarcodeScanner('equipment-barcode-modal', 'serial_number_input', null, 'mobile')"
+                                    <button type="button" onclick="openBarcodeScanner('equipment-barcode-modal', 'serial_number_input', window.onEquipmentScanSuccess, 'mobile')"
                                             class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 transition cursor-pointer shadow-xs">
                                         <svg class="w-3.5 h-3.5 text-slate-700 dark:text-slate-300" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"/></svg>
                                         <span>Mobile Cam</span>
@@ -110,12 +110,12 @@
                             <div class="flex items-center justify-between mb-2">
                                 <label class="crm-label mb-0 text-sm font-semibold text-slate-800 dark:text-slate-200">MAC / IP Address (Optional)</label>
                                 <div class="flex items-center gap-1.5">
-                                    <button type="button" onclick="openBarcodeScanner('equipment-barcode-modal', 'mac_address_input', null, 'laptop')"
+                                    <button type="button" onclick="openBarcodeScanner('equipment-barcode-modal', 'mac_address_input', window.onEquipmentScanSuccess, 'laptop')"
                                             class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 transition cursor-pointer shadow-xs">
                                         <svg class="w-3.5 h-3.5 text-slate-700 dark:text-slate-300" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0H3"/></svg>
                                         <span>Laptop Cam</span>
                                     </button>
-                                    <button type="button" onclick="openBarcodeScanner('equipment-barcode-modal', 'mac_address_input', null, 'mobile')"
+                                    <button type="button" onclick="openBarcodeScanner('equipment-barcode-modal', 'mac_address_input', window.onEquipmentScanSuccess, 'mobile')"
                                             class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 transition cursor-pointer shadow-xs">
                                         <svg class="w-3.5 h-3.5 text-slate-700 dark:text-slate-300" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"/></svg>
                                         <span>Mobile Cam</span>
@@ -200,6 +200,39 @@
                 installDate: '{{ old('installation_date', date('Y-m-d')) }}',
                 mfgExpiry: '{{ old('manufacturer_warranty_expiry', '') }}',
                 serviceExpiry: '{{ old('service_warranty_expiry', '') }}',
+                init() {
+                    window.onEquipmentScanSuccess = (rawCode, parsed, lookupData) => {
+                        this.handleScanResult(rawCode, parsed, lookupData);
+                    };
+                },
+                handleScanResult(rawCode, parsed, lookupData) {
+                    if (parsed && parsed.serial) {
+                        const sInput = document.getElementById('serial_number_input');
+                        if (sInput) sInput.value = parsed.serial;
+                    }
+                    if (parsed && parsed.mac) {
+                        const mInput = document.getElementById('mac_address_input');
+                        if (mInput) mInput.value = parsed.mac;
+                    }
+
+                    // Auto-fill Product Name / Equipment Name & Select Catalog Model
+                    if (lookupData) {
+                        if (lookupData.equipment_name || lookupData.product_name) {
+                            this.equipmentName = lookupData.equipment_name || lookupData.product_name;
+                        }
+                        if (lookupData.product_id) {
+                            const pSelect = document.querySelector('select[name="product_id"]');
+                            if (pSelect) {
+                                pSelect.value = lookupData.product_id;
+                                this.onProductChange(lookupData.product_id);
+                            }
+                        }
+                        if (lookupData.mac_address && !document.getElementById('mac_address_input')?.value) {
+                            const mInput = document.getElementById('mac_address_input');
+                            if (mInput) mInput.value = lookupData.mac_address;
+                        }
+                    }
+                },
                 onProductChange(productId) {
                     this.selectedProduct = this.products.find(p => p.id == productId);
                     if (this.selectedProduct) {
