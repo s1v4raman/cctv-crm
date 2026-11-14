@@ -222,57 +222,143 @@ window.barcodeScannerState = window.barcodeScannerState || {};
  * Extracts Serial Number (S/N), optional MAC address, and Model Number from composite labels.
  */
 window.parseDeviceBarcode = function(rawCode) {
-    if (!rawCode) return { serial: '', mac: '', model: '', raw: '' };
+    if (!rawCode) return { serial: '', mac: '', model: '', ean: '', isMacOnly: false, isSerialOnly: false, isComposite: false, raw: '' };
     const raw = String(rawCode).trim();
     let serial = '';
     let mac = '';
     let model = '';
+    let ean = '';
 
-    // 1. MAC address detection: (supports XX:XX:XX:XX:XX:XX, XX-XX-XX-XX-XX-XX, or 12 hex chars preceded by MAC)
-    const macRegex = /(?:MAC(?:\s*[:=-]|\s+)?|^|\b)([0-9A-Fa-f]{2}[:-][0-9A-Fa-f]{2}[:-][0-9A-Fa-f]{2}[:-][0-9A-Fa-f]{2}[:-][0-9A-Fa-f]{2}[:-][0-9A-Fa-f]{2})\b/i;
-    const macPlainRegex = /(?:MAC(?:\s*[:=-]|\s+))([0-9A-Fa-f]{12})\b/i;
+    function isValidMac(str) {
+        if (!str) return false;
+        const s = String(str).trim();
+        // Standard colon or hyphen separated 6 hex pairs: e.g. F8:20:97:E3:33:91 or F8-20-97-E3-33-91
+        if (/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/.test(s)) return true;
+        // Dot notation 3 quads: e.g. f820.97e3.3391
+        if (/^[0-9A-Fa-f]{4}\.[0-9A-Fa-f]{4}\.[0-9A-Fa-f]{4}$/.test(s)) return true;
+        // MAC: prefix followed by 12 hex digits
+        if (/^MAC[:\s=-]*[0-9A-Fa-f]{12}$/i.test(s)) return true;
+        // Plain 12 hex chars: must contain only 0-9 and A-F, and MUST have at least one hex letter A-F (to prevent purely numeric 12-digit barcodes/EANs from falsely being treated as MAC)
+        if (/^[0-9A-Fa-f]{12}$/.test(s) && /[A-Fa-f]/.test(s)) return true;
+        return false;
+    }
 
-    let macMatch = raw.match(macRegex);
-    if (macMatch && macMatch[1]) {
-        mac = macMatch[1].toUpperCase();
-    } else {
-        let plainMatch = raw.match(macPlainRegex);
-        if (plainMatch && plainMatch[1]) {
-            mac = plainMatch[1].toUpperCase().match(/.{1,2}/g).join(':');
+    function normalizeMac(str) {
+        if (!str) return '';
+        const clean = str.replace(/[^0-9A-Fa-f]/g, '').toUpperCase();
+        if (clean.length === 12) {
+            return clean.match(/.{1,2}/g).join(':');
         }
+        return str.toUpperCase();
     }
 
-    // 2. Explicit Serial Number pattern (SN:..., S/N:..., SERIAL:..., NO:...)
-    const snRegex = /(?:SN|S\/N|SERIAL(?:\s*NO)?|NO)(?:\s*[:=-]|\s+)([A-Za-z0-9\-_]+)/i;
-    let snMatch = raw.match(snRegex);
-    if (snMatch && snMatch[1]) {
-        serial = snMatch[1].trim();
+    function normalizeSerial(str) {
+        if (!str) return '';
+        return String(str).trim()
+            .replace(/^(?:S\/N|SN|SERIAL(?:\s*NO)?|NO)[:\s=_-]*/i, '')
+            .trim();
     }
 
-    // 3. Model detection (MODEL:..., MDL:...)
-    const modelRegex = /(?:MODEL|MDL|PROD|ITEM)(?:\s*[:=-]|\s+)([A-Za-z0-9\-_\.\/]+)/i;
-    let modelMatch = raw.match(modelRegex);
-    if (modelMatch && modelMatch[1]) {
-        model = modelMatch[1].trim();
+    // 1. JSON parsing for modern smart QR codes
+    if ((raw.startsWith('{') && raw.endsWith('}')) || (raw.startsWith('[') && raw.endsWith(']'))) {
+        try {
+            const data = JSON.parse(raw);
+            const item = Array.isArray(data) ? data[0] : data;
+            if (item && typeof item === 'object') {
+                serial = item.serial || item.sn || item.s_n || item.serialNumber || item.serial_number || item.no || '';
+                mac = item.mac || item.macAddress || item.mac_address || '';
+                model = item.model || item.modelNo || item.model_no || item.prod || item.item || '';
+            }
+        } catch (e) {}
     }
 
-    // 4. Fallback heuristics if no explicit labels were used
-    if (!serial && !mac) {
-        if (/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/.test(raw)) {
-            mac = raw.toUpperCase();
-        } else if (/^[0-9A-Fa-f]{12}$/.test(raw) && raw.length === 12) {
-            mac = raw.toUpperCase().match(/.{1,2}/g).join(':');
+    // 2. Query String / URL Parameter parsing
+    if (!serial && !mac && (raw.includes('?') || (raw.includes('=') && (raw.includes('&') || raw.includes(';'))))) {
+        try {
+            const qs = raw.replace(/^.*\?/, '');
+            const params = new URLSearchParams(qs.replace(/;/g, '&'));
+            if (params.has('sn')) serial = params.get('sn');
+            else if (params.has('serial')) serial = params.get('serial');
+            else if (params.has('s_n')) serial = params.get('s_n');
+
+            if (params.has('mac')) mac = params.get('mac');
+            else if (params.has('mac_address')) mac = params.get('mac_address');
+
+            if (params.has('model')) model = params.get('model');
+            else if (params.has('mdl')) model = params.get('mdl');
+        } catch (e) {}
+    }
+
+    // 3. Multi-attribute or delimited label detection
+    if (!serial || !mac) {
+        // Explicit MAC regex:
+        const explicitMacRegex = /(?:MAC(?:\s*[:=-]|\s+)?)((?:[0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2})\b/i;
+        const macMatch = raw.match(explicitMacRegex);
+        if (macMatch && macMatch[1]) {
+            mac = normalizeMac(macMatch[1]);
         } else {
-            serial = raw.replace(/^(SN|S\/N|SERIAL)[:\s-]*/i, '').trim();
+            const plainMacWithPrefix = /(?:MAC(?:\s*[:=-]|\s+))([0-9A-Fa-f]{12})\b/i;
+            const plainMatch = raw.match(plainMacWithPrefix);
+            if (plainMatch && plainMatch[1]) {
+                mac = normalizeMac(plainMatch[1]);
+            }
         }
-    } else if (!serial && mac) {
-        let remainder = raw.replace(macRegex, '').replace(macPlainRegex, '').replace(/MAC/i, '').replace(/[,\s;|/]+/g, ' ').trim();
-        if (remainder) {
-            serial = remainder.replace(/^(SN|S\/N|SERIAL)[:\s-]*/i, '').trim();
+
+        // Explicit S/N regex
+        const explicitSnRegex = /(?:S\/N|SN|SERIAL(?:\s*NO)?|NO)(?:\s*[:=-]|\s+)([A-Za-z0-9\-_]+)/i;
+        const snMatch = raw.match(explicitSnRegex);
+        if (snMatch && snMatch[1]) {
+            serial = snMatch[1].trim();
+        }
+
+        // Explicit Model regex
+        const explicitModelRegex = /(?:MODEL|MDL|PROD|ITEM|PART)(?:\s*[:=-]|\s+)([A-Za-z0-9\-_\.\/]+)/i;
+        const modelMatch = raw.match(explicitModelRegex);
+        if (modelMatch && modelMatch[1]) {
+            model = modelMatch[1].trim();
         }
     }
 
-    return { serial, mac, model, raw };
+    // 4. Standalone / Unprefixed Barcode Identification
+    if (!serial && !mac) {
+        if (isValidMac(raw)) {
+            mac = normalizeMac(raw);
+        } else if (/^\d{13}$/.test(raw)) {
+            ean = raw;
+        } else {
+            serial = normalizeSerial(raw);
+        }
+    } else if (mac && !serial) {
+        let remainder = raw
+            .replace(/(?:MAC(?:\s*[:=-]|\s+)?)((?:[0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2})/i, '')
+            .replace(/(?:MAC(?:\s*[:=-]|\s+))([0-9A-Fa-f]{12})/i, '')
+            .replace(/MAC/i, '')
+            .replace(/[,\s;|/]+/g, ' ')
+            .trim();
+        if (remainder && !isValidMac(remainder)) {
+            serial = normalizeSerial(remainder);
+        }
+    }
+
+    // Validate that mac does not contain non-hex characters
+    if (mac && !isValidMac(mac)) {
+        mac = '';
+    }
+
+    const isMacOnly = Boolean(mac && !serial);
+    const isSerialOnly = Boolean(serial && !mac);
+    const isComposite = Boolean(serial && mac);
+
+    return {
+        serial,
+        mac,
+        model,
+        ean,
+        isMacOnly,
+        isSerialOnly,
+        isComposite,
+        raw
+    };
 };
 
 function isMobileScannerDevice() {
@@ -614,6 +700,7 @@ async function handleBarcodeDetected(modalId, code) {
     const cleanCode = (code || '').trim();
     if (!cleanCode) return;
     const state = window.barcodeScannerState[modalId];
+    const targetId = state ? state.targetInputId : null;
     const parsed = window.parseDeviceBarcode(cleanCode);
 
     // Audio beep on detection
@@ -635,68 +722,122 @@ async function handleBarcodeDetected(modalId, code) {
         navigator.vibrate([90, 40, 90]);
     }
 
-    // Determine target inputs (dual serial and optional MAC address assignment)
-    const targetId = state ? state.targetInputId : null;
     const serialInput = document.getElementById('serial_number_input') || (targetId === 'serial_number_input' ? document.getElementById(targetId) : null);
     const macInput = document.getElementById('mac_address_input') || (targetId === 'mac_address_input' ? document.getElementById(targetId) : null);
 
+    const detectedPill = document.getElementById(`${modalId}-detected-pill`);
+    const detectedText = document.getElementById(`${modalId}-detected-text`);
+    const statusOverlay = document.getElementById(`${modalId}-status`);
+
+    let shouldClose = true;
+    let feedbackMessage = '';
+
+    // INTELLIGENT FIELD ROUTING LOGIC:
     if (targetId === 'mac_address_input') {
-        const macVal = parsed.mac || cleanCode;
-        if (macInput) {
-            macInput.value = macVal;
-            macInput.dispatchEvent(new Event('input', { bubbles: true }));
-            macInput.dispatchEvent(new Event('change', { bubbles: true }));
-            highlightScannerInput(macInput);
-        }
-        if (parsed.serial && serialInput && !serialInput.value) {
-            serialInput.value = parsed.serial;
-            serialInput.dispatchEvent(new Event('input', { bubbles: true }));
-            serialInput.dispatchEvent(new Event('change', { bubbles: true }));
-            highlightScannerInput(serialInput);
+        // User opened scanner specifically for MAC Address:
+        if (parsed.mac) {
+            // A valid MAC address was detected!
+            if (macInput) {
+                macInput.value = parsed.mac;
+                macInput.dispatchEvent(new Event('input', { bubbles: true }));
+                macInput.dispatchEvent(new Event('change', { bubbles: true }));
+                highlightScannerInput(macInput);
+            }
+            if (parsed.serial && serialInput && !serialInput.value) {
+                serialInput.value = parsed.serial;
+                serialInput.dispatchEvent(new Event('input', { bubbles: true }));
+                serialInput.dispatchEvent(new Event('change', { bubbles: true }));
+                highlightScannerInput(serialInput);
+            }
+            feedbackMessage = `✓ MAC Address: ${parsed.mac}`;
+            shouldClose = true;
+        } else if (parsed.serial) {
+            // Camera caught the S/N barcode (e.g. O2T6VS3PH8FFTANS) instead of the MAC barcode!
+            // CRITICAL: NEVER put the serial number into mac_address_input!
+            if (serialInput) {
+                serialInput.value = parsed.serial;
+                serialInput.dispatchEvent(new Event('input', { bubbles: true }));
+                serialInput.dispatchEvent(new Event('change', { bubbles: true }));
+                highlightScannerInput(serialInput);
+            }
+            // Keep scanner open and guide technician to the MAC barcode!
+            feedbackMessage = `Captured S/N (${parsed.serial}) & saved to Serial field. Now aim at the MAC barcode!`;
+            if (statusOverlay) {
+                statusOverlay.innerHTML = `<span style="color:#38bdf8;">✓ S/N saved!</span> Now point camera at the <strong style="color:#4ade80;">MAC barcode</strong> (F8:20:97...)`;
+            }
+            shouldClose = false;
+        } else {
+            feedbackMessage = `Code: ${cleanCode}`;
+            shouldClose = false;
         }
     } else {
-        // Serial is target or general scan
-        const serialVal = parsed.serial || cleanCode;
-        if (serialInput) {
-            serialInput.value = serialVal;
-            serialInput.dispatchEvent(new Event('input', { bubbles: true }));
-            serialInput.dispatchEvent(new Event('change', { bubbles: true }));
-            highlightScannerInput(serialInput);
-        } else if (targetId) {
-            const el = document.getElementById(targetId);
-            if (el) {
-                el.value = serialVal;
-                el.dispatchEvent(new Event('input', { bubbles: true }));
-                el.dispatchEvent(new Event('change', { bubbles: true }));
-                highlightScannerInput(el);
+        // User opened scanner for Serial Number (or general scan):
+        if (parsed.serial) {
+            // Serial number detected!
+            if (serialInput) {
+                serialInput.value = parsed.serial;
+                serialInput.dispatchEvent(new Event('input', { bubbles: true }));
+                serialInput.dispatchEvent(new Event('change', { bubbles: true }));
+                highlightScannerInput(serialInput);
+            } else if (targetId) {
+                const el = document.getElementById(targetId);
+                if (el) {
+                    el.value = parsed.serial;
+                    el.dispatchEvent(new Event('input', { bubbles: true }));
+                    el.dispatchEvent(new Event('change', { bubbles: true }));
+                    highlightScannerInput(el);
+                }
             }
-        }
-        // If the scanned tag also contained a MAC address, populate MAC (optional)
-        if (parsed.mac && macInput) {
-            macInput.value = parsed.mac;
-            macInput.dispatchEvent(new Event('input', { bubbles: true }));
-            macInput.dispatchEvent(new Event('change', { bubbles: true }));
-            highlightScannerInput(macInput);
+            if (parsed.mac && macInput) {
+                macInput.value = parsed.mac;
+                macInput.dispatchEvent(new Event('input', { bubbles: true }));
+                macInput.dispatchEvent(new Event('change', { bubbles: true }));
+                highlightScannerInput(macInput);
+            }
+            feedbackMessage = `✓ Serial Number: ${parsed.serial}` + (parsed.mac ? ` | MAC: ${parsed.mac}` : '');
+            shouldClose = true;
+        } else if (parsed.mac) {
+            // Camera caught the MAC barcode (e.g. F8:20:97:E3:33:91) instead of the S/N barcode!
+            // CRITICAL: NEVER put the MAC address into serial_number_input!
+            if (macInput) {
+                macInput.value = parsed.mac;
+                macInput.dispatchEvent(new Event('input', { bubbles: true }));
+                macInput.dispatchEvent(new Event('change', { bubbles: true }));
+                highlightScannerInput(macInput);
+            }
+            // Keep scanner open and guide technician to the S/N barcode!
+            feedbackMessage = `Captured MAC (${parsed.mac}) & saved to MAC field. Now aim at the S/N barcode!`;
+            if (statusOverlay) {
+                statusOverlay.innerHTML = `<span style="color:#38bdf8;">✓ MAC saved!</span> Now point camera at the <strong style="color:#4ade80;">S/N barcode</strong>`;
+            }
+            shouldClose = false;
+        } else if (parsed.ean) {
+            feedbackMessage = `Product EAN: ${parsed.ean}. Aim at S/N barcode for unique serial.`;
+            shouldClose = false;
+        } else {
+            if (serialInput) {
+                serialInput.value = cleanCode;
+                serialInput.dispatchEvent(new Event('input', { bubbles: true }));
+                serialInput.dispatchEvent(new Event('change', { bubbles: true }));
+                highlightScannerInput(serialInput);
+            }
+            feedbackMessage = `Captured: ${cleanCode}`;
+            shouldClose = true;
         }
     }
 
     // Scanned preview banner inside modal
-    const detectedPill = document.getElementById(`${modalId}-detected-pill`);
-    const detectedText = document.getElementById(`${modalId}-detected-text`);
     if (detectedPill && detectedText) {
-        let displayStr = '';
-        if (parsed.serial) displayStr += `S/N: ${parsed.serial} `;
-        if (parsed.mac) displayStr += `MAC: ${parsed.mac} `;
-        if (!displayStr) displayStr = cleanCode;
-        detectedText.innerText = displayStr;
+        detectedText.innerText = feedbackMessage;
         detectedPill.style.display = 'flex';
     }
 
     // Automatic Product & Equipment Name Lookup
     let lookupResult = null;
-    const queryKey = parsed.serial || cleanCode;
+    const queryKey = parsed.serial || parsed.mac || cleanCode;
+    const queryModel = parsed.model || '';
     try {
-        const lookupRes = await fetch(`/api/equipment/lookup-serial?serial=${encodeURIComponent(queryKey)}`);
+        const lookupRes = await fetch(`/api/equipment/lookup-serial?serial=${encodeURIComponent(queryKey)}&mac=${encodeURIComponent(parsed.mac || '')}&model=${encodeURIComponent(queryModel)}`);
         if (lookupRes.ok) {
             lookupResult = await lookupRes.json();
             if (lookupResult && (lookupResult.equipment_name || lookupResult.product_name)) {
@@ -725,14 +866,16 @@ async function handleBarcodeDetected(modalId, code) {
 
     // Call custom callback if provided
     if (state && typeof state.callback === 'function') {
-        state.callback(cleanCode, parsed, lookupResult);
+        state.callback(cleanCode, parsed, lookupResult, targetId);
     } else if (typeof window.onBarcodeScanned === 'function') {
-        window.onBarcodeScanned(cleanCode, modalId, parsed, lookupResult);
+        window.onBarcodeScanned(cleanCode, modalId, parsed, lookupResult, targetId);
     }
 
-    setTimeout(() => {
-        closeBarcodeScanner(modalId);
-    }, 700);
+    if (shouldClose) {
+        setTimeout(() => {
+            closeBarcodeScanner(modalId);
+        }, 750);
+    }
 }
 
 async function snapBarcodeCurrentFrame(modalId) {

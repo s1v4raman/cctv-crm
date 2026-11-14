@@ -172,14 +172,24 @@
     <x-barcode-scanner modalId="equipment-barcode-modal" title="Scan Device Serial / Barcode" />
 
     <script>
-        window.onEquipmentEditScanSuccess = function(rawCode, parsed, lookupData) {
-            if (parsed && parsed.serial) {
-                const sInput = document.getElementById('serial_number_input');
-                if (sInput) sInput.value = parsed.serial;
-            }
-            if (parsed && parsed.mac) {
-                const mInput = document.getElementById('mac_address_input');
-                if (mInput) mInput.value = parsed.mac;
+        window.onEquipmentEditScanSuccess = function(rawCode, parsed, lookupData, targetId) {
+            const sInput = document.getElementById('serial_number_input');
+            const mInput = document.getElementById('mac_address_input');
+
+            if (targetId === 'mac_address_input') {
+                if (parsed && parsed.mac) {
+                    if (mInput) mInput.value = parsed.mac;
+                }
+                if (parsed && parsed.serial && sInput && !sInput.value) {
+                    sInput.value = parsed.serial;
+                }
+            } else {
+                if (parsed && parsed.serial) {
+                    if (sInput) sInput.value = parsed.serial;
+                }
+                if (parsed && parsed.mac && mInput && !mInput.value) {
+                    mInput.value = parsed.mac;
+                }
             }
 
             if (lookupData) {
@@ -191,9 +201,8 @@
                     const pSelect = document.querySelector('select[name="product_id"]');
                     if (pSelect) pSelect.value = lookupData.product_id;
                 }
-                if (lookupData.mac_address) {
-                    const mInput = document.getElementById('mac_address_input');
-                    if (mInput && !mInput.value) mInput.value = lookupData.mac_address;
+                if (lookupData.mac_address && mInput && !mInput.value) {
+                    mInput.value = lookupData.mac_address;
                 }
             }
         };

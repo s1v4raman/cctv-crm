@@ -18,6 +18,7 @@ class EquipmentLookupController extends Controller
     {
         $serial = trim((string) $request->input('serial', ''));
         $mac = trim((string) $request->input('mac', ''));
+        $model = trim((string) $request->input('model', ''));
 
         // Handle composite or prefixed barcodes (e.g. "SN:12345,MAC:AA:BB:CC:DD:EE:FF")
         if ($serial !== '') {
@@ -31,17 +32,27 @@ class EquipmentLookupController extends Controller
                 $mac = $macMatch[1];
             }
 
+            // If the serial input is actually a standalone MAC address, shift it to MAC
+            if (preg_match('/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/', $cleanedSerial)) {
+                $mac = strtoupper(str_replace('-', ':', $cleanedSerial));
+                $cleanedSerial = '';
+            } elseif (preg_match('/^[0-9A-Fa-f]{12}$/', $cleanedSerial) && preg_match('/[A-Fa-f]/', $cleanedSerial)) {
+                $mac = strtoupper(implode(':', str_split($cleanedSerial, 2)));
+                $cleanedSerial = '';
+            }
+
             $serial = $cleanedSerial;
         }
 
         if ($mac !== '') {
             $mac = preg_replace('/^MAC[:\s=_-]*/i', '', $mac);
+            $mac = strtoupper(str_replace('-', ':', $mac));
         }
 
-        if ($serial === '' && $mac === '') {
+        if ($serial === '' && $mac === '' && $model === '') {
             return response()->json([
                 'found'   => false,
-                'message' => 'Please provide a serial number or MAC address to search.',
+                'message' => 'Please provide a serial number, MAC address, or model to search.',
             ], 400);
         }
 
@@ -93,12 +104,23 @@ class EquipmentLookupController extends Controller
 
         // If not found in installed equipment, search if this barcode matches a product SKU, Model No, or Name
         $searchKey = $serial ?: $mac;
-        $product = Product::where('sku', $searchKey)
-            ->orWhere('model_no', $searchKey)
-            ->orWhere('name', $searchKey)
-            ->orWhere('sku', 'like', "%{$searchKey}%")
-            ->orWhere('model_no', 'like', "%{$searchKey}%")
-            ->first();
+        $product = null;
+
+        if ($model !== '') {
+            $product = Product::where('model_no', $model)
+                ->orWhere('model_no', 'like', "%{$model}%")
+                ->orWhere('name', 'like', "%{$model}%")
+                ->first();
+        }
+
+        if (!$product && $searchKey !== '') {
+            $product = Product::where('sku', $searchKey)
+                ->orWhere('model_no', $searchKey)
+                ->orWhere('name', $searchKey)
+                ->orWhere('sku', 'like', "%{$searchKey}%")
+                ->orWhere('model_no', 'like', "%{$searchKey}%")
+                ->first();
+        }
 
         if ($product) {
             $displayName = $product->name . ($product->model_no ? " ({$product->model_no})" : '');

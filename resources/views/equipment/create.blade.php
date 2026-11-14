@@ -201,18 +201,28 @@
                 mfgExpiry: '{{ old('manufacturer_warranty_expiry', '') }}',
                 serviceExpiry: '{{ old('service_warranty_expiry', '') }}',
                 init() {
-                    window.onEquipmentScanSuccess = (rawCode, parsed, lookupData) => {
-                        this.handleScanResult(rawCode, parsed, lookupData);
+                    window.onEquipmentScanSuccess = (rawCode, parsed, lookupData, targetId) => {
+                        this.handleScanResult(rawCode, parsed, lookupData, targetId);
                     };
                 },
-                handleScanResult(rawCode, parsed, lookupData) {
-                    if (parsed && parsed.serial) {
-                        const sInput = document.getElementById('serial_number_input');
-                        if (sInput) sInput.value = parsed.serial;
-                    }
-                    if (parsed && parsed.mac) {
-                        const mInput = document.getElementById('mac_address_input');
-                        if (mInput) mInput.value = parsed.mac;
+                handleScanResult(rawCode, parsed, lookupData, targetId) {
+                    const sInput = document.getElementById('serial_number_input');
+                    const mInput = document.getElementById('mac_address_input');
+
+                    if (targetId === 'mac_address_input') {
+                        if (parsed && parsed.mac) {
+                            if (mInput) mInput.value = parsed.mac;
+                        }
+                        if (parsed && parsed.serial && sInput && !sInput.value) {
+                            sInput.value = parsed.serial;
+                        }
+                    } else {
+                        if (parsed && parsed.serial) {
+                            if (sInput) sInput.value = parsed.serial;
+                        }
+                        if (parsed && parsed.mac && mInput && !mInput.value) {
+                            mInput.value = parsed.mac;
+                        }
                     }
 
                     // Auto-fill Product Name / Equipment Name & Select Catalog Model
@@ -227,9 +237,23 @@
                                 this.onProductChange(lookupData.product_id);
                             }
                         }
-                        if (lookupData.mac_address && !document.getElementById('mac_address_input')?.value) {
-                            const mInput = document.getElementById('mac_address_input');
-                            if (mInput) mInput.value = lookupData.mac_address;
+                        if (lookupData.mac_address && mInput && !mInput.value) {
+                            mInput.value = lookupData.mac_address;
+                        }
+                    }
+
+                    // Auto-match model from barcode/QR code if product is not yet selected
+                    if (parsed && parsed.model && (!this.selectedProduct || !this.selectedProduct.id)) {
+                        const matched = this.products.find(p => 
+                            (p.model_no && p.model_no.toLowerCase().includes(parsed.model.toLowerCase())) ||
+                            (p.name && p.name.toLowerCase().includes(parsed.model.toLowerCase()))
+                        );
+                        if (matched) {
+                            const pSelect = document.querySelector('select[name="product_id"]');
+                            if (pSelect) {
+                                pSelect.value = matched.id;
+                                this.onProductChange(matched.id);
+                            }
                         }
                     }
                 },
