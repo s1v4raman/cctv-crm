@@ -175,7 +175,8 @@
                                 <button type="button" @click="prefillAndRegister(lastQueriedCode)"
                                         class="self-start sm:self-auto inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 !text-white font-bold text-xs sm:text-sm shadow-sm transition cursor-pointer"
                                         style="color: #ffffff !important;">
-                                    <span style="color: #ffffff !important;">{{ __('+ Register This S/N Now') }} &rarr;</span>
+                                    <svg class="w-3.5 h-3.5 shrink-0 !text-white" fill="none" stroke="#ffffff" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                                    <span style="color: #ffffff !important;">{{ __('Register This S/N Now') }} &rarr;</span>
                                 </button>
                             </div>
                         </template>

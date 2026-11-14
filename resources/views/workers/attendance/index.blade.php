@@ -364,7 +364,7 @@
                         @if(isset($unpunchedWorkers) && $unpunchedWorkers->isNotEmpty())
                             <button type="button" onclick="openBulkAttendanceModal('{{ $selectedDate->toDateString() }}', {{ Js::from($unpunchedWorkers->pluck('id')->values()) }})" class="text-xs font-bold px-2.5 py-1 rounded-md bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 hover:bg-blue-100 transition cursor-pointer flex items-center gap-1 shadow-2xs">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"/></svg>
-                                <span>{{ __('+ Bulk Punch Unpunched (:count)', ['count' => $unpunchedWorkers->count()]) }}</span>
+                                <span>{{ __('Bulk Punch Unpunched (:count)', ['count' => $unpunchedWorkers->count()]) }}</span>
                             </button>
                         @endif
 
@@ -647,9 +647,9 @@
                                         @elseif(!$isPresent && $w)
                                             <button type="button" 
                                                     onclick="openAttendanceModal('{{ $selectedDate->toDateString() }}', {{ $w->id }})" 
-                                                    class="inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100 dark:hover:bg-emerald-900 transition cursor-pointer shadow-2xs">
-                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-                                                <span>{{ __('+ Punch') }}</span>
+                                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100 dark:hover:bg-emerald-900 transition cursor-pointer shadow-2xs">
+                                                <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                                                <span>{{ __('Punch') }}</span>
                                             </button>
                                         @else
                                             <span class="text-slate-400 text-[11px]">&mdash;</span>

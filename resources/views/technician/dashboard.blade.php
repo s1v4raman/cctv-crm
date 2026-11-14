@@ -888,9 +888,10 @@
                         <p class="text-xs sm:text-sm text-slate-400">{{ __('Active daily-wage technicians, cable pullers, and helpers') }}</p>
                     </div>
                     <button type="button" onclick="openAttendanceModal()"
-                            class="inline-flex items-center justify-center gap-2 px-4 py-2 min-h-[38px] rounded-xl bg-blue-600 hover:bg-blue-700 !text-white font-bold text-xs sm:text-sm shadow-xs transition cursor-pointer"
+                            class="inline-flex items-center justify-center gap-1.5 px-4 py-2 min-h-[38px] rounded-xl bg-blue-600 hover:bg-blue-700 !text-white font-bold text-xs sm:text-sm shadow-xs transition cursor-pointer"
                             style="color: #ffffff !important;">
-                        <span class="!text-white" style="color: #ffffff !important;">+ {{ __('Punch Attendance') }}</span>
+                        <svg class="w-4 h-4 shrink-0 !text-white" fill="none" stroke="#ffffff" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                        <span class="!text-white" style="color: #ffffff !important;">{{ __('Punch Attendance') }}</span>
                     </button>
                 </div>
 
