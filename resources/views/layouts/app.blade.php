@@ -1664,10 +1664,6 @@
                                             <a href="{{ route('technician.dashboard') }}" class="text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:underline">
                                                 {{ __('View All Assigned Work Orders') }} →
                                             </a>
-                                        @elseif(Auth::user()->isWorker())
-                                            <a href="{{ route('worker.portal') }}" class="text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:underline">
-                                                {{ __('Open My Work & Attendance') }} →
-                                            </a>
                                         @elseif(Auth::user()->isOffice())
                                             <a href="{{ route('dashboard') }}" class="text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:underline">
                                                 View Operations Dashboard →
@@ -2004,15 +2000,7 @@
                             <span class="text-[11px] tracking-tight">Profile</span>
                         </a>
                     @else
-                        {{-- Worker / other accounts: their own page and profile --}}
-                        @if(auth()->user()->isWorker())
-                        <a href="{{ route('worker.portal') }}" 
-                           class="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl transition {{ request()->routeIs('worker.*') ? 'text-blue-600 dark:text-blue-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200' }}">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                            <span class="text-[11px] tracking-tight">My Work</span>
-                        </a>
-                        @endif
-
+                        {{-- Other accounts: profile --}}
                         <a href="{{ route('profile.edit') }}" 
                            class="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl transition {{ request()->routeIs('profile.*') ? 'text-blue-600 dark:text-blue-400 font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200' }}">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>

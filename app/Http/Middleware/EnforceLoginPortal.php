@@ -24,7 +24,7 @@ class EnforceLoginPortal
      */
     public const ROLES = [
         'admin' => ['admin', 'staff'],
-        'technician' => ['technician', 'worker'],
+        'technician' => ['technician'],
     ];
 
     public function handle(Request $request, Closure $next): Response
@@ -33,10 +33,6 @@ class EnforceLoginPortal
 
         if (!$portal) {
             return $next($request);
-        }
-
-        if ($request->routeIs('login.worker') && !in_array('worker', self::ROLES[$portal], true)) {
-            abort(404);
         }
 
         // An account already signed in here (or remembered) from before the server was locked

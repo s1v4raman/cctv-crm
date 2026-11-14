@@ -387,18 +387,9 @@
                 </div>
             @endif
 
-        {{-- Daily-wage workers: their portal; any other account: only its profile --}}
+        {{-- Any other account: only its profile --}}
         @else
             <div class="space-y-1">
-                @if(auth()->user()->isWorker())
-                    <a :title="sidebarCollapsed ? $el.textContent.trim() : null" :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('worker.portal') }}"
-                       class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('worker.*') ? 'crm-active-link' : '' }}" @if(request()->routeIs('worker.*')) aria-current="page" @endif>
-                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                        </svg>
-                        <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">My Work &amp; Attendance</span>
-                    </a>
-                @endif
                 <a :title="sidebarCollapsed ? $el.textContent.trim() : null" :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''" href="{{ route('profile.edit') }}"
                    class="group flex items-center gap-3 px-3 py-2 text-sm transition-colors rounded-lg {{ request()->routeIs('profile.*') ? 'crm-active-link' : '' }}" @if(request()->routeIs('profile.*')) aria-current="page" @endif>
                     <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">

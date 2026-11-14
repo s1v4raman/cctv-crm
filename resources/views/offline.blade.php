@@ -81,10 +81,6 @@
 
         <!-- Quick Access Shortcuts -->
         <div class="pt-2 flex flex-col sm:flex-row items-center justify-center gap-2">
-            <a href="{{ route('worker.portal') }}" 
-               class="w-full sm:w-auto px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 transition">
-                &larr; {{ __('Worker Portal') }}
-            </a>
             <a href="{{ route('technician.dashboard') }}" 
                class="w-full sm:w-auto px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 transition">
                 {{ __('Technician Workstation') }} &rarr;

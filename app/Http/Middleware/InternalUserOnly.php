@@ -18,11 +18,6 @@ class InternalUserOnly
     {
         $user = $request->user();
 
-        // Daily-wage workers only have their own portal: send them there instead of a 403
-        if ($user?->isWorker() && $request->isMethod('GET') && !$request->expectsJson()) {
-            return redirect()->route('worker.portal');
-        }
-
         if (!$user || !$user->isInternal()) {
             abort(403, 'Unauthorized action.');
         }

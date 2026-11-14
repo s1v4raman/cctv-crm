@@ -98,7 +98,6 @@ class User extends Authenticatable
     {
         return match (true) {
             $this->isTechnician() => route('technician.dashboard'),
-            $this->isWorker() => route('worker.portal'),
             $this->isOffice() => route('dashboard'),
             default => route('profile.edit'),
         };

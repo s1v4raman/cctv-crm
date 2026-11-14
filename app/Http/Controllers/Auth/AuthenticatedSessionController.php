@@ -68,10 +68,6 @@ class AuthenticatedSessionController extends Controller
                 ->withCookie(cookie()->forever(SetLocale::COOKIE, $locale));
         }
 
-        if ($user->role === 'worker') {
-            return redirect()->intended(route('worker.portal', absolute: false));
-        }
-
         return redirect()->intended(route('dashboard', absolute: false));
     }
 
@@ -80,8 +76,7 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
-        $wasWorker = (bool) $request->user()?->isWorker();
-        $wasField = $wasWorker || (bool) $request->user()?->isTechnician();
+        $wasField = (bool) $request->user()?->isTechnician();
 
         Auth::guard('web')->logout();
 
@@ -89,12 +84,8 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        // Technicians and workers land back on their own sign-in link, a worker on the worker tab
-        // (in the language this phone picked)
         $loginRoute = $wasField ? EnforceLoginPortal::loginRoute('technician') : 'login';
 
-        return $wasWorker
-            ? redirect()->route($loginRoute)->with('login_portal', 'worker')
-            : redirect()->route($loginRoute);
+        return redirect()->route($loginRoute);
     }
 }

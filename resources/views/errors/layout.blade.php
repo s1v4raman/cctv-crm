@@ -14,8 +14,6 @@
                 // keep the dashboard link
             } elseif ($viewer->isTechnician()) {
                 $homeUrl = route('technician.dashboard');
-            } elseif ($viewer->isWorker()) {
-                [$homeUrl, $homeLabel] = [route('worker.portal'), 'Go to my page'];
             }
         } catch (\Throwable $e) {
             // keep the plain dashboard link

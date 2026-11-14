@@ -46,7 +46,6 @@ use App\Http\Controllers\WorkerController;
 use App\Http\Controllers\WorkerAttendanceController;
 use App\Http\Controllers\WorkDayController;
 use App\Http\Controllers\IpDeviceController;
-use App\Http\Controllers\WorkerPortalController;
 use App\Http\Controllers\WageController;
 use App\Http\Controllers\ProjectDocumentController;
 use App\Http\Controllers\ProjectTaskController;
@@ -588,9 +587,6 @@ Route::middleware(['auth', 'technician'])->prefix('technician')->name('technicia
 Route::get('/field/tasks', function (\Illuminate\Http\Request $request) {
     if (auth()->check()) {
         $user = auth()->user();
-        if ($user->isWorker()) {
-            return redirect()->route('worker.portal');
-        }
         if ($user->isTechnician()) {
             return redirect()->route('technician.dashboard');
         }
@@ -638,21 +634,10 @@ Route::get('/offline', function () {
     return view('offline');
 })->name('offline');
 
-// English / Tamil switch on the worker sign-in, worker portal and technician pages
+// English / Tamil switch on the technician and field pages
 Route::post('/locale', [LocaleController::class, 'update'])
     ->middleware('throttle:30,1')
     ->name('locale.update');
-
-// Daily Wages Worker Mobile Portal & Work Logging
-Route::post('/login/worker', [WorkerPortalController::class, 'workerLogin'])
-    ->middleware('throttle:30,1')
-    ->name('login.worker');
-
-Route::middleware(['auth'])->prefix('worker')->name('worker.')->group(function () {
-    Route::get('/portal', [WorkerPortalController::class, 'portal'])->name('portal');
-    Route::post('/attendance/punch', [WorkerPortalController::class, 'punchAttendance'])->name('attendance.punch');
-    Route::post('/work/log', [WorkerPortalController::class, 'logWork'])->name('work.log');
-});
 
 // Staff & Admin ERP Login Aliases
 Route::get('/staff/login', [\App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'create'])->name('staff.login');
