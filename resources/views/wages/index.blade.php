@@ -2,7 +2,7 @@
     <x-list-page-assets />
 
     <div class="ld-root"
-         x-data="{
+         x-data="Object.assign(listPage([], 'wages', {}, false), {
              showFilter: false,
              menu: null,
              filterWorker: '',
@@ -46,7 +46,7 @@
              openPhoto(url) {
                  this.photoModalUrl = url;
              }
-         }"
+         })"
          @keydown.escape.window="menu = null">
 
         @if (session('status'))
@@ -210,8 +210,8 @@
                 </div>
 
                 {{-- Running Ledger Table Card --}}
-                <div class="ld-card flex flex-col flex-1 min-h-0 mb-6">
-                    <div class="ld-scroll">
+                <div class="ld-card flex flex-col flex-1 min-h-0 overflow-hidden">
+                    <div class="ld-scroll flex-1 min-h-0 overflow-y-auto overflow-x-auto">
                         <table class="ld-table crm-auto-cards">
                             <thead>
                                 <tr>
@@ -530,8 +530,21 @@
                     @endif
 
                     {{-- Table Footer (Desktop standard) --}}
-                    <div class="ld-foot hidden md:flex">
-                        <div>Total Workers: <strong>{{ count($wageRows) }}</strong></div>
+                    <div class="ld-foot hidden md:flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span>Total Workers: <strong>{{ count($wageRows) }}</strong></span>
+                            {{-- Dedicated Scroll Up / Down Controls --}}
+                            <div class="inline-flex items-center gap-1 border border-slate-200 dark:border-slate-700 rounded-md bg-white dark:bg-slate-800 p-0.5 shadow-2xs" title="Scroll through worker records">
+                                <button type="button" @click="scrollUp()" class="px-2 py-1 rounded text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition flex items-center gap-1 text-xs font-semibold cursor-pointer" title="Scroll Up (Previous Records)" aria-label="Scroll Up">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/></svg>
+                                    <span>Scroll Up</span>
+                                </button>
+                                <button type="button" @click="scrollDown()" class="px-2 py-1 rounded text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition flex items-center gap-1 text-xs font-semibold cursor-pointer" title="Scroll Down (Next Records)" aria-label="Scroll Down">
+                                    <span>Scroll Down</span>
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                                </button>
+                            </div>
+                        </div>
                         <div class="flex items-center gap-4">
                             <div>Total Sunday Cash Due: <strong class="text-rose-600 dark:text-rose-400">₹{{ number_format($totalDueAll, 2) }}</strong></div>
                         </div>

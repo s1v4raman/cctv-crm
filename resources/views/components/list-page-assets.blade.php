@@ -183,10 +183,81 @@
     .ld-filter-actions { display: flex; gap: 8px; padding: 10px 18px; border-top: 1px solid var(--ld-line); }
 
     .ld-main { flex: 1; min-width: 0; display: flex; flex-direction: column; min-height: 0; }
-    .ld-scroll { flex: 1 1 0%; overflow-y: auto; overflow-x: auto; min-height: 0; -webkit-overflow-scrolling: touch; }
+    .ld-scroll {
+        flex: 1 1 0%;
+        overflow-y: auto;
+        overflow-x: auto;
+        min-height: 0;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        scrollbar-color: #94a3b8 #f1f5f9;
+    }
+    html.dark .ld-scroll {
+        scrollbar-color: #475569 #0f172a;
+    }
+    .ld-scroll::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+    .ld-scroll::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 4px;
+    }
+    html.dark .ld-scroll::-webkit-scrollbar-track {
+        background: #0f172a;
+    }
+    .ld-scroll::-webkit-scrollbar-thumb {
+        background: #94a3b8;
+        border-radius: 6px;
+        border: 2px solid #f1f5f9;
+    }
+    html.dark .ld-scroll::-webkit-scrollbar-thumb {
+        background: #475569;
+        border: 2px solid #0f172a;
+    }
+    .ld-scroll::-webkit-scrollbar-thumb:hover {
+        background: #64748b;
+    }
+    html.dark .ld-scroll::-webkit-scrollbar-thumb:hover {
+        background: #64748b;
+    }
+    .ld-scroll::-webkit-scrollbar-button:single-button:vertical:decrement {
+        height: 14px;
+        width: 10px;
+        background-color: #e2e8f0;
+        background-position: center center;
+        background-repeat: no-repeat;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 24 24' fill='none' stroke='%23334155' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='18 15 12 9 6 15'></polyline></svg>");
+        border-radius: 3px 3px 0 0;
+        display: block;
+    }
+    .ld-scroll::-webkit-scrollbar-button:single-button:vertical:decrement:hover {
+        background-color: #cbd5e1;
+    }
+    .ld-scroll::-webkit-scrollbar-button:single-button:vertical:increment {
+        height: 14px;
+        width: 10px;
+        background-color: #e2e8f0;
+        background-position: center center;
+        background-repeat: no-repeat;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 24 24' fill='none' stroke='%23334155' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+        border-radius: 0 0 3px 3px;
+        display: block;
+    }
+    .ld-scroll::-webkit-scrollbar-button:single-button:vertical:increment:hover {
+        background-color: #cbd5e1;
+    }
+    html.dark .ld-scroll::-webkit-scrollbar-button:single-button:vertical:decrement {
+        background-color: #1e293b;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='18 15 12 9 6 15'></polyline></svg>");
+    }
+    html.dark .ld-scroll::-webkit-scrollbar-button:single-button:vertical:increment {
+        background-color: #1e293b;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+    }
     .ld-root .ld-scroll table.ld-table { width: 100%; border: 0 !important; border-collapse: separate !important; border-spacing: 0 !important; }
     .ld-root .ld-scroll table.ld-table thead, .ld-root .ld-scroll table.ld-table thead tr { background: transparent !important; border: 0 !important; }
-    .ld-root .ld-scroll table.ld-table th { position: sticky; top: 0; z-index: 5; background: var(--ld-card) !important; height: 38px; padding: 0 12px; text-align: left; font-size: 13px; font-weight: 600; color: var(--ld-text); white-space: nowrap; border: 0 !important; box-shadow: inset 0 -1px 0 var(--ld-border), inset -1px 0 0 var(--ld-line); }
+    .ld-root .ld-scroll table.ld-table th { position: sticky; top: 0; z-index: 10; background: var(--ld-card) !important; height: 38px; padding: 0 12px; text-align: left; font-size: 13px; font-weight: 600; color: var(--ld-text); white-space: nowrap; border: 0 !important; box-shadow: inset 0 -1px 0 var(--ld-border), inset -1px 0 0 var(--ld-line); }
     .ld-root .ld-scroll table.ld-table th:last-child { box-shadow: inset 0 -1px 0 var(--ld-border); }
     .ld-root .ld-scroll table.ld-table td { padding: 9px 12px; font-size: 13.5px; color: var(--ld-text); vertical-align: middle; line-height: 1.4; border: 0 !important; border-bottom: 1px solid var(--ld-line) !important; background: var(--ld-card) !important; }
     .ld-root .ld-scroll table.ld-table tbody tr:hover td { background: var(--ld-hover) !important; }
@@ -295,6 +366,22 @@
         toggleAll() { this.selected = this.allPicked ? [] : [...this.pageIds]; },
         open(name) { this.menu = this.menu === name ? null : name; },
         shows(label) { return label.toLowerCase().includes(this.filterQuery.trim().toLowerCase()); },
+        scrollUp() {
+            const scroll = this.$el.querySelector('.ld-scroll') || document.querySelector('.ld-scroll');
+            if (scroll) scroll.scrollBy({ top: -240, behavior: 'smooth' });
+        },
+        scrollDown() {
+            const scroll = this.$el.querySelector('.ld-scroll') || document.querySelector('.ld-scroll');
+            if (scroll) scroll.scrollBy({ top: 240, behavior: 'smooth' });
+        },
+        scrollToTop() {
+            const scroll = this.$el.querySelector('.ld-scroll') || document.querySelector('.ld-scroll');
+            if (scroll) scroll.scrollTo({ top: 0, behavior: 'smooth' });
+        },
+        scrollToBottom() {
+            const scroll = this.$el.querySelector('.ld-scroll') || document.querySelector('.ld-scroll');
+            if (scroll) scroll.scrollTo({ top: scroll.scrollHeight, behavior: 'smooth' });
+        },
     });
 
     // The mass delete, update and email dialogs; `selected` comes from the listPage() around them

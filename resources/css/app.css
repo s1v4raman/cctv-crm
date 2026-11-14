@@ -512,30 +512,68 @@ html.dark a.btn-secondary {
     color: var(--text-main) !important;
 }
 
-/* Custom Sleek Scrollbars */
+/* Custom Sleek Scrollbars with Visible Up/Down Scroll Buttons */
 ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 10px;
+    height: 10px;
 }
 ::-webkit-scrollbar-track {
     background: #f1f5f9;
+    border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 9999px;
+    background: #94a3b8;
+    border-radius: 6px;
+    border: 2px solid #f1f5f9;
 }
 ::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
+    background: #64748b;
+}
+
+::-webkit-scrollbar-button:single-button:vertical:decrement {
+    height: 14px;
+    width: 10px;
+    background-color: #e2e8f0;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 24 24' fill='none' stroke='%23334155' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='18 15 12 9 6 15'></polyline></svg>");
+    border-radius: 3px 3px 0 0;
+    display: block;
+}
+::-webkit-scrollbar-button:single-button:vertical:decrement:hover {
+    background-color: #cbd5e1;
+}
+::-webkit-scrollbar-button:single-button:vertical:increment {
+    height: 14px;
+    width: 10px;
+    background-color: #e2e8f0;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 24 24' fill='none' stroke='%23334155' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+    border-radius: 0 0 3px 3px;
+    display: block;
+}
+::-webkit-scrollbar-button:single-button:vertical:increment:hover {
+    background-color: #cbd5e1;
 }
 
 html.dark ::-webkit-scrollbar-track {
-    background: #0b1120;
+    background: #0f172a;
 }
 html.dark ::-webkit-scrollbar-thumb {
-    background: #334155;
+    background: #475569;
+    border: 2px solid #0f172a;
 }
 html.dark ::-webkit-scrollbar-thumb:hover {
-    background: #475569;
+    background: #64748b;
+}
+html.dark ::-webkit-scrollbar-button:single-button:vertical:decrement {
+    background-color: #1e293b;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='18 15 12 9 6 15'></polyline></svg>");
+}
+html.dark ::-webkit-scrollbar-button:single-button:vertical:increment {
+    background-color: #1e293b;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
 }
 
 /* Modern SaaS Card Utilities */
