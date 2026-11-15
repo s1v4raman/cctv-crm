@@ -252,16 +252,25 @@
                 {{-- Cabling Metres & Cameras Installed --}}
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label for="att-cabling-metres" class="crm-label text-xs">{{ __('Cabling Metres Done') }}</label>
-                        <input id="att-cabling-metres" type="number" step="0.1" min="0" name="cabling_metres" placeholder="{{ __('e.g. 75.0') }}" class="crm-input text-xs w-full">
-                        <p class="text-[10px] text-slate-400 mt-0.5">{{ __('Physical cable pulled today (m)') }}</p>
+                        <label for="att-cabling-metres" class="crm-label text-xs">{{ __('Cabling Metres Done Today') }}</label>
+                        <input id="att-cabling-metres" type="number" step="0.1" min="0" name="cabling_metres" oninput="updateWorkOutputPreview()" placeholder="{{ __('e.g. 50.0') }}" class="crm-input text-xs w-full">
+                        <p class="text-[10px] text-slate-400 mt-0.5" id="cabling-helper-text">{{ __('Total physical cable pulled today on site (m)') }}</p>
                     </div>
 
                     <div>
-                        <label for="att-cameras-installed" class="crm-label text-xs">{{ __('Cameras Installed') }}</label>
-                        <input id="att-cameras-installed" type="number" min="0" name="cameras_installed" placeholder="{{ __('e.g. 4') }}" class="crm-input text-xs w-full">
-                        <p class="text-[10px] text-slate-400 mt-0.5">{{ __('Units mounted/configured today') }}</p>
+                        <label for="att-cameras-installed" class="crm-label text-xs">{{ __('Cameras Installed Today') }}</label>
+                        <input id="att-cameras-installed" type="number" min="0" name="cameras_installed" oninput="updateWorkOutputPreview()" placeholder="{{ __('e.g. 4') }}" class="crm-input text-xs w-full">
+                        <p class="text-[10px] text-slate-400 mt-0.5" id="cameras-helper-text">{{ __('Total units mounted/configured today') }}</p>
                     </div>
+                </div>
+
+                {{-- Live Team Output Allocation Notice for Bulk Shifts --}}
+                <div id="bulk-output-allocation-note" class="hidden p-2.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 text-[11px] text-indigo-900 dark:text-indigo-200">
+                    <div class="flex items-center gap-1.5 font-bold">
+                        <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"/></svg>
+                        <span>{{ __('Per-Day Worker Output Allocation:') }}</span>
+                    </div>
+                    <div class="mt-1 pl-5 text-slate-600 dark:text-slate-300" id="bulk-allocation-text"></div>
                 </div>
 
                 {{-- Extra Allowance & Reason --}}
@@ -596,6 +605,42 @@
         const connLine = document.getElementById('step-connector-line-1');
         if (connLine) {
             connLine.className = 'h-0.5 w-full transition-colors ' + (1 < step ? 'bg-blue-600 dark:bg-blue-500' : 'bg-slate-200 dark:bg-slate-700');
+        }
+
+        if (step === 2) {
+            updateWorkOutputPreview();
+        }
+    }
+
+    function updateWorkOutputPreview() {
+        const note = document.getElementById('bulk-output-allocation-note');
+        const text = document.getElementById('bulk-allocation-text');
+        if (!note || !text) return;
+
+        if (currentAttendanceMode !== 'bulk') {
+            note.classList.add('hidden');
+            return;
+        }
+
+        const checks = document.querySelectorAll('.bulk-worker-check:checked');
+        const count = checks.length;
+        const cabling = parseFloat(document.getElementById('att-cabling-metres')?.value || 0);
+        const cameras = parseInt(document.getElementById('att-cameras-installed')?.value || 0, 10);
+
+        if (count > 1 && (cabling > 0 || cameras > 0)) {
+            const perCabling = (cabling / count).toFixed(1);
+            const perCameras = Math.floor(cameras / count);
+            let parts = [];
+            if (cabling > 0) {
+                parts.push(`${cabling}m today &rarr; <strong>${perCabling}m</strong> per worker`);
+            }
+            if (cameras > 0) {
+                parts.push(`${cameras} cameras &rarr; <strong>${perCameras}</strong> per worker`);
+            }
+            text.innerHTML = `Today's site total will be distributed evenly across all ${count} selected workers: ${parts.join(', ')}.`;
+            note.classList.remove('hidden');
+        } else {
+            note.classList.add('hidden');
         }
     }
 

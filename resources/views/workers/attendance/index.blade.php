@@ -265,9 +265,9 @@
                     <div class="text-[11px] text-slate-500 mt-0.5">{{ __('Daily wages incurred') }}</div>
                 </div>
                 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-3 shadow-sm">
-                    <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wider">{{ __('Photos Logged') }}</div>
-                    <div class="text-xl font-semibold text-slate-900 dark:text-white mt-1">{{ $attendances->whereNotNull('photo_path')->count() }} / {{ $metrics['total_present'] }}</div>
-                    <div class="text-[11px] text-slate-500 mt-0.5">{{ __('With selfie/punch photo') }}</div>
+                    <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wider">{{ __('Technician Logged') }}</div>
+                    <div class="text-xl font-semibold text-slate-900 dark:text-white mt-1">{{ $attendances->whereNotNull('logged_by')->count() }} / {{ $metrics['total_present'] }}</div>
+                    <div class="text-[11px] text-slate-500 mt-0.5">{{ __('Submitted by field technicians') }}</div>
                 </div>
                 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-3 shadow-sm">
                     <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wider">{{ __('Total Active Pool') }}</div>
@@ -348,7 +348,7 @@
             <div class="ld-card flex flex-col flex-1 min-h-0 overflow-hidden mb-6">
                 <div class="p-3 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-2.5">
                     <div class="flex items-center gap-2">
-                        <span class="font-bold text-sm text-slate-900 dark:text-white">{{ __('Daily Attendance Roster & Photo Verification') }}</span>
+                        <span class="font-bold text-sm text-slate-900 dark:text-white">{{ __('Daily Attendance Roster & Field Log') }}</span>
                         <span class="text-xs text-slate-500">&bull; {{ $selectedDate->format('l, d F Y') }}</span>
                     </div>
 
@@ -433,8 +433,7 @@
                                 <th class="py-2.5 px-3">{{ __('Worker (Profile Photo)') }}</th>
                                 <th class="py-2.5 px-3">{{ __('Project / Site') }}</th>
                                 <th class="py-2.5 px-3">{{ __('Check-in Time') }}</th>
-                                <th class="py-2.5 px-3 text-center">{{ __('Punch Photo') }}</th>
-                                <th class="py-2.5 px-3 text-center">{{ __('Visual Verification') }}</th>
+                                <th class="py-2.5 px-3">{{ __('Logged By (Technician)') }}</th>
                                 <th class="py-2.5 px-3">{{ __('Shift Type') }}</th>
                                 <th class="py-2.5 px-3 text-right">{{ __('Cabling (m)') }}</th>
                                 <th class="py-2.5 px-3 text-center">{{ __('Cameras') }}</th>
@@ -457,9 +456,8 @@
                                         <div class="flex items-center gap-2.5 min-w-0 max-w-full">
                                             @if($w && $w->photo_url)
                                                 <img src="{{ $w->photo_url }}" alt="{{ $w->name }}" 
-                                                     class="w-9 h-9 rounded-full object-cover border border-slate-300 dark:border-slate-600 shrink-0 shadow-xs cursor-pointer hover:opacity-90" 
-                                                     onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode($w->name) }}&background=6366f1&color=fff&size=72';"
-                                                     onclick="showLightbox('{{ $w->name }}', '{{ $w->photo_url }}', '{{ $att?->photo_url ?? '' }}', '{{ $selectedDate->format('d M Y') }}')">
+                                                     class="w-9 h-9 rounded-full object-cover border border-slate-300 dark:border-slate-600 shrink-0 shadow-xs" 
+                                                     onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode($w->name) }}&background=6366f1&color=fff&size=72';">
                                             @else
                                                 <div class="w-9 h-9 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs flex items-center justify-center shrink-0 border border-slate-300 dark:border-slate-600">
                                                     {{ strtoupper(mb_substr($w?->name ?? 'W', 0, 1)) }}
@@ -520,45 +518,15 @@
                                         @endif
                                     </td>
 
-                                    {{-- Punch Photo Column --}}
-                                    <td class="py-2.5 px-3 text-center">
-                                        @if($isPresent && $att?->photo_url)
-                                            <button type="button" 
-                                                    onclick="showLightbox('{{ $w?->name }}', '{{ $w?->photo_url }}', '{{ $att->photo_url }}', '{{ $selectedDate->format('d M Y') }}')"
-                                                    class="inline-block relative group cursor-pointer focus:outline-none">
-                                                <img src="{{ $att->photo_url }}" alt="Punch Selfie" 
-                                                     class="w-10 h-10 rounded object-cover border border-indigo-200 dark:border-indigo-800 group-hover:ring-2 group-hover:ring-indigo-500 shadow-xs transition-all"
-                                                     onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=Punch+Photo&background=4f46e5&color=fff&size=80';">
-                                                <span class="absolute -top-1 -right-1 bg-indigo-600 text-white rounded-full p-0.5 text-[9px] shadow-sm">
-                                                    <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                                                </span>
-                                            </button>
+                                    {{-- Logged By (Technician) Column --}}
+                                    <td class="py-2.5 px-3">
+                                        @if($isPresent && $att?->logger)
+                                            <div class="font-bold text-slate-800 dark:text-slate-200">{{ $att->logger->name }}</div>
+                                            <div class="text-[10px] text-blue-600 dark:text-blue-400 font-semibold">{{ __('Technician') }}</div>
+                                        @elseif($isPresent && $att?->logged_by)
+                                            <div class="font-bold text-slate-800 dark:text-slate-200">{{ __('Tech #:id', ['id' => $att->logged_by]) }}</div>
                                         @elseif($isPresent)
-                                            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400">
-                                                {{ __('No photo') }}
-                                            </span>
-                                        @else
-                                            <span class="text-slate-400 text-xs">&mdash;</span>
-                                        @endif
-                                    </td>
-
-                                    {{-- Visual Verification Match Badge --}}
-                                    <td class="py-2.5 px-3 text-center">
-                                        @if($isPresent && $w?->photo_url && $att?->photo_url)
-                                            <button type="button" 
-                                                    onclick="showLightbox('{{ $w?->name }}', '{{ $w?->photo_url }}', '{{ $att->photo_url }}', '{{ $selectedDate->format('d M Y') }}')"
-                                                    class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300 hover:bg-emerald-200 transition-colors cursor-pointer">
-                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                                <span>{{ __('Verify Both') }}</span>
-                                            </button>
-                                        @elseif($isPresent && $att?->photo_url)
-                                            <button type="button"
-                                                    onclick="showLightbox('{{ $w?->name }}', '{{ $w?->photo_url }}', '{{ $att->photo_url }}', '{{ $selectedDate->format('d M Y') }}')"
-                                                    class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300 hover:bg-amber-100 transition-colors cursor-pointer" title="Click to inspect punch photo">
-                                                <span>{{ __('Punch only') }}</span>
-                                            </button>
-                                        @elseif($isPresent)
-                                            <span class="text-[10px] text-slate-400">{{ __('Manual Entry') }}</span>
+                                            <span class="text-slate-400 italic text-[11px]">{{ __('Direct / Office') }}</span>
                                         @else
                                             <span class="text-slate-400 text-xs">&mdash;</span>
                                         @endif
@@ -836,18 +804,10 @@
                                         <td class="py-2.5 px-2 text-center {{ $wd['is_today'] ? 'bg-indigo-50/40 dark:bg-indigo-950/20' : '' }}">
                                             @if($att)
                                                 <div class="inline-flex flex-col items-center">
-                                                    @if($att->photo_url)
-                                                        <button type="button" 
-                                                                onclick="showLightbox('{{ $w->name }}', '{{ $w->photo_url }}', '{{ $att->photo_url }}', '{{ $wd['label'] }}')"
-                                                                class="relative group cursor-pointer focus:outline-none mb-0.5" title="View Punch Selfie">
-                                                            <span class="inline-block px-2 py-0.5 rounded text-[11px] font-bold {{ $att->attendance_type === 'half' ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300' : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300' }}">
-                                                                {{ $att->attendance_type === 'half' ? 'H' : 'P' }}                                                             </span>
-                                                        </button>
-                                                    @else
-                                                        <span class="inline-block px-2 py-0.5 rounded text-[11px] font-bold {{ $att->attendance_type === 'half' ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300' : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300' }}">
-                                                            {{ $att->attendance_type === 'half' ? 'H' : 'P' }}
-                                                        </span>
-                                                    @endif
+                                                    <span class="inline-block px-2 py-0.5 rounded text-[11px] font-bold {{ $att->attendance_type === 'half' ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300' : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300' }}"
+                                                          title="{{ $att->logger ? __('Logged by :name', ['name' => $att->logger->name]) : ($att->attendance_type === 'half' ? __('Half Day') : __('Full Day')) }}">
+                                                        {{ $att->attendance_type === 'half' ? 'H' : 'P' }}
+                                                    </span>
 
                                                     @if($att->cameras_installed > 0 || $att->cabling_metres > 0)
                                                         <span class="text-[9px] text-slate-500">
@@ -997,11 +957,15 @@
                                                             <div class="text-[10px] text-slate-500">{{ Str::limit($sh->workDay?->project?->title ?? 'Site', 18) }}</div>
                                                             <div class="text-[10px] font-bold text-slate-700 dark:text-slate-300">&#8377;{{ number_format($sh->total_amount, 2) }} &bull; {{ ucfirst($sh->attendance_type) }}</div>
                                                         </div>
-                                                        @if($sh->photo_url)
-                                                            <img src="{{ $sh->photo_url }}" alt="Selfie" class="w-8 h-8 rounded object-cover border border-slate-300 dark:border-slate-600 cursor-pointer" onclick="showLightbox('{{ $w->name }}', '{{ $w->photo_url }}', '{{ $sh->photo_url }}', '{{ $shiftDate }}')">
-                                                        @else
-                                                            <span class="text-[10px] text-slate-400">{{ __('No photo') }}</span>
-                                                        @endif
+                                                        <div>
+                                                            @if($sh->logger)
+                                                                <span class="text-[10px] text-blue-600 dark:text-blue-400 font-semibold">{{ $sh->logger->name }}</span>
+                                                            @elseif($sh->logged_by)
+                                                                <span class="text-[10px] text-slate-500">Tech #{{ $sh->logged_by }}</span>
+                                                            @else
+                                                                <span class="text-[10px] text-slate-400">{{ __('Office') }}</span>
+                                                            @endif
+                                                        </div>
                                                     </div>
                                                 @endforeach
                                             </div>
@@ -1040,92 +1004,11 @@
             </section>
         </div>
     </div>
-{{-- SIDE-BY-SIDE VISUAL VERIFICATION LIGHTBOX MODAL --}}
-    <div id="photoLightboxModal" class="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 hidden">
-        <div class="bg-white dark:bg-slate-900 rounded-lg max-w-2xl w-full p-5 shadow-2xl border border-slate-200 dark:border-slate-800 animate-in fade-in zoom-in-95 duration-150">
-            <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
-                <div>
-                    <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                        <span>{{ __('Visual Identity Verification') }}</span>
-                        <span class="text-xs font-normal text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800">&#10003; {{ __('Dual Photo Inspection') }}</span>
-                    </h3>
-                    <p class="text-xs text-slate-500 mt-0.5" id="lightbox-worker-title">Worker Name</p>
-                </div>
-                <x-close-button onclick="closeLightbox()" />
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-4">
-                {{-- Master Profile Photo --}}
-                <div class="p-3 bg-slate-50 dark:bg-slate-800/40 rounded border border-slate-200 dark:border-slate-700 text-center">
-                    <div class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide mb-2 flex items-center justify-center gap-1">
-                        <svg class="w-3.5 h-3.5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                        <span>{{ __('Registered Profile Photo') }}</span>
-                    </div>
-                    <div class="w-full h-56 bg-slate-200 dark:bg-slate-800 rounded flex items-center justify-center overflow-hidden border border-slate-300 dark:border-slate-600">
-                        <img id="lightbox-profile-img" alt="Profile Photo" class="w-full h-full object-cover" onerror="this.classList.add('hidden'); document.getElementById('lightbox-profile-empty').classList.remove('hidden');">
-                        <span id="lightbox-profile-empty" class="text-xs text-slate-400 hidden">{{ __('No master profile photo registered') }}</span>
-                    </div>
-                    <p class="text-[11px] text-slate-500 mt-2">{{ __('Master worker portrait on file') }}</p>
-                </div>
-
-                {{-- Daily Attendance Punch Photo --}}
-                <div class="p-3 bg-slate-50 dark:bg-slate-800/40 rounded border border-slate-200 dark:border-slate-700 text-center">
-                    <div class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide mb-2 flex items-center justify-center gap-1">
-                        <svg class="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                        <span>{{ __('Daily Punch Photo') }}</span>
-                    </div>
-                    <div class="w-full h-56 bg-slate-200 dark:bg-slate-800 rounded flex items-center justify-center overflow-hidden border border-slate-300 dark:border-slate-600">
-                        <img id="lightbox-punch-img" alt="Punch Photo" class="w-full h-full object-cover" onerror="this.classList.add('hidden'); document.getElementById('lightbox-punch-empty').classList.remove('hidden');">
-                        <span id="lightbox-punch-empty" class="text-xs text-slate-400 hidden">{{ __('No punch photo recorded') }}</span>
-                    </div>
-                    <p class="text-[11px] text-slate-500 mt-2" id="lightbox-punch-date">{{ __('Taken on shift check-in') }}</p>
-                </div>
-            </div>
-
-            <div class="flex justify-end pt-2 border-t border-slate-200 dark:border-slate-800">
-                <button type="button" onclick="closeLightbox()" class="btn-secondary text-xs">{{ __('Close') }}</button>
-            </div>
-        </div>
-    </div>
-
     {{-- TWO-STEP SPLIT GUIDED ATTENDANCE MODAL COMPONENT --}}
     <x-mark-attendance-modal :workers="$activeWorkers" :projects="$activeProjects" :selected-date="$viewMode === 'day' ? $selectedDate->toDateString() : now()->toDateString()" />
 
-    {{-- Interactive JavaScript for Lightbox & View Helpers --}}
+    {{-- Interactive JavaScript Helpers --}}
     <script>
-        function showLightbox(workerName, profileUrl, punchUrl, dateStr) {
-            document.getElementById('lightbox-worker-title').textContent = workerName + ' • ' + dateStr;
-            
-            const profileImg = document.getElementById('lightbox-profile-img');
-            const profileEmpty = document.getElementById('lightbox-profile-empty');
-            if (profileUrl && profileUrl !== '') {
-                profileImg.src = profileUrl;
-                profileImg.classList.remove('hidden');
-                profileEmpty.classList.add('hidden');
-            } else {
-                profileImg.classList.add('hidden');
-                profileEmpty.classList.remove('hidden');
-            }
-
-            const punchImg = document.getElementById('lightbox-punch-img');
-            const punchEmpty = document.getElementById('lightbox-punch-empty');
-            if (punchUrl && punchUrl !== '') {
-                punchImg.src = punchUrl;
-                punchImg.classList.remove('hidden');
-                punchEmpty.classList.add('hidden');
-            } else {
-                punchImg.classList.add('hidden');
-                punchEmpty.classList.remove('hidden');
-            }
-
-            document.getElementById('lightbox-punch-date').textContent = 'Punched on: ' + dateStr;
-            document.getElementById('photoLightboxModal').classList.remove('hidden');
-        }
-
-        function closeLightbox() {
-            document.getElementById('photoLightboxModal').classList.add('hidden');
-        }
-
         function toggleWorkerShifts(workerId) {
             const row = document.getElementById('worker-shifts-' + workerId);
             if (row) {

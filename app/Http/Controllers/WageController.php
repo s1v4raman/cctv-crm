@@ -107,7 +107,7 @@ class WageController extends Controller implements HasMiddleware
                 ->whereHas('workDay', function ($q) use ($weekStart, $weekEnd) {
                     $q->whereBetween('work_date', [$weekStart->toDateString(), $weekEnd->toDateString()]);
                 })
-                ->with(['workDay.project', 'wagePayment'])
+                ->with(['workDay.project', 'wagePayment', 'logger'])
                 ->orderByDesc('id')
                 ->get();
 
@@ -149,7 +149,7 @@ class WageController extends Controller implements HasMiddleware
                     $q->where('work_date', '<', $weekStart->toDateString());
                 })
                 ->where('is_paid', false)
-                ->with(['workDay.project', 'wagePayment'])
+                ->with(['workDay.project', 'wagePayment', 'logger'])
                 ->orderByDesc('id')
                 ->get();
 

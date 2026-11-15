@@ -820,7 +820,7 @@
                                 <span>Daily Attendance &amp; Shift Verification (This Week)</span>
                                 <span class="px-2 py-0.5 rounded-full text-xs bg-slate-100 dark:bg-slate-800 font-normal text-slate-600 dark:text-slate-400" x-text="(selectedAnalysis?.attendances?.length ?? 0) + ' shift(s)'"></span>
                             </h4>
-                            <span class="text-xs text-slate-500">Click photo thumbnail to view full punch selfie</span>
+                            <span class="text-xs text-slate-500">Verified shift performance &amp; technician field logs</span>
                         </div>
 
                         <div class="border border-slate-200 dark:border-slate-800 rounded overflow-x-auto">
@@ -829,7 +829,7 @@
                                     <tr>
                                         <th class="px-3 py-2 text-left">Date &amp; Project</th>
                                         <th class="px-3 py-2 text-center">Shift Type</th>
-                                        <th class="px-3 py-2 text-center">Punch Photo</th>
+                                        <th class="px-3 py-2 text-left">Logged By</th>
                                         <th class="px-3 py-2 text-center">Cameras</th>
                                         <th class="px-3 py-2 text-right">Base Wage</th>
                                         <th class="px-3 py-2 text-right">Cabling Work</th>
@@ -850,18 +850,9 @@
                                             <td class="px-3 py-2 text-center whitespace-nowrap">
                                                 <span :class="att.attendance_type === 'Full Day' ? 'bg-blue-100 text-blue-800 dark:bg-blue-950/70 dark:text-blue-300' : 'bg-purple-100 text-purple-800 dark:bg-purple-950/70 dark:text-purple-300'" class="px-2 py-0.5 rounded text-[11px] font-semibold" x-text="att.attendance_type"></span>
                                             </td>
-                                            <td class="px-3 py-2 text-center whitespace-nowrap">
-                                                <template x-if="att.photo_url">
-                                                    <button type="button" @click.stop="openPhoto(att.photo_url)" class="inline-block relative group cursor-pointer border border-slate-200 dark:border-slate-700 rounded overflow-hidden shadow-xs hover:border-blue-500 transition" title="Click to view full photo">
-                                                        <img :src="att.photo_url" alt="Punch selfie" class="w-10 h-10 object-cover">
-                                                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-[10px] font-bold transition">
-                                                            View
-                                                        </div>
-                                                    </button>
-                                                </template>
-                                                <template x-if="!att.photo_url">
-                                                    <span class="text-slate-400 italic text-[11px]">No photo</span>
-                                                </template>
+                                            <td class="px-3 py-2 text-left whitespace-nowrap">
+                                                <div class="font-semibold text-slate-800 dark:text-slate-200" x-text="att.logger ? att.logger.name : (att.logged_by ? ('Tech #' + att.logged_by) : 'Direct / Office')"></div>
+                                                <div class="text-[10px] text-blue-600 dark:text-blue-400" x-show="att.logger || att.logged_by">Technician</div>
                                             </td>
                                             <td class="px-3 py-2 text-center font-mono font-bold text-indigo-600 whitespace-nowrap">
                                                 <span x-text="att.cameras > 0 ? att.cameras + ' cams' : '—'"></span>
@@ -943,7 +934,7 @@
                                         <tr>
                                             <th class="px-3 py-2 text-left">Date &amp; Project</th>
                                             <th class="px-3 py-2 text-center">Shift Type</th>
-                                            <th class="px-3 py-2 text-center">Punch Photo</th>
+                                            <th class="px-3 py-2 text-left">Logged By</th>
                                             <th class="px-3 py-2 text-center">Cameras</th>
                                             <th class="px-3 py-2 text-right">Base Wage</th>
                                             <th class="px-3 py-2 text-right">Cabling Work</th>
@@ -964,18 +955,9 @@
                                                 <td class="px-3 py-2 text-center whitespace-nowrap">
                                                     <span :class="patt.attendance_type === 'Full Day' ? 'bg-blue-100 text-blue-800 dark:bg-blue-950/70 dark:text-blue-300' : 'bg-purple-100 text-purple-800 dark:bg-purple-950/70 dark:text-purple-300'" class="px-2 py-0.5 rounded text-[11px] font-semibold" x-text="patt.attendance_type"></span>
                                                 </td>
-                                                <td class="px-3 py-2 text-center whitespace-nowrap">
-                                                    <template x-if="patt.photo_url">
-                                                        <button type="button" @click.stop="openPhoto(patt.photo_url)" class="inline-block relative group cursor-pointer border border-slate-200 dark:border-slate-700 rounded overflow-hidden shadow-xs hover:border-blue-500 transition" title="Click to view full photo">
-                                                            <img :src="patt.photo_url" alt="Punch selfie" class="w-10 h-10 object-cover">
-                                                            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-[10px] font-bold transition">
-                                                                View
-                                                            </div>
-                                                        </button>
-                                                    </template>
-                                                    <template x-if="!patt.photo_url">
-                                                        <span class="text-slate-400 italic text-[11px]">No photo</span>
-                                                    </template>
+                                                <td class="px-3 py-2 text-left whitespace-nowrap">
+                                                    <div class="font-semibold text-slate-800 dark:text-slate-200" x-text="patt.logger ? patt.logger.name : (patt.logged_by ? ('Tech #' + patt.logged_by) : 'Direct / Office')"></div>
+                                                    <div class="text-[10px] text-blue-600 dark:text-blue-400" x-show="patt.logger || patt.logged_by">Technician</div>
                                                 </td>
                                                 <td class="px-3 py-2 text-center font-mono font-bold text-indigo-600 whitespace-nowrap">
                                                     <span x-text="patt.cameras > 0 ? patt.cameras + ' cams' : '—'"></span>
@@ -1110,43 +1092,6 @@
                         </div>
                     </div>
 
-                </div>
-
-                {{-- Full Size Punch Photo Lightbox (Displayed directly in front of the analysis modal) --}}
-                <div x-show="photoModalUrl !== null" 
-                     x-cloak 
-                     class="fixed inset-0 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm" 
-                     style="z-index: 99999 !important;"
-                     @click.self="photoModalUrl = null">
-                    <div class="relative max-w-2xl w-full bg-slate-900 rounded-xl p-4 border border-slate-700 shadow-2xl flex flex-col items-center animate-in fade-in zoom-in-95 duration-150">
-                        {{-- Lightbox Header --}}
-                        <div class="flex items-center justify-between w-full pb-3 mb-3 border-b border-slate-800">
-                            <div class="flex items-center gap-2">
-                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                                <h4 class="text-sm font-bold text-white">Punch-In Selfie Verification</h4>
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <a :href="photoModalUrl" target="_blank" class="text-xs text-blue-400 hover:text-blue-300 hover:underline flex items-center gap-1 font-mono" title="Open full resolution in new tab">
-                                    <span>Open Full</span>
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                                </a>
-                                <x-close-button size="sm" tone="dark" label="Close photo" @click.stop="photoModalUrl = null" />
-                            </div>
-                        </div>
-
-                        {{-- Lightbox Image Box --}}
-                        <div class="w-full flex items-center justify-center bg-black/50 rounded-lg p-2 overflow-hidden border border-slate-800">
-                            <img :src="photoModalUrl" alt="Punch Verification Photo" class="max-h-[70vh] w-auto max-w-full object-contain rounded">
-                        </div>
-
-                        {{-- Lightbox Footer --}}
-                        <div class="mt-3 flex items-center justify-between w-full text-xs text-slate-400">
-                            <span>Selfie photo recorded at shift check-in</span>
-                            <button type="button" @click.stop="photoModalUrl = null" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-xs font-semibold transition cursor-pointer">
-                                Close Preview
-                            </button>
-                        </div>
-                    </div>
                 </div>
 
             </div>

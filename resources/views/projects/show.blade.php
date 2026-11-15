@@ -1757,15 +1757,10 @@
                                         <tr>
                                             <td class="px-5 py-3">
                                                 <div class="flex items-center gap-3">
-                                                    @if($att->photo_path)
-                                                        <div class="relative shrink-0">
-                                                            <img src="{{ $att->photo_url }}" 
-                                                                 alt="{{ $att->worker?->name ?? 'Worker' }}" 
-                                                                 @click="workerPhotoModalUrl = '{{ $att->photo_url }}'"
-                                                                 title="Click to view verified punch selfie"
-                                                                 class="w-10 h-10 rounded-full object-cover border-2 border-emerald-500 cursor-pointer shadow-sm hover:scale-105 transition-transform">
-                                                            <span class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-white dark:border-slate-900 rounded-full" title="Photo Verified"></span>
-                                                        </div>
+                                                    @if($att->worker?->photo_url)
+                                                        <img src="{{ $att->worker->photo_url }}" 
+                                                             alt="{{ $att->worker->name }}" 
+                                                             class="w-10 h-10 rounded-full object-cover border border-slate-300 dark:border-slate-700 shrink-0">
                                                     @else
                                                         <div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 flex items-center justify-center text-xs font-bold text-slate-500 shrink-0">
                                                             {{ strtoupper(mb_substr($att->worker?->name ?? 'WK', 0, 2)) }}
@@ -1784,8 +1779,13 @@
                                                         </div>
                                                         <div class="text-[11px] text-slate-500 font-mono mt-0.5 flex items-center gap-2">
                                                             <span><svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg> {{ $att->worker?->phone ?? '—' }}</span>
+                                                            @if($att->logger)
+                                                                <span class="text-blue-600 dark:text-blue-400 font-sans">• Logged by {{ $att->logger->name }}</span>
+                                                            @elseif($att->logged_by)
+                                                                <span class="text-blue-600 dark:text-blue-400 font-sans">• Tech #{{ $att->logged_by }}</span>
+                                                            @endif
                                                             @if($att->check_in_at)
-                                                                <span class="text-emerald-600 dark:text-emerald-400 font-semibold">• {{ $att->check_in_at->format('h:i A') }}</span>
+                                                                <span class="text-emerald-600 dark:text-emerald-400 font-sans">• {{ $att->check_in_at->format('h:i A') }}</span>
                                                             @endif
                                                         </div>
                                                     </div>
@@ -1873,25 +1873,6 @@
                         No work days logged yet.@can('logWorkDay', $project) Use <strong>Log work day</strong> to record who worked on site and what they did.@endcan
                     </div>
                 @endforelse
-            </div>
-
-            {{-- Worker Photo Modal Preview in Tab 4 --}}
-            <div x-show="workerPhotoModalUrl" 
-                 x-cloak 
-                 class="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
-                 @click.self="workerPhotoModalUrl = null">
-                <div class="relative bg-white dark:bg-[#0f172a] rounded-2xl overflow-hidden max-w-md w-full border border-slate-200 dark:border-slate-800 shadow-2xl">
-                    <div class="p-3 bg-slate-900 text-white flex items-center justify-between">
-                        <span class="text-xs font-bold">Worker Attendance Verified Selfie</span>
-                        <x-close-button size="sm" tone="dark" label="Close photo" @click="workerPhotoModalUrl = null" />
-                    </div>
-                    <div class="p-3 bg-slate-100 dark:bg-slate-950 flex items-center justify-center">
-                        <img :src="workerPhotoModalUrl" alt="Worker Punch Photo" class="max-h-[70vh] w-auto object-contain rounded-xl">
-                    </div>
-                    <div class="p-3 text-right bg-white dark:bg-[#0f172a] border-t border-slate-100 dark:border-slate-800">
-                        <button type="button" @click="workerPhotoModalUrl = null" class="btn-md px-4 py-1.5 bg-slate-800 text-white text-xs font-bold rounded-lg hover:bg-slate-700">Close</button>
-                    </div>
-                </div>
             </div>
         </div>
 

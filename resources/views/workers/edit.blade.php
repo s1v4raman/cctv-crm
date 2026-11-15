@@ -38,10 +38,10 @@
                         </div>
                         <div class="flex-1 min-w-0 max-w-full w-full text-center md:text-left">
                             <label for="worker-photo-input" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide mb-1.5 break-words">
-                                Worker Profile Photo (Login &amp; Verification Photo)
+                                Worker Profile Photo
                             </label>
                             <input type="file" name="photo" id="worker-photo-input" accept="image/*" class="cursor-pointer block w-full max-w-full text-xs text-slate-600 dark:text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 dark:file:bg-slate-700 dark:file:text-slate-200 truncate box-border">
-                            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5 break-words leading-relaxed max-w-full">Used to verify identity against daily attendance punch photos. Max 5MB (JPG, PNG).</p>
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5 break-words leading-relaxed max-w-full">Master worker portrait on file. Max 5MB (JPG, PNG).</p>
                             @if($worker->photo_path)
                                 <label class="inline-flex items-center gap-1.5 mt-2 cursor-pointer text-xs text-red-600 dark:text-red-400">
                                     <input type="checkbox" name="remove_photo" value="1" class="rounded border-slate-300 text-red-600">

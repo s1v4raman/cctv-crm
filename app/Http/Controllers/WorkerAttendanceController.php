@@ -89,7 +89,7 @@ class WorkerAttendanceController extends Controller
             ->leftJoin('workers', 'project_worker_attendances.worker_id', '=', 'workers.id')
             ->whereDate('work_days.work_date', $selectedDate->toDateString())
             ->select('project_worker_attendances.*')
-            ->with(['worker', 'workDay.project'])
+            ->with(['worker', 'workDay.project', 'logger'])
             ->orderBy('project_worker_attendances.check_in_at', 'asc')
             ->orderBy('workers.name', 'asc')
             ->get();
@@ -269,7 +269,7 @@ class WorkerAttendanceController extends Controller
                 'Daily Wage (INR)',
                 'Extra Allowance (INR)',
                 'Payment Status',
-                'Punch Photo Logged',
+                'Logged By (Technician)',
                 'Notes',
             ]);
 
@@ -292,7 +292,7 @@ class WorkerAttendanceController extends Controller
                     $att ? number_format((float) $att->total_amount, 2, '.', '') : '0.00',
                     $att ? number_format((float) $att->extra_amount, 2, '.', '') : '0.00',
                     $att ? ($att->is_paid ? 'Paid' : 'Pending') : '-',
-                    $att && $att->photo_path ? 'Yes' : 'No',
+                    $att?->logger?->name ?? ($att?->logged_by ? 'Technician #' . $att->logged_by : ($item->is_present ? 'Direct / Office' : '-')),
                     $att?->notes ?? '',
                 ]);
             }
@@ -332,7 +332,7 @@ class WorkerAttendanceController extends Controller
             ->leftJoin('workers', 'project_worker_attendances.worker_id', '=', 'workers.id')
             ->whereBetween('work_days.work_date', [$weekStart->toDateString(), $weekEnd->toDateString()])
             ->select('project_worker_attendances.*', 'work_days.work_date')
-            ->with(['worker', 'workDay.project']);
+            ->with(['worker', 'workDay.project', 'logger']);
 
         if ($workerFilter) {
             $query->where('project_worker_attendances.worker_id', $workerFilter);
@@ -499,7 +499,7 @@ class WorkerAttendanceController extends Controller
             ->leftJoin('workers', 'project_worker_attendances.worker_id', '=', 'workers.id')
             ->whereBetween('work_days.work_date', [$monthStart->toDateString(), $monthEnd->toDateString()])
             ->select('project_worker_attendances.*', 'work_days.work_date')
-            ->with(['worker', 'workDay.project']);
+            ->with(['worker', 'workDay.project', 'logger']);
 
         if ($workerFilter) {
             $query->where('project_worker_attendances.worker_id', $workerFilter);
@@ -696,12 +696,21 @@ class WorkerAttendanceController extends Controller
                 ]
             );
 
+            $workerCount = count($workers);
             $multiplier = ($validated['attendance_type'] === 'half') ? 0.5 : 1.0;
-            $cablingMetres = (float) ($validated['cabling_metres'] ?? 0);
-            $camerasInstalled = (int) ($validated['cameras_installed'] ?? 0);
+            $totalCablingMetres = (float) ($validated['cabling_metres'] ?? 0);
+            $totalCamerasInstalled = (int) ($validated['cameras_installed'] ?? 0);
             $cablingRate = (float) ($project->per_metre_rate ?? 8.00);
-            $cablingAmount = $cablingMetres * $cablingRate;
             $extraAmount = (float) ($validated['extra_amount'] ?? 0);
+
+            // Output allocation: If multiple workers are logged in bulk on site today,
+            // allocate the entered cabling & cameras evenly so each worker has their per-day output
+            // and the site sum accurately reflects only today's used cable/camera data
+            $perWorkerCabling = $workerCount > 1 ? round($totalCablingMetres / $workerCount, 1) : $totalCablingMetres;
+            $perWorkerCameras = $workerCount > 1 ? (int) floor($totalCamerasInstalled / $workerCount) : $totalCamerasInstalled;
+
+            $remainingCabling = $totalCablingMetres;
+            $remainingCameras = $totalCamerasInstalled;
 
             $checkInAt = now();
             if (!empty($validated['check_in_time'])) {
@@ -718,7 +727,24 @@ class WorkerAttendanceController extends Controller
             $approvedAt = $isTechnician ? null : now();
 
             $savedWorkerNames = [];
-            foreach ($workers as $worker) {
+            foreach ($workers as $index => $worker) {
+                // Distribute cabling & cameras cleanly across selected crew
+                if ($workerCount > 1) {
+                    if ($index === $workerCount - 1) {
+                        $cablingMetres = max(0, round($remainingCabling, 1));
+                        $camerasInstalled = max(0, $remainingCameras);
+                    } else {
+                        $cablingMetres = $perWorkerCabling;
+                        $camerasInstalled = $perWorkerCameras;
+                        $remainingCabling -= $cablingMetres;
+                        $remainingCameras -= $camerasInstalled;
+                    }
+                } else {
+                    $cablingMetres = $totalCablingMetres;
+                    $camerasInstalled = $totalCamerasInstalled;
+                }
+
+                $cablingAmount = $cablingMetres * $cablingRate;
                 $dailyRate = (float) ($worker->daily_rate > 0 ? $worker->daily_rate : 700.00);
                 $basePay = $dailyRate * $multiplier;
                 $totalAmount = $basePay + $cablingAmount + $extraAmount;
