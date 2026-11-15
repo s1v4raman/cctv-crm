@@ -23,7 +23,7 @@
                     @csrf
                     @method('PUT')
 
-                    <h3 class="mb-4 pb-2 border-b border-[#ddd] dark:border-slate-700 font-bold text-base text-gray-900 dark:text-slate-100">Personal & Wage Details</h3>
+                    <h3 class="mb-4 pb-2 border-b border-[#ddd] dark:border-slate-700 font-bold text-base text-gray-900 dark:text-slate-100">Personal {{ auth()->user()->isAdmin() ? '& Wage ' : '' }}Details</h3>
 
                     {{-- Worker Profile Photo / Login Photo --}}
                     <div class="mb-5 p-3.5 sm:p-4 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 flex flex-col md:flex-row items-center md:items-start gap-4 max-w-full box-border">
@@ -65,11 +65,13 @@
                             @error('phone') <p class="error-text">{{ $message }}</p> @enderror
                         </div>
 
+                        @if(auth()->user()->isAdmin())
                         <div>
                             <label class="crm-label">Standard Daily Wage Rate (₹) <span class="required-marker">*</span></label>
                             <input aria-label="Standard Daily Wage Rate (₹)" type="number" step="any" min="0" name="daily_rate" value="{{ old('daily_rate', $worker->daily_rate) }}" required class="crm-input">
                             @error('daily_rate') <p class="error-text">{{ $message }}</p> @enderror
                         </div>
+                        @endif
 
                         <div class="sm:col-span-2">
                             <label class="crm-label">Field Skills & Capabilities</label>

@@ -1,20 +1,27 @@
 <x-app-layout>
     @php
+        $isAdmin = auth()->user()->isAdmin();
         $views = [
             ['label' => __('Active Workers (:count)', ['count' => $activeWorkersCount]), 'url' => route('workers.index'), 'active' => $statusFilter === 'active'],
             ['label' => __('Inactive Workers'), 'url' => route('workers.index', ['status' => 'inactive']), 'active' => $statusFilter === 'inactive'],
             ['label' => __('All Workers (:count)', ['count' => $totalWorkersCount]), 'url' => route('workers.index', ['status' => 'all']), 'active' => $statusFilter === 'all'],
         ];
         $filterCount = $search !== '' ? 1 : 0;
+        $sortsList = $isAdmin
+            ? ['name' => 'Name, A to Z', 'rate_desc' => 'Daily rate, high to low', 'days_desc' => 'Most days logged', 'newest' => 'Newest first']
+            : ['name' => 'Name, A to Z', 'days_desc' => 'Most days logged', 'newest' => 'Newest first'];
+        $columnList = $isAdmin
+            ? ['phone' => __('Phone'), 'rate' => __('Daily Rate'), 'skills' => __('Skills'), 'balance' => __('Balance'), 'status' => __('Status')]
+            : ['phone' => __('Phone'), 'skills' => __('Skills'), 'status' => __('Status')];
     @endphp
 
     <x-list-page key="workers" :paginator="$workers" :views="$views"
-        :sorts="['name' => 'Name, A to Z', 'rate_desc' => 'Daily rate, high to low', 'days_desc' => 'Most days logged', 'newest' => 'Newest first']"
+        :sorts="$sortsList"
         :create-url="auth()->user()->isOffice() ? route('workers.create') : null" :create-label="__('Add Worker')"
         :filter-title="__('Filter Workers by')" :filter-action="route('workers.index')"
         :keep="['status' => $statusFilter === 'active' ? null : $statusFilter, 'sort' => request('sort'), 'per_page' => request('per_page')]"
         :filter-count="$filterCount" :clear-url="route('workers.index', array_filter(['status' => $statusFilter === 'active' ? null : $statusFilter]))"
-        :columns="['phone' => __('Phone'), 'rate' => __('Daily Rate'), 'skills' => __('Skills'), 'balance' => __('Balance'), 'status' => __('Status')]"
+        :columns="$columnList"
         :empty-text="__('No workers yet.')" :filtered-text="__('No workers match these filters.')">
 
         @if (auth()->user()->isAdmin() && $pendingWorkers->isNotEmpty())
@@ -68,14 +75,18 @@
         <x-slot name="head">
             <th style="min-width: 220px">{{ __('Worker') }}</th>
             <th x-show="cols.phone" style="min-width: 140px">{{ __('Phone') }}</th>
-            <th x-show="cols.rate" style="min-width: 110px; text-align: right">{{ __('Daily Rate') }}</th>
+            @if($isAdmin)
+                <th x-show="cols.rate" style="min-width: 110px; text-align: right">{{ __('Daily Rate') }}</th>
+            @endif
             <th x-show="cols.skills" style="min-width: 180px">{{ __('Skills') }}</th>
-            <th x-show="cols.balance" style="min-width: 120px; text-align: right">{{ __('Balance') }}</th>
+            @if($isAdmin)
+                <th x-show="cols.balance" style="min-width: 120px; text-align: right">{{ __('Balance') }}</th>
+            @endif
             <th x-show="cols.status" style="min-width: 90px">{{ __('Status') }}</th>
         </x-slot>
 
         @foreach($workers as $worker)
-            @php $balance = $worker->getRunningBalance(); @endphp
+            @php $balance = $isAdmin ? $worker->getRunningBalance() : 0; @endphp
             <tr>
                 <x-list-pick :id="$worker->id" :label="$worker->name" />
                 <td>
@@ -83,11 +94,15 @@
                     <div class="text-xs mt-0.5" style="color: var(--ld-muted)">{{ $worker->attendances_count }} {{ __('days logged') }}</div>
                 </td>
                 <td x-show="cols.phone" class="whitespace-nowrap">{{ $worker->phone ?: '—' }}</td>
-                <td x-show="cols.rate" class="whitespace-nowrap" style="text-align: right">{{ \App\Support\Inr::money($worker->daily_rate) }}</td>
+                @if($isAdmin)
+                    <td x-show="cols.rate" class="whitespace-nowrap" style="text-align: right">{{ \App\Support\Inr::money($worker->daily_rate) }}</td>
+                @endif
                 <td x-show="cols.skills">{{ $worker->skills && is_array($worker->skills) ? implode(', ', array_map('ucfirst', $worker->skills)) : __('General assistant') }}</td>
-                <td x-show="cols.balance" class="whitespace-nowrap" style="text-align: right">
-                    <span class="{{ $balance > 0 ? 'text-amber-700 dark:text-amber-400 font-medium' : '' }}">{{ \App\Support\Inr::money($balance) }}</span>
-                </td>
+                @if($isAdmin)
+                    <td x-show="cols.balance" class="whitespace-nowrap" style="text-align: right">
+                        <span class="{{ $balance > 0 ? 'text-amber-700 dark:text-amber-400 font-medium' : '' }}">{{ \App\Support\Inr::money($balance) }}</span>
+                    </td>
+                @endif
                 <td x-show="cols.status">{!! $worker->is_active ? __('Active') : '<span style="color: var(--ld-muted)">' . __('Inactive') . '</span>' !!}</td>
                 <td>
                     <div class="ld-row-actions">

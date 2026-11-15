@@ -211,7 +211,7 @@
                     </div>
                     <div class="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-white mt-1.5 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition">{{ $activeWorkers->count() }}</div>
                     <div class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-2.5 pt-2 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
-                        <span>{{ __('Daily wage workers') }}</span>
+                        <span>{{ __('Field Workers') }}</span>
                         <span class="text-emerald-600 dark:text-emerald-400 font-bold">&rarr;</span>
                     </div>
                 </div>
@@ -948,7 +948,7 @@
 
                 <div class="pt-3 text-center">
                     <a href="{{ route('workers.attendance.index') }}" class="text-xs sm:text-sm font-bold text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:underline">
-                        {{ __('View Complete Worker Attendance Register & Wages') }} &rarr;
+                        {{ __('View Complete Worker Attendance Register') }} &rarr;
                     </a>
                 </div>
             </div>

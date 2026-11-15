@@ -80,7 +80,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="M22 21v-2a4 4 0 0 0-3-3.87"/>
                             <path stroke-linecap="round" stroke-linejoin="round" d="M16 3.13a4 4 0 0 1 0 7.75"/>
                         </svg>
-                        <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">{{ __('Daily Wage Workers') }}</span>
+                        <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">{{ auth()->user()->isAdmin() ? __('Daily Wage Workers') : __('Field Workers') }}</span>
                     </a>
 
                     {{-- Worker Attendance Maintenance (Calendar/Check icon) --}}
@@ -199,7 +199,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="M22 21v-2a4 4 0 0 0-3-3.87"/>
                             <path stroke-linecap="round" stroke-linejoin="round" d="M16 3.13a4 4 0 0 1 0 7.75"/>
                         </svg>
-                        <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">Workers &amp; Daily Wages</span>
+                        <span :class="sidebarCollapsed ? 'lg:sr-only' : ''">{{ auth()->user()->isAdmin() ? 'Workers & Daily Wages' : 'Field Workers' }}</span>
                     </a>
 
                     {{-- Worker Attendance Maintenance (Calendar/Check icon) --}}

@@ -52,10 +52,12 @@ class WorkerController extends Controller
         $activeWorkersCount = Worker::where('is_active', true)->count();
         $totalWorkersCount = Worker::approved()->count();
 
-        // Calculate aggregate outstanding labor wage liability
+        // Calculate aggregate outstanding labor wage liability (Admin only)
         $totalOutstandingLiability = 0;
-        foreach (Worker::where('is_active', true)->get() as $w) {
-            $totalOutstandingLiability += $w->getRunningBalance();
+        if (Auth::user()->isAdmin()) {
+            foreach (Worker::where('is_active', true)->get() as $w) {
+                $totalOutstandingLiability += $w->getRunningBalance();
+            }
         }
 
         $activeProjects = \App\Models\Project::whereIn('status', ['in_progress', 'scheduled', 'draft'])
@@ -100,16 +102,27 @@ class WorkerController extends Controller
             abort(403, 'Only authorized team members can register daily workers.');
         }
 
-        $validated = $request->validate([
+        $rules = [
             'name' => 'required|string|max:255',
             'phone' => 'nullable|string|max:50',
-            'daily_rate' => 'required|numeric|min:0',
             'skills' => 'nullable|array',
             'skills.*' => 'string',
             'notes' => 'nullable|string',
             'is_active' => 'nullable|boolean',
             'photo' => 'nullable|image|max:5120',
-        ]);
+        ];
+
+        if (Auth::user()->isAdmin()) {
+            $rules['daily_rate'] = 'required|numeric|min:0';
+        } else {
+            $rules['daily_rate'] = 'nullable|numeric|min:0';
+        }
+
+        $validated = $request->validate($rules);
+
+        if (!Auth::user()->isAdmin()) {
+            $validated['daily_rate'] = 700.00;
+        }
 
         if ($request->hasFile('photo')) {
             $file = $request->file('photo');
@@ -159,20 +172,20 @@ class WorkerController extends Controller
             abort(403, 'Only office users and technicians can register workers.');
         }
 
-        if (Auth::user()->isTechnician()) {
-            // Technician: Name and phone only, rate set to standard default
-            $validated = $request->validate([
-                'name' => 'required|string|max:255',
-                'phone' => 'nullable|string|max:50',
-            ]);
-            $validated['daily_rate'] = $request->filled('daily_rate') ? (float)$request->input('daily_rate') : 700.00;
-        } else {
+        if (Auth::user()->isAdmin()) {
             // Admin can set daily rate
             $validated = $request->validate([
                 'name' => 'required|string|max:255',
                 'phone' => 'nullable|string|max:50',
                 'daily_rate' => 'required|numeric|min:0',
             ]);
+        } else {
+            // Non-admin (staff / technician): Name and phone only, rate strictly defaults to standard 700.00
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'phone' => 'nullable|string|max:50',
+            ]);
+            $validated['daily_rate'] = 700.00;
         }
 
         $validated['is_active'] = true;
@@ -248,16 +261,28 @@ class WorkerController extends Controller
             abort(403, 'Only office users can update worker wage rates.');
         }
 
-        $validated = $request->validate([
+        $rules = [
             'name' => 'required|string|max:255',
             'phone' => 'nullable|string|max:50',
-            'daily_rate' => 'required|numeric|min:0',
             'skills' => 'nullable|array',
             'skills.*' => 'string',
             'notes' => 'nullable|string',
             'is_active' => 'nullable|boolean',
             'photo' => 'nullable|image|max:5120',
-        ]);
+        ];
+
+        if (Auth::user()->isAdmin()) {
+            $rules['daily_rate'] = 'required|numeric|min:0';
+        } else {
+            $rules['daily_rate'] = 'nullable|numeric|min:0';
+        }
+
+        $validated = $request->validate($rules);
+
+        if (!Auth::user()->isAdmin()) {
+            // Non-admins cannot alter worker daily wage rates
+            unset($validated['daily_rate']);
+        }
 
         if ($request->hasFile('photo')) {
             // Delete old photo if exists

@@ -1584,7 +1584,7 @@
 
             @if($project->workDays->isNotEmpty())
             {{-- Summary KPI Cards --}}
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+            <div class="grid grid-cols-2 {{ auth()->user()->isAdmin() ? 'sm:grid-cols-3 lg:grid-cols-5' : 'sm:grid-cols-2' }} gap-4">
                 <div class="p-4 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs">
                     <span class="text-[11px] font-bold uppercase text-slate-400 block">Total Man-Days</span>
                     <div class="text-xl font-black text-slate-900 dark:text-white mt-1">{{ $totalManDays }} <span class="text-xs font-semibold text-slate-400">Days</span></div>
@@ -1593,6 +1593,7 @@
                     <span class="text-[11px] font-bold uppercase text-slate-400 block">Cabling Pulled</span>
                     <div class="text-xl font-black text-blue-600 dark:text-blue-400 mt-1 font-mono">{{ $totalCablingMetres }} <span class="text-xs font-semibold">m</span></div>
                 </div>
+                @if(auth()->user()->isAdmin())
                 <div class="p-4 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-xs">
                     <span class="text-[11px] font-bold uppercase text-slate-400 block">Total Labor Cost</span>
                     <div class="text-xl font-black text-slate-900 dark:text-white mt-1 font-mono">₹{{ number_format($totalLaborCost, 2) }}</div>
@@ -1605,6 +1606,7 @@
                     <span class="text-[11px] font-bold uppercase text-rose-500 dark:text-rose-400 block">Cost to Pay (Pending)</span>
                     <div class="text-xl font-black text-rose-600 dark:text-rose-400 mt-1 font-mono">₹{{ number_format($totalLaborPendingPay, 2) }}</div>
                 </div>
+                @endif
             </div>
             @endif
 
@@ -1615,10 +1617,10 @@
                         <div>
                             <h4 class="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-2">
                                 <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
-                                <span>Worker-wise Labor Cost &amp; Settlement Analysis ({{ count($workerAnalysis) }} Workers)</span>
+                                <span>Worker-wise {{ auth()->user()->isAdmin() ? 'Labor Cost & Settlement ' : '' }}Analysis ({{ count($workerAnalysis) }} Workers)</span>
                             </h4>
                             <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                                Breakdown of man-days, cabling metrics, wages earned, amounts settled, and pending costs to pay for this project.
+                                Breakdown of man-days, cabling metrics, cameras installed{{ auth()->user()->isAdmin() ? ', wages earned, amounts settled, and pending costs to pay' : '' }} for this project.
                             </p>
                         </div>
                         @if(auth()->user()->isAdmin())
@@ -1635,10 +1637,12 @@
                                     <th class="px-5 py-3 text-center">Shifts / Man-Days</th>
                                     <th class="px-5 py-3 text-center">Cabling (m)</th>
                                     <th class="px-5 py-3 text-center">Cameras</th>
-                                    <th class="px-5 py-3 text-right">Total Incurred</th>
-                                    <th class="px-5 py-3 text-right">Amount Paid</th>
-                                    <th class="px-5 py-3 text-right">Cost to Pay (Pending)</th>
-                                    <th class="px-5 py-3 text-center">Status</th>
+                                    @if(auth()->user()->isAdmin())
+                                        <th class="px-5 py-3 text-right">Total Incurred</th>
+                                        <th class="px-5 py-3 text-right">Amount Paid</th>
+                                        <th class="px-5 py-3 text-right">Cost to Pay (Pending)</th>
+                                        <th class="px-5 py-3 text-center">Status</th>
+                                    @endif
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
@@ -1659,7 +1663,7 @@
                                                     {{ $wrkName }}
                                                 </span>
                                             @endif
-                                            <span class="text-[11px] text-slate-500 font-mono">₹{{ number_format($wrk?->daily_rate ?? 0, 2) }}/day &bull; <svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg> {{ $wrk?->phone ?? '—' }}</span>
+                                            <span class="text-[11px] text-slate-500 font-mono">@if(auth()->user()->isAdmin())₹{{ number_format($wrk?->daily_rate ?? 0, 2) }}/day &bull; @endif<svg class="w-3.5 h-3.5 inline-block align-[-2px] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg> {{ $wrk?->phone ?? '—' }}</span>
                                         </td>
                                         <td class="px-5 py-3.5 text-center font-medium">
                                             {{ $wData['man_days'] }} <span class="text-xs text-slate-400">({{ $wData['shifts_count'] }} {{ Str::plural('shift', $wData['shifts_count']) }})</span>
@@ -1670,6 +1674,7 @@
                                         <td class="px-5 py-3.5 text-center font-semibold text-emerald-600 dark:text-emerald-400">
                                             {{ $wData['cameras_installed'] > 0 ? $wData['cameras_installed'] : '—' }}
                                         </td>
+                                        @if(auth()->user()->isAdmin())
                                         <td class="px-5 py-3.5 text-right font-mono font-bold text-slate-900 dark:text-white">
                                             ₹{{ number_format($wData['total_earned'], 2) }}
                                         </td>
@@ -1690,6 +1695,7 @@
                                                 </span>
                                             @endif
                                         </td>
+                                        @endif
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -1745,11 +1751,15 @@
                                     <tr>
                                         <th class="px-5 py-2.5">Worker &amp; Photo</th>
                                         <th class="px-5 py-2.5">Shift Type</th>
-                                        <th class="px-5 py-2.5">Rate Snapshot</th>
+                                        @if(auth()->user()->isAdmin())
+                                            <th class="px-5 py-2.5">Rate Snapshot</th>
+                                        @endif
                                         <th class="px-5 py-2.5">Cabling &amp; Cameras</th>
                                         <th class="px-5 py-2.5">Work Notes &amp; Extras</th>
-                                        <th class="px-5 py-2.5 text-right">Row Total</th>
-                                        <th class="px-5 py-2.5 text-center">Settlement Status</th>
+                                        @if(auth()->user()->isAdmin())
+                                            <th class="px-5 py-2.5 text-right">Row Total</th>
+                                            <th class="px-5 py-2.5 text-center">Settlement Status</th>
+                                        @endif
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
@@ -1796,13 +1806,15 @@
                                                     {{ $att->attendance_type === 'full_day' ? 'Full Day' : 'Half Day' }}
                                                 </span>
                                             </td>
+                                            @if(auth()->user()->isAdmin())
                                             <td class="px-5 py-3 font-mono text-xs">
                                                 ₹{{ number_format($att->daily_rate_snapshot, 2) }}
                                             </td>
+                                            @endif
                                             <td class="px-5 py-3 text-xs">
                                                 <div class="font-mono font-semibold text-slate-900 dark:text-white">
                                                     {{ $att->cabling_metres > 0 ? $att->cabling_metres . ' m' : '—' }}
-                                                    @if($att->cabling_metres > 0)
+                                                    @if($att->cabling_metres > 0 && auth()->user()->isAdmin())
                                                         <span class="text-slate-400 font-normal">(+₹{{ number_format($att->cabling_amount, 2) }})</span>
                                                     @endif
                                                 </div>
@@ -1815,7 +1827,11 @@
                                             <td class="px-5 py-3 text-xs">
                                                 @if($att->extra_amount > 0)
                                                     <div class="font-semibold text-slate-800 dark:text-slate-200">
-                                                        +₹{{ number_format($att->extra_amount, 2) }} ({{ $att->extra_description }})
+                                                        @if(auth()->user()->isAdmin())
+                                                            +₹{{ number_format($att->extra_amount, 2) }} ({{ $att->extra_description }})
+                                                        @else
+                                                            Extra: {{ $att->extra_description ?: 'Approved allowance' }}
+                                                        @endif
                                                     </div>
                                                 @endif
                                                 @if($att->work_summary)
@@ -1830,6 +1846,7 @@
                                                     <span class="text-slate-400">—</span>
                                                 @endif
                                             </td>
+                                            @if(auth()->user()->isAdmin())
                                             <td class="px-5 py-3 text-right font-bold font-mono text-slate-900 dark:text-white">
                                                 ₹{{ number_format($att->total_amount, 2) }}
                                             </td>
@@ -1837,17 +1854,22 @@
                                                 @if($att->is_paid)
                                                     <div class="inline-flex items-center gap-1">
                                                         <span class="px-2 py-0.5 text-[11px] font-bold rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
-                                                            Paid &amp; Locked
+                                                             Paid &amp; Locked
                                                         </span>
-                                                        @if(auth()->user()->isAdmin())
-                                                            <form method="POST" action="{{ route('projects.attendances.unlock', $att) }}" class="inline-block" data-confirm="Unlock this attendance record?">
-                                                                @csrf
-                                                                <button type="submit" class="text-[11px] text-rose-500 hover:underline">Unlock</button>
-                                                            </form>
-                                                        @endif
+                                                        <form method="POST" action="{{ route('projects.attendances.unlock', $att) }}" class="inline-block" data-confirm="Unlock this attendance record?">
+                                                            @csrf
+                                                            <button type="submit" class="text-[11px] text-rose-500 hover:underline">Unlock</button>
+                                                        </form>
                                                     </div>
                                                 @else
                                                     <div class="inline-flex items-center gap-1.5 flex-wrap justify-center">
+                                                        <span class="px-2 py-0.5 text-[11px] font-bold rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300">
+                                                            Unsettled
+                                                        </span>
+                                                    </div>
+                                                @endif
+                                            </td>
+                                            @endif
                                                         <span class="px-2 py-0.5 text-[11px] font-bold rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300">
                                                             Unpaid
                                                         </span>
@@ -3281,6 +3303,7 @@
                                         <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Full Name *</label>
                                         <input aria-label="Worker name" type="text" x-model="newWorkerName" placeholder="e.g. Ramesh Kumar" class="w-full px-2.5 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg outline-none font-semibold text-slate-900 dark:text-white">
                                     </div>
+                                    @if(auth()->user()->isAdmin())
                                     <div>
                                         <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Daily Wage Rate (₹) *</label>
                                         <div class="flex items-center rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 overflow-hidden">
@@ -3288,6 +3311,7 @@
                                             <input aria-label="Daily rate" type="number" step="10" min="0" x-model="newWorkerDailyRate" placeholder="750" class="w-full px-2 py-1.5 text-xs bg-transparent outline-none font-mono font-bold text-blue-600 dark:text-blue-400">
                                         </div>
                                     </div>
+                                    @endif
                                 </div>
 
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -3339,9 +3363,11 @@
                                             <div class="flex items-center gap-2">
                                                 <span class="w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[11px] font-bold flex items-center justify-center" x-text="idx + 1"></span>
                                                 <span class="text-xs font-bold text-slate-800 dark:text-slate-200" x-text="r.worker_id ? (workersList.find(w => w.id == r.worker_id)?.name || 'Worker') : `Worker #${idx + 1}`"></span>
+                                                @if(auth()->user()->isAdmin())
                                                 <template x-if="r.daily_rate > 0">
                                                     <span class="text-[11px] font-mono font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-1.5 py-0.5 rounded border border-emerald-200 dark:border-emerald-800" x-text="`₹${r.daily_rate}/day`"></span>
                                                 </template>
+                                                @endif
                                             </div>
                                             <div class="flex items-center gap-2.5">
                                                 <button type="button" @click="openNewWorkerModal(idx)" class="inline-flex items-center gap-1 text-[11px] font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 cursor-pointer">
@@ -3361,7 +3387,7 @@
                                                 <select aria-label="Worker" :name="`attendances[${idx}][worker_id]`" x-model="r.worker_id" @change="updateRate(r)" required class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg outline-none font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
                                                     <option value="">-- Select Worker --</option>
                                                     <template x-for="w in workersList" :key="w.id">
-                                                        <option :value="w.id" x-text="`${w.name} (₹${w.daily_rate}/d)`"></option>
+                                                        <option :value="w.id" x-text="`${w.name} @if(auth()->user()->isAdmin())(₹${w.daily_rate}/d)@endif`"></option>
                                                     </template>
                                                 </select>
                                             </div>
@@ -3375,7 +3401,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                                        <div class="grid grid-cols-1 {{ auth()->user()->isAdmin() ? 'sm:grid-cols-3' : 'sm:grid-cols-2' }} gap-2.5">
                                             <div>
                                                 <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">
                                                     Cabling (Metres)
@@ -3383,6 +3409,7 @@
                                                 <input aria-label="Cabling metres" type="number" step="1" min="0" :name="`attendances[${idx}][cabling_metres]`" x-model="r.cabling_metres" @input="calcRow(r)" placeholder="0" class="w-full px-2.5 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg font-mono font-bold outline-none text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
                                             </div>
 
+                                            @if(auth()->user()->isAdmin())
                                             <div>
                                                 <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Extra Allowance</label>
                                                 <div class="flex items-center rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 overflow-hidden focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500">
@@ -3390,6 +3417,7 @@
                                                     <input aria-label="Extra amount" type="number" step="0.5" min="0" :name="`attendances[${idx}][extra_amount]`" x-model="r.extra_amount" @input="calcRow(r)" placeholder="0" class="w-full px-2 py-1 text-xs bg-transparent outline-none font-mono text-slate-900 dark:text-white">
                                                 </div>
                                             </div>
+                                            @endif
 
                                             <div>
                                                 <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Reason for Extra</label>
@@ -3397,7 +3425,8 @@
                                             </div>
                                         </div>
 
-                                        {{-- Row Subtotal Summary --}}
+                                        {{-- Row Subtotal Summary (Admin only) --}}
+                                        @if(auth()->user()->isAdmin())
                                         <div class="px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 flex items-center justify-between text-xs">
                                             <div class="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
                                                 <span>Base: ₹<span x-text="r.attendance_type === 'half_day' ? (r.daily_rate / 2).toFixed(0) : r.daily_rate"></span></span>
@@ -3408,12 +3437,13 @@
                                                 Subtotal: ₹<span x-text="r.row_total.toFixed(2)"></span>
                                             </div>
                                         </div>
+                                        @endif
                                     </div>
                                 </template>
                             </div>
 
                             {{-- Real-time Shift Summary Bar (Compact) --}}
-                            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 grid grid-cols-4 gap-2 text-center">
+                            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 grid {{ auth()->user()->isAdmin() ? 'grid-cols-4' : 'grid-cols-3' }} gap-2 text-center">
                                 <div>
                                     <span class="text-[11px] font-bold uppercase text-slate-400 block">Workers</span>
                                     <span class="text-sm font-bold font-mono text-slate-800 dark:text-slate-200" x-text="rows.filter(r => r.worker_id).length"></span>
@@ -3426,10 +3456,12 @@
                                     <span class="text-[11px] font-bold uppercase text-slate-400 block">Cabling</span>
                                     <span class="text-sm font-bold font-mono text-slate-800 dark:text-slate-200" x-text="`${totalCablingMtrs}m`"></span>
                                 </div>
+                                @if(auth()->user()->isAdmin())
                                 <div>
                                     <span class="text-[11px] font-bold uppercase text-emerald-600 dark:text-emerald-400 block">Total Wages</span>
                                     <span class="text-sm font-bold font-mono text-emerald-600 dark:text-emerald-400" x-text="`₹${totalWagePayout.toFixed(2)}`"></span>
                                 </div>
+                                @endif
                             </div>
                         </div>
                     </div>

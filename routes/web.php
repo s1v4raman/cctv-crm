@@ -304,6 +304,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/finance/payroll/{payroll}/view-pdf', [FinanceController::class, 'streamPayslipPdf'])->name('finance.payroll.viewPdf');
         Route::match(['get', 'post'], '/finance/payroll/{payroll}/send-whatsapp', [FinanceController::class, 'sendWhatsApp'])->name('finance.payroll.sendWhatsApp');
         Route::post('/finance/payroll/{payroll}/status', [FinanceController::class, 'updatePayrollStatus'])->name('finance.payroll.updateStatus');
+
+        // Daily-Wage Workers Sunday Payday Console & Wage Disbursements (Admin Only)
+        Route::get('/wages', [WageController::class, 'index'])->name('wages.index');
+        Route::post('/wages/advance', [WageController::class, 'recordAdvance'])->name('wages.advance');
+        Route::post('/wages/settle', [WageController::class, 'settlePayment'])->name('wages.settle');
+        Route::post('/wages/attendances/{attendance}/pay', [WageController::class, 'payAttendanceShift'])->name('wages.attendances.pay');
+        Route::get('/wages/signature-sheet', [WageController::class, 'printSignatureSheet'])->name('wages.signature-sheet');
+        Route::get('/wages/export-csv', [WageController::class, 'exportCsv'])->name('wages.export-csv');
+        Route::post('/projects/attendances/{attendance}/unlock', [WorkDayController::class, 'unlockAttendance'])->name('projects.attendances.unlock');
+        Route::post('/projects/attendances/{attendance}/pay', [WorkDayController::class, 'payAttendance'])->name('projects.attendances.pay');
     });
 
     // ================================================================
@@ -392,8 +402,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Work Days & Attendance Logger
         Route::post('/projects/{project}/work-days', [WorkDayController::class, 'store'])->name('projects.work-days.store');
         Route::delete('/projects/{project}/work-days/{workDay}', [WorkDayController::class, 'destroy'])->name('projects.work-days.destroy');
-        Route::post('/projects/attendances/{attendance}/unlock', [WorkDayController::class, 'unlockAttendance'])->name('projects.attendances.unlock');
-        Route::post('/projects/attendances/{attendance}/pay', [WorkDayController::class, 'payAttendance'])->name('projects.attendances.pay');
 
         // IP Devices Registry & Configuration
         Route::post('/projects/{project}/devices', [IpDeviceController::class, 'store'])->name('projects.devices.store');
@@ -403,14 +411,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/projects/{project}/devices/{device}', [IpDeviceController::class, 'destroy'])->name('projects.devices.destroy');
         Route::post('/projects/{project}/devices/{device}/reveal', [IpDeviceController::class, 'revealPassword'])->name('projects.devices.reveal');
         Route::get('/projects/{project}/devices/export', [IpDeviceController::class, 'export'])->name('projects.devices.export');
-
-        // Sunday Weekly Wages Console
-        Route::get('/wages', [WageController::class, 'index'])->name('wages.index');
-        Route::post('/wages/advance', [WageController::class, 'recordAdvance'])->name('wages.advance');
-        Route::post('/wages/settle', [WageController::class, 'settlePayment'])->name('wages.settle');
-        Route::post('/wages/attendances/{attendance}/pay', [WageController::class, 'payAttendanceShift'])->name('wages.attendances.pay');
-        Route::get('/wages/signature-sheet', [WageController::class, 'printSignatureSheet'])->name('wages.signature-sheet');
-        Route::get('/wages/export-csv', [WageController::class, 'exportCsv'])->name('wages.export-csv');
 
         // Leads Read-Only
         Route::get('/leads', [LeadController::class, 'index'])->name('leads.index');

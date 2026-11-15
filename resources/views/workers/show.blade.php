@@ -33,6 +33,10 @@
         </div>
     </x-slot>
 
+    @php
+        $isAdmin = auth()->user()->isAdmin();
+    @endphp
+
     <div class="max-w-[1200px] mx-auto space-y-6">
         @if (session('status'))
             <div class="p-3 bg-white dark:bg-slate-900 border border-emerald-500 text-emerald-700 dark:text-emerald-300 rounded text-xs">
@@ -40,27 +44,31 @@
             </div>
         @endif
 
-        {{-- Stat Cards: Gray label and bold number only (5.5) --}}
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {{-- Stat Cards --}}
+        <div class="grid grid-cols-2 {{ $isAdmin ? 'md:grid-cols-4' : 'md:grid-cols-2' }} gap-4">
             <div class="stat-card">
                 <div class="stat-label">Days Logged</div>
                 <div class="stat-value">{{ $totalDaysWorked }}</div>
             </div>
 
             <div class="stat-card">
-                <div class="stat-label">Total Lifetime Earned</div>
-                <div class="stat-value">&#8377;{{ number_format($totalEarned, 0) }}</div>
+                <div class="stat-label">Worker Status</div>
+                <div class="stat-value {{ $worker->is_active ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400' }}">
+                    {{ $worker->is_active ? __('Active') : __('Inactive') }}
+                </div>
             </div>
 
-            <div class="stat-card">
-                <div class="stat-label">Total Lifetime Paid</div>
-                <div class="stat-value">&#8377;{{ number_format($totalPaid, 0) }}</div>
-            </div>
+            @if($isAdmin)
+                <div class="stat-card">
+                    <div class="stat-label">Total Lifetime Earned</div>
+                    <div class="stat-value">&#8377;{{ number_format($totalEarned, 0) }}</div>
+                </div>
 
-            <div class="stat-card">
-                <div class="stat-label">Outstanding Balance</div>
-                <div class="stat-value">&#8377;{{ number_format($runningBalance, 0) }}</div>
-            </div>
+                <div class="stat-card">
+                    <div class="stat-label">Outstanding Balance</div>
+                    <div class="stat-value">&#8377;{{ number_format($runningBalance, 0) }}</div>
+                </div>
+            @endif
         </div>
 
         {{-- Section 1: Worker Profile Two-column table (5.5) --}}
@@ -82,10 +90,12 @@
                             @endif
                         </td>
                     </tr>
+                    @if($isAdmin)
                     <tr>
                         <td class="text-slate-500 font-bold">Daily Wage Rate</td>
                         <td class="text-slate-900 dark:text-white">&#8377;{{ number_format($worker->daily_rate, 2) }}</td>
                     </tr>
+                    @endif
                     <tr>
                         <td class="text-slate-500 font-bold">Skills</td>
                         <td class="text-slate-900 dark:text-white">
@@ -116,11 +126,15 @@
                             <th class="nowrap">Work Date</th>
                             <th class="nowrap">Project</th>
                             <th class="nowrap">Shift</th>
-                            <th class="nowrap">Daily Rate</th>
+                            @if($isAdmin)
+                                <th class="nowrap">Daily Rate</th>
+                            @endif
                             <th class="nowrap">Cabling Metres</th>
-                            <th>Extras</th>
-                            <th>Total Amount</th>
-                            <th class="nowrap">Status</th>
+                            @if($isAdmin)
+                                <th>Extras</th>
+                                <th>Total Amount</th>
+                                <th class="nowrap">Status</th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody>
@@ -137,33 +151,37 @@
                             <td class="nowrap">
                                 {{ $att->attendance_type === 'full_day' ? 'Full Day' : 'Half Day' }}
                             </td>
-                            <td class="nowrap">&#8377;{{ number_format($att->daily_rate_snapshot, 2) }}</td>
+                            @if($isAdmin)
+                                <td class="nowrap">&#8377;{{ number_format($att->daily_rate_snapshot, 2) }}</td>
+                            @endif
                             <td class="nowrap">
                                 @if($att->cabling_metres > 0)
-                                    {{ $att->cabling_metres }} m (+&#8377;{{ number_format($att->cabling_amount, 2) }})
+                                    {{ $att->cabling_metres }} m @if($isAdmin)(+&#8377;{{ number_format($att->cabling_amount, 2) }})@endif
                                 @else
                                     —
                                 @endif
                             </td>
-                            <td>
-                                @if($att->extra_amount > 0)
-                                    +&#8377;{{ number_format($att->extra_amount, 2) }} ({{ $att->extra_description }})
-                                @else
-                                    —
-                                @endif
-                            </td>
-                            <td class="font-bold text-slate-900 dark:text-white">&#8377;{{ number_format($att->total_amount, 2) }}</td>
-                            <td class="nowrap">
-                                @if($att->is_paid)
-                                    <span class="status-won">Paid</span>
-                                @else
-                                    <span class="status-quoted">Unpaid</span>
-                                @endif
-                            </td>
+                            @if($isAdmin)
+                                <td>
+                                    @if($att->extra_amount > 0)
+                                        +&#8377;{{ number_format($att->extra_amount, 2) }} ({{ $att->extra_description }})
+                                    @else
+                                        —
+                                    @endif
+                                </td>
+                                <td class="font-bold text-slate-900 dark:text-white">&#8377;{{ number_format($att->total_amount, 2) }}</td>
+                                <td class="nowrap">
+                                    @if($att->is_paid)
+                                        <span class="status-won">Paid</span>
+                                    @else
+                                        <span class="status-quoted">Unpaid</span>
+                                    @endif
+                                </td>
+                            @endif
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="8" class="text-center py-6 text-slate-500 text-sm">
+                            <td colspan="{{ $isAdmin ? 8 : 4 }}" class="text-center py-6 text-slate-500 text-sm">
                                 No attendance shifts yet
                             </td>
                         </tr>
@@ -179,7 +197,8 @@
             @endif
         </div>
 
-        {{-- Section 3: Wage Settlements & Advances (5.3) --}}
+        {{-- Section 3: Wage Settlements & Advances (Admin Only) --}}
+        @if($isAdmin)
         <div class="crm-section">
             <h3>Wage Settlements & Advances ({{ $payments->total() }})</h3>
             <div class="overflow-x-auto">
@@ -237,5 +256,6 @@
                 </div>
             @endif
         </div>
+        @endif
     </div>
 </x-app-layout>
