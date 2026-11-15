@@ -158,6 +158,11 @@ class WorkerController extends Controller
             ]);
         }
 
+        if (Auth::user()->isTechnician()) {
+            return redirect()->route('technician.dashboard')
+                ->with('status', "Worker '{$worker->name}' added successfully to field crew!");
+        }
+
         return redirect()->route('workers.show', $worker)
             ->with('status', "Worker '{$worker->name}' added successfully!");
     }

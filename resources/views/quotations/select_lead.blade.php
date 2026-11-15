@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <div>
-            <a href="{{ route('quotations.index') }}" class="back-link">&larr; Back</a>
+            <a href="{{ auth()->user()->isTechnician() ? route('technician.dashboard') : route('quotations.index') }}" class="back-link">&larr; Back</a>
             <h2 class="text-xl font-bold leading-tight text-slate-900 dark:text-white mt-1">Select Customer Lead</h2>
         </div>
     </x-slot>
@@ -15,7 +15,7 @@
             @if($leads->isEmpty())
                 <p class="text-sm text-slate-500 my-4">You must create a customer lead first before making a quotation.</p>
                 <div class="mt-4">
-                    @if(auth()->user()->isOffice())
+                    @if(auth()->user()->isInternal())
                     <a href="{{ route('leads.create', ['return_to' => 'quotation', 'for_quote' => 1]) }}" class="btn-primary">
                         <x-icon.plus />
                         <span>Add New Customer</span>
@@ -29,7 +29,7 @@
                             <label for="lead_id" class="crm-label mb-0 font-semibold text-slate-800 dark:text-slate-200">
                                 Customer Lead <span class="required-marker">*</span>
                             </label>
-                            @if(auth()->user()->isOffice())
+                            @if(auth()->user()->isInternal())
                             <a href="{{ route('leads.create', ['return_to' => 'quotation', 'for_quote' => 1]) }}" 
                                class="btn-subtle gap-1.5 text-white font-semibold"
                                style="color: #ffffff !important;">
@@ -46,12 +46,16 @@
                         </select>
                     </div>
 
-                    <div class="form-actions mt-6">
-                        <a href="{{ route('quotations.index') }}" class="btn-secondary">
-                            Cancel
+                    <div class="form-actions mt-6 flex items-center justify-end gap-3">
+                        <a href="{{ auth()->user()->isTechnician() ? route('technician.dashboard') : route('quotations.index') }}" 
+                           class="inline-flex items-center justify-center px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 font-semibold text-xs sm:text-sm transition shadow-2xs">
+                            {{ __('Cancel') }}
                         </a>
-                        <button type="button" onclick="goToQuotation()" class="btn-primary">
-                            Submit
+                        <button type="button" onclick="goToQuotation()" 
+                                class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-bold text-xs sm:text-sm shadow-sm transition cursor-pointer"
+                                style="color: #ffffff !important; background-color: #2563eb !important;">
+                            <span class="text-white font-bold" style="color: #ffffff !important;">{{ __('Proceed to Quotation') }}</span>
+                            <svg class="w-4 h-4 text-white shrink-0" fill="none" stroke="#ffffff" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
                         </button>
                     </div>
                 </form>

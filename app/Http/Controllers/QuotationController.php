@@ -31,24 +31,46 @@ class QuotationController extends Controller
     public function store(StoreQuotationRequest $request, Lead $lead): RedirectResponse
     {
         $data = $request->validated();
+        $isTech = Auth::user()?->isTechnician();
 
-        $quotation = DB::transaction(function () use ($data, $lead) {
+        $quotation = DB::transaction(function () use ($data, $lead, $isTech) {
             $subtotal = 0;
 
+            // Fetch catalog product prices if technician submitted items without price
+            $processedItems = [];
             foreach ($data['items'] as $item) {
-                $subtotal += (float) $item['quantity'] * (float) $item['unit_price'];
+                $qty = (float) $item['quantity'];
+                $price = isset($item['unit_price']) && is_numeric($item['unit_price']) ? (float) $item['unit_price'] : 0;
+                
+                if ($price <= 0 && !empty($item['product_id'])) {
+                    $catalogProduct = \App\Models\Product::find($item['product_id']);
+                    if ($catalogProduct && $catalogProduct->unit_price) {
+                        $price = (float) $catalogProduct->unit_price;
+                    }
+                }
+                $item['unit_price'] = $price;
+                $lineTotal = $qty * $price;
+                $subtotal += $lineTotal;
+
+                $processedItems[] = [
+                    'item' => $item,
+                    'line_total' => $lineTotal,
+                ];
             }
 
             $requestedDiscount = (float) ($data['discount'] ?? 0);
             $discount = min($requestedDiscount, $subtotal);
 
-            $taxPercent = (float) ($data['tax_percent'] ?? 0);
+            $taxPercent = (float) ($data['tax_percent'] ?? 18);
             $taxableAmount = $subtotal - $discount;
             $taxAmount = $taxableAmount * ($taxPercent / 100);
             $grandTotal = $taxableAmount + $taxAmount;
 
+            $status = $isTech ? 'pending_approval' : 'draft';
+
             $quotation = Quotation::create([
                 'lead_id' => $lead->id,
+                'created_by' => Auth::id(),
                 'quotation_no' => 'QT-' . now()->format('Ymd') . '-' . str_pad(
                     (string) (Quotation::count() + 1),
                     4,
@@ -62,13 +84,13 @@ class QuotationController extends Controller
                 'tax_percent' => $taxPercent,
                 'tax_amount' => $taxAmount,
                 'total' => $grandTotal,
-                'status' => 'draft',
+                'status' => $status,
                 'notes' => $data['notes'] ?? null,
+                'pdf_format' => $data['pdf_format'] ?? '1',
             ]);
 
-            foreach ($data['items'] as $item) {
-                $lineTotal = (float) $item['quantity'] * (float) $item['unit_price'];
-
+            foreach ($processedItems as $entry) {
+                $item = $entry['item'];
                 $quotation->items()->create([
                     'product_id' => $item['product_id'] ?? null,
                     'item_name' => $item['item_name'],
@@ -76,7 +98,7 @@ class QuotationController extends Controller
                     'quantity' => (float) $item['quantity'],
                     'unit' => $item['unit'],
                     'unit_price' => (float) $item['unit_price'],
-                    'total' => $lineTotal,
+                    'total' => $entry['line_total'],
                 ]);
             }
 
@@ -84,8 +106,26 @@ class QuotationController extends Controller
                 'status' => 'quoted',
             ]);
 
+            $quotation->statusHistories()->create([
+                'changed_by' => Auth::id(),
+                'from_status' => null,
+                'to_status' => $status,
+                'notes' => $isTech
+                    ? 'Field technician ' . Auth::user()->name . ' created quotation with ' . count($processedItems) . ' items. Awaiting Admin pricing & product review.'
+                    : 'Quotation created.',
+            ]);
+
             return $quotation;
         });
+
+        // Notify Admin & Employee teams immediately
+        if ($isTech) {
+            \App\Services\HeaderNotificationService::notifyAdminAndStaffOfQuotation($quotation, Auth::user());
+
+            return redirect()
+                ->route('technician.dashboard')
+                ->with('status', "Quotation #{$quotation->quotation_no} submitted successfully! It has been forwarded to Admin & Employee teams for pricing and product review. Once approved, you can share it directly with the client.");
+        }
 
         return redirect()
             ->route('quotations.show', $quotation)
@@ -106,6 +146,12 @@ class QuotationController extends Controller
 
     public function downloadPdf(Quotation $quotation, string $format)
     {
+        if (Auth::user()?->isTechnician() && $quotation->status === 'pending_approval') {
+            return redirect()
+                ->route('quotations.show', $quotation)
+                ->with('error', 'Admin review & approval is required before downloading or sharing this quotation.');
+        }
+
         $quotation->load(['lead', 'items']);
 
         if (!in_array($format, ['1', '2', '3'])) {
@@ -173,11 +219,16 @@ class QuotationController extends Controller
             $quotation->load('lead');
         }
 
+        if ($quotation->status === 'pending_approval' && Auth::user()->isTechnician()) {
+            return back()->with('error', 'This quotation is pending Admin pricing and product approval. Once approved, you will be able to share it with the customer.');
+        }
+
         $customMsg = $request->input('custom_message');
         $phone = $quotation->getWhatsAppPhone($customPhone);
         $message = $customMsg ?: $quotation->getWhatsAppFormattedMessage($format);
 
-        if ($quotation->status === 'draft') {
+        if (in_array($quotation->status, ['draft', 'approved'])) {
+            $prevStatus = $quotation->status;
             $quotation->update([
                 'status'  => 'sent',
                 'sent_at' => now(),
@@ -185,7 +236,7 @@ class QuotationController extends Controller
 
             $quotation->statusHistories()->create([
                 'changed_by'  => Auth::id(),
-                'from_status' => 'draft',
+                'from_status' => $prevStatus,
                 'to_status'   => 'sent',
                 'notes'       => "Quotation PDF (Format {$format}) shared with customer via WhatsApp (" . ($phone ?: 'No Phone') . ").",
             ]);
@@ -303,12 +354,17 @@ class QuotationController extends Controller
             'created_by'      => Auth::id(),
         ]);
 
+        if ($quotation->status === 'pending_approval' && Auth::user()->isTechnician()) {
+            return back()->with('error', 'This quotation is pending Admin pricing and product approval. Once approved, you will be able to share it with the customer.');
+        }
+
         if ($emailStatus === 'failed') {
             return back()->with('error', "Failed to send email to {$recipientEmail}: {$errorMessage}. Please check your SMTP mail settings in .env.");
         }
 
-        // 4. Update status to 'sent' if currently 'draft'
-        if ($quotation->status === 'draft') {
+        // 4. Update status to 'sent' if currently 'draft' or 'approved'
+        if (in_array($quotation->status, ['draft', 'approved'])) {
+            $prevStatus = $quotation->status;
             $quotation->update([
                 'status'  => 'sent',
                 'sent_at' => now(),
@@ -316,7 +372,7 @@ class QuotationController extends Controller
 
             $quotation->statusHistories()->create([
                 'changed_by'  => Auth::id(),
-                'from_status' => 'draft',
+                'from_status' => $prevStatus,
                 'to_status'   => 'sent',
                 'notes'       => "Quotation PDF emailed to customer ({$recipientEmail}).",
             ]);
@@ -335,12 +391,78 @@ class QuotationController extends Controller
         return back()->with('status', "Quotation #{$quotation->quotation_no} with attached PDF has been successfully dispatched to {$recipientEmail}!{$note}");
     }
 
+    /**
+     * Admin & Office review and approval of field quotation pricing & product details.
+     */
+    public function approve(Request $request, Quotation $quotation): RedirectResponse
+    {
+        if (!Auth::user()->isAdmin() && !Auth::user()->isOffice()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        if (!in_array($quotation->status, ['pending_approval', 'draft'])) {
+            return back()->with('status', 'Quotation is already approved or processed.');
+        }
+
+        $oldStatus = $quotation->status;
+        $chosenFormat = $request->input('pdf_format', $quotation->pdf_format ?? '1');
+        if (!in_array($chosenFormat, ['1', '2', '3'])) {
+            $chosenFormat = '1';
+        }
+
+        DB::transaction(function () use ($quotation, $oldStatus, $chosenFormat) {
+            $quotation->update([
+                'status' => 'approved',
+                'pdf_format' => $chosenFormat,
+                'approved_by' => Auth::id(),
+                'approved_at' => now(),
+            ]);
+
+            $formatName = Quotation::FORMATS[$chosenFormat] ?? 'Format ' . $chosenFormat;
+
+            $quotation->statusHistories()->create([
+                'changed_by' => Auth::id(),
+                'from_status' => $oldStatus,
+                'to_status' => 'approved',
+                'notes' => 'Pricing, scope, and ' . $formatName . ' format approved by ' . Auth::user()->name . '. Ready for client dispatch.',
+            ]);
+
+            // Notify technician that their quotation has been approved
+            if ($quotation->created_by && $quotation->creator) {
+                try {
+                    \App\Models\NotificationLog::create([
+                        'channel' => 'email',
+                        'event_type' => 'quotation_approved',
+                        'recipient_type' => 'technician',
+                        'recipient_name' => $quotation->creator->name,
+                        'recipient_email' => $quotation->creator->email,
+                        'recipient_phone' => $quotation->creator->phone,
+                        'subject' => "Quotation #{$quotation->quotation_no} Approved",
+                        'message_body' => "Admin " . Auth::user()->name . " approved quotation #{$quotation->quotation_no} for " . ($quotation->lead?->customer_name ?? 'Client') . ". You can now share it via WhatsApp & Email.",
+                        'action_url' => route('quotations.show', $quotation),
+                        'status' => 'delivered',
+                        'reference_type' => get_class($quotation),
+                        'reference_id' => $quotation->id,
+                        'sent_at' => now(),
+                        'created_by' => Auth::id(),
+                    ]);
+                } catch (\Throwable $e) {}
+            }
+        });
+
+        \Illuminate\Support\Facades\Cache::flush();
+
+        return redirect()
+            ->route('quotations.show', $quotation)
+            ->with('status', "Quotation #{$quotation->quotation_no} approved successfully! The technician can now share it with the customer.");
+    }
+
     public function markAccepted(Quotation $quotation): RedirectResponse
     {
-        if (!in_array($quotation->status, ['draft', 'sent'])) {
+        if (!in_array($quotation->status, ['draft', 'approved', 'sent'])) {
             return back()->with(
                 'status',
-                'Only draft or sent quotations can be accepted.'
+                'Only draft, approved, or sent quotations can be accepted.'
             );
         }
 
@@ -449,10 +571,10 @@ class QuotationController extends Controller
 
     public function edit(Quotation $quotation): View|RedirectResponse
     {
-        if ($quotation->status !== 'draft') {
+        if (!in_array($quotation->status, ['draft', 'pending_approval', 'approved'])) {
             return redirect()
                 ->route('quotations.show', $quotation)
-                ->with('status', 'Only draft quotations can be edited.');
+                ->with('status', 'This quotation cannot be edited.');
         }
 
         $quotation->load([
@@ -467,27 +589,30 @@ class QuotationController extends Controller
         StoreQuotationRequest $request,
         Quotation $quotation
     ): RedirectResponse {
-        if ($quotation->status !== 'draft') {
+        if (!in_array($quotation->status, ['draft', 'pending_approval', 'approved'])) {
             return redirect()
                 ->route('quotations.show', $quotation)
-                ->with('status', 'Only draft quotations can be edited.');
+                ->with('status', 'This quotation cannot be edited.');
         }
 
         $validated = $request->validated();
 
         DB::transaction(function () use ($validated, $quotation) {
+            $format = $validated['pdf_format'] ?? $quotation->pdf_format ?? '1';
+
             $quotation->update([
                 'quotation_date' => $validated['quotation_date'],
                 'valid_until' => $validated['valid_until'] ?? null,
                 'tax_percent' => (float) ($validated['tax_percent'] ?? 0),
                 'discount' => (float) ($validated['discount'] ?? 0),
                 'notes' => $validated['notes'] ?? null,
+                'pdf_format' => $format,
             ]);
 
             $quotation->items()->delete();
 
             foreach ($validated['items'] as $item) {
-                $lineTotal = (float) $item['quantity'] * (float) $item['unit_price'];
+                $lineTotal = (float) $item['quantity'] * (float) ($item['unit_price'] ?? 0);
 
                 $quotation->items()->create([
                     'product_id' => $item['product_id'] ?? null,
@@ -495,25 +620,143 @@ class QuotationController extends Controller
                     'description' => $item['description'] ?? null,
                     'quantity' => (float) $item['quantity'],
                     'unit' => $item['unit'],
-                    'unit_price' => (float) $item['unit_price'],
+                    'unit_price' => (float) ($item['unit_price'] ?? 0),
                     'total' => $lineTotal,
                 ]);
             }
 
             $quotation->recalculateTotals();
+
+            $formatName = Quotation::FORMATS[$format] ?? 'Format ' . $format;
+            $quotation->statusHistories()->create([
+                'changed_by' => Auth::id(),
+                'from_status' => $quotation->status,
+                'to_status' => $quotation->status,
+                'notes' => Auth::user()->name . " updated quotation items, pricing & format ({$formatName}). Grand Total: " . \App\Support\Inr::money($quotation->total),
+            ]);
         });
+
+        // Flush notification cache for creator
+        if ($quotation->created_by) {
+            \App\Services\HeaderNotificationService::clearCacheForUser($quotation->created_by);
+        }
 
         return redirect()
             ->route('quotations.show', $quotation)
-            ->with('status', 'Quotation updated successfully.');
+            ->with('status', 'Quotation items, pricing, and format updated successfully.');
+    }
+
+    /**
+     * Direct endpoint to quickly update item pricing and quantities from show view.
+     */
+    public function updatePricing(Request $request, Quotation $quotation): RedirectResponse
+    {
+        if (!Auth::user()->isOffice()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        if (!in_array($quotation->status, ['draft', 'pending_approval', 'approved'])) {
+            return back()->with('error', 'Cannot update pricing on this quotation in its current status.');
+        }
+
+        $request->validate([
+            'items' => ['required', 'array'],
+            'items.*.id' => ['required', 'integer', 'exists:quotation_items,id'],
+            'items.*.unit_price' => ['required', 'numeric', 'min:0'],
+            'items.*.quantity' => ['required', 'numeric', 'gt:0'],
+            'tax_percent' => ['nullable', 'numeric', 'min:0', 'max:100'],
+            'discount' => ['nullable', 'numeric', 'min:0'],
+            'pdf_format' => ['nullable', 'string', 'in:1,2,3'],
+        ]);
+
+        DB::transaction(function () use ($request, $quotation) {
+            foreach ($request->input('items') as $itemData) {
+                $qItem = $quotation->items()->find($itemData['id']);
+                if ($qItem) {
+                    $qty = (float) $itemData['quantity'];
+                    $price = (float) $itemData['unit_price'];
+                    $qItem->update([
+                        'quantity' => $qty,
+                        'unit_price' => $price,
+                        'total' => $qty * $price,
+                    ]);
+                }
+            }
+
+            $updates = [];
+            if ($request->has('tax_percent')) {
+                $updates['tax_percent'] = (float) $request->input('tax_percent');
+            }
+            if ($request->has('discount')) {
+                $updates['discount'] = (float) $request->input('discount');
+            }
+            if ($request->filled('pdf_format')) {
+                $updates['pdf_format'] = $request->input('pdf_format');
+            }
+            if (!empty($updates)) {
+                $quotation->update($updates);
+            }
+
+            $quotation->recalculateTotals();
+
+            $quotation->statusHistories()->create([
+                'changed_by' => Auth::id(),
+                'from_status' => $quotation->status,
+                'to_status' => $quotation->status,
+                'notes' => Auth::user()->name . ' updated item prices & quantities. Grand Total: ' . \App\Support\Inr::money($quotation->total),
+            ]);
+        });
+
+        // Flush caches
+        if ($quotation->created_by) {
+            \App\Services\HeaderNotificationService::clearCacheForUser($quotation->created_by);
+        }
+
+        return back()->with('status', 'Quotation pricing and product items updated successfully! All changes are now live.');
+    }
+
+    /**
+     * Dedicated endpoint for both Admin and Technician to set/update Quotation Format.
+     */
+    public function updateFormat(Request $request, Quotation $quotation): RedirectResponse
+    {
+        $request->validate([
+            'pdf_format' => ['required', 'string', 'in:1,2,3'],
+        ]);
+
+        $newFormat = $request->input('pdf_format');
+
+        $quotation->update([
+            'pdf_format' => $newFormat,
+        ]);
+
+        $formatName = Quotation::FORMATS[$newFormat] ?? 'Format ' . $newFormat;
+        $user = Auth::user();
+
+        $quotation->statusHistories()->create([
+            'changed_by' => $user->id,
+            'from_status' => $quotation->status,
+            'to_status' => $quotation->status,
+            'notes' => "{$user->name} set quotation format to '{$formatName}'.",
+        ]);
+
+        $message = $user->isTechnician()
+            ? "Quotation format set to '{$formatName}'. Forwarded to Admin for review & approval."
+            : "Quotation format updated to '{$formatName}'.";
+
+        return back()->with('status', $message);
     }
 
     public function destroy(Quotation $quotation): RedirectResponse
     {
-        if ($quotation->status !== 'draft') {
+        if (!Auth::user()->isAdmin()) {
+            abort(403);
+        }
+
+        if (in_array($quotation->status, ['accepted'])) {
             return redirect()
                 ->route('quotations.show', $quotation)
-                ->with('status', 'Only draft quotations can be deleted. Change status back to Draft first.');
+                ->with('status', 'Cannot delete an accepted quotation.');
         }
 
         $leadId = $quotation->lead_id;
@@ -525,28 +768,37 @@ class QuotationController extends Controller
     }
 
     /**
-     * Remove a single line item from a draft quotation.
+     * Remove a single line item from a quotation (draft, pending_approval, or approved).
      */
     public function destroyItem(QuotationItem $item): RedirectResponse
     {
         $quotation = $item->quotation;
 
-        if ($quotation->status !== 'draft') {
-            return back()->with('status', 'Cannot remove items from a non-draft quotation.');
+        if (!in_array($quotation->status, ['draft', 'pending_approval', 'approved'])) {
+            return back()->with('status', 'Cannot remove items from this quotation.');
         }
 
+        $itemName = $item->item_name;
         $item->delete();
         $quotation->recalculateTotals();
 
-        return back()->with('status', 'Item removed.');
+        $quotation->statusHistories()->create([
+            'changed_by' => Auth::id(),
+            'from_status' => $quotation->status,
+            'to_status' => $quotation->status,
+            'notes' => Auth::user()->name . " deleted item '{$itemName}' from quotation.",
+        ]);
+
+        return back()->with('status', "Item '{$itemName}' removed successfully.");
     }
 
     /** Saved views shown in the view menu. */
     public const VIEWS = [
-        'all'  => 'All Quotations',
-        'open' => 'Open Deals',
-        'won'  => 'Won Deals',
-        'lost' => 'Lost Deals',
+        'all'     => 'All Quotations',
+        'pending' => 'Pending Review',
+        'open'    => 'Open Deals',
+        'won'     => 'Won Deals',
+        'lost'    => 'Lost Deals',
     ];
 
     /** Quick filters in the filter panel's first section. */
@@ -663,10 +915,11 @@ class QuotationController extends Controller
         }
 
         match ($request->get('view')) {
-            'open'  => $query->whereIn('status', ['draft', 'sent']),
-            'won'   => $query->where('status', 'accepted'),
-            'lost'  => $query->whereIn('status', ['rejected', 'expired']),
-            default => null,
+            'pending' => $query->where('status', 'pending_approval'),
+            'open'    => $query->whereIn('status', ['draft', 'approved', 'sent']),
+            'won'     => $query->where('status', 'accepted'),
+            'lost'    => $query->whereIn('status', ['rejected', 'expired']),
+            default   => null,
         };
 
         foreach ((array) $request->get('only', []) as $quick) {

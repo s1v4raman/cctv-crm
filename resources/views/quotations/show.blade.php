@@ -1,11 +1,14 @@
 <x-app-layout>
     @php
+        $isTechnician = auth()->user()?->isTechnician();
         $statusColors = [
-            'draft'    => ['badge' => 'border-slate-600 bg-slate-800/80 text-slate-300', 'bar' => '#64748b', 'glow' => 'rgba(100,116,139,0.3)'],
-            'sent'     => ['badge' => 'border-sky-500/30 bg-sky-500/10 text-sky-400', 'bar' => 'var(--crm-accent, #2563eb)', 'glow' => 'rgba(var(--crm-accent-rgb, 37, 99, 235), 0.3)'],
-            'accepted' => ['badge' => 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400', 'bar' => '#34d399', 'glow' => 'rgba(52,211,153,0.3)'],
-            'rejected' => ['badge' => 'border-rose-500/30 bg-rose-500/10 text-rose-400', 'bar' => '#f43f5e', 'glow' => 'rgba(244,63,94,0.3)'],
-            'expired'  => ['badge' => 'border-amber-500/30 bg-amber-500/10 text-amber-400', 'bar' => '#f59e0b', 'glow' => 'rgba(245,158,11,0.3)'],
+            'draft'            => ['badge' => 'border-slate-600 bg-slate-800/80 text-slate-300', 'bar' => '#64748b', 'glow' => 'rgba(100,116,139,0.3)'],
+            'pending_approval' => ['badge' => 'border-amber-500/30 bg-amber-500/10 text-amber-500', 'bar' => '#f59e0b', 'glow' => 'rgba(245,158,11,0.3)'],
+            'approved'         => ['badge' => 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400', 'bar' => '#10b981', 'glow' => 'rgba(16,185,129,0.3)'],
+            'sent'             => ['badge' => 'border-sky-500/30 bg-sky-500/10 text-sky-400', 'bar' => 'var(--crm-accent, #2563eb)', 'glow' => 'rgba(var(--crm-accent-rgb, 37, 99, 235), 0.3)'],
+            'accepted'         => ['badge' => 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400', 'bar' => '#34d399', 'glow' => 'rgba(52,211,153,0.3)'],
+            'rejected'         => ['badge' => 'border-rose-500/30 bg-rose-500/10 text-rose-400', 'bar' => '#f43f5e', 'glow' => 'rgba(244,63,94,0.3)'],
+            'expired'          => ['badge' => 'border-amber-500/30 bg-amber-500/10 text-amber-400', 'bar' => '#f59e0b', 'glow' => 'rgba(245,158,11,0.3)'],
         ];
         $sc = $statusColors[$quotation->status] ?? $statusColors['draft'];
     @endphp
@@ -13,7 +16,7 @@
     <x-slot name="header">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-                <a href="{{ route('quotations.index') }}" class="back-link">
+                <a href="{{ $isTechnician ? route('technician.dashboard') : route('quotations.index') }}" class="back-link">
                     &larr; Back
                 </a>
                 <div class="flex items-center gap-3 mt-1">
@@ -22,58 +25,79 @@
                     </h2>
                     @php
                         $qStatusColor = 'var(--text-muted)';
-                        if ($quotation->status === 'sent') $qStatusColor = 'var(--link-color)';
+                        if ($quotation->status === 'pending_approval') $qStatusColor = '#d97706';
+                        elseif ($quotation->status === 'approved') $qStatusColor = '#059669';
+                        elseif ($quotation->status === 'sent') $qStatusColor = 'var(--link-color)';
                         elseif ($quotation->status === 'accepted') $qStatusColor = 'var(--status-success-fg)';
                         elseif ($quotation->status === 'rejected') $qStatusColor = 'var(--status-danger-fg)';
                         elseif ($quotation->status === 'expired') $qStatusColor = 'var(--status-warning-fg)';
                     @endphp
                     <span class="text-sm font-bold" style="color: {{ $qStatusColor }};">
-                        {{ ucfirst($quotation->status) }}
+                        @if($quotation->status === 'pending_approval')
+                            Pending Admin Approval
+                        @elseif($quotation->status === 'approved')
+                            Approved by Management
+                        @else
+                            {{ ucfirst($quotation->status) }}
+                        @endif
                     </span>
                 </div>
             </div>
 
             <div class="flex items-center gap-2 flex-wrap">
-                {{-- PDF Downloads --}}
-                <a href="{{ route('quotations.pdf', [$quotation, '1']) }}" title="Download the Executive Modern quotation PDF" class="btn-secondary text-xs inline-flex items-center gap-1.5 shadow-2xs">
-                    <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v6h6"/></svg>
-                    <span>Modern PDF</span>
-                </a>
-                <a href="{{ route('quotations.pdf', [$quotation, '2']) }}" title="Download the Technical Detailed quotation PDF" class="btn-secondary text-xs inline-flex items-center gap-1.5 shadow-2xs">
-                    <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                    <span>Detailed PDF</span>
-                </a>
-                <a href="{{ route('quotations.pdf', [$quotation, '3']) }}" title="Download the Classic Formal quotation PDF" class="btn-secondary text-xs inline-flex items-center gap-1.5 shadow-2xs">
-                    <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
-                    <span>Classic PDF</span>
-                </a>
+                @if($quotation->status === 'pending_approval' && $isTechnician)
+                    {{-- Technician locked indicator while waiting for admin approval --}}
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300 text-xs font-semibold shadow-2xs">
+                        <svg class="w-4 h-4 text-amber-500 animate-pulse" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span>{{ __('Awaiting Admin Price Approval (Sharing Locked)') }}</span>
+                    </div>
+                @else
+                    {{-- PDF Downloads: Active format default + format quick picks --}}
+                    <div class="inline-flex items-center rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-2xs overflow-hidden">
+                        <a href="{{ route('quotations.pdf', [$quotation, $quotation->pdf_format ?? '1']) }}" title="{{ __('Download Active Format PDF (:name)', ['name' => $quotation->pdf_format_name]) }}" class="px-3 py-1.5 text-xs font-bold text-slate-800 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-700/60 inline-flex items-center gap-1.5 transition">
+                            <svg class="w-3.5 h-3.5 text-rose-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v6h6"/></svg>
+                            <span>{{ __('PDF (Format :fmt)', ['fmt' => $quotation->pdf_format ?? '1']) }}</span>
+                        </a>
+                        <span class="w-[1px] h-4 bg-slate-200 dark:bg-slate-700"></span>
+                        <a href="{{ route('quotations.pdf', [$quotation, '1']) }}" class="px-2 py-1.5 text-[11px] font-semibold {{ ($quotation->pdf_format ?? '1') == '1' ? 'text-blue-600 dark:text-blue-400 bg-blue-50/60 dark:bg-blue-950/40 font-bold' : 'text-slate-500 hover:text-slate-800 dark:hover:text-white' }}" title="Format 1: Executive Modern">F1</a>
+                        <a href="{{ route('quotations.pdf', [$quotation, '2']) }}" class="px-2 py-1.5 text-[11px] font-semibold {{ ($quotation->pdf_format ?? '1') == '2' ? 'text-blue-600 dark:text-blue-400 bg-blue-50/60 dark:bg-blue-950/40 font-bold' : 'text-slate-500 hover:text-slate-800 dark:hover:text-white' }}" title="Format 2: Technical Detailed">F2</a>
+                        <a href="{{ route('quotations.pdf', [$quotation, '3']) }}" class="px-2 py-1.5 text-[11px] font-semibold {{ ($quotation->pdf_format ?? '1') == '3' ? 'text-blue-600 dark:text-blue-400 bg-blue-50/60 dark:bg-blue-950/40 font-bold' : 'text-slate-500 hover:text-slate-800 dark:hover:text-white' }}" title="Format 3: Classic Formal">F3</a>
+                    </div>
 
-                {{-- Action Modals & Links --}}
-                <button type="button" onclick="openWhatsAppModal()" class="btn-secondary text-xs cursor-pointer inline-flex items-center gap-1.5 shadow-2xs">
-                    <x-icon.whatsapp class="w-4 h-4 text-black dark:text-white shrink-0" />
-                    <span>Share on WhatsApp</span>
-                </button>
-                <button type="button" onclick="openEmailModal()" class="btn-secondary text-xs cursor-pointer inline-flex items-center gap-1.5 shadow-2xs">
-                    <x-icon.email class="w-4 h-4 text-black dark:text-white shrink-0" />
-                    <span>Email</span>
-                </button>
-                <a href="{{ route('quotations.vcard', $quotation) }}" class="btn-secondary text-xs inline-flex items-center gap-1.5 shadow-2xs">
-                    <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                    <span>Save Contact to Phone</span>
-                </a>
+                    {{-- Action Modals & Links --}}
+                    <button type="button" onclick="openWhatsAppModal()" class="btn-secondary text-xs cursor-pointer inline-flex items-center gap-1.5 shadow-2xs">
+                        <x-icon.whatsapp class="w-4 h-4 text-emerald-600 shrink-0" />
+                        <span>Share on WhatsApp</span>
+                    </button>
+                    <button type="button" onclick="openEmailModal()" class="btn-secondary text-xs cursor-pointer inline-flex items-center gap-1.5 shadow-2xs">
+                        <x-icon.email class="w-4 h-4 text-blue-600 shrink-0" />
+                        <span>Email</span>
+                    </button>
+                @endif
 
-                @if($quotation->status === 'draft')
-                    <a href="{{ route('quotations.edit', $quotation) }}" class="btn-secondary text-xs inline-flex items-center gap-1.5 shadow-2xs">
-                        <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
-                        <span>Edit Details</span>
+                @if(!$isTechnician)
+                    <a href="{{ route('quotations.vcard', $quotation) }}" class="btn-secondary text-xs inline-flex items-center gap-1.5 shadow-2xs">
+                        <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                        <span>Save Contact</span>
                     </a>
-                    <form method="POST" action="{{ route('quotations.markSent', $quotation) }}" class="inline">
-                        @csrf @method('PATCH')
-                        <button type="submit" class="btn-primary text-xs cursor-pointer inline-flex items-center gap-1.5 shadow-2xs">
-                            <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                            <span>Mark as Sent</span>
+                @endif
+
+                {{-- Admin & Staff Approval Action --}}
+                @if(in_array($quotation->status, ['pending_approval', 'draft']) && auth()->user()->isOffice())
+                    <form method="POST" action="{{ route('quotations.approve', $quotation) }}" class="inline">
+                        @csrf
+                        <button type="submit" class="btn-primary text-xs cursor-pointer inline-flex items-center gap-1.5 !bg-emerald-600 hover:!bg-emerald-700 !text-white shadow-xs" style="background-color: #059669 !important; color: #ffffff !important;">
+                            <svg class="w-3.5 h-3.5 !text-white shrink-0" fill="none" stroke="#ffffff" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <span class="!text-white font-bold" style="color: #ffffff !important;">{{ __('Approve Quotation') }}</span>
                         </button>
                     </form>
+                @endif
+
+                @if(in_array($quotation->status, ['draft', 'pending_approval']) && (auth()->user()->isOffice() || auth()->id() === $quotation->created_by))
+                    <a href="{{ route('quotations.edit', $quotation) }}" class="btn-secondary text-xs inline-flex items-center gap-1.5 shadow-2xs">
+                        <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                        <span>Edit Scope</span>
+                    </a>
                     @if(auth()->user()->isAdmin())
                     <form method="POST" action="{{ route('quotations.destroy', $quotation) }}"
                           data-confirm="Delete {{ $quotation->quotation_no }}?" class="inline">
@@ -86,12 +110,12 @@
                     @endif
                 @endif
 
-                @if($quotation->status === 'sent')
+                @if(in_array($quotation->status, ['sent', 'approved']))
                     <form method="POST" action="{{ route('quotations.accept', $quotation) }}" class="inline">
                         @csrf
-                        <button type="submit" data-confirm="Confirm customer accepted?" class="btn-primary text-xs cursor-pointer inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 shadow-2xs">
-                            <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                            <span>Mark Accepted</span>
+                        <button type="submit" data-confirm="Confirm customer accepted?" class="btn-primary text-xs cursor-pointer inline-flex items-center gap-1.5 !bg-emerald-600 hover:!bg-emerald-700 !text-white shadow-2xs" style="background-color: #059669 !important; color: #ffffff !important;">
+                            <svg class="w-3.5 h-3.5 !text-white shrink-0" fill="none" stroke="#ffffff" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <span class="!text-white font-bold" style="color: #ffffff !important;">Mark Accepted</span>
                         </button>
                     </form>
                     <button type="button" onclick="document.getElementById('reject-modal').classList.add('open')" class="btn-secondary text-xs cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 text-rose-600 hover:text-rose-700 hover:border-rose-300 dark:hover:border-rose-700 shadow-2xs transition">
@@ -150,12 +174,156 @@
                 </div>
             @endif
 
+            {{-- Pending Approval Alert Banner --}}
+            @if($quotation->status === 'pending_approval')
+                @if(!$isTechnician)
+                    <div class="p-4 sm:p-5 rounded-2xl border border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/40 text-amber-900 dark:text-amber-200 text-xs shadow-xs space-y-4">
+                        <div class="flex items-start gap-3">
+                            <div class="w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-900/60 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/></svg>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <strong class="font-bold text-sm text-slate-900 dark:text-white">{{ __('Field Quotation Awaiting Admin Review & Approval') }}</strong>
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-200/60 dark:bg-amber-900/80 text-amber-900 dark:text-amber-200">
+                                        {{ __('Proposed Layout: Format :fmt (:name)', ['fmt' => $quotation->pdf_format ?? '1', 'name' => $quotation->pdf_format_name]) }}
+                                    </span>
+                                </div>
+                                <p class="text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">
+                                    {{ __('Submitted on-site by') }} <strong class="text-slate-800 dark:text-slate-100">{{ $quotation->creator->name ?? __('Technician') }}</strong>. {{ __('Review the equipment scope and pricing below. Confirm or update the PDF format before approving.') }}
+                                </p>
+                            </div>
+                        </div>
+
+                        @if(auth()->user()->isOffice())
+                            <form method="POST" action="{{ route('quotations.approve', $quotation) }}" class="p-3.5 rounded-xl bg-white dark:bg-slate-900/90 border border-amber-200 dark:border-amber-800/80 flex flex-col md:flex-row md:items-center justify-between gap-3">
+                                @csrf
+                                <div class="flex items-center gap-3 flex-wrap">
+                                    <span class="font-bold text-slate-800 dark:text-slate-200">{{ __('Confirm PDF Format:') }}</span>
+                                    <label class="inline-flex items-center gap-1.5 cursor-pointer text-xs font-semibold text-slate-800 dark:text-slate-200">
+                                        <input type="radio" name="pdf_format" value="1" {{ ($quotation->pdf_format ?? '1') == '1' ? 'checked' : '' }} class="accent-emerald-600">
+                                        <span>F1: Executive Modern</span>
+                                    </label>
+                                    <label class="inline-flex items-center gap-1.5 cursor-pointer text-xs font-semibold text-slate-800 dark:text-slate-200">
+                                        <input type="radio" name="pdf_format" value="2" {{ ($quotation->pdf_format ?? '1') == '2' ? 'checked' : '' }} class="accent-emerald-600">
+                                        <span>F2: Technical Detailed</span>
+                                    </label>
+                                    <label class="inline-flex items-center gap-1.5 cursor-pointer text-xs font-semibold text-slate-800 dark:text-slate-200">
+                                        <input type="radio" name="pdf_format" value="3" {{ ($quotation->pdf_format ?? '1') == '3' ? 'checked' : '' }} class="accent-emerald-600">
+                                        <span>F3: Classic Formal</span>
+                                    </label>
+                                </div>
+
+                                <button type="submit" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] !text-white font-bold text-xs sm:text-sm inline-flex items-center justify-center gap-2 shadow-sm transition cursor-pointer shrink-0" style="color: #ffffff !important; background-color: #059669 !important;">
+                                    <svg class="w-4 h-4 !text-white shrink-0" fill="none" stroke="#ffffff" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    <span class="!text-white font-bold" style="color: #ffffff !important;">{{ __('Approve Format & Quotation') }}</span>
+                                    <svg class="w-4 h-4 text-white shrink-0" fill="none" stroke="#ffffff" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+                                </button>
+                            </form>
+                        @endif
+                    </div>
+                @else
+                    <div class="p-4 rounded-2xl border border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/40 text-amber-900 dark:text-amber-200 text-xs flex items-start gap-3 shadow-xs">
+                        <div class="w-8 h-8 rounded-xl bg-amber-100 dark:bg-amber-900/60 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                            <svg class="w-4 h-4 animate-pulse" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <strong class="font-bold text-sm text-slate-900 dark:text-white">{{ __('Submitted for Office Review & Pricing') }}</strong>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-200/60 dark:bg-amber-900/80 text-amber-900 dark:text-amber-200">
+                                    {{ __('Proposed Format: :fmt (:name)', ['fmt' => $quotation->pdf_format ?? '1', 'name' => $quotation->pdf_format_name]) }}
+                                </span>
+                            </div>
+                            <p class="text-slate-600 dark:text-slate-300 leading-relaxed">
+                                {{ __('Your equipment list and proposed format have been submitted to office management. As soon as admin reviews and approves the quotation, WhatsApp and Email dispatch will automatically unlock.') }}
+                            </p>
+                        </div>
+                    </div>
+                @endif
+            @elseif($quotation->status === 'approved')
+                <div class="p-4 rounded-2xl border border-emerald-300 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-200 text-xs flex items-start gap-3 shadow-xs">
+                    <div class="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-900/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <div class="flex-1 space-y-1">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <strong class="font-bold text-sm text-slate-900 dark:text-white">{{ __('Quotation Approved & Ready to Share') }}</strong>
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-200/60 dark:bg-emerald-900/80 text-emerald-900 dark:text-emerald-200">
+                                {{ __('Approved Format: :fmt (:name)', ['fmt' => $quotation->pdf_format ?? '1', 'name' => $quotation->pdf_format_name]) }}
+                            </span>
+                        </div>
+                        <p class="text-slate-600 dark:text-slate-300 leading-relaxed">
+                            {{ __('Approved by') }} <strong class="text-slate-900 dark:text-white">{{ $quotation->approver->name ?? __('Management') }}</strong>{{ $quotation->approved_at ? ' on ' . $quotation->approved_at->format('d M Y, h:i A') : '' }}. {{ __('You can now share this proposal directly with the customer via WhatsApp, Email, or PDF download.') }}
+                        </p>
+                    </div>
+                </div>
+            @endif
+
             @if($quotation->status === 'rejected' && $quotation->rejection_reason)
                 <div class="crm-section border-rose-300 bg-rose-50 text-rose-800 text-xs">
                     <p class="font-bold mb-1">Rejection Reason</p>
                     <p>{{ $quotation->rejection_reason }}</p>
                 </div>
             @endif
+
+            {{-- Quotation PDF Format & Document Layout Section --}}
+            <div class="crm-section">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                    <div>
+                        <h3 class="!mb-0">{{ __('Quotation PDF Format & Layout Style') }}</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                            {{ __('Select which presentation layout is used for customer WhatsApp dispatch, emails, and PDF downloads.') }}
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        @if($quotation->status === 'pending_approval')
+                            <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                                {{ __('Proposed: :name', ['name' => $quotation->pdf_format_name]) }}
+                            </span>
+                        @else
+                            <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                                ✓ {{ __('Active: :name', ['name' => $quotation->pdf_format_name]) }}
+                            </span>
+                        @endif
+                        <a href="{{ URL::signedRoute('quotations.public-pdf', ['quotation' => $quotation, 'format' => $quotation->pdf_format ?? '1']) }}" target="_blank" class="action-link text-xs inline-flex items-center gap-1 font-bold">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                            <span>{{ __('Preview PDF') }}</span>
+                        </a>
+                    </div>
+                </div>
+
+                <form method="POST" action="{{ route('quotations.set-format', $quotation) }}" class="space-y-3">
+                    @csrf
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        @foreach(\App\Models\Quotation::FORMATS as $key => $title)
+                            @php $isSelected = ($quotation->pdf_format ?? '1') == $key; @endphp
+                            <label class="flex items-start gap-3 p-3.5 rounded-xl border {{ $isSelected ? 'border-amber-500 bg-amber-500/10' : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 hover:border-amber-400' }} cursor-pointer text-xs transition">
+                                <input type="radio" name="pdf_format" value="{{ $key }}" {{ $isSelected ? 'checked' : '' }} class="accent-amber-500 mt-0.5 shrink-0" onchange="this.form.submit()">
+                                <div class="space-y-1">
+                                    <div class="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                                        <span>Format {{ $key }}: {{ $title }}</span>
+                                        @if($isSelected)
+                                            <span class="px-1.5 py-0.5 rounded text-[10px] bg-amber-500 text-white font-bold leading-none">Active</span>
+                                        @endif
+                                    </div>
+                                    <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-snug">
+                                        @if($key === '1') Executive Modern &bull; Hero brand header with clean itemized schedule
+                                        @elseif($key === '2') Technical Detailed &bull; Item-level specs, terms &amp; warranty badges
+                                        @else Classic Formal &bull; Standard corporate layout with bank &amp; seal details
+                                        @endif
+                                    </p>
+                                </div>
+                            </label>
+                        @endforeach
+                    </div>
+                    @if(!$isTechnician || $quotation->status === 'pending_approval' || $quotation->status === 'draft')
+                        <div class="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 pt-1">
+                            <span>{{ $isTechnician ? __('Click any format above to propose a different layout to management.') : __('Click any format above to change the active layout for customer sharing.') }}</span>
+                            <button type="submit" class="action-link text-xs font-bold">{{ __('Apply Format') }}</button>
+                        </div>
+                    @endif
+                </form>
+            </div>
 
             {{-- 1. Specifications & Overview: Two-column table inside standard section --}}
             <div class="crm-section">
@@ -194,87 +362,231 @@
                 </div>
             </div>
 
-            {{-- 2. Line Items Table --}}
+            {{-- 2. Line Items Table & Pricing Management --}}
             <div class="crm-section">
-                <h3>Line Items ({{ $quotation->items->count() }})</h3>
-                <div class="overflow-x-auto">
-                    <table class="crm-table w-full">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Item / Product</th>
-                                <th>Description</th>
-                                <th class="text-right">Qty</th>
-                                <th>Unit</th>
-                                <th class="text-right">Unit Price</th>
-                                <th class="text-right">Subtotal</th>
-                                @if($quotation->status === 'draft')
-                                    <th class="text-right">Action</th>
-                                @endif
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse ($quotation->items as $i => $item)
-                                <tr>
-                                    <td>{{ $i + 1 }}</td>
-                                    <td class="font-bold text-slate-900">{{ $item->item_name }}</td>
-                                    <td>{{ $item->description ?? '—' }}</td>
-                                    <td class="text-right font-medium">{{ $item->quantity }}</td>
-                                    <td>{{ $item->unit ?? '—' }}</td>
-                                    <td class="text-right" style="white-space: nowrap;">₹{{ number_format((float)$item->unit_price, 2) }}</td>
-                                    <td class="text-right font-bold text-slate-900" style="white-space: nowrap;">₹{{ number_format((float)$item->total, 2) }}</td>
-                                    @if($quotation->status === 'draft')
-                                        <td class="text-right">
-                                            <form method="POST" action="{{ route('quotation-items.destroy', $item) }}"
-                                                  data-confirm="Remove this item?" class="inline">
-                                                @csrf @method('DELETE')
-                                                <button type="submit" class="danger-link text-xs cursor-pointer">Remove</button>
-                                            </form>
-                                        </td>
-                                    @endif
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="{{ $quotation->status === 'draft' ? 8 : 7 }}" class="text-center py-6 text-slate-500 text-sm">
-                                        No items on this quotation yet. Edit the quotation to add items.
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
+                    <div>
+                        <h3 class="!mb-0">Line Items ({{ $quotation->items->count() }})</h3>
+                        @if(!$isTechnician)
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                                {{ __('Update unit prices and quantities below. Zero-cost items added by technicians are highlighted for review.') }}
+                            </p>
+                        @else
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                                {{ __('Equipment and hardware scope for site installation.') }}
+                            </p>
+                        @endif
+                    </div>
+                    @if(!$isTechnician && in_array($quotation->status, ['draft', 'pending_approval', 'approved']))
+                        <div class="flex items-center gap-2">
+                            <a href="{{ route('quotations.edit', $quotation) }}" class="btn-secondary text-xs inline-flex items-center gap-1.5 shadow-2xs font-semibold">
+                                <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                                <span>{{ __('Add / Full Edit Scope') }}</span>
+                            </a>
+                        </div>
+                    @endif
                 </div>
 
-                {{-- Totals Summary --}}
-                <div class="mt-4 pt-4 border-t border-[#ddd] flex flex-col md:flex-row justify-between gap-6 text-sm">
-                    <div class="flex-1">
-                        @if($quotation->notes)
-                            <div class="p-3 rounded border border-[#ddd] bg-[#f9f9f9] text-xs text-slate-700 leading-relaxed">
-                                <span class="font-bold block mb-1">Notes &amp; Terms:</span>
-                                {{ $quotation->notes }}
+                @if(!$isTechnician && in_array($quotation->status, ['draft', 'pending_approval', 'approved']))
+                    {{-- Admin quick pricing & quantity editor form --}}
+                    <form method="POST" action="{{ route('quotations.update-pricing', $quotation) }}" id="quotation-pricing-form">
+                        @csrf
+                        <div class="overflow-x-auto">
+                            <table class="crm-table w-full">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Item / Product</th>
+                                        <th>Description</th>
+                                        <th class="text-right">Qty</th>
+                                        <th>Unit</th>
+                                        <th class="text-right">Unit Price (₹)</th>
+                                        <th class="text-right">Subtotal</th>
+                                        <th class="text-right">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse ($quotation->items as $i => $item)
+                                        <tr class="{{ (float)$item->unit_price == 0 ? 'bg-amber-50/50 dark:bg-amber-950/20' : '' }}">
+                                            <td>{{ $i + 1 }}</td>
+                                            <td class="font-bold text-slate-900 dark:text-white">
+                                                <input type="hidden" name="items[{{ $i }}][id]" value="{{ $item->id }}">
+                                                {{ $item->item_name }}
+                                            </td>
+                                            <td class="text-xs text-slate-600 dark:text-slate-300">{{ $item->description ?? '—' }}</td>
+                                            <td class="text-right">
+                                                <input type="number" step="0.01" min="0.01" name="items[{{ $i }}][quantity]" value="{{ $item->quantity }}" class="w-20 text-right px-2 py-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold focus:border-blue-500 focus:outline-none">
+                                            </td>
+                                            <td>{{ $item->unit ?? '—' }}</td>
+                                            <td class="text-right" style="white-space: nowrap;">
+                                                <div class="inline-flex items-center gap-1 justify-end">
+                                                    <span class="text-slate-400 font-bold">₹</span>
+                                                    <input type="number" step="0.01" min="0" name="items[{{ $i }}][unit_price]" value="{{ $item->unit_price }}" class="w-28 text-right px-2 py-1 rounded-lg border {{ (float)$item->unit_price == 0 ? 'border-amber-500 ring-2 ring-amber-400 bg-amber-50 dark:bg-amber-950/40 text-amber-900 dark:text-amber-200' : 'border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white' }} text-xs font-bold focus:border-blue-500 focus:outline-none">
+                                                </div>
+                                                @if((float)$item->unit_price == 0)
+                                                    <span class="block text-[10px] text-amber-600 dark:text-amber-400 font-bold text-right mt-0.5">⚠️ Price Required</span>
+                                                @endif
+                                            </td>
+                                            <td class="text-right font-bold text-slate-900 dark:text-white" style="white-space: nowrap;">₹{{ number_format((float)$item->total, 2) }}</td>
+                                            <td class="text-right">
+                                                <button type="submit" form="delete-item-{{ $item->id }}" class="danger-link text-xs cursor-pointer">Remove</button>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="8" class="text-center py-6 text-slate-500 text-sm">
+                                                No items on this quotation yet.
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {{-- Totals Summary & Quick Update Footer --}}
+                        <div class="mt-4 pt-4 border-t border-[#ddd] flex flex-col md:flex-row justify-between gap-6 text-sm">
+                            <div class="flex-1 space-y-3">
+                                @if($quotation->notes)
+                                    <div class="p-3 rounded border border-[#ddd] bg-[#f9f9f9] text-xs text-slate-700 leading-relaxed">
+                                        <span class="font-bold block mb-1">Notes &amp; Scope:</span>
+                                        {{ $quotation->notes }}
+                                    </div>
+                                @endif
+                                <div class="flex items-center gap-3 pt-2">
+                                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-[0.98] !text-white font-bold text-xs sm:text-sm inline-flex items-center gap-2 shadow-sm transition cursor-pointer" style="background-color: #2563eb !important; color: #ffffff !important;">
+                                        <svg class="w-4 h-4 !text-white" fill="none" stroke="#ffffff" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                                        <span class="!text-white font-bold">{{ __('Update Prices & Recalculate') }}</span>
+                                    </button>
+                                </div>
                             </div>
+
+                            <div class="w-full md:w-80 space-y-2.5 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/80">
+                                <div class="flex justify-between items-center text-xs">
+                                    <span class="text-slate-500 dark:text-slate-400 font-semibold">Subtotal</span>
+                                    <span class="font-bold text-slate-900 dark:text-white">₹{{ number_format((float)$quotation->subtotal, 2) }}</span>
+                                </div>
+                                <div class="flex justify-between items-center text-xs">
+                                    <label class="text-slate-500 dark:text-slate-400 font-semibold">Discount (₹)</label>
+                                    <input type="number" step="0.01" min="0" name="discount" value="{{ $quotation->discount }}" class="w-28 text-right px-2 py-1 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold">
+                                </div>
+                                <div class="flex justify-between items-center text-xs pb-2 border-b border-slate-200 dark:border-slate-700">
+                                    <label class="text-slate-500 dark:text-slate-400 font-semibold">GST (%)</label>
+                                    <input type="number" step="0.01" min="0" max="100" name="tax_percent" value="{{ $quotation->tax_percent }}" class="w-20 text-right px-2 py-1 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold">
+                                </div>
+                                <div class="flex justify-between items-center text-sm font-black text-slate-900 dark:text-white pt-1">
+                                    <span>Grand Total</span>
+                                    <span class="text-base text-blue-600 dark:text-blue-400">₹{{ number_format((float)$quotation->total, 2) }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                    {{-- Hidden individual delete item forms to avoid form nesting --}}
+                    @foreach ($quotation->items as $item)
+                        <form id="delete-item-{{ $item->id }}" method="POST" action="{{ route('quotation-items.destroy', $item) }}" data-confirm="Remove '{{ $item->item_name }}' from quotation?" class="hidden">
+                            @csrf @method('DELETE')
+                        </form>
+                    @endforeach
+
+                @else
+                    {{-- Standard view for Technicians and Completed/Accepted Quotes --}}
+                    <div class="overflow-x-auto">
+                        <table class="crm-table w-full">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Item / Product</th>
+                                    <th>Description</th>
+                                    <th class="text-right">Qty</th>
+                                    <th>Unit</th>
+                                    @if(!$isTechnician)
+                                        <th class="text-right">Unit Price</th>
+                                        <th class="text-right">Subtotal</th>
+                                    @endif
+                                    @if(!$isTechnician && in_array($quotation->status, ['draft', 'pending_approval']))
+                                        <th class="text-right">Action</th>
+                                    @endif
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse ($quotation->items as $i => $item)
+                                    <tr>
+                                        <td>{{ $i + 1 }}</td>
+                                        <td class="font-bold text-slate-900 dark:text-white">{{ $item->item_name }}</td>
+                                        <td>{{ $item->description ?? '—' }}</td>
+                                        <td class="text-right font-medium">{{ $item->quantity }}</td>
+                                        <td>{{ $item->unit ?? '—' }}</td>
+                                        @if(!$isTechnician)
+                                            <td class="text-right" style="white-space: nowrap;">₹{{ number_format((float)$item->unit_price, 2) }}</td>
+                                            <td class="text-right font-bold text-slate-900 dark:text-white" style="white-space: nowrap;">₹{{ number_format((float)$item->total, 2) }}</td>
+                                        @endif
+                                        @if(!$isTechnician && in_array($quotation->status, ['draft', 'pending_approval']))
+                                            <td class="text-right">
+                                                <form method="POST" action="{{ route('quotation-items.destroy', $item) }}"
+                                                      data-confirm="Remove this item?" class="inline">
+                                                    @csrf @method('DELETE')
+                                                    <button type="submit" class="danger-link text-xs cursor-pointer">Remove</button>
+                                                </form>
+                                            </td>
+                                        @endif
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="{{ $isTechnician ? 5 : 8 }}" class="text-center py-6 text-slate-500 text-sm">
+                                            No items on this quotation yet.
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {{-- Totals Summary --}}
+                    <div class="mt-4 pt-4 border-t border-[#ddd] flex flex-col md:flex-row justify-between gap-6 text-sm">
+                        <div class="flex-1">
+                            @if($quotation->notes)
+                                <div class="p-3 rounded border border-[#ddd] bg-[#f9f9f9] text-xs text-slate-700 leading-relaxed">
+                                    <span class="font-bold block mb-1">Notes &amp; Scope:</span>
+                                    {{ $quotation->notes }}
+                                </div>
+                            @endif
+                        </div>
+                        @if(!$isTechnician)
+                        <div class="w-full md:w-72 space-y-2">
+                            <div class="flex justify-between">
+                                <span class="text-slate-500">Subtotal</span>
+                                <span class="font-medium text-slate-900">₹{{ number_format((float)$quotation->subtotal, 2) }}</span>
+                            </div>
+                            @if($quotation->discount > 0)
+                            <div class="flex justify-between text-red-600">
+                                <span>Discount</span>
+                                <span class="font-medium">−₹{{ number_format((float)$quotation->discount, 2) }}</span>
+                            </div>
+                            @endif
+                            <div class="flex justify-between pb-2 border-b border-[#ddd]">
+                                <span class="text-slate-500">GST ({{ $quotation->tax_percent }}%)</span>
+                                <span class="font-medium text-slate-900">₹{{ number_format((float)$quotation->tax_amount, 2) }}</span>
+                            </div>
+                            <div class="flex justify-between text-base font-bold text-slate-900">
+                                <span>Grand Total</span>
+                                <span>₹{{ number_format((float)$quotation->total, 2) }}</span>
+                            </div>
+                        </div>
+                        @else
+                        <div class="w-full md:w-80">
+                            <div class="p-3.5 rounded-xl border border-blue-200 dark:border-blue-800/80 bg-blue-50/60 dark:bg-blue-950/40 text-xs text-blue-900 dark:text-blue-200 space-y-1">
+                                <div class="flex items-center gap-1.5 font-bold">
+                                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"/></svg>
+                                    <span>{{ __('Managed Pricing & Commercials') }}</span>
+                                </div>
+                                <p class="text-[11px] text-blue-800/80 dark:text-blue-300/80 leading-relaxed">
+                                    {{ __('Item unit prices, discounts, and final quotations are reviewed and maintained by the office management.') }}
+                                </p>
+                            </div>
+                        </div>
                         @endif
                     </div>
-                    <div class="w-full md:w-72 space-y-2">
-                        <div class="flex justify-between">
-                            <span class="text-slate-500">Subtotal</span>
-                            <span class="font-medium text-slate-900">₹{{ number_format((float)$quotation->subtotal, 2) }}</span>
-                        </div>
-                        @if($quotation->discount > 0)
-                        <div class="flex justify-between text-red-600">
-                            <span>Discount</span>
-                            <span class="font-medium">−₹{{ number_format((float)$quotation->discount, 2) }}</span>
-                        </div>
-                        @endif
-                        <div class="flex justify-between pb-2 border-b border-[#ddd]">
-                            <span class="text-slate-500">GST ({{ $quotation->tax_percent }}%)</span>
-                            <span class="font-medium text-slate-900">₹{{ number_format((float)$quotation->tax_amount, 2) }}</span>
-                        </div>
-                        <div class="flex justify-between text-base font-bold text-slate-900">
-                            <span>Grand Total</span>
-                            <span>₹{{ number_format((float)$quotation->total, 2) }}</span>
-                        </div>
-                    </div>
-                </div>
+                @endif
             </div>
 
             {{-- 3. Audit Trail --}}
@@ -406,9 +718,9 @@
                             PDF Template Style
                         </label>
                         <select aria-label="PDF Template Style" name="pdf_format" class="crm-select">
-                            <option value="1">Executive Modern (Format 1)</option>
-                            <option value="2">Technical Detailed (Format 2)</option>
-                            <option value="3">Classic Formal (Format 3)</option>
+                            <option value="1" {{ ($quotation->pdf_format ?? '1') == '1' ? 'selected' : '' }}>Executive Modern (Format 1)</option>
+                            <option value="2" {{ ($quotation->pdf_format ?? '1') == '2' ? 'selected' : '' }}>Technical Detailed (Format 2)</option>
+                            <option value="3" {{ ($quotation->pdf_format ?? '1') == '3' ? 'selected' : '' }}>Classic Formal (Format 3)</option>
                         </select>
                     </div>
                     <div>
@@ -482,24 +794,25 @@
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" id="wa-format-selector-grid">
-                    <label data-format="1" class="wa-format-card flex items-start gap-3 p-3.5 rounded-xl border border-amber-500 bg-amber-500/5 dark:bg-amber-500/10 cursor-pointer text-xs transition">
-                        <input type="radio" name="wa_pdf_format" value="1" checked class="accent-amber-500 mt-0.5 shrink-0" onchange="onWhatsAppFormatChange('1')">
+                    @php $activeFmt = $quotation->pdf_format ?? '1'; @endphp
+                    <label data-format="1" class="wa-format-card flex items-start gap-3 p-3.5 rounded-xl border {{ $activeFmt == '1' ? 'border-amber-500 bg-amber-500/5 dark:bg-amber-500/10' : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 hover:border-amber-500' }} cursor-pointer text-xs transition">
+                        <input type="radio" name="wa_pdf_format" value="1" {{ $activeFmt == '1' ? 'checked' : '' }} class="accent-amber-500 mt-0.5 shrink-0" onchange="onWhatsAppFormatChange('1')">
                         <div>
                             <div class="font-bold text-slate-900 dark:text-white leading-tight">Executive Modern</div>
                             <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Format 1 (Standard)</div>
                         </div>
                     </label>
 
-                    <label data-format="2" class="wa-format-card flex items-start gap-3 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 hover:border-amber-500 transition cursor-pointer text-xs">
-                        <input type="radio" name="wa_pdf_format" value="2" class="accent-amber-500 mt-0.5 shrink-0" onchange="onWhatsAppFormatChange('2')">
+                    <label data-format="2" class="wa-format-card flex items-start gap-3 p-3.5 rounded-xl border {{ $activeFmt == '2' ? 'border-amber-500 bg-amber-500/5 dark:bg-amber-500/10' : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 hover:border-amber-500' }} transition cursor-pointer text-xs">
+                        <input type="radio" name="wa_pdf_format" value="2" {{ $activeFmt == '2' ? 'checked' : '' }} class="accent-amber-500 mt-0.5 shrink-0" onchange="onWhatsAppFormatChange('2')">
                         <div>
                             <div class="font-bold text-slate-900 dark:text-white leading-tight">Technical Detailed</div>
                             <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Format 2</div>
                         </div>
                     </label>
 
-                    <label data-format="3" class="wa-format-card flex items-start gap-3 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 hover:border-amber-500 transition cursor-pointer text-xs">
-                        <input type="radio" name="wa_pdf_format" value="3" class="accent-amber-500 mt-0.5 shrink-0" onchange="onWhatsAppFormatChange('3')">
+                    <label data-format="3" class="wa-format-card flex items-start gap-3 p-3.5 rounded-xl border {{ $activeFmt == '3' ? 'border-amber-500 bg-amber-500/5 dark:bg-amber-500/10' : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 hover:border-amber-500' }} transition cursor-pointer text-xs">
+                        <input type="radio" name="wa_pdf_format" value="3" {{ $activeFmt == '3' ? 'checked' : '' }} class="accent-amber-500 mt-0.5 shrink-0" onchange="onWhatsAppFormatChange('3')">
                         <div>
                             <div class="font-bold text-slate-900 dark:text-white leading-tight">Classic Formal</div>
                             <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Format 3</div>
@@ -603,7 +916,7 @@
         quoteNo: @json($quotation->quotation_no),
         customerName: @json($quotation->lead?->customer_name ?? 'Customer'),
         defaultPhone: @json($quotation->getWhatsAppPhone()),
-        selectedFormat: '1',
+        selectedFormat: @json($quotation->pdf_format ?: '1'),
         messages: {
             '1': @json($quotation->getWhatsAppFormattedMessage('1')),
             '2': @json($quotation->getWhatsAppFormattedMessage('2')),
@@ -628,6 +941,9 @@
         if (modal) {
             modal.style.display = 'flex';
             modal.classList.add('open');
+            if (waQuotationData.selectedFormat) {
+                onWhatsAppFormatChange(waQuotationData.selectedFormat);
+            }
             syncCustomerStatusUI();
         }
     }

@@ -9,8 +9,12 @@
     @endphp
 
     <div x-data="{
-        currentTab: 'overview', // 'overview', 'projects', 'jobs', 'surveys', 'workers', 'scanner'
+        currentTab: 'overview', // 'overview', 'projects', 'jobs', 'surveys', 'workers', 'quotations', 'scanner'
         scanCodeInput: '',
+        showAddWorkerModal: false,
+        showExistingQuoteModal: false,
+        showNewLeadQuoteModal: false,
+        selectedLeadIdForQuote: '',
         switchTab(t) {
             this.currentTab = t;
             this.$nextTick(() => {
@@ -152,9 +156,9 @@
             </div>
 
             {{-- ═══════════════════════════════════════════════════════════════════ --}}
-            {{-- 2. METRIC HIGHLIGHTS CARDS (4 Columns across on Laptop)             --}}
+            {{-- 2. METRIC HIGHLIGHTS CARDS (5 Columns across on Laptop)             --}}
             {{-- ═══════════════════════════════════════════════════════════════════ --}}
-            <div :class="currentTab !== 'overview' ? 'hidden lg:grid' : ''" class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
+            <div :class="currentTab !== 'overview' ? 'hidden lg:grid' : ''" class="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-5">
                 
                 {{-- Assigned Projects --}}
                 <div @click="switchTab('projects')"
@@ -213,6 +217,21 @@
                     <div class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-2.5 pt-2 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
                         <span>{{ __('Field Workers') }}</span>
                         <span class="text-emerald-600 dark:text-emerald-400 font-bold">&rarr;</span>
+                    </div>
+                </div>
+
+                {{-- Quotations & Estimates --}}
+                <div @click="switchTab('quotations')"
+                     class="p-4 sm:p-5 lg:p-6 rounded-2xl sm:rounded-3xl crm-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm text-left hover:border-blue-500 hover:shadow-md transition-all group cursor-pointer col-span-2 lg:col-span-1"
+                     :class="currentTab === 'quotations' ? 'ring-2 ring-blue-500 border-blue-500' : ''">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">{{ __('Quotations') }}</span>
+                        <span class="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-xs"></span>
+                    </div>
+                    <div class="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-white mt-1.5 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition">{{ isset($quotations) ? $quotations->count() : 0 }}</div>
+                    <div class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-2.5 pt-2 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
+                        <span>{{ __('Create & Share') }}</span>
+                        <span class="text-blue-600 dark:text-blue-400 font-bold">&rarr;</span>
                     </div>
                 </div>
 
@@ -289,6 +308,22 @@
                             :style="currentTab === 'workers' ? 'color: #ffffff !important;' : ''">
                         <svg class="w-4 h-4 shrink-0" :class="currentTab === 'workers' ? '!text-white' : ''" :stroke="currentTab === 'workers' ? '#ffffff' : 'currentColor'" fill="none" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
                         <span :class="currentTab === 'workers' ? '!text-white font-bold' : ''">{{ __('Workers') }}</span>
+                    </button>
+
+                    <button type="button" @click="switchTab('quotations')"
+                            class="shrink-0 px-4 sm:px-5 py-2 min-h-[38px] rounded-xl text-xs sm:text-sm font-bold transition-all inline-flex items-center justify-center gap-2 cursor-pointer border"
+                            :class="currentTab === 'quotations' 
+                                ? 'bg-[#65a30d] !text-white border-[#65a30d] shadow-sm' 
+                                : 'bg-white hover:bg-slate-50 dark:bg-slate-800/80 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:text-slate-900 dark:hover:text-white'"
+                            :style="currentTab === 'quotations' ? 'color: #ffffff !important;' : ''">
+                        <svg class="w-4 h-4 shrink-0" :class="currentTab === 'quotations' ? '!text-white' : ''" :stroke="currentTab === 'quotations' ? '#ffffff' : 'currentColor'" fill="none" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+                        <span :class="currentTab === 'quotations' ? '!text-white font-bold' : ''">{{ __('Quotations') }}</span>
+                        @if(isset($quotations) && $quotations->count() > 0)
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold"
+                                  :class="currentTab === 'quotations' ? 'bg-white/25 !text-white' : 'bg-lime-100 dark:bg-lime-900/60 text-lime-800 dark:text-lime-300'">
+                                {{ $quotations->count() }}
+                            </span>
+                        @endif
                     </button>
 
                     <button type="button" @click="switchTab('scanner')"
@@ -895,14 +930,22 @@
                 <div class="flex items-center justify-between flex-wrap gap-2 px-1">
                     <div>
                         <h2 class="text-base sm:text-xl font-black text-slate-900 dark:text-white tracking-tight">{{ __('Field Crew Workers') }}</h2>
-                        <p class="text-xs sm:text-sm text-slate-400">{{ __('Active daily-wage technicians, cable pullers, and helpers') }}</p>
+                        <p class="text-xs sm:text-sm text-slate-400">{{ __('Active field technicians, cable pullers, and helpers') }}</p>
                     </div>
-                    <button type="button" onclick="openAttendanceModal()"
-                            class="inline-flex items-center justify-center gap-1.5 px-4 py-2 min-h-[38px] rounded-xl bg-blue-600 hover:bg-blue-700 !text-white font-bold text-xs sm:text-sm shadow-xs transition cursor-pointer"
-                            style="color: #ffffff !important;">
-                        <svg class="w-4 h-4 shrink-0 !text-white" fill="none" stroke="#ffffff" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-                        <span class="!text-white" style="color: #ffffff !important;">{{ __('Punch Attendance') }}</span>
-                    </button>
+                    <div class="flex items-center gap-2">
+                        <button type="button" @click="showAddWorkerModal = true"
+                                class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 min-h-[38px] rounded-xl bg-emerald-600 hover:bg-emerald-700 !text-white font-bold text-xs sm:text-sm shadow-xs transition cursor-pointer"
+                                style="color: #ffffff !important;">
+                            <svg class="w-4 h-4 shrink-0 !text-white" fill="none" stroke="#ffffff" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
+                            <span class="!text-white" style="color: #ffffff !important;">{{ __('+ Add Worker') }}</span>
+                        </button>
+                        <button type="button" onclick="openAttendanceModal()"
+                                class="inline-flex items-center justify-center gap-1.5 px-4 py-2 min-h-[38px] rounded-xl bg-blue-600 hover:bg-blue-700 !text-white font-bold text-xs sm:text-sm shadow-xs transition cursor-pointer"
+                                style="color: #ffffff !important;">
+                            <svg class="w-4 h-4 shrink-0 !text-white" fill="none" stroke="#ffffff" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                            <span class="!text-white" style="color: #ffffff !important;">{{ __('Punch Attendance') }}</span>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -1013,6 +1056,192 @@
                 </div>
             </div>
 
+            {{-- ═══════════════════════════════════════════════════════════════════ --}}
+            {{-- TAB PANE 7: QUOTATIONS & PROPOSALS (Laptop & Mobile)               --}}
+            {{-- ═══════════════════════════════════════════════════════════════════ --}}
+            <div x-show="currentTab === 'quotations'" class="space-y-4 lg:space-y-6">
+                {{-- Pane Header & Actions --}}
+                <div class="rounded-2xl sm:rounded-3xl crm-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-sm">
+                    <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-2">
+                                <div class="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+                                </div>
+                                <h2 class="text-base sm:text-xl font-black text-slate-900 dark:text-white tracking-tight">{{ __('Client Quotations & Estimates') }}</h2>
+                            </div>
+                            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+                                {{ __('Create on-site proposals, download formatted PDFs, and share via WhatsApp or Email directly with clients.') }}
+                            </p>
+                        </div>
+
+                        <div class="flex items-center gap-2.5 flex-wrap w-full lg:w-auto">
+                            {{-- Button 1: Quote Existing Client --}}
+                            <button type="button" @click="showExistingQuoteModal = true"
+                                    class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-4 py-2.5 min-h-[42px] rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 font-bold text-xs sm:text-sm transition shadow-2xs hover:shadow-xs active:scale-[0.98] cursor-pointer border border-slate-200 dark:border-slate-700">
+                                <svg class="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
+                                <span>{{ __('Quote Existing Client') }}</span>
+                            </button>
+
+                            {{-- Button 2: New Client & Quote --}}
+                            <button type="button" @click="showNewLeadQuoteModal = true"
+                                    class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-4 py-2.5 min-h-[42px] rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] !text-white font-bold text-xs sm:text-sm shadow-sm transition cursor-pointer"
+                                    style="color: #ffffff !important; background-color: #059669 !important;">
+                                <svg class="w-4 h-4 !text-white shrink-0" fill="none" stroke="#ffffff" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z"/></svg>
+                                <span class="!text-white" style="color: #ffffff !important;">{{ __('New Client & Quote') }}</span>
+                            </button>
+
+                            {{-- Button 3: All Clients browse --}}
+                            <a href="{{ route('quotations.create-general') }}" 
+                               class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 min-h-[42px] rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-bold transition shadow-2xs group"
+                               title="{{ __('Browse All Leads & Clients') }}">
+                                <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z"/></svg>
+                                <span>{{ __('All Clients') }}</span>
+                                <svg class="w-3.5 h-3.5 text-slate-400 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Quotations Table / List --}}
+                <div class="rounded-2xl sm:rounded-3xl crm-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+                    <div class="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                        <h3 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+                            {{ __('Recent Quotations') }} ({{ isset($quotations) ? $quotations->count() : 0 }})
+                        </h3>
+                        <span class="text-[11px] text-slate-400">{{ __('Showing latest proposals') }}</span>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs divide-y divide-slate-100 dark:divide-slate-800">
+                            <thead>
+                                <tr class="bg-slate-50 dark:bg-slate-800/60 text-slate-500 uppercase tracking-wider text-[10px]">
+                                    <th class="py-3 px-4">{{ __('Quotation #') }}</th>
+                                    <th class="py-3 px-4">{{ __('Customer / Site') }}</th>
+                                    <th class="py-3 px-4">{{ __('Items') }}</th>
+                                    <th class="py-3 px-4">{{ __('Approval & Status') }}</th>
+                                    <th class="py-3 px-4 text-right">{{ __('Customer Sharing') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                                @forelse($quotations as $q)
+                                    <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition">
+                                        <td class="py-3 px-4 font-bold text-slate-900 dark:text-white whitespace-nowrap">
+                                            <a href="{{ route('quotations.show', $q) }}" class="text-blue-600 dark:text-blue-400 hover:underline">
+                                                {{ $q->quotation_no ?? ('QUO-' . $q->id) }}
+                                            </a>
+                                            <div class="text-[10px] text-slate-400 mt-0.5">
+                                                {{ $q->quotation_date ? $q->quotation_date->format('d M Y') : $q->created_at->format('d M Y') }}
+                                            </div>
+                                        </td>
+                                        <td class="py-3 px-4">
+                                            <div class="font-bold text-slate-900 dark:text-slate-100">{{ $q->lead?->customer_name ?? __('Customer') }}</div>
+                                            @if($q->lead?->phone)
+                                                <a href="tel:{{ $q->lead->phone }}" class="text-[11px] text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 block mt-0.5">
+                                                    {{ $q->lead->phone }}
+                                                </a>
+                                            @endif
+                                            @if($q->lead?->site_address)
+                                                <div class="text-[10px] text-slate-400 truncate max-w-xs">{{ $q->lead->site_address }}</div>
+                                            @endif
+                                        </td>
+                                        <td class="py-3 px-4 whitespace-nowrap">
+                                            <span class="px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold">
+                                                {{ $q->items->count() }} {{ __('items') }}
+                                            </span>
+                                            <div class="text-[10px] text-slate-500 dark:text-slate-400 mt-1 font-medium">
+                                                {{ __('Format') }}: <span class="font-bold text-slate-700 dark:text-slate-300">{{ $q->pdf_format_name }}</span>
+                                            </div>
+                                        </td>
+                                        <td class="py-3 px-4 whitespace-nowrap">
+                                            @if($q->status === 'pending_approval')
+                                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                                                    <svg class="w-3.5 h-3.5 text-amber-500 animate-pulse shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                                    <span>{{ __('Pending Admin Approval') }}</span>
+                                                </span>
+                                            @elseif($q->status === 'approved')
+                                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                                                    <svg class="w-3.5 h-3.5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                                    <span>{{ __('Approved - Ready to Share') }}</span>
+                                                </span>
+                                            @elseif($q->status === 'sent')
+                                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-blue-50 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                                                    <svg class="w-3.5 h-3.5 text-blue-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/></svg>
+                                                    <span>{{ __('Sent to Customer') }}</span>
+                                                </span>
+                                            @elseif($q->status === 'accepted')
+                                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-900 dark:bg-emerald-900/60 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700">
+                                                    <svg class="w-3.5 h-3.5 text-emerald-700 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                                                    <span>{{ __('Accepted by Client') }}</span>
+                                                </span>
+                                            @elseif($q->status === 'rejected')
+                                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-rose-50 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200 dark:border-rose-800">
+                                                    <span>{{ __('Rejected') }}</span>
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                                                    <span>{{ ucfirst($q->status) }}</span>
+                                                </span>
+                                            @endif
+                                        </td>
+                                        <td class="py-3 px-4 text-right whitespace-nowrap">
+                                            <div class="inline-flex items-center gap-2 justify-end">
+                                                {{-- View Details --}}
+                                                <a href="{{ route('quotations.show', $q) }}" 
+                                                   class="px-3 py-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900/60 text-blue-700 dark:text-blue-300 font-bold text-xs inline-flex items-center gap-1.5 transition group"
+                                                   title="{{ __('View Quotation Scope & Details') }}">
+                                                    <span>{{ __('View') }}</span>
+                                                    <svg class="w-3.5 h-3.5 shrink-0 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+                                                </a>
+
+                                                @if($q->status === 'pending_approval')
+                                                    {{-- Locked sharing pending admin approval --}}
+                                                    <span class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-400 text-xs font-semibold"
+                                                          title="{{ __('Locked: Admin approval is required before sending quotation to customer') }}">
+                                                        <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/></svg>
+                                                        <span>{{ __('Awaiting Approval') }}</span>
+                                                    </span>
+                                                @else
+                                                    {{-- Quick PDF Download in approved/active format --}}
+                                                    <a href="{{ route('quotations.pdf', [$q, $q->pdf_format ?? '1']) }}" 
+                                                       class="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:text-blue-600 hover:border-blue-300 transition" 
+                                                       title="{{ __('Download Formatted PDF (:name)', ['name' => $q->pdf_format_name]) }}">
+                                                        <svg class="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M7.5 12L12 16.5m0 0L16.5 12M12 16.5V3"/></svg>
+                                                    </a>
+
+                                                    {{-- Quick WhatsApp Share in approved format --}}
+                                                    <a href="{{ route('quotations.send-whatsapp', ['quotation' => $q, 'format' => $q->pdf_format ?? '1']) }}" 
+                                                       target="_blank"
+                                                       class="p-1.5 rounded-lg border border-emerald-200 dark:border-emerald-800/80 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 transition" 
+                                                       title="{{ __('Send Quote via WhatsApp (:name)', ['name' => $q->pdf_format_name]) }}">
+                                                        <x-icon.whatsapp :badge="false" class="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                                                    </a>
+                                                @endif
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="6" class="py-8 text-center text-slate-400">
+                                            <div class="max-w-sm mx-auto space-y-2">
+                                                <svg class="w-8 h-8 mx-auto text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+                                                <p class="font-bold text-slate-700 dark:text-slate-300 text-sm">{{ __('No quotations created yet') }}</p>
+                                                <p class="text-xs text-slate-400">{{ __('Create a quote for an on-site customer or existing lead to share professional estimates.') }}</p>
+                                                <div class="pt-2 flex items-center justify-center gap-2">
+                                                    <button type="button" @click="showNewLeadQuoteModal = true" class="btn-primary text-xs py-1.5 px-3">
+                                                        {{ __('Create First Quotation') }}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
         {{-- ═══════════════════════════════════════════════════════════════════ --}}
@@ -1071,10 +1300,18 @@
                     <span class="text-[11px] leading-tight pointer-events-none">{{ __('Crew') }}</span>
                 </button>
 
+                {{-- Quotes Tab --}}
+                <button type="button" @click="switchTab('quotations')"
+                        :aria-current="currentTab === 'quotations' ? 'page' : 'false'"
+                        class="flex-1 h-auto min-h-[48px] py-1.5 px-1 rounded-xl flex flex-col items-center justify-center gap-0.5 transition cursor-pointer select-none"
+                        :class="currentTab === 'quotations' ? 'text-blue-600 dark:text-blue-400 font-bold bg-slate-100/70 dark:bg-slate-800/70' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'"
+                        :style="currentTab === 'quotations' ? 'color: var(--crm-accent, #2563eb);' : ''">
+                    <svg class="w-5 h-5 pointer-events-none shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+                    <span class="text-[11px] leading-tight pointer-events-none">{{ __('Quotes') }}</span>
+                </button>
+
             </div>
         </nav>
-
-    </div>
 
     {{-- HARDWARE BARCODE SCANNER MODAL & COMPONENT --}}
     <x-hardware-scanner-modal modalId="hardwareScannerModal" :projects="$activeProjects" :leads="$leads ?? collect()" />
@@ -1129,6 +1366,187 @@
                 </div>
             </form>
         </div>
+    </div>
+
+    {{-- TECHNICIAN ADD FIELD CREW WORKER MODAL (NO WAGE / COST INPUTS) --}}
+    <div x-show="showAddWorkerModal" x-cloak class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div @click.away="showAddWorkerModal = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-lg w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-900 dark:text-white">{{ __('Register New Field Worker') }}</h3>
+                        <p class="text-[11px] text-slate-400">{{ __('Add a worker to field crew for site attendance and tasks') }}</p>
+                    </div>
+                </div>
+                <button type="button" @click="showAddWorkerModal = false" class="text-slate-400 hover:text-slate-600 text-lg leading-none cursor-pointer">&times;</button>
+            </div>
+
+            <form method="POST" action="{{ route('workers.store') }}" enctype="multipart/form-data" class="space-y-4 mt-4">
+                @csrf
+                <input type="hidden" name="is_active" value="1">
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{{ __('Worker Full Name *') }}</label>
+                    <input type="text" name="name" required placeholder="e.g. Ramesh Kumar" class="w-full text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{{ __('Phone Number *') }}</label>
+                    <input type="tel" name="phone" required placeholder="e.g. 9876543210" class="w-full text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{{ __('Primary Skill / Trade') }}</label>
+                    <select name="skills" class="w-full text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
+                        <option value="General assistant">{{ __('General assistant') }}</option>
+                        <option value="Cabling technician">{{ __('Cabling technician') }}</option>
+                        <option value="CCTV installation">{{ __('CCTV installation') }}</option>
+                        <option value="Senior technician">{{ __('Senior technician') }}</option>
+                        <option value="Helper">{{ __('Helper') }}</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{{ __('Worker Profile Photo (Optional)') }}</label>
+                    <input type="file" name="photo" accept="image/*" class="w-full text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-1.5 text-slate-800 dark:text-slate-200 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{{ __('Notes / Identity Details (Optional)') }}</label>
+                    <textarea name="notes" rows="2" placeholder="{{ __('e.g. Aadhaar / emergency contact / remarks...') }}" class="w-full text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200"></textarea>
+                </div>
+
+                <div class="pt-2 flex items-center justify-between">
+                    <button type="button" @click="showAddWorkerModal = false" class="btn-secondary text-xs">
+                        {{ __('Cancel') }}
+                    </button>
+                    <button type="submit" class="btn-primary text-xs !bg-emerald-600 hover:!bg-emerald-700 !text-white flex items-center gap-1.5 shadow-xs" style="color: #ffffff !important;">
+                        <svg class="w-4 h-4 !text-white" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                        <span class="!text-white font-bold" style="color: #ffffff !important;">{{ __('Save Field Worker') }}</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {{-- QUOTE EXISTING CLIENT MODAL --}}
+    <div x-show="showExistingQuoteModal" x-cloak class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div @click.away="showExistingQuoteModal = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-900 dark:text-white">{{ __('Quote Existing Client') }}</h3>
+                        <p class="text-[11px] text-slate-400">{{ __('Select an existing registered client or lead') }}</p>
+                    </div>
+                </div>
+                <button type="button" @click="showExistingQuoteModal = false" class="text-slate-400 hover:text-slate-600 text-lg leading-none cursor-pointer">&times;</button>
+            </div>
+
+            <div class="space-y-4 mt-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{{ __('Select Customer / Lead *') }}</label>
+                    <select x-model="selectedLeadIdForQuote" class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
+                        <option value="">{{ __('-- Select Customer --') }}</option>
+                        @foreach($leads as $lead)
+                            <option value="{{ $lead->id }}">{{ $lead->customer_name }} — {{ $lead->phone }} ({{ $lead->company_name ?: __('Individual') }})</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-700/60 text-[11px] text-slate-500 dark:text-slate-400">
+                    {{ __('Tip: If you do not see the customer in this list, click "All Clients" or add them as a new customer.') }}
+                </div>
+
+                <div class="pt-3 flex items-center justify-between border-t border-slate-100 dark:border-slate-800">
+                    <button type="button" @click="showExistingQuoteModal = false" class="px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-semibold transition cursor-pointer">
+                        {{ __('Cancel') }}
+                    </button>
+                    <button type="button" 
+                            :disabled="!selectedLeadIdForQuote"
+                            @click="if(selectedLeadIdForQuote) { window.location.href = '/leads/' + selectedLeadIdForQuote + '/quote'; }"
+                            class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-xs sm:text-sm shadow-sm transition cursor-pointer" 
+                            style="color: #ffffff !important; background-color: #2563eb !important;">
+                        <span class="text-white font-bold" style="color: #ffffff !important;">{{ __('Proceed to Quotation') }}</span>
+                        <svg class="w-4 h-4 text-white shrink-0" fill="none" stroke="#ffffff" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- REGISTER NEW CLIENT & CREATE QUOTE MODAL --}}
+    <div x-show="showNewLeadQuoteModal" x-cloak class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div @click.away="showNewLeadQuoteModal = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-lg w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21v-2a4 4 0 00-4-4H9a4 4 0 00-4 4v2m12-10a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-900 dark:text-white">{{ __('New Client & Quotation Builder') }}</h3>
+                        <p class="text-[11px] text-slate-400">{{ __('Enter client details to create lead and launch quotation') }}</p>
+                    </div>
+                </div>
+                <button type="button" @click="showNewLeadQuoteModal = false" class="text-slate-400 hover:text-slate-600 text-lg leading-none cursor-pointer">&times;</button>
+            </div>
+
+            <form method="POST" action="{{ route('leads.store') }}" class="space-y-4 mt-4">
+                @csrf
+                <input type="hidden" name="for_quote" value="1">
+                <input type="hidden" name="return_to" value="quotation">
+                <input type="hidden" name="source" value="field_technician">
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{{ __('Customer / Contact Name *') }}</label>
+                    <input type="text" name="customer_name" required placeholder="e.g. Rajesh Sharma" class="w-full text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{{ __('Phone Number (WhatsApp) *') }}</label>
+                        <input type="tel" name="phone" required placeholder="e.g. 9876543210" class="w-full text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{{ __('Email Address') }}</label>
+                        <input type="email" name="email" placeholder="e.g. rajesh@example.com" class="w-full text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{{ __('Company / Organization (Optional)') }}</label>
+                    <input type="text" name="company_name" placeholder="e.g. Apex Security Solutions Pvt Ltd" class="w-full text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{{ __('Installation Facility / Site Address') }}</label>
+                    <textarea name="site_address" rows="2" placeholder="e.g. #14, 2nd Main Road, Industrial Estate, Bengaluru" class="w-full text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{{ __('Project Requirement / Client Scope Notes') }}</label>
+                    <textarea name="notes" rows="2" placeholder="e.g. 8-channel IP CCTV setup with 2TB HDD, cabling estimate 120m..." class="w-full text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200"></textarea>
+                </div>
+
+                <div class="pt-3 flex items-center justify-between border-t border-slate-100 dark:border-slate-800">
+                    <button type="button" @click="showNewLeadQuoteModal = false" class="px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-semibold transition cursor-pointer">
+                        {{ __('Cancel') }}
+                    </button>
+                    <button type="submit" 
+                            class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-bold text-xs sm:text-sm shadow-sm transition cursor-pointer" 
+                            style="color: #ffffff !important; background-color: #2563eb !important;">
+                        <span class="text-white font-bold" style="color: #ffffff !important;">{{ __('Create Client & Build Quote') }}</span>
+                        <svg class="w-4 h-4 text-white shrink-0" fill="none" stroke="#ffffff" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
     </div>
 
     <script>
@@ -1192,7 +1610,7 @@
                             </div>
                             <a href="${data.show_url}" 
                                class="self-start sm:self-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 min-h-[38px] rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-bold transition shadow-xs">
-                                <span>${techScanText.viewHistory}</span> &rarr;
+                                <span>${techScanText.viewHistory}</span> →
                             </a>
                         </div>
                     `;
@@ -1212,7 +1630,7 @@
                             <a href="{{ route('equipment.create') }}?product_id=${data.id}&serial=${encodeURIComponent(code)}" 
                                class="self-start sm:self-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 min-h-[38px] rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 !text-white font-bold text-xs sm:text-sm shadow-sm transition"
                                style="color: #ffffff !important;">
-                                <span style="color: #ffffff !important;">${techScanText.installAtSite} &rarr;</span>
+                                <span style="color: #ffffff !important;">${techScanText.installAtSite} →</span>
                             </a>
                         </div>
                     `;
@@ -1233,7 +1651,7 @@
                             <a href="{{ route('equipment.create') }}?serial=${encodeURIComponent(code)}" 
                                class="self-start sm:self-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 min-h-[38px] rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 !text-white font-bold text-xs sm:text-sm shadow-sm transition"
                                style="color: #ffffff !important;">
-                                <span style="color: #ffffff !important;">${techScanText.registerNew} &rarr;</span>
+                                <span style="color: #ffffff !important;">${techScanText.registerNew} →</span>
                             </a>
                         </div>
                     `;

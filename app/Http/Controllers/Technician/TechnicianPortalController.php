@@ -379,10 +379,15 @@ class TechnicianPortalController extends Controller
             $primaryProject = null;
         }
 
-        $leads = \App\Models\Lead::orderBy('customer_name')->limit(100)->get();
+        $leads = \App\Models\Lead::orderBy('customer_name')->limit(150)->get();
+        $quotations = \App\Models\Quotation::with(['lead', 'items'])
+            ->latest('id')
+            ->take(50)
+            ->get();
 
         return view('technician.dashboard', compact(
             'leads',
+            'quotations',
             'activeJobs',
             'completedJobs',
             'activeSurveys',

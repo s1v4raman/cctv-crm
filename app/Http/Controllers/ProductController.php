@@ -230,6 +230,14 @@ class ProductController extends Controller
                 'default_warranty_months',
             ]);
 
+        $user = $request->user() ?: Auth::user();
+        if ($user?->isTechnician()) {
+            $products->makeHidden(['unit_price']);
+            $products->each(function ($p) {
+                $p->unit_price = 0;
+            });
+        }
+
         return response()->json($products);
     }
 

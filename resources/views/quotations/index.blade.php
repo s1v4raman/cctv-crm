@@ -5,7 +5,15 @@
         $viewLabels = \App\Http\Controllers\QuotationController::VIEWS;
         $quickFilters = \App\Http\Controllers\QuotationController::QUICK_FILTERS;
         $sortLabels = \App\Http\Controllers\QuotationController::SORTS;
-        $statusLabels = ['draft' => 'Draft', 'sent' => 'Sent', 'accepted' => 'Accepted', 'rejected' => 'Rejected', 'expired' => 'Expired'];
+        $statusLabels = [
+            'draft' => 'Draft',
+            'pending_approval' => 'Pending Review',
+            'approved' => 'Approved',
+            'sent' => 'Sent',
+            'accepted' => 'Accepted',
+            'rejected' => 'Rejected',
+            'expired' => 'Expired'
+        ];
         $only = (array) request('only', []);
         $pickedStatus = (array) request('status', []);
         $letter = preg_match('/^[A-Z]$/', (string) request('letter')) ? request('letter') : null;

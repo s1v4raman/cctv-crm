@@ -133,13 +133,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Admin-only actions are in the next group (see User::isOffice()).
     // ================================================================
     Route::middleware(['office'])->group(function () {
-        // Leads Write
-        Route::get('/leads/create', [LeadController::class, 'create'])->name('leads.create');
+        // Leads Bulk Operations & Export
         Route::get('/leads/export', [LeadController::class, 'export'])->name('leads.export');
         Route::post('/leads/bulk', [LeadController::class, 'bulk'])->name('leads.bulk');
         Route::get('/quotations/export', [QuotationController::class, 'export'])->name('quotations.export');
         Route::post('/quotations/bulk', [QuotationController::class, 'bulk'])->name('quotations.bulk');
-        Route::post('/leads', [LeadController::class, 'store'])->name('leads.store');
         Route::get('/leads/{lead}/edit', [LeadController::class, 'edit'])->name('leads.edit');
         Route::put('/leads/{lead}', [LeadController::class, 'update'])->name('leads.update');
         Route::post('/leads/{lead}/status', [LeadController::class, 'updateStatus'])->name('leads.status');
@@ -412,7 +410,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/projects/{project}/devices/{device}/reveal', [IpDeviceController::class, 'revealPassword'])->name('projects.devices.reveal');
         Route::get('/projects/{project}/devices/export', [IpDeviceController::class, 'export'])->name('projects.devices.export');
 
-        // Leads Read-Only
+        // Leads Management & Customer Registration (All Internal Users: Admin, Staff, Technician)
+        Route::get('/leads/create', [LeadController::class, 'create'])->name('leads.create');
+        Route::post('/leads', [LeadController::class, 'store'])->name('leads.store');
         Route::get('/leads', [LeadController::class, 'index'])->name('leads.index');
         Route::get('/leads/{lead}', [LeadController::class, 'show'])->name('leads.show');
         Route::get('/leads/{lead}/vcard', [LeadController::class, 'downloadVcard'])->name('leads.vcard');
@@ -425,6 +425,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('/quotations/{quotation}', [QuotationController::class, 'update'])->name('quotations.update');
         Route::delete('/quotations/{quotation}', [QuotationController::class, 'destroy'])->middleware('admin')->name('quotations.destroy');
         Route::post('/quotations/{quotation}/accept', [QuotationController::class, 'markAccepted'])->name('quotations.accept');
+        Route::post('/quotations/{quotation}/approve', [QuotationController::class, 'approve'])->name('quotations.approve');
+        Route::post('/quotations/{quotation}/set-format', [QuotationController::class, 'updateFormat'])->name('quotations.set-format');
+        Route::post('/quotations/{quotation}/update-pricing', [QuotationController::class, 'updatePricing'])->name('quotations.update-pricing');
         Route::post('/quotations/{quotation}/reject', [QuotationController::class, 'markRejected'])->name('quotations.reject');
         Route::patch('/quotations/{quotation}/sent', [QuotationController::class, 'markSent'])->name('quotations.markSent');
         Route::post('/quotations/{quotation}/send-email', [QuotationController::class, 'sendEmail'])->name('quotations.send-email');

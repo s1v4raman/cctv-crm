@@ -182,7 +182,9 @@
                                 <th>Project Code</th>
                                 <th>Project Title</th>
                                 <th>Project Type</th>
-                                <th>Budget</th>
+                                @if(auth()->user()->isAdmin())
+                                    <th>Budget</th>
+                                @endif
                                 <th>Status</th>
                                 <th class="text-right">Action</th>
                             </tr>
@@ -205,7 +207,9 @@
                                             {{ $prj->project_type_label }}
                                         </span>
                                     </td>
-                                    <td style="white-space: nowrap;">₹{{ number_format($prj->budget, 2) }}</td>
+                                    @if(auth()->user()->isAdmin())
+                                        <td style="white-space: nowrap;">₹{{ number_format($prj->budget, 2) }}</td>
+                                    @endif
                                     <td>
                                         <span class="status-{{ strtolower($prj->status) }}">
                                             {{ ucfirst(str_replace('_', ' ', $prj->status)) }}

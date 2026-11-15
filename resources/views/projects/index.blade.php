@@ -133,9 +133,13 @@
                         </div>
 
                         <div class="flex items-center gap-3 shrink-0">
-                            @if($project->budget)
+                            @if(auth()->user()->isAdmin() && $project->budget)
                                 <span class="text-xs font-bold text-slate-900 dark:text-white">
                                     {{ \App\Support\Inr::money($project->budget) }}
+                                </span>
+                            @elseif($project->deadline)
+                                <span class="text-xs text-slate-400">
+                                    due {{ \Carbon\Carbon::parse($project->deadline)->format('d/m/Y') }}
                                 </span>
                             @endif
 
@@ -180,12 +184,12 @@
     {{-- ═══════════════════════════════════════════════════════════════════ --}}
     <div class="hidden lg:block">
         <x-list-page key="projects" :paginator="$projects" :views="$views"
-            :sorts="['status' => 'Open work first', 'newest' => 'Newest first', 'updated' => 'Recently updated', 'deadline_asc' => 'Deadline, soonest', 'budget_desc' => 'Budget, high to low']"
+            :sorts="auth()->user()->isAdmin() ? ['status' => 'Open work first', 'newest' => 'Newest first', 'updated' => 'Recently updated', 'deadline_asc' => 'Deadline, soonest', 'budget_desc' => 'Budget, high to low'] : ['status' => 'Open work first', 'newest' => 'Newest first', 'updated' => 'Recently updated', 'deadline_asc' => 'Deadline, soonest']"
             :create-url="$canCreate ? route('projects.create') : null" :create-label="__('New Project')"
             :export-url="route('projects.export-csv', request()->all())"
             :filter-title="__('Filter Projects by')" :filter-action="route('projects.index')" :keep="['sort' => request('sort'), 'per_page' => request('per_page')]"
             :filter-count="$filterCount" :clear-url="route('projects.index')"
-            :columns="['customer' => __('Customer'), 'type' => __('Type'), 'team' => __('Team'), 'progress' => __('Progress'), 'budget' => __('Budget / due'), 'priority' => __('Priority'), 'status' => __('Status')]"
+            :columns="auth()->user()->isAdmin() ? ['customer' => __('Customer'), 'type' => __('Type'), 'team' => __('Team'), 'progress' => __('Progress'), 'budget' => __('Budget / due'), 'priority' => __('Priority'), 'status' => __('Status')] : ['customer' => __('Customer'), 'type' => __('Type'), 'team' => __('Team'), 'progress' => __('Progress'), 'budget' => __('Due date'), 'priority' => __('Priority'), 'status' => __('Status')]"
             :empty-text="__('No projects yet.')" :filtered-text="__('No projects match these filters.')">
 
             <x-slot name="filters">
@@ -241,7 +245,7 @@
                 <th x-show="cols.type" style="min-width: 190px">{{ __('Type') }}</th>
                 <th x-show="cols.team" style="min-width: 160px">{{ __('Team') }}</th>
                 <th x-show="cols.progress" style="min-width: 110px">{{ __('Progress') }}</th>
-                <th x-show="cols.budget" style="min-width: 130px; text-align: right">{{ __('Budget / due') }}</th>
+                <th x-show="cols.budget" style="min-width: 130px; text-align: right">{{ auth()->user()->isAdmin() ? __('Budget / due') : __('Due date') }}</th>
                 <th x-show="cols.priority" style="min-width: 90px">{{ __('Priority') }}</th>
                 <th x-show="cols.status" style="min-width: 150px">{{ __('Status') }}</th>
             </x-slot>
@@ -277,7 +281,7 @@
                         </div>
                     </td>
                     <td x-show="cols.budget" class="whitespace-nowrap" style="text-align: right">
-                        @if($project->budget)
+                        @if(auth()->user()->isAdmin() && $project->budget)
                             {{ \App\Support\Inr::money($project->budget) }}
                         @elseif($project->deadline)
                             <span style="color: var(--ld-muted)">due {{ \Carbon\Carbon::parse($project->deadline)->format('d/m/Y') }}</span>

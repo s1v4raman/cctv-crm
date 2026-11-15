@@ -161,7 +161,55 @@ class HeaderNotificationService
                     'is_unread'   => true,
                 ]);
             }
+
+            // Pending Technician Quotations awaiting Admin & Office approval
+            $pendingQuotations = \App\Models\Quotation::with(['lead', 'creator'])
+                ->where('status', 'pending_approval')
+                ->latest()
+                ->take(4)
+                ->get();
+
+            foreach ($pendingQuotations as $pQuote) {
+                $custName = $pQuote->lead?->customer_name ?? 'Customer';
+                $techName = $pQuote->creator?->name ?? 'Field Technician';
+                $quoteNo = $pQuote->quotation_no ?? ('QUO-' . $pQuote->id);
+                $items->push([
+                    'id'          => 'pending-quote-' . $pQuote->id,
+                    'title'       => "Quotation Review: {$quoteNo}",
+                    'description' => "By {$techName} for {$custName} • Needs Pricing & Item Review",
+                    'time'        => $pQuote->created_at ? $pQuote->created_at->diffForHumans(null, true) . ' ago' : 'Recently',
+                    'timestamp'   => $pQuote->created_at ? $pQuote->created_at->timestamp : time(),
+                    'icon'        => 'quotation',
+                    'url'         => route('quotations.show', $pQuote),
+                    'activity_at' => $pQuote->created_at?->timestamp,
+                    'is_unread'   => true,
+                ]);
+            }
         } elseif ($user->isTechnician()) {
+            // Approved Quotations ready for technician to send to customer
+            $approvedQuotations = \App\Models\Quotation::with(['lead'])
+                ->where('status', 'approved')
+                ->where('created_by', $user->id)
+                ->latest()
+                ->take(3)
+                ->get();
+
+            foreach ($approvedQuotations as $aQuote) {
+                $custName = $aQuote->lead?->customer_name ?? 'Customer';
+                $quoteNo = $aQuote->quotation_no ?? ('QUO-' . $aQuote->id);
+                $items->push([
+                    'id'          => 'approved-quote-' . $aQuote->id,
+                    'title'       => "Quotation Approved: {$quoteNo}",
+                    'description' => "For {$custName} • Ready to dispatch via WhatsApp & Email",
+                    'time'        => $aQuote->updated_at ? $aQuote->updated_at->diffForHumans(null, true) . ' ago' : 'Recently',
+                    'timestamp'   => $aQuote->updated_at ? $aQuote->updated_at->timestamp : time(),
+                    'icon'        => 'quotation',
+                    'url'         => route('quotations.show', $aQuote),
+                    'activity_at' => $aQuote->updated_at?->timestamp,
+                    'is_unread'   => true,
+                ]);
+            }
+
             // Technician assigned jobs
             $jobs = InstallationJob::where('assigned_technician_id', $user->id)
                 ->whereIn('status', ['scheduled', 'in_progress'])
@@ -254,6 +302,36 @@ class HeaderNotificationService
             ]);
         } catch (\Throwable $e) {
             // Log fallback if DB constraint occurs
+        }
+    }
+
+    /**
+     * Notify Admin and Staff when a technician submits a quotation from site.
+     */
+    public static function notifyAdminAndStaffOfQuotation(\App\Models\Quotation $quotation, \App\Models\User $technician): void
+    {
+        $adminAndStaff = User::whereIn('role', ['admin', 'staff'])->get();
+        foreach ($adminAndStaff as $u) {
+            Cache::forget("topbar_notifs_user_{$u->id}");
+        }
+
+        try {
+            NotificationLog::create([
+                'channel'        => 'email',
+                'event_type'     => 'quotation_pending_approval',
+                'recipient_type' => 'admin',
+                'recipient_name' => 'Admin & Employee Team',
+                'subject'        => "Field Quotation #{$quotation->quotation_no} by {$technician->name}",
+                'message_body'   => "Technician {$technician->name} created a quotation for " . ($quotation->lead?->customer_name ?? 'Client') . " with " . $quotation->items->count() . " items. Pending pricing review.",
+                'action_url'     => route('quotations.show', $quotation),
+                'status'         => 'delivered',
+                'reference_type' => get_class($quotation),
+                'reference_id'   => $quotation->id,
+                'sent_at'        => now(),
+                'created_by'     => $technician->id,
+            ]);
+        } catch (\Throwable $e) {
+            // Log fallback
         }
     }
 }

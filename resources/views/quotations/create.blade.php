@@ -1,8 +1,12 @@
 <x-app-layout>
+    @php
+        $isTechnician = auth()->user()?->isTechnician();
+    @endphp
+
     <x-slot name="header">
         <div>
-            <a href="{{ route('leads.show', $lead) }}" class="back-link">&larr; Back</a>
-            <h2 class="text-xl font-bold text-slate-900 dark:text-white mt-1">Create Quotation</h2>
+            <a href="{{ $isTechnician ? route('technician.dashboard') : route('leads.show', $lead) }}" class="back-link">&larr; Back</a>
+            <h2 class="text-xl font-bold text-slate-900 dark:text-white mt-1">{{ $isTechnician ? __('Prepare On-Site Quotation Scope') : __('Create Quotation') }}</h2>
             <div class="text-xs text-slate-500 mt-0.5">
                 Customer: <strong class="text-slate-900 dark:text-white">{{ $lead->customer_name }}</strong> ({{ $lead->phone }})
             </div>
@@ -31,7 +35,7 @@
                         </div>
                     @endif
 
-                    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                    <div class="grid grid-cols-1 gap-4 {{ $isTechnician ? 'md:grid-cols-2' : 'md:grid-cols-3' }}">
                         <div>
                             <label for="quotation_date"
                                    class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
@@ -67,6 +71,7 @@
                             @enderror
                         </div>
 
+                        @if(!$isTechnician)
                         <div>
                             <label for="tax_percent"
                                    class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
@@ -85,6 +90,47 @@
                             @error('tax_percent')
                                 <p class="mt-1 text-xs font-semibold text-rose-500 dark:text-rose-400">{{ $message }}</p>
                             @enderror
+                        </div>
+                        @else
+                            <input type="hidden" id="tax_percent" name="tax_percent" value="18">
+                        @endif
+                    </div>
+
+                    {{-- Quotation PDF Format Selection --}}
+                    <div class="mt-6 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 p-4 sm:p-5">
+                        <div class="flex items-center justify-between mb-3">
+                            <label class="block text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
+                                {{ __('Quotation PDF Format & Style') }}
+                            </label>
+                            <span class="text-[11px] text-slate-400">
+                                {{ $isTechnician ? __('Choose preferred layout for Admin review') : __('Select layout style') }}
+                            </span>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <label class="flex items-start gap-3 p-3.5 rounded-xl border border-blue-500 bg-blue-50/50 dark:bg-blue-950/40 cursor-pointer text-xs transition">
+                                <input type="radio" name="pdf_format" value="1" @checked(old('pdf_format', '1') === '1') class="accent-blue-600 mt-0.5 shrink-0">
+                                <div>
+                                    <div class="font-bold text-slate-900 dark:text-white leading-tight">Executive Modern</div>
+                                    <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Format 1 &bull; Visual cards & sleek branding</div>
+                                </div>
+                            </label>
+
+                            <label class="flex items-start gap-3 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-blue-400 cursor-pointer text-xs transition">
+                                <input type="radio" name="pdf_format" value="2" @checked(old('pdf_format') === '2') class="accent-blue-600 mt-0.5 shrink-0">
+                                <div>
+                                    <div class="font-bold text-slate-900 dark:text-white leading-tight">Technical Detailed</div>
+                                    <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Format 2 &bull; Hardware breakdown & specs</div>
+                                </div>
+                            </label>
+
+                            <label class="flex items-start gap-3 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-blue-400 cursor-pointer text-xs transition">
+                                <input type="radio" name="pdf_format" value="3" @checked(old('pdf_format') === '3') class="accent-blue-600 mt-0.5 shrink-0">
+                                <div>
+                                    <div class="font-bold text-slate-900 dark:text-white leading-tight">Classic Formal</div>
+                                    <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Format 3 &bull; Business letterhead terms</div>
+                                </div>
+                            </label>
                         </div>
                     </div>
 
@@ -123,12 +169,14 @@
                                         <th class="px-3 py-3 text-left text-[11px] font-extrabold uppercase tracking-wider text-slate-600 dark:text-slate-400">
                                             Unit
                                         </th>
+                                        @if(!$isTechnician)
                                         <th class="px-3 py-3 text-left text-[11px] font-extrabold uppercase tracking-wider text-slate-600 dark:text-slate-400">
                                             Unit Price
                                         </th>
                                         <th class="px-3 py-3 text-right text-[11px] font-extrabold uppercase tracking-wider text-slate-600 dark:text-slate-400">
                                             Total
                                         </th>
+                                        @endif
                                         <th class="px-3 py-3"></th>
                                     </tr>
                                 </thead>
@@ -190,6 +238,7 @@
                                                 </select>
                                             </td>
 
+                                            @if(!$isTechnician)
                                             <td class="p-2 align-top">
                                                 <input aria-label="Unit price" type="number"
                                                        name="items[{{ $index }}][unit_price]"
@@ -203,6 +252,9 @@
                                             <td class="line-total p-2 text-right text-xs font-bold text-slate-800 dark:text-amber-400 font-mono align-middle">
                                                 ₹0.00
                                             </td>
+                                            @else
+                                                <input type="hidden" class="unit-price" name="items[{{ $index }}][unit_price]" value="{{ $item['unit_price'] ?? 0 }}">
+                                            @endif
 
                                             <td class="p-2 text-right align-middle">
                                                 <button type="button"
@@ -235,6 +287,7 @@
                             @enderror
                         </div>
 
+                        @if(!$isTechnician)
                         <div class="rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/90 dark:border-slate-700/80 p-5 space-y-3">
                             <div class="flex justify-between items-center text-xs text-slate-600 dark:text-slate-400">
                                 <span>Subtotal</span>
@@ -263,16 +316,44 @@
                                 <span id="grand-total-display" class="text-blue-600 dark:text-amber-400 font-mono text-xl font-black">₹0.00</span>
                             </div>
                         </div>
+                        @else
+                        <div class="rounded-2xl bg-blue-50/70 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800/70 p-5 space-y-3">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-8 h-8 rounded-xl bg-blue-100 dark:bg-blue-900/60 text-blue-600 dark:text-blue-300 flex items-center justify-center shrink-0">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                </div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-blue-950 dark:text-blue-200">{{ __('Automated Office Review & Pricing') }}</h4>
+                                    <p class="text-[11px] text-blue-800/80 dark:text-blue-300/80 mt-0.5">{{ __('Product costs and quotation totals are calculated & reviewed by office management') }}</p>
+                                </div>
+                            </div>
+                            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed border-t border-blue-100 dark:border-blue-900/50 pt-2.5">
+                                {{ __('As an on-site technician, please select the items, equipment specifications, and quantities required. Once submitted, your quotation will be immediately sent to Admin & Office staff for price verification and approval.') }}
+                            </p>
+                            <input type="hidden" id="discount" name="discount" value="0">
+                        </div>
+                        @endif
                     </div>
 
-                    <div class="form-actions mt-8">
-                        <a href="{{ route('leads.show', $lead) }}" class="btn-secondary">
-                            Cancel
+                    <div class="form-actions mt-8 flex items-center justify-end gap-3">
+                        <a href="{{ $isTechnician ? route('technician.dashboard') : route('leads.show', $lead) }}" 
+                           class="inline-flex items-center justify-center px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 font-semibold text-xs sm:text-sm transition shadow-2xs">
+                            {{ __('Cancel') }}
                         </a>
 
-                        <button type="submit" class="btn-primary">
-                            Save
-                        </button>
+                        @if($isTechnician)
+                            <button type="submit" 
+                                    class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white font-bold text-xs sm:text-sm shadow-sm transition cursor-pointer" 
+                                    style="background-color: #059669 !important; color: #ffffff !important;">
+                                <span class="text-white font-bold" style="color: #ffffff !important;">{{ __('Submit for Admin Approval') }}</span>
+                                <svg class="w-4 h-4 text-white shrink-0" fill="none" stroke="#ffffff" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+                            </button>
+                        @else
+                            <button type="submit" class="btn-primary text-xs sm:text-sm font-bold inline-flex items-center gap-2">
+                                <span>{{ __('Save Quotation') }}</span>
+                                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                            </button>
+                        @endif
                     </div>
                 </form>
             </div>
@@ -323,6 +404,7 @@
                 </select>
             </td>
 
+            @if(!$isTechnician)
             <td class="p-2 align-top">
                 <input aria-label="Unit price" type="number"
                        name="items[__INDEX__][unit_price]"
@@ -336,6 +418,9 @@
             <td class="line-total p-2 text-right text-xs font-bold text-slate-800 dark:text-amber-400 font-mono align-middle">
                 ₹0.00
             </td>
+            @else
+                <input type="hidden" class="unit-price" name="items[__INDEX__][unit_price]" value="0">
+            @endif
 
             <td class="p-2 text-right align-middle">
                 <button type="button"
@@ -352,6 +437,7 @@
     </div>
 
     <script>
+        const isTechnician = {{ $isTechnician ? 'true' : 'false' }};
         const itemsBody = document.getElementById('items-body');
         const template = document.getElementById('item-row-template').innerHTML;
         const addRowButton = document.getElementById('add-row');
@@ -372,26 +458,31 @@
         }
 
         function calculateTotals() {
+            if (isTechnician) return;
             let subtotal = 0;
 
             document.querySelectorAll('.item-row').forEach((row) => {
                 const quantity = parseFloat(row.querySelector('.quantity').value) || 0;
-                const unitPrice = parseFloat(row.querySelector('.unit-price').value) || 0;
+                const unitPrice = parseFloat(row.querySelector('.unit-price')?.value) || 0;
                 const lineTotal = quantity * unitPrice;
 
-                row.querySelector('.line-total').textContent = money(lineTotal);
+                const lineTotalEl = row.querySelector('.line-total');
+                if (lineTotalEl) lineTotalEl.textContent = money(lineTotal);
                 subtotal += lineTotal;
             });
 
-            const discount = parseFloat(discountInput.value) || 0;
-            const taxPercent = parseFloat(taxPercentInput.value) || 0;
+            const discount = parseFloat(discountInput?.value) || 0;
+            const taxPercent = parseFloat(taxPercentInput?.value) || 0;
             const taxableAmount = Math.max(subtotal - discount, 0);
             const taxAmount = taxableAmount * (taxPercent / 100);
             const grandTotal = taxableAmount + taxAmount;
 
-            document.getElementById('subtotal-display').textContent = money(subtotal);
-            document.getElementById('tax-display').textContent = money(taxAmount);
-            document.getElementById('grand-total-display').textContent = money(grandTotal);
+            const subDisplay = document.getElementById('subtotal-display');
+            if (subDisplay) subDisplay.textContent = money(subtotal);
+            const taxDisplay = document.getElementById('tax-display');
+            if (taxDisplay) taxDisplay.textContent = money(taxAmount);
+            const gtDisplay = document.getElementById('grand-total-display');
+            if (gtDisplay) gtDisplay.textContent = money(grandTotal);
         }
 
         const productDropdown = document.getElementById('quotation-product-dropdown');
@@ -462,7 +553,11 @@
             row.querySelector('.item-name').value = product.name;
             row.querySelector('.item-description').value = product.description || '';
             row.querySelector('.item-unit').value = product.unit;
-            row.querySelector('.unit-price').value = product.unit_price;
+            
+            const unitPriceInput = row.querySelector('.unit-price');
+            if (unitPriceInput) {
+                unitPriceInput.value = isTechnician ? 0 : (product.unit_price || 0);
+            }
 
             hideAllProductResults();
             calculateTotals();
@@ -536,11 +631,13 @@
                                 </div>
                             ` : ''}
                         </div>
+                        ${!isTechnician && product.unit_price ? `
                         <div class="shrink-0 text-right">
                             <span class="inline-block px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200/80 dark:border-emerald-800/50 shadow-2xs">
                                 ${money(product.unit_price)}
                             </span>
                         </div>
+                        ` : ''}
                     `;
 
                     button.addEventListener('mousedown', (event) => {

@@ -129,6 +129,44 @@
                         </div>
                     </div>
 
+                    {{-- Quotation PDF Format & Style Selection --}}
+                    <div class="mt-6 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 p-4 sm:p-5">
+                        <div class="flex items-center justify-between mb-3">
+                            <label class="block text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
+                                {{ __('Quotation PDF Format & Layout') }}
+                            </label>
+                            <span class="text-[11px] text-slate-400">
+                                {{ __('Choose the layout format to generate and share with the customer') }}
+                            </span>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <label class="flex items-start gap-3 p-3.5 rounded-xl border border-blue-500 bg-blue-50/50 dark:bg-blue-950/40 cursor-pointer text-xs transition">
+                                <input type="radio" name="pdf_format" value="1" @checked(old('pdf_format', $quotation->pdf_format ?? '1') === '1') class="accent-blue-600 mt-0.5 shrink-0">
+                                <div>
+                                    <div class="font-bold text-slate-900 dark:text-white leading-tight">Executive Modern</div>
+                                    <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Format 1 &bull; Visual cards & sleek branding</div>
+                                </div>
+                            </label>
+
+                            <label class="flex items-start gap-3 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-blue-400 cursor-pointer text-xs transition">
+                                <input type="radio" name="pdf_format" value="2" @checked(old('pdf_format', $quotation->pdf_format ?? '1') === '2') class="accent-blue-600 mt-0.5 shrink-0">
+                                <div>
+                                    <div class="font-bold text-slate-900 dark:text-white leading-tight">Technical Detailed</div>
+                                    <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Format 2 &bull; Hardware breakdown & specs</div>
+                                </div>
+                            </label>
+
+                            <label class="flex items-start gap-3 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-blue-400 cursor-pointer text-xs transition">
+                                <input type="radio" name="pdf_format" value="3" @checked(old('pdf_format', $quotation->pdf_format ?? '1') === '3') class="accent-blue-600 mt-0.5 shrink-0">
+                                <div>
+                                    <div class="font-bold text-slate-900 dark:text-white leading-tight">Classic Formal</div>
+                                    <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Format 3 &bull; Business letterhead terms</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
                     <div class="mt-8">
                         <div class="mb-4 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
                             <div>

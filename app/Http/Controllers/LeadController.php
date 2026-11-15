@@ -209,6 +209,11 @@ class LeadController extends Controller
                 ->with('status', "Customer '{$lead->customer_name}' added. You can now register their equipment.");
         }
 
+        if (Auth::user()?->isTechnician()) {
+            return redirect()->route('technician.dashboard')
+                ->with('status', "Customer '{$lead->customer_name}' registered successfully.");
+        }
+
         return redirect()->route('leads.show', $lead)->with('status', 'Lead created.');
     }
 

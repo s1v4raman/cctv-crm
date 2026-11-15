@@ -10,6 +10,9 @@ class Quotation extends Model
 {
     protected $fillable = [
         'lead_id',
+        'created_by',
+        'approved_by',
+        'approved_at',
         'quotation_no',
         'quotation_date',
         'valid_until',
@@ -24,7 +27,19 @@ class Quotation extends Model
         'rejected_at',
         'rejection_reason',
         'notes',
+        'pdf_format',
     ];
+
+    public const FORMATS = [
+        '1' => 'Executive Modern',
+        '2' => 'Technical Detailed',
+        '3' => 'Classic Formal',
+    ];
+
+    public function getPdfFormatNameAttribute(): string
+    {
+        return self::FORMATS[$this->pdf_format ?? '1'] ?? 'Executive Modern';
+    }
 
     protected function casts(): array
     {
@@ -34,7 +49,33 @@ class Quotation extends Model
             'sent_at' => 'datetime',
             'accepted_at' => 'datetime',
             'rejected_at' => 'datetime',
+            'approved_at' => 'datetime',
         ];
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function approver()
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    public function isPendingApproval(): bool
+    {
+        return $this->status === 'pending_approval';
+    }
+
+    public function isApproved(): bool
+    {
+        return in_array($this->status, ['approved', 'sent', 'accepted']);
+    }
+
+    public function canSendToCustomer(): bool
+    {
+        return in_array($this->status, ['approved', 'sent', 'accepted']);
     }
 
     public function lead()
