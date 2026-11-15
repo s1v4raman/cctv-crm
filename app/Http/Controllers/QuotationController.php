@@ -160,6 +160,17 @@ class QuotationController extends Controller
                 $quotation->lead->update($updates);
                 $quotation->load('lead');
             }
+        } elseif (!empty($customName) || !empty($customPhone)) {
+            // Automatically add new customer to contacts (Lead model) if quotation had no lead
+            $lead = \App\Models\Lead::create([
+                'customer_name' => $customName ?: 'Customer',
+                'phone'         => $customPhone ?: '',
+                'source'        => 'quotation',
+                'status'        => 'contacted',
+                'created_by'    => Auth::id(),
+            ]);
+            $quotation->update(['lead_id' => $lead->id]);
+            $quotation->load('lead');
         }
 
         $customMsg = $request->input('custom_message');

@@ -96,14 +96,41 @@ class WorkerAttendanceController extends Controller
 
         $punchedByWorkerId = $attendances->keyBy('worker_id');
 
-        // Summary metrics for the day
+        // Fetch all work days logged for this date to display per-day overall site work output & reporting technician
+        $workDaysToday = WorkDay::whereDate('work_date', $selectedDate->toDateString())
+            ->with(['project.site', 'logger', 'attendances.worker'])
+            ->get();
+
+        $siteWorkSummaries = $workDaysToday->map(function ($wd) {
+            $cabling = (float) ($wd->total_cabling_metres > 0 ? $wd->total_cabling_metres : $wd->attendances->sum('cabling_metres'));
+            $cameras = (int) ($wd->total_cameras_installed > 0 ? $wd->total_cameras_installed : $wd->attendances->sum('cameras_installed'));
+
+            return (object) [
+                'work_day_id' => $wd->id,
+                'project' => $wd->project,
+                'project_title' => $wd->project?->title ?? 'CCTV Site',
+                'site_name' => $wd->project?->site?->site_name ?? ($wd->project?->customer_name ?? 'Project Site'),
+                'logger_name' => $wd->logger?->name ?? 'Technician',
+                'total_cabling' => $cabling,
+                'total_cameras' => $cameras,
+                'workers_count' => $wd->attendances->count(),
+                'worker_names' => $wd->attendances->map(fn ($a) => $a->worker?->name)->filter()->values()->all(),
+                'notes' => $wd->notes,
+                'created_at' => $wd->created_at,
+            ];
+        });
+
+        $reportingTechNames = $siteWorkSummaries->pluck('logger_name')->unique()->values();
+
+        // Summary metrics for the day: total site cable, total cameras, and reporting technician
         $metrics = [
             'total_present' => $attendances->count(),
             'full_day_count' => $attendances->where('attendance_type', 'full')->count(),
             'half_day_count' => $attendances->where('attendance_type', 'half')->count(),
-            'total_cabling' => (float) $attendances->sum('cabling_metres'),
-            'total_cameras' => (int) $attendances->sum('cameras_installed'),
-            'total_labor_cost' => (float) $attendances->sum('total_amount'),
+            'total_cabling' => (float) $siteWorkSummaries->sum('total_cabling'),
+            'total_cameras' => (int) $siteWorkSummaries->sum('total_cameras'),
+            'reporting_technicians' => $reportingTechNames,
+            'technician_display' => $reportingTechNames->isNotEmpty() ? $reportingTechNames->join(', ') : __('Direct / Office'),
         ];
 
         // 2. Build complete workforce roster (all active workers + any punched inactive/archived workers)
@@ -218,6 +245,7 @@ class WorkerAttendanceController extends Controller
             'selectedDate',
             'roster',
             'attendances',
+            'siteWorkSummaries',
             'unpunchedWorkers',
             'metrics',
             'statusCounts',
@@ -696,21 +724,18 @@ class WorkerAttendanceController extends Controller
                 ]
             );
 
-            $workerCount = count($workers);
-            $multiplier = ($validated['attendance_type'] === 'half') ? 0.5 : 1.0;
             $totalCablingMetres = (float) ($validated['cabling_metres'] ?? 0);
             $totalCamerasInstalled = (int) ($validated['cameras_installed'] ?? 0);
-            $cablingRate = (float) ($project->per_metre_rate ?? 8.00);
-            $extraAmount = (float) ($validated['extra_amount'] ?? 0);
 
-            // Output allocation: If multiple workers are logged in bulk on site today,
-            // allocate the entered cabling & cameras evenly so each worker has their per-day output
-            // and the site sum accurately reflects only today's used cable/camera data
-            $perWorkerCabling = $workerCount > 1 ? round($totalCablingMetres / $workerCount, 1) : $totalCablingMetres;
-            $perWorkerCameras = $workerCount > 1 ? (int) floor($totalCamerasInstalled / $workerCount) : $totalCamerasInstalled;
+            // Record overall site-level output and reporting technician on the WorkDay
+            $workDay->update([
+                'logged_by' => Auth::id() ?? $workDay->logged_by,
+                'total_cabling_metres' => $totalCablingMetres,
+                'total_cameras_installed' => $totalCamerasInstalled,
+                'notes' => $validated['notes'] ?? $workDay->notes,
+            ]);
 
-            $remainingCabling = $totalCablingMetres;
-            $remainingCameras = $totalCamerasInstalled;
+            $multiplier = ($validated['attendance_type'] === 'half') ? 0.5 : 1.0;
 
             $checkInAt = now();
             if (!empty($validated['check_in_time'])) {
@@ -727,27 +752,10 @@ class WorkerAttendanceController extends Controller
             $approvedAt = $isTechnician ? null : now();
 
             $savedWorkerNames = [];
-            foreach ($workers as $index => $worker) {
-                // Distribute cabling & cameras cleanly across selected crew
-                if ($workerCount > 1) {
-                    if ($index === $workerCount - 1) {
-                        $cablingMetres = max(0, round($remainingCabling, 1));
-                        $camerasInstalled = max(0, $remainingCameras);
-                    } else {
-                        $cablingMetres = $perWorkerCabling;
-                        $camerasInstalled = $perWorkerCameras;
-                        $remainingCabling -= $cablingMetres;
-                        $remainingCameras -= $camerasInstalled;
-                    }
-                } else {
-                    $cablingMetres = $totalCablingMetres;
-                    $camerasInstalled = $totalCamerasInstalled;
-                }
-
-                $cablingAmount = $cablingMetres * $cablingRate;
+            foreach ($workers as $worker) {
                 $dailyRate = (float) ($worker->daily_rate > 0 ? $worker->daily_rate : 700.00);
                 $basePay = $dailyRate * $multiplier;
-                $totalAmount = $basePay + $cablingAmount + $extraAmount;
+                $totalAmount = $basePay;
 
                 // Check if record already exists for this work day and worker
                 $attendance = ProjectWorkerAttendance::where('work_day_id', $workDay->id)
@@ -762,12 +770,12 @@ class WorkerAttendanceController extends Controller
                         'check_in_at' => $attendance->check_in_at ?: $checkInAt,
                         'daily_rate_snapshot' => $dailyRate,
                         'rate_applied' => $basePay,
-                        'cabling_metres' => $cablingMetres,
-                        'cameras_installed' => $camerasInstalled,
-                        'cabling_rate' => $cablingRate,
-                        'cabling_amount' => $cablingAmount,
-                        'extra_amount' => $extraAmount,
-                        'extra_description' => $validated['extra_description'] ?? $attendance->extra_description,
+                        'cabling_metres' => 0,
+                        'cameras_installed' => 0,
+                        'cabling_rate' => 0,
+                        'cabling_amount' => 0,
+                        'extra_amount' => 0,
+                        'extra_description' => null,
                         'total_amount' => $totalAmount,
                         'notes' => $validated['notes'] ?? $attendance->notes,
                         'approval_status' => $approvalStatus,
@@ -785,12 +793,12 @@ class WorkerAttendanceController extends Controller
                         'check_in_at' => $checkInAt,
                         'daily_rate_snapshot' => $dailyRate,
                         'rate_applied' => $basePay,
-                        'cabling_metres' => $cablingMetres,
-                        'cameras_installed' => $camerasInstalled,
-                        'cabling_rate' => $cablingRate,
-                        'cabling_amount' => $cablingAmount,
-                        'extra_amount' => $extraAmount,
-                        'extra_description' => $validated['extra_description'] ?? null,
+                        'cabling_metres' => 0,
+                        'cameras_installed' => 0,
+                        'cabling_rate' => 0,
+                        'cabling_amount' => 0,
+                        'extra_amount' => 0,
+                        'extra_description' => null,
                         'total_amount' => $totalAmount,
                         'notes' => $validated['notes'] ?? null,
                         'approval_status' => $approvalStatus,

@@ -245,29 +245,29 @@
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
             @if($viewMode === 'day')
                 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-3 shadow-sm">
-                    <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wider">{{ __('Workers Present') }}</div>
+                    <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wider">{{ __('Workers On-Site') }}</div>
                     <div class="text-xl font-bold text-slate-900 dark:text-white mt-1">{{ $metrics['total_present'] }}</div>
                     <div class="text-[11px] text-slate-500 mt-0.5">{{ $metrics['full_day_count'] }} {{ __('Full') }} &bull; {{ $metrics['half_day_count'] }} {{ __('Half') }}</div>
                 </div>
                 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-3 shadow-sm">
-                    <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wider">{{ __('Cabling Run') }}</div>
-                    <div class="text-xl font-semibold text-slate-900 dark:text-white mt-1">{{ number_format($metrics['total_cabling'], 1) }} <span class="text-xs font-normal text-slate-500">m</span></div>
-                    <div class="text-[11px] text-slate-500 mt-0.5">{{ __('Physical cable meters') }}</div>
+                    <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wider">{{ __('Total Cable Used Today') }}</div>
+                    <div class="text-xl font-bold text-indigo-600 dark:text-indigo-400 mt-1">{{ number_format($metrics['total_cabling'], 1) }} <span class="text-xs font-normal text-slate-500">m</span></div>
+                    <div class="text-[11px] text-slate-500 mt-0.5">{{ __('Overall site cable pulled') }}</div>
                 </div>
                 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-3 shadow-sm">
-                    <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wider">{{ __('Cameras Mounted') }}</div>
-                    <div class="text-xl font-semibold text-slate-900 dark:text-white mt-1">{{ $metrics['total_cameras'] }} <span class="text-xs font-normal text-slate-500">units</span></div>
-                    <div class="text-[11px] text-slate-500 mt-0.5">{{ __('Installed today') }}</div>
+                    <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wider">{{ __('Total Cameras Installed') }}</div>
+                    <div class="text-xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">{{ $metrics['total_cameras'] }} <span class="text-xs font-normal text-slate-500">units</span></div>
+                    <div class="text-[11px] text-slate-500 mt-0.5">{{ __('Overall units mounted today') }}</div>
                 </div>
                 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-3 shadow-sm">
-                    <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wider">{{ __('Total Labor Wage') }}</div>
-                    <div class="text-xl font-bold text-slate-900 dark:text-white mt-1">&#8377;{{ number_format($metrics['total_labor_cost'], 2) }}</div>
-                    <div class="text-[11px] text-slate-500 mt-0.5">{{ __('Daily wages incurred') }}</div>
+                    <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wider">{{ __('Data Provided By') }}</div>
+                    <div class="text-sm font-bold text-slate-900 dark:text-white mt-1 truncate" title="{{ $metrics['technician_display'] }}">{{ $metrics['technician_display'] }}</div>
+                    <div class="text-[11px] text-blue-600 dark:text-blue-400 font-semibold mt-0.5">{{ __('Reporting Technician') }}</div>
                 </div>
                 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-3 shadow-sm">
-                    <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wider">{{ __('Technician Logged') }}</div>
-                    <div class="text-xl font-semibold text-slate-900 dark:text-white mt-1">{{ $attendances->whereNotNull('logged_by')->count() }} / {{ $metrics['total_present'] }}</div>
-                    <div class="text-[11px] text-slate-500 mt-0.5">{{ __('Submitted by field technicians') }}</div>
+                    <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wider">{{ __('Shifts Recorded') }}</div>
+                    <div class="text-xl font-semibold text-slate-900 dark:text-white mt-1">{{ $attendances->count() }}</div>
+                    <div class="text-[11px] text-slate-500 mt-0.5">{{ __('Workers on duty') }}</div>
                 </div>
                 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-3 shadow-sm">
                     <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wider">{{ __('Total Active Pool') }}</div>
@@ -296,23 +296,20 @@
                     <div class="text-[11px] text-slate-500 mt-0.5">{{ __('Mounted this week') }}</div>
                 </div>
                 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-3 shadow-sm">
-                    <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wider">{{ __('Gross Labor Cost') }}</div>
-                    <div class="text-xl font-bold text-slate-900 dark:text-white mt-1">&#8377;{{ number_format($metrics['total_labor_cost'], 2) }}</div>
-                    <div class="text-[11px] text-slate-500 mt-0.5">{{ __('Total weekly payable') }}</div>
-                </div>
-                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-3 shadow-sm flex flex-col justify-center items-start">
-                    @if(auth()->user()->isAdmin())
-                    <a href="{{ route('wages.index', ['week' => $weekStart->toDateString()]) }}" class="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1">
-                        <span>{{ __('Open Sunday Payday') }} &rarr;</span>
-                    </a>
-                    @endif
-                    <div class="text-[11px] text-slate-500 mt-1">{{ __('Settle weekly disbursements') }}</div>
+                    <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wider">{{ __('Shift Status') }}</div>
+                    <div class="text-xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">{{ __('Active') }}</div>
+                    <div class="text-[11px] text-slate-500 mt-0.5">{{ __('All weekly roster records') }}</div>
                 </div>
             @else
                 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-3 shadow-sm">
                     <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wider">{{ __('Monthly Shifts') }}</div>
                     <div class="text-xl font-bold text-slate-900 dark:text-white mt-1">{{ $metrics['total_shifts'] }}</div>
                     <div class="text-[11px] text-slate-500 mt-0.5">{{ __('Worker days logged') }}</div>
+                </div>
+                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-3 shadow-sm">
+                    <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wider">{{ __('Active Workers') }}</div>
+                    <div class="text-xl font-bold text-slate-900 dark:text-white mt-1">{{ count($workerSummary) }}</div>
+                    <div class="text-[11px] text-slate-500 mt-0.5">{{ __('Crew on monthly sites') }}</div>
                 </div>
                 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-3 shadow-sm">
                     <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wider">{{ __('Monthly Cabling') }}</div>
@@ -324,26 +321,78 @@
                     <div class="text-xl font-semibold text-slate-900 dark:text-white mt-1">{{ $metrics['total_cameras'] }}</div>
                     <div class="text-[11px] text-slate-500 mt-0.5">{{ __('Cameras configured') }}</div>
                 </div>
-                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-3 shadow-sm">
-                    <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wider">{{ __('Gross Labor Cost') }}</div>
-                    <div class="text-xl font-bold text-slate-900 dark:text-white mt-1">&#8377;{{ number_format($metrics['total_gross'], 2) }}</div>
-                    <div class="text-[11px] text-slate-500 mt-0.5">{{ __('Monthly wages incurred') }}</div>
-                </div>
-                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-3 shadow-sm">
-                    <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wider">{{ __('Settled / Paid') }}</div>
-                    <div class="text-xl font-semibold text-slate-900 dark:text-white mt-1">&#8377;{{ number_format($metrics['total_paid'], 2) }}</div>
-                    <div class="text-[11px] text-slate-500 mt-0.5">{{ __('Cleared disbursements') }}</div>
-                </div>
-                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded p-3 shadow-sm">
-                    <div class="text-[11px] font-bold uppercase text-slate-500 tracking-wider">{{ __('Outstanding') }}</div>
-                    <div class="text-xl font-bold {{ $metrics['total_unpaid'] > 0 ? 'text-red-600 dark:text-red-400' : 'text-slate-900 dark:text-white' }} mt-1">&#8377;{{ number_format($metrics['total_unpaid'], 2) }}</div>
-                    <div class="text-[11px] text-slate-500 mt-0.5">{{ __('Pending settlement') }}</div>
-                </div>
             @endif
         </div>
 
         {{-- Main Table View Depending on View Mode --}}
         @if($viewMode === 'day')
+            {{-- SITE DAILY WORK PROGRESS & OVERALL DATA (PER-DAY SITE DATA) --}}
+            @if(isset($siteWorkSummaries) && $siteWorkSummaries->isNotEmpty())
+                <div class="mb-5 space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                            <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/></svg>
+                            <span>{{ __('Today\'s Site Work Progress & Overall Output') }}</span>
+                        </h4>
+                        <span class="text-[11px] text-slate-400">{{ __('Site-level cabling and camera installation data') }}</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        @foreach($siteWorkSummaries as $siteSummary)
+                            <div class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xs p-4 flex flex-col justify-between">
+                                <div>
+                                    <div class="flex items-start justify-between gap-2">
+                                        <div>
+                                            <h5 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                                                <span>{{ $siteSummary->project_title }}</span>
+                                            </h5>
+                                            <p class="text-[11px] text-slate-500">{{ $siteSummary->site_name }}</p>
+                                        </div>
+                                        <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-blue-50 text-blue-700 dark:bg-blue-950/70 dark:text-blue-300 border border-blue-200 dark:border-blue-800 shrink-0">
+                                            {{ $siteSummary->workers_count }} {{ __('Workers On-Site') }}
+                                        </span>
+                                    </div>
+
+                                    {{-- Total Site Work Data --}}
+                                    <div class="grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+                                        <div class="bg-indigo-50/60 dark:bg-indigo-950/30 rounded-lg p-2.5 border border-indigo-100 dark:border-indigo-900/40">
+                                            <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-300 block">{{ __('Total Cable Used Today') }}</span>
+                                            <div class="text-lg font-black text-indigo-900 dark:text-indigo-100 mt-0.5">
+                                                {{ number_format($siteSummary->total_cabling, 1) }} <span class="text-xs font-normal">metres</span>
+                                            </div>
+                                        </div>
+                                        <div class="bg-emerald-50/60 dark:bg-emerald-950/30 rounded-lg p-2.5 border border-emerald-100 dark:border-emerald-900/40">
+                                            <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300 block">{{ __('Total Cameras Installed') }}</span>
+                                            <div class="text-lg font-black text-emerald-900 dark:text-emerald-100 mt-0.5">
+                                                {{ $siteSummary->total_cameras }} <span class="text-xs font-normal">units</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    @if(!empty($siteSummary->notes))
+                                        <p class="text-[11px] text-slate-600 dark:text-slate-400 mt-2 italic bg-slate-50 dark:bg-slate-800/50 p-2 rounded">
+                                            "{{ $siteSummary->notes }}"
+                                        </p>
+                                    @endif
+                                </div>
+
+                                {{-- Reporting Technician Attribution --}}
+                                <div class="mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="text-slate-400">{{ __('Data provided by:') }}</span>
+                                        <span class="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1">
+                                            <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                                            {{ $siteSummary->logger_name }} ({{ __('Technician') }})
+                                        </span>
+                                    </div>
+                                    <span class="text-[10px] text-slate-400">{{ $siteSummary->created_at ? $siteSummary->created_at->format('d M Y') : '' }}</span>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
             {{-- PER-DAY VIEW --}}
             <div class="ld-card flex flex-col flex-1 min-h-0 overflow-hidden mb-6">
                 <div class="p-3 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-2.5">
@@ -432,12 +481,8 @@
                             <tr class="bg-slate-100/90 dark:bg-slate-800/90 text-slate-700 dark:text-slate-300 uppercase tracking-wider text-[11px] sticky top-0 z-10">
                                 <th class="py-2.5 px-3">{{ __('Worker (Profile Photo)') }}</th>
                                 <th class="py-2.5 px-3">{{ __('Project / Site') }}</th>
-                                <th class="py-2.5 px-3">{{ __('Check-in Time') }}</th>
-                                <th class="py-2.5 px-3">{{ __('Logged By (Technician)') }}</th>
                                 <th class="py-2.5 px-3">{{ __('Shift Type') }}</th>
-                                <th class="py-2.5 px-3 text-right">{{ __('Cabling (m)') }}</th>
-                                <th class="py-2.5 px-3 text-center">{{ __('Cameras') }}</th>
-                                <th class="py-2.5 px-3 text-right">{{ __('Daily Wage') }}</th>
+                                <th class="py-2.5 px-3">{{ __('Logged By (Technician)') }}</th>
                                 <th class="py-2.5 px-3 text-center">{{ __('Status') }}</th>
                                 <th class="py-2.5 px-3 text-right">{{ __('Actions') }}</th>
                             </tr>
@@ -484,9 +529,6 @@
                                                 </div>
                                                 <div class="text-[11px] text-slate-500 break-words">
                                                     {{ $w?->phone ?? __('No phone') }}
-                                                    @if($w?->daily_rate)
-                                                        &bull; &#8377;{{ number_format($w->daily_rate, 0) }}/day
-                                                    @endif
                                                 </div>
                                             </div>
                                         </div>
@@ -503,32 +545,6 @@
                                             <span class="text-slate-400">{{ __('Direct Labor Shift') }}</span>
                                         @else
                                             <span class="text-slate-400 italic text-[11px]">{{ __('Not Assigned') }}</span>
-                                        @endif
-                                    </td>
-
-                                    {{-- Check-in Time --}}
-                                    <td class="py-2.5 px-3 nowrap text-slate-700 dark:text-slate-300">
-                                        @if($isPresent && $att?->check_in_at)
-                                            <div class="font-semibold">{{ $att->check_in_at->format('h:i A') }}</div>
-                                            <div class="text-[10px] text-slate-400">{{ __('Punched in') }}</div>
-                                        @elseif($isPresent)
-                                            <span class="text-slate-400 text-xs">{{ __('Standard Day') }}</span>
-                                        @else
-                                            <span class="text-slate-400 text-xs">&mdash;</span>
-                                        @endif
-                                    </td>
-
-                                    {{-- Logged By (Technician) Column --}}
-                                    <td class="py-2.5 px-3">
-                                        @if($isPresent && $att?->logger)
-                                            <div class="font-bold text-slate-800 dark:text-slate-200">{{ $att->logger->name }}</div>
-                                            <div class="text-[10px] text-blue-600 dark:text-blue-400 font-semibold">{{ __('Technician') }}</div>
-                                        @elseif($isPresent && $att?->logged_by)
-                                            <div class="font-bold text-slate-800 dark:text-slate-200">{{ __('Tech #:id', ['id' => $att->logged_by]) }}</div>
-                                        @elseif($isPresent)
-                                            <span class="text-slate-400 italic text-[11px]">{{ __('Direct / Office') }}</span>
-                                        @else
-                                            <span class="text-slate-400 text-xs">&mdash;</span>
                                         @endif
                                     </td>
 
@@ -559,54 +575,28 @@
                                         @endif
                                     </td>
 
-                                    {{-- Cabling --}}
-                                    <td class="py-2.5 px-3 text-right font-medium text-slate-900 dark:text-white">
-                                        @if($isPresent && $att?->cabling_metres > 0)
-                                            <span class="text-indigo-600 dark:text-indigo-400 font-bold">{{ number_format($att->cabling_metres, 1) }}</span> m
+                                    {{-- Logged By (Technician) Column --}}
+                                    <td class="py-2.5 px-3">
+                                        @if($isPresent && $att?->logger)
+                                            <div class="font-bold text-slate-800 dark:text-slate-200">{{ $att->logger->name }}</div>
+                                            <div class="text-[10px] text-blue-600 dark:text-blue-400 font-semibold">{{ __('Technician') }}</div>
+                                        @elseif($isPresent && $att?->logged_by)
+                                            <div class="font-bold text-slate-800 dark:text-slate-200">{{ __('Tech #:id', ['id' => $att->logged_by]) }}</div>
                                         @elseif($isPresent)
-                                            <span class="text-slate-400">&mdash;</span>
+                                            <span class="text-slate-400 italic text-[11px]">{{ __('Direct / Office') }}</span>
                                         @else
-                                            <span class="text-slate-400">&mdash;</span>
+                                            <span class="text-slate-400 text-xs">&mdash;</span>
                                         @endif
                                     </td>
 
-                                    {{-- Cameras --}}
-                                    <td class="py-2.5 px-3 text-center font-medium text-slate-900 dark:text-white">
-                                        @if($isPresent && $att?->cameras_installed > 0)
-                                            <span class="px-1.5 py-0.5 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 font-bold rounded">
-                                                {{ $att->cameras_installed }}
-                                            </span>
-                                        @elseif($isPresent)
-                                            <span class="text-slate-400">&mdash;</span>
-                                        @else
-                                            <span class="text-slate-400">&mdash;</span>
-                                        @endif
-                                    </td>
-
-                                    {{-- Wage Amount --}}
-                                    <td class="py-2.5 px-3 text-right font-bold text-slate-900 dark:text-white">
-                                        @if($isPresent && $att)
-                                            &#8377;{{ number_format($att->total_amount, 2) }}
-                                            @if($att->extra_amount > 0)
-                                                <div class="text-[10px] text-emerald-600">+&#8377;{{ number_format($att->extra_amount, 2) }} extra</div>
-                                            @endif
-                                        @else
-                                            <span class="text-slate-400 font-normal">&mdash;</span>
-                                        @endif
-                                    </td>
-
-                                    {{-- Paid/Settled Status --}}
+                                    {{-- Attendance Status --}}
                                     <td class="py-2.5 px-3 text-center">
-                                        @if($isPresent && $att?->is_paid)
-                                            <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300">
-                                                &#10003; {{ __('Paid') }}
-                                            </span>
-                                        @elseif($isPresent)
-                                            <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
-                                                {{ __('Pending') }}
+                                        @if($isPresent)
+                                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300">
+                                                &#10003; {{ __('Present') }}
                                             </span>
                                         @else
-                                            <span class="px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+                                            <span class="px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400">
                                                 {{ __('Unpunched') }}
                                             </span>
                                         @endif
@@ -645,7 +635,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="11" class="text-center py-8 text-slate-500">
+                                    <td colspan="6" class="text-center py-8 text-slate-500">
                                         <div class="text-sm font-semibold">{{ __('No workers match current criteria for :date', ['date' => $selectedDate->format('d M Y')]) }}</div>
                                         <div class="text-xs text-slate-400 mt-1">{{ __('Click the buttons below to mark attendance or clear applied filters.') }}</div>
                                         <div class="mt-3 flex items-center justify-center gap-2">
@@ -667,11 +657,9 @@
                         @if($attendances->isNotEmpty())
                             <tfoot>
                                 <tr class="bg-slate-100/90 dark:bg-slate-800/90 font-bold text-slate-900 dark:text-white border-t-2 border-slate-300 dark:border-slate-700">
-                                    <td colspan="6" class="py-2.5 px-3 text-right uppercase text-[11px] tracking-wider">{{ __('Day Totals:') }}</td>
-                                    <td class="py-2.5 px-3 text-right text-indigo-600 dark:text-indigo-400">{{ number_format($metrics['total_cabling'], 1) }} m</td>
-                                    <td class="py-2.5 px-3 text-center text-emerald-600 dark:text-emerald-400">{{ $metrics['total_cameras'] }}</td>
-                                    <td class="py-2.5 px-3 text-right">&#8377;{{ number_format($metrics['total_labor_cost'], 2) }}</td>
-                                    <td colspan="2"></td>
+                                    <td colspan="4" class="py-2.5 px-3 text-right uppercase text-[11px] tracking-wider">{{ __('Total Present On-Site:') }}</td>
+                                    <td class="py-2.5 px-3 text-center text-emerald-600 dark:text-emerald-400 font-extrabold">{{ $attendances->count() }}</td>
+                                    <td></td>
                                 </tr>
                             </tfoot>
                         @endif
@@ -762,9 +750,7 @@
                                     </th>
                                 @endforeach
                                 <th class="py-2.5 px-3 text-center">{{ __('Days Worked') }}</th>
-                                <th class="py-2.5 px-3 text-right">{{ __('Cabling (m)') }}</th>
-                                <th class="py-2.5 px-3 text-center">{{ __('Cameras') }}</th>
-                                <th class="py-2.5 px-3 text-right">{{ __('Weekly Wage') }}</th>
+                                <th class="py-2.5 px-3 text-center">{{ __('Status') }}</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
@@ -788,7 +774,6 @@
                                                     @if(method_exists($w, 'trashed') && $w->trashed())
                                                         <span class="text-[9px] px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 font-medium">{{ __('Archived') }}</span>
                                                     @endif
-                                                    <div class="text-[10px] text-slate-500">&#8377;{{ number_format($w->daily_rate, 2) }}/{{ __('day') }}</div>
                                                 @else
                                                     <span class="font-bold text-slate-500">{{ __('Deleted Worker') }}</span>
                                                 @endif
@@ -808,13 +793,6 @@
                                                           title="{{ $att->logger ? __('Logged by :name', ['name' => $att->logger->name]) : ($att->attendance_type === 'half' ? __('Half Day') : __('Full Day')) }}">
                                                         {{ $att->attendance_type === 'half' ? 'H' : 'P' }}
                                                     </span>
-
-                                                    @if($att->cameras_installed > 0 || $att->cabling_metres > 0)
-                                                        <span class="text-[9px] text-slate-500">
-                                                            {{ $att->cameras_installed > 0 ? $att->cameras_installed . 'c' : '' }}
-                                                            {{ $att->cabling_metres > 0 ? $att->cabling_metres . 'm' : '' }}
-                                                        </span>
-                                                    @endif
                                                 </div>
                                             @else
                                                 <span class="text-slate-300 dark:text-slate-600">&ndash;</span>
@@ -825,19 +803,15 @@
                                     <td class="py-2.5 px-3 text-center font-bold text-slate-900 dark:text-white">
                                         {{ $row['total_shifts'] }}
                                     </td>
-                                    <td class="py-2.5 px-3 text-right font-medium text-indigo-600 dark:text-indigo-400">
-                                        {{ number_format($row['total_cabling'], 1) }} m
-                                    </td>
-                                    <td class="py-2.5 px-3 text-center font-medium text-emerald-600 dark:text-emerald-400">
-                                        {{ $row['total_cameras'] }}
-                                    </td>
-                                    <td class="py-2.5 px-3 text-right font-bold text-slate-900 dark:text-white">
-                                        &#8377;{{ number_format($row['total_wages'], 2) }}
+                                    <td class="py-2.5 px-3 text-center">
+                                        <span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                                            {{ __('Active') }}
+                                        </span>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="12" class="text-center py-8 text-slate-500">
+                                    <td colspan="10" class="text-center py-8 text-slate-500">
                                         {{ __('No workers scheduled or logged for this week.') }}
                                     </td>
                                 </tr>
@@ -846,11 +820,9 @@
                         @if(!empty($matrixData))
                             <tfoot>
                                 <tr class="bg-slate-100/90 dark:bg-slate-800/90 font-bold text-slate-900 dark:text-white border-t-2 border-slate-300 dark:border-slate-700">
-                                    <td colspan="8" class="py-2.5 px-3 text-right uppercase text-[11px] tracking-wider">{{ __('Weekly Totals:') }}</td>
+                                    <td colspan="8" class="py-2.5 px-3 text-right uppercase text-[11px] tracking-wider">{{ __('Weekly Total Shifts:') }}</td>
                                     <td class="py-2.5 px-3 text-center">{{ $metrics['total_shifts'] }}</td>
-                                    <td class="py-2.5 px-3 text-right text-indigo-600 dark:text-indigo-400">{{ number_format($metrics['total_cabling'], 1) }} m</td>
-                                    <td class="py-2.5 px-3 text-center text-emerald-600 dark:text-emerald-400">{{ $metrics['total_cameras'] }}</td>
-                                    <td class="py-2.5 px-3 text-right">&#8377;{{ number_format($metrics['total_labor_cost'], 2) }}</td>
+                                    <td class="py-2.5 px-3 text-center">&mdash;</td>
                                 </tr>
                             </tfoot>
                         @endif
@@ -878,13 +850,8 @@
                                 <th class="py-2.5 px-3">{{ __('Worker Name') }}</th>
                                 <th class="py-2.5 px-3 text-center">{{ __('Full Days') }}</th>
                                 <th class="py-2.5 px-3 text-center">{{ __('Half Days') }}</th>
-                                <th class="py-2.5 px-3 text-center">{{ __('Total Shifts') }}</th>
-                                <th class="py-2.5 px-3 text-right">{{ __('Total Cabling (m)') }}</th>
-                                <th class="py-2.5 px-3 text-center">{{ __('Total Cameras') }}</th>
-                                <th class="py-2.5 px-3 text-right">{{ __('Gross Wages') }}</th>
-                                <th class="py-2.5 px-3 text-right">{{ __('Paid / Settled') }}</th>
-                                <th class="py-2.5 px-3 text-right">{{ __('Unpaid Balance') }}</th>
-                                <th class="py-2.5 px-3 text-center">{{ __('Monthly Shifts') }}</th>
+                                <th class="py-2.5 px-3 text-center">{{ __('Total Shifts Worked') }}</th>
+                                <th class="py-2.5 px-3 text-center">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
@@ -908,7 +875,6 @@
                                                     @if(method_exists($w, 'trashed') && $w->trashed())
                                                         <span class="text-[9px] px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 font-medium">{{ __('Archived') }}</span>
                                                     @endif
-                                                    <div class="text-[10px] text-slate-500">&#8377;{{ number_format($w->daily_rate, 2) }}/{{ __('day') }}</div>
                                                 @else
                                                     <span class="font-bold text-slate-500">{{ __('Deleted Worker') }}</span>
                                                 @endif
@@ -918,21 +884,6 @@
                                     <td class="py-2.5 px-3 text-center font-medium">{{ $sum['full_days'] }}</td>
                                     <td class="py-2.5 px-3 text-center font-medium">{{ $sum['half_days'] }}</td>
                                     <td class="py-2.5 px-3 text-center font-bold text-slate-900 dark:text-white">{{ $sum['total_shifts'] }}</td>
-                                    <td class="py-2.5 px-3 text-right font-medium text-indigo-600 dark:text-indigo-400">
-                                        {{ number_format($sum['cabling'], 1) }} m
-                                    </td>
-                                    <td class="py-2.5 px-3 text-center font-medium text-emerald-600 dark:text-emerald-400">
-                                        {{ $sum['cameras'] }}
-                                    </td>
-                                    <td class="py-2.5 px-3 text-right font-bold text-slate-900 dark:text-white">
-                                        &#8377;{{ number_format($sum['gross_earned'], 2) }}
-                                    </td>
-                                    <td class="py-2.5 px-3 text-right text-emerald-600 dark:text-emerald-400 font-medium">
-                                        &#8377;{{ number_format($sum['paid_amount'], 2) }}
-                                    </td>
-                                    <td class="py-2.5 px-3 text-right font-bold {{ $sum['unpaid_amount'] > 0 ? 'text-red-600 dark:text-red-400' : 'text-slate-500' }}">
-                                        &#8377;{{ number_format($sum['unpaid_amount'], 2) }}
-                                    </td>
                                     <td class="py-2.5 px-3 text-center">
                                         <button type="button" onclick="toggleWorkerShifts({{ $w->id }})" class="btn-secondary py-0.5 px-2 text-[11px]">
                                             {{ __('View Logs (:count)', ['count' => $sum['attendances']->count()]) }}
@@ -941,7 +892,7 @@
                                 </tr>
                                 {{-- Expandable worker shifts breakdown row --}}
                                 <tr id="worker-shifts-{{ $w->id }}" class="hidden bg-slate-50/50 dark:bg-slate-950/30">
-                                    <td colspan="10" class="p-3">
+                                    <td colspan="5" class="p-3">
                                         <div class="border border-slate-200 dark:border-slate-800 rounded bg-white dark:bg-slate-900 p-3 shadow-xs">
                                             <div class="font-bold text-xs text-slate-800 dark:text-slate-200 mb-2">
                                                 {{ __('Detailed Shifts for :name — :month', ['name' => $w->name, 'month' => $monthStart->format('F Y')]) }}
@@ -955,7 +906,7 @@
                                                         <div>
                                                             <div class="font-semibold text-slate-800 dark:text-slate-200">{{ \Carbon\Carbon::parse($shiftDate)->format('d M (D)') }}</div>
                                                             <div class="text-[10px] text-slate-500">{{ Str::limit($sh->workDay?->project?->title ?? 'Site', 18) }}</div>
-                                                            <div class="text-[10px] font-bold text-slate-700 dark:text-slate-300">&#8377;{{ number_format($sh->total_amount, 2) }} &bull; {{ ucfirst($sh->attendance_type) }}</div>
+                                                            <div class="text-[10px] font-bold text-slate-700 dark:text-slate-300">{{ ucfirst($sh->attendance_type) }} Day</div>
                                                         </div>
                                                         <div>
                                                             @if($sh->logger)
@@ -974,7 +925,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="10" class="text-center py-8 text-slate-500">
+                                    <td colspan="5" class="text-center py-8 text-slate-500">
                                         {{ __('No monthly records found for :month.', ['month' => $monthStart->format('F Y')]) }}
                                     </td>
                                 </tr>
@@ -983,14 +934,9 @@
                         @if(!empty($workerSummary))
                             <tfoot>
                                 <tr class="bg-slate-100/90 dark:bg-slate-800/90 font-bold text-slate-900 dark:text-white border-t-2 border-slate-300 dark:border-slate-700">
-                                    <td colspan="3" class="py-2.5 px-3 text-right uppercase text-[11px] tracking-wider">{{ __('Month Totals:') }}</td>
+                                    <td colspan="3" class="py-2.5 px-3 text-right uppercase text-[11px] tracking-wider">{{ __('Month Total Shifts:') }}</td>
                                     <td class="py-2.5 px-3 text-center">{{ $metrics['total_shifts'] }}</td>
-                                    <td class="py-2.5 px-3 text-right text-indigo-600 dark:text-indigo-400">{{ number_format($metrics['total_cabling'], 1) }} m</td>
-                                    <td class="py-2.5 px-3 text-center text-emerald-600 dark:text-emerald-400">{{ $metrics['total_cameras'] }}</td>
-                                    <td class="py-2.5 px-3 text-right">&#8377;{{ number_format($metrics['total_gross'], 2) }}</td>
-                                    <td class="py-2.5 px-3 text-right text-emerald-600 dark:text-emerald-400">&#8377;{{ number_format($metrics['total_paid'], 2) }}</td>
-                                    <td class="py-2.5 px-3 text-right {{ $metrics['total_unpaid'] > 0 ? 'text-red-600' : '' }}">&#8377;{{ number_format($metrics['total_unpaid'], 2) }}</td>
-                                    <td></td>
+                                    <td class="py-2.5 px-3 text-center">&mdash;</td>
                                 </tr>
                             </tfoot>
                         @endif

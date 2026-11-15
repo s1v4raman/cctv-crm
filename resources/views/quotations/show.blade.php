@@ -537,12 +537,18 @@
                     </div>
                 </div>
 
-                <div class="flex items-center justify-between text-xs pt-1">
+                <div class="flex items-center justify-between text-xs pt-1 flex-wrap gap-2">
                     <span class="text-slate-500 dark:text-slate-400">Target Chat: <strong class="text-slate-800 dark:text-slate-200"><span id="wa-phone-preview-badge">{{ $quotation->getWhatsAppPhone() ?: 'Customer Number' }}</span></strong></span>
-                    <button type="button" onclick="quickSaveCustomerContact()" id="btn-quick-save-contact" class="btn-secondary text-xs py-1.5 px-3 flex items-center justify-center gap-1.5">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
-                        <span>Save Contact</span>
-                    </button>
+                    <div class="flex items-center gap-2">
+                        <a href="{{ route('quotations.vcard', $quotation) }}" download class="btn-secondary text-xs py-1.5 px-2.5 flex items-center justify-center gap-1.5" title="Save customer contact to your phone or contacts list">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                            <span>Save to Phone (.vcf)</span>
+                        </a>
+                        <button type="button" onclick="quickSaveCustomerContact()" id="btn-quick-save-contact" class="btn-secondary text-xs py-1.5 px-3 flex items-center justify-center gap-1.5">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
+                            <span>Save Contact</span>
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -777,10 +783,10 @@
         const link = document.createElement('a');
         link.href = pdfUrl;
         link.download = filename;
-        link.setAttribute('target', '_blank');
+        // Do NOT use target="_blank" here so browser does not block WhatsApp chat as a second popup
         document.body.appendChild(link);
         link.click();
-        setTimeout(() => link.remove(), 500);
+        setTimeout(() => link.remove(), 600);
     }
 
     function showWhatsAppAttachmentBanner(filename) {
@@ -839,39 +845,16 @@
         const filename = getQuotationPdfFilename();
         const encodedText = encodeURIComponent(message);
 
-        // Direct WhatsApp Web (desktop) or Native App (mobile) for unsaved and existing numbers
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        const targetUrl = isMobile 
-            ? `https://api.whatsapp.com/send?phone=${phone}&text=${encodedText}`
-            : `https://web.whatsapp.com/send?phone=${phone}&text=${encodedText}`;
+        // Universal official WhatsApp API link: reliably opens chat for both saved and unsaved customer numbers across desktop & mobile
+        const targetUrl = `https://api.whatsapp.com/send?phone=${phone}&text=${encodedText}`;
 
-        // 1. Synchronously open the customer's WhatsApp chat in a new tab (prevents popup blocker)
-        const waTab = window.open(targetUrl, '_blank');
+        // 1. Immediately open customer WhatsApp chat in a new tab using the user click event
+        let waTab = window.open(targetUrl, '_blank');
         if (!waTab) {
             window.location.href = targetUrl;
         }
 
-        // 2. Automatically trigger customer-named PDF download
-        downloadSelectedPdfOnly();
-
-        // 3. Automatically copy proposal text to clipboard
-        if (message && navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(message).catch(() => {});
-        }
-
-        // 4. Auto-prime clipboard with PDF blob if browser ClipboardItem supports it
-        if (window.ClipboardItem && navigator.clipboard && navigator.clipboard.write) {
-            fetch(waQuotationData.pdfUrls[format])
-                .then(res => res.blob())
-                .then(blob => {
-                    navigator.clipboard.write([
-                        new ClipboardItem({ 'application/pdf': blob })
-                    ]).catch(() => {});
-                })
-                .catch(() => {});
-        }
-
-        // 5. Automatically save new/updated customer details and record status in CRM
+        // 2. Automatically save new/updated customer details into CRM contact list immediately
         const params = new URLSearchParams({
             format: format,
             phone: phone,
@@ -886,7 +869,29 @@
                 waQuotationData.defaultPhone = phone;
                 syncCustomerStatusUI();
             }
-        }).catch(e => console.warn('Status log skipped', e));
+        }).catch(e => console.warn('Contact sync skipped', e));
+
+        // 3. Trigger PDF download with slight delay so browser treats it as file download without blocking the WhatsApp tab
+        setTimeout(() => {
+            downloadSelectedPdfOnly();
+        }, 500);
+
+        // 4. Automatically copy proposal text to clipboard
+        if (message && navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(message).catch(() => {});
+        }
+
+        // 5. Auto-prime clipboard with PDF blob if browser ClipboardItem supports it
+        if (window.ClipboardItem && navigator.clipboard && navigator.clipboard.write) {
+            fetch(waQuotationData.pdfUrls[format])
+                .then(res => res.blob())
+                .then(blob => {
+                    navigator.clipboard.write([
+                        new ClipboardItem({ 'application/pdf': blob })
+                    ]).catch(() => {});
+                })
+                .catch(() => {});
+        }
 
         // 6. Visual notification banner & button feedback
         showWhatsAppAttachmentBanner(filename);
@@ -922,19 +927,21 @@
 
         let url = '';
         if (type === 'web') {
-            url = `https://web.whatsapp.com/send?phone=${phone}&text=${encodedText}`;
+            url = `https://api.whatsapp.com/send?phone=${phone}&text=${encodedText}`;
         } else if (type === 'app') {
             url = `whatsapp://send?phone=${phone}&text=${encodedText}`;
         }
 
-        // Synchronously open WhatsApp window
+        // Open WhatsApp window
         const waTab = window.open(url, '_blank');
         if (!waTab && type === 'web') {
             window.location.href = url;
         }
 
-        // Trigger PDF download
-        downloadSelectedPdfOnly();
+        // Trigger PDF download after slight delay
+        setTimeout(() => {
+            downloadSelectedPdfOnly();
+        }, 500);
 
         // Copy text to clipboard
         if (message && navigator.clipboard && navigator.clipboard.writeText) {

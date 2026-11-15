@@ -1005,7 +1005,7 @@
                                             <th class="py-3 px-4">{{ __('Project Site') }}</th>
                                             <th class="py-3 px-4">{{ __('Logged By') }}</th>
                                             <th class="py-3 px-4">{{ __('Shift & Date') }}</th>
-                                            <th class="py-3 px-4">{{ __('Work Output Metrics') }}</th>
+                                            <th class="py-3 px-4">{{ __('Site Output (Today)') }}</th>
                                             <th class="py-3 px-4">{{ __('Notes') }}</th>
                                             <th class="py-3 px-4 text-right">{{ __('Actions') }}</th>
                                         </tr>
@@ -1041,17 +1041,20 @@
                                                     </span>
                                                 </td>
                                                 <td class="py-3 px-4">
+                                                    @php
+                                                        $siteCabling = (float)($wAtt->workDay?->total_cabling_metres ?? 0);
+                                                        $siteCameras = (int)($wAtt->workDay?->total_cameras_installed ?? 0);
+                                                    @endphp
                                                     <div class="text-[11px] text-slate-700 dark:text-slate-300 space-y-0.5">
-                                                        @if($wAtt->cabling_metres > 0)
-                                                            <div><strong>{{ $wAtt->cabling_metres }}m</strong> {{ __('cabling') }}</div>
-                                                        @endif
-                                                        @if($wAtt->cameras_installed > 0)
-                                                            <div><strong>{{ $wAtt->cameras_installed }}</strong> {{ __('cameras mounted') }}</div>
-                                                        @endif
-                                                        @if($wAtt->extra_amount > 0)
-                                                            <div class="text-amber-600 dark:text-amber-400 font-semibold">{{ __('Extra: ₹:amt', ['amt' => $wAtt->extra_amount]) }} ({{ $wAtt->extra_description ?: __('Allowance') }})</div>
-                                                        @endif
-                                                        @if($wAtt->cabling_metres <= 0 && $wAtt->cameras_installed <= 0 && $wAtt->extra_amount <= 0)
+                                                        @if($siteCabling > 0 || $siteCameras > 0)
+                                                            @if($siteCabling > 0)
+                                                                <div><strong class="text-amber-600 dark:text-amber-400">{{ $siteCabling }}m</strong> {{ __('cable used today') }}</div>
+                                                            @endif
+                                                            @if($siteCameras > 0)
+                                                                <div><strong class="text-emerald-600 dark:text-emerald-400">{{ $siteCameras }}</strong> {{ __('cameras mounted') }}</div>
+                                                            @endif
+                                                            <div class="text-[10px] text-slate-400">{{ __('Site total today') }}</div>
+                                                        @else
                                                             <span class="text-slate-400 italic">{{ __('General Shift') }}</span>
                                                         @endif
                                                     </div>

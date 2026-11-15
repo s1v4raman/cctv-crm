@@ -78,8 +78,8 @@
                             <select name="worker_id" id="modal-worker-select" class="crm-select text-xs w-full">
                                 <option value="">{{ __('Select Worker...') }}</option>
                                 @foreach($workers as $w)
-                                    <option value="{{ $w->id }}" data-photo="{{ $w->photo_url ?? '' }}" data-name="{{ $w->name }}" data-rate="{{ number_format($w->daily_rate, 0) }}" @selected(old('worker_id', $defaultWorkerId) == $w->id)>
-                                        {{ $w->name }} (&#8377;{{ number_format($w->daily_rate, 0) }}/{{ __('day') }})
+                                    <option value="{{ $w->id }}" data-photo="{{ $w->photo_url ?? '' }}" data-name="{{ $w->name }}" @selected(old('worker_id', $defaultWorkerId) == $w->id)>
+                                        {{ $w->name }}
                                     </option>
                                 @endforeach
                             </select>
@@ -159,23 +159,16 @@
                                         </div>
                                     </div>
                                     <div class="text-right shrink-0 ml-2">
-                                        <span class="inline-block text-xs font-bold text-slate-900 dark:text-slate-100">&#8377;{{ number_format($w->daily_rate, 0) }}</span>
-                                        <span class="block text-[10px] text-slate-400">/{{ __('day') }}</span>
+                                        <span class="inline-block text-[11px] font-semibold text-slate-500 dark:text-slate-400">{{ __('Worker') }}</span>
                                     </div>
                                 </label>
                             @endforeach
                         </div>
-
-                        {{-- Bulk Summary Line --}}
-                        <div class="mt-2 flex items-center justify-between text-xs text-slate-600 dark:text-slate-300 pt-1">
-                            <span>{{ __('Estimated Daily Base Wage:') }}</span>
-                            <span class="font-bold text-slate-900 dark:text-white" id="bulk-total-wage">&#8377;0</span>
-                        </div>
                     </div>
                 </div>
 
-                {{-- Date, Shift Type, Punch Time --}}
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {{-- Date & Shift Type --}}
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                         <label for="modal-work-date" class="crm-label text-xs">{{ __('Work Date') }} <span class="required-marker">*</span></label>
                         <input type="date" name="work_date" id="modal-work-date" value="{{ $selectedDate ?? now()->toDateString() }}" required class="crm-input text-xs w-full">
@@ -187,11 +180,6 @@
                             <option value="full" selected>{{ __('Full Day (1.0x)') }}</option>
                             <option value="half">{{ __('Half Day (0.5x)') }}</option>
                         </select>
-                    </div>
-
-                    <div>
-                        <label for="att-check-in-time" class="crm-label text-xs">{{ __('Punch Time') }}</label>
-                        <input id="att-check-in-time" type="time" name="check_in_time" value="{{ now()->format('H:i') }}" class="crm-input text-xs w-full">
                     </div>
                 </div>
 
@@ -243,47 +231,27 @@
                         </button>
                     </div>
                     <div id="bulk-summary-chips" class="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto"></div>
-                    <div class="mt-2 pt-2 border-t border-blue-200/60 dark:border-blue-800/60 flex items-center justify-between text-xs">
-                        <span class="text-slate-600 dark:text-slate-300">{{ __('Combined Estimated Wage:') }}</span>
-                        <strong id="bulk-summary-total-wage" class="text-blue-700 dark:text-blue-300 font-bold">&#8377;0</strong>
-                    </div>
                 </div>
 
-                {{-- Cabling Metres & Cameras Installed --}}
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                        <label for="att-cabling-metres" class="crm-label text-xs">{{ __('Cabling Metres Done Today') }}</label>
-                        <input id="att-cabling-metres" type="number" step="0.1" min="0" name="cabling_metres" oninput="updateWorkOutputPreview()" placeholder="{{ __('e.g. 50.0') }}" class="crm-input text-xs w-full">
-                        <p class="text-[10px] text-slate-400 mt-0.5" id="cabling-helper-text">{{ __('Total physical cable pulled today on site (m)') }}</p>
+                {{-- Overall Today's Site Progress: Cabling & Cameras --}}
+                <div class="p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/40 space-y-3">
+                    <div class="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wide flex items-center gap-1.5">
+                        <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg>
+                        <span>{{ __("Today's Overall Site Progress (Site Total)") }}</span>
                     </div>
 
-                    <div>
-                        <label for="att-cameras-installed" class="crm-label text-xs">{{ __('Cameras Installed Today') }}</label>
-                        <input id="att-cameras-installed" type="number" min="0" name="cameras_installed" oninput="updateWorkOutputPreview()" placeholder="{{ __('e.g. 4') }}" class="crm-input text-xs w-full">
-                        <p class="text-[10px] text-slate-400 mt-0.5" id="cameras-helper-text">{{ __('Total units mounted/configured today') }}</p>
-                    </div>
-                </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label for="att-cabling-metres" class="crm-label text-xs font-bold">{{ __('Total Cable Used on Site Today (m)') }}</label>
+                            <input id="att-cabling-metres" type="number" step="0.1" min="0" name="cabling_metres" placeholder="{{ __('e.g. 50.0') }}" class="crm-input text-xs w-full">
+                            <p class="text-[10px] text-slate-400 mt-0.5">{{ __('Total physical cable pulled today across the entire site') }}</p>
+                        </div>
 
-                {{-- Live Team Output Allocation Notice for Bulk Shifts --}}
-                <div id="bulk-output-allocation-note" class="hidden p-2.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 text-[11px] text-indigo-900 dark:text-indigo-200">
-                    <div class="flex items-center gap-1.5 font-bold">
-                        <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"/></svg>
-                        <span>{{ __('Per-Day Worker Output Allocation:') }}</span>
-                    </div>
-                    <div class="mt-1 pl-5 text-slate-600 dark:text-slate-300" id="bulk-allocation-text"></div>
-                </div>
-
-                {{-- Extra Allowance & Reason --}}
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                        <label for="att-extra-amount" class="crm-label text-xs">{{ __('Extra Allowance (₹)') }}</label>
-                        <input id="att-extra-amount" type="number" step="any" min="0" name="extra_amount" placeholder="{{ __('e.g. 150') }}" class="crm-input text-xs w-full">
-                    </div>
-                    <div>
-                        <label for="att-extra-description" class="crm-label text-xs">{{ __('Extra Reason') }}</label>
-                        <x-tamil-input>
-                            <input id="att-extra-description" type="text" name="extra_description" placeholder="{{ __('e.g. Night shift / Travel allowance') }}" class="crm-input text-xs w-full">
-                        </x-tamil-input>
+                        <div>
+                            <label for="att-cameras-installed" class="crm-label text-xs font-bold">{{ __('Total Cameras Installed Today (units)') }}</label>
+                            <input id="att-cameras-installed" type="number" min="0" name="cameras_installed" placeholder="{{ __('e.g. 4') }}" class="crm-input text-xs w-full">
+                            <p class="text-[10px] text-slate-400 mt-0.5">{{ __('Total CCTV camera units mounted & configured today') }}</p>
+                        </div>
                     </div>
                 </div>
 
@@ -387,22 +355,9 @@
         const checks = document.querySelectorAll('.bulk-worker-check:checked');
         const allChecks = document.querySelectorAll('.bulk-worker-check');
         const badge = document.getElementById('bulk-worker-count-badge');
-        const wageEl = document.getElementById('bulk-total-wage');
-        const shiftMultiplier = (document.getElementById('att-attendance-type')?.value === 'half') ? 0.5 : 1.0;
-
-        let totalRate = 0;
-        checks.forEach(c => {
-            const r = parseFloat(c.getAttribute('data-rate') || 0);
-            totalRate += r;
-        });
-
-        const effectiveWage = totalRate * shiftMultiplier;
 
         if (badge) {
             badge.textContent = `${checks.length} / ${allChecks.length} ${attendanceModalText.workersSelected}`;
-        }
-        if (wageEl) {
-            wageEl.innerHTML = `&#8377;${Math.round(effectiveWage).toLocaleString()}`;
         }
     }
 
@@ -565,14 +520,8 @@
                 const chipsContainer = document.getElementById('bulk-summary-chips');
                 chipsContainer.innerHTML = '';
 
-                let totalWage = 0;
-                const shiftMultiplier = (document.getElementById('att-attendance-type')?.value === 'half') ? 0.5 : 1.0;
-
                 checks.forEach(c => {
                     const name = c.getAttribute('data-name');
-                    const rate = parseFloat(c.getAttribute('data-rate') || 0);
-                    totalWage += rate * shiftMultiplier;
-
                     const chip = document.createElement('span');
                     chip.className = 'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-white dark:bg-slate-900 border border-blue-200 dark:border-blue-800 text-slate-800 dark:text-slate-200 shadow-2xs';
                     chip.innerHTML = `<span>✓</span> <span>${name}</span>`;
@@ -583,7 +532,6 @@
                 if (projOpt) {
                     document.getElementById('bulk-summary-project').textContent = `• ${projOpt.text.trim()} • ${dateVal} • ${shiftType}`;
                 }
-                document.getElementById('bulk-summary-total-wage').innerHTML = `&#8377;${Math.round(totalWage).toLocaleString()}`;
             }
         }
 
@@ -605,42 +553,6 @@
         const connLine = document.getElementById('step-connector-line-1');
         if (connLine) {
             connLine.className = 'h-0.5 w-full transition-colors ' + (1 < step ? 'bg-blue-600 dark:bg-blue-500' : 'bg-slate-200 dark:bg-slate-700');
-        }
-
-        if (step === 2) {
-            updateWorkOutputPreview();
-        }
-    }
-
-    function updateWorkOutputPreview() {
-        const note = document.getElementById('bulk-output-allocation-note');
-        const text = document.getElementById('bulk-allocation-text');
-        if (!note || !text) return;
-
-        if (currentAttendanceMode !== 'bulk') {
-            note.classList.add('hidden');
-            return;
-        }
-
-        const checks = document.querySelectorAll('.bulk-worker-check:checked');
-        const count = checks.length;
-        const cabling = parseFloat(document.getElementById('att-cabling-metres')?.value || 0);
-        const cameras = parseInt(document.getElementById('att-cameras-installed')?.value || 0, 10);
-
-        if (count > 1 && (cabling > 0 || cameras > 0)) {
-            const perCabling = (cabling / count).toFixed(1);
-            const perCameras = Math.floor(cameras / count);
-            let parts = [];
-            if (cabling > 0) {
-                parts.push(`${cabling}m today &rarr; <strong>${perCabling}m</strong> per worker`);
-            }
-            if (cameras > 0) {
-                parts.push(`${cameras} cameras &rarr; <strong>${perCameras}</strong> per worker`);
-            }
-            text.innerHTML = `Today's site total will be distributed evenly across all ${count} selected workers: ${parts.join(', ')}.`;
-            note.classList.remove('hidden');
-        } else {
-            note.classList.add('hidden');
         }
     }
 

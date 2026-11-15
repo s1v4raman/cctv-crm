@@ -17,10 +17,14 @@ class WorkDay extends Model
         'work_date',
         'logged_by',
         'notes',
+        'total_cabling_metres',
+        'total_cameras_installed',
     ];
 
     protected $casts = [
         'work_date' => 'date',
+        'total_cabling_metres' => 'decimal:2',
+        'total_cameras_installed' => 'integer',
     ];
 
     public function setWorkDateAttribute($value): void
