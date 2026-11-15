@@ -359,6 +359,7 @@ class TechnicianPortalController extends Controller
             $remainingCount = max(0, $uniqueAssignees->count() - 3);
 
             $primaryProject = (object) [
+                'id' => $realProj->id,
                 'code' => $realProj->project_code,
                 'title' => $realProj->title,
                 'created_at_label' => $realProj->created_at ? $realProj->created_at->format('d M Y') : '',

@@ -1108,7 +1108,7 @@
                     <select id="tech-checkin-project" name="project_id" class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
                         <option value="">{{ __('General On-Site / Field Engineering') }}</option>
                         @foreach($assignedProjects as $p)
-                            <option value="{{ $p->id }}" @selected(isset($primaryPrj) && $primaryPrj->id === $p->id)>{{ $p->title }} ({{ $p->customer_name ?? __('Customer') }})</option>
+                            <option value="{{ $p->id }}" @selected(($primaryPrj->id ?? null) === $p->id)>{{ $p->title }} ({{ $p->customer_name ?? __('Customer') }})</option>
                         @endforeach
                     </select>
                 </div>
