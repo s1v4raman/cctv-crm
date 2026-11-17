@@ -72,9 +72,20 @@
                             <td style="padding: 4px 0; text-align: right; font-weight: 600; color: #334155;">{{ $quotation->valid_until ? $quotation->valid_until->format('d M Y') : '15 days from issue' }}</td>
                         </tr>
                         <tr>
-                            <td style="padding: 4px 0; color: #64748b;">Total Line Items:</td>
-                            <td style="padding: 4px 0; text-align: right; font-weight: 600; color: #334155;">{{ $quotation->items->count() }} items</td>
+                            <td style="padding: 4px 0; color: #64748b;">Pricing Format:</td>
+                            <td style="padding: 4px 0; text-align: right; font-weight: 600; color: #334155;">{{ $quotation->pricing_mode_name }}</td>
                         </tr>
+                        @if(!$quotation->isTotalCostOnly())
+                            <tr>
+                                <td style="padding: 4px 0; color: #64748b;">Total Line Items:</td>
+                                <td style="padding: 4px 0; text-align: right; font-weight: 600; color: #334155;">{{ $quotation->items->count() }} items</td>
+                            </tr>
+                        @else
+                            <tr>
+                                <td style="padding: 4px 0; color: #64748b;">Scope Type:</td>
+                                <td style="padding: 4px 0; text-align: right; font-weight: 600; color: #334155;">Turnkey CCTV Surveillance Solution</td>
+                            </tr>
+                        @endif
                         <tr>
                             <td style="padding: 4px 0; color: #64748b;">Subtotal:</td>
                             <td style="padding: 4px 0; text-align: right; font-weight: 600; color: #334155;">₹{{ number_format($quotation->subtotal, 2) }}</td>
@@ -102,19 +113,19 @@
                 <div class="attachment-notice">
                     <div class="attachment-icon">📎</div>
                     <div class="attachment-text">
-                        The complete itemized PDF proposal document (<strong>Quotation-{{ $quotation->quotation_no }}.pdf</strong>) is attached to this email for your records.
+                        The official PDF proposal document (<strong>Quotation-{{ $quotation->quotation_no }}.pdf</strong>) is attached to this email for your records.
                     </div>
                 </div>
 
                 {{-- Action Button --}}
                 <div class="cta-center">
-                    <a href="{{ URL::signedRoute('quotations.public-pdf', ['quotation' => $quotation, 'format' => '1']) }}" class="btn-portal" target="_blank">
+                    <a href="{{ URL::signedRoute('quotations.public-pdf', ['quotation' => $quotation, 'format' => $quotation->pdf_format ?? '1']) }}" class="btn-portal" target="_blank">
                         ✓ View &amp; Download Proposal PDF
                     </a>
                 </div>
 
                 <div style="font-size: 12px; color: #64748b; text-align: center; margin-top: 15px;">
-                    Or download proposal directly: <a href="{{ URL::signedRoute('quotations.public-pdf', ['quotation' => $quotation, 'format' => '1']) }}" style="color: #4f46e5; font-weight: 700;">Download PDF Proposal</a>
+                    Or download proposal directly: <a href="{{ URL::signedRoute('quotations.public-pdf', ['quotation' => $quotation, 'format' => $quotation->pdf_format ?? '1']) }}" style="color: #4f46e5; font-weight: 700;">Download PDF Proposal</a>
                 </div>
             </div>
 

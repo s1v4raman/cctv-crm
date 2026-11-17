@@ -31,7 +31,6 @@
                 <a href="{{ route('projects.create') }}" 
                    class="inline-flex items-center justify-center gap-2 px-4 py-2 min-h-[38px] rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 !text-white font-bold text-xs sm:text-sm shadow-sm transition cursor-pointer"
                    style="color: #ffffff !important;">
-                    <svg class="w-4 h-4 shrink-0 !text-white" fill="none" stroke="#ffffff" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                     <span class="!text-white font-bold" style="color: #ffffff !important;">{{ __('New Project') }}</span>
                 </a>
             @endif

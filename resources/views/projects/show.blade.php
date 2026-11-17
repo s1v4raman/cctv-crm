@@ -62,6 +62,40 @@
              approveModalOpen: false,
              rejectModalOpen: false,
              materialModalOpen: false,
+             editMaterialModalOpen: false,
+             productDetailsModalOpen: false,
+             selectedProductData: null,
+             openProductDetailsModal(data) {
+                 this.selectedProductData = data;
+                 this.productDetailsModalOpen = true;
+             },
+             editMaterialData: {
+                 id: null,
+                 product_id: '',
+                 item_name: '',
+                 quantity: '',
+                 unit: 'nos',
+                 unit_cost: '',
+                 source: 'warehouse',
+                 shop_name: '',
+                 notes: '',
+                 action_url: ''
+             },
+             openEditMaterialModal(mat) {
+                 this.editMaterialData = {
+                     id: mat.id || null,
+                     product_id: mat.product_id ? String(mat.product_id) : '',
+                     item_name: mat.item_name || '',
+                     quantity: mat.quantity || '',
+                     unit: mat.unit || 'nos',
+                     unit_cost: mat.unit_cost || '',
+                     source: mat.source || 'warehouse',
+                     shop_name: mat.shop_name || '',
+                     notes: mat.notes || '',
+                     action_url: mat.id ? `/projects/{{ $project->id }}/materials/${mat.id}` : `{{ route('projects.materials.store', $project) }}`
+                 };
+                 this.editMaterialModalOpen = true;
+             },
              consumeModalOpen: false,
              consumeStep: 1,
              consumeStep1Error: '',
@@ -933,9 +967,8 @@
                                             <span class="text-slate-500">Not assigned yet</span>
                                             @if(auth()->user()->isAdmin())
                                             <a href="{{ route('admin.users.create', ['role' => 'technician', 'return_to' => route('projects.show', [$project->id, 'tab' => 'overview'])]) }}" 
-                                               class="btn-subtle gap-1.5 text-white font-semibold"
+                                               class="btn-subtle text-white font-semibold"
                                                style="color: #ffffff !important;">
-                                                <x-icon.plus />
                                                 <span class="text-white font-semibold" style="color: #ffffff !important;">Add New Technician</span>
                                             </a>
                                             @endif
@@ -1175,11 +1208,53 @@
                                     <td class="px-4 py-3 text-right font-mono whitespace-nowrap">{{ $row['in_store'] !== null ? $qty($row['in_store']) . ' ' . $row['unit'] : '—' }}</td>
                                     <td class="px-4 py-3 text-right font-mono whitespace-nowrap">{{ $row['on_order'] ? $qty($row['on_order']) . ' ' . $row['unit'] : '—' }}</td>
                                     <td class="px-5 py-3 text-right whitespace-nowrap">
-                                        <div class="inline-flex items-center gap-3">
-                                            <button type="button" @click="stockProduct = @js($row['key'])" class="action-link text-xs">History</button>
+                                        <div class="inline-flex items-center gap-2 flex-wrap justify-end">
+                                            {{-- View Product Details --}}
+                                            <button type="button" @click="openProductDetailsModal(@js($row))" class="action-link text-xs font-semibold" title="View product specifications, warehouse stock and site allocation">
+                                                View
+                                            </button>
+
+                                            {{-- Stock History --}}
+                                            <button type="button" @click="stockProduct = @js($row['key'])" class="action-link text-xs">
+                                                History
+                                            </button>
+
+                                            {{-- Give / Return (Office/Admin only) --}}
                                             @if($row['product_id'] && auth()->user()->isOffice())
-                                                <button type="button" @click="openIssueModal('issue', {{ $row['product_id'] }})" class="action-link text-xs">Give</button>
-                                                <button type="button" @click="openIssueModal('return', {{ $row['product_id'] }})" class="action-link text-xs">Return</button>
+                                                <button type="button" @click="openIssueModal('issue', {{ $row['product_id'] }})" class="action-link text-xs text-blue-600 dark:text-blue-400">
+                                                    Give
+                                                </button>
+                                                <button type="button" @click="openIssueModal('return', {{ $row['product_id'] }})" class="action-link text-xs text-slate-600 dark:text-slate-400">
+                                                    Return
+                                                </button>
+                                            @endif
+
+                                            {{-- Update / Edit Product BOM data (Admin Only) --}}
+                                            @if(auth()->user()->isOffice())
+                                                <button type="button" @click="openEditMaterialModal({
+                                                    id: @js($row['material_id'] ?? null),
+                                                    product_id: @js($row['product_id'] ?? ''),
+                                                    item_name: @js($row['material_item_name'] ?? $row['name']),
+                                                    quantity: @js($row['planned'] > 0 ? $row['planned'] : 1),
+                                                    unit: @js($row['material_unit'] ?? $row['unit']),
+                                                    unit_cost: @js($row['material_unit_cost'] ?? 0),
+                                                    source: @js($row['material_source'] ?? 'warehouse'),
+                                                    shop_name: @js($row['material_shop_name'] ?? ''),
+                                                    notes: @js($row['material_notes'] ?? '')
+                                                })" class="action-link text-xs text-amber-700 dark:text-amber-400 font-semibold" title="{{ $row['material_id'] ? 'Edit BOM item' : 'Allocate to BOM' }}">
+                                                    {{ $row['material_id'] ? 'Edit' : 'Allocate' }}
+                                                </button>
+
+                                                {{-- Delete BOM Product (Admin Only) --}}
+                                                @if(!empty($row['material_id']))
+                                                    <form method="POST" action="{{ route('projects.materials.destroy', ['project' => $project, 'material' => $row['material_id']]) }}" data-confirm="Remove '{{ addslashes($row['name']) }}' from this project's BOM?" class="inline-block">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="danger-link text-xs bg-transparent border-0 p-0 cursor-pointer font-semibold" title="Remove product from project">
+                                                            Delete
+                                                        </button>
+                                                    </form>
+                                                @endif
                                             @endif
                                         </div>
                                     </td>
@@ -1344,16 +1419,61 @@
                                         @endif
                                     </td>
                                     <td class="px-5 py-3.5 text-right whitespace-nowrap">
-                                        <div class="inline-flex items-center gap-1.5">
+                                        <div class="inline-flex items-center gap-2 flex-wrap justify-end">
+                                            {{-- View Product / Material Details --}}
+                                            <button type="button" @click="openProductDetailsModal({
+                                                name: @js($mat->item_name),
+                                                sku: @js($mat->product?->sku),
+                                                category: @js($mat->product?->category ?? 'Hardware'),
+                                                brand: @js($mat->product?->brand),
+                                                description: @js($mat->product?->description),
+                                                selling_price: @js($mat->product?->selling_price),
+                                                material_unit_cost: @js($mat->unit_cost),
+                                                unit: @js($mat->unit),
+                                                planned: @js((float)$mat->quantity),
+                                                used: @js((float)$mat->total_consumed),
+                                                wastage: @js((float)$mat->total_wastage),
+                                                balance: @js((float)$mat->remaining_quantity),
+                                                in_store: @js($mat->product ? (float)$mat->product->stock_quantity : null),
+                                                material_source: @js($mat->source),
+                                                material_shop_name: @js($mat->shop_name),
+                                                material_notes: @js($mat->notes),
+                                                product_id: @js($mat->product_id),
+                                                material_id: {{ $mat->id }}
+                                            })" class="action-link text-xs font-semibold" title="View details">
+                                                View
+                                            </button>
+
+                                            {{-- Edit Material (Admin / Office Only) --}}
+                                            @if(auth()->user()->isOffice())
+                                                <button type="button" @click="openEditMaterialModal({
+                                                    id: {{ $mat->id }},
+                                                    product_id: '{{ $mat->product_id }}',
+                                                    item_name: '{{ addslashes($mat->item_name) }}',
+                                                    quantity: '{{ $mat->quantity }}',
+                                                    unit: '{{ $mat->unit }}',
+                                                    unit_cost: '{{ $mat->unit_cost }}',
+                                                    source: '{{ $mat->source }}',
+                                                    shop_name: '{{ addslashes($mat->shop_name ?? '') }}',
+                                                    notes: '{{ addslashes($mat->notes ?? '') }}'
+                                                })" class="action-link text-xs text-amber-700 dark:text-amber-400 font-semibold" title="Edit material allocation">
+                                                    Edit
+                                                </button>
+                                            @endif
+
+                                            {{-- Log Usage --}}
                                             <button type="button" @click="openConsumeModal(null, '', {{ $mat->id }}, '{{ addslashes($mat->item_name) }}', '{{ $mat->unit }}', '{{ $mat->product_id }}')" class="action-link text-xs" title="Log usage for this item">
                                                 Log usage
                                             </button>
 
-                                            @if(auth()->user()->isAdmin())
-                                            <form method="POST" action="{{ route('projects.materials.destroy', ['project' => $project, 'material' => $mat]) }}" data-confirm="Remove this material from BOM?" class="inline-block">
+                                            {{-- Delete Material (Admin / Office Only) --}}
+                                            @if(auth()->user()->isOffice() || auth()->user()->isAdmin())
+                                            <form method="POST" action="{{ route('projects.materials.destroy', ['project' => $project, 'material' => $mat]) }}" data-confirm="Remove '{{ addslashes($mat->item_name) }}' from BOM?" class="inline-block">
                                                 @csrf
                                                 @method('DELETE')
-                                                <x-close-button size="sm" tone="danger" label="Delete BOM item" type="submit" />
+                                                <button type="submit" class="danger-link text-xs bg-transparent border-0 p-0 cursor-pointer font-semibold" title="Delete BOM item">
+                                                    Delete
+                                                </button>
                                             </form>
                                             @endif
                                         </div>
@@ -1385,7 +1505,6 @@
                     </div>
 
                     <button type="button" @click="openConsumeModal()" class="btn-secondary text-xs">
-                        <x-icon.plus />
                         <span>Record Field Usage</span>
                     </button>
                 </div>
@@ -1715,6 +1834,10 @@
                         <svg class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"/></svg>
                         <span>{{ __('Bulk Attendance') }}</span>
                     </button>
+                    <button type="button" onclick="openWorkOutputModal('{{ $project->id }}')" class="btn-secondary text-xs flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800" title="{{ __('Log daily physical cabling & cameras performance') }}">
+                        <svg class="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg>
+                        <span>{{ __('Log Work Output') }}</span>
+                    </button>
                     @can('logWorkDay', $project)
                         <button type="button" @click="workDayModalOpen = true" class="btn-secondary text-xs whitespace-nowrap shrink-0">
                             Batch Work Day Log
@@ -1864,13 +1987,6 @@
                                                 @else
                                                     <div class="inline-flex items-center gap-1.5 flex-wrap justify-center">
                                                         <span class="px-2 py-0.5 text-[11px] font-bold rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300">
-                                                            Unsettled
-                                                        </span>
-                                                    </div>
-                                                @endif
-                                            </td>
-                                            @endif
-                                                        <span class="px-2 py-0.5 text-[11px] font-bold rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300">
                                                             Unpaid
                                                         </span>
                                                         @if(auth()->user()->isAdmin())
@@ -1884,6 +2000,7 @@
                                                     </div>
                                                 @endif
                                             </td>
+                                            @endif
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -2530,7 +2647,6 @@
                                                 <span>Consumed ({{ $task->materialConsumptions->count() }})</span>
                                             </span>
                                             <button type="button" @click.stop="openConsumeModal({{ $task->id }}, '{{ addslashes($task->title) }}')" class="inline-flex items-center gap-0.5 hover:underline text-[11px] text-indigo-600 dark:text-indigo-400 font-bold">
-                                                <x-icon.plus class="w-3 h-3 shrink-0" />
                                                 <span>Log More</span>
                                             </button>
                                         </div>
@@ -2683,11 +2799,19 @@
                     @csrf
 
                     <div>
-                        <label for="f-product-id" class="block text-xs font-bold uppercase text-slate-500 mb-1">Select from Catalog (Optional)</label>
-                        <select id="f-product-id" name="product_id" onchange="if(this.value) { const opt = this.selectedOptions[0]; document.getElementById('bom_item_name').value = opt.dataset.name; document.getElementById('bom_unit').value = opt.dataset.unit || 'nos'; }" class="w-full px-3.5 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                        <div class="flex items-center justify-between mb-1">
+                            <label for="f-product-id" class="block text-xs font-bold uppercase text-slate-500">Select from Catalog (Optional)</label>
+                            <button type="button" 
+                                    onclick="window.openQuickAddProductModal({ targetSelectId: 'f-product-id', nameInputId: 'bom_item_name', unitInputId: 'bom_unit', costInputId: 'f-unit-cost' })"
+                                    class="inline-flex items-center gap-1 text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition cursor-pointer"
+                                    title="Add a brand new item into Master Products & Pricing catalog">
+                                <span>Add New Product to Catalog</span>
+                            </button>
+                        </div>
+                        <select id="f-product-id" name="product_id" onchange="if(this.value) { const opt = this.selectedOptions[0]; document.getElementById('bom_item_name').value = opt.dataset.name; document.getElementById('bom_unit').value = opt.dataset.unit || 'nos'; if(opt.dataset.cost && Number(opt.dataset.cost) > 0) { document.getElementById('f-unit-cost').value = opt.dataset.cost; } }" class="w-full px-3.5 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
                             <option value="">-- Custom Non-Catalog Item --</option>
                             @foreach($availableProducts as $prod)
-                                <option value="{{ $prod->id }}" data-name="{{ $prod->name }}" data-unit="{{ $prod->unit }}">
+                                <option value="{{ $prod->id }}" data-name="{{ $prod->name }}" data-unit="{{ $prod->unit }}" data-cost="{{ $prod->cost_price }}" data-price="{{ $prod->unit_price }}">
                                     [{{ $prod->sku }}] {{ $prod->name }}
                                 </option>
                             @endforeach
@@ -2741,6 +2865,15 @@
                         <input id="f-notes" type="text" name="notes" placeholder="e.g. For Floor 1 perimeter cameras" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
                     </div>
 
+                    <div class="p-3 rounded-xl bg-blue-50/60 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/40">
+                        <label class="flex items-start gap-2.5 cursor-pointer select-none">
+                            <input type="checkbox" name="save_to_catalog" value="1" class="mt-0.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                            <span class="text-xs text-slate-700 dark:text-slate-300">
+                                <strong class="font-bold text-blue-700 dark:text-blue-300">{{ __('Save as Catalog Product:') }}</strong> {{ __('If this is a custom item, automatically add it into Products & Pricing catalog so it can be searched and used in future projects, quotes, and storeroom tracking.') }}
+                            </span>
+                        </label>
+                    </div>
+
                     <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
                         <button type="button" @click="materialModalOpen = false" class="btn-secondary text-xs">Cancel</button>
                         <button type="submit" class="btn-primary text-xs shadow-md">Add to BOM</button>
@@ -2748,6 +2881,210 @@
                 </form>
             </div>
         </div>
+
+        {{-- Product & Stock Details Modal --}}
+        <div x-show="productDetailsModalOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+            <div @click.away="productDetailsModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 max-h-[90vh] overflow-y-auto">
+                <div class="flex items-start justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                    <div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <h3 class="font-bold text-slate-900 dark:text-white text-base" x-text="selectedProductData ? (selectedProductData.name || selectedProductData.item_name) : 'Product Details'"></h3>
+                            <span x-show="selectedProductData && selectedProductData.sku" class="px-1.5 py-0.5 rounded text-[11px] font-mono bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700" x-text="selectedProductData ? selectedProductData.sku : ''"></span>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-0.5" x-text="selectedProductData ? (selectedProductData.category || 'General Equipment') : ''"></p>
+                    </div>
+                    <x-close-button @click="productDetailsModalOpen = false" />
+                </div>
+
+                <div x-show="selectedProductData" class="space-y-4">
+                    {{-- 1. Project Allocation & Work Site Status --}}
+                    <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-3">
+                        <h4 class="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-1.5">
+                            <span>📍</span> {{ __('Project Site Deployment & Progress') }}
+                        </h4>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+                            <div class="p-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800">
+                                <span class="text-[10px] uppercase font-bold text-slate-400 block">{{ __('Planned (BOM)') }}</span>
+                                <span class="text-sm font-black text-slate-900 dark:text-white font-mono mt-0.5 block" x-text="(selectedProductData ? (selectedProductData.planned || 0) : 0) + ' ' + (selectedProductData ? selectedProductData.unit : '')"></span>
+                            </div>
+                            <div class="p-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800">
+                                <span class="text-[10px] uppercase font-bold text-slate-400 block">{{ __('Given to Site') }}</span>
+                                <span class="text-sm font-black text-blue-600 dark:text-blue-400 font-mono mt-0.5 block" x-text="(selectedProductData ? (selectedProductData.given || 0) : 0) + ' ' + (selectedProductData ? selectedProductData.unit : '')"></span>
+                            </div>
+                            <div class="p-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800">
+                                <span class="text-[10px] uppercase font-bold text-slate-400 block">{{ __('Used / Installed') }}</span>
+                                <span class="text-sm font-black text-emerald-600 dark:text-emerald-400 font-mono mt-0.5 block" x-text="(selectedProductData ? (selectedProductData.used || 0) : 0) + ' ' + (selectedProductData ? selectedProductData.unit : '')"></span>
+                            </div>
+                            <div class="p-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800">
+                                <span class="text-[10px] uppercase font-bold text-slate-400 block">{{ __('Site Balance') }}</span>
+                                <span class="text-sm font-black text-purple-600 dark:text-purple-400 font-mono mt-0.5 block" x-text="(selectedProductData && selectedProductData.balance !== undefined && selectedProductData.balance !== null ? selectedProductData.balance : '—') + ' ' + (selectedProductData ? selectedProductData.unit : '')"></span>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs pt-1 border-t border-slate-200 dark:border-slate-700/80">
+                            <div>
+                                <span class="text-slate-400 font-semibold">{{ __('Sourcing Channel:') }}</span>
+                                <span class="font-bold text-slate-800 dark:text-slate-200 ml-1" x-text="selectedProductData ? (selectedProductData.material_source === 'warehouse' ? 'Warehouse Dispatch' : (selectedProductData.material_source || 'Warehouse')) : 'Warehouse'"></span>
+                            </div>
+                            <div x-show="selectedProductData && selectedProductData.material_notes">
+                                <span class="text-slate-400 font-semibold">{{ __('Notes / Location:') }}</span>
+                                <span class="font-bold text-slate-800 dark:text-slate-200 ml-1" x-text="selectedProductData ? selectedProductData.material_notes : ''"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- 2. Warehouse Storeroom & Catalog Status --}}
+                    <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-3">
+                        <h4 class="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-1.5">
+                            <span>📦</span> {{ __('Warehouse Storeroom & Catalog Information') }}
+                        </h4>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
+                            <div>
+                                <span class="text-slate-400 block font-semibold">{{ __('Storeroom Stock') }}</span>
+                                <span class="font-mono font-bold text-sm text-slate-900 dark:text-white mt-0.5 block" x-text="selectedProductData && selectedProductData.in_store !== null ? (selectedProductData.in_store + ' ' + selectedProductData.unit) : 'Not in catalog'"></span>
+                            </div>
+                            <div>
+                                <span class="text-slate-400 block font-semibold">{{ __('Brand / Vendor') }}</span>
+                                <span class="font-bold text-slate-800 dark:text-slate-200 mt-0.5 block" x-text="selectedProductData ? (selectedProductData.brand || '—') : '—'"></span>
+                            </div>
+                            <div>
+                                <span class="text-slate-400 block font-semibold">{{ __('Unit Price (₹)') }}</span>
+                                <span class="font-bold text-slate-800 dark:text-slate-200 font-mono mt-0.5 block" x-text="selectedProductData && selectedProductData.selling_price ? ('₹' + selectedProductData.selling_price) : (selectedProductData && selectedProductData.material_unit_cost ? ('₹' + selectedProductData.material_unit_cost) : '—')"></span>
+                            </div>
+                        </div>
+                        <div x-show="selectedProductData && selectedProductData.description" class="text-xs pt-1 border-t border-slate-200 dark:border-slate-700/80">
+                            <span class="text-slate-400 font-semibold block mb-0.5">{{ __('Product Description / Specs:') }}</span>
+                            <p class="text-slate-700 dark:text-slate-300 text-[11px]" x-text="selectedProductData ? selectedProductData.description : ''"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-800">
+                    <template x-if="selectedProductData && selectedProductData.product_id">
+                        <a :href="'/products/' + selectedProductData.product_id" target="_blank" class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1">
+                            <span>View in Inventory Catalog →</span>
+                        </a>
+                    </template>
+                    <span x-show="!selectedProductData || !selectedProductData.product_id"></span>
+
+                    <div class="flex items-center gap-2">
+                        @if(auth()->user()->isOffice())
+                        <template x-if="selectedProductData && selectedProductData.material_id">
+                            <button type="button" @click="productDetailsModalOpen = false; openEditMaterialModal({
+                                id: selectedProductData.material_id,
+                                product_id: selectedProductData.product_id,
+                                item_name: selectedProductData.material_item_name || selectedProductData.name,
+                                quantity: selectedProductData.planned,
+                                unit: selectedProductData.material_unit || selectedProductData.unit,
+                                unit_cost: selectedProductData.material_unit_cost,
+                                source: selectedProductData.material_source || 'warehouse',
+                                shop_name: selectedProductData.material_shop_name,
+                                notes: selectedProductData.material_notes
+                            })" class="btn-primary text-xs shadow-xs">
+                                Edit Allocation
+                            </button>
+                        </template>
+                        @endif
+                        <button type="button" @click="productDetailsModalOpen = false" class="btn-secondary text-xs">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Edit Material Line Item Modal (Admin / Office Only) --}}
+        @if(auth()->user()->isOffice())
+        <div x-show="editMaterialModalOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+            <div @click.away="editMaterialModalOpen = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 max-h-[90vh] overflow-y-auto">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                    <div>
+                        <h3 class="font-bold text-slate-900 dark:text-white text-base">Update Product / BOM Allocation</h3>
+                        <p class="text-xs text-slate-500 mt-0.5">Admin control to update product scope, quantity, and sourcing.</p>
+                    </div>
+                    <x-close-button @click="editMaterialModalOpen = false" />
+                </div>
+
+                <form method="POST" :action="editMaterialData.action_url" class="space-y-4">
+                    @csrf
+                    <input type="hidden" name="_method" :value="editMaterialData.id ? 'PUT' : 'POST'">
+
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <label class="block text-xs font-bold uppercase text-slate-500">Catalog Product (Optional)</label>
+                            <button type="button" 
+                                    onclick="window.openQuickAddProductModal({ targetSelectId: 'edit-material-prod-select' })"
+                                    class="inline-flex items-center gap-1 text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition cursor-pointer"
+                                    title="Add new product to Catalog">
+                                <span>Add New Product</span>
+                            </button>
+                        </div>
+                        <select id="edit-material-prod-select" name="product_id" x-model="editMaterialData.product_id" 
+                                @change="if ($event.target.value) { const opt = $event.target.selectedOptions[0]; editMaterialData.item_name = opt.dataset.name; editMaterialData.unit = opt.dataset.unit || editMaterialData.unit; }"
+                                class="w-full px-3.5 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                            <option value="">-- Custom Non-Catalog Item --</option>
+                            @foreach($availableProducts as $prod)
+                                <option value="{{ $prod->id }}" data-name="{{ $prod->name }}" data-unit="{{ $prod->unit }}">
+                                    [{{ $prod->sku }}] {{ $prod->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Item Description / Name *</label>
+                        <input type="text" name="item_name" x-model="editMaterialData.item_name" required placeholder="e.g. 4TB Surveillance HDD" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-medium">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Planned Quantity *</label>
+                            <input type="number" step="any" min="0.01" name="quantity" x-model="editMaterialData.quantity" required placeholder="1" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-bold font-mono text-blue-600 dark:text-blue-400">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Unit *</label>
+                            <select name="unit" x-model="editMaterialData.unit" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-semibold">
+                                <option value="meters">meters (mtr)</option>
+                                <option value="nos">nos (units)</option>
+                                <option value="box">box</option>
+                                <option value="roll">roll</option>
+                                <option value="pkt">pkt</option>
+                                <option value="feet">feet</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Est. Unit Cost (₹)</label>
+                            <input type="number" step="any" min="0" name="unit_cost" x-model="editMaterialData.unit_cost" placeholder="0.00" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Sourcing Channel *</label>
+                            <select name="source" x-model="editMaterialData.source" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                                <option value="warehouse">Warehouse Dispatch</option>
+                                <option value="local_purchase">Direct Local Purchase</option>
+                                <option value="company_stock">Company Stock</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Shop / Vendor Name (if local purchase)</label>
+                        <input type="text" name="shop_name" x-model="editMaterialData.shop_name" placeholder="Vendor / Hardware shop name" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Notes / Location Tag</label>
+                        <input type="text" name="notes" x-model="editMaterialData.notes" placeholder="e.g. Ground floor rack" class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
+                    </div>
+
+                    <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                        <button type="button" @click="editMaterialModalOpen = false" class="btn-secondary text-xs">Cancel</button>
+                        <button type="submit" class="btn-primary text-xs shadow-md">Update BOM</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        @endif
 
         {{-- Give material to the site / return it to the storeroom --}}
         @if(auth()->user()->isOffice())
@@ -2776,7 +3113,15 @@
                     </div>
 
                     <div>
-                        <label for="issue-product-id" class="block text-xs font-bold uppercase text-slate-500 mb-1">Product *</label>
+                        <div class="flex items-center justify-between mb-1">
+                            <label for="issue-product-id" class="block text-xs font-bold uppercase text-slate-500">Product *</label>
+                            <button type="button" 
+                                    onclick="window.openQuickAddProductModal({ targetSelectId: 'issue-product-id' })"
+                                    class="inline-flex items-center gap-1 text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition cursor-pointer"
+                                    title="Add new product to Catalog">
+                                <span>Add New Product</span>
+                            </button>
+                        </div>
                         <select id="issue-product-id" name="product_id" x-model="issueProductId" required class="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none">
                             <option value="">-- Choose a product --</option>
                             @foreach($availableProducts as $prod)
@@ -2897,7 +3242,6 @@
                                     <button type="button" 
                                             @click="consumeModalOpen = false; taskModalOpen = true" 
                                             class="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 cursor-pointer">
-                                        <x-icon.plus class="w-3 h-3 shrink-0" />
                                         <span>Add New Task</span>
                                     </button>
                                 </div>
@@ -2915,7 +3259,6 @@
                                             <button type="button" 
                                                     @click="consumeModalOpen = false; taskModalOpen = true" 
                                                     class="btn-md px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs transition inline-flex items-center gap-1 cursor-pointer">
-                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                                                 <span>Create First Task</span>
                                             </button>
                                             <button type="button" 
@@ -3345,11 +3688,9 @@
                                     </div>
                                     <div class="flex items-center gap-2">
                                         <button type="button" @click="openNewWorkerModal(null)" class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 hover:bg-blue-100 transition inline-flex items-center gap-1 cursor-pointer">
-                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                                             <span>Add New Worker</span>
                                         </button>
                                         <button type="button" @click="addRow()" class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition inline-flex items-center gap-1 cursor-pointer">
-                                            <x-icon.plus />
                                             <span>Add Row</span>
                                         </button>
                                     </div>
@@ -3371,7 +3712,6 @@
                                             </div>
                                             <div class="flex items-center gap-2.5">
                                                 <button type="button" @click="openNewWorkerModal(idx)" class="inline-flex items-center gap-1 text-[11px] font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 cursor-pointer">
-                                                    <x-icon.plus class="w-3 h-3 shrink-0" />
                                                     <span>New Person</span>
                                                 </button>
                                                 <button type="button" @click="removeRow(idx)" class="text-rose-500 hover:text-rose-700 text-xs font-semibold cursor-pointer" x-show="rows.length > 1">

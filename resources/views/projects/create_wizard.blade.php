@@ -385,7 +385,6 @@
                             </div>
                         </div>
                         <button type="button" @click="siteModalOpen = true" class="btn-secondary text-xs py-2 px-3.5 flex items-center justify-center gap-2 shadow-2xs self-start sm:self-auto shrink-0">
-                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
                             <span>Quick-Register New Site</span>
                         </button>
                     </div>
@@ -484,9 +483,8 @@
                                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-500">Lead Technician In-Charge</label>
                                 @if(auth()->user()->isAdmin())
                                 <a href="{{ route('admin.users.create', ['role' => 'technician', 'return_to' => route('projects.create', ['step' => 2])]) }}" 
-                                   class="btn-subtle gap-1.5 text-white font-semibold"
+                                   class="btn-subtle text-white font-semibold"
                                    style="color: #ffffff !important;">
-                                    <x-icon.plus />
                                     <span class="text-white font-semibold" style="color: #ffffff !important;">Add New Technician</span>
                                 </a>
                                 @endif
@@ -563,7 +561,6 @@
                             </div>
                         </div>
                         <button type="button" @click="addMaterialRow()" class="btn-secondary text-xs py-2 px-3.5 flex items-center justify-center gap-2 shadow-2xs self-start sm:self-auto shrink-0">
-                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
                             <span>Add Item</span>
                         </button>
                     </div>

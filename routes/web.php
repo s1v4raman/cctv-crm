@@ -150,6 +150,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Products Management
         Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
         Route::post('/products', [ProductController::class, 'store'])->name('products.store');
+        Route::post('/products/quick-store', [ProductController::class, 'quickStore'])->name('products.quick-store');
         Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
         Route::put('/products/{product}', [ProductController::class, 'update'])->name('products.update');
         Route::post('/products/{product}/approve', [ProductController::class, 'approve'])->name('products.approve');
@@ -162,6 +163,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/suppliers', [SupplierController::class, 'store'])->name('suppliers.store');
         Route::get('/suppliers/{supplier}/edit', [SupplierController::class, 'edit'])->name('suppliers.edit');
         Route::put('/suppliers/{supplier}', [SupplierController::class, 'update'])->name('suppliers.update');
+        Route::post('/suppliers/{supplier}/payments', [SupplierController::class, 'recordPayment'])->name('suppliers.recordPayment');
+        Route::post('/suppliers/{supplier}/share-whatsapp', [SupplierController::class, 'shareWhatsApp'])->name('suppliers.shareWhatsApp');
+        Route::post('/suppliers/{supplier}/send-email', [SupplierController::class, 'sendEmail'])->name('suppliers.sendEmail');
 
         // Purchase Orders Write
         Route::get('/purchase-orders/create', [PurchaseOrderController::class, 'create'])->name('purchase-orders.create');
@@ -171,6 +175,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/purchase-orders/{purchase_order}/receive', [PurchaseOrderController::class, 'receiveItems'])->name('purchase-orders.receive');
         Route::patch('/purchase-orders/{purchase_order}/status', [PurchaseOrderController::class, 'updateStatus'])->name('purchase-orders.updateStatus');
         Route::patch('/purchase-orders/{purchase_order}/payment', [PurchaseOrderController::class, 'updatePayment'])->name('purchase-orders.updatePayment');
+        Route::post('/purchase-orders/{purchase_order}/share-whatsapp', [PurchaseOrderController::class, 'shareWhatsApp'])->name('purchase-orders.shareWhatsApp');
+        Route::post('/purchase-orders/{purchase_order}/send-email', [PurchaseOrderController::class, 'sendEmail'])->name('purchase-orders.sendEmail');
 
         // Attendance Admin Write (managing other employees' records)
         Route::post('/attendance', [AttendanceController::class, 'store'])->name('attendance.store');
@@ -192,7 +198,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::patch('/attendance/leaves/{leave}/reject', [LeaveRequestController::class, 'reject'])->name('leaves.reject');
         Route::get('/finance/analytics', [FinanceController::class, 'analytics'])->name('finance.analytics');
 
-        // Expense & Travel Claims Admin Approvals & Payouts
+        // Expense & Travel Claims Admin Approvals, Updates & Payouts
+        Route::put('/finance/expenses/{claim}', [ExpenseClaimController::class, 'update'])->name('finance.expenses.update');
+        Route::delete('/finance/expenses/{claim}', [ExpenseClaimController::class, 'destroy'])->name('finance.expenses.destroy');
         Route::patch('/finance/expenses/{claim}/approve', [ExpenseClaimController::class, 'approve'])->name('finance.expenses.approve');
         Route::patch('/finance/expenses/{claim}/reject', [ExpenseClaimController::class, 'reject'])->name('finance.expenses.reject');
         Route::post('/finance/expenses/{claim}/pay', [ExpenseClaimController::class, 'markPaid'])->name('finance.expenses.pay');
@@ -350,6 +358,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/projects/{project}/approve', [ProjectController::class, 'approve'])->name('projects.approve');
         Route::post('/projects/{project}/reject', [ProjectController::class, 'reject'])->name('projects.reject');
         Route::post('/projects/{project}/materials', [ProjectController::class, 'addMaterial'])->name('projects.materials.store');
+        Route::put('/projects/{project}/materials/{material}', [ProjectController::class, 'updateMaterial'])->name('projects.materials.update');
         Route::delete('/projects/{project}/materials/{material}', [ProjectController::class, 'deleteMaterial'])->name('projects.materials.destroy');
         Route::post('/projects/{project}/material-issues', [ProjectMaterialIssueController::class, 'store'])->name('projects.material-issues.store');
         Route::delete('/projects/{project}/material-issues/{issue}', [ProjectMaterialIssueController::class, 'destroy'])->name('projects.material-issues.destroy');
@@ -384,12 +393,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Client Installation Sites
         Route::get('/sites/search', [SiteController::class, 'search'])->name('sites.search');
         Route::post('/sites/check-duplicate', [SiteController::class, 'checkDuplicate'])->name('sites.check-duplicate');
+        Route::post('/sites/quick-create', [SiteController::class, 'quickCreateSiteProject'])->name('sites.quick-create');
         Route::resource('sites', SiteController::class)->middlewareFor('destroy', 'admin');
 
         // Daily-Wage Workers & Attendance Maintenance
+        Route::get('/workers/attendance/check-date', [WorkerAttendanceController::class, 'checkDateAttendance'])->name('workers.attendance.check-date');
         Route::get('/workers/attendance', [WorkerAttendanceController::class, 'index'])->name('workers.attendance.index');
         Route::post('/workers/attendance', [WorkerAttendanceController::class, 'store'])->name('workers.attendance.store');
         Route::delete('/workers/attendance/{attendance}', [WorkerAttendanceController::class, 'destroy'])->name('workers.attendance.destroy');
+        Route::get('/workers/work-output/check', [WorkerAttendanceController::class, 'checkWorkOutput'])->name('workers.work-output.check');
+        Route::post('/workers/work-output', [WorkerAttendanceController::class, 'storeWorkOutput'])->name('workers.work-output.store');
         Route::post('/workers/quick-store', [WorkerController::class, 'quickStore'])->name('workers.quick-store');
         Route::post('/workers/quick-add', [WorkerController::class, 'quickStore'])->name('workers.quick-add');
         // Sign-up requests from the worker login page (admin only, checked in the controller)
@@ -437,7 +450,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/quotations', [QuotationController::class, 'index'])->name('quotations.index');
         Route::get('/quotations/{quotation}', [QuotationController::class, 'show'])->name('quotations.show');
         Route::get('/quotations/{quotation}/send-whatsapp', [QuotationController::class, 'sendWhatsApp'])->name('quotations.send-whatsapp');
-        Route::get('/quotations/{quotation}/pdf/{format}', [QuotationController::class, 'downloadPdf'])->name('quotations.pdf');
+        Route::get('/quotations/{quotation}/pdf/{format?}', [QuotationController::class, 'downloadPdf'])->name('quotations.pdf');
+        Route::get('/quotations/{quotation}/download-pdf/{format?}', [QuotationController::class, 'downloadPdf'])->name('quotations.download-pdf');
         Route::get('/quotations/{quotation}/vcard', [QuotationController::class, 'downloadVcard'])->name('quotations.vcard');
 
         // Invoices & Payments Write

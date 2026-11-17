@@ -4,6 +4,9 @@
     'leads' => collect(),
 ])
 
+{{-- Local Offline Barcode & QR Decoding Engine (ZXing MultiFormat) --}}
+<script src="{{ asset('vendor/zxing/zxing.min.js') }}"></script>
+
 {{-- HARDWARE BARCODE SCANNER & ASSET REGISTRY MULTI-MODE MODAL --}}
 <div id="{{ $modalId }}" 
      class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 hidden overflow-y-auto"
@@ -36,7 +39,6 @@
                     class="flex-1 py-2 px-3 min-h-[38px] rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 cursor-pointer"
                     :class="activeTab === 'lookup' ? 'bg-blue-600 !text-white shadow-xs' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-700/60'"
                     :style="activeTab === 'lookup' ? 'color: #ffffff !important;' : ''">
-                <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
                 <span>{{ __('Serial Lookup') }}</span>
             </button>
 
@@ -45,7 +47,6 @@
                     class="flex-1 py-2 px-3 min-h-[38px] rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 cursor-pointer"
                     :class="activeTab === 'camera' ? 'bg-blue-600 !text-white shadow-xs' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-700/60'"
                     :style="activeTab === 'camera' ? 'color: #ffffff !important;' : ''">
-                <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z"/></svg>
                 <span>{{ __('Live Scanner') }}</span>
             </button>
 
@@ -54,7 +55,6 @@
                     class="flex-1 py-2 px-3 min-h-[38px] rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 cursor-pointer"
                     :class="activeTab === 'register' ? 'bg-blue-600 !text-white shadow-xs' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-700/60'"
                     :style="activeTab === 'register' ? 'color: #ffffff !important;' : ''">
-                <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                 <span>{{ __('Register Asset') }}</span>
             </button>
         </div>
@@ -87,13 +87,12 @@
             <div class="flex items-center justify-between flex-wrap gap-2 pt-1 text-xs">
                 <button type="button" @click="switchTab('camera')"
                         class="inline-flex items-center gap-1.5 text-blue-600 dark:text-blue-400 font-bold hover:underline cursor-pointer">
-                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z"/></svg>
                     <span>{{ __('Launch Live Camera Scanner') }}</span>
                 </button>
 
                 <button type="button" @click="prefillAndRegister(lookupInput)"
                         class="inline-flex items-center gap-1.5 text-slate-600 dark:text-slate-400 font-semibold hover:text-slate-900 dark:hover:text-white cursor-pointer">
-                    <span>{{ __('+ Register New Asset Directly') }}</span>
+                    <span>{{ __('Register New Asset Directly') }}</span>
                 </button>
             </div>
 
@@ -192,26 +191,26 @@
         <div x-show="activeTab === 'camera'" class="space-y-4">
             
             {{-- Camera Viewport Container --}}
-            <div class="relative bg-black rounded-2xl overflow-hidden w-full h-[260px] sm:h-[300px] flex items-center justify-center border border-slate-200 dark:border-slate-800 shadow-inner">
+            <div class="relative bg-slate-950 rounded-2xl overflow-hidden w-full h-[260px] sm:h-[300px] flex items-center justify-center border border-slate-800 shadow-inner">
                 <video id="hw-scanner-video" autoplay playsinline muted class="w-full h-full object-cover"></video>
                 <canvas id="hw-scanner-canvas" style="display:none;"></canvas>
 
                 {{-- Scanning Reticle & Animated Laser --}}
-                <div class="absolute w-[240px] h-[160px] border-2 border-dashed border-blue-400/80 rounded-2xl pointer-events-none flex flex-col justify-between p-2 box-border shadow-[0_0_0_4000px_rgba(0,0,0,0.55)]">
+                <div class="absolute w-[240px] h-[150px] border-2 border-dashed border-white/40 rounded-2xl pointer-events-none flex flex-col justify-between p-2 box-border shadow-[0_0_0_4000px_rgba(0,0,0,0.6)]">
                     <div class="flex justify-between">
-                        <div class="w-4 h-4 border-t-3 border-l-3 border-blue-500 rounded-tl-lg"></div>
-                        <div class="w-4 h-4 border-t-3 border-r-3 border-blue-500 rounded-tr-lg"></div>
+                        <div class="w-4 h-4 border-t-3 border-l-3 border-[var(--crm-accent,#2563eb)] rounded-tl-lg"></div>
+                        <div class="w-4 h-4 border-t-3 border-r-3 border-[var(--crm-accent,#2563eb)] rounded-tr-lg"></div>
                     </div>
-                    <div class="laser-scanner-line w-full h-0.5 bg-red-500 shadow-[0_0_12px_#ef4444] animate-pulse"></div>
+                    <div class="laser-scanner-line w-full h-0.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-[0_0_12px_#22d3ee] animate-pulse"></div>
                     <div class="flex justify-between">
-                        <div class="w-4 h-4 border-b-3 border-l-3 border-blue-500 rounded-bl-lg"></div>
-                        <div class="w-4 h-4 border-b-3 border-r-3 border-blue-500 rounded-br-lg"></div>
+                        <div class="w-4 h-4 border-b-3 border-l-3 border-[var(--crm-accent,#2563eb)] rounded-bl-lg"></div>
+                        <div class="w-4 h-4 border-b-3 border-r-3 border-[var(--crm-accent,#2563eb)] rounded-br-lg"></div>
                     </div>
                 </div>
 
                 {{-- Camera Status Overlay Pill --}}
                 <div id="hw-scanner-status"
-                     class="absolute bottom-3 inset-x-3 text-center bg-slate-900/85 backdrop-blur text-white text-xs font-semibold py-1.5 px-3 rounded-full border border-white/10 shadow-sm mx-auto max-w-xs">
+                     class="absolute bottom-3 inset-x-4 text-center bg-slate-900/90 backdrop-blur-md text-slate-100 text-xs font-medium py-2 px-3.5 rounded-xl border border-slate-700/80 shadow-lg mx-auto max-w-sm">
                     {{ __('Initializing camera...') }}
                 </div>
             </div>
@@ -220,27 +219,23 @@
             <div class="flex items-center justify-between flex-wrap gap-2 pt-1">
                 <div class="flex items-center gap-2">
                     <button type="button" @click="toggleTorch()"
-                            class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-slate-700 transition cursor-pointer">
-                        <svg class="w-3.5 h-3.5 text-amber-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.478a12.06 12.06 0 01-4.5 0m3.75 2.383a14.406 14.406 0 01-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 10-7.516 0c.85.493 1.509 1.333 1.509 2.316V18"/></svg>
+                            class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-slate-700 transition cursor-pointer">
                         <span>{{ __('Torch') }}</span>
                     </button>
                     <button type="button" @click="switchCamera()"
-                            class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-slate-700 transition cursor-pointer">
-                        <svg class="w-3.5 h-3.5 text-blue-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
+                            class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-slate-700 transition cursor-pointer">
                         <span>{{ __('Flip Cam') }}</span>
                     </button>
                 </div>
 
                 <div class="flex items-center gap-2">
                     <button type="button" @click="snapFrame()"
-                            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-slate-700 transition cursor-pointer">
-                        <svg class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z"/></svg>
+                            class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-slate-700 transition cursor-pointer">
                         <span>{{ __('Snap Frame') }}</span>
                     </button>
-                    <label class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 !text-white text-xs font-bold shadow-sm transition cursor-pointer"
-                           style="color: #ffffff !important;">
-                        <svg class="w-3.5 h-3.5 !text-white" fill="none" stroke="#ffffff" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg>
-                        <span class="!text-white font-bold" style="color: #ffffff !important;">{{ __('Upload Image') }}</span>
+                    <label class="px-4 py-2 rounded-xl text-white text-xs font-semibold shadow-xs transition cursor-pointer inline-flex items-center justify-center"
+                           style="background-color: var(--crm-accent, #2563eb); color: #ffffff !important;">
+                        <span style="color: #ffffff !important;">{{ __('Upload Image') }}</span>
                         <input type="file" accept="image/*" @change="uploadImage($event)" style="display:none;">
                     </label>
                 </div>
@@ -248,7 +243,7 @@
 
             <div class="pt-2 text-center">
                 <button type="button" @click="switchTab('lookup')" class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline">
-                    &larr; {{ __('Switch back to manual serial lookup') }}
+                    {{ __('Switch back to manual serial lookup') }}
                 </button>
             </div>
 
@@ -299,11 +294,19 @@
 
                     {{-- Customer Site / Project --}}
                     <div class="sm:col-span-2 space-y-1">
-                        <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block">
-                            {{ __('Customer Site / Project') }} <span class="text-rose-500">*</span>
-                        </label>
-                        <select name="lead_id" required
-                                class="w-full text-xs sm:text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/70 text-slate-900 dark:text-white px-3.5 py-2.5 focus:ring-2 focus:ring-blue-500">
+                        <div class="flex items-center justify-between mb-1">
+                            <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-0">
+                                {{ __('Customer Site / Project') }} <span class="text-rose-500">*</span>
+                            </label>
+                            <button type="button" 
+                                    onclick="triggerAddCustomerSiteFromScanner()" 
+                                    class="text-xs font-bold px-3 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 active:scale-95 !text-white transition cursor-pointer shadow-xs" 
+                                    style="color: #ffffff !important;">
+                                <span class="!text-white font-bold" style="color: #ffffff !important;">Add New Customer Site</span>
+                            </button>
+                        </div>
+                        <select id="hw_scanner_lead_id" name="lead_id" required data-searchable="true" data-search-placeholder="Search customer site or active project..."
+                                class="crm-select crm-searchable-select w-full text-xs sm:text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/70 text-slate-900 dark:text-white px-3.5 py-2.5 focus:ring-2 focus:ring-blue-500">
                             <option value="">{{ __('-- Select Customer Site or Active Project --') }}</option>
                             @if($projects->isNotEmpty())
                                 <optgroup label="{{ __('Active Installation Projects') }}">
@@ -362,13 +365,13 @@
                 <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3">
                     <button type="button" @click="switchTab('lookup')"
                             class="inline-flex items-center justify-center px-4 py-2 min-h-[38px] rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs sm:text-sm font-bold transition cursor-pointer">
-                        &larr; {{ __('Back to Lookup') }}
+                        <span>{{ __('Back to Lookup') }}</span>
                     </button>
 
                     <button type="submit"
                             class="inline-flex items-center justify-center px-5 py-2 min-h-[38px] rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 !text-white text-xs sm:text-sm font-bold shadow-sm transition cursor-pointer"
                             style="color: #ffffff !important;">
-                        <span style="color: #ffffff !important;">{{ __('Save & Register Asset') }} &rarr;</span>
+                        <span style="color: #ffffff !important;">{{ __('Save & Register Asset') }}</span>
                     </button>
                 </div>
 
@@ -414,6 +417,14 @@
 
                 window.closeHardwareScannerModal = () => {
                     this.closeModal();
+                };
+
+                window.triggerAddCustomerSiteFromScanner = () => {
+                    if (typeof openQuickAddSiteModal === 'function') {
+                        openQuickAddSiteModal();
+                    } else {
+                        window.open("{{ route('sites.create') }}", '_blank');
+                    }
                 };
             },
 
@@ -560,6 +571,20 @@
                     } catch (e) {}
                 }
 
+                // ZXing universal PC / laptop webcam decoder fallback
+                if (window.ZXing && window.ZXing.BrowserMultiFormatReader) {
+                    try {
+                        if (!this.zxingReader) {
+                            this.zxingReader = new window.ZXing.BrowserMultiFormatReader();
+                        }
+                        const result = await this.zxingReader.decodeFromVideoElement(video);
+                        if (result && result.getText()) {
+                            this.onBarcodeDetected(result.getText());
+                            return;
+                        }
+                    } catch (e) {}
+                }
+
                 this.animFrame = requestAnimationFrame(() => this.scanLoop());
             },
 
@@ -612,6 +637,17 @@
                     } catch (e) {}
                 }
 
+                if (window.ZXing && window.ZXing.BrowserMultiFormatReader) {
+                    try {
+                        if (!this.zxingReader) this.zxingReader = new window.ZXing.BrowserMultiFormatReader();
+                        const result = await this.zxingReader.decodeFromCanvas(canvas);
+                        if (result && result.getText()) {
+                            this.onBarcodeDetected(result.getText());
+                            return;
+                        }
+                    } catch (e) {}
+                }
+
                 const statusEl = document.getElementById('hw-scanner-status');
                 if (statusEl) statusEl.innerText = '{{ __('No barcode found in current frame. Hold closer and steady.') }}';
             },
@@ -640,6 +676,18 @@
                             }
                         } catch (e) {}
                     }
+
+                    if (window.ZXing && window.ZXing.BrowserMultiFormatReader) {
+                        try {
+                            if (!this.zxingReader) this.zxingReader = new window.ZXing.BrowserMultiFormatReader();
+                            const result = await this.zxingReader.decodeFromCanvas(canvas);
+                            if (result && result.getText()) {
+                                this.onBarcodeDetected(result.getText());
+                                return;
+                            }
+                        } catch (e) {}
+                    }
+
                     alert('{{ __('No barcode detected in uploaded photo. Please try another image or type serial manually.') }}');
                 };
                 img.src = URL.createObjectURL(file);

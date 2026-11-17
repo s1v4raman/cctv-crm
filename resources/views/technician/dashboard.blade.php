@@ -9,11 +9,12 @@
     @endphp
 
     <div x-data="{
-        currentTab: 'overview', // 'overview', 'projects', 'jobs', 'surveys', 'workers', 'quotations', 'scanner'
+        currentTab: @js(request('tab', 'overview')), // 'overview', 'projects', 'jobs', 'surveys', 'workers', 'quotations', 'allowances', 'scanner'
         scanCodeInput: '',
         showAddWorkerModal: false,
         showExistingQuoteModal: false,
         showNewLeadQuoteModal: false,
+        showAddAllowanceModal: false,
         selectedLeadIdForQuote: '',
         switchTab(t) {
             this.currentTab = t;
@@ -80,15 +81,15 @@
                             <button type="button" onclick="document.getElementById('techSiteCheckInModal').classList.remove('hidden')"
                                     class="inline-flex items-center justify-center gap-2 px-4 py-2 min-h-[38px] rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 !text-white font-bold text-xs sm:text-sm shadow-md shadow-blue-500/20 transition cursor-pointer"
                                     style="color: #ffffff !important;">
-                                <svg class="w-4 h-4 sm:w-5 sm:h-5 !text-white" fill="none" stroke="#ffffff" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                <span class="!text-white font-bold" style="color: #ffffff !important;">{{ __('Site Clock-In Today') }}</span>
+                                <svg class="w-4 h-4 sm:w-5 sm:h-5 !text-white" fill="none" stroke="#ffffff" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                <span class="!text-white font-bold" style="color: #ffffff !important;">{{ __('My Attendance') }}</span>
                             </button>
-                        @elseif(!$myAttendance->clock_out)
+                        @else
                             <div class="inline-flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 min-h-[38px] rounded-xl {{ $myAttendance->approval_status === 'pending' ? 'bg-amber-50 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-800' : ($myAttendance->approval_status === 'rejected' ? 'bg-rose-50 dark:bg-rose-950/60 border border-rose-300 dark:border-rose-800' : 'bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-800') }} text-xs sm:text-sm">
-                                <span class="w-2.5 h-2.5 rounded-full {{ $myAttendance->approval_status === 'pending' ? 'bg-amber-500 animate-pulse' : ($myAttendance->approval_status === 'rejected' ? 'bg-rose-500' : 'bg-emerald-500 animate-pulse') }}"></span>
+                                <span class="w-2.5 h-2.5 rounded-full {{ $myAttendance->approval_status === 'pending' ? 'bg-amber-500 animate-pulse' : ($myAttendance->approval_status === 'rejected' ? 'bg-rose-500' : 'bg-emerald-500') }}"></span>
                                 <div>
                                     <span class="font-bold {{ $myAttendance->approval_status === 'pending' ? 'text-amber-800 dark:text-amber-300' : ($myAttendance->approval_status === 'rejected' ? 'text-rose-800 dark:text-rose-300' : 'text-emerald-800 dark:text-emerald-300') }}">
-                                        {{ __('Shift: :time', ['time' => \Carbon\Carbon::parse($myAttendance->clock_in)->format('h:i A')]) }}
+                                        {{ __('Full Day Attendance Logged') }}
                                     </span>
                                     <span class="text-[10px] block opacity-80">
                                         @if($myAttendance->approval_status === 'pending')
@@ -98,24 +99,11 @@
                                         @else
                                             {{ __('(Approved by Office)') }}
                                         @endif
+                                        @if($myAttendance->project)
+                                            &bull; {{ Str::limit($myAttendance->project->title, 22) }}
+                                        @endif
                                     </span>
                                 </div>
-                                <form method="POST" action="{{ route('attendance.clock-out') }}" class="inline ml-1">
-                                    @csrf
-                                    <button type="submit" 
-                                            class="inline-flex items-center justify-center px-3.5 py-1.5 min-h-[32px] rounded-lg bg-rose-600 hover:bg-rose-700 active:scale-95 !text-white font-bold text-[11px] sm:text-xs shadow-xs transition cursor-pointer"
-                                            style="color: #ffffff !important;">
-                                        <span class="!text-white font-bold" style="color: #ffffff !important;">{{ __('Clock Out') }}</span>
-                                    </button>
-                                </form>
-                            </div>
-                        @else
-                            <div class="inline-flex items-center gap-2 px-4 py-2 min-h-[38px] rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm text-slate-700 dark:text-slate-300 font-bold">
-                                <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                <span>{{ __('Shift Done (:hours hrs)', ['hours' => $myAttendance->total_hours]) }}</span>
-                                <span class="text-[10px] font-normal opacity-75">
-                                    {{ $myAttendance->approval_status === 'pending' ? __('(Pending Review)') : ($myAttendance->approval_status === 'rejected' ? __('(Rejected)') : __('(Approved)')) }}
-                                </span>
                             </div>
                         @endif
                     </div>
@@ -128,21 +116,30 @@
                         <a href="{{ route('projects.create') }}" 
                            class="inline-flex items-center justify-center gap-2 px-4 py-2 min-h-[38px] rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 !text-white font-bold text-xs sm:text-sm shadow-sm transition cursor-pointer"
                            style="color: #ffffff !important;">
-                            <svg class="w-4 h-4 shrink-0 !text-white" fill="none" stroke="#ffffff" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                             <span class="!text-white font-bold" style="color: #ffffff !important;">{{ __('New Project') }}</span>
                         </a>
 
-                        {{-- Log Worker Attendance (Split Guided Modal) --}}
+                        {{-- Add Site Location (Quick Modal) --}}
+                        <button type="button" onclick="openQuickAddSiteModal()"
+                                class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 min-h-[38px] rounded-xl bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/40 dark:hover:bg-blue-900/50 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 font-bold text-xs sm:text-sm shadow-xs transition cursor-pointer">
+                            <span>{{ __('+ Add Site Location') }}</span>
+                        </button>
+
+                        {{-- Log Worker Attendance (Method 1) --}}
                         <button type="button" onclick="openAttendanceModal()"
                                 class="inline-flex items-center justify-center gap-2 px-4 py-2 min-h-[38px] rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 font-bold text-xs sm:text-sm shadow-xs transition cursor-pointer">
-                            <svg class="w-4 h-4 shrink-0 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
                             <span>{{ __('Log Worker Attendance') }}</span>
+                        </button>
+
+                        {{-- Log Site Work Output (Method 2) --}}
+                        <button type="button" onclick="openWorkOutputModal()"
+                                class="inline-flex items-center justify-center gap-2 px-4 py-2 min-h-[38px] rounded-xl bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/40 dark:hover:bg-amber-900/50 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300 font-bold text-xs sm:text-sm shadow-xs transition cursor-pointer">
+                            <span>{{ __('Log Site Work Output') }}</span>
                         </button>
 
                         {{-- Hardware Scanner (Opens Full Multi-Function Modal) --}}
                         <button type="button" onclick="openHardwareScannerModal()"
                                 class="inline-flex items-center justify-center gap-2 px-4 py-2 min-h-[38px] rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 font-bold text-xs sm:text-sm shadow-xs transition cursor-pointer">
-                            <svg class="w-4 h-4 shrink-0 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z"/></svg>
                             <span>{{ __('Hardware Scanner') }}</span>
                         </button>
                     </div>
@@ -245,7 +242,7 @@
                     <button type="button" @click="switchTab('overview')"
                             class="shrink-0 px-4 sm:px-5 py-2 min-h-[38px] rounded-xl text-xs sm:text-sm font-bold transition-all inline-flex items-center justify-center gap-2 cursor-pointer border"
                             :class="currentTab === 'overview' 
-                                ? 'bg-[#65a30d] !text-white border-[#65a30d] shadow-sm' 
+                                ? 'bg-blue-600 !text-white border-blue-600 shadow-sm' 
                                 : 'bg-white hover:bg-slate-50 dark:bg-slate-800/80 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:text-slate-900 dark:hover:text-white'"
                             :style="currentTab === 'overview' ? 'color: #ffffff !important;' : ''">
                         <svg class="w-4 h-4 shrink-0" :class="currentTab === 'overview' ? '!text-white' : ''" :stroke="currentTab === 'overview' ? '#ffffff' : 'currentColor'" fill="none" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
@@ -255,14 +252,14 @@
                     <button type="button" @click="switchTab('projects')"
                             class="shrink-0 px-4 sm:px-5 py-2 min-h-[38px] rounded-xl text-xs sm:text-sm font-bold transition-all inline-flex items-center justify-center gap-2 cursor-pointer border"
                             :class="currentTab === 'projects' 
-                                ? 'bg-[#65a30d] !text-white border-[#65a30d] shadow-sm' 
+                                ? 'bg-blue-600 !text-white border-blue-600 shadow-sm' 
                                 : 'bg-white hover:bg-slate-50 dark:bg-slate-800/80 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:text-slate-900 dark:hover:text-white'"
                             :style="currentTab === 'projects' ? 'color: #ffffff !important;' : ''">
                         <svg class="w-4 h-4 shrink-0" :class="currentTab === 'projects' ? '!text-white' : ''" :stroke="currentTab === 'projects' ? '#ffffff' : 'currentColor'" fill="none" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21"/></svg>
                         <span :class="currentTab === 'projects' ? '!text-white font-bold' : ''">{{ __('Projects') }}</span>
                         @if($assignedProjects->count() > 0)
                             <span class="px-2 py-0.5 rounded-full text-[10px] font-bold"
-                                  :class="currentTab === 'projects' ? 'bg-white/25 !text-white' : 'bg-lime-100 dark:bg-lime-900/60 text-lime-800 dark:text-lime-300'">
+                                  :class="currentTab === 'projects' ? 'bg-white/25 !text-white' : 'bg-blue-100 dark:bg-blue-900/60 text-blue-800 dark:text-blue-300'">
                                 {{ $assignedProjects->count() }}
                             </span>
                         @endif
@@ -271,14 +268,14 @@
                     <button type="button" @click="switchTab('jobs')"
                             class="shrink-0 px-4 sm:px-5 py-2 min-h-[38px] rounded-xl text-xs sm:text-sm font-bold transition-all inline-flex items-center justify-center gap-2 cursor-pointer border"
                             :class="currentTab === 'jobs' 
-                                ? 'bg-[#65a30d] !text-white border-[#65a30d] shadow-sm' 
+                                ? 'bg-blue-600 !text-white border-blue-600 shadow-sm' 
                                 : 'bg-white hover:bg-slate-50 dark:bg-slate-800/80 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:text-slate-900 dark:hover:text-white'"
                             :style="currentTab === 'jobs' ? 'color: #ffffff !important;' : ''">
                         <svg class="w-4 h-4 shrink-0" :class="currentTab === 'jobs' ? '!text-white' : ''" :stroke="currentTab === 'jobs' ? '#ffffff' : 'currentColor'" fill="none" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.204a4.5 4.5 0 00-6.364-6.364l-.707.707a4.5 4.5 0 006.364 6.364l.707-.707z"/></svg>
                         <span :class="currentTab === 'jobs' ? '!text-white font-bold' : ''">{{ __('Jobs') }}</span>
                         @if($activeJobs->count() > 0)
                             <span class="px-2 py-0.5 rounded-full text-[10px] font-bold"
-                                  :class="currentTab === 'jobs' ? 'bg-white/25 !text-white' : 'bg-lime-100 dark:bg-lime-900/60 text-lime-800 dark:text-lime-300'">
+                                  :class="currentTab === 'jobs' ? 'bg-white/25 !text-white' : 'bg-blue-100 dark:bg-blue-900/60 text-blue-800 dark:text-blue-300'">
                                 {{ $activeJobs->count() }}
                             </span>
                         @endif
@@ -287,14 +284,14 @@
                     <button type="button" @click="switchTab('surveys')"
                             class="shrink-0 px-4 sm:px-5 py-2 min-h-[38px] rounded-xl text-xs sm:text-sm font-bold transition-all inline-flex items-center justify-center gap-2 cursor-pointer border"
                             :class="currentTab === 'surveys' 
-                                ? 'bg-[#65a30d] !text-white border-[#65a30d] shadow-sm' 
+                                ? 'bg-blue-600 !text-white border-blue-600 shadow-sm' 
                                 : 'bg-white hover:bg-slate-50 dark:bg-slate-800/80 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:text-slate-900 dark:hover:text-white'"
                             :style="currentTab === 'surveys' ? 'color: #ffffff !important;' : ''">
                         <svg class="w-4 h-4 shrink-0" :class="currentTab === 'surveys' ? '!text-white' : ''" :stroke="currentTab === 'surveys' ? '#ffffff' : 'currentColor'" fill="none" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25z"/></svg>
                         <span :class="currentTab === 'surveys' ? '!text-white font-bold' : ''">{{ __('Surveys') }}</span>
                         @if($activeSurveys->count() > 0)
                             <span class="px-2 py-0.5 rounded-full text-[10px] font-bold"
-                                  :class="currentTab === 'surveys' ? 'bg-white/25 !text-white' : 'bg-lime-100 dark:bg-lime-900/60 text-lime-800 dark:text-lime-300'">
+                                  :class="currentTab === 'surveys' ? 'bg-white/25 !text-white' : 'bg-blue-100 dark:bg-blue-900/60 text-blue-800 dark:text-blue-300'">
                                 {{ $activeSurveys->count() }}
                             </span>
                         @endif
@@ -303,7 +300,7 @@
                     <button type="button" @click="switchTab('workers')"
                             class="shrink-0 px-4 sm:px-5 py-2 min-h-[38px] rounded-xl text-xs sm:text-sm font-bold transition-all inline-flex items-center justify-center gap-2 cursor-pointer border"
                             :class="currentTab === 'workers' 
-                                ? 'bg-[#65a30d] !text-white border-[#65a30d] shadow-sm' 
+                                ? 'bg-blue-600 !text-white border-blue-600 shadow-sm' 
                                 : 'bg-white hover:bg-slate-50 dark:bg-slate-800/80 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:text-slate-900 dark:hover:text-white'"
                             :style="currentTab === 'workers' ? 'color: #ffffff !important;' : ''">
                         <svg class="w-4 h-4 shrink-0" :class="currentTab === 'workers' ? '!text-white' : ''" :stroke="currentTab === 'workers' ? '#ffffff' : 'currentColor'" fill="none" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
@@ -313,15 +310,31 @@
                     <button type="button" @click="switchTab('quotations')"
                             class="shrink-0 px-4 sm:px-5 py-2 min-h-[38px] rounded-xl text-xs sm:text-sm font-bold transition-all inline-flex items-center justify-center gap-2 cursor-pointer border"
                             :class="currentTab === 'quotations' 
-                                ? 'bg-[#65a30d] !text-white border-[#65a30d] shadow-sm' 
+                                ? 'bg-blue-600 !text-white border-blue-600 shadow-sm' 
                                 : 'bg-white hover:bg-slate-50 dark:bg-slate-800/80 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:text-slate-900 dark:hover:text-white'"
                             :style="currentTab === 'quotations' ? 'color: #ffffff !important;' : ''">
                         <svg class="w-4 h-4 shrink-0" :class="currentTab === 'quotations' ? '!text-white' : ''" :stroke="currentTab === 'quotations' ? '#ffffff' : 'currentColor'" fill="none" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
                         <span :class="currentTab === 'quotations' ? '!text-white font-bold' : ''">{{ __('Quotations') }}</span>
                         @if(isset($quotations) && $quotations->count() > 0)
                             <span class="px-2 py-0.5 rounded-full text-[10px] font-bold"
-                                  :class="currentTab === 'quotations' ? 'bg-white/25 !text-white' : 'bg-lime-100 dark:bg-lime-900/60 text-lime-800 dark:text-lime-300'">
+                                  :class="currentTab === 'quotations' ? 'bg-white/25 !text-white' : 'bg-blue-100 dark:bg-blue-900/60 text-blue-800 dark:text-blue-300'">
                                 {{ $quotations->count() }}
+                            </span>
+                        @endif
+                    </button>
+
+                    <button type="button" @click="switchTab('allowances')"
+                            class="shrink-0 px-4 sm:px-5 py-2 min-h-[38px] rounded-xl text-xs sm:text-sm font-bold transition-all inline-flex items-center justify-center gap-2 cursor-pointer border"
+                            :class="currentTab === 'allowances' 
+                                ? 'bg-blue-600 !text-white border-blue-600 shadow-sm' 
+                                : 'bg-white hover:bg-slate-50 dark:bg-slate-800/80 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:text-slate-900 dark:hover:text-white'"
+                            :style="currentTab === 'allowances' ? 'color: #ffffff !important;' : ''">
+                        <svg class="w-4 h-4 shrink-0" :class="currentTab === 'allowances' ? '!text-white' : 'text-slate-500 dark:text-slate-400'" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 14.25l6-6m4.5-3.493V21.75l-3.75-1.5-3.75 1.5-3.75-1.5-3.75 1.5V4.757c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0c1.1.128 1.907 1.077 1.907 2.185zM9.75 9h.008v.008H9.75V9zm4.5 6h.008v.008h-.008V15z"/></svg>
+                        <span :class="currentTab === 'allowances' ? '!text-white font-bold' : ''">{{ __('Allowances & Claims') }}</span>
+                        @if(isset($pendingClaimsCount) && $pendingClaimsCount > 0)
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold"
+                                  :class="currentTab === 'allowances' ? 'bg-white/25 !text-white' : 'bg-amber-500 text-white'">
+                                {{ $pendingClaimsCount }}
                             </span>
                         @endif
                     </button>
@@ -329,7 +342,7 @@
                     <button type="button" @click="switchTab('scanner')"
                             class="shrink-0 px-4 sm:px-5 py-2 min-h-[38px] rounded-xl text-xs sm:text-sm font-bold transition-all inline-flex items-center justify-center gap-2 cursor-pointer border"
                             :class="currentTab === 'scanner' 
-                                ? 'bg-[#65a30d] !text-white border-[#65a30d] shadow-sm' 
+                                ? 'bg-blue-600 !text-white border-blue-600 shadow-sm' 
                                 : 'bg-white hover:bg-slate-50 dark:bg-slate-800/80 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:text-slate-900 dark:hover:text-white'"
                             :style="currentTab === 'scanner' ? 'color: #ffffff !important;' : ''">
                         <svg class="w-4 h-4 shrink-0" :class="currentTab === 'scanner' ? '!text-white' : ''" :stroke="currentTab === 'scanner' ? '#ffffff' : 'currentColor'" fill="none" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z"/></svg>
@@ -374,6 +387,14 @@
                                                 <h2 class="text-lg sm:text-xl font-black text-slate-900 dark:text-white leading-snug mt-0.5">{{ $primaryPrj->title }}</h2>
                                                 @if(!empty($primaryPrj->created_at_label))
                                                     <span class="text-xs text-slate-400 block mt-0.5">{{ __('Created') }}: {{ $primaryPrj->created_at_label }}</span>
+                                                @endif
+                                                @if(!empty($primaryPrj->site_name) || !empty($primaryPrj->site_address))
+                                                    <div class="inline-flex items-center gap-1.5 text-xs text-blue-700 dark:text-blue-300 bg-blue-50/90 dark:bg-blue-950/60 px-2.5 py-1 rounded-lg border border-blue-200 dark:border-blue-800/60 mt-1.5">
+                                                        <svg class="w-3.5 h-3.5 shrink-0 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg>
+                                                        <span>
+                                                            <strong>{{ __('Assigned Site:') }}</strong> {{ $primaryPrj->site_name ?: '' }}{{ !empty($primaryPrj->site_name) && !empty($primaryPrj->site_address) ? ' — ' : '' }}{{ Str::limit($primaryPrj->site_address, 36) }}
+                                                        </span>
+                                                    </div>
                                                 @endif
                                             </div>
                                         </div>
@@ -425,6 +446,11 @@
                                             <button type="button" onclick="openAttendanceModal('{{ $assignedProjects->first()?->id }}')" 
                                                     class="inline-flex items-center justify-center px-4 py-2 min-h-[38px] rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-xs sm:text-sm font-bold hover:bg-blue-100 transition cursor-pointer">
                                                 {{ __('Punch Crew') }}
+                                            </button>
+                                            <button type="button" onclick="openWorkOutputModal('{{ $assignedProjects->first()?->id }}')" 
+                                                    class="inline-flex items-center justify-center gap-1.5 px-3 py-2 min-h-[38px] rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300 text-xs sm:text-sm font-bold hover:bg-amber-100 transition cursor-pointer">
+                                                <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg>
+                                                <span>{{ __('Work Output') }}</span>
                                             </button>
                                             <a href="{{ route('projects.show', $assignedProjects->first()?->id ?? 1) }}"
                                                class="inline-flex items-center justify-center gap-1.5 px-4 py-2 min-h-[38px] rounded-xl bg-blue-600 hover:bg-blue-700 !text-white text-xs sm:text-sm font-bold shadow-xs transition"
@@ -548,7 +574,6 @@
                                     <button type="button" onclick="openAttendanceModal()"
                                             class="w-full py-2 px-4 min-h-[38px] rounded-xl bg-blue-600 hover:bg-blue-700 !text-white font-bold text-xs sm:text-sm shadow-xs transition flex items-center justify-center gap-2 cursor-pointer"
                                             style="color: #ffffff !important;">
-                                        <svg class="w-4 h-4 shrink-0 !text-white" fill="none" stroke="#ffffff" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                                         <span class="!text-white" style="color: #ffffff !important;">{{ __('Log Worker Attendance') }}</span>
                                     </button>
                                 </div>
@@ -574,7 +599,6 @@
                             <button type="button" onclick="openHardwareScannerModal()"
                                     class="w-full py-2 px-4 min-h-[38px] rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 !text-white font-bold text-xs sm:text-sm shadow-sm transition flex items-center justify-center gap-2 cursor-pointer"
                                     style="color: #ffffff !important;">
-                                <svg class="w-4 h-4 !text-white" fill="none" stroke="#ffffff" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                                 <span class="!text-white font-bold" style="color: #ffffff !important;">{{ __('Open Hardware Scanner') }}</span>
                             </button>
                         </div>
@@ -624,12 +648,17 @@
                         <h2 class="text-base sm:text-xl font-black text-slate-900 dark:text-white tracking-tight">{{ __('Assigned Projects') }}</h2>
                         <p class="text-xs sm:text-sm text-slate-400">{{ __('Live site deployments and ongoing installations') }}</p>
                     </div>
-                    <a href="{{ route('projects.create') }}" 
-                       class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 !text-white font-bold text-xs sm:text-sm shadow-xs transition"
-                       style="color: #ffffff !important;">
-                        <svg class="w-4 h-4 shrink-0 !text-white" fill="none" stroke="#ffffff" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-                        <span class="!text-white font-bold" style="color: #ffffff !important;">{{ __('New Project') }}</span>
-                    </a>
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="openQuickAddSiteModal()" 
+                                class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/40 dark:hover:bg-blue-900/50 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 font-bold text-xs sm:text-sm shadow-xs transition cursor-pointer">
+                            <span>{{ __('+ Add Site Location') }}</span>
+                        </button>
+                        <a href="{{ route('projects.create') }}" 
+                           class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 !text-white font-bold text-xs sm:text-sm shadow-xs transition"
+                           style="color: #ffffff !important;">
+                            <span class="!text-white font-bold" style="color: #ffffff !important;">{{ __('New Project') }}</span>
+                        </a>
+                    </div>
                 </div>
 
                 {{-- 2 Columns on Laptop / Desktop, Single Column on Mobile --}}
@@ -645,7 +674,10 @@
                                             <span class="px-2 py-0.5 rounded-md font-mono text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
                                                 {{ $prj->project_code }}
                                             </span>
-                                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold capitalize bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 dark:bg-blue-900/60 text-blue-800 dark:text-blue-300 border border-blue-300 dark:border-blue-700 flex items-center gap-1">
+                                                ⭐ {{ __('Assigned to You') }}
+                                            </span>
+                                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold capitalize bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
                                                 {{ __(\App\Models\Project::statusOptions()[$prj->status] ?? str_replace('_', ' ', $prj->status)) }}
                                             </span>
                                         </div>
@@ -663,27 +695,44 @@
                                     </a>
                                 </div>
 
-                                {{-- Site Address & Phone --}}
-                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60 text-xs space-y-1.5">
-                                    @if($prj->site)
-                                        <div class="text-slate-600 dark:text-slate-300 flex items-start gap-1.5">
-                                            <strong class="text-slate-800 dark:text-slate-200 shrink-0">{{ __('Site:') }}</strong>
-                                            <span>{{ $prj->site->name }} &mdash; {{ $prj->site->address }}</span>
+                                {{-- Assigned Site Location & Contact Details --}}
+                                <div class="p-3.5 rounded-xl bg-blue-50/70 dark:bg-blue-950/40 border border-blue-200/80 dark:border-blue-800/70 text-xs space-y-2">
+                                    <div class="flex items-start gap-2">
+                                        <div class="w-6 h-6 rounded-lg bg-blue-100 dark:bg-blue-900/60 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 mt-0.5">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg>
                                         </div>
-                                    @elseif($prj->site_address)
-                                        <div class="text-slate-600 dark:text-slate-300 flex items-start gap-1.5">
-                                            <strong class="text-slate-800 dark:text-slate-200 shrink-0">{{ __('Site:') }}</strong>
-                                            <span>{{ $prj->site_address }}</span>
+                                        <div class="min-w-0 flex-1">
+                                            <span class="text-[10px] uppercase font-bold text-blue-700 dark:text-blue-300 block tracking-wide">{{ __('Assigned Site Location') }}</span>
+                                            <strong class="text-slate-900 dark:text-white text-xs block mt-0.5 font-bold">
+                                                {{ $prj->site?->name ?? ($prj->customer_name ?? __('Customer Site')) }}
+                                            </strong>
+                                            @php
+                                                $sAddr = $prj->site?->address ?: $prj->site_address;
+                                                $sCity = $prj->site?->city;
+                                            @endphp
+                                            @if($sAddr || $sCity)
+                                                <span class="text-[11px] text-slate-600 dark:text-slate-300 block mt-0.5">
+                                                    {{ $sAddr }}{{ $sCity && !str_contains($sAddr ?? '', $sCity) ? ', ' . $sCity : '' }}
+                                                </span>
+                                            @endif
+                                            @if($prj->site?->google_maps_link)
+                                                <a href="{{ $prj->site->google_maps_link }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-[10px] font-bold text-blue-600 dark:text-blue-400 hover:underline mt-1">
+                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/></svg>
+                                                    <span>{{ __('Open in Google Maps') }}</span>
+                                                </a>
+                                            @endif
                                         </div>
-                                    @endif
+                                    </div>
 
                                     @if($prj->contact_person || $prj->contact_phone)
-                                        <div class="flex items-center gap-2">
-                                            <strong class="text-slate-800 dark:text-slate-200">{{ __('Contact:') }}</strong>
-                                            <span>{{ $prj->contact_person ?? __('Manager') }}</span>
+                                        <div class="pt-1.5 border-t border-blue-200/50 dark:border-blue-800/50 flex items-center justify-between text-[11px]">
+                                            <div class="flex items-center gap-1.5 text-slate-600 dark:text-slate-300">
+                                                <strong class="text-slate-700 dark:text-slate-200">{{ __('Site Contact:') }}</strong>
+                                                <span>{{ $prj->contact_person ?? __('Site Manager') }}</span>
+                                            </div>
                                             @if($prj->contact_phone)
                                                 <a href="tel:{{ $prj->contact_phone }}" class="text-blue-600 dark:text-blue-400 font-bold hover:underline">
-                                                    ({{ $prj->contact_phone }})
+                                                    {{ $prj->contact_phone }}
                                                 </a>
                                             @endif
                                         </div>
@@ -719,9 +768,15 @@
                                     @endif
 
                                     <button type="button" onclick="openAttendanceModal('{{ $prj->id }}')" 
-                                            class="inline-flex items-center justify-center gap-1.5 px-4 py-2 min-h-[38px] rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-xs sm:text-sm font-bold hover:bg-blue-100 transition cursor-pointer">
+                                            class="inline-flex items-center justify-center gap-1.5 px-3 py-2 min-h-[38px] rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-xs sm:text-sm font-bold hover:bg-blue-100 transition cursor-pointer">
                                         <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                                         <span>{{ __('Punch Crew') }}</span>
+                                    </button>
+
+                                    <button type="button" onclick="openWorkOutputModal('{{ $prj->id }}')" 
+                                            class="inline-flex items-center justify-center gap-1.5 px-3 py-2 min-h-[38px] rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300 text-xs sm:text-sm font-bold hover:bg-amber-100 transition cursor-pointer">
+                                        <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg>
+                                        <span>{{ __('Work Output') }}</span>
                                     </button>
 
                                     <a href="{{ route('projects.tasks.index', $prj) }}" 
@@ -752,7 +807,6 @@
                             <p class="text-xs sm:text-sm text-slate-400 max-w-sm mx-auto">{{ __('Projects assigned to you by admin or created by you appear here.') }}</p>
                             <a href="{{ route('projects.create') }}" class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-blue-600 !text-white font-bold text-xs sm:text-sm shadow-xs hover:bg-blue-700 transition"
                                style="color: #ffffff !important;">
-                                <svg class="w-4 h-4 shrink-0 !text-white" fill="none" stroke="#ffffff" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                                 <span class="!text-white font-bold" style="color: #ffffff !important;">{{ __('New Project') }}</span>
                             </a>
                         </div>
@@ -827,8 +881,11 @@
                                         </select>
                                     </div>
                                     <div>
-                                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">{{ __('Work Notes') }}</label>
-                                        <input type="text" name="notes" value="{{ $job->installation_notes }}" placeholder="{{ __('Findings or notes...') }}"
+                                        <div class="flex items-center justify-between mb-1">
+                                            <label for="job-notes-{{ $job->id }}" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">{{ __('Work Notes') }}</label>
+                                            <x-voice-mic-button target="#job-notes-{{ $job->id }}" />
+                                        </div>
+                                        <input type="text" id="job-notes-{{ $job->id }}" name="notes" value="{{ $job->installation_notes }}" placeholder="{{ __('Findings or notes...') }}"
                                                class="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2">
                                     </div>
                                 </div>
@@ -940,50 +997,105 @@
                             <span class="!text-white" style="color: #ffffff !important;">{{ __('+ Add Worker') }}</span>
                         </button>
                         <button type="button" onclick="openAttendanceModal()"
-                                class="inline-flex items-center justify-center gap-1.5 px-4 py-2 min-h-[38px] rounded-xl bg-blue-600 hover:bg-blue-700 !text-white font-bold text-xs sm:text-sm shadow-xs transition cursor-pointer"
+                                class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 min-h-[38px] rounded-xl bg-blue-600 hover:bg-blue-700 !text-white font-bold text-xs sm:text-sm shadow-xs transition cursor-pointer"
                                 style="color: #ffffff !important;">
                             <svg class="w-4 h-4 shrink-0 !text-white" fill="none" stroke="#ffffff" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
                             <span class="!text-white" style="color: #ffffff !important;">{{ __('Punch Attendance') }}</span>
                         </button>
+                        <button type="button" onclick="openWorkOutputModal()"
+                                class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 min-h-[38px] rounded-xl bg-amber-500 hover:bg-amber-600 !text-white font-bold text-xs sm:text-sm shadow-xs transition cursor-pointer"
+                                style="color: #ffffff !important;">
+                            <svg class="w-4 h-4 shrink-0 !text-white" fill="none" stroke="#ffffff" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg>
+                            <span class="!text-white" style="color: #ffffff !important;">{{ __('Log Work Output') }}</span>
+                        </button>
                     </div>
+                </div>
+
+                {{-- Realtime Attendance Status Strip (Avoids Repeated Duplicate Punches Across Technicians) --}}
+                @php
+                    $markedCount = $workersToday->where('is_already_marked', true)->count();
+                    $pendingCount = $workersToday->where('is_already_marked', false)->count();
+                @endphp
+                <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-850 border border-slate-200 dark:border-slate-800 flex items-center justify-between flex-wrap gap-3">
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">{{ __('Today\'s Roster Status') }}:</span>
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                            <span>{{ $markedCount }} {{ __('Logged Today') }}</span>
+                        </span>
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-300 dark:border-amber-800">
+                            <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                            <span>{{ $pendingCount }} {{ __('Available to Punch') }}</span>
+                        </span>
+                    </div>
+                    <span class="text-[11px] text-slate-500 dark:text-slate-400">
+                        {{ __('Workers already punched by any technician can be updated with 1-click.') }}
+                    </span>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                     @foreach($workersToday as $w)
-                        <div class="rounded-2xl sm:rounded-3xl crm-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3.5 flex flex-col justify-between hover:border-blue-400 transition">
+                        <div class="rounded-2xl sm:rounded-3xl crm-card bg-white dark:bg-slate-900 border {{ $w->is_already_marked ? 'border-emerald-300 dark:border-emerald-900/60 bg-emerald-50/15' : 'border-slate-200 dark:border-slate-800' }} p-5 shadow-sm space-y-3.5 flex flex-col justify-between hover:border-blue-400 transition">
                             <div class="space-y-3">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-12 h-12 rounded-full border-2 border-blue-500 bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-300 font-black text-sm flex items-center justify-center shrink-0 shadow-xs">
+                                    <div class="w-12 h-12 rounded-full border-2 {{ $w->is_already_marked ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300' : 'border-blue-500 bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-300' }} font-black text-sm flex items-center justify-center shrink-0 shadow-xs">
                                         {{ $w->initials }}
                                     </div>
                                     <div class="min-w-0 flex-1">
                                         <h4 class="text-sm font-black text-slate-900 dark:text-white truncate">{{ $w->name }}</h4>
                                         <span class="text-xs text-slate-400 block truncate">{{ $w->role_label }}</span>
                                     </div>
-                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold {{ $w->status_badge_class }}">
+                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold {{ $w->is_already_marked ? 'border border-emerald-400 text-emerald-600 bg-emerald-50/70' : $w->status_badge_class }}">
                                         {{ $w->status }}
                                     </span>
                                 </div>
 
-                                <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60 text-xs">
-                                    <span class="text-slate-400 block text-[10px] uppercase font-bold">{{ __('Phone / Direct Contact') }}</span>
-                                    @if($w->phone)
-                                        <a href="tel:{{ $w->phone }}" class="text-blue-600 dark:text-blue-400 font-bold hover:underline">
-                                            {{ $w->phone }}
-                                        </a>
-                                    @else
-                                        <span class="text-slate-400">-</span>
-                                    @endif
-                                </div>
+                                @if($w->is_already_marked)
+                                    <div class="p-2.5 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 text-xs space-y-1">
+                                        <div class="flex items-center justify-between text-[11px] font-bold text-emerald-800 dark:text-emerald-300">
+                                            <span class="flex items-center gap-1">
+                                                <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                                                <span>{{ __('Already Added Today') }}</span>
+                                            </span>
+                                            @if($w->check_in_time)
+                                                <span class="font-mono text-[10px] text-emerald-600 dark:text-emerald-400">{{ $w->check_in_time }}</span>
+                                            @endif
+                                        </div>
+                                        <p class="text-[10px] text-slate-600 dark:text-slate-300 leading-tight">
+                                            {{ __('Logged by:') }} <strong class="text-slate-800 dark:text-slate-100">{{ $w->logger_name }}</strong><br>
+                                            <span class="text-slate-500">{{ __('Site:') }} {{ Str::limit($w->project_name, 32) }}</span>
+                                        </p>
+                                    </div>
+                                @else
+                                    <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60 text-xs">
+                                        <span class="text-slate-400 block text-[10px] uppercase font-bold">{{ __('Phone / Direct Contact') }}</span>
+                                        @if($w->phone)
+                                            <a href="tel:{{ $w->phone }}" class="text-blue-600 dark:text-blue-400 font-bold hover:underline">
+                                                {{ $w->phone }}
+                                            </a>
+                                        @else
+                                            <span class="text-slate-400">-</span>
+                                        @endif
+                                    </div>
+                                @endif
                             </div>
 
                             <div class="pt-2 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs">
                                 <span class="text-[11px] text-slate-400">{{ __('On-Duty Today') }}</span>
 
-                                <button type="button" onclick="openAttendanceModal(null, '{{ $w->id }}')" 
-                                        class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer">
-                                    {{ __('Punch Shift') }} &rarr;
-                                </button>
+                                @if($w->is_already_marked)
+                                    <button type="button" onclick="openAttendanceModal(null, '{{ $w->id }}')" 
+                                            class="inline-flex items-center gap-1 text-xs font-bold text-amber-700 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-300 hover:underline cursor-pointer"
+                                            title="{{ __('Click to update shift or site for this worker') }}">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/></svg>
+                                        <span>{{ __('Update Shift') }} &rarr;</span>
+                                    </button>
+                                @else
+                                    <button type="button" onclick="openAttendanceModal(null, '{{ $w->id }}')" 
+                                            class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer">
+                                        {{ __('Punch Shift') }} &rarr;
+                                    </button>
+                                @endif
                             </div>
                         </div>
                     @endforeach
@@ -1017,10 +1129,11 @@
                                 <span class="!text-white font-bold" style="color: #ffffff !important;">{{ __('Launch Camera Scanner') }}</span>
                             </button>
 
-                            <div class="w-full sm:max-w-xs flex items-center gap-2">
-                                <input type="text" x-model="scanCodeInput" placeholder="{{ __('Type serial number...') }}" 
+                            <div class="w-full sm:max-w-xs flex items-center gap-1.5">
+                                <input type="text" id="techScanCodeInput" x-model="scanCodeInput" placeholder="{{ __('Type serial number...') }}" 
                                        @keydown.enter="if(scanCodeInput.trim()) { handleTechScannedCode(scanCodeInput.trim()); scanCodeInput = ''; }"
                                        class="w-full text-xs sm:text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 px-3.5 py-2 min-h-[38px] text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500">
+                                <x-voice-mic-button target="#techScanCodeInput" label="" class="!h-[38px] !px-2.5 !rounded-xl" />
                                 <button type="button" @click="if(scanCodeInput.trim()) { handleTechScannedCode(scanCodeInput.trim()); scanCodeInput = ''; }"
                                         class="inline-flex items-center justify-center px-4 py-2 min-h-[38px] rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 !text-white text-xs sm:text-sm font-bold shadow-sm transition cursor-pointer shrink-0"
                                         style="color: #ffffff !important;">
@@ -1242,6 +1355,233 @@
                 </div>
             </div>
 
+            {{-- ═══════════════════════════════════════════════════════════════════ --}}
+            {{-- TAB PANE 8: TRAVEL ALLOWANCES & FIELD EXPENSES (Laptop & Mobile)    --}}
+            {{-- ═══════════════════════════════════════════════════════════════════ --}}
+            <div x-show="currentTab === 'allowances'" class="space-y-4 lg:space-y-6">
+                {{-- Pane Header & Actions --}}
+                <div class="rounded-2xl sm:rounded-3xl crm-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-sm">
+                    <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-xs"></span>
+                                <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{{ __('Travel Allowances & On-Site Claims') }}</span>
+                            </div>
+                            <h2 class="text-base sm:text-xl font-black text-slate-900 dark:text-white tracking-tight">
+                                {{ __('Site Work Allowances & Fuel KM') }}
+                            </h2>
+                            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+                                {{ __('Submit site fuel travel (KM), tools, meals or operational expenses. Approved allowances are verified by Admin and added directly to your monthly salary slip.') }}
+                            </p>
+                        </div>
+
+                        <div class="flex items-center gap-2.5 flex-wrap w-full sm:w-auto">
+                            <button type="button" @click="showAddAllowanceModal = true"
+                                    class="inline-flex items-center justify-center gap-2 px-4 py-2 min-h-[38px] rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold text-xs sm:text-sm shadow-sm transition cursor-pointer shrink-0">
+                                <svg class="w-4 h-4 text-white shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                                <span class="text-white font-bold">{{ __('Add Travel / Work Allowance') }}</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Allowance KPI Summary Strip --}}
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+                    {{-- Approved this month --}}
+                    <div class="p-4 rounded-2xl crm-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">{{ __('Approved This Month') }}</span>
+                        <div class="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1 font-mono">
+                            ₹{{ number_format($approvedAllowancesMonth ?? 0, 2) }}
+                        </div>
+                        <div class="text-[11px] text-slate-400 mt-1.5 flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                            <span>{{ __('Integrated into Monthly Salary') }}</span>
+                        </div>
+                    </div>
+
+                    {{-- Pending Review --}}
+                    <div class="p-4 rounded-2xl crm-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">{{ __('Pending Admin Review') }}</span>
+                        <div class="text-2xl font-black text-amber-600 dark:text-amber-400 mt-1 font-mono">
+                            {{ $pendingClaimsCount ?? 0 }} <span class="text-xs font-bold text-slate-500">({{ '₹' . number_format($pendingClaimsAmount ?? 0, 2) }})</span>
+                        </div>
+                        <div class="text-[11px] text-slate-400 mt-1.5 flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                            <span>{{ __('Awaiting management approval') }}</span>
+                        </div>
+                    </div>
+
+                    {{-- Total Travel KM Logged --}}
+                    <div class="p-4 rounded-2xl crm-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">{{ __('Fuel Travel Logged') }}</span>
+                        <div class="text-2xl font-black text-purple-600 dark:text-purple-400 mt-1 font-mono">
+                            {{ number_format($totalKmLoggedMonth ?? 0, 1) }} <span class="text-xs font-bold text-slate-500">KM</span>
+                        </div>
+                        <div class="text-[11px] text-slate-400 mt-1.5 flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 rounded-full bg-purple-500"></span>
+                            <span>{{ __('Standard rate ₹6.00 / KM') }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Allowance Claims History Table --}}
+                <div class="rounded-2xl sm:rounded-3xl crm-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+                    <div class="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between flex-wrap gap-2">
+                        <h3 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+                            {{ __('My Allowance & Travel Ledger (:count)', ['count' => isset($myExpenseClaims) ? $myExpenseClaims->count() : 0]) }}
+                        </h3>
+                        <span class="text-[11px] text-slate-400">
+                            {{ __('Amounts updated by Admin reflect here live') }}
+                        </span>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-slate-100 dark:divide-slate-800 text-left text-xs">
+                            <thead class="bg-slate-50 dark:bg-slate-800/50 text-slate-400 font-bold uppercase text-[10px] tracking-wider">
+                                <tr>
+                                    <th class="py-3 px-4 sm:px-6">{{ __('Date & Claim #') }}</th>
+                                    <th class="py-3 px-4">{{ __('Category & Purpose') }}</th>
+                                    <th class="py-3 px-4">{{ __('Route / KM Calculation') }}</th>
+                                    <th class="py-3 px-4 text-right">{{ __('Claim Amount') }}</th>
+                                    <th class="py-3 px-4">{{ __('Approval & Salary Status') }}</th>
+                                    <th class="py-3 px-4 text-center">{{ __('Receipt') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                                @forelse($myExpenseClaims ?? [] as $claim)
+                                    @php
+                                        $isTargetClaim = (request('claim_no') && request('claim_no') == $claim->claim_no) || (request('claim_id') && request('claim_id') == $claim->id);
+                                    @endphp
+                                    <tr id="tech-claim-{{ $claim->id }}" data-claim-no="{{ $claim->claim_no }}" class="{{ $isTargetClaim ? 'bg-amber-50/90 dark:bg-amber-950/40 ring-2 ring-amber-500 rounded-lg' : 'hover:bg-slate-50/50 dark:hover:bg-slate-800/30' }} transition">
+                                        <td class="py-3.5 px-4 sm:px-6 whitespace-nowrap">
+                                            <div class="flex items-center gap-2">
+                                                <div class="font-bold text-slate-900 dark:text-white">
+                                                    {{ $claim->expense_date ? $claim->expense_date->format('d M Y') : '—' }}
+                                                </div>
+                                                @if($isTargetClaim)
+                                                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-500 text-white animate-pulse">
+                                                        {{ __('Target Claim') }}
+                                                    </span>
+                                                @endif
+                                            </div>
+                                            <div class="font-mono text-[11px] text-blue-600 dark:text-blue-400 font-bold">
+                                                #{{ $claim->claim_no }}
+                                            </div>
+                                        </td>
+                                        <td class="py-3.5 px-4">
+                                            <span class="inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold border {{ $claim->category_badge_class }}">
+                                                {{ $claim->category_label }}
+                                            </span>
+                                            <div class="text-[11px] text-slate-600 dark:text-slate-300 mt-1 line-clamp-2">
+                                                {{ $claim->description }}
+                                            </div>
+                                            @if($claim->site)
+                                                <div class="text-[11px] font-bold text-blue-600 dark:text-blue-400 mt-1 flex items-center gap-1">
+                                                    <span>📍 {{ $claim->site->name }}</span>
+                                                    @if($claim->site->client_name)
+                                                        <span class="text-slate-400 font-normal">({{ $claim->site->client_name }})</span>
+                                                    @endif
+                                                </div>
+                                                @if($claim->site->address)
+                                                    <div class="text-[10px] text-slate-500 dark:text-slate-400 line-clamp-1">{{ $claim->site->address }}</div>
+                                                @endif
+                                            @elseif($claim->project)
+                                                <div class="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 mt-1 flex items-center gap-1">
+                                                    <span>🏢 {{ $claim->project->title }}</span>
+                                                    @if($claim->project->company_name)
+                                                        <span class="text-slate-400 font-normal">({{ $claim->project->company_name }})</span>
+                                                    @endif
+                                                </div>
+                                                @if($claim->project->site_address)
+                                                    <div class="text-[10px] text-slate-500 dark:text-slate-400 line-clamp-1">{{ $claim->project->site_address }}</div>
+                                                @endif
+                                            @elseif($claim->installationJob)
+                                                <div class="text-[10px] text-slate-400 mt-0.5">
+                                                    {{ __('Job:') }} {{ $claim->installationJob->job_no }} ({{ $claim->installationJob->quotation?->lead?->customer_name }})
+                                                </div>
+                                            @endif
+                                            @if($claim->admin_notes)
+                                                <div class="text-[10px] text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/40 px-2 py-1 rounded mt-1 border border-blue-200 dark:border-blue-900/40">
+                                                    <strong>{{ __('Admin Note:') }}</strong> {{ $claim->admin_notes }}
+                                                </div>
+                                            @endif
+                                        </td>
+                                        <td class="py-3.5 px-4 whitespace-nowrap">
+                                            @if($claim->travel_distance_km > 0)
+                                                <div class="font-bold text-purple-700 dark:text-purple-300">
+                                                    {{ $claim->travel_distance_km }} KM
+                                                    <span class="text-[10px] font-normal text-slate-400">(@ ₹{{ number_format($claim->rate_per_km, 2) }}/km)</span>
+                                                </div>
+                                                @if($claim->travel_from || $claim->travel_to)
+                                                    <div class="text-[10px] text-slate-400">
+                                                        {{ $claim->travel_from ?: 'Site' }} &rarr; {{ $claim->travel_to ?: 'Site' }}
+                                                    </div>
+                                                @endif
+                                            @else
+                                                <span class="text-slate-400 text-[11px]">—</span>
+                                            @endif
+                                        </td>
+                                        <td class="py-3.5 px-4 text-right whitespace-nowrap">
+                                            <div class="font-black text-sm text-slate-900 dark:text-white font-mono">
+                                                ₹{{ number_format((float) $claim->amount, 2) }}
+                                            </div>
+                                            @if($claim->actioned_by && $claim->status !== 'rejected')
+                                                <span class="text-[9px] text-emerald-600 dark:text-emerald-400 block font-semibold">
+                                                    {{ __('Verified by Admin') }}
+                                                </span>
+                                            @endif
+                                        </td>
+                                        <td class="py-3.5 px-4 whitespace-nowrap">
+                                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold border {{ $claim->status_badge_class }}">
+                                                {{ $claim->status_label }}
+                                            </span>
+                                            @if($claim->status === 'approved')
+                                                <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold mt-1">
+                                                    {{ __('Added to upcoming Salary') }}
+                                                </div>
+                                            @elseif($claim->status === 'paid')
+                                                <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold mt-1">
+                                                    {{ $claim->payment_method === 'payroll_addition' ? __('Credited in Salary Slip') : __('Disbursed via ') . ucfirst($claim->payment_method) }}
+                                                </div>
+                                            @elseif($claim->status === 'rejected' && $claim->rejection_reason)
+                                                <div class="text-[10px] text-rose-600 dark:text-rose-400 mt-1 max-w-xs truncate" title="{{ $claim->rejection_reason }}">
+                                                    {{ __('Reason: ') . $claim->rejection_reason }}
+                                                </div>
+                                            @endif
+                                        </td>
+                                        <td class="py-3.5 px-4 text-center whitespace-nowrap">
+                                            @if($claim->receipt_path)
+                                                <a href="{{ asset('storage/' . $claim->receipt_path) }}" target="_blank" class="text-blue-600 dark:text-blue-400 font-bold hover:underline inline-flex items-center gap-1 text-[11px]">
+                                                    <span>{{ __('View Proof') }}</span>
+                                                </a>
+                                            @else
+                                                <span class="text-slate-400 text-[11px]">—</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="6" class="py-8 text-center text-slate-400">
+                                            <div class="max-w-sm mx-auto space-y-2">
+                                                <svg class="w-8 h-8 mx-auto text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+                                                <p class="font-bold text-slate-700 dark:text-slate-300 text-sm">{{ __('No allowance claims logged yet') }}</p>
+                                                <p class="text-xs text-slate-400">{{ __('Log fuel travel KM, parking, tolls or emergency materials for on-site client jobs.') }}</p>
+                                                <div class="pt-2 flex items-center justify-center gap-2">
+                                                    <button type="button" @click="showAddAllowanceModal = true" class="btn-primary text-xs py-1.5 px-3 inline-flex items-center gap-1.5">
+                                                        <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                                                        <span>{{ __('Add Your First Claim') }}</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
         {{-- ═══════════════════════════════════════════════════════════════════ --}}
@@ -1310,6 +1650,19 @@
                     <span class="text-[11px] leading-tight pointer-events-none">{{ __('Quotes') }}</span>
                 </button>
 
+                {{-- Allowances Tab --}}
+                <button type="button" @click="switchTab('allowances')"
+                        :aria-current="currentTab === 'allowances' ? 'page' : 'false'"
+                        class="flex-1 h-auto min-h-[48px] py-1.5 px-1 rounded-xl flex flex-col items-center justify-center gap-0.5 transition cursor-pointer select-none relative"
+                        :class="currentTab === 'allowances' ? 'text-blue-600 dark:text-blue-400 font-bold bg-slate-100/70 dark:bg-slate-800/70' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'"
+                        :style="currentTab === 'allowances' ? 'color: var(--crm-accent, #2563eb);' : ''">
+                    <svg class="w-5 h-5 pointer-events-none shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 14.25l6-6m4.5-3.493V21.75l-3.75-1.5-3.75 1.5-3.75-1.5-3.75 1.5V4.757c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0c1.1.128 1.907 1.077 1.907 2.185zM9.75 9h.008v.008H9.75V9zm4.5 6h.008v.008h-.008V15z"/></svg>
+                    <span class="text-[11px] leading-tight pointer-events-none">{{ __('Allowances') }}</span>
+                    @if(isset($pendingClaimsCount) && $pendingClaimsCount > 0)
+                        <span class="absolute top-1 right-2 w-2 h-2 rounded-full bg-amber-500"></span>
+                    @endif
+                </button>
+
             </div>
         </nav>
 
@@ -1318,19 +1671,19 @@
     <x-barcode-scanner modalId="tech-barcode-modal" :title="__('Hardware Scanner')" />
 
     {{-- SPLIT GUIDED WORKER ATTENDANCE MODAL COMPONENT --}}
-    <x-mark-attendance-modal :workers="$activeWorkers" :projects="$activeProjects" />
+    <x-mark-attendance-modal :workers="$activeWorkers" :projects="$activeProjects" :today-attendances="$todayAttendanceByWorkerId ?? null" :assigned-project-ids="$assignedProjectIds ?? []" :default-project-id="$assignedProjects->first()?->id" />
 
     {{-- TECHNICIAN SITE CHECK-IN MODAL --}}
     <div id="techSiteCheckInModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
         <div class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl">
             <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                 <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <div class="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     </div>
                     <div>
-                        <h3 class="text-sm font-bold text-slate-900 dark:text-white">{{ __('On-Site Shift Check-In') }}</h3>
-                        <p class="text-[11px] text-slate-400">{{ __('Record self-attendance on customer site for office review') }}</p>
+                        <h3 class="text-sm font-bold text-slate-900 dark:text-white">{{ __('My Attendance (Full Day)') }}</h3>
+                        <p class="text-[11px] text-slate-400">{{ __('Record full day on-site attendance for today') }}</p>
                     </div>
                 </div>
                 <x-close-button onclick="document.getElementById('techSiteCheckInModal').classList.add('hidden')" />
@@ -1344,14 +1697,42 @@
                     <label for="tech-checkin-project" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{{ __('Select Project Site *') }}</label>
                     <select id="tech-checkin-project" name="project_id" class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
                         <option value="">{{ __('General On-Site / Field Engineering') }}</option>
-                        @foreach($assignedProjects as $p)
-                            <option value="{{ $p->id }}" @selected(($primaryPrj->id ?? null) === $p->id)>{{ $p->title }} ({{ $p->customer_name ?? __('Customer') }})</option>
-                        @endforeach
+                        @if($assignedProjects->isNotEmpty())
+                            <optgroup label="⭐ {{ __('My Assigned Project Sites') }} ({{ $assignedProjects->count() }})">
+                                @foreach($assignedProjects as $p)
+                                    @php
+                                        $siteLoc = $p->site?->name ? ($p->site->name . ($p->site->address ? ' — ' . Str::limit($p->site->address, 28) : '')) : ($p->site_address ?: ($p->customer_name ?? __('Site')));
+                                    @endphp
+                                    <option value="{{ $p->id }}" @selected(($primaryPrj->id ?? null) === $p->id)>
+                                        ⭐ [Assigned] {{ $p->title }} &mdash; 📍 {{ $siteLoc }}
+                                    </option>
+                                @endforeach
+                            </optgroup>
+                        @endif
+                        @php
+                            $assignedIds = $assignedProjects->pluck('id')->all();
+                            $otherActiveProjects = $activeProjects->filter(fn($p) => !in_array($p->id, $assignedIds));
+                        @endphp
+                        @if($otherActiveProjects->isNotEmpty())
+                            <optgroup label="🏢 {{ __('All Project Sites & Locations') }} ({{ $otherActiveProjects->count() }})">
+                                @foreach($otherActiveProjects as $p)
+                                    @php
+                                        $siteLoc = $p->site?->name ? ($p->site->name . ($p->site->address ? ' — ' . Str::limit($p->site->address, 28) : '')) : ($p->site_address ?: ($p->customer_name ?? __('Site')));
+                                    @endphp
+                                    <option value="{{ $p->id }}">
+                                        {{ $p->title }} &mdash; 📍 {{ $siteLoc }}
+                                    </option>
+                                @endforeach
+                            </optgroup>
+                        @endif
                     </select>
                 </div>
 
                 <div>
-                    <label for="tech-checkin-notes" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{{ __('Work Planned / Site Notes (Optional)') }}</label>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label for="tech-checkin-notes" class="block text-xs font-bold text-slate-700 dark:text-slate-300">{{ __('Work Planned / Site Notes (Optional)') }}</label>
+                        <x-voice-mic-button target="#tech-checkin-notes" />
+                    </div>
                     <textarea id="tech-checkin-notes" name="notes" rows="2" placeholder="{{ __('e.g. CCTV wiring testing, NVR configuration...') }}" class="w-full text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200"></textarea>
                 </div>
 
@@ -1359,9 +1740,9 @@
                     <button type="button" onclick="document.getElementById('techSiteCheckInModal').classList.add('hidden')" class="btn-secondary text-xs">
                         {{ __('Cancel') }}
                     </button>
-                    <button type="submit" class="btn-primary text-xs !bg-blue-600 hover:!bg-blue-700 !text-white flex items-center gap-1.5 shadow-xs" style="color: #ffffff !important;">
-                        <svg class="w-4 h-4 !text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        <span class="!text-white font-bold" style="color: #ffffff !important;">{{ __('Confirm Clock-In') }}</span>
+                    <button type="submit" class="btn-primary text-xs !bg-emerald-600 hover:!bg-emerald-700 !text-white flex items-center gap-1.5 shadow-xs" style="color: #ffffff !important;">
+                        <svg class="w-4 h-4 !text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span class="!text-white font-bold" style="color: #ffffff !important;">{{ __('Confirm Full Day Attendance') }}</span>
                     </button>
                 </div>
             </form>
@@ -1389,13 +1770,19 @@
                 <input type="hidden" name="is_active" value="1">
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{{ __('Worker Full Name *') }}</label>
-                    <input type="text" name="name" required placeholder="e.g. Ramesh Kumar" class="w-full text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-blue-500">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label for="worker_name" class="block text-xs font-bold text-slate-700 dark:text-slate-300">{{ __('Worker Full Name *') }}</label>
+                        <x-voice-mic-button target="#worker_name" />
+                    </div>
+                    <input type="text" id="worker_name" name="name" required placeholder="e.g. Ramesh Kumar" class="w-full text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-blue-500">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{{ __('Phone Number *') }}</label>
-                    <input type="tel" name="phone" required placeholder="e.g. 9876543210" class="w-full text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-blue-500">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label for="worker_phone" class="block text-xs font-bold text-slate-700 dark:text-slate-300">{{ __('Phone Number *') }}</label>
+                        <x-voice-mic-button target="#worker_phone" />
+                    </div>
+                    <input type="tel" id="worker_phone" name="phone" required placeholder="e.g. 9876543210" class="w-full text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-blue-500">
                 </div>
 
                 <div>
@@ -1415,8 +1802,11 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{{ __('Notes / Identity Details (Optional)') }}</label>
-                    <textarea name="notes" rows="2" placeholder="{{ __('e.g. Aadhaar / emergency contact / remarks...') }}" class="w-full text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200"></textarea>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label for="worker_notes" class="block text-xs font-bold text-slate-700 dark:text-slate-300">{{ __('Notes / Identity Details (Optional)') }}</label>
+                        <x-voice-mic-button target="#worker_notes" />
+                    </div>
+                    <textarea id="worker_notes" name="notes" rows="2" placeholder="{{ __('e.g. Aadhaar / emergency contact / remarks...') }}" class="w-full text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200"></textarea>
                 </div>
 
                 <div class="pt-2 flex items-center justify-between">
@@ -1503,34 +1893,52 @@
                 <input type="hidden" name="source" value="field_technician">
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{{ __('Customer / Contact Name *') }}</label>
-                    <input type="text" name="customer_name" required placeholder="e.g. Rajesh Sharma" class="w-full text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-blue-500">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label for="lead_customer_name" class="block text-xs font-bold text-slate-700 dark:text-slate-300">{{ __('Customer / Contact Name *') }}</label>
+                        <x-voice-mic-button target="#lead_customer_name" />
+                    </div>
+                    <input type="text" id="lead_customer_name" name="customer_name" required placeholder="e.g. Rajesh Sharma" class="w-full text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-blue-500">
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{{ __('Phone Number (WhatsApp) *') }}</label>
-                        <input type="tel" name="phone" required placeholder="e.g. 9876543210" class="w-full text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-blue-500">
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label for="lead_phone" class="block text-xs font-bold text-slate-700 dark:text-slate-300">{{ __('Phone Number (WhatsApp) *') }}</label>
+                            <x-voice-mic-button target="#lead_phone" />
+                        </div>
+                        <input type="tel" id="lead_phone" name="phone" required placeholder="e.g. 9876543210" class="w-full text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{{ __('Email Address') }}</label>
-                        <input type="email" name="email" placeholder="e.g. rajesh@example.com" class="w-full text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-blue-500">
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label for="lead_email" class="block text-xs font-bold text-slate-700 dark:text-slate-300">{{ __('Email Address') }}</label>
+                            <x-voice-mic-button target="#lead_email" />
+                        </div>
+                        <input type="email" id="lead_email" name="email" placeholder="e.g. rajesh@example.com" class="w-full text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-blue-500">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{{ __('Company / Organization (Optional)') }}</label>
-                    <input type="text" name="company_name" placeholder="e.g. Apex Security Solutions Pvt Ltd" class="w-full text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label for="lead_company_name" class="block text-xs font-bold text-slate-700 dark:text-slate-300">{{ __('Company / Organization (Optional)') }}</label>
+                        <x-voice-mic-button target="#lead_company_name" />
+                    </div>
+                    <input type="text" id="lead_company_name" name="company_name" placeholder="e.g. Apex Security Solutions Pvt Ltd" class="w-full text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{{ __('Installation Facility / Site Address') }}</label>
-                    <textarea name="site_address" rows="2" placeholder="e.g. #14, 2nd Main Road, Industrial Estate, Bengaluru" class="w-full text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200"></textarea>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label for="lead_site_address" class="block text-xs font-bold text-slate-700 dark:text-slate-300">{{ __('Installation Facility / Site Address') }}</label>
+                        <x-voice-mic-button target="#lead_site_address" />
+                    </div>
+                    <textarea id="lead_site_address" name="site_address" rows="2" placeholder="e.g. #14, 2nd Main Road, Industrial Estate, Bengaluru" class="w-full text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200"></textarea>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{{ __('Project Requirement / Client Scope Notes') }}</label>
-                    <textarea name="notes" rows="2" placeholder="e.g. 8-channel IP CCTV setup with 2TB HDD, cabling estimate 120m..." class="w-full text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200"></textarea>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label for="lead_notes" class="block text-xs font-bold text-slate-700 dark:text-slate-300">{{ __('Project Requirement / Client Scope Notes') }}</label>
+                        <x-voice-mic-button target="#lead_notes" />
+                    </div>
+                    <textarea id="lead_notes" name="notes" rows="2" placeholder="e.g. 8-channel IP CCTV setup with 2TB HDD, cabling estimate 120m..." class="w-full text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200"></textarea>
                 </div>
 
                 <div class="pt-3 flex items-center justify-between border-t border-slate-100 dark:border-slate-800">
@@ -1542,6 +1950,277 @@
                             style="color: #ffffff !important; background-color: #2563eb !important;">
                         <span class="text-white font-bold" style="color: #ffffff !important;">{{ __('Create Client & Build Quote') }}</span>
                         <svg class="w-4 h-4 text-white shrink-0" fill="none" stroke="#ffffff" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {{-- TECHNICIAN ADD ALLOWANCE / TRAVEL EXPENSE MODAL --}}
+    <div x-show="showAddAllowanceModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div @click.away="showAddAllowanceModal = false" class="bg-white dark:bg-[#0f172a] rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-900 dark:text-white">{{ __('Log Travel & Site Work Allowance') }}</h3>
+                        <p class="text-[11px] text-slate-400">{{ __('Submitted directly to Admin for approval and salary addition') }}</p>
+                    </div>
+                </div>
+                <x-close-button @click="showAddAllowanceModal = false" />
+            </div>
+
+            <form action="{{ route('finance.expenses.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4 text-xs">
+                @csrf
+                <input type="hidden" name="return_to" value="technician_dashboard">
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {{-- Category --}}
+                    <div>
+                        <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">{{ __('Expense Category *') }}</label>
+                        <select name="expense_category" id="techCategorySelect" onchange="toggleTechKm(this.value)" required class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
+                            <option value="fuel_travel">{{ __('Fuel & Travel (KM Calculation)') }}</option>
+                            <option value="hardware_tools">{{ __('Hardware Tools & Cables') }}</option>
+                            <option value="food_lodging">{{ __('Meals & On-Site Allowance') }}</option>
+                            <option value="toll_parking">{{ __('Tolls & Parking Fees') }}</option>
+                            <option value="emergency_materials">{{ __('Emergency Site Supplies') }}</option>
+                            <option value="other">{{ __('Other Work Expense') }}</option>
+                        </select>
+                    </div>
+
+                    {{-- Expense Date --}}
+                    <div>
+                        <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">{{ __('Expense Date *') }}</label>
+                        <input type="date" name="expense_date" required value="{{ now()->toDateString() }}" 
+                               class="w-full text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
+                    </div>
+                </div>
+
+                {{-- Interactive KM Calculator Strip --}}
+                <div id="techKmSection" class="p-3.5 rounded-xl bg-purple-50/70 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-900/50 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-purple-900 dark:text-purple-300 flex items-center gap-1.5">
+                            {{ __('Smart Route & KM Calculator') }}
+                        </span>
+                        <span class="text-[11px] text-purple-700 dark:text-purple-400 font-semibold">{{ __('Standard: ₹6.00 / KM') }}</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <label for="techTravelFrom" class="text-[11px] font-semibold text-purple-800 dark:text-purple-300">{{ __('From Location') }}</label>
+                                <x-voice-mic-button target="#techTravelFrom" />
+                            </div>
+                            <input type="text" id="techTravelFrom" name="travel_from" placeholder="{{ __('From (e.g. Office / Home)') }}" 
+                                   class="w-full text-xs rounded-xl border border-purple-200 dark:border-purple-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2">
+                        </div>
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <label for="techTravelTo" class="text-[11px] font-semibold text-purple-800 dark:text-purple-300">{{ __('To Location') }}</label>
+                                <x-voice-mic-button target="#techTravelTo" />
+                            </div>
+                            <input type="text" id="techTravelTo" name="travel_to" placeholder="{{ __('To (e.g. Client Site / Tech Park)') }}" 
+                                   class="w-full text-xs rounded-xl border border-purple-200 dark:border-purple-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2.5 items-center">
+                        <div>
+                            <label class="block text-xs font-semibold text-purple-800 dark:text-purple-300 mb-1">{{ __('Total Distance (KM)') }}</label>
+                            <input type="number" step="0.1" name="travel_distance_km" id="techKmInput" oninput="calculateTechKmAmount()" placeholder="e.g. 24.5" 
+                                   class="w-full text-xs rounded-xl border border-purple-200 dark:border-purple-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-purple-800 dark:text-purple-300 mb-1">{{ __('Rate / KM (₹)') }}</label>
+                            <input type="number" step="0.5" name="rate_per_km" id="techRateInput" value="6.0" oninput="calculateTechKmAmount()" 
+                                   class="w-full text-xs rounded-xl border border-purple-200 dark:border-purple-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-2">
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Amount Field --}}
+                <div>
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">{{ __('Claim Amount (₹) *') }}</label>
+                    <input type="number" step="0.01" name="amount" id="techClaimAmount" required placeholder="0.00" 
+                           class="w-full text-sm font-bold rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white">
+                </div>
+
+                {{-- Installation Site & Assigned Work Linkage --}}
+                <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-850 border border-slate-200 dark:border-slate-700/80 space-y-2.5" x-data="{ showNewSiteForm: false }">
+                    <div class="flex items-center justify-between flex-wrap gap-2">
+                        <label class="block text-xs font-bold text-slate-800 dark:text-slate-200">
+                            {{ __('Installation Site & Assigned Work (Optional)') }}
+                        </label>
+                        <button type="button" 
+                                @click="showNewSiteForm = !showNewSiteForm"
+                                class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 hover:bg-blue-100 text-[11px] font-bold border border-blue-200 dark:border-blue-800/80 transition cursor-pointer">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                            <span x-text="showNewSiteForm ? '{{ __('Hide New Site Form') }}' : '{{ __('+ Add New Installation Site') }}'"></span>
+                        </button>
+                    </div>
+
+                    {{-- Dropdown for Existing Sites & Admin-Assigned Projects --}}
+                    <select name="linked_target" id="techSiteSelect" onchange="onTechSiteSelected(this)" 
+                            class="w-full text-xs font-medium rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200">
+                        <option value="" data-title="" data-client="" data-address="" data-phone="" data-status="">
+                            {{ __('None / General Field Expense') }}
+                        </option>
+
+                        {{-- Admin Assigned Projects --}}
+                        @if(isset($assignedProjects) && $assignedProjects->isNotEmpty())
+                            <optgroup label="🏢 {{ __('Admin Assigned Installation Sites & Projects') }}">
+                                @foreach($assignedProjects as $p)
+                                    <option value="project:{{ $p->id }}" 
+                                            data-type="project"
+                                            data-title="{{ $p->title }}" 
+                                            data-client="{{ $p->company_name ?: ($p->site?->client_name ?? 'Client') }}" 
+                                            data-address="{{ $p->site_address ?: ($p->site?->address ?? '') }}" 
+                                            data-phone="{{ $p->contact_phone ?: ($p->site?->phone ?? '') }}" 
+                                            data-status="{{ ucfirst(str_replace('_', ' ', $p->status)) }} (Assigned by Admin)">
+                                        🏢 {{ $p->title }} — {{ $p->site_address ?: ($p->company_name ?? 'Assigned Project') }}
+                                    </option>
+                                @endforeach
+                            </optgroup>
+                        @endif
+
+                        {{-- Registered Client Installation Sites --}}
+                        @if(isset($availableSites) && $availableSites->isNotEmpty())
+                            <optgroup label="📍 {{ __('Client Installation Sites') }}">
+                                @foreach($availableSites as $s)
+                                    <option value="site:{{ $s->id }}" 
+                                            data-type="site"
+                                            data-title="{{ $s->name }}" 
+                                            data-client="{{ $s->client_name ?: 'Client' }}" 
+                                            data-address="{{ $s->address }}" 
+                                            data-phone="{{ $s->phone ?: '' }}" 
+                                            data-status="Active Installation Site">
+                                        📍 {{ $s->name }} — {{ $s->address }}
+                                    </option>
+                                @endforeach
+                            </optgroup>
+                        @endif
+
+                        {{-- Active Installation Jobs --}}
+                        @if(isset($activeJobs) && $activeJobs->isNotEmpty())
+                            <optgroup label="🔧 {{ __('Field Installation Jobs') }}">
+                                @foreach($activeJobs as $job)
+                                    @php $jLead = $job->quotation?->lead; @endphp
+                                    <option value="job:{{ $job->id }}" 
+                                            data-type="job"
+                                            data-title="{{ $job->job_no }}" 
+                                            data-client="{{ $jLead?->customer_name ?? 'Customer' }}" 
+                                            data-address="{{ $jLead?->site_address ?? ($jLead?->address ?? '') }}" 
+                                            data-phone="{{ $jLead?->phone ?? '' }}" 
+                                            data-status="Installation Job ({{ ucfirst($job->status) }})">
+                                        🔧 {{ $job->job_no }} — {{ $jLead?->customer_name }}
+                                    </option>
+                                @endforeach
+                            </optgroup>
+                        @endif
+                    </select>
+
+                    {{-- Live Display of Selected Admin-Assigned Installation Site Data --}}
+                    <div id="techSiteDetailsCard" class="hidden p-3 rounded-xl bg-blue-50/70 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800/70 text-xs space-y-1">
+                        <div class="flex items-center justify-between">
+                            <span id="techCardBadge" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-600 text-white shadow-xs">
+                                {{ __('Admin Assigned Installation Site') }}
+                            </span>
+                            <button type="button" onclick="setSiteAsDestination()" class="text-[11px] text-blue-700 dark:text-blue-300 font-bold hover:underline cursor-pointer">
+                                {{ __('Set as Travel Destination →') }}
+                            </button>
+                        </div>
+                        <div class="font-bold text-slate-900 dark:text-white text-xs mt-1" id="techCardTitle">--</div>
+                        <div class="text-[11px] text-slate-600 dark:text-slate-300 flex items-start gap-1" id="techCardAddressRow">
+                            <svg class="w-3.5 h-3.5 shrink-0 text-slate-400 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg>
+                            <span id="techCardAddress">--</span>
+                        </div>
+                        <div class="text-[10px] text-slate-500 dark:text-slate-400 flex items-center gap-3 pt-0.5" id="techCardMeta">
+                            <span id="techCardClient">--</span>
+                            <span id="techCardPhone">--</span>
+                        </div>
+                    </div>
+
+                    {{-- Inline Add New Installation Site Panel --}}
+                    <div x-show="showNewSiteForm" x-cloak class="p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-blue-300 dark:border-blue-700 space-y-2.5 shadow-sm">
+                        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-1.5">
+                            <span class="text-xs font-bold text-blue-600 dark:text-blue-400 flex items-center gap-1">
+                                <span>➕</span> {{ __('Register New Installation Site for Claim') }}
+                            </span>
+                            <span class="text-[10px] text-slate-400">{{ __('Stores site in CRM & links to this allowance') }}</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <div>
+                                <div class="flex items-center justify-between mb-0.5">
+                                    <label for="inlineNewSiteName" class="block text-[11px] font-semibold text-slate-700 dark:text-slate-300">{{ __('Site / Facility Name *') }}</label>
+                                    <x-voice-mic-button target="#inlineNewSiteName" />
+                                </div>
+                                <input type="text" name="new_site_name" id="inlineNewSiteName" placeholder="{{ __('e.g. Reliance Smart Point - Koramangala') }}" 
+                                       class="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-2">
+                            </div>
+                            <div>
+                                <div class="flex items-center justify-between mb-0.5">
+                                    <label for="inlineNewClientName" class="block text-[11px] font-semibold text-slate-700 dark:text-slate-300">{{ __('Client / Organization') }}</label>
+                                    <x-voice-mic-button target="#inlineNewClientName" />
+                                </div>
+                                <input type="text" name="new_client_name" id="inlineNewClientName" placeholder="{{ __('e.g. Reliance Retail Ltd') }}" 
+                                       class="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-2">
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex items-center justify-between mb-0.5">
+                                <label for="inlineNewSiteAddress" class="block text-[11px] font-semibold text-slate-700 dark:text-slate-300">{{ __('Installation Site Address *') }}</label>
+                                <x-voice-mic-button target="#inlineNewSiteAddress" />
+                            </div>
+                            <input type="text" name="new_site_address" id="inlineNewSiteAddress" placeholder="{{ __('e.g. #42, 80 Feet Road, 4th Block, Koramangala, Bengaluru') }}" 
+                                   class="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-2">
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 items-center">
+                            <div>
+                                <div class="flex items-center justify-between mb-0.5">
+                                    <label for="inlineNewSitePhone" class="block text-[11px] font-semibold text-slate-700 dark:text-slate-300">{{ __('Site Contact Phone (Optional)') }}</label>
+                                    <x-voice-mic-button target="#inlineNewSitePhone" />
+                                </div>
+                                <input type="tel" name="new_site_phone" id="inlineNewSitePhone" placeholder="{{ __('e.g. 9876543210') }}" 
+                                       class="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-2">
+                            </div>
+                            <div class="pt-4 text-right">
+                                <button type="button" onclick="quickSaveNewSite()" class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-xs transition cursor-pointer">
+                                    {{ __('✓ Create & Select Site') }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Description (Optional) --}}
+                <div>
+                    <div class="flex items-center justify-between mb-1">
+                        <label for="techExpenseDescription" class="block font-bold text-slate-700 dark:text-slate-300">
+                            {{ __('Description / Purpose (Optional)') }}
+                        </label>
+                        <x-voice-mic-button target="#techExpenseDescription" />
+                    </div>
+                    <textarea id="techExpenseDescription" name="description" rows="2" placeholder="{{ __('State site location, work done, or items purchased (optional)...') }}" 
+                              class="w-full text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 text-slate-800 dark:text-slate-200"></textarea>
+                </div>
+
+                {{-- Receipt Upload --}}
+                <div>
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">{{ __('Receipt / Fuel Bill Photo (Optional)') }}</label>
+                    <input type="file" name="receipt" accept=".pdf,.jpg,.jpeg,.png,.webp" class="w-full text-xs text-slate-500">
+                </div>
+
+                <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
+                    <button type="button" @click="showAddAllowanceModal = false" class="btn-secondary text-xs">
+                        {{ __('Cancel') }}
+                    </button>
+                    <button type="submit" class="btn-primary text-xs px-5 py-2.5">
+                        {{ __('Submit for Admin Approval') }}
                     </button>
                 </div>
             </form>
@@ -1660,5 +2339,148 @@
                 container.innerHTML = `<div class="text-rose-400 text-xs">${techScanText.lookupError.replace(':error', e.message)}</div>`;
             }
         }
+
+        function toggleTechKm(cat) {
+            const sec = document.getElementById('techKmSection');
+            if (sec) {
+                if (cat === 'fuel_travel') {
+                    sec.classList.remove('hidden');
+                } else {
+                    sec.classList.add('hidden');
+                }
+            }
+        }
+
+        function calculateTechKmAmount() {
+            const km = parseFloat(document.getElementById('techKmInput').value) || 0;
+            const rate = parseFloat(document.getElementById('techRateInput').value) || 6.0;
+            if (km > 0) {
+                const total = (km * rate).toFixed(2);
+                document.getElementById('techClaimAmount').value = total;
+            }
+        }
+
+        function onTechSiteSelected(sel) {
+            const opt = sel.options[sel.selectedIndex];
+            const card = document.getElementById('techSiteDetailsCard');
+            if (!opt || !opt.value) {
+                card.classList.add('hidden');
+                return;
+            }
+            const title = opt.getAttribute('data-title') || opt.text;
+            const client = opt.getAttribute('data-client') || '';
+            const address = opt.getAttribute('data-address') || '';
+            const phone = opt.getAttribute('data-phone') || '';
+            const status = opt.getAttribute('data-status') || 'Installation Site';
+
+            document.getElementById('techCardTitle').textContent = title;
+            document.getElementById('techCardBadge').textContent = status;
+            document.getElementById('techCardAddress').textContent = address || 'No address registered';
+            document.getElementById('techCardClient').textContent = client ? ('Client: ' + client) : '';
+            document.getElementById('techCardPhone').textContent = phone ? ('📞 ' + phone) : '';
+            card.classList.remove('hidden');
+
+            const toInput = document.getElementById('techTravelTo');
+            if (toInput && (!toInput.value || toInput.value.trim() === '')) {
+                toInput.value = address || title;
+            }
+        }
+
+        function setSiteAsDestination() {
+            const sel = document.getElementById('techLinkedSiteSelect');
+            const opt = sel.options[sel.selectedIndex];
+            if (opt && opt.value) {
+                const address = opt.getAttribute('data-address') || opt.getAttribute('data-title');
+                const toInput = document.getElementById('techTravelTo');
+                if (toInput && address) {
+                    toInput.value = address;
+                    toInput.focus();
+                }
+            }
+        }
+
+        async function quickSaveNewSite() {
+            const name = document.getElementById('inlineNewSiteName').value.trim();
+            const address = document.getElementById('inlineNewSiteAddress').value.trim();
+            const client = document.getElementById('inlineNewClientName').value.trim();
+            const phone = document.getElementById('inlineNewSitePhone').value.trim();
+
+            if (!name || !address) {
+                alert('Please enter both Site Name and Address to register an installation site.');
+                return;
+            }
+
+            try {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') 
+                    || document.querySelector('input[name="_token"]')?.value;
+
+                const response = await fetch('/sites', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        address: address,
+                        client_name: client,
+                        contact_person: client || 'Site Manager',
+                        phone: phone || '-'
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const newId = data.site ? data.site.id : data.id;
+                    const newName = data.site ? data.site.name : name;
+
+                    const sel = document.getElementById('techLinkedSiteSelect');
+                    const newOpt = document.createElement('option');
+                    newOpt.value = `site:${newId}`;
+                    newOpt.textContent = `📍 ${newName} (${client || 'Site'})`;
+                    newOpt.setAttribute('data-type', 'site');
+                    newOpt.setAttribute('data-title', newName);
+                    newOpt.setAttribute('data-client', client);
+                    newOpt.setAttribute('data-address', address);
+                    newOpt.setAttribute('data-phone', phone);
+                    newOpt.setAttribute('data-status', 'Registered Installation Site');
+
+                    sel.appendChild(newOpt);
+                    sel.value = `site:${newId}`;
+                    onTechSiteSelected(sel);
+
+                    alert(`Installation site "${newName}" created and selected!`);
+                } else {
+                    alert('Site details stored for this claim.');
+                }
+            } catch (err) {
+                alert('Site details stored for this claim.');
+            }
+        }
+
+        // Auto-focus target allowance or record if navigating from Topbar Notifications
+        document.addEventListener('DOMContentLoaded', function () {
+            const targetClaimNo = @js(request('claim_no'));
+            const targetClaimId = @js(request('claim_id'));
+            if (targetClaimNo) {
+                const el = document.querySelector('[data-claim-no="' + targetClaimNo + '"]');
+                if (el) {
+                    setTimeout(() => {
+                        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 250);
+                }
+            } else if (targetClaimId) {
+                const el = document.getElementById('tech-claim-' + targetClaimId);
+                if (el) {
+                    setTimeout(() => {
+                        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 250);
+                }
+            }
+        });
     </script>
+
+    {{-- Universal Voice Dictation & Speech Recognition Engine --}}
+    <x-tech-voice-engine />
 </x-app-layout>

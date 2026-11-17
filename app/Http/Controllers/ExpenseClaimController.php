@@ -31,12 +31,25 @@ class ExpenseClaimController extends Controller
         $employeeFilter = $request->input('employee_id');
         $tab = $request->input('tab', $canManage ? 'pending' : 'my_claims');
 
+        // Target claim auto-focus from notification alerts
+        $targetClaim = null;
+        if ($claimId = $request->input('claim_id')) {
+            $targetClaim = ExpenseClaim::find($claimId);
+        } elseif ($claimNo = $request->input('claim_no')) {
+            $targetClaim = ExpenseClaim::where('claim_no', $claimNo)->first();
+        }
+
+        if ($targetClaim) {
+            $selectedMonth = $targetClaim->expense_date->format('Y-m');
+            $tab = $canManage ? 'all_claims' : 'my_claims';
+        }
+
         $monthCarbon = Carbon::parse($selectedMonth . '-01');
         $monthStart = $monthCarbon->copy()->startOfMonth();
         $monthEnd = $monthCarbon->copy()->endOfMonth();
 
         // Pending Claims for Admin Approval Queue
-        $pendingQuery = ExpenseClaim::with(['user', 'installationJob', 'serviceTicket'])
+        $pendingQuery = ExpenseClaim::with(['user', 'site', 'project.site', 'installationJob.quotation.lead', 'serviceTicket'])
             ->pending()
             ->orderBy('created_at', 'asc');
         $pendingClaims = $pendingQuery->get();
@@ -44,7 +57,7 @@ class ExpenseClaimController extends Controller
         $pendingTotalAmount = (float) $pendingClaims->sum('amount');
 
         // My Claims (for logged-in user)
-        $myQuery = ExpenseClaim::with(['installationJob', 'serviceTicket', 'actioner'])
+        $myQuery = ExpenseClaim::with(['site', 'project.site', 'installationJob.quotation.lead', 'serviceTicket', 'actioner'])
             ->forUser($user->id)
             ->whereBetween('expense_date', [$monthStart, $monthEnd])
             ->orderByDesc('expense_date');
@@ -58,9 +71,25 @@ class ExpenseClaimController extends Controller
         $myClaims = $myQuery->paginate(12, ['*'], 'my_page')->withQueryString();
 
         // Master Company-wide Expenses (for Admin / Finance team)
-        $allQuery = ExpenseClaim::with(['user', 'installationJob', 'serviceTicket', 'actioner'])
-            ->whereBetween('expense_date', [$monthStart, $monthEnd])
+        $allQuery = ExpenseClaim::with(['user', 'site', 'project.site', 'installationJob.quotation.lead', 'serviceTicket', 'actioner'])
             ->orderByDesc('expense_date');
+
+        if (!$targetClaim) {
+            $allQuery->whereBetween('expense_date', [$monthStart, $monthEnd]);
+        } else {
+            $allQuery->where(function($q) use ($monthStart, $monthEnd, $targetClaim) {
+                $q->whereBetween('expense_date', [$monthStart, $monthEnd])
+                  ->orWhere('id', $targetClaim->id);
+            });
+        }
+
+        if ($search = trim((string) $request->input('search', ''))) {
+            $allQuery->where(function($q) use ($search) {
+                $q->where('claim_no', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%")
+                  ->orWhereHas('user', fn($uq) => $uq->where('name', 'like', "%{$search}%"));
+            });
+        }
 
         if ($statusFilter && in_array($statusFilter, ['pending', 'approved', 'rejected', 'paid', 'cancelled'])) {
             $allQuery->where('status', $statusFilter);
@@ -81,8 +110,13 @@ class ExpenseClaimController extends Controller
         $totalFuelMonth    = (float) $monthClaims->where('expense_category', 'fuel_travel')->sum('amount');
         $totalKmMonth      = (float) $monthClaims->where('expense_category', 'fuel_travel')->sum('travel_distance_km');
 
-        // Workforce & Active Jobs for selectors
+        // Workforce & Active Jobs, Sites, Projects for selectors
         $workforce = User::whereIn('role', ['admin', 'staff', 'technician'])->orderBy('name')->get();
+        $availableSites = \App\Models\Site::orderBy('name')->get();
+        $assignedProjects = \App\Models\Project::with(['site', 'company'])
+            ->whereIn('status', ['in_progress', 'approved', 'pending_approval'])
+            ->latest('updated_at')
+            ->get();
         $activeJobs = InstallationJob::with('quotation.lead')
             ->whereIn('status', ['scheduled', 'in_progress', 'completed'])
             ->orderByDesc('created_at')
@@ -109,6 +143,8 @@ class ExpenseClaimController extends Controller
             'totalFuelMonth',
             'totalKmMonth',
             'workforce',
+            'availableSites',
+            'assignedProjects',
             'activeJobs',
             'activeTickets',
             'selectedMonth',
@@ -119,11 +155,12 @@ class ExpenseClaimController extends Controller
     }
 
     /**
-     * Submit an Expense / Travel Claim (Technician & Staff Self-Service).
+     * Submit an Expense / Travel Claim (Technician & Staff Self-Service or Admin on-behalf).
      */
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
+            'user_id'             => ['nullable', 'exists:users,id'],
             'expense_category'    => ['required', 'in:fuel_travel,hardware_tools,food_lodging,toll_parking,emergency_materials,other'],
             'expense_date'        => ['required', 'date', 'after_or_equal:today - 60 days'],
             'amount'              => ['nullable', 'numeric', 'min:0.01', 'max:500000'],
@@ -131,20 +168,96 @@ class ExpenseClaimController extends Controller
             'travel_from'         => ['nullable', 'string', 'max:150'],
             'travel_to'           => ['nullable', 'string', 'max:150'],
             'rate_per_km'         => ['nullable', 'numeric', 'min:1', 'max:100'],
+            'linked_target'       => ['nullable', 'string', 'max:100'],
+            'site_id'             => ['nullable', 'exists:sites,id'],
+            'project_id'          => ['nullable', 'exists:projects,id'],
             'installation_job_id' => ['nullable', 'exists:installation_jobs,id'],
             'service_ticket_id'   => ['nullable', 'exists:service_tickets,id'],
-            'description'         => ['required', 'string', 'min:4', 'max:1000'],
+            'new_site_name'       => ['nullable', 'string', 'max:200'],
+            'new_site_address'    => ['nullable', 'string', 'max:500'],
+            'new_client_name'     => ['nullable', 'string', 'max:200'],
+            'new_site_phone'      => ['nullable', 'string', 'max:50'],
+            'description'         => ['nullable', 'string', 'max:1000'],
             'receipt'             => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png,webp', 'max:4096'],
         ]);
 
+        $targetUserId = (Auth::user()->isOffice() && !empty($validated['user_id']))
+            ? (int) $validated['user_id']
+            : Auth::id();
+
+        // 1. Resolve Installation Site & Project linkage (or auto-create new site if entered)
+        $siteId = $validated['site_id'] ?? null;
+        $projectId = $validated['project_id'] ?? null;
+        $jobId = $validated['installation_job_id'] ?? null;
+        $siteName = null;
+
+        if (!empty($validated['new_site_name']) && !empty($validated['new_site_address'])) {
+            $createdSite = \App\Models\Site::create([
+                'site_code'      => \App\Models\Site::generateSiteCode(),
+                'name'           => $validated['new_site_name'],
+                'address'        => $validated['new_site_address'],
+                'client_name'    => $validated['new_client_name'] ?? null,
+                'contact_person' => $validated['new_client_name'] ?: 'Site Manager',
+                'phone'          => $validated['new_site_phone'] ?: '-',
+                'created_by'     => Auth::id(),
+            ]);
+            $siteId = $createdSite->id;
+            $siteName = $createdSite->name;
+        }
+
+        if (!empty($validated['linked_target'])) {
+            $parts = explode(':', $validated['linked_target'], 2);
+            if (count($parts) === 2) {
+                [$targetType, $targetId] = $parts;
+                if ($targetType === 'project') {
+                    $projectId = (int) $targetId;
+                    $prj = \App\Models\Project::find($projectId);
+                    if ($prj) {
+                        $siteName = $prj->title;
+                        if ($prj->site_id) {
+                            $siteId = $siteId ?: $prj->site_id;
+                        }
+                    }
+                } elseif ($targetType === 'site') {
+                    $siteId = (int) $targetId;
+                    $st = \App\Models\Site::find($siteId);
+                    if ($st) $siteName = $st->name;
+                } elseif ($targetType === 'job') {
+                    $jobId = (int) $targetId;
+                    $jb = \App\Models\InstallationJob::with('quotation.lead')->find($jobId);
+                    if ($jb) $siteName = $jb->job_no . ' (' . ($jb->quotation?->lead?->customer_name ?? 'Client') . ')';
+                }
+            }
+        }
+
+        // Auto-fill travel_to from site / project if not manually given
+        $travelTo = $validated['travel_to'] ?? null;
+        if (empty($travelTo)) {
+            if ($siteId && ($s = \App\Models\Site::find($siteId))) {
+                $travelTo = $s->name . ($s->address ? ' (' . $s->address . ')' : '');
+                $siteName = $siteName ?: $s->name;
+            } elseif ($projectId && ($p = \App\Models\Project::find($projectId))) {
+                $travelTo = $p->title . ($p->site_address ? ' (' . $p->site_address . ')' : '');
+                $siteName = $siteName ?: $p->title;
+            } elseif ($jobId && ($j = \App\Models\InstallationJob::with('quotation.lead')->find($jobId))) {
+                $lead = $j->quotation?->lead;
+                $travelTo = ($lead?->customer_name ?? 'Client') . ($lead?->site_address ? ' - ' . $lead->site_address : '');
+                $siteName = $siteName ?: $j->job_no;
+            }
+        }
+
+        // Description is optional; fallback to clean human-readable default if omitted
+        $description = !empty(trim((string)($validated['description'] ?? '')))
+            ? trim($validated['description'])
+            : ($siteName ? "Site allowance for {$siteName}" : "Field travel & operational allowance");
+
         $amount = !empty($validated['amount']) ? (float) $validated['amount'] : 0.0;
+        $km = !empty($validated['travel_distance_km']) ? (float) $validated['travel_distance_km'] : null;
+        $rate = !empty($validated['rate_per_km']) ? (float) $validated['rate_per_km'] : 6.0;
 
         // Smart Fuel KM Auto-Calculation
         if ($validated['expense_category'] === 'fuel_travel') {
-            $km = (float) ($validated['travel_distance_km'] ?? 0);
-            $rate = (float) ($validated['rate_per_km'] ?? 6.0); // Default ₹6.00/km
-
-            if ($amount <= 0 && $km > 0) {
+            if ($km !== null && $km > 0 && $amount <= 0) {
                 $amount = round($km * $rate, 2);
             }
         }
@@ -160,34 +273,44 @@ class ExpenseClaimController extends Controller
 
         $claim = ExpenseClaim::create([
             'claim_no'            => ExpenseClaim::generateClaimNumber($validated['expense_date']),
-            'user_id'             => Auth::id(),
-            'installation_job_id' => $validated['installation_job_id'] ?? null,
+            'user_id'             => $targetUserId,
+            'site_id'             => $siteId,
+            'project_id'          => $projectId,
+            'installation_job_id' => $jobId,
             'service_ticket_id'   => $validated['service_ticket_id'] ?? null,
             'expense_category'    => $validated['expense_category'],
             'expense_date'        => $validated['expense_date'],
             'amount'              => $amount,
-            'travel_distance_km'  => $validated['travel_distance_km'] ?? null,
+            'travel_distance_km'  => $km,
             'travel_from'         => $validated['travel_from'] ?? null,
-            'travel_to'           => $validated['travel_to'] ?? null,
-            'rate_per_km'         => $validated['rate_per_km'] ?? null,
-            'description'         => $validated['description'],
+            'travel_to'           => $travelTo,
+            'rate_per_km'         => $rate,
+            'description'         => $description,
             'receipt_path'        => $receiptPath,
             'status'              => 'pending',
         ]);
 
         // Multi-channel alert dispatch for submitted expense claim
         try {
+            $claim->load('user');
             $alertService = app(\App\Services\AlertNotificationService::class);
-            $alertService->sendAlert('expense_submitted', Auth::user(), [
-                'employee_name'  => Auth::user()->name,
+            $alertService->sendAlert('expense_submitted', $claim->user ?? Auth::user(), [
+                'employee_name'  => $claim->user?->name ?? Auth::user()->name,
                 'expense_number' => $claim->claim_no,
                 'amount'         => '₹' . number_format($amount, 2),
                 'category'       => $claim->category_label,
                 'expense_date'   => $validated['expense_date'],
                 'description'    => $validated['description'],
+                'link'           => route('finance.expenses.index', ['tab' => 'all_claims', 'claim_id' => $claim->id, 'claim_no' => $claim->claim_no]),
             ], $claim);
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::warning("Expense submission alert failed: " . $e->getMessage());
+        }
+
+        if (Auth::user()->isTechnician()) {
+            return redirect()
+                ->route('technician.dashboard')
+                ->with('status', "✅ Travel allowance / extra work claim #{$claim->claim_no} for ₹" . number_format($amount, 2) . " submitted to Admin for review.");
         }
 
         return redirect()
@@ -196,9 +319,136 @@ class ExpenseClaimController extends Controller
     }
 
     /**
-     * Admin 1-Click Approve Expense Claim.
+     * Admin or Owner Update Expense Claim Details (Cost, KM, Category, Notes).
      */
-    public function approve(ExpenseClaim $claim): RedirectResponse
+    public function update(Request $request, ExpenseClaim $claim): RedirectResponse
+    {
+        $user = Auth::user();
+
+        if (!$user->isOffice() && $claim->user_id !== $user->id) {
+            abort(403, 'Unauthorized. You cannot modify this expense claim.');
+        }
+
+        if (!$user->isOffice() && $claim->status !== 'pending') {
+            return back()->with('error', 'Only pending claims can be edited.');
+        }
+
+        $validated = $request->validate([
+            'user_id'             => ['nullable', 'exists:users,id'],
+            'expense_category'    => ['required', 'in:fuel_travel,hardware_tools,food_lodging,toll_parking,emergency_materials,other'],
+            'expense_date'        => ['required', 'date'],
+            'amount'              => ['nullable', 'numeric', 'min:0.01', 'max:500000'],
+            'travel_distance_km'  => ['nullable', 'numeric', 'min:0.1', 'max:5000'],
+            'travel_from'         => ['nullable', 'string', 'max:150'],
+            'travel_to'           => ['nullable', 'string', 'max:150'],
+            'rate_per_km'         => ['nullable', 'numeric', 'min:1', 'max:100'],
+            'linked_target'       => ['nullable', 'string', 'max:100'],
+            'site_id'             => ['nullable', 'exists:sites,id'],
+            'project_id'          => ['nullable', 'exists:projects,id'],
+            'installation_job_id' => ['nullable', 'exists:installation_jobs,id'],
+            'service_ticket_id'   => ['nullable', 'exists:service_tickets,id'],
+            'description'         => ['nullable', 'string', 'max:1000'],
+            'status'              => ['nullable', 'in:pending,approved,rejected,paid,cancelled'],
+            'admin_notes'         => ['nullable', 'string', 'max:1000'],
+            'receipt'             => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png,webp', 'max:4096'],
+        ]);
+
+        $siteId = $validated['site_id'] ?? $claim->site_id;
+        $projectId = $validated['project_id'] ?? $claim->project_id;
+        $jobId = $validated['installation_job_id'] ?? $claim->installation_job_id;
+
+        if (!empty($validated['linked_target'])) {
+            $parts = explode(':', $validated['linked_target'], 2);
+            if (count($parts) === 2) {
+                [$targetType, $targetId] = $parts;
+                if ($targetType === 'project') {
+                    $projectId = (int) $targetId;
+                    $prj = \App\Models\Project::find($projectId);
+                    if ($prj && $prj->site_id) {
+                        $siteId = $prj->site_id;
+                    }
+                } elseif ($targetType === 'site') {
+                    $siteId = (int) $targetId;
+                } elseif ($targetType === 'job') {
+                    $jobId = (int) $targetId;
+                }
+            }
+        }
+
+        $amount = !empty($validated['amount']) ? (float) $validated['amount'] : (float) $claim->amount;
+        $km = isset($validated['travel_distance_km']) ? (float) $validated['travel_distance_km'] : $claim->travel_distance_km;
+        $rate = !empty($validated['rate_per_km']) ? (float) $validated['rate_per_km'] : ($claim->rate_per_km ?: 6.0);
+
+        // If category is fuel and distance/rate was edited, auto-recompute amount if not explicitly provided
+        if ($validated['expense_category'] === 'fuel_travel') {
+            if (empty($validated['amount']) && $km > 0) {
+                $amount = round($km * $rate, 2);
+            }
+        }
+
+        $desc = !empty(trim((string)($validated['description'] ?? '')))
+            ? trim($validated['description'])
+            : $claim->description;
+
+        $updateData = [
+            'expense_category'    => $validated['expense_category'],
+            'expense_date'        => $validated['expense_date'],
+            'amount'              => $amount,
+            'travel_distance_km'  => $km,
+            'travel_from'         => $validated['travel_from'] ?? $claim->travel_from,
+            'travel_to'           => $validated['travel_to'] ?? $claim->travel_to,
+            'rate_per_km'         => $rate,
+            'site_id'             => $siteId,
+            'project_id'          => $projectId,
+            'installation_job_id' => $jobId,
+            'service_ticket_id'   => $validated['service_ticket_id'] ?? $claim->service_ticket_id,
+            'description'         => $desc,
+        ];
+
+        if ($user->isOffice() && !empty($validated['user_id'])) {
+            $updateData['user_id'] = (int) $validated['user_id'];
+        }
+
+        if ($user->isOffice() && array_key_exists('admin_notes', $validated)) {
+            $updateData['admin_notes'] = $validated['admin_notes'];
+        }
+
+        if ($user->isOffice() && !empty($validated['status'])) {
+            $updateData['status'] = $validated['status'];
+            if ($validated['status'] === 'approved' && $claim->status !== 'approved') {
+                $updateData['actioned_by'] = Auth::id();
+                $updateData['actioned_at'] = now();
+            }
+        }
+
+        if ($request->hasFile('receipt')) {
+            $updateData['receipt_path'] = $request->file('receipt')->store('expense_receipts', 'public');
+        }
+
+        $claim->update($updateData);
+
+        return back()->with('status', "✅ Expense claim #{$claim->claim_no} updated successfully (Amount: ₹" . number_format($amount, 2) . "). Changes are now reflected for the employee.");
+    }
+
+    /**
+     * Admin Permanently Delete Expense Claim.
+     */
+    public function destroy(ExpenseClaim $claim): RedirectResponse
+    {
+        if (!Auth::user()->isOffice()) {
+            abort(403, 'Unauthorized. Only management can delete claims.');
+        }
+
+        $claimNo = $claim->claim_no;
+        $claim->delete();
+
+        return back()->with('status', "Expense claim #{$claimNo} has been deleted.");
+    }
+
+    /**
+     * Admin 1-Click Approve Expense Claim (with optional amount adjustment).
+     */
+    public function approve(Request $request, ExpenseClaim $claim): RedirectResponse
     {
         if (!Auth::user()->canDecideFor($claim->user_id)) {
             abort(403, 'You cannot approve this expense claim.');
@@ -208,12 +458,24 @@ class ExpenseClaimController extends Controller
             return back()->with('error', 'This claim has already been processed.');
         }
 
-        $claim->update([
+        $updateData = [
             'status'      => 'approved',
             'actioned_by' => Auth::id(),
             'actioned_at' => now(),
-        ]);
+        ];
 
+        // Optional on-the-fly adjustment by admin
+        if ($request->filled('amount') && (float) $request->input('amount') > 0) {
+            $updateData['amount'] = (float) $request->input('amount');
+        }
+        if ($request->filled('travel_distance_km')) {
+            $updateData['travel_distance_km'] = (float) $request->input('travel_distance_km');
+        }
+        if ($request->filled('rate_per_km')) {
+            $updateData['rate_per_km'] = (float) $request->input('rate_per_km');
+        }
+
+        $claim->update($updateData);
         $claim->load('user');
 
         // Multi-channel alert to employee
@@ -227,6 +489,7 @@ class ExpenseClaimController extends Controller
                 'status'         => 'Approved',
                 'actioner_name'  => Auth::user()->name,
                 'review_notes'   => 'Approved for payment disbursal.',
+                'link'           => route('finance.expenses.index', ['tab' => 'all_claims', 'claim_id' => $claim->id, 'claim_no' => $claim->claim_no]),
             ], $claim);
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::warning("Expense approval alert failed: " . $e->getMessage());
@@ -272,6 +535,7 @@ class ExpenseClaimController extends Controller
                 'status'         => 'Rejected',
                 'actioner_name'  => Auth::user()->name,
                 'review_notes'   => $validated['rejection_reason'],
+                'link'           => route('finance.expenses.index', ['tab' => 'all_claims', 'claim_id' => $claim->id, 'claim_no' => $claim->claim_no]),
             ], $claim);
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::warning("Expense rejection alert failed: " . $e->getMessage());

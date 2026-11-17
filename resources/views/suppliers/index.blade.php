@@ -21,8 +21,17 @@
         </x-slot>
 
         <x-slot name="filters">
-            <div class="ld-sub">Name, company, contact, phone or GSTIN</div>
-            <input type="text" name="search" value="{{ request('search') }}" class="ld-input" aria-label="Name, company, contact, phone or GSTIN">
+            <div class="ld-sub">Search by Name, Company, Contact, Phone, GSTIN or Brands</div>
+            <input type="text" name="search" value="{{ request('search') }}" class="ld-input" placeholder="e.g. Hikvision, Dahua, Chennai..." aria-label="Name, company, contact, phone, GSTIN or brands">
+            <div class="flex items-center gap-1.5 flex-wrap mt-2 text-xs">
+                <span class="text-slate-500 font-medium">Quick search:</span>
+                @foreach(['Hikvision', 'Dahua', 'CP Plus', 'Western Digital', 'Seagate', 'PoE Switch'] as $tag)
+                    <a href="{{ route('suppliers.index', array_merge(request()->query(), ['search' => $tag])) }}"
+                       class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-950/60 hover:text-blue-600 dark:hover:text-blue-400 border border-slate-200 dark:border-slate-700 transition">
+                        {{ $tag }}
+                    </a>
+                @endforeach
+            </div>
         </x-slot>
 
         <x-slot name="head">
@@ -45,28 +54,41 @@
                 </td>
                 <td x-show="cols.contact">{{ $supplier->contact_person ?: '—' }}</td>
                 <td x-show="cols.phone">
-                    @if($supplier->phone)<div class="whitespace-nowrap">{{ $supplier->phone }}</div>@endif
-                    @if($supplier->email)<div class="text-xs mt-0.5" style="color: var(--ld-muted)">{{ $supplier->email }}</div>@endif
+                    @if($supplier->phone)
+                        <div class="whitespace-nowrap flex items-center gap-1.5">
+                            <span>{{ $supplier->phone }}</span>
+                            <a href="{{ $supplier->getWhatsAppUrl() }}" target="_blank" title="WhatsApp Supplier" class="text-xs font-semibold text-emerald-600 hover:text-emerald-700 hover:underline">
+                                WhatsApp
+                            </a>
+                        </div>
+                    @endif
+                    @if($supplier->email)
+                        <div class="text-xs mt-0.5 flex items-center gap-1.5" style="color: var(--ld-muted)">
+                            <a href="mailto:{{ $supplier->email }}" class="hover:underline">
+                                {{ $supplier->email }}
+                            </a>
+                        </div>
+                    @endif
                 </td>
                 <td x-show="cols.gst">
-                    @if($supplier->gst_number)<div class="whitespace-nowrap">{{ $supplier->gst_number }}</div>@endif
+                    @if($supplier->gst_number)<div class="whitespace-nowrap font-mono text-xs">{{ $supplier->gst_number }}</div>@endif
                     <div class="text-xs mt-0.5" style="color: var(--ld-muted)">{{ $supplier->payment_terms ?: 'Standard terms' }}</div>
                 </td>
-                <td x-show="cols.orders" style="text-align: right">{{ $supplier->purchase_orders_count }}</td>
-                <td x-show="cols.status">{!! $supplier->is_active ? 'Active' : '<span style="color: var(--ld-muted)">Inactive</span>' !!}</td>
+                <td x-show="cols.orders" style="text-align: right font-mono">{{ $supplier->purchase_orders_count }}</td>
+                <td x-show="cols.status">{!! $supplier->is_active ? '<span class="status-won">Active</span>' : '<span class="status-lost">Inactive</span>' !!}</td>
                 <td>
                     <div class="ld-row-actions">
                         @if(auth()->user()->isOffice())
-                            <a href="{{ route('suppliers.edit', $supplier) }}" class="plain-link" title="Edit" aria-label="Edit {{ $supplier->name }}">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.2 5.2l3.6 3.6M4 20l4.5-1 10.3-10.3a2.5 2.5 0 00-3.5-3.5L5 15.5 4 20z"/></svg>
+                            <a href="{{ route('suppliers.edit', $supplier) }}" class="plain-link text-xs font-semibold" title="Edit" aria-label="Edit {{ $supplier->name }}">
+                                Edit
                             </a>
                         @endif
                         @if(auth()->user()->isAdmin())
                             <form method="POST" action="{{ route('suppliers.destroy', $supplier) }}" data-confirm="Delete supplier {{ $supplier->name }}?">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn-cancel" title="Delete" aria-label="Delete {{ $supplier->name }}">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 7h14M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>
+                                <button type="submit" class="btn-cancel text-xs font-semibold" title="Delete" aria-label="Delete {{ $supplier->name }}">
+                                    Delete
                                 </button>
                             </form>
                         @endif

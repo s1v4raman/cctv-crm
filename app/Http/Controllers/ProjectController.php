@@ -661,6 +661,36 @@ class ProjectController extends Controller
         $validated['project_id'] = $project->id;
         $validated['status'] = 'pending';
 
+        // Auto-save item into Master Product Catalog & Pricing if requested
+        if ($request->boolean('save_to_catalog') && empty($validated['product_id'])) {
+            $prodName = Product::cleanName($validated['item_name']);
+            $existing = Product::where('name_key', Product::normalizeNameKey($prodName))->first();
+            if ($existing) {
+                $validated['product_id'] = $existing->id;
+            } else {
+                do {
+                    $sku = 'PRD-' . strtoupper(\Illuminate\Support\Str::random(6));
+                } while (Product::where('sku', $sku)->exists());
+
+                $cost = (float) ($validated['unit_cost'] ?? 0);
+                $newProd = Product::create([
+                    'sku'                     => $sku,
+                    'name'                    => $prodName,
+                    'category'                => $request->input('catalog_category', 'accessory'),
+                    'unit'                    => $validated['unit'] ?: 'Nos',
+                    'cost_price'              => $cost,
+                    'unit_price'              => $cost > 0 ? round($cost * 1.25, 2) : 0,
+                    'stock_quantity'          => 0,
+                    'min_stock_alert'         => 5,
+                    'default_warranty_months' => 24,
+                    'status'                  => 'approved',
+                    'is_active'               => true,
+                    'created_by'              => Auth::id(),
+                ]);
+                $validated['product_id'] = $newProd->id;
+            }
+        }
+
         $material = ProjectMaterial::create($validated);
 
         ProjectAuditLog::logChange(
@@ -673,6 +703,42 @@ class ProjectController extends Controller
 
         return redirect()->route('projects.show', ['project' => $project, 'tab' => 'materials'])
             ->with('status', "Item '{$material->item_name}' added to Bill of Materials!");
+    }
+
+    /**
+     * Update an existing material line item in BOM (Admin / Office only).
+     */
+    public function updateMaterial(Request $request, Project $project, ProjectMaterial $material)
+    {
+        if (!Auth::user()->isOffice()) {
+            abort(403, 'Only administrators and authorized managers can update materials in Bill of Materials.');
+        }
+
+        $validated = $request->validate([
+            'product_id' => 'nullable|exists:products,id',
+            'item_name'  => 'required|string|max:255',
+            'quantity'   => 'required|numeric|min:0.01',
+            'unit'       => 'required|string|max:50',
+            'unit_cost'  => 'nullable|numeric|min:0',
+            'source'     => 'required|in:warehouse,local_purchase,company_stock,bought_from_shop',
+            'shop_name'  => 'nullable|string|max:255',
+            'notes'      => 'nullable|string|max:255',
+        ]);
+
+        $oldName = $material->item_name;
+        $oldQty = $material->quantity;
+        $material->update($validated);
+
+        ProjectAuditLog::logChange(
+            $project,
+            'material_updated',
+            null,
+            null,
+            "Material '{$oldName}' updated by " . Auth::user()->name . " (Qty: {$oldQty} → {$material->quantity} {$material->unit})"
+        );
+
+        return redirect()->route('projects.show', ['project' => $project, 'tab' => 'materials'])
+            ->with('status', "Material '{$material->item_name}' updated successfully in Bill of Materials!");
     }
 
     /**

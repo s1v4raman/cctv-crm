@@ -160,7 +160,7 @@ class EmployeeAttendance extends Model
             $this->attributes['total_hours'] = $hours;
             $this->attributes['overtime_hours'] = max(0.00, round($hours - $standardShiftHours, 2));
 
-            if ($this->status === 'present' && $hours < 5.0 && $hours > 0) {
+            if ($this->status === 'present' && $hours < 5.0 && $hours > 0 && !$this->user?->isTechnician()) {
                 $this->status = 'half_day';
             }
         }

@@ -73,24 +73,86 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-                        <div>
-                            <label class="crm-label">Address</label>
-                            <input aria-label="Address" type="text" name="address" value="{{ old('address') }}" placeholder="e.g. 42 Industrial Area" class="crm-input">
-                        </div>
+                    <div class="mb-4">
+                        <label class="crm-label">Address</label>
+                        <textarea aria-label="Address" name="address" rows="3" class="crm-input" style="height: auto;" placeholder="e.g. 42 Industrial Area, Guindy, Chennai">{{ old('address') }}</textarea>
+                        @error('address') <p class="error-text">{{ $message }}</p> @enderror
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                         <div>
                             <label class="crm-label">City</label>
-                            <input aria-label="City" type="text" name="city" value="{{ old('city') }}" placeholder="e.g. Mumbai" class="crm-input">
+                            <input aria-label="City" type="text" name="city" value="{{ old('city') }}" placeholder="e.g. Chennai" class="crm-input">
+                            @error('city') <p class="error-text">{{ $message }}</p> @enderror
                         </div>
                         <div>
                             <label class="crm-label">State</label>
-                            <input aria-label="State" type="text" name="state" value="{{ old('state') }}" placeholder="e.g. Maharashtra" class="crm-input">
+                            <input aria-label="State" type="text" name="state" value="{{ old('state') }}" placeholder="e.g. Tamil Nadu" class="crm-input">
+                            @error('state') <p class="error-text">{{ $message }}</p> @enderror
+                        </div>
+                    </div>
+
+                    {{-- Bank & Financial Account Details (For Reference & Offline Transfers) --}}
+                    <div class="pt-4 border-t border-slate-200 dark:border-slate-800 mb-4">
+                        <h4 class="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider mb-3">Bank & Payment Details (For Offline Transfers)</h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="crm-label">Bank Name</label>
+                                <input aria-label="Bank Name" type="text" name="bank_name" value="{{ old('bank_name') }}" placeholder="e.g. HDFC Bank, ICICI Bank" class="crm-input">
+                                @error('bank_name') <p class="error-text">{{ $message }}</p> @enderror
+                            </div>
+                            <div>
+                                <label class="crm-label">Account Number</label>
+                                <input aria-label="Account Number" type="text" name="bank_account_number" value="{{ old('bank_account_number') }}" placeholder="e.g. 50200012345678" class="crm-input font-mono">
+                                @error('bank_account_number') <p class="error-text">{{ $message }}</p> @enderror
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+                            <div>
+                                <label class="crm-label">IFSC Code</label>
+                                <input aria-label="IFSC Code" type="text" name="bank_ifsc" value="{{ old('bank_ifsc') }}" placeholder="e.g. HDFC0001234" class="crm-input font-mono uppercase">
+                                @error('bank_ifsc') <p class="error-text">{{ $message }}</p> @enderror
+                            </div>
+                            <div>
+                                <label class="crm-label">Branch Name</label>
+                                <input aria-label="Branch Name" type="text" name="bank_branch" value="{{ old('bank_branch') }}" placeholder="e.g. Guindy Industrial Branch" class="crm-input">
+                                @error('bank_branch') <p class="error-text">{{ $message }}</p> @enderror
+                            </div>
+                            <div>
+                                <label class="crm-label">UPI ID / VPA</label>
+                                <input aria-label="UPI ID / VPA" type="text" name="upi_id" value="{{ old('upi_id') }}" placeholder="e.g. vendor@hdfcbank" class="crm-input font-mono">
+                                @error('upi_id') <p class="error-text">{{ $message }}</p> @enderror
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Product Categories & Brands Supplied --}}
+                    <div class="pt-4 border-t border-slate-200 dark:border-slate-800 mb-4">
+                        <h4 class="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider mb-3">Supplied Hardware & Categories</h4>
+                        <div class="mb-4">
+                            <label class="crm-label mb-2">Hardware Product Categories</label>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                                @foreach(['CCTV Cameras & Recorders', 'Hard Disks & Storage', 'PoE Switches & Networking', 'Cables & Conduits', 'Power Supplies & Racks', 'Access Control & Biometrics'] as $cat)
+                                    <label class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/60 cursor-pointer text-xs font-medium text-slate-800 dark:text-slate-200">
+                                        <input type="checkbox" name="categories[]" value="{{ $cat }}" @checked(in_array($cat, old('categories', []))) class="rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                                        <span>{{ $cat }}</span>
+                                    </label>
+                                @endforeach
+                            </div>
+                            @error('categories') <p class="error-text">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="crm-label">Brands Supplied (Comma Separated)</label>
+                            <input aria-label="Brands Supplied" type="text" name="brands_supplied" value="{{ old('brands_supplied') }}" placeholder="e.g. Hikvision, Dahua, WD Purple, Seagate, D-Link" class="crm-input">
+                            @error('brands_supplied') <p class="error-text">{{ $message }}</p> @enderror
                         </div>
                     </div>
 
                     <div class="mb-4">
-                        <label class="crm-label">Vendor Notes & Bank Details</label>
-                        <textarea aria-label="Vendor Notes & Bank Details" name="notes" rows="2" class="crm-input" style="height: auto;" placeholder="e.g. Bank details and contact notes">{{ old('notes') }}</textarea>
+                        <label class="crm-label">Vendor Notes</label>
+                        <textarea aria-label="Vendor Notes" name="notes" rows="3" class="crm-input" style="height: auto;" placeholder="e.g. Delivery terms, payment schedules, contact notes">{{ old('notes') }}</textarea>
+                        @error('notes') <p class="error-text">{{ $message }}</p> @enderror
                     </div>
 
                     <div class="mb-4 flex items-center gap-2">

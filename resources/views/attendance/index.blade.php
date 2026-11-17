@@ -214,6 +214,16 @@
 
                     {{-- Full buttons on Desktop & Tablet (>= 768px) --}}
                     <div class="hidden md:flex items-center gap-2 flex-wrap">
+                        @if(auth()->user()->isOffice() && ($pendingApprovalsCount ?? 0) > 0)
+                            <form method="POST" action="{{ route('attendance.technicians.bulk-accept') }}" onsubmit="return confirm('{{ __('Accept and approve all :count pending technician attendance records?', ['count' => $pendingTechAttendances->count()]) }}')">
+                                @csrf
+                                <input type="hidden" name="date" value="{{ $selectedDate }}">
+                                <button type="submit" class="px-3 py-1.5 rounded text-xs font-bold bg-emerald-600 hover:bg-emerald-700 active:scale-95 !text-white flex items-center gap-1.5 shadow-xs transition cursor-pointer" style="color: #ffffff !important;">
+                                    <svg class="w-3.5 h-3.5 !text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                                    <span class="!text-white font-bold" style="color: #ffffff !important;">✓ {{ __('Accept All Pending (:count)', ['count' => $pendingApprovalsCount]) }}</span>
+                                </button>
+                            </form>
+                        @endif
                         <form method="POST" action="{{ route('attendance.batch-store') }}" data-confirm="Mark the {{ $unmarkedCount }} unmarked {{ Str::plural('person', $unmarkedCount) }} present (full day, 8h) for {{ \Carbon\Carbon::parse($selectedDate)->format('d M Y') }}?">
                             @csrf
                             <input type="hidden" name="mode" value="bulk_day">

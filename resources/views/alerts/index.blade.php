@@ -272,11 +272,27 @@
                                     <th style="min-width: 280px">Message Content</th>
                                     <th style="min-width: 110px">Status</th>
                                     <th style="min-width: 150px">Sent At</th>
-                                    <th style="width: 100px; text-align: right">Actions</th>
+                                    <th style="min-width: 140px; text-align: right">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse($logs as $log)
+                                    @php
+                                        $isExpenseLog = ($log->reference_type === 'App\Models\ExpenseClaim' || str_contains($log->event_type ?? '', 'expense') || str_contains($log->message_body ?? '', 'EXP-'));
+                                        $expenseClaimNo = null;
+                                        $expenseUrl = null;
+                                        if ($isExpenseLog) {
+                                            if (preg_match('/EXP-\d{6}-\d{3}/i', $log->message_body ?? '', $matches)) {
+                                                $expenseClaimNo = $matches[0];
+                                            }
+                                            $expenseUrl = route('finance.expenses.index', [
+                                                'tab'      => 'all_claims',
+                                                'claim_id' => $log->reference_id,
+                                                'claim_no' => $expenseClaimNo,
+                                                'search'   => $expenseClaimNo,
+                                            ]);
+                                        }
+                                    @endphp
                                     <tr>
                                         <td>
                                             <div class="flex items-center gap-1.5 font-semibold text-slate-900 dark:text-white">
@@ -293,6 +309,11 @@
                                             <div class="text-xs text-slate-500 dark:text-slate-400 capitalize mt-0.5">
                                                 {{ str_replace('_', ' ', $log->event_type) }}
                                             </div>
+                                            @if($isExpenseLog && $expenseUrl)
+                                                <a href="{{ $expenseUrl }}" class="inline-flex items-center gap-1 mt-1 text-[11px] font-bold text-blue-600 dark:text-blue-400 hover:underline" title="Open in Expense Hub">
+                                                    <span>View Expense Hub &rarr;</span>
+                                                </a>
+                                            @endif
                                         </td>
                                         <td>
                                             <div class="ld-name font-bold">{{ $log->recipient_name }}</div>
@@ -302,7 +323,15 @@
                                         </td>
                                         <td class="max-w-md">
                                             <div class="text-slate-800 dark:text-slate-300 line-clamp-2 leading-relaxed text-xs">
-                                                {{ $log->message_body }}
+                                                @if($isExpenseLog && $expenseClaimNo)
+                                                    {!! str_replace(
+                                                        $expenseClaimNo,
+                                                        '<a href="' . e($expenseUrl) . '" class="inline-flex items-center gap-1 font-mono font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 dark:hover:bg-blue-900/60 px-1.5 py-0.5 rounded border border-blue-200 dark:border-blue-800 underline transition" title="Click to open and manage ' . e($expenseClaimNo) . ' in Expense Hub">' . e($expenseClaimNo) . ' <svg class="w-3 h-3 inline-block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/></svg></a>',
+                                                        e($log->message_body)
+                                                    ) !!}
+                                                @else
+                                                    {{ $log->message_body }}
+                                                @endif
                                             </div>
                                             @if($log->error_message)
                                                 <div class="text-xs text-rose-600 dark:text-rose-400 font-medium mt-1 flex items-center gap-1">
@@ -326,8 +355,14 @@
                                             <div class="text-slate-500 dark:text-slate-400">{{ $log->sent_at?->format('h:i A') ?? $log->created_at->format('h:i A') }}</div>
                                         </td>
                                         <td class="whitespace-nowrap text-right">
-                                            <div class="flex items-center justify-end gap-2 text-xs">
-                                                @if($log->action_url)
+                                            <div class="flex items-center justify-end gap-1.5 text-xs">
+                                                @if($isExpenseLog && $expenseUrl)
+                                                    <a href="{{ $expenseUrl }}" class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-2xs transition shrink-0" title="Review, edit cost/KM, accept or reject claim in Expenses Hub">
+                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                                        <span>Review Claim &rarr;</span>
+                                                    </a>
+                                                @endif
+                                                @if($log->action_url && !$isExpenseLog)
                                                     <a href="{{ $log->action_url }}" target="_blank" class="ld-outline plain-link" style="height: 26px; padding: 0 8px;" title="View Proposal PDF">
                                                         PDF
                                                     </a>

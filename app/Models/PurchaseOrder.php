@@ -225,4 +225,73 @@ class PurchaseOrder extends Model
     {
         return max((float) ($this->total - $this->amount_paid), 0.0);
     }
+
+    /**
+     * Build formatted WhatsApp message for Purchase Order sharing.
+     */
+    public function buildWhatsAppMessage(?string $customNote = null): string
+    {
+        $supplierName = $this->supplier?->contact_person ?: ($this->supplier?->company_name ?: $this->supplier?->name ?: 'Vendor Partner');
+        $items = $this->items;
+
+        $msg = "📋 *PURCHASE ORDER — PRECISION IT SYSTEMS*\n";
+        $msg .= "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
+        $msg .= "Dear *{$supplierName}*,\n\n";
+        $msg .= "Please find the procurement order details below:\n\n";
+        $msg .= "🔹 *PO Number:* {$this->po_number}\n";
+        $msg .= "🔹 *Order Date:* " . ($this->order_date ? $this->order_date->format('d M Y') : now()->format('d M Y')) . "\n";
+        if ($this->expected_delivery_date) {
+            $msg .= "🔹 *Expected Delivery:* " . $this->expected_delivery_date->format('d M Y') . "\n";
+        }
+        $msg .= "\n📦 *ORDERED ITEMS:*\n";
+
+        foreach ($items as $idx => $item) {
+            $num = $idx + 1;
+            $qty = (int) $item->quantity_ordered;
+            $rate = number_format((float) $item->unit_cost, 2);
+            $total = number_format((float) ($item->total_cost ?: ($item->quantity_ordered * $item->unit_cost)), 2);
+            $msg .= "{$num}. *{$item->item_name}*\n";
+            $msg .= "   Qty: {$qty} units @ ₹{$rate} = *₹{$total}*\n";
+        }
+
+        $msg .= "\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
+        $msg .= "💰 *Subtotal:* ₹" . number_format((float) $this->subtotal, 2) . "\n";
+        if ($this->tax_amount > 0) {
+            $taxLabel = $this->tax_percent > 0 ? "GST ({$this->tax_percent}%)" : "Tax";
+            $msg .= "🧾 *{$taxLabel}:* ₹" . number_format((float) $this->tax_amount, 2) . "\n";
+        }
+        if ($this->shipping_cost > 0) {
+            $msg .= "🚚 *Shipping:* ₹" . number_format((float) $this->shipping_cost, 2) . "\n";
+        }
+        $msg .= "💵 *GRAND TOTAL:* *₹" . number_format((float) $this->total, 2) . "*\n";
+        $msg .= "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
+
+        if ($this->notes) {
+            $msg .= "📝 *Terms & Instructions:* {$this->notes}\n\n";
+        }
+        if ($customNote) {
+            $msg .= "📌 *Note:* {$customNote}\n\n";
+        }
+
+        $msg .= "📍 *Delivery Location:*\nPrecision IT Systems Central Warehouse\n";
+        $msg .= "\nPlease confirm order acceptance and dispatch tracking.\n";
+        $msg .= "Best regards,\n*Precision IT Systems Procurement Team*";
+
+        return $msg;
+    }
+
+    /**
+     * Get direct WhatsApp URL (wa.me) for this Purchase Order.
+     */
+    public function getWhatsAppUrl(?string $customPhone = null, ?string $customNote = null): string
+    {
+        $phone = $customPhone ?: ($this->supplier?->phone ?? '');
+        $phoneClean = preg_replace('/[^0-9]/', '', $phone);
+        if (strlen($phoneClean) === 10) {
+            $phoneClean = '91' . $phoneClean;
+        }
+        $text = $this->buildWhatsAppMessage($customNote);
+
+        return "https://wa.me/{$phoneClean}?text=" . urlencode($text);
+    }
 }

@@ -20,11 +20,15 @@ class MobileScannerSyncController extends Controller
         // Mark this token as connected
         Cache::put("scanner_connected_{$token}", true, 180);
 
-        return view('mobile-scanner', [
-            'token' => $token,
-            'target' => $target,
-            'label' => $label,
-        ]);
+        return response()
+            ->view('mobile-scanner', [
+                'token' => $token,
+                'target' => $target,
+                'label' => $label,
+            ])
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0, post-check=0, pre-check=0')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', 'Sat, 01 Jan 2000 00:00:00 GMT');
     }
 
     /**
@@ -95,19 +99,56 @@ class MobileScannerSyncController extends Controller
     }
 
     /**
+     * Accurately detect local WiFi / Ethernet IPv4 address, filtering out virtual hotspot adapters.
+     */
+    public static function detectLanIp(): string
+    {
+        $lanIp = '192.168.29.168';
+
+        if (function_exists('exec')) {
+            @exec('ipconfig', $ipOutput);
+            if (!empty($ipOutput)) {
+                $foundIp = null;
+                $isWifiOrEth = false;
+                foreach ($ipOutput as $line) {
+                    if (preg_match('/(?:Wireless LAN adapter Wi-?Fi|Ethernet adapter)/i', $line)) {
+                        $isWifiOrEth = true;
+                    } elseif (preg_match('/adapter/i', $line)) {
+                        $isWifiOrEth = false;
+                    }
+                    if ($isWifiOrEth && preg_match('/IPv4 Address[ .:]+([0-9.]+)/i', $line, $matches)) {
+                        $candidate = trim($matches[1]);
+                        if ($candidate !== '127.0.0.1' && !str_starts_with($candidate, '192.168.137.')) {
+                            $foundIp = $candidate;
+                            break;
+                        }
+                    }
+                }
+                if ($foundIp) {
+                    return $foundIp;
+                }
+            }
+        }
+
+        $hostIp = gethostbyname(gethostname());
+        if ($hostIp && $hostIp !== '127.0.0.1' && !str_starts_with($hostIp, '192.168.137.')) {
+            return $hostIp;
+        }
+
+        return $lanIp;
+    }
+
+    /**
      * Helper to retrieve detected LAN IP for QR codes.
      */
     public function getLanInfo(Request $request)
     {
-        $lanIp = gethostbyname(gethostname());
-        if ($lanIp === '127.0.0.1' || empty($lanIp)) {
-            $lanIp = '192.168.1.34'; // Detected active WiFi adapter
-        }
+        $lanIp = self::detectLanIp();
 
         return response()->json([
             'lan_ip' => $lanIp,
             'host' => $request->getHost(),
-            'port' => $request->getPort() ?: 8001,
+            'port' => $request->getPort() ?: 8000,
         ]);
     }
 }

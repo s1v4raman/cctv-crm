@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Site;
 use App\Models\Lead;
+use App\Models\Project;
 use App\Models\ProjectAuditLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class SiteController extends Controller
 {
@@ -372,6 +374,136 @@ class SiteController extends Controller
         }
 
         return response()->json(['duplicate' => false]);
+    }
+
+    /**
+     * Quickly create a new site location and associated active project on the fly.
+     */
+    public function quickCreateSiteProject(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'address' => 'required|string|max:500',
+            'city' => 'nullable|string|max:100',
+            'state' => 'nullable|string|max:100',
+            'client_name' => 'nullable|string|max:255',
+            'contact_person' => 'nullable|string|max:150',
+            'contact_phone' => 'nullable|string|max:50',
+            'client_email' => 'nullable|string|max:150',
+            'google_maps_url' => 'nullable|string|max:500',
+            'project_type' => 'nullable|string|max:50',
+            'project_title' => 'nullable|string|max:255',
+        ]);
+
+        $currentUser = Auth::user();
+        $siteCode = Site::generateSiteCode();
+        $contactPerson = $validated['contact_person'] ?? ($validated['client_name'] ?? 'Site Manager');
+        $phone = $validated['contact_phone'] ?? '-';
+
+        $siteData = [
+            'site_code' => $siteCode,
+            'name' => $validated['name'],
+            'client_name' => $validated['client_name'] ?? null,
+            'contact_person' => $contactPerson,
+            'contact_phone' => $validated['contact_phone'] ?? null,
+            'phone' => $phone,
+            'client_phone' => $validated['contact_phone'] ?? null,
+            'client_email' => $validated['client_email'] ?? null,
+            'address' => $validated['address'],
+            'city' => $validated['city'] ?? null,
+            'state' => $validated['state'] ?? 'Tamil Nadu',
+            'google_maps_url' => $validated['google_maps_url'] ?? null,
+            'google_maps_link' => $validated['google_maps_url'] ?? null,
+            'created_by' => $currentUser?->id,
+        ];
+
+        // Parse coordinates if maps URL is provided
+        if (!empty($validated['google_maps_url'])) {
+            $parsed = $this->extractCoordinatesFromUrl($validated['google_maps_url']);
+            if ($parsed) {
+                $siteData['latitude'] = $parsed['lat'];
+                $siteData['longitude'] = $parsed['lng'];
+            }
+        }
+
+        $site = Site::create($siteData);
+
+        // Auto-create an associated active project for this site and assign to the logged-in technician
+        $projectTitle = !empty($validated['project_title']) 
+            ? $validated['project_title'] 
+            : ($site->name . ' - Site Installation');
+
+        $projectType = in_array($validated['project_type'] ?? null, array_keys(Project::projectTypeOptions()))
+            ? $validated['project_type']
+            : 'hardware_cctv';
+
+        // Auto-create or link Lead customer record for this site location
+        $customerName = !empty($validated['client_name']) 
+            ? $validated['client_name'] 
+            : (!empty($validated['contact_person']) ? $validated['contact_person'] : $validated['name']);
+
+        $lead = Lead::create([
+            'customer_name' => $customerName,
+            'company_legal_name' => $validated['client_name'] ?? null,
+            'phone' => $validated['contact_phone'] ?? '',
+            'email' => $validated['client_email'] ?? null,
+            'site_address' => $validated['address'],
+            'state' => $validated['state'] ?? 'Tamil Nadu',
+            'source' => 'field_site',
+            'status' => 'won',
+        ]);
+
+        $project = Project::create([
+            'project_code' => Project::generateProjectCode(),
+            'title' => $projectTitle,
+            'project_type' => $projectType,
+            'site_id' => $site->id,
+            'lead_id' => $lead->id,
+            'company_name' => $site->client_name ?: $site->name,
+            'site_address' => $site->address,
+            'contact_person' => $site->contact_person,
+            'contact_phone' => $site->contact_phone,
+            'contact_email' => $site->client_email,
+            'status' => 'in_progress',
+            'priority' => 'medium',
+            'start_date' => now()->toDateString(),
+            'assigned_to' => $currentUser?->id,
+            'lead_technician_id' => $currentUser?->id,
+            'created_by' => $currentUser?->id,
+        ]);
+
+        ProjectAuditLog::logChange(
+            $site,
+            'created',
+            null,
+            null,
+            "Site {$site->site_code} ({$site->name}) quick-created and linked to Project {$project->project_code} by " . ($currentUser?->name ?? 'User')
+        );
+
+        $locParts = [];
+        if ($site->name) {
+            $locParts[] = $site->name;
+        }
+        if ($site->city) {
+            $locParts[] = $site->city;
+        } elseif ($site->address) {
+            $locParts[] = Str::limit($site->address, 32);
+        }
+        $locStr = count($locParts) ? implode(', ', $locParts) : ($site->address ?: 'Site Location');
+        $label = "⭐ [Assigned Site] {$project->title} — 📍 {$locStr}";
+        $leadLabel = "{$project->project_code} - {$project->title} ({$lead->customer_name})";
+
+        return response()->json([
+            'success' => true,
+            'site' => $site,
+            'project' => $project,
+            'project_id' => $project->id,
+            'lead' => $lead,
+            'lead_id' => $lead->id,
+            'lead_label' => $leadLabel,
+            'label' => $label,
+            'message' => "New site location '{$site->name}' added and assigned successfully!",
+        ]);
     }
 
     /**

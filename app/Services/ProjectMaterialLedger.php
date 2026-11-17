@@ -56,6 +56,13 @@ class ProjectMaterialLedger
         foreach ($project->materials as $material) {
             $key = $material->product_id ? 'p' . $material->product_id : 'm' . $material->id;
             self::ensureRow($rows, $key, $material->product, $material->item_name, $material->unit);
+            $rows[$key]['material_id'] = $material->id;
+            $rows[$key]['material_item_name'] = $material->item_name;
+            $rows[$key]['material_unit'] = $material->unit;
+            $rows[$key]['material_unit_cost'] = (float) $material->unit_cost;
+            $rows[$key]['material_source'] = $material->source;
+            $rows[$key]['material_shop_name'] = $material->shop_name;
+            $rows[$key]['material_notes'] = $material->notes;
             if (self::sameUnit($material->unit, $rows[$key]['unit'])) {
                 $rows[$key]['planned'] += (float) $material->quantity;
             } else {
@@ -197,7 +204,19 @@ class ProjectMaterialLedger
             'unit' => $product?->unit ?: ($isCable ? 'm' : ($unit ?: 'nos')),
             'is_cable' => $isCable,
             'category' => $isCable ? 'Cable' : ($product?->category ? ucfirst(strtolower(trim($product->category))) : 'Other'),
+            'brand' => $product?->brand,
+            'description' => $product?->description,
+            'cost_price' => $product ? (float) $product->cost_price : null,
+            'selling_price' => $product ? (float) $product->selling_price : null,
+            'reorder_level' => $product ? (float) $product->reorder_level : null,
             'in_store' => $product ? (float) $product->stock_quantity : null,
+            'material_id' => null,
+            'material_item_name' => null,
+            'material_unit' => null,
+            'material_unit_cost' => null,
+            'material_source' => null,
+            'material_shop_name' => null,
+            'material_notes' => null,
             'planned' => 0.0,
             'planned_other' => [],
             'issued' => 0.0,

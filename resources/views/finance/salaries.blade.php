@@ -122,11 +122,19 @@
                                         <span class="text-slate-400">—</span>
                                     @endif
                                 </td>
-                                <td class="py-3 px-3 text-right text-emerald-600 dark:text-emerald-400">
-                                    @if($sal && $sal->total_allowances > 0)
-                                        +&#8377;{{ number_format($sal->total_allowances, 2) }}
-                                    @else
-                                        <span class="text-slate-400">&#8377;0</span>
+                                <td class="py-3 px-3 text-right">
+                                    <div class="text-emerald-600 dark:text-emerald-400 font-semibold">
+                                        @if($sal && $sal->total_allowances > 0)
+                                            +&#8377;{{ number_format($sal->total_allowances, 2) }}
+                                        @else
+                                            <span class="text-slate-400">&#8377;0</span>
+                                        @endif
+                                    </div>
+                                    @php $empApprovedTravel = $monthlyApprovedClaims[$emp->id] ?? 0; @endphp
+                                    @if($empApprovedTravel > 0)
+                                        <div class="text-[10px] text-purple-600 dark:text-purple-400 font-bold mt-0.5" title="Approved Site Travel & Work Allowances this month">
+                                            +&#8377;{{ number_format($empApprovedTravel, 2) }} travel
+                                        </div>
                                     @endif
                                 </td>
                                 <td class="py-3 px-3 text-right text-rose-600 dark:text-rose-400">

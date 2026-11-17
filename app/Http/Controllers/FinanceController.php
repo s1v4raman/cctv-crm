@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\EmployeeAttendance;
 use App\Models\EmployeeSalary;
+use App\Models\ExpenseClaim;
 use App\Models\NotificationLog;
 use App\Models\Payroll;
 use App\Models\User;
@@ -50,6 +51,15 @@ class FinanceController extends Controller
         $configuredCount     = $allInternal->filter(fn($e) => $e->salaryStructure && $e->salaryStructure->base_salary_monthly > 0)->count();
         $avgMonthlySalary    = $configuredCount > 0 ? round($totalMonthlyPayroll / $configuredCount, 2) : 0;
 
+        // Current month's approved travel/work allowances per staff member
+        $cMonthStart = now()->startOfMonth();
+        $cMonthEnd   = now()->endOfMonth();
+        $monthlyApprovedClaims = ExpenseClaim::whereIn('status', ['approved', 'paid'])
+            ->whereBetween('expense_date', [$cMonthStart, $cMonthEnd])
+            ->selectRaw('user_id, sum(amount) as total_amount')
+            ->groupBy('user_id')
+            ->pluck('total_amount', 'user_id');
+
         return view('finance.salaries', compact(
             'employees',
             'roleFilter',
@@ -58,7 +68,8 @@ class FinanceController extends Controller
             'totalWeeklyPayroll',
             'totalDailyPayroll',
             'configuredCount',
-            'avgMonthlySalary'
+            'avgMonthlySalary',
+            'monthlyApprovedClaims'
         ));
     }
 
@@ -237,6 +248,19 @@ class FinanceController extends Controller
                 $deductions = (float) $salary->deductions;
             }
 
+            // Dynamically aggregate approved Travel & Work Expense Claims for this employee within the payroll period
+            $approvedClaims = ExpenseClaim::where('user_id', $emp->id)
+                ->where('status', 'approved')
+                ->where(function ($q) {
+                    $q->whereNull('payment_method')
+                      ->orWhere('payment_method', 'payroll_addition');
+                })
+                ->whereBetween('expense_date', [$periodStart, $periodEnd])
+                ->get();
+
+            $siteTravelAllowances = (float) $approvedClaims->sum('amount');
+            $allowances = round($allowances + $siteTravelAllowances, 2);
+
             $overtimeRate = $salary->overtime_hourly_rate > 0 ? (float) $salary->overtime_hourly_rate : (float) $salary->hourly_rate * 1.25;
             $overtimePay  = round($overtimeHrs * $overtimeRate, 2);
             $netSalary    = max(0, round($basicPay + $overtimePay + $allowances - $deductions, 2));
@@ -283,6 +307,13 @@ class FinanceController extends Controller
                     'net_salary'     => $netSalary,
                     'status'         => 'draft',
                     'created_by'     => auth()->id(),
+                ]);
+            }
+
+            // Mark aggregated claims as designated for monthly payroll addition
+            foreach ($approvedClaims as $cl) {
+                $cl->update([
+                    'payment_method' => 'payroll_addition',
                 ]);
             }
 

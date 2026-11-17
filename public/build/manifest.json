@@ -216,7 +216,7 @@
     "src": "node_modules/@fontsource/roboto/files/roboto-vietnamese-700-normal.woff2"
   },
   "resources/css/app.css": {
-    "file": "assets/app-DBxPxmqG.css",
+    "file": "assets/app-DLmt3UTE.css",
     "name": "app",
     "names": [
       "app.css"
@@ -281,7 +281,7 @@
     ]
   },
   "resources/css/standalone.css": {
-    "file": "assets/standalone-g888yjvi.css",
+    "file": "assets/standalone-C_-knruR.css",
     "name": "standalone",
     "names": [
       "standalone.css"
@@ -290,7 +290,7 @@
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app-CSHuX-Rz.js",
+    "file": "assets/app-CCuxSQgI.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,

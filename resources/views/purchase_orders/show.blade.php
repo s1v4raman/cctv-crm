@@ -17,6 +17,16 @@
                 </div>
 
                 <div class="flex items-center gap-2 flex-wrap">
+                    @if($purchaseOrder->supplier?->phone)
+                        <button type="button" onclick="openPoWhatsAppModal()" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white transition shadow-xs cursor-pointer">
+                            <span>WhatsApp PO</span>
+                        </button>
+                    @endif
+                    @if($purchaseOrder->supplier?->email)
+                        <button type="button" onclick="openPoEmailModal()" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white transition shadow-xs cursor-pointer">
+                            <span>Email PO</span>
+                        </button>
+                    @endif
                     <a href="{{ route('suppliers.show', $purchaseOrder->supplier) }}" class="btn-secondary">
                         Supplier Profile
                     </a>
@@ -277,4 +287,107 @@
             </form>
         </div>
     </div>
+
+    {{-- Purchase Order WhatsApp Sharing Modal --}}
+    <div id="po-whatsapp-modal" style="display: none;" 
+         onclick="if(event.target === this) closePoWhatsAppModal()"
+         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
+            <div class="px-5 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-emerald-50/60 dark:bg-emerald-950/30">
+                <div class="text-emerald-800 dark:text-emerald-300 font-bold text-sm">
+                    <span>Share Purchase Order via WhatsApp</span>
+                </div>
+                <button type="button" onclick="closePoWhatsAppModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg leading-none cursor-pointer">&times;</button>
+            </div>
+            <form method="POST" action="{{ route('purchase-orders.shareWhatsApp', $purchaseOrder) }}" target="_blank" onsubmit="closePoWhatsAppModal()">
+                @csrf
+                <div class="p-5 space-y-4 text-xs">
+                    <div>
+                        <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Supplier Mobile Number *</label>
+                        <input type="text" name="phone" value="{{ $purchaseOrder->supplier?->phone }}" required class="w-full px-3 py-2 border rounded-lg border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-mono">
+                    </div>
+                    <div class="p-3 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-1 text-[11px]">
+                        <div class="flex justify-between font-bold text-slate-800 dark:text-slate-200">
+                            <span>PO #{{ $purchaseOrder->po_number }}</span>
+                            <span>₹{{ number_format((float) $purchaseOrder->total, 2) }}</span>
+                        </div>
+                        <div class="text-slate-500">{{ $purchaseOrder->items->count() }} item(s) • {{ $purchaseOrder->supplier?->name }}</div>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Additional Note / Dispatch Instructions</label>
+                        <textarea name="custom_note" rows="2" placeholder="e.g. Please deliver by Thursday evening or dispatch through safe transport..." class="w-full px-3 py-2 border rounded-lg border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"></textarea>
+                    </div>
+                </div>
+                <div class="px-5 py-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 flex items-center justify-end gap-2">
+                    <button type="button" onclick="closePoWhatsAppModal()" class="btn-secondary">Cancel</button>
+                    <button type="submit" class="inline-flex items-center px-4 py-2 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white transition shadow-xs cursor-pointer">
+                        <span>Open WhatsApp & Send</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {{-- Purchase Order Email Dispatch Modal --}}
+    <div id="po-email-modal" style="display: none;" 
+         onclick="if(event.target === this) closePoEmailModal()"
+         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden">
+            <div class="px-5 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-blue-50/60 dark:bg-blue-950/30">
+                <div class="text-blue-800 dark:text-blue-300 font-bold text-sm">
+                    <span>Dispatch Purchase Order via Email</span>
+                </div>
+                <button type="button" onclick="closePoEmailModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg leading-none cursor-pointer">&times;</button>
+            </div>
+            <form method="POST" action="{{ route('purchase-orders.sendEmail', $purchaseOrder) }}" onsubmit="closePoEmailModal()">
+                @csrf
+                <div class="p-5 space-y-4 text-xs">
+                    <div>
+                        <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Supplier Email *</label>
+                        <input type="email" name="email" value="{{ $purchaseOrder->supplier?->email }}" required class="w-full px-3 py-2 border rounded-lg border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Subject</label>
+                        <input type="text" name="subject" value="Purchase Order #{{ $purchaseOrder->po_number }} — Precision IT Systems" required class="w-full px-3 py-2 border rounded-lg border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Custom Message / Order Instructions</label>
+                        <textarea name="custom_message" rows="3" placeholder="Add specific order notes, delivery timeframe or terms..." class="w-full px-3 py-2 border rounded-lg border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">Please find attached our official Purchase Order #{{ $purchaseOrder->po_number }} for immediate processing. Kindly confirm delivery timeline and dispatch status.</textarea>
+                    </div>
+                </div>
+                <div class="px-5 py-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 flex items-center justify-end gap-2">
+                    <button type="button" onclick="closePoEmailModal()" class="btn-secondary">Cancel</button>
+                    <button type="submit" class="inline-flex items-center px-4 py-2 rounded-lg text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white transition shadow-xs cursor-pointer">
+                        <span>Send Official PO Email</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openPoWhatsAppModal() {
+            const el = document.getElementById('po-whatsapp-modal');
+            if (el) el.style.display = 'flex';
+        }
+        function closePoWhatsAppModal() {
+            const el = document.getElementById('po-whatsapp-modal');
+            if (el) el.style.display = 'none';
+        }
+        function openPoEmailModal() {
+            const el = document.getElementById('po-email-modal');
+            if (el) el.style.display = 'flex';
+        }
+        function closePoEmailModal() {
+            const el = document.getElementById('po-email-modal');
+            if (el) el.style.display = 'none';
+        }
+
+        window.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closePoWhatsAppModal();
+                closePoEmailModal();
+            }
+        });
+    </script>
 </x-app-layout>

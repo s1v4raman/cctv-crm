@@ -85,16 +85,16 @@
                 <td>
                     <div class="ld-row-actions">
                         @if(auth()->user()->isOffice())
-                            <a href="{{ route('purchase-orders.edit', $po) }}" class="plain-link" title="Edit" aria-label="Edit {{ $po->po_number }}">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.2 5.2l3.6 3.6M4 20l4.5-1 10.3-10.3a2.5 2.5 0 00-3.5-3.5L5 15.5 4 20z"/></svg>
+                            <a href="{{ route('purchase-orders.edit', $po) }}" class="plain-link text-xs font-semibold" title="Edit" aria-label="Edit {{ $po->po_number }}">
+                                Edit
                             </a>
                         @endif
                         @if(auth()->user()->isAdmin())
                             <form method="POST" action="{{ route('purchase-orders.destroy', $po) }}" data-confirm="Delete purchase order {{ $po->po_number }}? This cannot be undone.">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn-cancel" title="Delete" aria-label="Delete {{ $po->po_number }}">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 7h14M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>
+                                <button type="submit" class="btn-cancel text-xs font-semibold" title="Delete" aria-label="Delete {{ $po->po_number }}">
+                                    Delete
                                 </button>
                             </form>
                         @endif

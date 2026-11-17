@@ -181,22 +181,41 @@
             </tr>
         </thead>
         <tbody>
-            @php $i = 1; @endphp
-            @foreach($quotation->items as $item)
+            @if(($quotation->pricing_mode ?? 'itemized') === 'total_only')
                 <tr>
-                    <td class="center">{{ $i++ }}</td>
+                    <td class="center">1</td>
                     <td>
-                        <strong>{{ $item->item_name }}</strong>
-                        @if($item->description)
-                            <div style="font-size: 8px; color: #555; margin-top: 2px;">{!! nl2br(e($item->description)) !!}</div>
-                        @endif
+                        <strong>Complete Turnkey CCTV Surveillance System & Security Infrastructure Package</strong>
+                        <div style="font-size: 8px; color: #555; margin-top: 2px;">
+                            Supply, Installation, System Integration, Cabling, Setup, Testing &amp; Commissioning as per Site Specifications.
+                            @if($quotation->notes)
+                                <br><span style="color: #444;">Scope Details: {{ $quotation->notes }}</span>
+                            @endif
+                        </div>
                     </td>
-                    <td class="center">{{ $item->quantity }}</td>
-                    <td class="right">₹{{ number_format($item->unit_price, 2) }}</td>
-                    <td class="right">₹{{ number_format($item->unit_price, 2) }}</td>
-                    <td class="right">₹{{ number_format($item->total, 2) }}</td>
+                    <td class="center">1 Set</td>
+                    <td class="right">₹{{ number_format($quotation->subtotal, 2) }}</td>
+                    <td class="right">₹{{ number_format($quotation->subtotal, 2) }}</td>
+                    <td class="right">₹{{ number_format($quotation->subtotal, 2) }}</td>
                 </tr>
-            @endforeach
+            @else
+                @php $i = 1; @endphp
+                @foreach($quotation->items as $item)
+                    <tr>
+                        <td class="center">{{ $i++ }}</td>
+                        <td>
+                            <strong>{{ $item->item_name }}</strong>
+                            @if($item->description)
+                                <div style="font-size: 8px; color: #555; margin-top: 2px;">{!! nl2br(e($item->description)) !!}</div>
+                            @endif
+                        </td>
+                        <td class="center">{{ $item->quantity }}</td>
+                        <td class="right">₹{{ number_format($item->unit_price, 2) }}</td>
+                        <td class="right">₹{{ number_format($item->unit_price, 2) }}</td>
+                        <td class="right">₹{{ number_format($item->total, 2) }}</td>
+                    </tr>
+                @endforeach
+            @endif
             
             <tr class="totals-row">
                 <td colspan="4" style="border: none;"></td>

@@ -166,6 +166,11 @@
                         <span class="whitespace-nowrap">{{ __('Bulk Attendance') }}</span>
                     </button>
 
+                    <button type="button" onclick="openWorkOutputModal()" class="ld-outline flex-1 sm:flex-initial !inline-flex items-center justify-center gap-2 whitespace-nowrap shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer text-amber-700 dark:text-amber-300 border-amber-300 dark:border-amber-700 hover:bg-amber-50 dark:hover:bg-amber-950/40" style="min-height: 38px;">
+                        <svg class="w-4 h-4 shrink-0 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg>
+                        <span class="whitespace-nowrap">{{ __('Log Work Output') }}</span>
+                    </button>
+
                     <div class="relative" @click.outside="menu === 'more' && (menu = null)">
                         <button type="button" class="ld-outline !inline-flex items-center justify-center p-2 rounded-xl shrink-0 cursor-pointer" style="min-height: 38px; width: 38px;" title="More options" aria-label="More actions" :aria-expanded="menu === 'more'" @click="open('more')">
                             <svg class="w-4 h-4 icon-solid shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><circle cx="4" cy="10" r="1.6"/><circle cx="10" cy="10" r="1.6"/><circle cx="16" cy="10" r="1.6"/></svg>
@@ -410,6 +415,24 @@
                             <span>{{ __('Export CSV') }}</span>
                         </a>
 
+                        {{-- 1-Click Accept All Pending Workers Attendance Button --}}
+                        @php
+                            $pendingAttendancesToday = $attendances->where('approval_status', 'pending');
+                        @endphp
+                        @if($pendingAttendancesToday->isNotEmpty() && auth()->user()->isOffice())
+                            <form method="POST" action="{{ route('attendance.workers.bulk-accept') }}" onsubmit="return confirm('{{ __('Accept and approve all :count pending worker attendance records for :date?', ['count' => $pendingAttendancesToday->count(), 'date' => $selectedDate->format('d M Y')]) }}')" class="inline">
+                                @csrf
+                                <input type="hidden" name="date" value="{{ $selectedDate->toDateString() }}">
+                                @foreach($pendingAttendancesToday as $pAtt)
+                                    <input type="hidden" name="ids[]" value="{{ $pAtt->id }}">
+                                @endforeach
+                                <button type="submit" class="text-xs font-bold px-3 py-1 rounded-md bg-emerald-600 hover:bg-emerald-700 active:scale-95 !text-white transition cursor-pointer flex items-center gap-1.5 shadow-2xs" style="color: #ffffff !important;" title="{{ __('Accept all pending worker attendance records on this date at once') }}">
+                                    <svg class="w-3.5 h-3.5 !text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                                    <span class="!text-white font-bold" style="color: #ffffff !important;">✓ {{ __('Accept All (:count)', ['count' => $pendingAttendancesToday->count()]) }}</span>
+                                </button>
+                            </form>
+                        @endif
+
                         @if(isset($unpunchedWorkers) && $unpunchedWorkers->isNotEmpty())
                             <button type="button" onclick="openBulkAttendanceModal('{{ $selectedDate->toDateString() }}', {{ Js::from($unpunchedWorkers->pluck('id')->values()) }})" class="text-xs font-bold px-2.5 py-1 rounded-md bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 hover:bg-blue-100 transition cursor-pointer flex items-center gap-1 shadow-2xs">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"/></svg>
@@ -484,7 +507,23 @@
                                 <th class="py-2.5 px-3">{{ __('Shift Type') }}</th>
                                 <th class="py-2.5 px-3">{{ __('Logged By (Technician)') }}</th>
                                 <th class="py-2.5 px-3 text-center">{{ __('Status') }}</th>
-                                <th class="py-2.5 px-3 text-right">{{ __('Actions') }}</th>
+                                <th class="py-2.5 px-3 text-right">
+                                    <div class="flex items-center justify-end gap-1.5">
+                                        <span>{{ __('Actions') }}</span>
+                                        @if(isset($pendingAttendancesToday) && $pendingAttendancesToday->isNotEmpty() && auth()->user()->isOffice())
+                                            <form method="POST" action="{{ route('attendance.workers.bulk-accept') }}" onsubmit="return confirm('{{ __('Accept and approve all :count pending worker attendance records for :date?', ['count' => $pendingAttendancesToday->count(), 'date' => $selectedDate->format('d M Y')]) }}')" class="inline">
+                                                @csrf
+                                                <input type="hidden" name="date" value="{{ $selectedDate->toDateString() }}">
+                                                @foreach($pendingAttendancesToday as $pAtt)
+                                                    <input type="hidden" name="ids[]" value="{{ $pAtt->id }}">
+                                                @endforeach
+                                                <button type="submit" class="px-2 py-0.5 rounded bg-emerald-600 hover:bg-emerald-700 !text-white font-bold text-[10px] inline-flex items-center gap-1 shadow-2xs transition cursor-pointer" style="color: #ffffff !important;" title="{{ __('Accept all pending worker attendance records') }}">
+                                                    ✓ {{ __('Accept All') }}
+                                                </button>
+                                            </form>
+                                        @endif
+                                    </div>
+                                </th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
@@ -613,14 +652,24 @@
                                             </form>
                                         @endif
 
-                                        @if($isPresent && $att && !$att->is_paid && auth()->user()->isAdmin())
-                                            <form method="POST" action="{{ route('workers.attendance.destroy', $att) }}" class="inline" data-confirm="Remove attendance record for {{ $w?->name ?? 'worker' }} on this date?">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="danger-link text-xs p-0 bg-transparent border-0 cursor-pointer">
-                                                    {{ __('Remove') }}
+                                        @if($isPresent && $att)
+                                            <div class="flex items-center gap-2">
+                                                <button type="button" 
+                                                        onclick="openAttendanceModal('{{ $selectedDate->toDateString() }}', {{ $w->id }})" 
+                                                        class="text-xs font-semibold text-amber-600 dark:text-amber-400 hover:underline cursor-pointer"
+                                                        title="{{ __('Update shift/site') }}">
+                                                    {{ __('Edit') }}
                                                 </button>
-                                            </form>
+                                                @if(!$att->is_paid && auth()->user()->isAdmin())
+                                                    <form method="POST" action="{{ route('workers.attendance.destroy', $att) }}" class="inline" data-confirm="Remove attendance record for {{ $w?->name ?? 'worker' }} on this date?">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="danger-link text-xs p-0 bg-transparent border-0 cursor-pointer">
+                                                            {{ __('Remove') }}
+                                                        </button>
+                                                    </form>
+                                                @endif
+                                            </div>
                                         @elseif(!$isPresent && $w)
                                             <button type="button" 
                                                     onclick="openAttendanceModal('{{ $selectedDate->toDateString() }}', {{ $w->id }})" 

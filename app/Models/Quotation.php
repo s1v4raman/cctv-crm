@@ -28,6 +28,7 @@ class Quotation extends Model
         'rejection_reason',
         'notes',
         'pdf_format',
+        'pricing_mode',
     ];
 
     public const FORMATS = [
@@ -36,9 +37,24 @@ class Quotation extends Model
         '3' => 'Classic Formal',
     ];
 
+    public const PRICING_MODES = [
+        'itemized'   => 'With Product Cost & Total',
+        'total_only' => 'Total Cost Only (Lump Sum)',
+    ];
+
     public function getPdfFormatNameAttribute(): string
     {
         return self::FORMATS[$this->pdf_format ?? '1'] ?? 'Executive Modern';
+    }
+
+    public function getPricingModeNameAttribute(): string
+    {
+        return self::PRICING_MODES[$this->pricing_mode ?? 'itemized'] ?? 'With Product Cost & Total';
+    }
+
+    public function isTotalCostOnly(): bool
+    {
+        return ($this->pricing_mode ?? 'itemized') === 'total_only';
     }
 
     protected function casts(): array
@@ -256,7 +272,9 @@ class Quotation extends Model
         };
 
         $itemsSummary = "";
-        if ($this->items->isNotEmpty()) {
+        if ($this->isTotalCostOnly()) {
+            $itemsSummary = "• Complete Turnkey CCTV Surveillance & Security Infrastructure Solution\n  (Complete Supply, Cabling, Hardware Installation, Integration & Commissioning)\n";
+        } elseif ($this->items->isNotEmpty()) {
             foreach ($this->items as $item) {
                 $productName = $item->item_name ?: ($item->product ? $item->product->name : ($item->description ?: 'CCTV Equipment'));
                 $qty = number_format((float)$item->quantity, 0);

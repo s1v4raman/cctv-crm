@@ -17,6 +17,8 @@ class ExpenseClaim extends Model
         'claim_no',
         'user_id',
         'installation_job_id',
+        'site_id',
+        'project_id',
         'service_ticket_id',
         'expense_category',
         'expense_date',
@@ -31,6 +33,7 @@ class ExpenseClaim extends Model
         'actioned_by',
         'actioned_at',
         'rejection_reason',
+        'admin_notes',
         'payment_method',
         'payment_reference',
         'paid_at',
@@ -56,6 +59,31 @@ class ExpenseClaim extends Model
     public function installationJob(): BelongsTo
     {
         return $this->belongsTo(InstallationJob::class, 'installation_job_id');
+    }
+
+    public function site(): BelongsTo
+    {
+        return $this->belongsTo(Site::class, 'site_id');
+    }
+
+    public function project(): BelongsTo
+    {
+        return $this->belongsTo(Project::class, 'project_id');
+    }
+
+    public function getSiteDisplayNameAttribute(): string
+    {
+        if ($this->site) {
+            return $this->site->name . ($this->site->address ? ' — ' . $this->site->address : '');
+        }
+        if ($this->project) {
+            return $this->project->title . ($this->project->site_address ? ' — ' . $this->project->site_address : '');
+        }
+        if ($this->installationJob) {
+            $lead = $this->installationJob->quotation?->lead;
+            return ($this->installationJob->job_no ?? 'Job') . ($lead ? ' (' . $lead->customer_name . ')' : '');
+        }
+        return $this->travel_to ?: 'General Site Operations';
     }
 
     public function serviceTicket(): BelongsTo

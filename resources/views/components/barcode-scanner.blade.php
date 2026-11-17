@@ -9,11 +9,11 @@
 @endphp
 
 @php
-    $lanIp = gethostbyname(gethostname());
-    if ($lanIp === '127.0.0.1' || empty($lanIp)) {
-        $lanIp = '192.168.1.34'; // Detected active WiFi IP
-    }
+    $lanIp = \App\Http\Controllers\MobileScannerSyncController::detectLanIp();
 @endphp
+
+{{-- Local Offline Barcode & QR Decoding Engine (ZXing MultiFormat) --}}
+<script src="{{ asset('vendor/zxing/zxing.min.js') }}"></script>
 
 <div id="{{ $modalId }}"
      style="display:none;"
@@ -36,43 +36,43 @@
             <x-close-button onclick="closeBarcodeScanner('{{ $modalId }}')" :label="__('Close')" />
         </div>
 
-        {{-- Mode Selector Tabs: Laptop Webcam vs Mobile Cam Wireless Sync --}}
-        <div class="bg-slate-100 dark:bg-slate-800/60 p-1.5 rounded-xl border border-slate-200 dark:border-slate-700/60 flex items-center gap-1.5">
+        {{-- Mode Selector Tabs: Barcode Scanner vs Mobile Scanner --}}
+        <div class="hidden sm:flex bg-slate-100 dark:bg-slate-800/60 p-1.5 rounded-xl border border-slate-200 dark:border-slate-700/60 items-center gap-1.5">
             <button type="button" id="{{ $modalId }}-tab-laptop" onclick="switchScannerMode('{{ $modalId }}', 'laptop')"
-                    class="flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 cursor-pointer bg-blue-600 text-white shadow-xs">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0H3"/></svg>
-                <span>{{ __('Laptop Cam') }}</span>
+                    class="flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center cursor-pointer shadow-xs"
+                    style="background-color: var(--crm-accent, #2563eb); color: #ffffff;">
+                <span id="{{ $modalId }}-tab-laptop-text" class="font-bold text-white">{{ __('Barcode Scanner') }}</span>
             </button>
             <button type="button" id="{{ $modalId }}-tab-mobile" onclick="switchScannerMode('{{ $modalId }}', 'mobile')"
-                    class="flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 cursor-pointer text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-700/60">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"/></svg>
-                <span>{{ __('Mobile Cam (Sync)') }}</span>
+                    class="flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center cursor-pointer text-slate-700 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-slate-700/60"
+                    style="color: #334155;">
+                <span id="{{ $modalId }}-tab-mobile-text" class="font-bold text-slate-700 dark:text-slate-300" style="color: #334155;">{{ __('Mobile Scanner') }}</span>
             </button>
         </div>
 
         {{-- PANE 1: Laptop Cam Local Video Stream --}}
         <div id="{{ $modalId }}-laptop-pane" class="space-y-4">
             {{-- Camera Viewport Container --}}
-            <div class="relative bg-black rounded-2xl overflow-hidden w-full h-[260px] sm:h-[300px] flex items-center justify-center border border-slate-200 dark:border-slate-800 shadow-inner">
+            <div class="relative bg-slate-950 rounded-2xl overflow-hidden w-full h-[260px] sm:h-[300px] flex items-center justify-center border border-slate-800 shadow-inner">
                 <video id="{{ $modalId }}-video" autoplay playsinline muted class="w-full h-full object-cover"></video>
                 <canvas id="{{ $modalId }}-canvas" style="display:none;"></canvas>
 
                 {{-- Scanning Reticle & Aim Animation --}}
-                <div class="absolute w-[240px] h-[160px] border-2 border-dashed border-blue-400/80 rounded-2xl pointer-events-none flex flex-col justify-between p-2 box-border shadow-[0_0_0_4000px_rgba(0,0,0,0.55)]">
+                <div class="absolute w-[240px] h-[150px] border-2 border-dashed border-white/40 rounded-2xl pointer-events-none flex flex-col justify-between p-2 box-border shadow-[0_0_0_4000px_rgba(0,0,0,0.6)]">
                     <div class="flex justify-between">
-                        <div class="w-4 h-4 border-t-3 border-l-3 border-blue-500 rounded-tl-lg"></div>
-                        <div class="w-4 h-4 border-t-3 border-r-3 border-blue-500 rounded-tr-lg"></div>
+                        <div class="w-4 h-4 border-t-3 border-l-3 border-[var(--crm-accent,#2563eb)] rounded-tl-lg"></div>
+                        <div class="w-4 h-4 border-t-3 border-r-3 border-[var(--crm-accent,#2563eb)] rounded-tr-lg"></div>
                     </div>
-                    <div class="laser-scanner-line w-full h-0.5 bg-red-500 shadow-[0_0_12px_#ef4444] animate-pulse"></div>
+                    <div class="laser-scanner-line w-full h-0.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-[0_0_12px_#22d3ee] animate-pulse"></div>
                     <div class="flex justify-between">
-                        <div class="w-4 h-4 border-b-3 border-l-3 border-blue-500 rounded-bl-lg"></div>
-                        <div class="w-4 h-4 border-b-3 border-r-3 border-blue-500 rounded-br-lg"></div>
+                        <div class="w-4 h-4 border-b-3 border-l-3 border-[var(--crm-accent,#2563eb)] rounded-bl-lg"></div>
+                        <div class="w-4 h-4 border-b-3 border-r-3 border-[var(--crm-accent,#2563eb)] rounded-br-lg"></div>
                     </div>
                 </div>
 
                 {{-- Camera Status Overlay Pill --}}
                 <div id="{{ $modalId }}-status"
-                     class="absolute bottom-3 inset-x-3 text-center bg-slate-900/85 backdrop-blur text-white text-xs font-semibold py-1.5 px-3 rounded-full border border-white/10 shadow-sm mx-auto max-w-xs">
+                     class="absolute bottom-3 inset-x-4 text-center bg-slate-900/90 backdrop-blur-md text-slate-100 text-xs font-medium py-2 px-3.5 rounded-xl border border-slate-700/80 shadow-lg mx-auto max-w-sm">
                     {{ __('Initializing camera...') }}
                 </div>
             </div>
@@ -81,46 +81,48 @@
             <div class="flex items-center justify-between flex-wrap gap-2 pt-1">
                 <div class="flex items-center gap-2">
                     <button type="button" id="{{ $modalId }}-torch-btn" onclick="toggleTorch('{{ $modalId }}')"
-                            class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-slate-700 transition cursor-pointer">
-                        <svg class="w-3.5 h-3.5 text-amber-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.478a12.06 12.06 0 01-4.5 0m3.75 2.383a14.406 14.406 0 01-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 10-7.516 0c.85.493 1.509 1.333 1.509 2.316V18"/></svg>
+                            class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-slate-700 transition cursor-pointer">
                         <span>{{ __('Torch') }}</span>
                     </button>
                     <button type="button" id="{{ $modalId }}-flip-btn" onclick="switchCamera('{{ $modalId }}')"
-                            class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-slate-700 transition cursor-pointer">
-                        <svg class="w-3.5 h-3.5 text-blue-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
+                            class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-slate-700 transition cursor-pointer">
                         <span>{{ __('Flip Cam') }}</span>
                     </button>
                 </div>
 
                 <div class="flex items-center gap-2">
                     <button type="button" onclick="snapBarcodeCurrentFrame('{{ $modalId }}')"
-                            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-slate-700 transition cursor-pointer">
-                        <svg class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z"/></svg>
+                            class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-slate-700 transition cursor-pointer">
                         <span>{{ __('Snap Frame') }}</span>
                     </button>
-                    <label class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 !text-white text-xs font-bold shadow-sm transition cursor-pointer"
-                           style="color: #ffffff !important;">
-                        <svg class="w-3.5 h-3.5 !text-white" fill="none" stroke="#ffffff" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg>
-                        <span class="!text-white font-bold" style="color: #ffffff !important;">{{ __('Upload Image') }}</span>
+                    <label class="px-4 py-2 rounded-xl text-white text-xs font-semibold shadow-xs transition cursor-pointer inline-flex items-center justify-center"
+                           style="background-color: var(--crm-accent, #2563eb); color: #ffffff !important;">
+                        <span style="color: #ffffff !important;">{{ __('Upload Image') }}</span>
                         <input type="file" accept="image/*" onchange="handleBarcodeImageUpload(event, '{{ $modalId }}')" style="display:none;">
                     </label>
                 </div>
             </div>
 
-            {{-- Direct Manual Input Row inside Modal --}}
-            <div class="pt-3 border-t border-slate-200 dark:border-slate-800 space-y-2">
-                <label class="text-xs font-bold text-slate-700 dark:text-slate-300 block">
-                    {{ __('Or Enter Serial Number or MAC Address Manually') }}
-                </label>
+            {{-- Direct Hardware Barcode Scanner & Manual Input Row inside Modal --}}
+            <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/70 space-y-2">
+                <div class="flex items-center justify-between">
+                    <label for="{{ $modalId }}-manual-input" class="text-xs font-bold text-slate-800 dark:text-slate-200 block">
+                        {{ __('Hardware Barcode Scanner Gun / Serial or MAC Input') }}
+                    </label>
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        {{ __('Scanner Gun Ready') }}
+                    </span>
+                </div>
                 <div class="flex items-center gap-2">
                     <input type="text" id="{{ $modalId }}-manual-input"
-                           placeholder="{{ __('Type or paste barcode (e.g. SN-98213 or 54:C8:01:A2:FE:9B)...') }}"
+                           placeholder="{{ __('Scan barcode with USB scanner gun or type barcode / MAC...') }}"
                            onkeydown="if(event.key === 'Enter') { event.preventDefault(); const val = this.value.trim(); if(val) { handleBarcodeDetected('{{ $modalId }}', val); closeBarcodeScanner('{{ $modalId }}'); } }"
-                           class="flex-1 text-xs sm:text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/70 text-slate-900 dark:text-white px-3.5 py-2.5 focus:ring-2 focus:ring-blue-500 font-mono">
+                           class="flex-1 text-xs sm:text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white px-3.5 py-2.5 focus:ring-2 focus:ring-[var(--crm-accent,#2563eb)] font-mono">
                     <button type="button"
                             onclick="const val = document.getElementById('{{ $modalId }}-manual-input').value.trim(); if(val) { handleBarcodeDetected('{{ $modalId }}', val); closeBarcodeScanner('{{ $modalId }}'); }"
-                            class="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 !text-white text-xs sm:text-sm font-bold shadow-sm transition cursor-pointer shrink-0"
-                            style="color: #ffffff !important;">
+                            class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold shadow-xs transition cursor-pointer shrink-0"
+                            style="background-color: var(--crm-accent, #2563eb); color: #ffffff !important;">
                         <span style="color: #ffffff !important;">{{ __('Apply') }}</span>
                     </button>
                 </div>
@@ -130,6 +132,15 @@
         {{-- PANE 2: Mobile Phone Cam Wireless Sync --}}
         <div id="{{ $modalId }}-mobile-pane" style="display:none;" class="space-y-4 text-center py-2">
             <div class="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 space-y-3">
+                
+                {{-- Fast alternative button on laptop --}}
+                <div class="pb-1 border-b border-slate-200 dark:border-slate-700">
+                    <button type="button" onclick="switchScannerMode('{{ $modalId }}', 'laptop')"
+                            class="w-full py-2 px-3 rounded-xl bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/50 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-xs font-bold border border-blue-200 dark:border-blue-800 transition flex items-center justify-center gap-1.5 cursor-pointer">
+                        <span>⚡ Switch to Barcode Scanner on Laptop (Instant &middot; No Phone Needed)</span>
+                    </button>
+                </div>
+
                 <div class="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-900/60 text-blue-600 dark:text-blue-400 flex items-center justify-center mx-auto shadow-sm">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"/></svg>
                 </div>
@@ -151,10 +162,35 @@
                     </div>
                 </div>
 
+                {{-- Host / IP Configuration --}}
+                <div class="mt-2 p-3 bg-slate-100 dark:bg-slate-800/80 rounded-xl text-left space-y-2 border border-slate-200 dark:border-slate-700/80">
+                    <div class="flex items-center justify-between">
+                        <label for="{{ $modalId }}-custom-ip" class="text-[11px] font-bold text-slate-700 dark:text-slate-300">
+                            {{ __('Server Wi-Fi Address / Host:') }}
+                        </label>
+                        <span class="text-[10px] text-slate-500">{{ __('Phone must be on same Wi-Fi') }}</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <input type="text" id="{{ $modalId }}-custom-ip" value="{{ $lanIp }}:{{ request()->getPort() ?: 8000 }}"
+                               placeholder="e.g. 192.168.29.168:8000"
+                               class="flex-1 text-xs rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-2.5 py-1.5 font-mono text-slate-900 dark:text-slate-100 focus:ring-1 focus:ring-blue-500">
+                        <button type="button" onclick="updateScannerQrUrl('{{ $modalId }}')"
+                                class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold cursor-pointer shrink-0">
+                            {{ __('Update QR') }}
+                        </button>
+                    </div>
+                    <p class="text-[11px] text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/50 p-2 rounded-lg border border-amber-200 dark:border-amber-800/60 leading-relaxed">
+                        <strong>⚠️ Why "This site can't be reached" occurs:</strong><br>
+                        1. Phone and laptop must be connected to the exact same Wi-Fi router.<br>
+                        2. If running locally with artisan, ensure the server listens on all network interfaces:<br>
+                        <code class="font-mono text-xs font-bold text-slate-800 dark:text-slate-200 block mt-1 bg-amber-100/70 dark:bg-amber-900/50 p-1 rounded">php artisan serve --host=0.0.0.0 --port=8000</code>
+                    </p>
+                </div>
+
                 <div class="flex items-center justify-center gap-2 pt-1 flex-wrap">
                     <a id="{{ $modalId }}-direct-mobile-link" href="#" target="_blank"
                        class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1">
-                        <span>{{ __('Open Mobile Scanner Directly') }} &rarr;</span>
+                        <span>{{ __('Open Mobile Scanner Directly in New Tab') }} &rarr;</span>
                     </a>
                 </div>
             </div>
@@ -196,24 +232,24 @@ window.barcodeScannerText = {{ Js::from([
     'mobileCamera' => __('Mobile Rear Camera'),
     'laptopCamera' => __('Laptop Integrated Camera'),
     'active' => __('Active: :camera... Hold steady over barcode.'),
-    'blockedOrUnavailable' => __('⚠️ Camera blocked or unavailable. Click "📁 Upload Image" or check permissions.'),
-    'blocked' => __('🚫 Camera blocked! Click 🔒 in your address bar and set Camera to "Allow", then click Retry.'),
-    'inUseShort' => __('⚠️ Camera in use by another app (Zoom/Teams). Please close it and click Retry.'),
-    'noCamera' => __('⚠️ No camera hardware found on this computer. Use "📁 Upload Image".'),
-    'permissionBlocked' => __("🚫 Camera Permission is Blocked in your browser!\n\nTo allow it:\n1. Look at the address bar at the top (where http://127.0.0.1:8000 is written).\n2. Click the Lock / Tune icon (🔒 or 🎚️) on the left of the URL.\n3. Change \"Camera\" permission from \"Block\" to \"Allow\".\n4. Re-open this scanner or reload the page.\n\nYou can also click \"📁 Upload Image\" below to choose a photo directly from your computer."),
-    'inUse' => __("⚠️ Camera is currently in use by another application (Zoom, Teams, Skype, etc.).\n\nPlease close the other app and click \"🔄 Flip Cam\" to retry, or use \"📁 Upload Image\"."),
-    'notConnected' => __("⚠️ Camera stream is not connected.\n\nPlease click \"📁 Upload Image\" to scan from a photo file, or ensure camera permissions are allowed in your browser."),
-    'waitingFrame' => __('⏳ Waiting for camera frame...'),
-    'snapping' => __('⚡ Snapping frame and scanning barcode...'),
-    'manualSnap' => __('Could not auto-read barcode from current snap. Enter S/N manually or try again:'),
-    'holdCloser' => __('Hold barcode closer and center in red line, then tap Snap again.'),
+    'blockedOrUnavailable' => __('Camera unavailable. Click "Upload Image" or use Barcode Scanner.'),
+    'blocked' => __('Camera blocked. Click tune/lock icon in address bar and allow camera access.'),
+    'inUseShort' => __('Camera in use by another app. Please close other app and retry.'),
+    'noCamera' => __('No camera found on computer. Use "Upload Image" or Barcode Scanner.'),
+    'permissionBlocked' => __("Camera Permission is Blocked in your browser.\n\nTo allow it:\n1. Click the lock/settings icon on the left of your URL address bar.\n2. Change Camera permission to Allow.\n3. Reload the page.\n\nYou can also click Upload Image to scan a photo file."),
+    'inUse' => __("Camera is currently in use by another application.\n\nPlease close the other app and retry, or use Upload Image."),
+    'notConnected' => __("Camera stream is not connected.\n\nPlease click Upload Image to scan from a photo file, or allow camera permissions."),
+    'waitingFrame' => __('Waiting for camera frame...'),
+    'snapping' => __('Snapping frame and scanning barcode...'),
+    'manualSnap' => __('Could not read barcode from snap. Enter S/N manually or retry:'),
+    'holdCloser' => __('Hold barcode closer and center in reticle, then tap Snap again.'),
     'processingUpload' => __('Processing uploaded image...'),
-    'manualPhoto' => __('Could not auto-read barcode from photo. Enter S/N manually:'),
-    'unreadableImage' => __('Could not read barcode from image. Please try again or use Mobile Scan.'),
-    'noTorch' => __('Torch / Flashlight is not supported on this webcam/device.'),
+    'manualPhoto' => __('Could not read barcode from photo. Enter S/N manually:'),
+    'unreadableImage' => __('Could not read barcode from image. Please try again or use Barcode Scanner.'),
+    'noTorch' => __('Torch is not supported on this webcam/device.'),
     'torchUnavailable' => __('Torch control unavailable on this camera stream.'),
-    'switching' => __('🔄 Switching camera...'),
-    'toggling' => __('🔄 Toggling camera mode... (1 physical camera detected)'),
+    'switching' => __('Switching camera...'),
+    'toggling' => __('Toggling camera mode...'),
 ]) }};
 window.barcodeScannerState = window.barcodeScannerState || {};
 
@@ -436,19 +472,33 @@ function closeBarcodeScanner(modalId) {
 function switchScannerMode(modalId, mode) {
     const state = window.barcodeScannerState[modalId];
     if (!state) return;
-    state.activeTab = mode;
+    state.activeTab = (mode === 'hardware') ? 'laptop' : mode;
 
     const laptopTab = document.getElementById(`${modalId}-tab-laptop`);
     const mobileTab = document.getElementById(`${modalId}-tab-mobile`);
     const laptopPane = document.getElementById(`${modalId}-laptop-pane`);
     const mobilePane = document.getElementById(`${modalId}-mobile-pane`);
 
-    if (mode === 'laptop') {
+    if (mode === 'laptop' || mode === 'hardware') {
         if (laptopTab) {
-            laptopTab.className = "flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 cursor-pointer bg-blue-600 text-white shadow-xs";
+            laptopTab.style.backgroundColor = 'var(--crm-accent, #2563eb)';
+            laptopTab.style.color = '#ffffff';
+            laptopTab.className = "flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center cursor-pointer shadow-xs";
+            const ltText = document.getElementById(`${modalId}-tab-laptop-text`);
+            if (ltText) {
+                ltText.style.color = '#ffffff';
+                ltText.className = "font-bold text-white";
+            }
         }
         if (mobileTab) {
-            mobileTab.className = "flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 cursor-pointer text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-700/60";
+            mobileTab.style.backgroundColor = 'transparent';
+            mobileTab.style.color = '#334155';
+            mobileTab.className = "flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center cursor-pointer text-slate-700 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-slate-700/60";
+            const mbText = document.getElementById(`${modalId}-tab-mobile-text`);
+            if (mbText) {
+                mbText.style.color = '#334155';
+                mbText.className = "font-bold text-slate-700 dark:text-slate-300";
+            }
         }
         if (laptopPane) laptopPane.style.display = 'block';
         if (mobilePane) mobilePane.style.display = 'none';
@@ -458,13 +508,36 @@ function switchScannerMode(modalId, mode) {
             state.pollInterval = null;
         }
         startBarcodeCamera(modalId);
+
+        // Auto-focus hardware barcode scanner gun input
+        setTimeout(() => {
+            const manualInp = document.getElementById(`${modalId}-manual-input`);
+            if (manualInp) {
+                manualInp.focus();
+                manualInp.select();
+            }
+        }, 150);
     } else {
         // Mobile Sync Tab
         if (laptopTab) {
-            laptopTab.className = "flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 cursor-pointer text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-700/60";
+            laptopTab.style.backgroundColor = 'transparent';
+            laptopTab.style.color = '#334155';
+            laptopTab.className = "flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center cursor-pointer text-slate-700 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-slate-700/60";
+            const ltText = document.getElementById(`${modalId}-tab-laptop-text`);
+            if (ltText) {
+                ltText.style.color = '#334155';
+                ltText.className = "font-bold text-slate-700 dark:text-slate-300";
+            }
         }
         if (mobileTab) {
-            mobileTab.className = "flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 cursor-pointer bg-blue-600 text-white shadow-xs";
+            mobileTab.style.backgroundColor = 'var(--crm-accent, #2563eb)';
+            mobileTab.style.color = '#ffffff';
+            mobileTab.className = "flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center cursor-pointer shadow-xs";
+            const mbText = document.getElementById(`${modalId}-tab-mobile-text`);
+            if (mbText) {
+                mbText.style.color = '#ffffff';
+                mbText.className = "font-bold text-white";
+            }
         }
         if (laptopPane) laptopPane.style.display = 'none';
         if (mobilePane) mobilePane.style.display = 'block';
@@ -484,12 +557,19 @@ function switchScannerMode(modalId, mode) {
 
         // Generate session token and display QR code
         const modal = document.getElementById(modalId);
-        const lanIp = (modal && modal.dataset.lanIp) ? modal.dataset.lanIp : window.location.hostname;
-        const port = window.location.port ? (':' + window.location.port) : '';
+        const customIpEl = document.getElementById(`${modalId}-custom-ip`);
+        let hostAndPort = customIpEl && customIpEl.value.trim() ? customIpEl.value.trim() : '';
+        if (!hostAndPort) {
+            const lanIp = (modal && modal.dataset.lanIp) ? modal.dataset.lanIp : window.location.hostname;
+            const port = window.location.port ? (':' + window.location.port) : '';
+            hostAndPort = lanIp + port;
+        }
+        hostAndPort = hostAndPort.replace(/^https?:\/\//i, '');
+
         const sessionToken = 'sc_' + Math.random().toString(36).substring(2, 10);
         state.sessionToken = sessionToken;
 
-        const mobileUrl = `${window.location.protocol}//${lanIp}${port}/mobile-scanner/${sessionToken}?target=${encodeURIComponent(state.targetInputId || 'serial_number')}`;
+        const mobileUrl = `${window.location.protocol}//${hostAndPort}/mobile-scanner/${sessionToken}?target=${encodeURIComponent(state.targetInputId || 'serial_number')}`;
         const qrImg = document.getElementById(`${modalId}-qr-img`);
         if (qrImg) {
             qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(mobileUrl)}`;
@@ -506,16 +586,48 @@ function switchScannerMode(modalId, mode) {
             try {
                 const res = await fetch(`/api/mobile-scanner/poll/${sessionToken}`);
                 const data = await res.json();
-                if (data && data.status === 'ok' && data.code) {
+                if (data && (data.status === 'scanned' || data.code)) {
                     clearInterval(state.pollInterval);
                     state.pollInterval = null;
                     if (mobileStatus) {
                         mobileStatus.innerHTML = `<span class="text-emerald-600 dark:text-emerald-400 font-bold">✓ Scanned from phone!</span>`;
                     }
                     handleBarcodeDetected(modalId, data.code);
+                } else if (data && data.status === 'connected') {
+                    if (mobileStatus) {
+                        mobileStatus.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span><span class="text-emerald-600 dark:text-emerald-400 font-semibold">Phone linked! Point camera at barcode...</span>`;
+                    }
                 }
             } catch (err) {}
-        }, 1500);
+        }, 1200);
+    }
+}
+
+function updateScannerQrUrl(modalId) {
+    const state = window.barcodeScannerState[modalId];
+    if (!state || !state.sessionToken) return;
+    const modal = document.getElementById(modalId);
+    const customIpEl = document.getElementById(`${modalId}-custom-ip`);
+    let hostAndPort = customIpEl && customIpEl.value.trim() ? customIpEl.value.trim() : '';
+    if (!hostAndPort) {
+        const lanIp = (modal && modal.dataset.lanIp) ? modal.dataset.lanIp : window.location.hostname;
+        const port = window.location.port ? (':' + window.location.port) : '';
+        hostAndPort = lanIp + port;
+    }
+    hostAndPort = hostAndPort.replace(/^https?:\/\//i, '');
+
+    const mobileUrl = `${window.location.protocol}//${hostAndPort}/mobile-scanner/${state.sessionToken}?target=${encodeURIComponent(state.targetInputId || 'serial_number')}`;
+    const qrImg = document.getElementById(`${modalId}-qr-img`);
+    if (qrImg) {
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(mobileUrl)}`;
+    }
+    const directLink = document.getElementById(`${modalId}-direct-mobile-link`);
+    if (directLink) {
+        directLink.href = mobileUrl;
+    }
+    const mobileStatus = document.getElementById(`${modalId}-mobile-status`);
+    if (mobileStatus) {
+        mobileStatus.innerHTML = `<span class="text-blue-600 dark:text-blue-400 font-semibold">QR updated! Scan with phone...</span>`;
     }
 }
 
@@ -664,22 +776,67 @@ async function startBarcodeCamera(modalId, preferDeviceId = null) {
     }
 }
 
+let zxingMultiReader = null;
+let isDecodingFrame = false;
+let lastDecodeTimestamp = 0;
+
+function getZxingReader() {
+    if (!zxingMultiReader && window.ZXing && window.ZXing.BrowserMultiFormatReader) {
+        try {
+            zxingMultiReader = new window.ZXing.BrowserMultiFormatReader();
+        } catch (e) {
+            console.warn('Could not instantiate ZXing reader:', e);
+        }
+    }
+    return zxingMultiReader;
+}
+
 async function scanBarcodeLoop(modalId) {
     const state = window.barcodeScannerState[modalId];
     const video = document.getElementById(`${modalId}-video`);
     if (!video || !state || !state.stream) return;
 
-    if ('BarcodeDetector' in window) {
+    const now = Date.now();
+    // Throttle decoding attempts to once every 120ms to keep CPU silky smooth
+    if (!isDecodingFrame && (now - lastDecodeTimestamp > 120) && video.readyState >= 2 && video.videoWidth > 0) {
+        isDecodingFrame = true;
+        lastDecodeTimestamp = now;
+
         try {
-            const detector = new BarcodeDetector({
-                formats: ['code_128', 'code_39', 'code_93', 'ean_13', 'ean_8', 'qr_code', 'upc_a', 'upc_e', 'data_matrix']
-            });
-            const barcodes = await detector.detect(video);
-            if (barcodes.length > 0 && barcodes[0].rawValue) {
-                handleBarcodeDetected(modalId, barcodes[0].rawValue);
-                return;
+            // 1. First attempt: Native BarcodeDetector (Chrome Android / macOS where available)
+            if ('BarcodeDetector' in window) {
+                try {
+                    const detector = new BarcodeDetector({
+                        formats: ['code_128', 'code_39', 'code_93', 'ean_13', 'ean_8', 'qr_code', 'upc_a', 'upc_e', 'data_matrix']
+                    });
+                    const barcodes = await detector.detect(video);
+                    if (barcodes && barcodes.length > 0 && barcodes[0].rawValue) {
+                        isDecodingFrame = false;
+                        handleBarcodeDetected(modalId, barcodes[0].rawValue);
+                        return;
+                    }
+                } catch (e) {}
             }
-        } catch (e) {}
+
+            // 2. Universal fallback: ZXing BrowserMultiFormatReader (PC, Windows, Linux, Mac laptop webcams)
+            const reader = getZxingReader();
+            if (reader) {
+                try {
+                    const result = await reader.decodeFromVideoElement(video);
+                    if (result && result.getText()) {
+                        isDecodingFrame = false;
+                        handleBarcodeDetected(modalId, result.getText());
+                        return;
+                    }
+                } catch (zxErr) {
+                    // NotFoundException is normal when no barcode is in view
+                }
+            }
+        } catch (err) {
+            console.debug('Scan frame error:', err);
+        } finally {
+            isDecodingFrame = false;
+        }
     }
 
     state.animFrame = requestAnimationFrame(() => scanBarcodeLoop(modalId));
@@ -927,6 +1084,18 @@ async function snapBarcodeCurrentFrame(modalId) {
         }
     }
 
+    // ZXing canvas frame decoding fallback
+    const snapReader = getZxingReader();
+    if (snapReader) {
+        try {
+            const result = await snapReader.decodeFromCanvas(canvas);
+            if (result && result.getText()) {
+                handleBarcodeDetected(modalId, result.getText());
+                return;
+            }
+        } catch (e) {}
+    }
+
     const manual = prompt(barcodeScannerText.manualSnap);
     if (manual) {
         handleBarcodeDetected(modalId, manual);
@@ -954,6 +1123,18 @@ async function handleBarcodeImageUpload(event, modalId) {
                 const barcodes = await detector.detect(img);
                 if (barcodes.length > 0 && barcodes[0].rawValue) {
                     handleBarcodeDetected(modalId, barcodes[0].rawValue);
+                    return;
+                }
+            } catch (e) {}
+        }
+
+        // ZXing image decoding fallback
+        const uploadReader = getZxingReader();
+        if (uploadReader) {
+            try {
+                const result = await uploadReader.decodeFromImageElement(img);
+                if (result && result.getText()) {
+                    handleBarcodeDetected(modalId, result.getText());
                     return;
                 }
             } catch (e) {}

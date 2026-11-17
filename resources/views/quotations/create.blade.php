@@ -146,11 +146,21 @@
                                 </p>
                             </div>
 
-                            <button type="button"
-                                    id="add-row"
-                                    class="btn-secondary">
-                                Add Item
-                            </button>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <button type="button"
+                                        onclick="window.openQuickAddProductModal()"
+                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 text-xs font-bold transition cursor-pointer"
+                                        title="Create and register a new item in Products & Pricing catalog">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                                    <span>+ Add Product to Catalog</span>
+                                </button>
+
+                                <button type="button"
+                                        id="add-row"
+                                        class="btn-secondary">
+                                    Add Item
+                                </button>
+                            </div>
                         </div>
 
                         <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
@@ -774,6 +784,19 @@
 
         document.querySelectorAll('.item-row').forEach((row) => {
             bindRowEvents(row);
+        });
+
+        // Listen for products created on-the-fly from Quick Add Product modal
+        window.addEventListener('product-created-in-catalog', (e) => {
+            const product = e.detail;
+            if (!product) return;
+
+            let row = activeRow;
+            if (!row || row.querySelector('.product-id')?.value) {
+                const emptyRow = Array.from(document.querySelectorAll('.item-row')).find(r => !r.querySelector('.product-id')?.value && !r.querySelector('.item-name')?.value);
+                row = emptyRow || addNewItemRow();
+            }
+            selectProduct(row, product);
         });
 
         taxPercentInput.addEventListener('input', calculateTotals);

@@ -1,6 +1,7 @@
 <x-app-layout>
     @php
         $isTechnician = auth()->user()?->isTechnician();
+        $isTechnicianRequest = $quotation->status === 'pending_approval' && ($quotation->creator?->isTechnician() || ($quotation->created_by && $quotation->created_by !== auth()->id()));
         $statusColors = [
             'draft'            => ['badge' => 'border-slate-600 bg-slate-800/80 text-slate-300', 'bar' => '#64748b', 'glow' => 'rgba(100,116,139,0.3)'],
             'pending_approval' => ['badge' => 'border-amber-500/30 bg-amber-500/10 text-amber-500', 'bar' => '#f59e0b', 'glow' => 'rgba(245,158,11,0.3)'],
@@ -75,15 +76,14 @@
                     </button>
                 @endif
 
-                @if(!$isTechnician)
-                    <a href="{{ route('quotations.vcard', $quotation) }}" class="btn-secondary text-xs inline-flex items-center gap-1.5 shadow-2xs">
-                        <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                        <span>Save Contact</span>
-                    </a>
-                @endif
+                {{-- Save Contact (vCard) for Admin & Technician --}}
+                <a href="{{ route('quotations.vcard', $quotation) }}" class="btn-secondary text-xs inline-flex items-center gap-1.5 shadow-2xs font-semibold" title="Save customer contact to your phone/WhatsApp">
+                    <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                    <span>Save Contact</span>
+                </a>
 
-                {{-- Admin & Staff Approval Action --}}
-                @if(in_array($quotation->status, ['pending_approval', 'draft']) && auth()->user()->isOffice())
+                {{-- Admin & Staff Approval Action: Only visible when a field technician submitted a quotation request awaiting approval --}}
+                @if($isTechnicianRequest && auth()->user()->isOffice())
                     <form method="POST" action="{{ route('quotations.approve', $quotation) }}" class="inline">
                         @csrf
                         <button type="submit" class="btn-primary text-xs cursor-pointer inline-flex items-center gap-1.5 !bg-emerald-600 hover:!bg-emerald-700 !text-white shadow-xs" style="background-color: #059669 !important; color: #ffffff !important;">
@@ -161,6 +161,10 @@
 
     <div class="pg-wrap py-6">
         <div class="pg-inner space-y-6">
+            @php
+                $isTechnician = auth()->user()?->isTechnician();
+                $isTechnicianRequest = $quotation->status === 'pending_approval' && ($quotation->creator?->isTechnician() || ($quotation->created_by && $quotation->created_by !== auth()->id()));
+            @endphp
 
             @if (session('status'))
                 <div class="p-3 rounded border border-emerald-300 bg-emerald-50 text-emerald-800 text-xs">
@@ -174,10 +178,10 @@
                 </div>
             @endif
 
-            {{-- Pending Approval Alert Banner --}}
-            @if($quotation->status === 'pending_approval')
+            {{-- Pending Approval Alert Banner: ONLY displayed when a field technician submitted a quotation request awaiting Admin review & approval --}}
+            @if($isTechnicianRequest)
                 @if(!$isTechnician)
-                    <div class="p-4 sm:p-5 rounded-2xl border border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/40 text-amber-900 dark:text-amber-200 text-xs shadow-xs space-y-4">
+                    <div class="p-4 sm:p-5 rounded-2xl border border-amber-300 dark:border-amber-800 bg-amber-50/90 dark:bg-amber-950/40 text-amber-900 dark:text-amber-200 text-xs shadow-xs space-y-4">
                         <div class="flex items-start gap-3">
                             <div class="w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-900/60 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/></svg>
@@ -185,7 +189,7 @@
                             <div class="flex-1">
                                 <div class="flex items-center gap-2 flex-wrap">
                                     <strong class="font-bold text-sm text-slate-900 dark:text-white">{{ __('Field Quotation Awaiting Admin Review & Approval') }}</strong>
-                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-200/60 dark:bg-amber-900/80 text-amber-900 dark:text-amber-200">
+                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-200/80 dark:bg-amber-900/80 text-amber-900 dark:text-amber-200">
                                         {{ __('Proposed Layout: Format :fmt (:name)', ['fmt' => $quotation->pdf_format ?? '1', 'name' => $quotation->pdf_format_name]) }}
                                     </span>
                                 </div>
@@ -196,22 +200,50 @@
                         </div>
 
                         @if(auth()->user()->isOffice())
-                            <form method="POST" action="{{ route('quotations.approve', $quotation) }}" class="p-3.5 rounded-xl bg-white dark:bg-slate-900/90 border border-amber-200 dark:border-amber-800/80 flex flex-col md:flex-row md:items-center justify-between gap-3">
+                            <form method="POST" action="{{ route('quotations.approve', $quotation) }}" class="p-3.5 sm:p-4 rounded-xl bg-white dark:bg-slate-900/90 border border-amber-200 dark:border-amber-800/80 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                                 @csrf
-                                <div class="flex items-center gap-3 flex-wrap">
-                                    <span class="font-bold text-slate-800 dark:text-slate-200">{{ __('Confirm PDF Format:') }}</span>
-                                    <label class="inline-flex items-center gap-1.5 cursor-pointer text-xs font-semibold text-slate-800 dark:text-slate-200">
-                                        <input type="radio" name="pdf_format" value="1" {{ ($quotation->pdf_format ?? '1') == '1' ? 'checked' : '' }} class="accent-emerald-600">
-                                        <span>F1: Executive Modern</span>
-                                    </label>
-                                    <label class="inline-flex items-center gap-1.5 cursor-pointer text-xs font-semibold text-slate-800 dark:text-slate-200">
-                                        <input type="radio" name="pdf_format" value="2" {{ ($quotation->pdf_format ?? '1') == '2' ? 'checked' : '' }} class="accent-emerald-600">
-                                        <span>F2: Technical Detailed</span>
-                                    </label>
-                                    <label class="inline-flex items-center gap-1.5 cursor-pointer text-xs font-semibold text-slate-800 dark:text-slate-200">
-                                        <input type="radio" name="pdf_format" value="3" {{ ($quotation->pdf_format ?? '1') == '3' ? 'checked' : '' }} class="accent-emerald-600">
-                                        <span>F3: Classic Formal</span>
-                                    </label>
+                                <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 flex-wrap">
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <span class="font-bold text-xs text-slate-700 dark:text-slate-300 uppercase tracking-wider">{{ __('Confirm PDF Format:') }}</span>
+                                        <div class="inline-flex items-center p-1 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 gap-1">
+                                            @foreach(\App\Models\Quotation::FORMATS as $key => $title)
+                                                @php $isFmtSelected = ($quotation->pdf_format ?? '1') == $key; @endphp
+                                                <label class="px-2.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-all flex items-center gap-1.5 {{ $isFmtSelected ? 'bg-white dark:bg-slate-900 text-emerald-700 dark:text-emerald-400 shadow-xs border border-emerald-500/40' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white' }}">
+                                                    <div class="w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 {{ $isFmtSelected ? 'border-emerald-600 bg-emerald-600' : 'border-slate-400 dark:border-slate-500 bg-transparent' }}">
+                                                        @if($isFmtSelected)
+                                                            <div class="w-1.5 h-1.5 rounded-full bg-white"></div>
+                                                        @endif
+                                                    </div>
+                                                    <input type="radio" name="pdf_format" value="{{ $key }}" {{ $isFmtSelected ? 'checked' : '' }} class="sr-only">
+                                                    <span>F{{ $key }}: {{ $title }}</span>
+                                                </label>
+                                            @endforeach
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <span class="font-bold text-xs text-slate-700 dark:text-slate-300 uppercase tracking-wider">{{ __('Pricing Mode:') }}</span>
+                                        <div class="inline-flex items-center p-1 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 gap-1">
+                                            <label class="px-2.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-all flex items-center gap-1.5 {{ !$quotation->isTotalCostOnly() ? 'bg-white dark:bg-slate-900 text-blue-700 dark:text-blue-400 shadow-xs border border-blue-500/40' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white' }}">
+                                                <div class="w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 {{ !$quotation->isTotalCostOnly() ? 'border-blue-600 bg-blue-600' : 'border-slate-400 dark:border-slate-500 bg-transparent' }}">
+                                                    @if(!$quotation->isTotalCostOnly())
+                                                        <div class="w-1.5 h-1.5 rounded-full bg-white"></div>
+                                                    @endif
+                                                </div>
+                                                <input type="radio" name="pricing_mode" value="itemized" {{ !$quotation->isTotalCostOnly() ? 'checked' : '' }} class="sr-only">
+                                                <span>With Product Cost</span>
+                                            </label>
+                                            <label class="px-2.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-all flex items-center gap-1.5 {{ $quotation->isTotalCostOnly() ? 'bg-white dark:bg-slate-900 text-purple-700 dark:text-purple-400 shadow-xs border border-purple-500/40' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white' }}">
+                                                <div class="w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center shrink-0 {{ $quotation->isTotalCostOnly() ? 'border-purple-600 bg-purple-600' : 'border-slate-400 dark:border-slate-500 bg-transparent' }}">
+                                                    @if($quotation->isTotalCostOnly())
+                                                        <div class="w-1.5 h-1.5 rounded-full bg-white"></div>
+                                                    @endif
+                                                </div>
+                                                <input type="radio" name="pricing_mode" value="total_only" {{ $quotation->isTotalCostOnly() ? 'checked' : '' }} class="sr-only">
+                                                <span>Total Cost Only</span>
+                                            </label>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <button type="submit" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] !text-white font-bold text-xs sm:text-sm inline-flex items-center justify-center gap-2 shadow-sm transition cursor-pointer shrink-0" style="color: #ffffff !important; background-color: #059669 !important;">
@@ -223,6 +255,7 @@
                         @endif
                     </div>
                 @else
+                    {{-- Technician View while waiting for office approval --}}
                     <div class="p-4 rounded-2xl border border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/40 text-amber-900 dark:text-amber-200 text-xs flex items-start gap-3 shadow-xs">
                         <div class="w-8 h-8 rounded-xl bg-amber-100 dark:bg-amber-900/60 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
                             <svg class="w-4 h-4 animate-pulse" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -240,23 +273,6 @@
                         </div>
                     </div>
                 @endif
-            @elseif($quotation->status === 'approved')
-                <div class="p-4 rounded-2xl border border-emerald-300 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-200 text-xs flex items-start gap-3 shadow-xs">
-                    <div class="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-900/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    </div>
-                    <div class="flex-1 space-y-1">
-                        <div class="flex items-center gap-2 flex-wrap">
-                            <strong class="font-bold text-sm text-slate-900 dark:text-white">{{ __('Quotation Approved & Ready to Share') }}</strong>
-                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-200/60 dark:bg-emerald-900/80 text-emerald-900 dark:text-emerald-200">
-                                {{ __('Approved Format: :fmt (:name)', ['fmt' => $quotation->pdf_format ?? '1', 'name' => $quotation->pdf_format_name]) }}
-                            </span>
-                        </div>
-                        <p class="text-slate-600 dark:text-slate-300 leading-relaxed">
-                            {{ __('Approved by') }} <strong class="text-slate-900 dark:text-white">{{ $quotation->approver->name ?? __('Management') }}</strong>{{ $quotation->approved_at ? ' on ' . $quotation->approved_at->format('d M Y, h:i A') : '' }}. {{ __('You can now share this proposal directly with the customer via WhatsApp, Email, or PDF download.') }}
-                        </p>
-                    </div>
-                </div>
             @endif
 
             @if($quotation->status === 'rejected' && $quotation->rejection_reason)
@@ -270,15 +286,20 @@
             <div class="crm-section">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
                     <div>
-                        <h3 class="!mb-0">{{ __('Quotation PDF Format & Layout Style') }}</h3>
+                        <h3 class="!mb-0 flex items-center gap-2">
+                            <span>{{ __('Quotation Format & Pricing Mode') }}</span>
+                            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold {{ $quotation->isTotalCostOnly() ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/60 dark:text-purple-300 border border-purple-200 dark:border-purple-800' : 'bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-300 border border-blue-200 dark:border-blue-800' }}">
+                                {{ $quotation->pricing_mode_name }}
+                            </span>
+                        </h3>
                         <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                            {{ __('Select which presentation layout is used for customer WhatsApp dispatch, emails, and PDF downloads.') }}
+                            {{ __('Choose your visual layout format, then choose whether to send itemized product prices or a turnkey total cost only quotation to the customer.') }}
                         </p>
                     </div>
                     <div class="flex items-center gap-2">
-                        @if($quotation->status === 'pending_approval')
+                        @if($isTechnicianRequest)
                             <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
-                                {{ __('Proposed: :name', ['name' => $quotation->pdf_format_name]) }}
+                                {{ __('Technician Proposed: :name', ['name' => $quotation->pdf_format_name]) }}
                             </span>
                         @else
                             <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
@@ -289,37 +310,114 @@
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                             <span>{{ __('Preview PDF') }}</span>
                         </a>
+                        <a href="{{ route('quotations.download-pdf', $quotation) }}" class="action-link text-xs inline-flex items-center gap-1 font-bold">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                            <span>{{ __('Download PDF') }}</span>
+                        </a>
                     </div>
                 </div>
 
-                <form method="POST" action="{{ route('quotations.set-format', $quotation) }}" class="space-y-3">
+                <form method="POST" action="{{ route('quotations.set-format', $quotation) }}" id="quotation-format-form" class="space-y-4">
                     @csrf
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        @foreach(\App\Models\Quotation::FORMATS as $key => $title)
-                            @php $isSelected = ($quotation->pdf_format ?? '1') == $key; @endphp
-                            <label class="flex items-start gap-3 p-3.5 rounded-xl border {{ $isSelected ? 'border-amber-500 bg-amber-500/10' : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 hover:border-amber-400' }} cursor-pointer text-xs transition">
-                                <input type="radio" name="pdf_format" value="{{ $key }}" {{ $isSelected ? 'checked' : '' }} class="accent-amber-500 mt-0.5 shrink-0" onchange="this.form.submit()">
-                                <div class="space-y-1">
-                                    <div class="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-                                        <span>Format {{ $key }}: {{ $title }}</span>
+                    
+                    {{-- Step 1: Layout Selection --}}
+                    <div>
+                        <div class="flex items-center justify-between gap-3 mb-2.5 flex-wrap">
+                            <div class="inline-flex items-center gap-2 flex-nowrap whitespace-nowrap" style="display: inline-flex !important; flex-direction: row !important; align-items: center !important; white-space: nowrap !important;">
+                                <span class="w-5 h-5 rounded-full bg-amber-500 text-white text-[11px] font-bold flex items-center justify-center shrink-0 shadow-xs" style="display: inline-flex !important; flex-shrink: 0 !important; width: 20px !important; height: 20px !important;">1</span>
+                                <span class="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200" style="display: inline-block !important; white-space: nowrap !important;">{{ __('Select Layout Presentation Style') }}</span>
+                            </div>
+                            <span class="text-[11px] text-slate-500 dark:text-slate-400">Click any card to apply</span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            @foreach(\App\Models\Quotation::FORMATS as $key => $title)
+                                @php $isSelected = ($quotation->pdf_format ?? '1') == $key; @endphp
+                                <label class="relative flex items-start gap-3 p-3.5 rounded-xl border-2 transition-all cursor-pointer {{ $isSelected ? 'border-amber-500 bg-amber-50/70 dark:bg-amber-950/30 shadow-xs ring-2 ring-amber-400/20' : 'border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800/80 hover:border-amber-400/70 hover:bg-slate-50/50 dark:hover:bg-slate-800' }}">
+                                    <div class="w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 mt-0.5 transition-all {{ $isSelected ? 'border-amber-500 bg-amber-500 ring-2 ring-amber-400/30' : 'border-slate-300 dark:border-slate-500 bg-white dark:bg-slate-700' }}">
                                         @if($isSelected)
-                                            <span class="px-1.5 py-0.5 rounded text-[10px] bg-amber-500 text-white font-bold leading-none">Active</span>
+                                            <div class="w-1.5 h-1.5 rounded-full bg-white"></div>
+                                        @endif
+                                    </div>
+                                    <input type="radio" name="pdf_format" value="{{ $key }}" {{ $isSelected ? 'checked' : '' }} class="sr-only" onchange="this.form.submit()">
+                                    <div class="space-y-1">
+                                        <div class="font-bold text-xs text-slate-900 dark:text-white flex items-center gap-1.5">
+                                            <span>Format {{ $key }}: {{ $title }}</span>
+                                            @if($isSelected)
+                                                <span class="px-1.5 py-0.5 rounded text-[10px] bg-amber-500 text-white font-bold leading-none shadow-2xs">Active</span>
+                                            @endif
+                                        </div>
+                                        <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-snug">
+                                            @if($key === '1') Executive Modern &bull; Hero brand header with clean itemized schedule
+                                            @elseif($key === '2') Technical Detailed &bull; Item-level specs, terms &amp; warranty badges
+                                            @else Classic Formal &bull; Standard corporate layout with bank &amp; seal details
+                                            @endif
+                                        </p>
+                                    </div>
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    {{-- Step 2: Pricing Breakdown Mode --}}
+                    <div class="pt-3 border-t border-slate-100 dark:border-slate-800/80">
+                        <div class="flex items-center justify-between gap-3 mb-2.5 flex-wrap">
+                            <div class="inline-flex items-center gap-2 flex-nowrap whitespace-nowrap" style="display: inline-flex !important; flex-direction: row !important; align-items: center !important; white-space: nowrap !important;">
+                                <span class="w-5 h-5 rounded-full bg-blue-600 text-white text-[11px] font-bold flex items-center justify-center shrink-0 shadow-xs" style="display: inline-flex !important; flex-shrink: 0 !important; width: 20px !important; height: 20px !important;">2</span>
+                                <span class="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200" style="display: inline-block !important; white-space: nowrap !important;">{{ __('Select Pricing Breakdown Mode for Customer') }}</span>
+                            </div>
+                            <span class="text-[11px] text-slate-500 dark:text-slate-400">Controls what the client sees</span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            {{-- Option 1: With Product Cost & Total --}}
+                            @php $isItemized = ($quotation->pricing_mode ?? 'itemized') === 'itemized'; @endphp
+                            <label class="relative flex items-start gap-3 p-3.5 rounded-xl border-2 transition-all cursor-pointer {{ $isItemized ? 'border-blue-600 bg-blue-50/70 dark:bg-blue-950/30 shadow-xs ring-2 ring-blue-500/20' : 'border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800/80 hover:border-blue-400/70 hover:bg-slate-50/50 dark:hover:bg-slate-800' }}">
+                                <div class="w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 mt-0.5 transition-all {{ $isItemized ? 'border-blue-600 bg-blue-600 ring-2 ring-blue-400/30' : 'border-slate-300 dark:border-slate-500 bg-white dark:bg-slate-700' }}">
+                                    @if($isItemized)
+                                        <div class="w-1.5 h-1.5 rounded-full bg-white"></div>
+                                    @endif
+                                </div>
+                                <input type="radio" name="pricing_mode" value="itemized" {{ $isItemized ? 'checked' : '' }} class="sr-only" onchange="this.form.submit()">
+                                <div class="space-y-1">
+                                    <div class="font-bold text-xs text-slate-900 dark:text-white flex items-center gap-1.5">
+                                        <span>With Product Cost &amp; Total</span>
+                                        @if($isItemized)
+                                            <span class="px-1.5 py-0.5 rounded text-[10px] bg-blue-600 text-white font-bold leading-none shadow-2xs">Selected</span>
                                         @endif
                                     </div>
                                     <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-snug">
-                                        @if($key === '1') Executive Modern &bull; Hero brand header with clean itemized schedule
-                                        @elseif($key === '2') Technical Detailed &bull; Item-level specs, terms &amp; warranty badges
-                                        @else Classic Formal &bull; Standard corporate layout with bank &amp; seal details
-                                        @endif
+                                        Full transparency: lists each product, model specs, quantity, unit rate, tax breakdown, and grand total.
                                     </p>
                                 </div>
                             </label>
-                        @endforeach
+
+                            {{-- Option 2: Total Cost Only --}}
+                            @php $isTotalOnly = ($quotation->pricing_mode ?? 'itemized') === 'total_only'; @endphp
+                            <label class="relative flex items-start gap-3 p-3.5 rounded-xl border-2 transition-all cursor-pointer {{ $isTotalOnly ? 'border-purple-600 bg-purple-50/70 dark:bg-purple-950/30 shadow-xs ring-2 ring-purple-500/20' : 'border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800/80 hover:border-purple-400/70 hover:bg-slate-50/50 dark:hover:bg-slate-800' }}">
+                                <div class="w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 mt-0.5 transition-all {{ $isTotalOnly ? 'border-purple-600 bg-purple-600 ring-2 ring-purple-400/30' : 'border-slate-300 dark:border-slate-500 bg-white dark:bg-slate-700' }}">
+                                    @if($isTotalOnly)
+                                        <div class="w-1.5 h-1.5 rounded-full bg-white"></div>
+                                    @endif
+                                </div>
+                                <input type="radio" name="pricing_mode" value="total_only" {{ $isTotalOnly ? 'checked' : '' }} class="sr-only" onchange="this.form.submit()">
+                                <div class="space-y-1">
+                                    <div class="font-bold text-xs text-slate-900 dark:text-white flex items-center gap-1.5">
+                                        <span>Total Cost Only (Lump Sum / Turnkey)</span>
+                                        @if($isTotalOnly)
+                                            <span class="px-1.5 py-0.5 rounded text-[10px] bg-purple-600 text-white font-bold leading-none shadow-2xs">Selected</span>
+                                        @endif
+                                    </div>
+                                    <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-snug">
+                                        Turnkey package: hides individual camera/HDD line prices so customer cannot price-shop parts online; shows turnkey package scope and grand total only.
+                                    </p>
+                                </div>
+                            </label>
+                        </div>
                     </div>
+
                     @if(!$isTechnician || $quotation->status === 'pending_approval' || $quotation->status === 'draft')
-                        <div class="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 pt-1">
-                            <span>{{ $isTechnician ? __('Click any format above to propose a different layout to management.') : __('Click any format above to change the active layout for customer sharing.') }}</span>
-                            <button type="submit" class="action-link text-xs font-bold">{{ __('Apply Format') }}</button>
+                        <div class="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 pt-2">
+                            <span>{{ $isTechnician ? __('Click any format or pricing mode above to propose to management.') : __('Click any format or pricing mode above to immediately update customer quotation.') }}</span>
+                            <button type="submit" class="action-link text-xs font-bold">{{ __('Apply & Regenerate') }}</button>
                         </div>
                     @endif
                 </form>
@@ -366,7 +464,18 @@
             <div class="crm-section">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
                     <div>
-                        <h3 class="!mb-0">Line Items ({{ $quotation->items->count() }})</h3>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <h3 class="!mb-0">Line Items ({{ $quotation->items->count() }})</h3>
+                            @if($quotation->isTotalCostOnly())
+                                <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-purple-100 text-purple-800 dark:bg-purple-900/60 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
+                                    Customer Mode: Total Cost Only
+                                </span>
+                            @else
+                                <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                                    Customer Mode: With Product Cost
+                                </span>
+                            @endif
+                        </div>
                         @if(!$isTechnician)
                             <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                                 {{ __('Update unit prices and quantities below. Zero-cost items added by technicians are highlighted for review.') }}
@@ -376,8 +485,14 @@
                                 {{ __('Equipment and hardware scope for site installation.') }}
                             </p>
                         @endif
+                        @if($quotation->isTotalCostOnly())
+                            <div class="mt-2 p-2 rounded-lg bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800/80 text-[11px] text-purple-900 dark:text-purple-200 flex items-center gap-2">
+                                <svg class="w-4 h-4 text-purple-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                <span><strong>Lump Sum Mode Active:</strong> Customer-facing PDF, WhatsApp and Email present a consolidated Turnkey CCTV Solution package and grand total (₹{{ number_format($quotation->total, 2) }}). Line item prices are hidden from the client to prevent parts price-shopping.</span>
+                            </div>
+                        @endif
                     </div>
-                    @if(!$isTechnician && in_array($quotation->status, ['draft', 'pending_approval', 'approved']))
+                    @if(!$isTechnician && in_array($quotation->status, ['draft', 'pending_approval', 'approved', 'sent']))
                         <div class="flex items-center gap-2">
                             <a href="{{ route('quotations.edit', $quotation) }}" class="btn-secondary text-xs inline-flex items-center gap-1.5 shadow-2xs font-semibold">
                                 <svg class="w-3.5 h-3.5 text-black shrink-0" fill="none" stroke="#000000" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
@@ -387,7 +502,7 @@
                     @endif
                 </div>
 
-                @if(!$isTechnician && in_array($quotation->status, ['draft', 'pending_approval', 'approved']))
+                @if(!$isTechnician && in_array($quotation->status, ['draft', 'pending_approval', 'approved', 'sent']))
                     {{-- Admin quick pricing & quantity editor form --}}
                     <form method="POST" action="{{ route('quotations.update-pricing', $quotation) }}" id="quotation-pricing-form">
                         @csrf
@@ -490,6 +605,9 @@
 
                 @else
                     {{-- Standard view for Technicians and Completed/Accepted Quotes --}}
+                    @php
+                        $showPricesToViewer = !$isTechnician || in_array($quotation->status, ['approved', 'sent', 'accepted']);
+                    @endphp
                     <div class="overflow-x-auto">
                         <table class="crm-table w-full">
                             <thead>
@@ -499,11 +617,11 @@
                                     <th>Description</th>
                                     <th class="text-right">Qty</th>
                                     <th>Unit</th>
-                                    @if(!$isTechnician)
+                                    @if($showPricesToViewer)
                                         <th class="text-right">Unit Price</th>
                                         <th class="text-right">Subtotal</th>
                                     @endif
-                                    @if(!$isTechnician && in_array($quotation->status, ['draft', 'pending_approval']))
+                                    @if(!$isTechnician && in_array($quotation->status, ['draft', 'pending_approval', 'approved', 'sent']))
                                         <th class="text-right">Action</th>
                                     @endif
                                 </tr>
@@ -516,11 +634,11 @@
                                         <td>{{ $item->description ?? '—' }}</td>
                                         <td class="text-right font-medium">{{ $item->quantity }}</td>
                                         <td>{{ $item->unit ?? '—' }}</td>
-                                        @if(!$isTechnician)
+                                        @if($showPricesToViewer)
                                             <td class="text-right" style="white-space: nowrap;">₹{{ number_format((float)$item->unit_price, 2) }}</td>
                                             <td class="text-right font-bold text-slate-900 dark:text-white" style="white-space: nowrap;">₹{{ number_format((float)$item->total, 2) }}</td>
                                         @endif
-                                        @if(!$isTechnician && in_array($quotation->status, ['draft', 'pending_approval']))
+                                        @if(!$isTechnician && in_array($quotation->status, ['draft', 'pending_approval', 'approved', 'sent']))
                                             <td class="text-right">
                                                 <form method="POST" action="{{ route('quotation-items.destroy', $item) }}"
                                                       data-confirm="Remove this item?" class="inline">
@@ -532,7 +650,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="{{ $isTechnician ? 5 : 8 }}" class="text-center py-6 text-slate-500 text-sm">
+                                        <td colspan="{{ $showPricesToViewer ? 8 : 6 }}" class="text-center py-6 text-slate-500 text-sm">
                                             No items on this quotation yet.
                                         </td>
                                     </tr>
@@ -551,7 +669,7 @@
                                 </div>
                             @endif
                         </div>
-                        @if(!$isTechnician)
+                        @if($showPricesToViewer)
                         <div class="w-full md:w-72 space-y-2">
                             <div class="flex justify-between">
                                 <span class="text-slate-500">Subtotal</span>
@@ -571,16 +689,24 @@
                                 <span>Grand Total</span>
                                 <span>₹{{ number_format((float)$quotation->total, 2) }}</span>
                             </div>
+                            @if($isTechnician && in_array($quotation->status, ['approved', 'sent']))
+                                <div class="pt-2">
+                                    <div class="p-2.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-[11px] text-emerald-800 dark:text-emerald-300 font-bold flex items-center gap-1.5">
+                                        <span>✅</span>
+                                        <span>{{ __('Approved by Admin. Ready to share quotation with customer.') }}</span>
+                                    </div>
+                                </div>
+                            @endif
                         </div>
                         @else
                         <div class="w-full md:w-80">
-                            <div class="p-3.5 rounded-xl border border-blue-200 dark:border-blue-800/80 bg-blue-50/60 dark:bg-blue-950/40 text-xs text-blue-900 dark:text-blue-200 space-y-1">
+                            <div class="p-3.5 rounded-xl border border-amber-200 dark:border-amber-800/80 bg-amber-50/60 dark:bg-amber-950/40 text-xs text-amber-900 dark:text-amber-200 space-y-1">
                                 <div class="flex items-center gap-1.5 font-bold">
-                                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"/></svg>
-                                    <span>{{ __('Managed Pricing & Commercials') }}</span>
+                                    <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/></svg>
+                                    <span>{{ __('Pending Admin Pricing Review') }}</span>
                                 </div>
-                                <p class="text-[11px] text-blue-800/80 dark:text-blue-300/80 leading-relaxed">
-                                    {{ __('Item unit prices, discounts, and final quotations are reviewed and maintained by the office management.') }}
+                                <p class="text-[11px] text-amber-800/80 dark:text-amber-300/80 leading-relaxed">
+                                    {{ __('Product specifications have been submitted to Management. As soon as Admin approves and sets the unit rates, pricing will be visible here and ready for customer sharing.') }}
                                 </p>
                             </div>
                         </div>
@@ -725,13 +851,13 @@
                     </div>
                     <div>
                         <label class="crm-label">
-                            <svg class="w-4 h-4 shrink-0 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
-                            Attachment
+                            <svg class="w-4 h-4 shrink-0 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            Pricing Breakdown
                         </label>
-                        <div class="crm-input flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/80">
-                            <svg class="w-4 h-4 text-rose-500 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M7 2v20h10V8l-6-6H7zm8 7V3.5L18.5 7H15z"/></svg>
-                            <span class="truncate">Quotation-{{ $quotation->quotation_no }}.pdf</span>
-                        </div>
+                        <select aria-label="Pricing Breakdown" name="pricing_mode" class="crm-select">
+                            <option value="itemized" {{ ($quotation->pricing_mode ?? 'itemized') == 'itemized' ? 'selected' : '' }}>With Product Cost &amp; Total (Itemized)</option>
+                            <option value="total_only" {{ ($quotation->pricing_mode ?? 'itemized') == 'total_only' ? 'selected' : '' }}>Total Cost Only (Turnkey Package)</option>
+                        </select>
                     </div>
                 </div>
 
@@ -877,7 +1003,7 @@
                         <span>Copy Message</span>
                     </button>
                 </div>
-                <textarea aria-label="WhatsApp message" id="wa-custom-message" rows="4" class="crm-input h-auto py-2.5 font-mono text-xs leading-relaxed">{{ $quotation->getWhatsAppFormattedMessage('1') }}</textarea>
+                <textarea aria-label="WhatsApp message" id="wa-custom-message" rows="4" class="crm-input h-auto py-2.5 font-mono text-xs leading-relaxed">{{ $quotation->getWhatsAppFormattedMessage($quotation->pdf_format ?: '1') }}</textarea>
             </div>
 
             {{-- Action Buttons --}}

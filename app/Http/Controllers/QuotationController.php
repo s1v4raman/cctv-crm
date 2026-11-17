@@ -144,7 +144,7 @@ class QuotationController extends Controller
         return view('quotations.show', compact('quotation'));
     }
 
-    public function downloadPdf(Quotation $quotation, string $format)
+    public function downloadPdf(Quotation $quotation, ?string $format = null)
     {
         if (Auth::user()?->isTechnician() && $quotation->status === 'pending_approval') {
             return redirect()
@@ -154,8 +154,8 @@ class QuotationController extends Controller
 
         $quotation->load(['lead', 'items']);
 
-        if (!in_array($format, ['1', '2', '3'])) {
-            $format = '1';
+        if (!$format || !in_array($format, ['1', '2', '3'])) {
+            $format = $quotation->pdf_format ?? '1';
         }
 
         $pdf = Pdf::loadView('quotations.pdf.format' . $format, compact('quotation'));
@@ -308,12 +308,22 @@ class QuotationController extends Controller
             'subject'        => ['nullable', 'string', 'max:255'],
             'custom_message' => ['nullable', 'string', 'max:2000'],
             'pdf_format'     => ['nullable', 'in:1,2,3'],
+            'pricing_mode'   => ['nullable', 'in:itemized,total_only'],
         ]);
 
         $recipientEmail = $validated['email'];
         $subject        = $validated['subject'] ?? null;
         $customMessage  = $validated['custom_message'] ?? null;
-        $pdfFormat      = $validated['pdf_format'] ?? '1';
+        $pdfFormat      = $validated['pdf_format'] ?? $quotation->pdf_format ?? '1';
+        $pricingMode    = $validated['pricing_mode'] ?? $quotation->pricing_mode ?? 'itemized';
+
+        // Persist any updated format or pricing mode selected on modal
+        if ($quotation->pdf_format !== $pdfFormat || $quotation->pricing_mode !== $pricingMode) {
+            $quotation->update([
+                'pdf_format'   => $pdfFormat,
+                'pricing_mode' => $pricingMode,
+            ]);
+        }
 
         // 1. Synchronize & persist customer email to Lead record if empty or updated
         if ($quotation->lead && ($quotation->lead->email !== $recipientEmail)) {
@@ -409,22 +419,28 @@ class QuotationController extends Controller
         if (!in_array($chosenFormat, ['1', '2', '3'])) {
             $chosenFormat = '1';
         }
+        $chosenPricingMode = $request->input('pricing_mode', $quotation->pricing_mode ?? 'itemized');
+        if (!in_array($chosenPricingMode, ['itemized', 'total_only'])) {
+            $chosenPricingMode = 'itemized';
+        }
 
-        DB::transaction(function () use ($quotation, $oldStatus, $chosenFormat) {
+        DB::transaction(function () use ($quotation, $oldStatus, $chosenFormat, $chosenPricingMode) {
             $quotation->update([
-                'status' => 'approved',
-                'pdf_format' => $chosenFormat,
-                'approved_by' => Auth::id(),
-                'approved_at' => now(),
+                'status'       => 'approved',
+                'pdf_format'   => $chosenFormat,
+                'pricing_mode' => $chosenPricingMode,
+                'approved_by'  => Auth::id(),
+                'approved_at'  => now(),
             ]);
 
             $formatName = Quotation::FORMATS[$chosenFormat] ?? 'Format ' . $chosenFormat;
+            $modeName = Quotation::PRICING_MODES[$chosenPricingMode] ?? 'With Product Cost & Total';
 
             $quotation->statusHistories()->create([
                 'changed_by' => Auth::id(),
                 'from_status' => $oldStatus,
                 'to_status' => 'approved',
-                'notes' => 'Pricing, scope, and ' . $formatName . ' format approved by ' . Auth::user()->name . '. Ready for client dispatch.',
+                'notes' => 'Pricing, scope, ' . $formatName . ' format (' . $modeName . ') approved by ' . Auth::user()->name . '. Ready for client dispatch.',
             ]);
 
             // Notify technician that their quotation has been approved
@@ -655,7 +671,7 @@ class QuotationController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        if (!in_array($quotation->status, ['draft', 'pending_approval', 'approved'])) {
+        if (!in_array($quotation->status, ['draft', 'pending_approval', 'approved', 'sent'])) {
             return back()->with('error', 'Cannot update pricing on this quotation in its current status.');
         }
 
@@ -720,29 +736,33 @@ class QuotationController extends Controller
      */
     public function updateFormat(Request $request, Quotation $quotation): RedirectResponse
     {
-        $request->validate([
-            'pdf_format' => ['required', 'string', 'in:1,2,3'],
+        $validated = $request->validate([
+            'pdf_format'   => ['nullable', 'string', 'in:1,2,3'],
+            'pricing_mode' => ['nullable', 'string', 'in:itemized,total_only'],
         ]);
 
-        $newFormat = $request->input('pdf_format');
+        $newFormat = $validated['pdf_format'] ?? $quotation->pdf_format ?? '1';
+        $newPricingMode = $validated['pricing_mode'] ?? $quotation->pricing_mode ?? 'itemized';
 
         $quotation->update([
-            'pdf_format' => $newFormat,
+            'pdf_format'   => $newFormat,
+            'pricing_mode' => $newPricingMode,
         ]);
 
         $formatName = Quotation::FORMATS[$newFormat] ?? 'Format ' . $newFormat;
+        $modeName = Quotation::PRICING_MODES[$newPricingMode] ?? 'With Product Cost & Total';
         $user = Auth::user();
 
         $quotation->statusHistories()->create([
             'changed_by' => $user->id,
             'from_status' => $quotation->status,
             'to_status' => $quotation->status,
-            'notes' => "{$user->name} set quotation format to '{$formatName}'.",
+            'notes' => "{$user->name} set quotation format to '{$formatName}' ({$modeName}).",
         ]);
 
         $message = $user->isTechnician()
-            ? "Quotation format set to '{$formatName}'. Forwarded to Admin for review & approval."
-            : "Quotation format updated to '{$formatName}'.";
+            ? "Quotation layout set to '{$formatName}' with '{$modeName}'. Forwarded to Admin for review & approval."
+            : "Quotation format updated to '{$formatName}' with '{$modeName}'.";
 
         return back()->with('status', $message);
     }
@@ -774,7 +794,7 @@ class QuotationController extends Controller
     {
         $quotation = $item->quotation;
 
-        if (!in_array($quotation->status, ['draft', 'pending_approval', 'approved'])) {
+        if (!in_array($quotation->status, ['draft', 'pending_approval', 'approved', 'sent'])) {
             return back()->with('status', 'Cannot remove items from this quotation.');
         }
 

@@ -1615,21 +1615,30 @@
                                             @php $rowTag = $item['url'] ? 'a' : 'div'; @endphp
                                             <{{ $rowTag }} @if($item['url']) href="{{ $item['url'] }}" @endif
                                                @click="notifOpen = false"
-                                               class="flex items-start gap-3 px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition group block">
+                                               class="flex items-start gap-3 px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition group block relative">
                                                 
                                                 {{-- Icon badge --}}
                                                 <div class="w-8 h-8 rounded-lg shrink-0 flex items-center justify-center 
                                                     @if($item['icon'] === 'ticket') bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900
                                                     @elseif($item['icon'] === 'inventory') bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-900
+                                                    @elseif($item['icon'] === 'expense' || $item['icon'] === 'receipt') bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900
                                                     @elseif($item['icon'] === 'job') bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-900
+                                                    @elseif($item['icon'] === 'survey') bg-sky-50 dark:bg-sky-950/50 text-sky-600 dark:text-sky-400 border border-sky-200 dark:border-sky-900
+                                                    @elseif($item['icon'] === 'quotation') bg-teal-50 dark:bg-teal-950/50 text-teal-600 dark:text-teal-400 border border-teal-200 dark:border-teal-900
                                                     @elseif($item['icon'] === 'attendance') bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-900
-                                                    @elseif($item['icon'] === 'log') bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900
+                                                    @elseif($item['icon'] === 'log') bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-900
                                                     @else bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700
                                                     @endif">
                                                     @if($item['icon'] === 'ticket')
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/></svg>
                                                     @elseif($item['icon'] === 'inventory')
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                                                    @elseif($item['icon'] === 'expense' || $item['icon'] === 'receipt')
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 14.25l6-6m4.5-3.493V21.75l-3.75-1.5-3.75 1.5-3.75-1.5-3.75 1.5V4.757c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0c1.1.128 1.907 1.077 1.907 2.185zM9.75 9h.008v.008H9.75V9zm4.5 6h.008v.008h-.008V15z"/></svg>
+                                                    @elseif($item['icon'] === 'survey')
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                                    @elseif($item['icon'] === 'quotation')
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
                                                     @elseif($item['icon'] === 'job')
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
                                                     @elseif($item['icon'] === 'attendance')
@@ -1649,6 +1658,13 @@
                                                     </div>
                                                     <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">{{ $item['description'] }}</p>
                                                 </div>
+
+                                                {{-- Quick Direct-Action Chevron --}}
+                                                @if($item['url'])
+                                                    <span class="self-center text-slate-300 dark:text-slate-600 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:translate-x-0.5 transition-all text-xs font-bold shrink-0">
+                                                        &rarr;
+                                                    </span>
+                                                @endif
                                             </{{ $rowTag }}>
                                         @empty
                                             <div class="p-6 text-center text-slate-400">
@@ -2102,6 +2118,14 @@
 
         {{-- Progressive Web App (PWA) Offline & Install Handler --}}
         <x-pwa-installer />
+
+        {{-- Quick On-the-Fly Product Catalog Creator (Available across all CRM pages) --}}
+        @if(auth()->check() && auth()->user()->isOffice())
+            <x-quick-add-product-modal />
+        @endif
+
+        {{-- Universal Searchable Select Combobox Engine for All CRM Modules --}}
+        <x-crm-searchable-script />
 
     </body>
 </html>

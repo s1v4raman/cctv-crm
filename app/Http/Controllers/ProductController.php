@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
@@ -100,6 +101,109 @@ class ProductController extends Controller
         return redirect()
             ->route('products.index')
             ->with('status', 'Product added successfully.');
+    }
+
+    /**
+     * Instant On-the-Fly Product Creation (AJAX modal across all CRM pages).
+     */
+    public function quickStore(Request $request): JsonResponse
+    {
+        if (!Auth::user()->isOffice()) {
+            return response()->json(['error' => 'Unauthorized. Only management can add products.'], 403);
+        }
+
+        $validated = $request->validate([
+            'name'           => ['required', 'string', 'max:255'],
+            'sku'            => ['nullable', 'string', 'max:50', Rule::unique('products', 'sku')],
+            'category'       => ['nullable', 'string', 'max:100'],
+            'brand'          => ['nullable', 'string', 'max:100'],
+            'model_no'       => ['nullable', 'string', 'max:100'],
+            'unit'           => ['nullable', 'string', 'max:50'],
+            'cost_price'     => ['nullable', 'numeric', 'min:0'],
+            'unit_price'     => ['nullable', 'numeric', 'min:0'],
+            'stock_quantity' => ['nullable', 'numeric', 'min:0'],
+            'description'    => ['nullable', 'string'],
+        ]);
+
+        $name = Product::cleanName($validated['name']);
+
+        // Check if product with same normalized name already exists
+        $existing = Product::where('name_key', Product::normalizeNameKey($name))->first();
+        if ($existing) {
+            return response()->json([
+                'success'     => true,
+                'is_existing' => true,
+                'message'     => "Product '{$existing->name}' already exists in Catalog.",
+                'product'     => [
+                    'id'             => $existing->id,
+                    'name'           => $existing->name,
+                    'sku'            => $existing->sku,
+                    'category'       => $existing->category,
+                    'unit'           => $existing->unit,
+                    'cost_price'     => (float) $existing->cost_price,
+                    'unit_price'     => (float) $existing->unit_price,
+                    'stock_quantity' => (float) $existing->stock_quantity,
+                ]
+            ]);
+        }
+
+        // Auto-generate SKU if omitted
+        $sku = !empty($validated['sku']) ? trim($validated['sku']) : null;
+        if (empty($sku)) {
+            do {
+                $sku = 'PRD-' . strtoupper(Str::random(6));
+            } while (Product::where('sku', $sku)->exists());
+        }
+
+        $costPrice = isset($validated['cost_price']) ? (float) $validated['cost_price'] : 0.0;
+        $unitPrice = isset($validated['unit_price']) ? (float) $validated['unit_price'] : ($costPrice > 0 ? round($costPrice * 1.25, 2) : 0.0);
+        $unit      = !empty($validated['unit']) ? $validated['unit'] : 'Nos';
+        $stockQty  = isset($validated['stock_quantity']) ? (float) $validated['stock_quantity'] : 0.0;
+
+        $product = Product::create([
+            'sku'                     => $sku,
+            'name'                    => $name,
+            'category'                => $validated['category'] ?? 'accessory',
+            'brand'                   => $validated['brand'] ?? null,
+            'model_no'                => $validated['model_no'] ?? null,
+            'unit'                    => $unit,
+            'cost_price'              => $costPrice,
+            'unit_price'              => $unitPrice,
+            'stock_quantity'          => $stockQty,
+            'min_stock_alert'         => 5,
+            'default_warranty_months' => 24,
+            'description'             => $validated['description'] ?? null,
+            'status'                  => 'approved',
+            'is_active'               => true,
+            'created_by'              => Auth::id(),
+        ]);
+
+        if ($stockQty > 0) {
+            \App\Models\StockMovement::create([
+                'product_id'    => $product->id,
+                'type'          => 'in',
+                'quantity'      => $stockQty,
+                'balance_after' => $stockQty,
+                'notes'         => 'Initial opening stock from on-the-fly product creation',
+                'user_id'       => Auth::id(),
+            ]);
+        }
+
+        return response()->json([
+            'success'     => true,
+            'is_existing' => false,
+            'message'     => "Product '{$product->name}' [{$product->sku}] added to Catalog & Pricing!",
+            'product'     => [
+                'id'             => $product->id,
+                'name'           => $product->name,
+                'sku'            => $product->sku,
+                'category'       => $product->category,
+                'unit'           => $product->unit,
+                'cost_price'     => (float) $product->cost_price,
+                'unit_price'     => (float) $product->unit_price,
+                'stock_quantity' => (float) $product->stock_quantity,
+            ]
+        ]);
     }
 
     public function edit(Product $product): View

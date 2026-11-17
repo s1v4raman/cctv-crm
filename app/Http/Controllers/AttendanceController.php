@@ -330,22 +330,30 @@ class AttendanceController extends Controller
             return back()->with('error', __('You have already clocked in today at :time.', ['time' => Carbon::parse($attendance->clock_in)->format('h:i A')]));
         }
 
-        // Standard shift start threshold: after 09:30 AM considered late
-        $lateThreshold = Carbon::parse($today . ' 09:30:00');
-        $isLate = now()->greaterThan($lateThreshold);
-
-        $attendance->clock_in = $nowTime;
-        $attendance->status = $isLate ? 'late' : 'present';
-        $attendance->location_type = $request->input('location_type', $user->isTechnician() ? 'on_site' : 'office');
-        $attendance->project_id = $request->input('project_id');
-        $attendance->notes = $request->input('notes');
-        $attendance->marked_by = $user->id;
-
+        // For technicians, attendance is always Full Day (not time-based)
         if ($user->isTechnician()) {
+            $attendance->clock_in = $nowTime;
+            $attendance->clock_out = $attendance->clock_out ?: '18:00:00';
+            $attendance->total_hours = 8.00;
+            $attendance->status = 'present';
+            $attendance->location_type = $request->input('location_type', 'on_site');
+            $attendance->project_id = $request->input('project_id');
+            $attendance->notes = $request->input('notes');
+            $attendance->marked_by = $user->id;
             $attendance->approval_status = 'pending';
             $attendance->approved_by = null;
             $attendance->approved_at = null;
         } else {
+            // Standard office / staff clock-in
+            $lateThreshold = Carbon::parse($today . ' 09:30:00');
+            $isLate = now()->greaterThan($lateThreshold);
+
+            $attendance->clock_in = $nowTime;
+            $attendance->status = $isLate ? 'late' : 'present';
+            $attendance->location_type = $request->input('location_type', 'office');
+            $attendance->project_id = $request->input('project_id');
+            $attendance->notes = $request->input('notes');
+            $attendance->marked_by = $user->id;
             $attendance->approval_status = 'approved';
             $attendance->approved_by = $user->id;
             $attendance->approved_at = now();
@@ -356,12 +364,12 @@ class AttendanceController extends Controller
         if ($user->isTechnician()) {
             $siteName = $attendance->project?->title ?? __('Assigned Site');
             \App\Services\HeaderNotificationService::notifyAdminAndStaffOfAttendance(
-                "Technician Check-In: {$user->name}",
-                "Technician {$user->name} clocked in on site for {$siteName}. Awaiting Admin & Employee review.",
+                "Technician Attendance: {$user->name}",
+                "Technician {$user->name} recorded Full Day Attendance on site for {$siteName}. Awaiting Admin review.",
                 route('attendance.index', ['tab' => 'approvals'])
             );
 
-            $statusMsg = __('✅ Clocked in on site at :time! Your attendance has been submitted for Admin & Employee review.', ['time' => now()->format('h:i A')]);
+            $statusMsg = __('✅ Full day attendance recorded successfully! Submitted for Admin review.');
         } else {
             $statusMsg = $isLate
                 ? __('⏰ Clocked in at :time (Marked as Late Arrival).', ['time' => now()->format('h:i A')])
@@ -442,18 +450,25 @@ class AttendanceController extends Controller
         $query = EmployeeAttendance::where('approval_status', 'pending');
         if ($request->filled('ids') && is_array($request->input('ids'))) {
             $query->whereIn('id', $request->input('ids'));
+        } elseif ($request->filled('date') && $request->input('date') !== 'all') {
+            $query->whereDate('date', $request->input('date'));
         }
         $count = $query->count();
-        $query->update([
-            'approval_status'  => 'approved',
-            'approved_by'      => auth()->id(),
-            'approved_at'      => now(),
-            'rejection_reason' => null,
-        ]);
+        if ($count > 0) {
+            $query->update([
+                'approval_status'  => 'approved',
+                'approved_by'      => auth()->id(),
+                'approved_at'      => now(),
+                'rejection_reason' => null,
+            ]);
+        }
 
         \App\Services\HeaderNotificationService::clearCacheForUser(auth()->id());
 
-        return back()->with('status', __('✓ Successfully accepted :count technician attendance records.', ['count' => $count]));
+        return back()->with('status', $count > 0 
+            ? __('✓ Successfully accepted :count technician attendance records.', ['count' => $count])
+            : __('No pending technician attendance records found to accept.')
+        );
     }
 
     /**

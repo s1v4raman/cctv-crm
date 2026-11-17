@@ -633,6 +633,156 @@ class WorkerAttendanceController extends Controller
     }
 
     /**
+     * Check which workers already have attendance logged for a specific date.
+     * Prevents duplicate worker attendance punches across multiple technicians.
+     */
+    public function checkDateAttendance(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $dateStr = $request->query('date', now()->toDateString());
+        try {
+            $parsedDate = Carbon::parse($dateStr)->toDateString();
+        } catch (\Throwable $e) {
+            $parsedDate = now()->toDateString();
+        }
+
+        $attendances = ProjectWorkerAttendance::with(['worker', 'workDay.project', 'logger'])
+            ->whereHas('workDay', function ($q) use ($parsedDate) {
+                $q->whereDate('work_date', $parsedDate);
+            })
+            ->get();
+
+        $alreadyLogged = [];
+        foreach ($attendances as $att) {
+            $alreadyLogged[$att->worker_id] = [
+                'worker_id' => $att->worker_id,
+                'worker_name' => $att->worker?->name ?? 'Worker',
+                'attendance_type' => $att->attendance_type === 'half' ? 'Half Day' : 'Full Day',
+                'logger_name' => $att->logger?->name ?? __('Technician'),
+                'project_title' => $att->workDay?->project?->title ?? __('Assigned Project'),
+                'check_in_at' => $att->check_in_at ? $att->check_in_at->format('h:i A') : '',
+            ];
+        }
+
+        return response()->json([
+            'date' => $parsedDate,
+            'already_logged_ids' => array_keys($alreadyLogged),
+            'attendances' => $alreadyLogged,
+        ]);
+    }
+
+    /**
+     * Check existing daily site work output metrics for a project and date.
+     */
+    public function checkWorkOutput(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $projectId = $request->query('project_id');
+        $dateStr = $request->query('date', now()->toDateString());
+
+        if (!$projectId) {
+            return response()->json(['exists' => false]);
+        }
+
+        try {
+            $parsedDate = Carbon::parse($dateStr)->toDateString();
+        } catch (\Throwable $e) {
+            $parsedDate = now()->toDateString();
+        }
+
+        $workDay = WorkDay::where('project_id', $projectId)
+            ->whereDate('work_date', $parsedDate)
+            ->first();
+
+        if (!$workDay) {
+            return response()->json([
+                'exists' => false,
+                'project_id' => (int) $projectId,
+                'work_date' => $parsedDate,
+                'cabling_metres' => '',
+                'cameras_installed' => '',
+                'notes' => '',
+            ]);
+        }
+
+        return response()->json([
+            'exists' => true,
+            'project_id' => (int) $projectId,
+            'work_date' => $parsedDate,
+            'cabling_metres' => (float) $workDay->total_cabling_metres,
+            'cameras_installed' => (int) $workDay->total_cameras_installed,
+            'notes' => $workDay->notes ?? '',
+            'logger_name' => $workDay->logger?->name ?? 'Technician',
+            'updated_at' => $workDay->updated_at?->format('d M Y, h:i A'),
+        ]);
+    }
+
+    /**
+     * Store site daily work output only (cabling metres, cameras installed, work notes).
+     * Dedicated method that does not require worker check-in.
+     */
+    public function storeWorkOutput(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'project_id' => 'required|exists:projects,id',
+            'work_date' => 'required|date',
+            'cabling_metres' => 'nullable|numeric|min:0',
+            'cameras_installed' => 'nullable|integer|min:0',
+            'notes' => 'nullable|string',
+        ]);
+
+        $project = Project::findOrFail($validated['project_id']);
+        $workDate = Carbon::parse($validated['work_date'])->toDateString();
+
+        DB::beginTransaction();
+        try {
+            $workDay = WorkDay::firstOrCreate(
+                [
+                    'project_id' => $project->id,
+                    'work_date' => $workDate,
+                ],
+                [
+                    'logged_by' => Auth::id() ?? 1,
+                    'notes' => $validated['notes'] ?? "Site work output logged by " . (Auth::user()?->name ?? 'Technician'),
+                ]
+            );
+
+            $cabling = (float) ($validated['cabling_metres'] ?? 0);
+            $cameras = (int) ($validated['cameras_installed'] ?? 0);
+
+            $workDay->update([
+                'logged_by' => Auth::id() ?? $workDay->logged_by,
+                'total_cabling_metres' => $cabling,
+                'total_cameras_installed' => $cameras,
+                'notes' => $validated['notes'] ?? $workDay->notes,
+            ]);
+
+            ProjectAuditLog::logChange(
+                $project,
+                'site_work_output_logged',
+                null,
+                [
+                    'work_date' => $workDate,
+                    'cabling_metres' => $cabling,
+                    'cameras_installed' => $cameras,
+                    'logged_by' => Auth::user()?->name ?? 'Technician',
+                ],
+                "Daily site work output recorded: {$cabling}m cable, {$cameras} cameras on {$workDate}"
+            );
+
+            DB::commit();
+
+            return back()->with('status', __("Daily work output for ':project' on :date saved successfully (:cabling m cabling, :cameras cameras installed).", [
+                'project' => $project->title,
+                'date' => Carbon::parse($workDate)->format('d M Y'),
+                'cabling' => $cabling,
+                'cameras' => $cameras,
+            ]));
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return back()->withErrors(['project_id' => __('Failed to save work output: ') . $e->getMessage()])->withInput();
+        }
+    }
+
+    /**
      * Store attendance entry with photo, shift type, and work output metrics.
      * Supports both single worker check-in and bulk multi-worker attendance logging.
      */
@@ -666,12 +816,20 @@ class WorkerAttendanceController extends Controller
             return back()->withErrors(['worker_id' => __('Please select at least one worker.')])->withInput();
         }
 
-        $attType = strtolower($validated['attendance_type']);
-        if ($attType === 'half' || $attType === 'half_day') {
-            $validated['attendance_type'] = 'half';
-        } else {
-            $validated['attendance_type'] = 'full';
-        }
+        $workDate = Carbon::parse($validated['work_date'])->toDateString();
+
+        // Identify any workers who already have attendance logged for this work date across ANY project/workday
+        // We allow updating existing attendance rather than blocking it
+        $alreadyLoggedAttendances = ProjectWorkerAttendance::whereIn('worker_id', $workerIds)
+            ->whereHas('workDay', function ($q) use ($workDate) {
+                $q->whereDate('work_date', $workDate);
+            })
+            ->with(['worker', 'logger', 'workDay.project'])
+            ->get()
+            ->keyBy('worker_id');
+
+        // Attendance policy: always Full Day (no half day attendance)
+        $validated['attendance_type'] = 'full';
 
         $workers = Worker::whereIn('id', $workerIds)->get();
         if ($workers->isEmpty()) {
@@ -724,16 +882,19 @@ class WorkerAttendanceController extends Controller
                 ]
             );
 
-            $totalCablingMetres = (float) ($validated['cabling_metres'] ?? 0);
-            $totalCamerasInstalled = (int) ($validated['cameras_installed'] ?? 0);
-
-            // Record overall site-level output and reporting technician on the WorkDay
-            $workDay->update([
+            $updateData = [
                 'logged_by' => Auth::id() ?? $workDay->logged_by,
-                'total_cabling_metres' => $totalCablingMetres,
-                'total_cameras_installed' => $totalCamerasInstalled,
-                'notes' => $validated['notes'] ?? $workDay->notes,
-            ]);
+            ];
+            if ($request->filled('cabling_metres')) {
+                $updateData['total_cabling_metres'] = (float) $validated['cabling_metres'];
+            }
+            if ($request->filled('cameras_installed')) {
+                $updateData['total_cameras_installed'] = (int) $validated['cameras_installed'];
+            }
+            if ($request->filled('notes')) {
+                $updateData['notes'] = $validated['notes'];
+            }
+            $workDay->update($updateData);
 
             $multiplier = ($validated['attendance_type'] === 'half') ? 0.5 : 1.0;
 
@@ -752,18 +913,25 @@ class WorkerAttendanceController extends Controller
             $approvedAt = $isTechnician ? null : now();
 
             $savedWorkerNames = [];
+            $updatedWorkerNames = [];
             foreach ($workers as $worker) {
                 $dailyRate = (float) ($worker->daily_rate > 0 ? $worker->daily_rate : 700.00);
                 $basePay = $dailyRate * $multiplier;
                 $totalAmount = $basePay;
 
-                // Check if record already exists for this work day and worker
+                // 1. Check if record already exists for this work day and worker
                 $attendance = ProjectWorkerAttendance::where('work_day_id', $workDay->id)
                     ->where('worker_id', $worker->id)
                     ->first();
 
+                // 2. If not on this work day, check if worker had attendance logged on another project for the same date
+                if (!$attendance && isset($alreadyLoggedAttendances[$worker->id])) {
+                    $attendance = $alreadyLoggedAttendances[$worker->id];
+                }
+
                 if ($attendance) {
                     $attendance->update([
+                        'work_day_id' => $workDay->id, // Re-assigns to current site if moved
                         'attendance_type' => $validated['attendance_type'],
                         'photo_path' => $photoPath ?: $attendance->photo_path,
                         'photo_data' => $photoData ?: $attendance->photo_data,
@@ -779,10 +947,11 @@ class WorkerAttendanceController extends Controller
                         'total_amount' => $totalAmount,
                         'notes' => $validated['notes'] ?? $attendance->notes,
                         'approval_status' => $approvalStatus,
-                        'logged_by' => Auth::id(),
+                        'logged_by' => Auth::id(), // Updated by current technician
                         'approved_by' => $approvedBy,
                         'approved_at' => $approvedAt,
                     ]);
+                    $updatedWorkerNames[] = $worker->name;
                 } else {
                     $attendance = ProjectWorkerAttendance::create([
                         'work_day_id' => $workDay->id,
@@ -844,14 +1013,21 @@ class WorkerAttendanceController extends Controller
 
             DB::commit();
 
+            $hasUpdates = !empty($updatedWorkerNames);
             if ($isTechnician) {
-                $statusMessage = count($workers) > 1
-                    ? __('✓ Attendance for :count workers successfully logged on site and submitted for Admin & Employee review!', ['count' => count($workers)])
-                    : __('✓ Attendance for :name successfully logged on site and submitted for Admin & Employee review!', ['name' => $workers->first()->name]);
+                if ($hasUpdates && count($updatedWorkerNames) === count($workers)) {
+                    $statusMessage = count($workers) > 1
+                        ? __('✓ Attendance updated for :count workers on site and submitted for review!', ['count' => count($workers)])
+                        : __('✓ Attendance for :name updated to :shift on :project!', ['name' => $workers->first()->name, 'shift' => $validated['attendance_type'] . ' day', 'project' => $project->title]);
+                } else {
+                    $statusMessage = count($workers) > 1
+                        ? __('✓ Attendance for :count workers successfully saved/updated on site!', ['count' => count($workers)])
+                        : __('✓ Attendance for :name successfully saved on site!', ['name' => $workers->first()->name]);
+                }
             } else {
                 $statusMessage = count($workers) > 1
-                    ? __('✓ Bulk attendance successfully marked for :count workers on :project!', ['count' => count($workers), 'project' => $project->title])
-                    : __('✓ Attendance successfully logged for :name on :date!', ['name' => $workers->first()->name, 'date' => $workDate]);
+                    ? __('✓ Bulk attendance marked/updated for :count workers on :project!', ['count' => count($workers), 'project' => $project->title])
+                    : __('✓ Attendance successfully recorded/updated for :name on :date!', ['name' => $workers->first()->name, 'date' => $workDate]);
             }
 
             if ($request->ajax() || $request->wantsJson()) {
@@ -1070,17 +1246,26 @@ class WorkerAttendanceController extends Controller
         $query = ProjectWorkerAttendance::where('approval_status', 'pending');
         if ($request->filled('ids') && is_array($request->input('ids'))) {
             $query->whereIn('id', $request->input('ids'));
+        } elseif ($request->filled('date') && $request->input('date') !== 'all') {
+            $query->whereHas('workDay', function ($q) use ($request) {
+                $q->whereDate('work_date', $request->input('date'));
+            });
         }
         $count = $query->count();
-        $query->update([
-            'approval_status'  => 'approved',
-            'approved_by'      => Auth::id(),
-            'approved_at'      => now(),
-            'rejection_reason' => null,
-        ]);
+        if ($count > 0) {
+            $query->update([
+                'approval_status'  => 'approved',
+                'approved_by'      => Auth::id(),
+                'approved_at'      => now(),
+                'rejection_reason' => null,
+            ]);
+        }
 
         \App\Services\HeaderNotificationService::clearCacheForUser(Auth::id());
 
-        return back()->with('status', __('✓ Successfully accepted :count worker attendance records into official project records.', ['count' => $count]));
+        return back()->with('status', $count > 0 
+            ? __('✓ Successfully accepted :count worker attendance records into official project records.', ['count' => $count])
+            : __('No pending worker attendance records found to accept.')
+        );
     }
 }

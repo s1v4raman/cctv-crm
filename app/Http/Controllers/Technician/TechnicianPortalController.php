@@ -41,32 +41,31 @@ class TechnicianPortalController extends Controller
             ->orderByDesc('updated_at')
             ->get();
 
-        // Assigned Infrastructure & Installation Projects (SecureVision Projects Module)
+        // Assigned Infrastructure & Installation Projects (Strictly for this signed-in technician)
         $assignedProjects = \App\Models\Project::with(['site', 'company', 'materials', 'ipDevices', 'leadTechnician', 'assignedUser', 'tasks.assignedUser'])
             ->where(function ($q) use ($technicianId) {
                 $q->where('lead_technician_id', $technicianId)
                   ->orWhere('assigned_to', $technicianId)
-                  ->orWhere('created_by', $technicianId);
+                  ->orWhere('created_by', $technicianId)
+                  ->orWhereHas('tasks', function ($tq) use ($technicianId) {
+                      $tq->where('assigned_to', $technicianId);
+                  });
             })
             ->orderByRaw("CASE WHEN status = 'in_progress' THEN 1 WHEN status = 'approved' THEN 2 WHEN status = 'pending_approval' THEN 3 ELSE 4 END")
             ->latest('updated_at')
             ->get();
 
-        if ($assignedProjects->isEmpty()) {
-            $assignedProjects = \App\Models\Project::with(['site', 'company', 'materials', 'ipDevices', 'leadTechnician', 'assignedUser', 'tasks.assignedUser'])
-                ->whereIn('status', ['in_progress', 'approved', 'pending_approval'])
-                ->latest('updated_at')
-                ->get();
-        }
-
+        $assignedProjectIds = $assignedProjects->pluck('id')->all();
         $allProjectsCount = \App\Models\Project::count();
-        $selectedProject = $assignedProjects->first();
 
-        // Active Workers and Projects for Technician On-Site Daily Attendance Logging
+        // Active Workers and Projects for Technician On-Site Daily Attendance Logging (All active sites & locations)
         $activeWorkers = \App\Models\Worker::where('is_active', true)->orderBy('name')->get();
-        $activeProjects = \App\Models\Project::whereIn('status', ['approved', 'in_progress'])
+        $activeProjects = \App\Models\Project::with(['site'])
+            ->whereIn('status', ['approved', 'in_progress', 'pending_approval'])
             ->orderBy('title')
             ->get();
+
+        $selectedProject = $assignedProjects->first() ?? $activeProjects->first();
 
         // Current Authenticated Technician Attendance Record for Today
         $myAttendanceToday = \App\Models\EmployeeAttendance::where('user_id', $technicianId)
@@ -255,11 +254,12 @@ class TechnicianPortalController extends Controller
 
         // 6. Workers Today from real DB records & today's attendance
         $todayDate = now()->toDateString();
-        $todayAttendances = \App\Models\ProjectWorkerAttendance::with(['worker', 'workDay.project'])
+        $todayAttendances = \App\Models\ProjectWorkerAttendance::with(['worker', 'workDay.project', 'logger'])
             ->whereHas('workDay', function($q) use ($todayDate) {
                 $q->whereDate('work_date', $todayDate);
             })->get();
 
+        $todayAttendanceByWorkerId = $todayAttendances->keyBy('worker_id');
         $normAttMap = [];
         foreach ($todayAttendances as $att) {
             if ($att->worker) {
@@ -277,12 +277,20 @@ class TechnicianPortalController extends Controller
             }
             $seenWorkersToday[$norm] = true;
 
-            $att = $normAttMap[$norm] ?? null;
+            $att = $todayAttendanceByWorkerId->get($w->id) ?? ($normAttMap[$norm] ?? null);
             $status = 'Not marked';
             $statusType = 'not_marked';
             $badgeClass = 'border border-slate-300 text-slate-500 bg-white/70';
 
+            $loggerName = null;
+            $projectName = null;
+            $checkInTime = null;
+
             if ($att) {
+                $loggerName = $att->logger?->name ?? __('Technician');
+                $projectName = $att->workDay?->project?->title ?? __('Assigned Site');
+                $checkInTime = $att->check_in_at ? $att->check_in_at->format('h:i A') : null;
+
                 if ($att->attendance_type === 'full') {
                     $status = 'Full day';
                     $statusType = 'full_day';
@@ -312,6 +320,10 @@ class TechnicianPortalController extends Controller
                 'status_badge_class' => $badgeClass,
                 'phone' => $w->phone ?: '',
                 'active_orders_count' => $att ? 1 : 0,
+                'is_already_marked' => (bool) $att,
+                'logger_name' => $loggerName,
+                'project_name' => $projectName,
+                'check_in_time' => $checkInTime,
             ]);
         }
 
@@ -374,6 +386,10 @@ class TechnicianPortalController extends Controller
                 'active_tasks_count' => $realProj->tasks->whereIn('status', ['pending', 'in_progress'])->count(),
                 'assignees' => $topAssignees,
                 'remaining_assignees_count' => $remainingCount,
+                'site_name' => $realProj->site?->name,
+                'site_address' => $realProj->site?->address ?: $realProj->site_address,
+                'site_city' => $realProj->site?->city,
+                'is_assigned_to_me' => in_array($realProj->id, $assignedProjectIds),
             ];
         } else {
             $primaryProject = null;
@@ -384,6 +400,25 @@ class TechnicianPortalController extends Controller
             ->latest('id')
             ->take(50)
             ->get();
+
+        // 8. Travel & Site Work Expense Claims for Technician
+        $myExpenseClaims = \App\Models\ExpenseClaim::with(['site', 'project.site', 'installationJob.quotation.lead', 'serviceTicket', 'actioner'])
+            ->where('user_id', $technicianId)
+            ->orderByDesc('expense_date')
+            ->get();
+
+        $availableSites = \App\Models\Site::orderBy('name')->get();
+
+        $monthStart = now()->startOfMonth();
+        $monthEnd = now()->endOfMonth();
+        $thisMonthClaims = $myExpenseClaims->filter(function ($c) use ($monthStart, $monthEnd) {
+            return $c->expense_date && $c->expense_date >= $monthStart && $c->expense_date <= $monthEnd;
+        });
+
+        $approvedAllowancesMonth = (float) $thisMonthClaims->whereIn('status', ['approved', 'paid'])->sum('amount');
+        $pendingClaimsCount = $myExpenseClaims->where('status', 'pending')->count();
+        $pendingClaimsAmount = (float) $myExpenseClaims->where('status', 'pending')->sum('amount');
+        $totalKmLoggedMonth = (float) $thisMonthClaims->where('expense_category', 'fuel_travel')->sum('travel_distance_km');
 
         return view('technician.dashboard', compact(
             'leads',
@@ -404,7 +439,15 @@ class TechnicianPortalController extends Controller
             'myLeaveRequests',
             'vacationDaysLeft',
             'workersToday',
-            'primaryProject'
+            'primaryProject',
+            'myExpenseClaims',
+            'availableSites',
+            'todayAttendanceByWorkerId',
+            'assignedProjectIds',
+            'approvedAllowancesMonth',
+            'pendingClaimsCount',
+            'pendingClaimsAmount',
+            'totalKmLoggedMonth'
         ));
     }
 

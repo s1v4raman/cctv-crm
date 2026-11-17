@@ -3,23 +3,10 @@ import './a11y';
 import './responsive-tables';
 import './filters';
 import formSteps from './form-steps';
+import './crm-searchable-select';
 
 window.Alpine = Alpine;
 Alpine.data('formSteps', formSteps);
-
-// Clean dropdown design: Native .crm-select is used across all modules,
-// avoiding nested box-in-box wrappers that clip text.
-window.initSearchableSelect = function(element, options = {}) {
-    return null;
-};
-
-window.initAllSearchableSelects = function(root = document) {
-    // Native .crm-select handles dropdown presentation cleanly
-};
-
-document.addEventListener('DOMContentLoaded', () => {
-    window.initAllSearchableSelects();
-});
 
 if (!window.AlpineStarted) {
     window.AlpineStarted = true;

@@ -151,52 +151,62 @@
 
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             <div>
-                                <label class="block text-sm font-semibold text-slate-200 mb-1.5">{{ __('Recommended Cameras') }} *</label>
-                                <input aria-label="{{ __('Recommended Cameras') }}" type="number" name="camera_count_recommended" required min="1" placeholder="{{ __('e.g. 4') }}" value="{{ old('camera_count_recommended', $siteSurvey->camera_count_recommended ?: 4) }}"
+                                <div class="flex items-center justify-between mb-1.5">
+                                    <label for="survey_cameras" class="block text-sm font-semibold text-slate-200">{{ __('Recommended Cameras') }} *</label>
+                                    <x-voice-mic-button target="#survey_cameras" />
+                                </div>
+                                <input id="survey_cameras" aria-label="{{ __('Recommended Cameras') }}" type="number" name="camera_count_recommended" required min="1" placeholder="{{ __('e.g. 4') }}" value="{{ old('camera_count_recommended', $siteSurvey->camera_count_recommended ?: 4) }}"
                                     class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 py-2.5">
                                 @error('camera_count_recommended') <span class="text-xs text-rose-400">{{ $message }}</span> @enderror
                             </div>
 
                             <div>
-                                <label class="block text-sm font-semibold text-slate-200 mb-1.5">{{ __('Estimated Cable Length (Mtr)') }} *</label>
-                                <input aria-label="{{ __('Estimated Cable Length (Mtr)') }}" type="number" name="cable_length_estimate" required min="1" step="0.5" placeholder="{{ __('e.g. 90') }}" value="{{ old('cable_length_estimate', $siteSurvey->cable_length_estimate ?: 50) }}"
+                                <div class="flex items-center justify-between mb-1.5">
+                                    <label for="survey_cable" class="block text-sm font-semibold text-slate-200">{{ __('Estimated Cable Length (Mtr)') }} *</label>
+                                    <x-voice-mic-button target="#survey_cable" />
+                                </div>
+                                <input id="survey_cable" aria-label="{{ __('Estimated Cable Length (Mtr)') }}" type="number" name="cable_length_estimate" required min="1" step="0.5" placeholder="{{ __('e.g. 90') }}" value="{{ old('cable_length_estimate', $siteSurvey->cable_length_estimate ?: 50) }}"
                                     class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 py-2.5">
                                 @error('cable_length_estimate') <span class="text-xs text-rose-400">{{ $message }}</span> @enderror
                             </div>
 
                             <div>
-                                <label class="block text-sm font-semibold text-slate-200 mb-1.5">{{ __('DVR / NVR Placement') }} *</label>
-                                <x-tamil-input>
-                                    <input aria-label="{{ __('DVR / NVR Placement') }}" type="text" name="dvr_location" required placeholder="{{ __('e.g. 1st Floor Server Room') }}" value="{{ old('dvr_location', $siteSurvey->dvr_location ?: 'Server Room / Office') }}"
-                                        class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 py-2.5">
-                                </x-tamil-input>
+                                <div class="flex items-center justify-between mb-1.5">
+                                    <label for="survey_dvr" class="block text-sm font-semibold text-slate-200">{{ __('DVR / NVR Placement') }} *</label>
+                                    <x-voice-mic-button target="#survey_dvr" />
+                                </div>
+                                <input id="survey_dvr" aria-label="{{ __('DVR / NVR Placement') }}" type="text" name="dvr_location" required placeholder="{{ __('e.g. 1st Floor Server Room') }}" value="{{ old('dvr_location', $siteSurvey->dvr_location ?: 'Server Room / Office') }}"
+                                    class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 py-2.5">
                                 @error('dvr_location') <span class="text-xs text-rose-400">{{ $message }}</span> @enderror
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-sm font-semibold text-slate-200 mb-1.5">{{ __('Power Sockets & UPS Availability') }}</label>
-                                <x-tamil-input>
-                                    <input aria-label="{{ __('Power Sockets & UPS Availability') }}" type="text" name="power_availability" placeholder="{{ __('e.g. 2x 230V Sockets available, connected to 1KVA UPS') }}" value="{{ old('power_availability', $siteSurvey->power_availability) }}"
-                                        class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 py-2.5">
-                                </x-tamil-input>
+                                <div class="flex items-center justify-between mb-1.5">
+                                    <label for="survey_power" class="block text-sm font-semibold text-slate-200">{{ __('Power Sockets & UPS Availability') }}</label>
+                                    <x-voice-mic-button target="#survey_power" />
+                                </div>
+                                <input id="survey_power" aria-label="{{ __('Power Sockets & UPS Availability') }}" type="text" name="power_availability" placeholder="{{ __('e.g. 2x 230V Sockets available, connected to 1KVA UPS') }}" value="{{ old('power_availability', $siteSurvey->power_availability) }}"
+                                    class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 py-2.5">
                             </div>
                             <div>
-                                <label class="block text-sm font-semibold text-slate-200 mb-1.5">{{ __('Site Obstacles & Challenges') }}</label>
-                                <x-tamil-input>
-                                    <input aria-label="{{ __('Site Obstacles & Challenges') }}" type="text" name="challenges" placeholder="{{ __('e.g. High false ceiling, masonry drilling required for outdoor entry') }}" value="{{ old('challenges', $siteSurvey->challenges) }}"
-                                        class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 py-2.5">
-                                </x-tamil-input>
+                                <div class="flex items-center justify-between mb-1.5">
+                                    <label for="survey_challenges" class="block text-sm font-semibold text-slate-200">{{ __('Site Obstacles & Challenges') }}</label>
+                                    <x-voice-mic-button target="#survey_challenges" />
+                                </div>
+                                <input id="survey_challenges" aria-label="{{ __('Site Obstacles & Challenges') }}" type="text" name="challenges" placeholder="{{ __('e.g. High false ceiling, masonry drilling required for outdoor entry') }}" value="{{ old('challenges', $siteSurvey->challenges) }}"
+                                    class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20 py-2.5">
                             </div>
                         </div>
 
                         <div>
-                            <label class="block text-sm font-semibold text-slate-200 mb-1.5">{{ __('Detailed On-Site Observations & Recommendations') }} *</label>
-                            <x-tamil-input>
-                                <textarea aria-label="{{ __('Detailed On-Site Observations & Recommendations') }}" name="visit_notes" required rows="3" placeholder="{{ __('Describe camera coverage angles, conduit routing, and storage requirements...') }}"
-                                    class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20">{{ old('visit_notes', $siteSurvey->visit_notes) }}</textarea>
-                            </x-tamil-input>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <label for="survey_notes" class="block text-sm font-semibold text-slate-200">{{ __('Detailed On-Site Observations & Recommendations') }} *</label>
+                                <x-voice-mic-button target="#survey_notes" />
+                            </div>
+                            <textarea id="survey_notes" aria-label="{{ __('Detailed On-Site Observations & Recommendations') }}" name="visit_notes" required rows="3" placeholder="{{ __('Describe camera coverage angles, conduit routing, and storage requirements...') }}"
+                                class="w-full text-xs rounded-xl border-slate-700 bg-[#060913] text-white focus:border-amber-400 focus:ring-amber-400/20">{{ old('visit_notes', $siteSurvey->visit_notes) }}</textarea>
                             @error('visit_notes') <span class="text-xs text-rose-400">{{ $message }}</span> @enderror
                         </div>
                     </div>
@@ -426,4 +436,7 @@
             };
         }
     </script>
+
+    {{-- Universal Voice Dictation & Speech Recognition Engine --}}
+    <x-tech-voice-engine />
 </x-app-layout>

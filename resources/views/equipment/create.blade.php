@@ -35,13 +35,13 @@
                                 <label class="crm-label mb-0 text-sm font-semibold text-slate-800 dark:text-slate-200">Customer Site / Lead <span class="required-marker text-rose-500">*</span></label>
                                 @if(auth()->user()->isOffice())
                                 <a href="{{ route('leads.create', ['return_to' => 'equipment']) }}" 
-                                   class="btn-subtle text-white font-semibold"
+                                   class="px-3 py-1 text-xs font-semibold rounded-lg bg-[var(--crm-accent,#2563eb)] hover:opacity-90 active:scale-95 text-white transition cursor-pointer shadow-xs inline-flex items-center justify-center"
                                    style="color: #ffffff !important;">
                                     <span class="text-white font-semibold" style="color: #ffffff !important;">Add New Customer</span>
                                 </a>
                                 @endif
                             </div>
-                            <select aria-label="Customer Site / Lead" name="lead_id" data-no-tom="true" class="crm-select w-full h-[44px] text-sm rounded-lg" required>
+                            <select aria-label="Customer Site / Lead" name="lead_id" data-searchable="true" data-search-placeholder="Search customer name, phone, address..." class="crm-select crm-searchable-select w-full h-[44px] text-sm rounded-lg" required>
                                 <option value="">-- Select Customer / Lead (or General Estimate) --</option>
                                 @foreach($leads as $l)
                                     <option value="{{ $l->id }}" @selected(old('lead_id', $selectedLeadId) == $l->id)>
@@ -53,8 +53,18 @@
 
                         {{-- Installation Job (Optional) --}}
                         <div>
-                            <label class="crm-label text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2 block">Associated Installation Job</label>
-                            <select aria-label="Associated Installation Job" name="installation_job_id" data-no-tom="true" class="crm-select w-full h-[44px] text-sm rounded-lg">
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="crm-label mb-0 text-sm font-semibold text-slate-800 dark:text-slate-200">Associated Installation Job</label>
+                                @if(auth()->user()->isOffice())
+                                <a href="{{ route('jobs.create-general', ['return_to' => 'equipment']) }}" 
+                                   target="_blank"
+                                   class="px-3 py-1 text-xs font-semibold rounded-lg bg-[var(--crm-accent,#2563eb)] hover:opacity-90 active:scale-95 text-white transition cursor-pointer shadow-xs inline-flex items-center justify-center"
+                                   style="color: #ffffff !important;">
+                                    <span class="text-white font-semibold" style="color: #ffffff !important;">Add New Installation Job</span>
+                                </a>
+                                @endif
+                            </div>
+                            <select aria-label="Associated Installation Job" name="installation_job_id" data-searchable="true" data-search-placeholder="Search job number, client, or site..." class="crm-select crm-searchable-select w-full h-[44px] text-sm rounded-lg">
                                 <option value="">-- None (Direct Entry / Existing Site) --</option>
                                 @foreach($jobs as $j)
                                     <option value="{{ $j->id }}" @selected(old('installation_job_id', $selectedJobId) == $j->id)>
@@ -66,8 +76,16 @@
 
                         {{-- Product Catalog Reference --}}
                         <div>
-                            <label class="crm-label text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2 block">Product Model (Catalog)</label>
-                            <select aria-label="Product Model (Catalog)" name="product_id" data-no-tom="true" class="crm-select w-full h-[44px] text-sm rounded-lg" @change="onProductChange($event.target.value)">
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="crm-label mb-0 text-sm font-semibold text-slate-800 dark:text-slate-200">Product Model (Catalog)</label>
+                                <button type="button" 
+                                        onclick="window.openQuickAddProductModal && window.openQuickAddProductModal({ targetSelectId: 'product_id_select', nameInputId: 'equipment_name_input' })" 
+                                        class="px-3 py-1 text-xs font-semibold rounded-lg bg-[var(--crm-accent,#2563eb)] hover:opacity-90 active:scale-95 text-white transition cursor-pointer shadow-xs inline-flex items-center justify-center"
+                                        style="color: #ffffff !important;">
+                                    <span class="text-white font-semibold" style="color: #ffffff !important;">Add New Product Catalog</span>
+                                </button>
+                            </div>
+                            <select id="product_id_select" aria-label="Product Model (Catalog)" name="product_id" data-searchable="true" data-search-placeholder="Search product model, name, or stock..." class="crm-select crm-searchable-select w-full h-[44px] text-sm rounded-lg" @change="onProductChange($event.target.value)">
                                 <option value="">-- Select Product Model (Catalog) --</option>
                                 @foreach($products as $p)
                                     <option value="{{ $p->id }}" @selected(old('product_id') == $p->id)>
@@ -90,15 +108,13 @@
                             <div class="flex items-center justify-between mb-2">
                                 <label class="crm-label mb-0 text-sm font-semibold text-slate-800 dark:text-slate-200">Hardware Serial Number (S/N) <span class="required-marker text-rose-500">*</span></label>
                                 <div class="flex items-center gap-1.5">
-                                    <button type="button" onclick="openBarcodeScanner('equipment-barcode-modal', 'serial_number_input', window.onEquipmentScanSuccess, 'laptop')"
-                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 transition cursor-pointer shadow-xs">
-                                        <svg class="w-3.5 h-3.5 text-slate-700 dark:text-slate-300" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0H3"/></svg>
-                                        <span>Laptop Cam</span>
+                                    <button type="button" onclick="openBarcodeScanner('equipment-barcode-modal', 'serial_number_input', window.onEquipmentScanSuccess, 'hardware')"
+                                            class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-600 transition cursor-pointer shadow-xs">
+                                        <span>Barcode Scanner</span>
                                     </button>
                                     <button type="button" onclick="openBarcodeScanner('equipment-barcode-modal', 'serial_number_input', window.onEquipmentScanSuccess, 'mobile')"
-                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 transition cursor-pointer shadow-xs">
-                                        <svg class="w-3.5 h-3.5 text-slate-700 dark:text-slate-300" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"/></svg>
-                                        <span>Mobile Cam</span>
+                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-600 transition cursor-pointer shadow-xs">
+                                        <span>Mobile Scanner</span>
                                     </button>
                                 </div>
                             </div>
@@ -110,15 +126,13 @@
                             <div class="flex items-center justify-between mb-2">
                                 <label class="crm-label mb-0 text-sm font-semibold text-slate-800 dark:text-slate-200">MAC / IP Address (Optional)</label>
                                 <div class="flex items-center gap-1.5">
-                                    <button type="button" onclick="openBarcodeScanner('equipment-barcode-modal', 'mac_address_input', window.onEquipmentScanSuccess, 'laptop')"
-                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 transition cursor-pointer shadow-xs">
-                                        <svg class="w-3.5 h-3.5 text-slate-700 dark:text-slate-300" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0H3"/></svg>
-                                        <span>Laptop Cam</span>
+                                    <button type="button" onclick="openBarcodeScanner('equipment-barcode-modal', 'mac_address_input', window.onEquipmentScanSuccess, 'hardware')"
+                                            class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-600 transition cursor-pointer shadow-xs">
+                                        <span>Barcode Scanner</span>
                                     </button>
                                     <button type="button" onclick="openBarcodeScanner('equipment-barcode-modal', 'mac_address_input', window.onEquipmentScanSuccess, 'mobile')"
-                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 transition cursor-pointer shadow-xs">
-                                        <svg class="w-3.5 h-3.5 text-slate-700 dark:text-slate-300" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"/></svg>
-                                        <span>Mobile Cam</span>
+                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-600 transition cursor-pointer shadow-xs">
+                                        <span>Mobile Scanner</span>
                                     </button>
                                 </div>
                             </div>
@@ -178,7 +192,6 @@
 
                     <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-4 border-t border-slate-200 dark:border-slate-800 max-w-full">
                         <button type="submit" class="w-full sm:w-auto btn-md min-h-[44px] h-auto px-6 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md transition cursor-pointer inline-flex items-center justify-center gap-2 max-w-full text-center">
-                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
                             <span>Save &amp; Register Equipment</span>
                         </button>
                         <a href="{{ route('equipment.index') }}" class="w-full sm:w-auto btn-md min-h-[44px] h-auto px-5 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white hover:bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-semibold text-sm transition inline-flex items-center justify-center text-center">
@@ -204,6 +217,26 @@
                     window.onEquipmentScanSuccess = (rawCode, parsed, lookupData, targetId) => {
                         this.handleScanResult(rawCode, parsed, lookupData, targetId);
                     };
+
+                    // Hardware Barcode Scanner Gun direct scan handler (USB/Bluetooth)
+                    const bindHardwareGun = (inputId) => {
+                        const el = document.getElementById(inputId);
+                        if (!el) return;
+                        el.addEventListener('keydown', (e) => {
+                            if (e.key === 'Enter') {
+                                e.preventDefault();
+                                const val = el.value.trim();
+                                if (val) {
+                                    const parsed = window.parseDeviceBarcode ? window.parseDeviceBarcode(val) : { serial: val, mac: '', model: '' };
+                                    this.handleScanResult(val, parsed, null, inputId);
+                                    el.classList.add('ring-2', 'ring-emerald-500');
+                                    setTimeout(() => el.classList.remove('ring-2', 'ring-emerald-500'), 1200);
+                                }
+                            }
+                        });
+                    };
+                    bindHardwareGun('serial_number_input');
+                    bindHardwareGun('mac_address_input');
                 },
                 handleScanResult(rawCode, parsed, lookupData, targetId) {
                     const sInput = document.getElementById('serial_number_input');
