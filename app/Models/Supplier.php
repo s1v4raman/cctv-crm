@@ -7,6 +7,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Supplier extends Model
 {
+    public const CATEGORIES = [
+        'CCTV Cameras & Recorders',
+        'Hard Drives & Storage',
+        'Networking (PoE Switches, Routers, Patch Panels)',
+        'Cables & Conduits',
+        'Power Supplies, Batteries & Racks',
+    ];
+
     protected $fillable = [
         'name',
         'company_name',
@@ -23,6 +31,7 @@ class Supplier extends Model
         'bank_ifsc',
         'bank_branch',
         'upi_id',
+        'payment_link',
         'categories',
         'brands_supplied',
         'is_active',
@@ -101,13 +110,47 @@ class Supplier extends Model
             return $msg;
         }
 
-        if ($templateType === 'stock_check') {
-            $msg = "📦 *STOCK AVAILABILITY & PRICING INQUIRY*\n";
+        if ($templateType === 'payment_confirmation') {
+            $msg = "💳 *PAYMENT CONFIRMATION & REMITTANCE ADVICE*\n";
+            $msg .= "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
+            $msg .= "Dear *{$name}*,\n\n";
+            $msg .= "We have remitted payment to your account. Details:\n\n";
+            if (!empty($customMessage)) {
+                $msg .= "{$customMessage}\n\n";
+            }
+            $msg .= "Kindly check your bank credit and confirm receipt / reconcile your ledger.\n\n";
+            $msg .= "Best regards,\n*Precision IT Systems Accounts Team*\nPhone: +91 96772 57774";
+            return $msg;
+        }
+
+        if ($templateType === 'po_dispatch') {
+            $msg = "📋 *PURCHASE ORDER DISPATCH — PRECISION IT SYSTEMS*\n";
+            $msg .= "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
+            $msg .= "Dear *{$name}*,\n\n";
+            $msg .= "Please find our official Purchase Order details below:\n\n";
+            if (!empty($customMessage)) {
+                $msg .= "{$customMessage}\n\n";
+            }
+            $msg .= "Kindly confirm order acceptance and share delivery tracking details once dispatched.\n\n";
+            $msg .= "Best regards,\n*Precision IT Systems Procurement Team*";
+            return $msg;
+        }
+
+        if ($templateType === 'stock_inquiry' || $templateType === 'stock_check') {
+            $msg = "📦 *STOCK & PRICE INQUIRY — PRECISION IT SYSTEMS*\n";
             $msg .= "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
             $msg .= "Dear *{$name}*,\n\n";
             $msg .= "Greetings from Precision IT Systems.\n\n";
-            $msg .= ($customMessage ?: "We have upcoming project requirements. Please share your current inventory availability, delivery timelines, and updated dealer price list for CCTV, NVR, cabling, and networking gear.") . "\n\n";
-            $msg .= "Best regards,\n*Precision IT Systems Procurement Team*";
+            $msg .= "Kindly share your current inventory availability, best dealer pricing, and dispatch lead times for the following items/SKUs:\n\n";
+            if (!empty($customMessage)) {
+                $msg .= "{$customMessage}\n\n";
+            } else {
+                $msg .= "1. [Camera / NVR / HDD / Cable / Network Switch & Accessories]\n\n";
+            }
+            $msg .= "🔹 *Delivery Destination:* Central Warehouse, Precision IT Systems\n";
+            $msg .= "🔹 *Requirement Timeline:* Immediate / Within 2-3 Days\n\n";
+            $msg .= "Please revert with ready stock quantity, GST inclusive/exclusive rates, and dispatch schedule.\n\n";
+            $msg .= "Best regards,\n*Precision IT Systems Procurement Team*\nPhone: +91 96772 57774";
             return $msg;
         }
 
@@ -118,6 +161,95 @@ class Supplier extends Model
         $msg .= ($customMessage ?: "Greetings from Precision IT Systems. We would like to follow up regarding our procurement collaboration and supply pipeline.") . "\n\n";
         $msg .= "Best regards,\n*Precision IT Systems*";
         return $msg;
+    }
+
+    /**
+     * Determine if supplier has any registered banking or payment details.
+     */
+    public function hasBankDetails(): bool
+    {
+        return !empty($this->bank_name)
+            || !empty($this->bank_account_number)
+            || !empty($this->bank_ifsc)
+            || !empty($this->upi_id)
+            || !empty($this->payment_link);
+    }
+
+    /**
+     * Get single formatted text block of all banking details for quick copy-pasting to netbanking portals.
+     */
+    public function formattedBankDetails(): string
+    {
+        $lines = [];
+        $lines[] = "Beneficiary: " . ($this->company_name ?: $this->name);
+        if ($this->bank_name) $lines[] = "Bank: " . $this->bank_name;
+        if ($this->bank_account_number) $lines[] = "A/C No: " . $this->bank_account_number;
+        if ($this->bank_ifsc) $lines[] = "IFSC: " . strtoupper($this->bank_ifsc);
+        if ($this->bank_branch) $lines[] = "Branch: " . $this->bank_branch;
+        if ($this->upi_id) $lines[] = "UPI ID: " . $this->upi_id;
+        if ($this->payment_link) $lines[] = "Payment Link: " . $this->payment_link;
+
+        return implode("\n", $lines);
+    }
+
+    /**
+     * Map a product category string or keyword to a standardized supplier category.
+     */
+    public static function mapProductCategoryToSupplierCategory(?string $productCategory, ?string $itemName = null): ?string
+    {
+        $cat = strtolower(trim((string) $productCategory));
+        $name = strtolower(trim((string) $itemName));
+
+        // 1. CCTV Cameras & Recorders
+        if (in_array($cat, ['camera', 'recorder', 'cctv', 'nvr', 'dvr', 'cctv cameras & recorders'])
+            || preg_match('/\b(camera|nvr|dvr|dome|bullet|ptz|cctv|channel|4mp|2mp|8mp|hikvision|dahua|cp plus|uniview)\b/i', $name)) {
+            return 'CCTV Cameras & Recorders';
+        }
+
+        // 2. Hard Drives & Storage
+        if (in_array($cat, ['storage', 'hdd', 'hard_disk', 'hard drives & storage'])
+            || preg_match('/\b(hdd|hard\s*disk|purple|skyhawk|surveillance\s*hdd|\dtb|\d\s*tb|western digital|seagate)\b/i', $name)) {
+            return 'Hard Drives & Storage';
+        }
+
+        // 3. Networking (PoE Switches, Routers, Patch Panels)
+        if (in_array($cat, ['networking', 'switch', 'router', 'networking (poe switches, routers, patch panels)'])
+            || preg_match('/\b(poe|switch|router|patch\s*panel|rj45|gigabit|sfp|d-link|tp-link|cisco)\b/i', $name)) {
+            return 'Networking (PoE Switches, Routers, Patch Panels)';
+        }
+
+        // 4. Cables & Conduits
+        if (in_array($cat, ['cable', 'cables', 'conduit', 'wire', 'cables & conduits'])
+            || preg_match('/\b(cable|cat6|cat5|lan\s*cable|wire|conduit|casing|pvc\s*pipe|patch\s*cord)\b/i', $name)) {
+            return 'Cables & Conduits';
+        }
+
+        // 5. Power Supplies, Batteries & Racks
+        if (in_array($cat, ['power', 'smps', 'ups', 'battery', 'rack', 'power supplies, batteries & racks'])
+            || preg_match('/\b(smps|power\s*supply|ups|battery|rack|4u|6u|9u|12v|adapter)\b/i', $name)) {
+            return 'Power Supplies, Batteries & Racks';
+        }
+
+        return null;
+    }
+
+    /**
+     * Retrieve suggested preferred suppliers for a product category or item name.
+     */
+    public static function getSuggestedSuppliers(?string $productCategory, ?string $itemName = null): \Illuminate\Database\Eloquent\Collection
+    {
+        $supplierCat = static::mapProductCategoryToSupplierCategory($productCategory, $itemName);
+        if (!$supplierCat) {
+            return static::where('is_active', true)->take(4)->get();
+        }
+
+        return static::where('is_active', true)
+            ->where(function ($q) use ($supplierCat) {
+                $q->whereJsonContains('categories', $supplierCat)
+                  ->orWhere('categories', 'like', "%{$supplierCat}%");
+            })
+            ->orderBy('name')
+            ->get();
     }
 
     /**

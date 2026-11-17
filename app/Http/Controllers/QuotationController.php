@@ -19,7 +19,11 @@ class QuotationController extends Controller
 {
     public function create(Lead $lead): View
     {
-        return view('quotations.create', compact('lead'));
+        $suppliers = \App\Models\Supplier::where('is_active', true)
+            ->orderBy('name')
+            ->get(['id', 'name', 'company_name', 'phone', 'categories', 'brands_supplied']);
+
+        return view('quotations.create', compact('lead', 'suppliers'));
     }
 
     public function createGeneral(): View
@@ -598,7 +602,11 @@ class QuotationController extends Controller
             'lead',
         ]);
 
-        return view('quotations.edit', compact('quotation'));
+        $suppliers = \App\Models\Supplier::where('is_active', true)
+            ->orderBy('name')
+            ->get(['id', 'name', 'company_name', 'phone', 'categories', 'brands_supplied']);
+
+        return view('quotations.edit', compact('quotation', 'suppliers'));
     }
 
     public function update(

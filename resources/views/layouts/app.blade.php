@@ -2124,6 +2124,11 @@
             <x-quick-add-product-modal />
         @endif
 
+        {{-- Global Hardware & Product Barcode Scanner Modal with Mobile Cam Pairing --}}
+        @if(auth()->check())
+            <x-hardware-scanner-modal modalId="hardwareScannerModal" />
+        @endif
+
         {{-- Universal Searchable Select Combobox Engine for All CRM Modules --}}
         <x-crm-searchable-script />
 

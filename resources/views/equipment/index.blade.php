@@ -26,6 +26,12 @@
         :columns="['equipment' => 'Equipment', 'customer' => 'Customer', 'mfg' => 'Maker warranty', 'service' => 'Service warranty', 'status' => 'Status']"
         empty-text="No equipment recorded yet." filtered-text="No equipment matches these filters.">
 
+        <x-slot name="actions">
+            <button type="button" onclick="openHardwareScannerModal()" class="ld-outline plain-link font-semibold cursor-pointer" title="Scan hardware barcode via Camera or Mobile QR Sync">
+                <span>Scan Hardware</span>
+            </button>
+        </x-slot>
+
         <x-slot name="filters">
             <div class="ld-sub">Serial, MAC, name, location or customer</div>
             <input type="text" name="search" value="{{ request('search') }}" class="ld-input" aria-label="Serial, MAC, name, location or customer">

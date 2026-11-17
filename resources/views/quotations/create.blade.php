@@ -149,10 +149,9 @@
                             <div class="flex items-center gap-2 flex-wrap">
                                 <button type="button"
                                         onclick="window.openQuickAddProductModal()"
-                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 text-xs font-bold transition cursor-pointer"
+                                        class="btn-secondary text-xs font-bold text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 hover:bg-blue-50 transition cursor-pointer"
                                         title="Create and register a new item in Products & Pricing catalog">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-                                    <span>+ Add Product to Catalog</span>
+                                    Add Product to Catalog
                                 </button>
 
                                 <button type="button"
@@ -217,6 +216,8 @@
                                                        autocomplete="off"
                                                        placeholder="Search camera, NVR, cable..."
                                                        class="item-name block w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-sm px-3 py-2 shadow-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500 placeholder-slate-400">
+
+                                                <div class="item-supplier-hint mt-1.5 text-xs"></div>
                                             </td>
 
                                             <td class="p-2 align-top">
@@ -384,6 +385,8 @@
                        autocomplete="off"
                        placeholder="Search camera, NVR, cable..."
                        class="item-name block w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-sm px-3 py-2 shadow-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500 placeholder-slate-400">
+
+                <div class="item-supplier-hint mt-1.5 text-xs"></div>
             </td>
 
             <td class="p-2 align-top">
@@ -448,6 +451,7 @@
 
     <script>
         const isTechnician = {{ $isTechnician ? 'true' : 'false' }};
+        const activeSuppliers = @js($suppliers ?? []);
         const itemsBody = document.getElementById('items-body');
         const template = document.getElementById('item-row-template').innerHTML;
         const addRowButton = document.getElementById('add-row');
@@ -457,6 +461,70 @@
         let nextItemIndex = document.querySelectorAll('.item-row').length;
         let searchTimer = null;
         let searchController = null;
+
+        function detectCategory(itemName, category) {
+            const cat = (category || '').toLowerCase().trim();
+            const name = (itemName || '').toLowerCase().trim();
+
+            if (['camera', 'recorder', 'cctv', 'nvr', 'dvr', 'cctv cameras & recorders'].includes(cat) ||
+                /\b(camera|nvr|dvr|dome|bullet|ptz|cctv|channel|4mp|2mp|8mp|hikvision|dahua|cp plus|uniview)\b/i.test(name)) {
+                return 'CCTV Cameras & Recorders';
+            }
+            if (['storage', 'hdd', 'hard_disk', 'hard drives & storage'].includes(cat) ||
+                /\b(hdd|hard\s*disk|purple|skyhawk|surveillance\s*hdd|\dtb|\d\s*tb|western digital|seagate)\b/i.test(name)) {
+                return 'Hard Drives & Storage';
+            }
+            if (['networking', 'switch', 'router', 'networking (poe switches, routers, patch panels)'].includes(cat) ||
+                /\b(poe|switch|router|patch\s*panel|rj45|gigabit|sfp|d-link|tp-link|cisco)\b/i.test(name)) {
+                return 'Networking (PoE Switches, Routers, Patch Panels)';
+            }
+            if (['cable', 'cables', 'conduit', 'wire', 'cables & conduits'].includes(cat) ||
+                /\b(cable|cat6|cat5|lan\s*cable|wire|conduit|casing|pvc\s*pipe|patch\s*cord)\b/i.test(name)) {
+                return 'Cables & Conduits';
+            }
+            if (['power', 'smps', 'ups', 'battery', 'rack', 'power supplies, batteries & racks'].includes(cat) ||
+                /\b(smps|power\s*supply|ups|battery|rack|4u|6u|9u|12v|adapter)\b/i.test(name)) {
+                return 'Power Supplies, Batteries & Racks';
+            }
+            return null;
+        }
+
+        function getSuggestedSuppliers(itemName, category) {
+            const cat = detectCategory(itemName, category);
+            if (!cat || !Array.isArray(activeSuppliers)) return [];
+            return activeSuppliers.filter(s => {
+                if (!s.categories) return false;
+                if (Array.isArray(s.categories)) {
+                    return s.categories.includes(cat);
+                }
+                return String(s.categories).includes(cat);
+            });
+        }
+
+        function updateRowSupplierHint(row, product = null) {
+            const hintEl = row.querySelector('.item-supplier-hint');
+            if (!hintEl) return;
+            const itemName = row.querySelector('.item-name')?.value || '';
+            const cat = detectCategory(itemName, product?.category);
+            if (!cat) {
+                hintEl.innerHTML = '';
+                return;
+            }
+            const suppliers = getSuggestedSuppliers(itemName, product?.category);
+            let html = `<div class="flex flex-wrap items-center gap-1.5 text-xs">`;
+            html += `<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">${escapeHtml(cat)}</span>`;
+            if (suppliers.length > 0) {
+                html += `<span class="text-[10px] text-slate-500 font-semibold">Preferred Suppliers:</span>`;
+                suppliers.slice(0, 3).forEach(s => {
+                    const phone = s.phone ? ` (${escapeHtml(s.phone)})` : '';
+                    html += `<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800">${escapeHtml(s.name)}${phone}</span>`;
+                });
+            } else {
+                html += `<span class="text-[10px] text-slate-400 italic">No supplier tagged with this category</span>`;
+            }
+            html += `</div>`;
+            hintEl.innerHTML = html;
+        }
 
         function money(value) {
             return new Intl.NumberFormat('en-IN', {
@@ -570,6 +638,7 @@
             }
 
             hideAllProductResults();
+            updateRowSupplierHint(row, product);
             calculateTotals();
 
             const quantityInput = row.querySelector('.quantity');
@@ -630,6 +699,24 @@
                     button.dataset.index = idx;
                     button.className = 'product-item-btn w-full px-4 py-3 text-left transition-colors flex items-start justify-between gap-3 cursor-pointer bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800/80 border-l-4 border-l-transparent group';
 
+                    const detectedCat = detectCategory(product.name, product.category);
+                    const prodSuppliers = detectedCat ? getSuggestedSuppliers(product.name, product.category).slice(0, 2) : [];
+                    let catSuppliersHtml = '';
+                    if (detectedCat) {
+                        catSuppliersHtml = `
+                            <div class="mt-1 flex flex-wrap items-center gap-1.5">
+                                <span class="px-1.5 py-0.5 text-[10px] font-medium rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                                    ${escapeHtml(detectedCat)}
+                                </span>
+                                ${prodSuppliers.map(s => `
+                                    <span class="px-1.5 py-0.5 text-[10px] font-semibold rounded bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/50">
+                                        Preferred: ${escapeHtml(s.name)}
+                                    </span>
+                                `).join('')}
+                            </div>
+                        `;
+                    }
+
                     button.innerHTML = `
                         <div class="min-w-0 flex-1">
                             <div class="font-bold text-xs text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
@@ -640,6 +727,7 @@
                                     ${escapeHtml(product.description)}
                                 </div>
                             ` : ''}
+                            ${catSuppliersHtml}
                         </div>
                         ${!isTechnician && product.unit_price ? `
                         <div class="shrink-0 text-right">
@@ -682,6 +770,7 @@
 
             itemNameInput.addEventListener('input', () => {
                 productIdInput.value = '';
+                updateRowSupplierHint(row);
                 clearTimeout(searchTimer);
 
                 searchTimer = setTimeout(() => {
@@ -784,6 +873,7 @@
 
         document.querySelectorAll('.item-row').forEach((row) => {
             bindRowEvents(row);
+            updateRowSupplierHint(row);
         });
 
         // Listen for products created on-the-fly from Quick Add Product modal

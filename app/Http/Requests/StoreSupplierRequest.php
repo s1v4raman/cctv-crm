@@ -29,6 +29,7 @@ class StoreSupplierRequest extends FormRequest
             'bank_ifsc' => ['nullable', 'string', 'max:50'],
             'bank_branch' => ['nullable', 'string', 'max:150'],
             'upi_id' => ['nullable', 'string', 'max:150'],
+            'payment_link' => ['nullable', 'string', 'max:500'],
             'categories' => ['nullable', 'array'],
             'categories.*' => ['string', 'max:100'],
             'brands_supplied' => ['nullable', 'string', 'max:500'],

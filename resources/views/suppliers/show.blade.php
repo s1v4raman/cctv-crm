@@ -28,33 +28,35 @@
 
                 <div class="flex items-center gap-2 flex-wrap">
                     @if(auth()->user()->isOffice())
-                        <button type="button" onclick="openSupplierPayment('', {{ (float) $supplier->balancePayable() }})" class="btn-primary text-xs font-bold cursor-pointer">
-                            Record Paid Amount
+                        <button type="button" onclick="openSupplierPayment('', {{ (float) $supplier->balancePayable() }})" class="btn-primary px-3.5 py-2 rounded-lg text-xs font-bold shadow-xs cursor-pointer inline-flex items-center gap-1.5 transition" style="background-color: #2563eb !important; color: #ffffff !important;">
+                            <span>Record Paid Amount</span>
                         </button>
                     @endif
                     @if($supplier->phone)
-                        <button type="button" onclick="openSupplierWhatsApp()" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white transition shadow-xs cursor-pointer">
+                        <button type="button" onclick="openSupplierWhatsApp()" class="px-3.5 py-2 rounded-lg text-xs font-bold transition shadow-xs cursor-pointer inline-flex items-center gap-1.5" style="background-color: #059669 !important; color: #ffffff !important;">
                             <span>WhatsApp</span>
                         </button>
                     @endif
                     @if($supplier->email)
-                        <button type="button" onclick="openSupplierEmail()" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white transition shadow-xs cursor-pointer">
-                            <span>Send Email</span>
+                        <button type="button" onclick="openSupplierEmail()" class="px-3.5 py-2 rounded-lg text-xs font-bold transition shadow-xs cursor-pointer inline-flex items-center gap-1.5" style="background-color: #0284c7 !important; color: #ffffff !important;">
+                            <span>Email</span>
                         </button>
                     @endif
                     @if(auth()->user()->isOffice())
-                        <a href="{{ route('purchase-orders.create', ['supplier_id' => $supplier->id]) }}" class="btn-secondary text-xs">
-                            New Purchase Order
+                        <a href="{{ route('purchase-orders.create', ['supplier_id' => $supplier->id]) }}" class="px-3.5 py-2 rounded-lg text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 border border-slate-300 dark:border-slate-700 transition shadow-xs">
+                            <span>New Purchase Order</span>
                         </a>
-                        <a href="{{ route('suppliers.edit', $supplier) }}" class="btn-secondary text-xs">
-                            Edit Supplier
+                        <a href="{{ route('suppliers.edit', $supplier) }}" class="px-3.5 py-2 rounded-lg text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 border border-slate-300 dark:border-slate-700 transition shadow-xs">
+                            <span>Edit</span>
                         </a>
                     @endif
                     @if(auth()->user()->isAdmin())
                         <form method="POST" action="{{ route('suppliers.destroy', $supplier) }}" data-confirm="Are you sure you want to delete supplier {{ $supplier->name }}?" class="inline">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="danger-link p-0 bg-transparent border-0 cursor-pointer text-xs ml-2">Delete</button>
+                            <button type="submit" class="px-3.5 py-2 rounded-lg text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white transition shadow-xs cursor-pointer border-0">
+                                <span>Delete</span>
+                            </button>
                         </form>
                     @endif
                 </div>
@@ -62,22 +64,117 @@
         </div>
     </x-slot>
 
+    @php
+        $validOrders = $supplier->purchaseOrders->where('status', '!=', 'cancelled');
+        $totalSpend = (float) $validOrders->sum('total');
+        $totalPaid = (float) $supplier->purchaseOrders->sum('amount_paid');
+        $balanceDue = max(0.0, $totalSpend - $totalPaid);
+        $unpaidOrders = $supplier->purchaseOrders->whereIn('payment_status', ['unpaid', 'partially_paid'])->where('status', '!=', 'cancelled');
+        $unpaidOrdersCount = $unpaidOrders->count();
+        $ordersInTransit = $supplier->purchaseOrders->whereIn('status', ['ordered', 'partially_received']);
+        $ordersInTransitCount = $ordersInTransit->count();
+        $ordersInTransitValue = (float) $ordersInTransit->sum('total');
+
+        $poMap = $supplier->purchaseOrders->mapWithKeys(function($p) {
+            $due = max(0.0, (float) $p->total - (float) $p->amount_paid);
+            return [(string)$p->id => [
+                'id' => $p->id,
+                'po_number' => $p->po_number,
+                'total' => (float) $p->total,
+                'amount_paid' => (float) $p->amount_paid,
+                'due' => $due,
+                'status' => $p->status,
+                'order_date' => $p->order_date ? $p->order_date->format('d M Y') : '—',
+            ]];
+        });
+
+        $paymentMap = $supplier->vendorPayments->mapWithKeys(function($pay) {
+            return [(string)$pay->id => [
+                'id' => $pay->id,
+                'ref' => $pay->payment_reference,
+                'date' => $pay->payment_date ? $pay->payment_date->format('d M Y') : '—',
+                'amount' => (float) $pay->amount,
+                'method' => strtoupper(str_replace('_', ' / ', $pay->payment_method ?: 'Bank Transfer')),
+                'utr' => $pay->transaction_reference ?: '',
+                'po' => $pay->purchaseOrder?->po_number ?: '',
+                'notes' => $pay->notes ?: '',
+            ]];
+        });
+    @endphp
+
     <div x-data="{
         showWhatsAppModal: false,
         showEmailModal: false,
         showPaymentModal: false,
         selectedPoId: '',
+        selectedPaymentId: '',
+        emailPoId: '',
+        emailPaymentId: '',
         paymentAmount: '',
         paymentMethod: 'neft_rtgs',
         paymentDate: '{{ now()->format('Y-m-d') }}',
         paymentRef: '',
         paymentNotes: '',
-        templateType: 'inquiry',
-        customMsg: '',
+        templateType: 'stock_inquiry',
+        customMsg: '1. [Model / SKU] — Qty: 10 Nos\n2. [Model / SKU] — Qty: 5 Nos',
+        emailTemplateType: 'stock_inquiry',
+        emailSubject: 'Stock & Price Inquiry: Availability & Quotation Request — Precision IT Systems',
+        emailMsg: 'Dear {{ $supplier->contact_person ?: ($supplier->company_name ?: $supplier->name) }},\n\nGreetings from Precision IT Systems.\n\nKindly share current stock availability, best dealer quotation, and dispatch lead times for the following items/SKUs:\n\n1. [Product Model / SKU] — Qty: 10 Nos\n2. [Product Model / SKU] — Qty: 4 Nos\n\nDelivery Destination: Central Warehouse, Precision IT Systems\nRequired Timeline: Immediate / Within 2-3 Business Days\n\nPlease confirm availability, GST rates, and delivery schedule.',
         copiedKey: null,
+        poList: @js($poMap),
+        paymentList: @js($paymentMap),
+        onWhatsAppTemplateChange() {
+            if (this.templateType === 'stock_inquiry' || this.templateType === 'stock_check') {
+                this.customMsg = '1. [Model / SKU] — Qty: 10 Nos\n2. [Model / SKU] — Qty: 5 Nos';
+            } else if (this.templateType === 'payment') {
+                this.customMsg = 'Please share the updated statement of account or outstanding invoice copies for reconciliation and payment scheduling.';
+            } else if (this.templateType === 'payment_confirmation') {
+                if (this.selectedPaymentId && this.paymentList[this.selectedPaymentId]) {
+                    const p = this.paymentList[this.selectedPaymentId];
+                    this.customMsg = `Amount: ₹${Number(p.amount).toFixed(2)}\nDate: ${p.date}\nPayment Mode: ${p.method}${p.utr ? '\nUTR / Ref: ' + p.utr : ''}${p.po ? '\nAgainst PO: ' + p.po : ''}`;
+                } else {
+                    this.customMsg = 'Amount Paid: ₹0.00\nPayment Mode: NEFT / RTGS\nUTR / Ref: UTR12345678';
+                }
+            } else if (this.templateType === 'po_dispatch') {
+                if (this.selectedPoId && this.poList[this.selectedPoId]) {
+                    const po = this.poList[this.selectedPoId];
+                    this.customMsg = `Order: PO #${po.po_number}\nTotal Amount: ₹${Number(po.total).toFixed(2)}\nDelivery expected as per PO instructions.`;
+                } else {
+                    this.customMsg = 'Please find attached our official Purchase Order.';
+                }
+            } else {
+                this.customMsg = '';
+            }
+        },
+        onEmailTemplateChange() {
+            const contactName = @js($supplier->contact_person ?: ($supplier->company_name ?: $supplier->name));
+            if (this.emailTemplateType === 'stock_inquiry') {
+                this.emailSubject = 'Stock & Price Inquiry: Availability & Quotation Request — Precision IT Systems';
+                this.emailMsg = `Dear ${contactName},\n\nGreetings from Precision IT Systems.\n\nKindly share current stock availability, best dealer quotation, and dispatch lead times for the following items/SKUs:\n\n1. [Product Model / SKU] — Qty: 10 Nos\n2. [Product Model / SKU] — Qty: 4 Nos\n\nDelivery Destination: Central Warehouse, Precision IT Systems\nRequired Timeline: Immediate / Within 2-3 Business Days\n\nPlease confirm availability, GST rates, and delivery schedule.`;
+            } else if (this.emailTemplateType === 'po_dispatch') {
+                const po = this.emailPoId && this.poList[this.emailPoId] ? this.poList[this.emailPoId] : null;
+                this.emailSubject = po ? `Official Purchase Order #${po.po_number} — Precision IT Systems` : 'Official Purchase Order — Precision IT Systems';
+                this.emailMsg = `Dear ${contactName},\n\nPlease find our official Purchase Order details below. Kindly acknowledge receipt, confirm delivery schedule, and dispatch as per instructions.`;
+            } else if (this.emailTemplateType === 'payment_confirmation') {
+                const pay = this.emailPaymentId && this.paymentList[this.emailPaymentId] ? this.paymentList[this.emailPaymentId] : null;
+                const amountStr = pay ? `₹${Number(pay.amount).toFixed(2)}` : '';
+                const utrStr = pay && pay.utr ? ` (UTR: ${pay.utr})` : '';
+                this.emailSubject = `Payment Confirmation & Remittance Advice: ${amountStr}${utrStr} — Precision IT Systems`;
+                this.emailMsg = `Dear ${contactName},\n\nWe have remitted payment to your registered bank account. Please find the payment details below and confirm receipt / reconcile your ledger.`;
+            } else {
+                this.emailSubject = 'Procurement Inquiry / Communique — Precision IT Systems';
+                this.emailMsg = `Dear ${contactName},\n\nGreetings from Precision IT Systems.\n\nWe are writing regarding our procurement collaboration. Kindly update us on current product availability and pricing schedules.\n\nBest regards,\nPrecision IT Systems Operations Team`;
+            }
+        },
         openPaymentModal(poId = '', dueAmount = 0) {
             this.selectedPoId = poId ? String(poId) : '';
-            this.paymentAmount = dueAmount > 0 ? Number(dueAmount).toFixed(2) : '';
+            if (poId && this.poList[String(poId)]) {
+                this.paymentAmount = Number(this.poList[String(poId)].due).toFixed(2);
+            } else if (dueAmount > 0) {
+                this.paymentAmount = Number(dueAmount).toFixed(2);
+            } else {
+                this.paymentAmount = '';
+            }
             this.paymentDate = '{{ now()->format('Y-m-d') }}';
             this.paymentRef = '';
             this.paymentNotes = '';
@@ -85,9 +182,31 @@
             const m = document.getElementById('supplier-payment-modal');
             if (m) m.style.display = 'flex';
         },
+        onPoChange() {
+            if (this.selectedPoId && this.poList[this.selectedPoId]) {
+                const po = this.poList[this.selectedPoId];
+                if (po.due > 0) {
+                    this.paymentAmount = Number(po.due).toFixed(2);
+                }
+            }
+        },
         copyText(text, key) {
             if (!text) return;
-            navigator.clipboard.writeText(text);
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text);
+            } else {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.focus();
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                } catch (err) {}
+                document.body.removeChild(textarea);
+            }
             this.copiedKey = key;
             setTimeout(() => { if (this.copiedKey === key) this.copiedKey = null; }, 2000);
         }
@@ -111,34 +230,76 @@
             </div>
         @endif
 
-        {{-- Financial & Work Metrics Overview (Cost-Based Work Ledger) --}}
-        @php
-            $totalVolume = $supplier->totalPurchaseVolume();
-            $totalPaid = (float) $supplier->purchaseOrders->sum('amount_paid');
-            $balanceDue = $supplier->balancePayable();
-            $ordersCount = $supplier->purchaseOrders->count();
-            $unpaidOrdersCount = $supplier->purchaseOrders->whereIn('payment_status', ['unpaid', 'partially_paid'])->count();
-        @endphp
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs">
-                <div class="text-xs font-medium text-slate-500 dark:text-slate-400">Total Procurement Cost</div>
-                <div class="text-xl font-bold font-mono text-slate-900 dark:text-white mt-1">₹{{ number_format($totalVolume, 2) }}</div>
-                <div class="text-[11px] text-slate-500 mt-1">Total value of all ordered work</div>
+        {{-- Vendor Financial Ledger & Outstanding Balance Card --}}
+        <div class="crm-section mb-6">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 mb-4 flex-wrap gap-3">
+                <div>
+                    <h3 style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;" class="text-base font-bold text-slate-900 dark:text-white">
+                        Vendor Financial Ledger & Procurement Overview
+                    </h3>
+                    <p class="text-xs text-slate-500 mt-0.5">Real-time spend, payment status, and order tracking for {{ $supplier->company_name ?: $supplier->name }}.</p>
+                </div>
+                <div class="flex items-center gap-2 flex-wrap">
+                    @if($balanceDue > 0)
+                        <span class="px-2.5 py-1 rounded-lg text-xs font-bold font-mono bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
+                            ₹{{ number_format($balanceDue, 2) }} Payment Pending
+                        </span>
+                    @else
+                        <span class="px-2.5 py-1 rounded-lg text-xs font-bold font-mono bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                            All Invoices Cleared
+                        </span>
+                    @endif
+                    @if(auth()->user()->isOffice())
+                        <button type="button" @click="openPaymentModal('', {{ $balanceDue }})" class="px-3.5 py-2 rounded-lg text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white transition shadow-xs cursor-pointer">
+                            <span>Record Payment</span>
+                        </button>
+                    @endif
+                </div>
             </div>
-            <div class="p-4 rounded-xl border border-emerald-200 dark:border-emerald-900/60 bg-emerald-50/50 dark:bg-emerald-950/20 shadow-xs">
-                <div class="text-xs font-medium text-emerald-700 dark:text-emerald-400">Total Paid Amount Recorded</div>
-                <div class="text-xl font-bold font-mono text-emerald-700 dark:text-emerald-400 mt-1">₹{{ number_format($totalPaid, 2) }}</div>
-                <div class="text-[11px] text-emerald-600/80 dark:text-emerald-500 mt-1">Cleared via offline transfers</div>
-            </div>
-            <div class="p-4 rounded-xl border {{ $balanceDue > 0 ? 'border-amber-200 dark:border-amber-900/60 bg-amber-50/50 dark:bg-amber-950/20' : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900' }} shadow-xs">
-                <div class="text-xs font-medium {{ $balanceDue > 0 ? 'text-amber-700 dark:text-amber-400' : 'text-slate-500 dark:text-slate-400' }}">Remaining Balance Due</div>
-                <div class="text-xl font-bold font-mono {{ $balanceDue > 0 ? 'text-amber-700 dark:text-amber-400' : 'text-slate-900 dark:text-white' }} mt-1">₹{{ number_format($balanceDue, 2) }}</div>
-                <div class="text-[11px] {{ $balanceDue > 0 ? 'text-amber-600/80 dark:text-amber-500' : 'text-slate-500' }} mt-1">Outstanding vendor liability</div>
-            </div>
-            <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs">
-                <div class="text-xs font-medium text-slate-500 dark:text-slate-400">Purchase Orders</div>
-                <div class="text-xl font-bold font-mono text-slate-900 dark:text-white mt-1">{{ $ordersCount }}</div>
-                <div class="text-[11px] text-slate-500 mt-1">{{ $unpaidOrdersCount }} order(s) pending payment</div>
+
+            {{-- 4 Real-Time Procurement Metric Cards Grid --}}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {{-- 1. Total Spend / Purchases (₹) --}}
+                <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Total Spend / Purchases</span>
+                        <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">Total POs</span>
+                    </div>
+                    <div class="text-2xl font-bold font-mono text-slate-900 dark:text-white mt-1.5">₹{{ number_format($totalSpend, 2) }}</div>
+                    <div class="text-[11px] text-slate-500 mt-1">Lifetime procurement ({{ $validOrders->count() }} active orders)</div>
+                </div>
+
+                {{-- 2. Total Paid (₹) --}}
+                <div class="p-4 rounded-xl border border-emerald-200 dark:border-emerald-900/60 bg-emerald-50/40 dark:bg-emerald-950/20 shadow-xs">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">Total Paid</span>
+                        <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300">Cleared</span>
+                    </div>
+                    <div class="text-2xl font-bold font-mono text-emerald-700 dark:text-emerald-400 mt-1.5">₹{{ number_format($totalPaid, 2) }}</div>
+                    <div class="text-[11px] text-emerald-600/80 dark:text-emerald-500 mt-1">Recorded via bank & offline transfers</div>
+                </div>
+
+                {{-- 3. Outstanding Balance / Unpaid POs (₹) --}}
+                <div class="p-4 rounded-xl border {{ $balanceDue > 0 ? 'border-amber-300 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-950/30' : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900' }} shadow-xs">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold {{ $balanceDue > 0 ? 'text-amber-700 dark:text-amber-400' : 'text-slate-500 dark:text-slate-400' }} uppercase tracking-wider">Outstanding Balance</span>
+                        <span class="px-1.5 py-0.5 rounded text-[10px] font-bold {{ $balanceDue > 0 ? 'bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-300' : 'bg-slate-100 dark:bg-slate-800 text-slate-500' }}">Due</span>
+                    </div>
+                    <div class="text-2xl font-bold font-mono {{ $balanceDue > 0 ? 'text-amber-700 dark:text-amber-400' : 'text-slate-900 dark:text-white' }} mt-1.5">₹{{ number_format($balanceDue, 2) }}</div>
+                    <div class="text-[11px] {{ $balanceDue > 0 ? 'text-amber-600 dark:text-amber-400 font-semibold' : 'text-slate-500' }} mt-1">
+                        {{ $unpaidOrdersCount }} unpaid / partial PO(s)
+                    </div>
+                </div>
+
+                {{-- 4. Active Orders in Transit --}}
+                <div class="p-4 rounded-xl border border-blue-200 dark:border-blue-900/60 bg-blue-50/40 dark:bg-blue-950/20 shadow-xs">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-blue-700 dark:text-blue-400 uppercase tracking-wider">Active Orders in Transit</span>
+                        <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-100 dark:bg-blue-900/60 text-blue-800 dark:text-blue-300">In Transit</span>
+                    </div>
+                    <div class="text-2xl font-bold font-mono text-blue-700 dark:text-blue-400 mt-1.5">{{ $ordersInTransitCount }} <span class="text-sm font-normal text-slate-600 dark:text-slate-400">order(s)</span></div>
+                    <div class="text-[11px] text-blue-600/80 dark:text-blue-400 mt-1">₹{{ number_format($ordersInTransitValue, 2) }} pending delivery</div>
+                </div>
             </div>
         </div>
 
@@ -207,39 +368,72 @@
             {{-- Bank Account & Payment Details Card (For Offline Transfers) --}}
             <div class="space-y-6">
                 <div class="crm-section">
-                    <div class="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-800 mb-3">
-                        <h3 style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">Bank & Payment Details</h3>
-                        <span class="text-[11px] text-slate-500 font-medium">For Offline Transfers</span>
+                    <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 mb-3.5 flex-wrap gap-2">
+                        <div>
+                            <h3 style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">Bank & Payment Details</h3>
+                            <span class="text-[11px] text-slate-500 font-medium">1-Click Copy for Vendor Bank Transfers</span>
+                        </div>
+                        @if($supplier->hasBankDetails())
+                            <button type="button" @click="copyText(@js($supplier->formattedBankDetails()), 'all')" 
+                                    class="px-2.5 py-1 rounded text-xs font-bold transition border cursor-pointer"
+                                    :class="copiedKey === 'all' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border-slate-300 dark:border-slate-700'">
+                                <span x-text="copiedKey === 'all' ? 'All Copied!' : 'Copy All Details'"></span>
+                            </button>
+                        @endif
                     </div>
 
-                    @if($supplier->bank_name || $supplier->bank_account_number || $supplier->bank_ifsc || $supplier->upi_id)
+                    @if($supplier->hasBankDetails())
                         <div class="space-y-3 text-xs">
+                            {{-- Beneficiary Name --}}
+                            <div>
+                                <div class="text-slate-500 font-bold uppercase text-[10px] tracking-wider">Beneficiary / Account Name</div>
+                                <div class="flex items-center justify-between mt-1 p-2 rounded-lg bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
+                                    <span class="font-bold text-slate-900 dark:text-white">{{ $supplier->company_name ?: $supplier->name }}</span>
+                                    <button type="button" @click="copyText('{{ addslashes($supplier->company_name ?: $supplier->name) }}', 'name')" 
+                                            class="text-[11px] font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 cursor-pointer">
+                                        <span x-text="copiedKey === 'name' ? 'Copied!' : 'Copy'"></span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            {{-- Bank Name --}}
                             @if($supplier->bank_name)
                                 <div>
                                     <div class="text-slate-500 font-bold uppercase text-[10px] tracking-wider">Bank Name</div>
-                                    <div class="text-sm font-semibold text-slate-900 dark:text-white mt-0.5">{{ $supplier->bank_name }}</div>
-                                </div>
-                            @endif
-
-                            @if($supplier->bank_account_number)
-                                <div>
-                                    <div class="text-slate-500 font-bold uppercase text-[10px] tracking-wider">Account Number</div>
-                                    <div class="flex items-center justify-between mt-0.5 p-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
-                                        <span class="font-mono font-bold text-slate-900 dark:text-white">{{ $supplier->bank_account_number }}</span>
-                                        <button type="button" @click="copyText('{{ $supplier->bank_account_number }}', 'acc')" class="text-[11px] font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 cursor-pointer">
-                                            <span x-text="copiedKey === 'acc' ? 'Copied!' : 'Copy'"></span>
+                                    <div class="flex items-center justify-between mt-1 p-2 rounded-lg bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
+                                        <span class="font-semibold text-slate-900 dark:text-white">{{ $supplier->bank_name }}</span>
+                                        <button type="button" @click="copyText('{{ addslashes($supplier->bank_name) }}', 'bank')" 
+                                                class="text-[11px] font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 cursor-pointer">
+                                            <span x-text="copiedKey === 'bank' ? 'Copied!' : 'Copy'"></span>
                                         </button>
                                     </div>
                                 </div>
                             @endif
 
+                            {{-- Account Number --}}
+                            @if($supplier->bank_account_number)
+                                <div>
+                                    <div class="text-slate-500 font-bold uppercase text-[10px] tracking-wider">Bank Account Number</div>
+                                    <div class="flex items-center justify-between mt-1 p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
+                                        <span class="font-mono font-bold text-sm text-slate-900 dark:text-white tracking-wider">{{ $supplier->bank_account_number }}</span>
+                                        <button type="button" @click="copyText('{{ $supplier->bank_account_number }}', 'acc')" 
+                                                class="px-2 py-0.5 rounded text-[11px] font-bold transition border cursor-pointer"
+                                                :class="copiedKey === 'acc' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-300 border-slate-300 dark:border-slate-600 hover:bg-blue-50'">
+                                            <span x-text="copiedKey === 'acc' ? 'Copied!' : 'Copy A/C'"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                            @endif
+
+                            {{-- IFSC Code & Branch --}}
                             <div class="grid grid-cols-2 gap-3">
                                 @if($supplier->bank_ifsc)
                                     <div>
                                         <div class="text-slate-500 font-bold uppercase text-[10px] tracking-wider">IFSC Code</div>
-                                        <div class="flex items-center justify-between mt-0.5 p-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                                        <div class="flex items-center justify-between mt-1 p-2 rounded-lg bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
                                             <span class="font-mono font-bold text-slate-900 dark:text-white uppercase">{{ $supplier->bank_ifsc }}</span>
-                                            <button type="button" @click="copyText('{{ $supplier->bank_ifsc }}', 'ifsc')" class="text-[11px] font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 cursor-pointer">
+                                            <button type="button" @click="copyText('{{ strtoupper($supplier->bank_ifsc) }}', 'ifsc')" 
+                                                    class="text-[11px] font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 cursor-pointer">
                                                 <span x-text="copiedKey === 'ifsc' ? 'Copied!' : 'Copy'"></span>
                                             </button>
                                         </div>
@@ -249,31 +443,63 @@
                                 @if($supplier->bank_branch)
                                     <div>
                                         <div class="text-slate-500 font-bold uppercase text-[10px] tracking-wider">Branch</div>
-                                        <div class="p-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white truncate">
+                                        <div class="mt-1 p-2 rounded-lg bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white truncate font-medium">
                                             {{ $supplier->bank_branch }}
                                         </div>
                                     </div>
                                 @endif
                             </div>
 
+                            {{-- UPI ID / VPA --}}
                             @if($supplier->upi_id)
                                 <div>
                                     <div class="text-slate-500 font-bold uppercase text-[10px] tracking-wider">UPI ID / VPA</div>
-                                    <div class="flex items-center justify-between mt-0.5 p-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                                    <div class="flex items-center justify-between mt-1 p-2 rounded-lg bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
                                         <span class="font-mono font-bold text-slate-900 dark:text-white">{{ $supplier->upi_id }}</span>
-                                        <button type="button" @click="copyText('{{ $supplier->upi_id }}', 'upi')" class="text-[11px] font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 cursor-pointer">
-                                            <span x-text="copiedKey === 'upi' ? 'Copied!' : 'Copy'"></span>
-                                        </button>
+                                        <div class="flex items-center gap-1.5">
+                                            <button type="button" @click="copyText('{{ $supplier->upi_id }}', 'upi')" 
+                                                    class="text-[11px] font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 cursor-pointer">
+                                                <span x-text="copiedKey === 'upi' ? 'Copied!' : 'Copy'"></span>
+                                            </button>
+                                            <a href="upi://pay?pa={{ urlencode($supplier->upi_id) }}&pn={{ urlencode($supplier->company_name ?: $supplier->name) }}&cu=INR" 
+                                               class="text-[11px] font-bold text-emerald-600 hover:text-emerald-700 hover:underline">
+                                                Pay
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+
+                            {{-- Payment Link / QR Portal --}}
+                            @if($supplier->payment_link)
+                                <div>
+                                    <div class="text-slate-500 font-bold uppercase text-[10px] tracking-wider">Payment Link / Portal URL</div>
+                                    <div class="flex items-center justify-between mt-1 p-2 rounded-lg bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
+                                        <a href="{{ $supplier->payment_link }}" target="_blank" class="font-mono text-xs text-blue-600 hover:underline truncate max-w-[180px]">
+                                            {{ $supplier->payment_link }}
+                                        </a>
+                                        <div class="flex items-center gap-1.5 shrink-0">
+                                            <button type="button" @click="copyText('{{ $supplier->payment_link }}', 'link')" 
+                                                    class="text-[11px] font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 cursor-pointer">
+                                                <span x-text="copiedKey === 'link' ? 'Copied!' : 'Copy'"></span>
+                                            </button>
+                                            <a href="{{ $supplier->payment_link }}" target="_blank" 
+                                               class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-600 text-white hover:bg-blue-700 transition">
+                                                Open
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
                             @endif
                         </div>
                     @else
-                        <div class="py-4 text-center text-xs text-slate-500">
-                            No bank details registered yet.
+                        <div class="py-6 text-center text-xs text-slate-500">
+                            <div>No bank or payment details registered yet.</div>
                             @if(auth()->user()->isOffice())
-                                <div class="mt-2">
-                                    <a href="{{ route('suppliers.edit', $supplier) }}" class="text-blue-600 hover:underline font-semibold">Add bank details</a>
+                                <div class="mt-2.5">
+                                    <a href="{{ route('suppliers.edit', $supplier) }}" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white transition inline-block">
+                                        Add Bank & Payment Details
+                                    </a>
                                 </div>
                             @endif
                         </div>
@@ -322,8 +548,8 @@
                     <p class="text-xs text-slate-500 mt-0.5">Track ordered hardware cost, offline amount paid, and outstanding balance.</p>
                 </div>
                 @if(auth()->user()->isOffice())
-                    <button type="button" @click="openPaymentModal('', {{ $supplier->balancePayable() }})" class="btn-secondary text-xs font-bold cursor-pointer">
-                        Record Paid Amount
+                    <button type="button" @click="openPaymentModal('', {{ $supplier->balancePayable() }})" class="px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-xs cursor-pointer border border-blue-600 inline-flex items-center" style="background-color: #2563eb !important; color: #ffffff !important;">
+                        <span>Record Paid Amount</span>
                     </button>
                 @endif
             </div>
@@ -380,13 +606,16 @@
                                     </span>
                                 </td>
                                 <td class="nowrap text-center">
-                                    <div class="flex items-center justify-center gap-2">
-                                        <a href="{{ route('purchase-orders.show', $po) }}" class="plain-link text-xs font-semibold">
-                                            View
+                                    <div class="flex items-center justify-center gap-1.5">
+                                        <a href="{{ route('purchase-orders.show', $po) }}" class="px-2.5 py-1 rounded text-xs font-bold bg-slate-800 hover:bg-slate-700 dark:bg-slate-700 dark:hover:bg-slate-600 text-white transition">
+                                            <span>View</span>
+                                        </a>
+                                        <a href="{{ route('purchase-orders.pdf', $po) }}" class="px-2.5 py-1 rounded text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 transition" title="Download PO PDF">
+                                            <span>PDF</span>
                                         </a>
                                         @if(auth()->user()->isOffice() && $due > 0)
-                                            <button type="button" @click="openPaymentModal({{ $po->id }}, {{ $due }})" class="text-xs font-bold text-blue-600 hover:underline cursor-pointer">
-                                                Update Paid
+                                            <button type="button" @click="openPaymentModal({{ $po->id }}, {{ $due }})" class="px-2.5 py-1 rounded text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white transition shadow-xs cursor-pointer" title="Direct Record Payment for this PO">
+                                                <span>Record Payment</span>
                                             </button>
                                         @endif
                                     </div>
@@ -425,6 +654,7 @@
                             <th>UTR / Cheque Ref</th>
                             <th>Remarks / Notes</th>
                             <th class="nowrap">Recorded By</th>
+                            <th class="nowrap text-center">Share Advice</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -460,10 +690,30 @@
                                 <td class="nowrap text-slate-500">
                                     {{ $payment->recordedBy?->name ?: 'System' }}
                                 </td>
+                                <td class="nowrap text-center">
+                                    <div class="flex items-center justify-center gap-1.5">
+                                        @if($supplier->phone)
+                                            <form method="POST" action="{{ route('vendor-payments.shareWhatsApp', $payment) }}" target="_blank" class="inline">
+                                                @csrf
+                                                <button type="submit" class="px-2.5 py-1 rounded text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white transition shadow-xs cursor-pointer border-0" title="Send Payment Advice & UTR on WhatsApp">
+                                                    <span>WhatsApp</span>
+                                                </button>
+                                            </form>
+                                        @endif
+                                        @if($supplier->email)
+                                            <form method="POST" action="{{ route('vendor-payments.sendEmail', $payment) }}" class="inline">
+                                                @csrf
+                                                <button type="submit" class="px-2.5 py-1 rounded text-xs font-bold bg-sky-600 hover:bg-sky-700 text-white transition shadow-xs cursor-pointer border-0" title="Email Remittance Advice to Vendor">
+                                                    <span>Email</span>
+                                                </button>
+                                            </form>
+                                        @endif
+                                    </div>
+                                </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="text-center py-6 text-slate-500 text-sm">
+                                <td colspan="9" class="text-center py-6 text-slate-500 text-sm">
                                     No offline payment records logged yet.
                                 </td>
                             </tr>
@@ -482,8 +732,8 @@
              @click.away="showPaymentModal = false; $root.style.display = 'none';">
             <div class="px-5 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-900/60">
                 <div>
-                    <h3 class="text-sm font-bold text-slate-900 dark:text-white" style="margin: 0; padding: 0; border: none;">Record Offline Payment</h3>
-                    <p class="text-xs text-slate-500 mt-0.5">Update work ledger with paid amount (NEFT, RTGS, Cheque, UPI, Cash)</p>
+                    <h3 class="text-sm font-bold text-slate-900 dark:text-white" style="margin: 0; padding: 0; border: none;">Record Vendor Payment</h3>
+                    <p class="text-xs text-slate-500 mt-0.5">Link offline payment to a specific Purchase Order or General Ledger</p>
                 </div>
                 <button type="button" @click="showPaymentModal = false; document.getElementById('supplier-payment-modal').style.display = 'none';" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg leading-none cursor-pointer">&times;</button>
             </div>
@@ -491,8 +741,13 @@
                 @csrf
                 <div class="p-5 space-y-4 text-xs">
                     <div>
-                        <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Target Purchase Order (Optional)</label>
-                        <select name="purchase_order_id" x-model="selectedPoId" class="w-full px-3 py-2 border rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs">
+                        <div class="flex items-center justify-between mb-1">
+                            <label class="block font-bold text-slate-700 dark:text-slate-200">Target Purchase Order (Optional)</label>
+                            <span class="text-[11px] text-blue-600 dark:text-blue-400 font-semibold" x-show="selectedPoId && poList[selectedPoId]">
+                                Due: ₹<span x-text="Number(poList[selectedPoId]?.due || 0).toFixed(2)"></span>
+                            </span>
+                        </div>
+                        <select name="purchase_order_id" x-model="selectedPoId" @change="onPoChange()" class="w-full px-3 py-2 border rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-mono">
                             <option value="">-- General Account Payment (Not tied to single PO) --</option>
                             @foreach($supplier->purchaseOrders as $po)
                                 @php
@@ -503,12 +758,28 @@
                                 </option>
                             @endforeach
                         </select>
+                        <p class="text-[11px] text-slate-500 mt-1">Linking to a PO automatically updates its paid amount and payment status.</p>
                     </div>
+
+                    {{-- Live Selected PO Banner --}}
+                    <template x-if="selectedPoId && poList[selectedPoId]">
+                        <div class="p-3 rounded-xl bg-blue-50/70 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 text-[11px] space-y-1">
+                            <div class="flex items-center justify-between font-bold text-blue-900 dark:text-blue-200">
+                                <span x-text="'PO #' + poList[selectedPoId].po_number"></span>
+                                <span x-text="'Ordered: ' + poList[selectedPoId].order_date"></span>
+                            </div>
+                            <div class="flex items-center justify-between text-slate-600 dark:text-slate-300 font-mono">
+                                <span>Total: ₹<span x-text="Number(poList[selectedPoId].total).toFixed(2)"></span></span>
+                                <span>Paid: ₹<span x-text="Number(poList[selectedPoId].amount_paid).toFixed(2)"></span></span>
+                                <span class="font-bold text-amber-700 dark:text-amber-400">Due: ₹<span x-text="Number(poList[selectedPoId].due).toFixed(2)"></span></span>
+                            </div>
+                        </div>
+                    </template>
 
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Paid Amount (₹) *</label>
-                            <input type="number" step="0.01" min="0.01" name="amount" x-model="paymentAmount" required placeholder="0.00" class="w-full px-3 py-2 border rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-mono text-sm">
+                            <input type="number" step="0.01" min="0.01" name="amount" x-model="paymentAmount" required placeholder="0.00" class="w-full px-3 py-2 border rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-mono text-sm font-bold">
                         </div>
                         <div>
                             <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Payment Date *</label>
@@ -541,7 +812,7 @@
 
                 <div class="px-5 py-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 flex items-center justify-end gap-2">
                     <button type="button" @click="showPaymentModal = false; document.getElementById('supplier-payment-modal').style.display = 'none';" class="btn-secondary text-xs">Cancel</button>
-                    <button type="submit" class="btn-primary text-xs font-bold">Save Payment Record</button>
+                    <button type="submit" class="px-4 py-2 rounded-lg text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white transition shadow-xs cursor-pointer">Save Payment Record</button>
                 </div>
             </form>
         </div>
@@ -551,11 +822,11 @@
     <div id="supplier-whatsapp-modal" x-show="showWhatsAppModal" style="display: none;" 
          class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs"
          @keydown.escape.window="showWhatsAppModal = false; $el.style.display = 'none';">
-        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl max-w-md w-full overflow-hidden"
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden"
              @click.away="showWhatsAppModal = false; $root.style.display = 'none';">
             <div class="px-5 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-emerald-50/60 dark:bg-emerald-950/30">
                 <div class="text-emerald-800 dark:text-emerald-300 font-bold text-sm">
-                    Share with Supplier on WhatsApp
+                    1-Click Vendor WhatsApp Inquiry & Advice
                 </div>
                 <button type="button" @click="showWhatsAppModal = false; document.getElementById('supplier-whatsapp-modal').style.display = 'none';" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg leading-none cursor-pointer">&times;</button>
             </div>
@@ -567,16 +838,59 @@
                         <input type="text" name="phone" value="{{ $supplier->phone }}" required class="w-full px-3 py-2 border rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-mono">
                     </div>
                     <div>
-                        <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Message Template</label>
-                        <select name="template_type" x-model="templateType" class="w-full px-3 py-2 border rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
-                            <option value="inquiry">General Vendor Inquiry & Follow-up</option>
-                            <option value="payment">Statement of Account & Payment Advice</option>
-                            <option value="stock_check">Stock Availability & Pricing Inquiry</option>
+                        <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Pre-built 1-Click Inquiry Template</label>
+                        <select name="template_type" x-model="templateType" @change="onWhatsAppTemplateChange()" class="w-full px-3 py-2 border rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-semibold">
+                            <option value="stock_inquiry">Stock & Price Inquiry (Send SKU List for Quotation)</option>
+                            <option value="po_dispatch">PO Dispatch (Share Official PO & PDF)</option>
+                            <option value="payment_confirmation">Payment Confirmation (Send UTR & Remittance Advice)</option>
+                            <option value="payment">Statement of Account & Balance Summary</option>
+                            <option value="inquiry">General Vendor Follow-up</option>
                         </select>
                     </div>
+
+                    {{-- Target PO Selector for PO Dispatch --}}
+                    <div x-show="templateType === 'po_dispatch'" class="p-3 rounded-xl bg-blue-50/70 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 space-y-1.5">
+                        <label class="block font-bold text-blue-900 dark:text-blue-200">Target Purchase Order *</label>
+                        <select name="purchase_order_id" x-model="selectedPoId" @change="onWhatsAppTemplateChange()" class="w-full px-3 py-1.5 border rounded-lg border-blue-300 dark:border-blue-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-mono">
+                            <option value="">-- Choose PO to Dispatch --</option>
+                            @foreach($supplier->purchaseOrders as $po)
+                                <option value="{{ $po->id }}">{{ $po->po_number }} &mdash; Total: ₹{{ number_format((float) $po->total, 2) }} ({{ $po->items->count() }} items)</option>
+                            @endforeach
+                        </select>
+                        <p class="text-[11px] text-blue-700 dark:text-blue-300">An official signed PDF link is automatically generated and attached to the WhatsApp dispatch message.</p>
+                    </div>
+
+                    {{-- Target Payment Selector for Payment Confirmation --}}
+                    <div x-show="templateType === 'payment_confirmation'" class="p-3 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 space-y-1.5">
+                        <label class="block font-bold text-emerald-900 dark:text-emerald-200">Select Payment Record *</label>
+                        <select name="vendor_payment_id" x-model="selectedPaymentId" @change="onWhatsAppTemplateChange()" class="w-full px-3 py-1.5 border rounded-lg border-emerald-300 dark:border-emerald-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-mono">
+                            <option value="">-- Choose Payment Record --</option>
+                            @foreach($supplier->vendorPayments as $pay)
+                                <option value="{{ $pay->id }}">{{ $pay->payment_reference }} &mdash; ₹{{ number_format((float) $pay->amount, 2) }} (UTR: {{ $pay->transaction_reference ?: 'N/A' }})</option>
+                            @endforeach
+                        </select>
+                        <p class="text-[11px] text-emerald-700 dark:text-emerald-300">Auto-injects amount, UTR / transaction ID, payment mode, and date into remittance advice.</p>
+                    </div>
+
+                    {{-- Dynamic SKU Quick-Add Chips for Stock & Price Inquiry --}}
+                    <div x-show="templateType === 'stock_inquiry' || templateType === 'stock_check'" class="space-y-1">
+                        <div class="flex items-center justify-between">
+                            <span class="font-bold text-slate-700 dark:text-slate-200">Quick-Add Hardware SKU Presets:</span>
+                        </div>
+                        <div class="flex flex-wrap gap-1">
+                            <button type="button" @click="customMsg += (customMsg ? '\n' : '') + '• 2MP Dome IP Camera — Qty: 10 Nos'" class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 cursor-pointer">+ 2MP Camera</button>
+                            <button type="button" @click="customMsg += (customMsg ? '\n' : '') + '• 8CH 4K NVR Recorder — Qty: 2 Nos'" class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 cursor-pointer">+ 8CH NVR</button>
+                            <button type="button" @click="customMsg += (customMsg ? '\n' : '') + '• 4TB Surveillance HDD — Qty: 4 Nos'" class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 cursor-pointer">+ 4TB HDD</button>
+                            <button type="button" @click="customMsg += (customMsg ? '\n' : '') + '• Cat6 UTP 305m Cable Box — Qty: 2 Boxes'" class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 cursor-pointer">+ Cat6 Cable</button>
+                            <button type="button" @click="customMsg += (customMsg ? '\n' : '') + '• 8-Port Gigabit PoE Switch — Qty: 2 Nos'" class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 cursor-pointer">+ PoE Switch</button>
+                        </div>
+                    </div>
+
                     <div>
-                        <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Custom Notes / Message (Optional)</label>
-                        <textarea name="message" x-model="customMsg" rows="3" placeholder="Add specific equipment, part numbers or remarks..." class="w-full px-3 py-2 border rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"></textarea>
+                        <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">
+                            <span x-text="templateType === 'stock_inquiry' ? 'Product SKU List / Inquiry Scope *' : 'Custom Notes / Message'"></span>
+                        </label>
+                        <textarea name="message" x-model="customMsg" rows="4" placeholder="Enter product SKUs, models, quantities, or special instructions..." class="w-full px-3 py-2 border rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-mono text-xs"></textarea>
                     </div>
                 </div>
                 <div class="px-5 py-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 flex items-center justify-end gap-2">
@@ -597,7 +911,7 @@
              @click.away="showEmailModal = false; $root.style.display = 'none';">
             <div class="px-5 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-blue-50/60 dark:bg-blue-950/30">
                 <div class="text-blue-800 dark:text-blue-300 font-bold text-sm">
-                    Dispatch Email to Supplier
+                    1-Click Vendor Email Dispatch & Inquiry
                 </div>
                 <button type="button" @click="showEmailModal = false; document.getElementById('supplier-email-modal').style.display = 'none';" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg leading-none cursor-pointer">&times;</button>
             </div>
@@ -609,19 +923,44 @@
                         <input type="email" name="email" value="{{ $supplier->email }}" required class="w-full px-3 py-2 border rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
                     </div>
                     <div>
+                        <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Pre-built 1-Click Email Template</label>
+                        <select name="template_type" x-model="emailTemplateType" @change="onEmailTemplateChange()" class="w-full px-3 py-2 border rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-semibold">
+                            <option value="stock_inquiry">Stock & Price Inquiry (SKU List & Availability)</option>
+                            <option value="po_dispatch">PO Dispatch (Purchase Order Details & Signed PDF)</option>
+                            <option value="payment_confirmation">Payment Confirmation (Remittance Advice & UTR)</option>
+                            <option value="inquiry">General Vendor Inquiry</option>
+                        </select>
+                    </div>
+
+                    {{-- Target PO Selector for Email PO Dispatch --}}
+                    <div x-show="emailTemplateType === 'po_dispatch'" class="p-3 rounded-xl bg-blue-50/70 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 space-y-1.5">
+                        <label class="block font-bold text-blue-900 dark:text-blue-200">Select Purchase Order *</label>
+                        <select name="purchase_order_id" x-model="emailPoId" @change="onEmailTemplateChange()" class="w-full px-3 py-1.5 border rounded-lg border-blue-300 dark:border-blue-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-mono">
+                            <option value="">-- Choose PO --</option>
+                            @foreach($supplier->purchaseOrders as $po)
+                                <option value="{{ $po->id }}">{{ $po->po_number }} &mdash; Total: ₹{{ number_format((float) $po->total, 2) }} ({{ $po->items->count() }} items)</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    {{-- Target Payment Selector for Email Payment Confirmation --}}
+                    <div x-show="emailTemplateType === 'payment_confirmation'" class="p-3 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 space-y-1.5">
+                        <label class="block font-bold text-emerald-900 dark:text-emerald-200">Select Payment Record *</label>
+                        <select name="vendor_payment_id" x-model="emailPaymentId" @change="onEmailTemplateChange()" class="w-full px-3 py-1.5 border rounded-lg border-emerald-300 dark:border-emerald-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-mono">
+                            <option value="">-- Choose Payment Record --</option>
+                            @foreach($supplier->vendorPayments as $pay)
+                                <option value="{{ $pay->id }}">{{ $pay->payment_reference }} &mdash; ₹{{ number_format((float) $pay->amount, 2) }} (UTR: {{ $pay->transaction_reference ?: 'N/A' }})</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
                         <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Email Subject *</label>
-                        <input type="text" name="subject" value="Procurement Inquiry / Communique — Precision IT Systems" required class="w-full px-3 py-2 border rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
+                        <input type="text" name="subject" x-model="emailSubject" required class="w-full px-3 py-2 border rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
                     </div>
                     <div>
-                        <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Message Body *</label>
-                        <textarea name="message_body" rows="5" required placeholder="Type official message, inquiries, delivery reminders or payment details..." class="w-full px-3 py-2 border rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">Dear {{ $supplier->contact_person ?: ($supplier->company_name ?: $supplier->name) }},
-
-Greetings from Precision IT Systems.
-
-We are writing regarding our procurement collaboration. Kindly update us on current product availability and pricing schedules.
-
-Best regards,
-Precision IT Systems Operations Team</textarea>
+                        <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Message Content / SKU Specifications *</label>
+                        <textarea name="message_body" x-model="emailMsg" rows="5" required class="w-full px-3 py-2 border rounded-xl border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-mono text-xs"></textarea>
                     </div>
                 </div>
                 <div class="px-5 py-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 flex items-center justify-end gap-2">

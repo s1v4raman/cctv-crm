@@ -107,6 +107,11 @@ Route::get('/view-jcr/{jobCompletionReport}', [JobCompletionReportController::cl
     ->middleware(['signed', 'throttle:60,1'])
     ->name('jcr.public-pdf');
 
+// Public vendor Purchase Order PDF viewer (accessible from WhatsApp links)
+Route::get('/view-po/{purchase_order}', [PurchaseOrderController::class, 'publicPdf'])
+    ->middleware(['signed', 'throttle:60,1'])
+    ->name('purchase-orders.public-pdf');
+
 // Universal theme preference persistence (all authenticated users)
 Route::middleware(['auth'])->group(function () {
     Route::post('/profile/theme', [ProfileController::class, 'updateTheme'])->name('profile.theme');
@@ -166,6 +171,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/suppliers/{supplier}/payments', [SupplierController::class, 'recordPayment'])->name('suppliers.recordPayment');
         Route::post('/suppliers/{supplier}/share-whatsapp', [SupplierController::class, 'shareWhatsApp'])->name('suppliers.shareWhatsApp');
         Route::post('/suppliers/{supplier}/send-email', [SupplierController::class, 'sendEmail'])->name('suppliers.sendEmail');
+        Route::post('/vendor-payments/{payment}/share-whatsapp', [SupplierController::class, 'sharePaymentWhatsApp'])->name('vendor-payments.shareWhatsApp');
+        Route::post('/vendor-payments/{payment}/send-email', [SupplierController::class, 'sendPaymentEmail'])->name('vendor-payments.sendEmail');
 
         // Purchase Orders Write
         Route::get('/purchase-orders/create', [PurchaseOrderController::class, 'create'])->name('purchase-orders.create');
@@ -177,6 +184,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::patch('/purchase-orders/{purchase_order}/payment', [PurchaseOrderController::class, 'updatePayment'])->name('purchase-orders.updatePayment');
         Route::post('/purchase-orders/{purchase_order}/share-whatsapp', [PurchaseOrderController::class, 'shareWhatsApp'])->name('purchase-orders.shareWhatsApp');
         Route::post('/purchase-orders/{purchase_order}/send-email', [PurchaseOrderController::class, 'sendEmail'])->name('purchase-orders.sendEmail');
+        Route::get('/purchase-orders/{purchase_order}/pdf', [PurchaseOrderController::class, 'downloadPdf'])->name('purchase-orders.pdf');
+        Route::get('/purchase-orders/{purchase_order}/stream-pdf', [PurchaseOrderController::class, 'streamPdf'])->name('purchase-orders.streamPdf');
 
         // Attendance Admin Write (managing other employees' records)
         Route::post('/attendance', [AttendanceController::class, 'store'])->name('attendance.store');
@@ -521,6 +530,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Suppliers & Vendors Read-Only
         Route::get('/suppliers', [SupplierController::class, 'index'])->name('suppliers.index');
+        Route::get('/suppliers/suggest', [SupplierController::class, 'suggest'])->name('suppliers.suggest');
         Route::get('/suppliers/{supplier}', [SupplierController::class, 'show'])->name('suppliers.show');
 
         // Purchase Orders Read-Only

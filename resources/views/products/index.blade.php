@@ -31,6 +31,12 @@
             :columns="['sku' => 'SKU', 'category' => 'Category', 'unit' => 'Unit', 'cost' => 'Cost Price', 'price' => 'Sale Price', 'margin' => 'Margin', 'status' => 'Status']"
             empty-text="No products yet." filtered-text="No products match these filters.">
 
+            <x-slot name="actions">
+                <button type="button" onclick="openHardwareScannerModal()" class="ld-outline plain-link font-semibold cursor-pointer" title="Scan product barcode via Camera or Mobile QR Sync">
+                    <span>Scan Product</span>
+                </button>
+            </x-slot>
+
             <x-slot name="filters">
                 <div class="ld-sub">Name, SKU, brand or model</div>
                 <input type="text" name="search" value="{{ request('search') }}" class="ld-input" aria-label="Name, SKU, brand or model">

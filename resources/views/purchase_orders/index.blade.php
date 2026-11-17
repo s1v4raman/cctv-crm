@@ -84,6 +84,14 @@
                 <td x-show="cols.payment"><span class="{{ $po->payment_status === 'unpaid' && $po->status !== 'draft' ? 'text-amber-700 dark:text-amber-400' : '' }}">{{ $payments[$po->payment_status] ?? ucfirst(str_replace('_', ' ', $po->payment_status)) }}</span></td>
                 <td>
                     <div class="ld-row-actions">
+                        <a href="{{ route('purchase-orders.pdf', $po) }}" class="plain-link text-xs font-semibold" title="Download PDF" aria-label="Download PDF for {{ $po->po_number }}">
+                            PDF
+                        </a>
+                        @if($po->supplier?->phone)
+                            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $po->supplier->phone) }}?text={{ urlencode('Hello ' . $po->supplier->name . ', sharing Purchase Order ' . $po->po_number . ' (Total: ' . \App\Support\Inr::money($po->total) . '). Download PDF: ' . route('purchase-orders.pdf', $po)) }}" target="_blank" class="plain-link text-xs font-semibold text-emerald-600 dark:text-emerald-400" title="Share PO PDF via WhatsApp" aria-label="WhatsApp {{ $po->po_number }}">
+                                WhatsApp
+                            </a>
+                        @endif
                         @if(auth()->user()->isOffice())
                             <a href="{{ route('purchase-orders.edit', $po) }}" class="plain-link text-xs font-semibold" title="Edit" aria-label="Edit {{ $po->po_number }}">
                                 Edit

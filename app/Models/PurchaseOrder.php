@@ -229,7 +229,7 @@ class PurchaseOrder extends Model
     /**
      * Build formatted WhatsApp message for Purchase Order sharing.
      */
-    public function buildWhatsAppMessage(?string $customNote = null): string
+    public function buildWhatsAppMessage(?string $customNote = null, ?string $pdfUrl = null): string
     {
         $supplierName = $this->supplier?->contact_person ?: ($this->supplier?->company_name ?: $this->supplier?->name ?: 'Vendor Partner');
         $items = $this->items;
@@ -237,7 +237,7 @@ class PurchaseOrder extends Model
         $msg = "📋 *PURCHASE ORDER — PRECISION IT SYSTEMS*\n";
         $msg .= "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
         $msg .= "Dear *{$supplierName}*,\n\n";
-        $msg .= "Please find the procurement order details below:\n\n";
+        $msg .= "Please find our official procurement purchase order details:\n\n";
         $msg .= "🔹 *PO Number:* {$this->po_number}\n";
         $msg .= "🔹 *Order Date:* " . ($this->order_date ? $this->order_date->format('d M Y') : now()->format('d M Y')) . "\n";
         if ($this->expected_delivery_date) {
@@ -266,6 +266,10 @@ class PurchaseOrder extends Model
         $msg .= "💵 *GRAND TOTAL:* *₹" . number_format((float) $this->total, 2) . "*\n";
         $msg .= "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
 
+        if ($pdfUrl) {
+            $msg .= "📄 *Official PO PDF Document:*\n{$pdfUrl}\n\n";
+        }
+
         if ($this->notes) {
             $msg .= "📝 *Terms & Instructions:* {$this->notes}\n\n";
         }
@@ -273,25 +277,96 @@ class PurchaseOrder extends Model
             $msg .= "📌 *Note:* {$customNote}\n\n";
         }
 
-        $msg .= "📍 *Delivery Location:*\nPrecision IT Systems Central Warehouse\n";
-        $msg .= "\nPlease confirm order acceptance and dispatch tracking.\n";
+        $msg .= "📍 *Delivery Location:*\nPrecision IT Systems Central Warehouse, Avadi, Chennai - 600054\n";
+        $msg .= "\nPlease confirm order acceptance and dispatch timeline.\n";
         $msg .= "Best regards,\n*Precision IT Systems Procurement Team*";
 
         return $msg;
     }
 
     /**
-     * Get direct WhatsApp URL (wa.me) for this Purchase Order.
+     * Build formatted WhatsApp message for Stock & Price Inquiry based on this PO's line items.
      */
-    public function getWhatsAppUrl(?string $customPhone = null, ?string $customNote = null): string
+    public function buildStockInquiryWhatsAppMessage(?string $customNote = null): string
+    {
+        $supplierName = $this->supplier?->contact_person ?: ($this->supplier?->company_name ?: $this->supplier?->name ?: 'Vendor Partner');
+        $items = $this->items;
+
+        $msg = "📦 *STOCK & PRICE INQUIRY — PRECISION IT SYSTEMS*\n";
+        $msg .= "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
+        $msg .= "Dear *{$supplierName}*,\n\n";
+        $msg .= "Greetings from Precision IT Systems.\n";
+        $msg .= "Kindly share current stock availability, best dealer pricing, and dispatch lead times for the following items/SKUs:\n\n";
+
+        foreach ($items as $idx => $item) {
+            $num = $idx + 1;
+            $skuText = $item->sku ? " [SKU: {$item->sku}]" : "";
+            $qty = (int) $item->quantity_ordered;
+            $msg .= "{$num}. *{$item->item_name}*{$skuText}\n";
+            $msg .= "   Requested Qty: *{$qty} units*\n";
+        }
+
+        $msg .= "\n🔹 *Reference PO / Scope:* {$this->po_number}\n";
+        $msg .= "🔹 *Delivery Destination:* Central Warehouse, Precision IT Systems\n";
+        if ($this->expected_delivery_date) {
+            $msg .= "🔹 *Required Timeline:* " . $this->expected_delivery_date->format('d M Y') . "\n";
+        }
+        if ($customNote) {
+            $msg .= "📌 *Note:* {$customNote}\n";
+        }
+        $msg .= "\nPlease confirm availability and dispatch schedule.\n\n";
+        $msg .= "Best regards,\n*Precision IT Systems Procurement Team*\nPhone: +91 96772 57774";
+
+        return $msg;
+    }
+
+    /**
+     * Build formatted WhatsApp message for Payment Confirmation against this PO.
+     */
+    public function buildPaymentConfirmationWhatsAppMessage(?VendorPayment $payment = null, ?string $customNote = null): string
+    {
+        $supplierName = $this->supplier?->contact_person ?: ($this->supplier?->company_name ?: $this->supplier?->name ?: 'Vendor Partner');
+        $amount = $payment ? (float) $payment->amount : (float) $this->amount_paid;
+        $date = $payment && $payment->payment_date ? $payment->payment_date->format('d M Y') : now()->format('d M Y');
+        $method = $payment ? strtoupper(str_replace('_', ' / ', $payment->payment_method)) : 'Bank Transfer';
+
+        $msg = "💳 *PAYMENT CONFIRMATION & REMITTANCE ADVICE*\n";
+        $msg .= "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
+        $msg .= "Dear *{$supplierName}*,\n\n";
+        $msg .= "We have remitted payment against Purchase Order *{$this->po_number}*. Details below:\n\n";
+        $msg .= "🔹 *PO Number:* {$this->po_number}\n";
+        $msg .= "🔹 *Amount Paid:* *₹" . number_format($amount, 2) . "*\n";
+        $msg .= "🔹 *Payment Date:* {$date}\n";
+        $msg .= "🔹 *Payment Mode:* {$method}\n";
+        if ($payment?->transaction_reference) {
+            $msg .= "🔹 *UTR / Ref No:* *{$payment->transaction_reference}*\n";
+        }
+        if ($payment?->payment_reference) {
+            $msg .= "🔹 *Payment Ref:* {$payment->payment_reference}\n";
+        }
+        $rem = max(0.0, (float) $this->total - (float) $this->amount_paid);
+        $msg .= "🔹 *Remaining PO Balance:* ₹" . number_format($rem, 2) . "\n";
+        if ($customNote) {
+            $msg .= "\n📌 *Remarks:* {$customNote}\n";
+        }
+        $msg .= "\nKindly verify your bank credit and issue payment receipt.\n\n";
+        $msg .= "Best regards,\n*Precision IT Systems Accounts Team*";
+
+        return $msg;
+    }
+
+    /**
+     * Get direct WhatsApp URL for this Purchase Order.
+     */
+    public function getWhatsAppUrl(?string $customPhone = null, ?string $customNote = null, ?string $pdfUrl = null): string
     {
         $phone = $customPhone ?: ($this->supplier?->phone ?? '');
         $phoneClean = preg_replace('/[^0-9]/', '', $phone);
         if (strlen($phoneClean) === 10) {
             $phoneClean = '91' . $phoneClean;
         }
-        $text = $this->buildWhatsAppMessage($customNote);
+        $text = $this->buildWhatsAppMessage($customNote, $pdfUrl);
 
-        return "https://wa.me/{$phoneClean}?text=" . urlencode($text);
+        return "https://api.whatsapp.com/send?phone={$phoneClean}&text=" . urlencode($text);
     }
 }

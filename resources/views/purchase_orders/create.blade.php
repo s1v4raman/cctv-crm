@@ -3,7 +3,7 @@
         <h2 class="text-xl font-semibold leading-tight text-gray-800">Create Purchase Order</h2>
     </x-slot>
 
-    <div class="py-5" x-data="purchaseOrderBuilder(@js($products), @js(old('items')))" @supplier-added="supplierAdded($event.detail)">
+    <div class="py-5" x-data="purchaseOrderBuilder(@js($products), @js(old('items')), @js($suppliers), @js(old('supplier_id', $selectedSupplierId)))" @supplier-added="supplierAdded($event.detail)">
         <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
             <a href="{{ route('purchase-orders.index') }}" class="back-link">&larr; Back</a>
 
@@ -36,7 +36,7 @@
                                     Add new supplier
                                 </button>
                             </div>
-                            <select id="po-supplier" x-ref="supplierSelect" name="supplier_id" required class="crm-select" @change="supplierNote = ''">
+                            <select id="po-supplier" x-ref="supplierSelect" name="supplier_id" required class="crm-select" x-model="selectedSupplierId" @change="supplierNote = ''">
                                 <option value="">-- Choose Hardware Supplier --</option>
                                 @foreach($suppliers as $supplier)
                                     <option value="{{ $supplier->id }}" @selected(old('supplier_id', $selectedSupplierId) == $supplier->id)>
@@ -122,6 +122,35 @@
                                                    autocomplete="off"
                                                    placeholder="Search camera, NVR, cable..."
                                                    class="item-name-input block w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-sm px-3 py-2 shadow-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500 placeholder-slate-400">
+
+                                            {{-- Automated Preferred Supplier & Category Suggestions --}}
+                                            <template x-if="detectCategory(item.item_name, item.category)">
+                                                <div class="mt-1.5 flex flex-wrap items-center gap-1.5 text-xs">
+                                                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700"
+                                                          x-text="detectCategory(item.item_name, item.category)"></span>
+
+                                                    <template x-if="getSuggestedSuppliersForItem(item).length > 0">
+                                                        <div class="flex flex-wrap items-center gap-1">
+                                                            <span class="text-[10px] font-semibold text-slate-500">Suppliers:</span>
+                                                            <template x-for="s in getSuggestedSuppliersForItem(item)" :key="s.id">
+                                                                <button type="button"
+                                                                        @click="selectSupplier(s.id)"
+                                                                        class="px-2 py-0.5 rounded text-[10px] font-semibold transition cursor-pointer"
+                                                                        :class="String(selectedSupplierId) === String(s.id)
+                                                                            ? 'bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-700'
+                                                                            : 'bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 dark:bg-blue-950/50 dark:text-blue-300 dark:border-blue-800'"
+                                                                        :title="s.phone ? 'Phone: ' + s.phone : 'Click to select this supplier'">
+                                                                    <span x-text="s.name"></span>
+                                                                    <span x-show="String(selectedSupplierId) === String(s.id)" class="ml-0.5 text-emerald-700 dark:text-emerald-300 font-bold">(Active)</span>
+                                                                </button>
+                                                            </template>
+                                                        </div>
+                                                    </template>
+                                                    <template x-if="getSuggestedSuppliersForItem(item).length === 0">
+                                                        <span class="text-[10px] text-slate-400 italic">No supplier tagged with this category</span>
+                                                    </template>
+                                                </div>
+                                            </template>
                                         </td>
                                         <td>
                                             <input aria-label="Description"
@@ -304,6 +333,16 @@
                                 <div class="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed"
                                      x-text="[prod.brand, prod.model_no || prod.sku].filter(Boolean).join(' • ')"></div>
                             </template>
+                            <template x-if="detectCategory(prod.name, prod.category)">
+                                <div class="mt-1 flex flex-wrap items-center gap-1.5">
+                                    <span class="px-1.5 py-0.5 text-[10px] font-medium rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700"
+                                          x-text="detectCategory(prod.name, prod.category)"></span>
+                                    <template x-for="s in getSuggestedSuppliersForProduct(prod)" :key="s.id">
+                                        <span class="px-1.5 py-0.5 text-[10px] font-semibold rounded bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/50"
+                                              x-text="'Preferred: ' + s.name"></span>
+                                    </template>
+                                </div>
+                            </template>
                         </div>
                         <div class="shrink-0 text-right">
                             <span class="inline-block px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200/80 dark:border-emerald-800/50 shadow-2xs"
@@ -359,9 +398,11 @@
             };
         }
 
-        function purchaseOrderBuilder(catalogProducts, initialItems = null) {
+        function purchaseOrderBuilder(catalogProducts, initialItems = null, suppliers = [], initialSupplierId = '') {
             return {
                 catalogProducts: catalogProducts || [],
+                suppliersList: suppliers || [],
+                selectedSupplierId: initialSupplierId ? String(initialSupplierId) : '',
                 supplierNote: '',
                 taxPercent: 18.0,
                 shippingCost: 0.0,
@@ -380,13 +421,76 @@
                     ? initialItems.map(it => ({
                         product_id: it.product_id || '',
                         item_name: it.item_name || '',
+                        category: it.category || '',
                         sku: it.sku || '',
                         unit_cost: parseFloat(it.unit_cost) || 0,
                         quantity_ordered: parseInt(it.quantity_ordered) || 1
                     }))
                     : [
-                        { product_id: '', item_name: '', sku: '', unit_cost: 0, quantity_ordered: 1 }
+                        { product_id: '', item_name: '', category: '', sku: '', unit_cost: 0, quantity_ordered: 1 }
                     ],
+
+                detectCategory(itemName, category) {
+                    const cat = (category || '').toLowerCase().trim();
+                    const name = (itemName || '').toLowerCase().trim();
+
+                    if (['camera', 'recorder', 'cctv', 'nvr', 'dvr', 'cctv cameras & recorders'].includes(cat) ||
+                        /\b(camera|nvr|dvr|dome|bullet|ptz|cctv|channel|4mp|2mp|8mp|hikvision|dahua|cp plus|uniview)\b/i.test(name)) {
+                        return 'CCTV Cameras & Recorders';
+                    }
+                    if (['storage', 'hdd', 'hard_disk', 'hard drives & storage'].includes(cat) ||
+                        /\b(hdd|hard\s*disk|purple|skyhawk|surveillance\s*hdd|\dtb|\d\s*tb|western digital|seagate)\b/i.test(name)) {
+                        return 'Hard Drives & Storage';
+                    }
+                    if (['networking', 'switch', 'router', 'networking (poe switches, routers, patch panels)'].includes(cat) ||
+                        /\b(poe|switch|router|patch\s*panel|rj45|gigabit|sfp|d-link|tp-link|cisco)\b/i.test(name)) {
+                        return 'Networking (PoE Switches, Routers, Patch Panels)';
+                    }
+                    if (['cable', 'cables', 'conduit', 'wire', 'cables & conduits'].includes(cat) ||
+                        /\b(cable|cat6|cat5|lan\s*cable|wire|conduit|casing|pvc\s*pipe|patch\s*cord)\b/i.test(name)) {
+                        return 'Cables & Conduits';
+                    }
+                    if (['power', 'smps', 'ups', 'battery', 'rack', 'power supplies, batteries & racks'].includes(cat) ||
+                        /\b(smps|power\s*supply|ups|battery|rack|4u|6u|9u|12v|adapter)\b/i.test(name)) {
+                        return 'Power Supplies, Batteries & Racks';
+                    }
+                    return null;
+                },
+
+                getSuggestedSuppliersForItem(item) {
+                    const cat = this.detectCategory(item.item_name, item.category);
+                    if (!cat) return [];
+                    return this.suppliersList.filter(s => {
+                        if (!s.categories) return false;
+                        if (Array.isArray(s.categories)) {
+                            return s.categories.includes(cat);
+                        }
+                        return String(s.categories).includes(cat);
+                    });
+                },
+
+                getSuggestedSuppliersForProduct(prod) {
+                    const cat = this.detectCategory(prod.name, prod.category);
+                    if (!cat) return [];
+                    return this.suppliersList.filter(s => {
+                        if (!s.categories) return false;
+                        if (Array.isArray(s.categories)) {
+                            return s.categories.includes(cat);
+                        }
+                        return String(s.categories).includes(cat);
+                    }).slice(0, 2);
+                },
+
+                selectSupplier(supplierId) {
+                    this.selectedSupplierId = String(supplierId);
+                    if (this.$refs.supplierSelect) {
+                        this.$refs.supplierSelect.value = String(supplierId);
+                    }
+                    const sup = this.suppliersList.find(s => String(s.id) === String(supplierId));
+                    if (sup) {
+                        this.supplierNote = `Active PO Supplier set to: ${sup.name}`;
+                    }
+                },
 
                 init() {
                     window.addEventListener('product-created-in-catalog', (e) => {
@@ -540,10 +644,19 @@
                     if (index === null || !this.items[index] || !prod) return;
                     this.items[index].product_id = prod.id;
                     this.items[index].item_name = prod.name;
+                    this.items[index].category = prod.category || '';
                     this.items[index].sku = prod.description || [prod.brand, prod.model_no || prod.sku].filter(Boolean).join(' • ') || prod.sku || '';
                     this.items[index].unit_cost = parseFloat(prod.cost_price || prod.unit_price) || 0;
                     if (!this.items[index].quantity_ordered || this.items[index].quantity_ordered < 1) {
                         this.items[index].quantity_ordered = 1;
+                    }
+
+                    // Auto-suggest supplier if none currently chosen
+                    if (!this.selectedSupplierId) {
+                        const suggestions = this.getSuggestedSuppliersForProduct(prod);
+                        if (suggestions && suggestions.length > 0) {
+                            this.selectSupplier(suggestions[0].id);
+                        }
                     }
 
                     this.closeDropdown();
@@ -601,13 +714,23 @@
 
                 supplierAdded(supplier) {
                     const select = this.$refs.supplierSelect;
-                    select.add(new Option(supplier.label, supplier.id, true, true));
-                    select.value = String(supplier.id);
+                    if (select) {
+                        select.add(new Option(supplier.label, supplier.id, true, true));
+                        select.value = String(supplier.id);
+                    }
+                    this.selectedSupplierId = String(supplier.id);
+                    this.suppliersList.push({
+                        id: supplier.id,
+                        name: supplier.name,
+                        company_name: supplier.company_name,
+                        phone: supplier.phone,
+                        categories: supplier.categories || []
+                    });
                     this.supplierNote = supplier.message;
                 },
 
                 addItem() {
-                    this.items.push({ product_id: '', item_name: '', sku: '', unit_cost: 0, quantity_ordered: 1 });
+                    this.items.push({ product_id: '', item_name: '', category: '', sku: '', unit_cost: 0, quantity_ordered: 1 });
                     this.$nextTick(() => {
                         const inputs = document.querySelectorAll('.item-name-input');
                         if (inputs.length) {

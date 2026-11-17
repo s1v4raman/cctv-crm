@@ -17,13 +17,19 @@
                 </div>
 
                 <div class="flex items-center gap-2 flex-wrap">
+                    <a href="{{ route('purchase-orders.pdf', $purchaseOrder) }}" class="inline-flex items-center px-3.5 py-2 rounded-lg text-xs font-bold transition shadow-xs cursor-pointer" style="background-color: #2563eb !important; color: #ffffff !important;" title="Download Official Purchase Order PDF">
+                        <span>Download PDF</span>
+                    </a>
+                    <a href="{{ route('purchase-orders.streamPdf', $purchaseOrder) }}" target="_blank" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 transition shadow-xs cursor-pointer" title="View Purchase Order PDF in browser">
+                        <span>View PDF</span>
+                    </a>
                     @if($purchaseOrder->supplier?->phone)
-                        <button type="button" onclick="openPoWhatsAppModal()" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white transition shadow-xs cursor-pointer">
+                        <button type="button" onclick="openPoWhatsAppModal()" class="inline-flex items-center px-3.5 py-2 rounded-lg text-xs font-bold transition shadow-xs cursor-pointer" style="background-color: #059669 !important; color: #ffffff !important;">
                             <span>WhatsApp PO</span>
                         </button>
                     @endif
                     @if($purchaseOrder->supplier?->email)
-                        <button type="button" onclick="openPoEmailModal()" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white transition shadow-xs cursor-pointer">
+                        <button type="button" onclick="openPoEmailModal()" class="inline-flex items-center px-3.5 py-2 rounded-lg text-xs font-bold transition shadow-xs cursor-pointer" style="background-color: #0284c7 !important; color: #ffffff !important;">
                             <span>Email PO</span>
                         </button>
                     @endif
@@ -258,7 +264,63 @@
 
         {{-- Section 4: Payment Tracking --}}
         <div class="crm-section">
-            <h3>Vendor Payment Tracking</h3>
+            <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+                <div>
+                    <h3 class="mb-0">Vendor Payment Tracking</h3>
+                    <p class="text-xs text-slate-500 mt-0.5">Track remittance, UTR transaction references, and share 1-click payment advice with vendor.</p>
+                </div>
+                <div class="text-xs font-mono font-bold text-slate-700 dark:text-slate-300">
+                    Paid: <span class="text-emerald-600 dark:text-emerald-400">₹{{ number_format((float) $purchaseOrder->amount_paid, 2) }}</span> / ₹{{ number_format((float) $purchaseOrder->total, 2) }}
+                </div>
+            </div>
+
+            @if($purchaseOrder->vendorPayments->isNotEmpty())
+                <div class="mb-6 overflow-x-auto border border-slate-200 dark:border-slate-800 rounded-xl">
+                    <table class="crm-table">
+                        <thead>
+                            <tr>
+                                <th>Payment Ref</th>
+                                <th>Date</th>
+                                <th>Amount Paid</th>
+                                <th>Payment Mode</th>
+                                <th>UTR / Reference</th>
+                                <th>Recorded By</th>
+                                <th class="text-right">Share Advice</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($purchaseOrder->vendorPayments as $pay)
+                                <tr>
+                                    <td class="font-mono font-bold text-slate-800 dark:text-slate-100">{{ $pay->payment_reference }}</td>
+                                    <td>{{ $pay->payment_date ? $pay->payment_date->format('d M Y') : '—' }}</td>
+                                    <td class="font-bold text-emerald-600 dark:text-emerald-400 font-mono">₹{{ number_format((float) $pay->amount, 2) }}</td>
+                                    <td>
+                                        <span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                                            {{ ucfirst(str_replace('_', ' ', $pay->payment_mode)) }}
+                                        </span>
+                                    </td>
+                                    <td class="font-mono text-xs font-semibold text-slate-700 dark:text-slate-200">{{ $pay->transaction_reference ?: '—' }}</td>
+                                    <td class="text-slate-600 dark:text-slate-400">{{ $pay->recordedBy?->name ?? 'System' }}</td>
+                                    <td class="text-right whitespace-nowrap">
+                                        <div class="inline-flex items-center gap-1.5 justify-end">
+                                            <a href="{{ route('vendor-payments.shareWhatsApp', $pay) }}" target="_blank" class="inline-flex items-center px-2 py-1 rounded text-[11px] font-bold bg-emerald-600 hover:bg-emerald-700 text-white transition shadow-xs cursor-pointer" title="Send WhatsApp Remittance Advice with UTR">
+                                                <span>WhatsApp Advice</span>
+                                            </a>
+                                            <form method="POST" action="{{ route('vendor-payments.sendEmail', $pay) }}" class="inline">
+                                                @csrf
+                                                <button type="submit" class="inline-flex items-center px-2 py-1 rounded text-[11px] font-bold bg-blue-600 hover:bg-blue-700 text-white transition shadow-xs cursor-pointer" title="Email Remittance Advice Voucher to Supplier">
+                                                    <span>Email Advice</span>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
+
             <form method="POST" action="{{ route('purchase-orders.updatePayment', $purchaseOrder) }}">
                 @csrf
                 @method('PATCH')
@@ -292,20 +354,31 @@
     <div id="po-whatsapp-modal" style="display: none;" 
          onclick="if(event.target === this) closePoWhatsAppModal()"
          class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden">
             <div class="px-5 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-emerald-50/60 dark:bg-emerald-950/30">
                 <div class="text-emerald-800 dark:text-emerald-300 font-bold text-sm">
-                    <span>Share Purchase Order via WhatsApp</span>
+                    <span>Share with Supplier via WhatsApp</span>
                 </div>
                 <button type="button" onclick="closePoWhatsAppModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg leading-none cursor-pointer">&times;</button>
             </div>
-            <form method="POST" action="{{ route('purchase-orders.shareWhatsApp', $purchaseOrder) }}" target="_blank" onsubmit="closePoWhatsAppModal()">
+            <form id="po-whatsapp-form" method="POST" action="{{ route('purchase-orders.shareWhatsApp', $purchaseOrder) }}" target="_blank">
                 @csrf
                 <div class="p-5 space-y-4 text-xs">
+                    {{-- 1-Click Inquiry Template Selector --}}
+                    <div>
+                        <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Pre-built Inquiry Template</label>
+                        <select id="po-wa-template-type" name="template_type" onchange="onPoWhatsAppTemplateChange(this.value)" class="w-full px-3 py-2 border rounded-lg border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-semibold">
+                            <option value="po_dispatch" selected>PO Dispatch (Official PDF & Order Summary)</option>
+                            <option value="stock_inquiry">Stock & Price Inquiry (SKU List & Availability)</option>
+                            <option value="payment_confirmation">Payment Confirmation & Remittance (UTR)</option>
+                        </select>
+                    </div>
+
                     <div>
                         <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Supplier Mobile Number *</label>
-                        <input type="text" name="phone" value="{{ $purchaseOrder->supplier?->phone }}" required class="w-full px-3 py-2 border rounded-lg border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-mono">
+                        <input type="text" id="po-wa-phone" name="phone" value="{{ $purchaseOrder->supplier?->phone }}" required class="w-full px-3 py-2 border rounded-lg border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-mono">
                     </div>
+
                     <div class="p-3 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-1 text-[11px]">
                         <div class="flex justify-between font-bold text-slate-800 dark:text-slate-200">
                             <span>PO #{{ $purchaseOrder->po_number }}</span>
@@ -313,16 +386,65 @@
                         </div>
                         <div class="text-slate-500">{{ $purchaseOrder->items->count() }} item(s) • {{ $purchaseOrder->supplier?->name }}</div>
                     </div>
+
+                    {{-- Attached PDF Document Feature Card (for PO Dispatch) --}}
+                    <div id="po-wa-pdf-card" class="p-3.5 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-[11px] space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="font-bold text-emerald-800 dark:text-emerald-300">Official PO PDF Document Included</span>
+                            <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-200/80 dark:bg-emerald-800 text-emerald-900 dark:text-emerald-100">PDF Linked</span>
+                        </div>
+                        <p class="text-slate-600 dark:text-slate-300 leading-relaxed">
+                            A secure, official PDF link is generated and included inside the WhatsApp message so your vendor can view and download the signed document with one tap.
+                        </p>
+                        <div class="pt-1 border-t border-emerald-200/70 dark:border-emerald-800/60">
+                            <label class="inline-flex items-center gap-2 cursor-pointer text-slate-700 dark:text-slate-200 font-semibold select-none">
+                                <input type="checkbox" id="po-wa-auto-download" checked class="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500">
+                                <span>Also download PDF file to this device to attach directly in chat</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    {{-- SKU Quick-Add Chips for Stock & Price Inquiry --}}
+                    <div id="po-wa-sku-chips-wrap" style="display: none;" class="p-3 rounded-xl bg-sky-50/60 dark:bg-sky-950/30 border border-sky-200 dark:border-sky-800 space-y-1.5">
+                        <span class="font-bold text-sky-800 dark:text-sky-300 text-[11px] block">Click SKU to append to inquiry note:</span>
+                        <div class="flex flex-wrap gap-1.5">
+                            @foreach($purchaseOrder->items as $poItem)
+                                <button type="button" onclick="insertSkuIntoPoWaNote('{{ addslashes($poItem->item_name . ($poItem->sku ? ' [SKU: ' . $poItem->sku . ']' : '')) }}')" class="px-2 py-1 rounded text-[10px] font-semibold bg-white dark:bg-slate-800 border border-sky-300 dark:border-sky-700 text-sky-900 dark:text-sky-200 hover:bg-sky-100 dark:hover:bg-sky-900/60 transition cursor-pointer">
+                                    + {{ Str::limit($poItem->item_name, 22) }}
+                                </button>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    {{-- Payment Selector (for Payment Confirmation) --}}
+                    @if($purchaseOrder->vendorPayments->isNotEmpty())
+                        <div id="po-wa-payment-selector-wrap" style="display: none;">
+                            <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Select Recorded Payment (UTR)</label>
+                            <select id="po-wa-payment-id" name="vendor_payment_id" class="w-full px-3 py-2 border rounded-lg border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
+                                @foreach($purchaseOrder->vendorPayments as $pay)
+                                    <option value="{{ $pay->id }}">
+                                        {{ $pay->payment_reference }} — ₹{{ number_format((float) $pay->amount, 2) }} (UTR: {{ $pay->transaction_reference ?: 'N/A' }})
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @endif
+
                     <div>
                         <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Additional Note / Dispatch Instructions</label>
-                        <textarea name="custom_note" rows="2" placeholder="e.g. Please deliver by Thursday evening or dispatch through safe transport..." class="w-full px-3 py-2 border rounded-lg border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"></textarea>
+                        <textarea id="po-wa-note" name="custom_note" rows="2" placeholder="e.g. Please deliver by Thursday evening or dispatch through safe transport..." class="w-full px-3 py-2 border rounded-lg border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"></textarea>
                     </div>
                 </div>
-                <div class="px-5 py-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 flex items-center justify-end gap-2">
-                    <button type="button" onclick="closePoWhatsAppModal()" class="btn-secondary">Cancel</button>
-                    <button type="submit" class="inline-flex items-center px-4 py-2 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white transition shadow-xs cursor-pointer">
-                        <span>Open WhatsApp & Send</span>
-                    </button>
+                <div class="px-5 py-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 flex items-center justify-between gap-2 flex-wrap">
+                    <a href="{{ route('purchase-orders.pdf', $purchaseOrder) }}" class="btn-secondary text-xs">
+                        <span>Download PDF</span>
+                    </a>
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="closePoWhatsAppModal()" class="btn-secondary">Cancel</button>
+                        <button type="button" onclick="sendPoWhatsAppWithPdf()" class="inline-flex items-center px-4 py-2 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white transition shadow-xs cursor-pointer">
+                            <span>Share on WhatsApp</span>
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -335,37 +457,181 @@
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden">
             <div class="px-5 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-blue-50/60 dark:bg-blue-950/30">
                 <div class="text-blue-800 dark:text-blue-300 font-bold text-sm">
-                    <span>Dispatch Purchase Order via Email</span>
+                    <span>Send Communication to Supplier via Email</span>
                 </div>
                 <button type="button" onclick="closePoEmailModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg leading-none cursor-pointer">&times;</button>
             </div>
             <form method="POST" action="{{ route('purchase-orders.sendEmail', $purchaseOrder) }}" onsubmit="closePoEmailModal()">
                 @csrf
                 <div class="p-5 space-y-4 text-xs">
+                    {{-- 1-Click Template Selector --}}
+                    <div>
+                        <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Pre-built Email Template</label>
+                        <select id="po-email-template-type" name="template_type" onchange="onPoEmailTemplateChange(this.value)" class="w-full px-3 py-2 border rounded-lg border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-semibold">
+                            <option value="po_dispatch" selected>PO Dispatch (Official PDF & Order Summary)</option>
+                            <option value="stock_inquiry">Stock & Price Inquiry (SKU List & Availability)</option>
+                            <option value="payment_confirmation">Payment Confirmation & Remittance (UTR)</option>
+                        </select>
+                    </div>
+
                     <div>
                         <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Supplier Email *</label>
                         <input type="email" name="email" value="{{ $purchaseOrder->supplier?->email }}" required class="w-full px-3 py-2 border rounded-lg border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
                     </div>
+
+                    {{-- Payment Selector (for Payment Confirmation) --}}
+                    @if($purchaseOrder->vendorPayments->isNotEmpty())
+                        <div id="po-email-payment-selector-wrap" style="display: none;">
+                            <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Select Recorded Payment (UTR)</label>
+                            <select name="vendor_payment_id" class="w-full px-3 py-2 border rounded-lg border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
+                                @foreach($purchaseOrder->vendorPayments as $pay)
+                                    <option value="{{ $pay->id }}">
+                                        {{ $pay->payment_reference }} — ₹{{ number_format((float) $pay->amount, 2) }} (UTR: {{ $pay->transaction_reference ?: 'N/A' }})
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @endif
+
                     <div>
                         <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Subject</label>
-                        <input type="text" name="subject" value="Purchase Order #{{ $purchaseOrder->po_number }} — Precision IT Systems" required class="w-full px-3 py-2 border rounded-lg border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
+                        <input type="text" id="po-email-subject" name="subject" value="Purchase Order #{{ $purchaseOrder->po_number }} — Precision IT Systems" required class="w-full px-3 py-2 border rounded-lg border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
                     </div>
                     <div>
                         <label class="block font-bold text-slate-700 dark:text-slate-200 mb-1">Custom Message / Order Instructions</label>
-                        <textarea name="custom_message" rows="3" placeholder="Add specific order notes, delivery timeframe or terms..." class="w-full px-3 py-2 border rounded-lg border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">Please find attached our official Purchase Order #{{ $purchaseOrder->po_number }} for immediate processing. Kindly confirm delivery timeline and dispatch status.</textarea>
+                        <textarea id="po-email-message" name="custom_message" rows="4" placeholder="Add specific order notes, delivery timeframe or terms..." class="w-full px-3 py-2 border rounded-lg border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white">Please find attached our official Purchase Order #{{ $purchaseOrder->po_number }} for immediate processing. Kindly confirm delivery timeline and dispatch status.</textarea>
                     </div>
                 </div>
                 <div class="px-5 py-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 flex items-center justify-end gap-2">
                     <button type="button" onclick="closePoEmailModal()" class="btn-secondary">Cancel</button>
                     <button type="submit" class="inline-flex items-center px-4 py-2 rounded-lg text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white transition shadow-xs cursor-pointer">
-                        <span>Send Official PO Email</span>
+                        <span>Send Email</span>
                     </button>
                 </div>
             </form>
         </div>
     </div>
 
+    @php
+        $vendorContactName = $purchaseOrder->supplier?->contact_person ?: ($purchaseOrder->supplier?->name ?: 'Vendor Partner');
+        $poEmailPresets = [
+            'po_dispatch' => [
+                'subject' => "Purchase Order #{$purchaseOrder->po_number} — Precision IT Systems",
+                'message' => "Please find attached our official Purchase Order #{$purchaseOrder->po_number} for immediate processing. Kindly confirm delivery timeline and dispatch status."
+            ],
+            'stock_inquiry' => [
+                'subject' => "Stock & Price Inquiry for PO #{$purchaseOrder->po_number} — Precision IT Systems",
+                'message' => "Dear {$vendorContactName},\n\nKindly check inventory availability and furnish your best dealer quotation for the hardware requirements on PO #{$purchaseOrder->po_number}.\n\nLooking forward to your quick confirmation."
+            ],
+            'payment_confirmation' => [
+                'subject' => "Payment Remittance Advice — PO #{$purchaseOrder->po_number} — Precision IT Systems",
+                'message' => "Dear {$vendorContactName},\n\nWe have processed payment against Purchase Order #{$purchaseOrder->po_number}.\nAmount Paid: ₹" . number_format((float) $purchaseOrder->amount_paid, 2) . "\nStatus: " . ucfirst(str_replace('_', ' ', $purchaseOrder->payment_status)) . "\n\nPlease find the transaction remittance advice and UTR reference attached."
+            ]
+        ];
+    @endphp
+
     <script>
+        const poPdfDownloadUrl = @json(route('purchase-orders.pdf', $purchaseOrder));
+        const poShareWhatsAppUrl = @json(route('purchase-orders.shareWhatsApp', $purchaseOrder));
+        const poEmailPresets = {!! json_encode($poEmailPresets) !!};
+
+        function onPoWhatsAppTemplateChange(val) {
+            const pdfCard = document.getElementById('po-wa-pdf-card');
+            const paymentSelector = document.getElementById('po-wa-payment-selector-wrap');
+            const skuChips = document.getElementById('po-wa-sku-chips-wrap');
+            const noteTextarea = document.getElementById('po-wa-note');
+
+            if (val === 'po_dispatch') {
+                if (pdfCard) pdfCard.style.display = 'block';
+                if (paymentSelector) paymentSelector.style.display = 'none';
+                if (skuChips) skuChips.style.display = 'none';
+                if (noteTextarea) noteTextarea.placeholder = 'e.g. Please deliver by Thursday evening or dispatch through safe transport...';
+            } else if (val === 'stock_inquiry') {
+                if (pdfCard) pdfCard.style.display = 'none';
+                if (paymentSelector) paymentSelector.style.display = 'none';
+                if (skuChips) skuChips.style.display = 'block';
+                if (noteTextarea) noteTextarea.placeholder = 'e.g. Urgent requirement for project site. Please quote dealer prices for items listed above...';
+            } else if (val === 'payment_confirmation') {
+                if (pdfCard) pdfCard.style.display = 'none';
+                if (paymentSelector) paymentSelector.style.display = 'block';
+                if (skuChips) skuChips.style.display = 'none';
+                if (noteTextarea) noteTextarea.placeholder = 'e.g. Payment processed via NEFT. Kindly acknowledge and send stamped invoice...';
+            }
+        }
+
+        function onPoEmailTemplateChange(val) {
+            const subjectInput = document.getElementById('po-email-subject');
+            const messageInput = document.getElementById('po-email-message');
+            const paymentSelector = document.getElementById('po-email-payment-selector-wrap');
+
+            if (poEmailPresets[val]) {
+                if (subjectInput) subjectInput.value = poEmailPresets[val].subject;
+                if (messageInput) messageInput.value = poEmailPresets[val].message;
+            }
+            if (paymentSelector) {
+                paymentSelector.style.display = (val === 'payment_confirmation') ? 'block' : 'none';
+            }
+        }
+
+        function insertSkuIntoPoWaNote(skuText) {
+            const noteTextarea = document.getElementById('po-wa-note');
+            if (!noteTextarea) return;
+            if (noteTextarea.value.trim().length > 0) {
+                noteTextarea.value += ', ' + skuText;
+            } else {
+                noteTextarea.value = 'Inquiry for: ' + skuText;
+            }
+        }
+
+        async function sendPoWhatsAppWithPdf() {
+            const phoneInput = document.getElementById('po-wa-phone');
+            const noteInput = document.getElementById('po-wa-note');
+            const templateType = document.getElementById('po-wa-template-type')?.value || 'po_dispatch';
+            const paymentId = document.getElementById('po-wa-payment-id')?.value || '';
+            const autoDownload = document.getElementById('po-wa-auto-download')?.checked;
+            const phone = phoneInput ? phoneInput.value.trim() : '';
+
+            if (!phone) {
+                alert('Please enter supplier mobile number.');
+                phoneInput?.focus();
+                return;
+            }
+
+            if (autoDownload && templateType === 'po_dispatch') {
+                const downloadLink = document.createElement('a');
+                downloadLink.href = poPdfDownloadUrl;
+                downloadLink.download = 'PO_' + @json($purchaseOrder->po_number) + '.pdf';
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                setTimeout(() => downloadLink.remove(), 1000);
+            }
+
+            try {
+                const formData = new FormData();
+                formData.append('phone', phone);
+                formData.append('template_type', templateType);
+                if (paymentId) formData.append('vendor_payment_id', paymentId);
+                formData.append('custom_note', noteInput ? noteInput.value : '');
+                formData.append('_token', @json(csrf_token()));
+
+                const res = await fetch(poShareWhatsAppUrl, {
+                    method: 'POST',
+                    headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                    body: formData
+                });
+                const data = await res.json();
+                if (data && data.whatsapp_url) {
+                    window.open(data.whatsapp_url, '_blank');
+                } else {
+                    document.getElementById('po-whatsapp-form').submit();
+                }
+            } catch (e) {
+                document.getElementById('po-whatsapp-form').submit();
+            }
+
+            closePoWhatsAppModal();
+        }
+
         function openPoWhatsAppModal() {
             const el = document.getElementById('po-whatsapp-modal');
             if (el) el.style.display = 'flex';

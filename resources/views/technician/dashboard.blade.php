@@ -1122,11 +1122,11 @@
                     {{-- Left 7 Cols: Scanner Station --}}
                     <div class="lg:col-span-7 rounded-2xl sm:rounded-3xl crm-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 sm:p-6 lg:p-7 shadow-sm space-y-4">
                         <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-                            <button type="button" onclick="openHardwareScannerModal('camera')"
+                            <button type="button" onclick="openHardwareScannerModal()"
                                     class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 min-h-[38px] rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 !text-white font-bold text-xs sm:text-sm shadow-sm transition cursor-pointer"
                                     style="color: #ffffff !important;">
                                 <svg class="w-4 h-4 shrink-0 !text-white" fill="none" stroke="#ffffff" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                                <span class="!text-white font-bold" style="color: #ffffff !important;">{{ __('Launch Camera Scanner') }}</span>
+                                <span class="!text-white font-bold" style="color: #ffffff !important;">{{ __('Launch Hardware Scanner') }}</span>
                             </button>
 
                             <div class="w-full sm:max-w-xs flex items-center gap-1.5">
@@ -1666,8 +1666,7 @@
             </div>
         </nav>
 
-    {{-- HARDWARE BARCODE SCANNER MODAL & COMPONENT --}}
-    <x-hardware-scanner-modal modalId="hardwareScannerModal" :projects="$activeProjects" :leads="$leads ?? collect()" />
+    {{-- HARDWARE BARCODE SCANNER COMPONENT (Modal provided globally via app layout) --}}
     <x-barcode-scanner modalId="tech-barcode-modal" :title="__('Hardware Scanner')" />
 
     {{-- SPLIT GUIDED WORKER ATTENDANCE MODAL COMPONENT --}}

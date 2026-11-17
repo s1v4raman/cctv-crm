@@ -156,20 +156,47 @@
         </div>
 
         <!-- Camera Control Bar -->
-        <div class="grid grid-cols-2 gap-2 mt-3">
-            <!-- Snap Photo Fallback -->
+        <div class="space-y-2 mt-3">
+            <!-- Primary Live Hardware Camera Trigger -->
             <button type="button" onclick="triggerMobileCameraSnap()"
-                    class="flex items-center justify-center space-x-2 min-h-[44px] py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-sm font-semibold border border-slate-700/80 cursor-pointer shadow-md active:scale-98 transition-all">
-                <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                <span>Snap Barcode</span>
+                    class="w-full flex items-center justify-center space-x-2 min-h-[46px] py-3 px-4 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-900/40 cursor-pointer active:scale-98 transition-all">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                <span>Scan Hardware with Camera</span>
             </button>
 
-            <!-- Manual Entry / Type S/N Button -->
-            <button type="button" onclick="openManualEntryPrompt()"
-                class="flex items-center justify-center space-x-2 min-h-[44px] py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-sm font-semibold border border-slate-700/80 shadow-md active:scale-98 transition-all cursor-pointer">
-                <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                <span>Type S/N Manually</span>
+            <div class="grid grid-cols-2 gap-2">
+                <!-- Retake / Flash Scan -->
+                <button type="button" onclick="triggerMobileCameraSnap()"
+                        class="flex items-center justify-center space-x-1.5 min-h-[40px] py-2 px-3 bg-slate-900 hover:bg-slate-800 text-slate-200 rounded-xl text-xs font-semibold border border-slate-800 cursor-pointer shadow-xs active:scale-98 transition-all">
+                    <span>📷 Re-scan Tag</span>
+                </button>
+
+                <!-- Manual Entry / Type S/N Button -->
+                <button type="button" onclick="openManualEntryPrompt()"
+                    class="flex items-center justify-center space-x-1.5 min-h-[40px] py-2 px-3 bg-slate-900 hover:bg-slate-800 text-slate-200 rounded-xl text-xs font-semibold border border-slate-800 cursor-pointer shadow-xs active:scale-98 transition-all">
+                    <span>⌨️ Type S/N Manually</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Optional Live 60fps Video Stream Helper Card (For Wi-Fi HTTP Android Chrome) -->
+        <div x-data="{ open: false }" class="mt-3 p-3 rounded-xl bg-slate-900/60 border border-slate-800 text-xs">
+            <button type="button" @click="open = !open" class="w-full flex items-center justify-between text-slate-400 hover:text-slate-200 text-left font-semibold">
+                <span class="flex items-center gap-1.5">
+                    <span class="text-cyan-400">💡</span>
+                    <span>Want 60fps continuous live video on mobile?</span>
+                </span>
+                <span x-text="open ? '▲' : '▼'" class="text-[10px]"></span>
             </button>
+            <div x-show="open" x-cloak class="mt-2.5 pt-2.5 border-t border-slate-800 text-slate-300 space-y-1.5 text-[11px]">
+                <p>Because mobile browsers restrict live camera video feeds over insecure HTTP LAN Wi-Fi, you can enable it in Chrome for Android:</p>
+                <ol class="list-decimal list-inside space-y-1 text-slate-400 pl-1">
+                    <li>Open a new tab and go to: <code class="text-cyan-400 bg-slate-950 px-1.5 py-0.5 rounded select-all font-mono">chrome://flags/#unsafely-treat-insecure-origin-as-secure</code></li>
+                    <li>Add this server address: <code class="text-cyan-400 bg-slate-950 px-1.5 py-0.5 rounded select-all font-mono">{{ url('/') }}</code></li>
+                    <li>Set to <strong>Enabled</strong> and tap <strong>Relaunch</strong>.</li>
+                </ol>
+                <p class="text-[10px] text-slate-500 pt-1">Even without flags, the <strong>Scan Hardware with Camera</strong> button above decodes all CCTV barcodes and S/N tags using the camera.</p>
+            </div>
         </div>
 
         <!-- Recent Scans on this session -->

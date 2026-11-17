@@ -125,6 +125,12 @@
                                 @error('upi_id') <p class="error-text">{{ $message }}</p> @enderror
                             </div>
                         </div>
+                        <div class="mb-4">
+                            <label class="crm-label">UPI QR Code / Payment Portal Link</label>
+                            <input aria-label="UPI QR Code / Payment Portal Link" type="text" name="payment_link" value="{{ old('payment_link', $supplier->payment_link) }}" placeholder="e.g. https://upi.me/... or vendor payment portal URL" class="crm-input font-mono">
+                            <p class="text-[11px] text-slate-500 mt-1">Optional URL for payment portal or UPI QR code link.</p>
+                            @error('payment_link') <p class="error-text">{{ $message }}</p> @enderror
+                        </div>
                     </div>
 
                     {{-- Product Categories & Brands Supplied --}}
@@ -136,9 +142,9 @@
                                 $currentCategories = old('categories', $supplier->categories ?? []);
                                 if (!is_array($currentCategories)) $currentCategories = [];
                             @endphp
-                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-                                @foreach(['CCTV Cameras & Recorders', 'Hard Disks & Storage', 'PoE Switches & Networking', 'Cables & Conduits', 'Power Supplies & Racks', 'Access Control & Biometrics'] as $cat)
-                                    <label class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/60 cursor-pointer text-xs font-medium text-slate-800 dark:text-slate-200">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+                                @foreach(\App\Models\Supplier::CATEGORIES as $cat)
+                                    <label class="flex items-center gap-2 p-2.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/60 cursor-pointer text-xs font-semibold text-slate-800 dark:text-slate-200">
                                         <input type="checkbox" name="categories[]" value="{{ $cat }}" @checked(in_array($cat, $currentCategories)) class="rounded border-slate-300 text-blue-600 focus:ring-blue-500">
                                         <span>{{ $cat }}</span>
                                     </label>
